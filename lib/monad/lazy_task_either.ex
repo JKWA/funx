@@ -275,20 +275,30 @@ defmodule Monex.LazyTaskEither do
   end
 
   @doc """
-  Validates a value using a list of validators.
-  Returns a `Right` if all validators succeed, or a `Left` with a list of errors if any validator fails.
+  Validates a value using a list of validators. Each validator is a function that returns a `LazyTaskEither` value.
+  If any validator returns a `Left`, the errors are collected, and if all validators return `Right`, the value is returned in a `Right`.
 
   ## Examples
 
-      iex> validator_1 = fn value -> if value > 0, do: Monex.LazyTaskEither.right(value), else: Monex.LazyTaskEither.left("too small") end
-      iex> validator_2 = fn value -> if rem(value, 2) == 0, do: Monex.LazyTaskEither.right(value), else: Monex.LazyTaskEither.left("not even") end
-      iex> result = Monex.LazyTaskEither.validate(4, [validator_1, validator_2])
-      iex> Monex.LazyTaskEither.run(result)
-      %Monex.Either.Right{value: 4}
+    ### Define Validators
 
-      iex> result = Monex.LazyTaskEither.validate(3, [validator_1, validator_2])
-      iex> Monex.LazyTaskEither.run(result)
-      %Monex.Either.Left{value: ["not even"]}
+        iex> validate_positive = fn value -> Monex.LazyTaskEither.lift_predicate(value, &(&1 > 0), fn -> "Value must be positive" end) end
+        iex> validate_even = fn value -> Monex.LazyTaskEither.lift_predicate(value, &rem(&1, 2) == 0, fn -> "Value must be even" end) end
+        iex> validators = [validate_positive, validate_even]
+
+    ### Validate
+
+        iex> result = Monex.LazyTaskEither.validate(4, validators)
+        iex> Monex.LazyTaskEither.run(result)
+        %Monex.Either.Right{value: 4}
+
+        iex> result = Monex.LazyTaskEither.validate(3, validators)
+        iex> Monex.LazyTaskEither.run(result)
+        %Monex.Either.Left{value: ["Value must be even"]}
+
+        iex> result = Monex.LazyTaskEither.validate(-3, validators)
+        iex> Monex.LazyTaskEither.run(result)
+        %Monex.Either.Left{value: ["Value must be positive", "Value must be even"]}
   """
 
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)

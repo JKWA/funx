@@ -220,8 +220,8 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.traverse(fn x -> Monex.Either.right(x * 2) end, [1, 2])
-      %Monex.Either.Right{value: [2, 4]}
+      iex> Monex.Either.traverse(&Monex.Either.right/1, [1, 2, 3])
+      %Monex.Either.Right{value: [1, 2, 3]}
   """
   @spec traverse((a -> t(error, b)), [a]) :: t(error, [b])
         when error: term(), a: term(), b: term()
@@ -262,15 +262,27 @@ defmodule Monex.Either do
   end
 
   @doc """
-  Validates a value using a list of validators. If any validator returns a `Left`, the errors are collected.
+  Validates a value using a list of validators. Each validator is a function that returns an `Either` value.
+  If any validator returns a `Left`, the errors are collected, and if all validators return `Right`, the value is returned in a `Right`.
 
   ## Examples
 
-      iex> Monex.Either.validate(5, [fn x -> if x > 3, do: Monex.Either.right(x), else: Monex.Either.left("too small") end])
-      %Monex.Either.Right{value: 5}
+    ### Define Validators
 
-      iex> Monex.Either.validate(2, [fn x -> if x > 3, do: Monex.Either.right(x), else: Monex.Either.left("too small") end])
-      %Monex.Either.Left{value: ["too small"]}
+        iex> validate_positive = fn x -> Monex.Either.lift_predicate(x, &(&1 > 0), fn -> "Value must be positive" end) end
+        iex> validate_even = fn x -> Monex.Either.lift_predicate(x, &rem(&1, 2) == 0, fn -> "Value must be even" end) end
+        iex> validators = [validate_positive, validate_even]
+
+    ### Validate
+
+        iex> Monex.Either.validate(4, validators)
+        %Monex.Either.Right{value: 4}
+
+        iex> Monex.Either.validate(3, validators)
+        %Monex.Either.Left{value: ["Value must be even"]}
+
+        iex> Monex.Either.validate(-3, validators)
+        %Monex.Either.Left{value: ["Value must be positive", "Value must be even"]}
   """
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
         when error: term(), value: term()
