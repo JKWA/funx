@@ -2,15 +2,17 @@
 
 [View the code on GitHub](https://github.com/JKWA/monex)
 
-Elixir is a dynamically typed language and lacks the static type system typically used in functional languages to enforce monadic patterns. Instead, Elixir leverages pattern matching, `defimpl`, and branded structs to create structured abstractions that behave like monads. Monex builds on these principles to provide useful tools for functional programming.
+Elixir is a dynamically typed language and lacks the static type system commonly used in functional languages to enforce monadic patterns. Instead, Elixir uses pattern matching, `defimpl`, and custom structs to create structured abstractions that provide runtime guarantees but lack the compile-time type safety of statically typed languages.
+
+Monex leverages these principles to deliver functional programming abstractions for Elixir.
 
 ## Features
 
-Monex provides various tools for working with monads, including constructors, refinements, folding, matching, and more.
+Monex provides tools for working with monads, including constructors, refinements, folding, matching, and more.
 
 ### Monads
 
-Monads in Monex support operations like `bind`, `map`, and `ap`, allowing for flexible control over computations:
+Monads in Monex support operations like `bind`, `map`, and `ap`, allowing flexible control over computations:
 
 - **Identity**: A base monad that returns its value unchanged.
 - **Maybe**: Encapsulates optional values as `Just` (a value) or `Nothing` (no value).
@@ -19,13 +21,13 @@ Monads in Monex support operations like `bind`, `map`, and `ap`, allowing for fl
 
 ### Operators
 
-Monex provides operators that offer a more concise syntax for working with monads:
+Monex includes operators that provide a more concise syntax for working with monads:
 
-- **`~>/2`**: Functor map. Applies a function to the value in a monad to transform the value within the monad's context.
+- **`~>/2`**: Functor map. Applies a function to the value in a monad, transforming the value within the monadic context.
 - **`~>>/2`**: Monad bind. Chains computations, passing the result of one monad to a function that returns another monad of the same type.
 - **`<<~/2`**: Applicative apply. Applies a function wrapped in a monad to a value in another monad of the same type.
 
-*Operators make code more compact, but they come with a trade-off in readability compared to Elixir’s standard pipe syntax.*
+*Operators make code more compact, but they may impact readability compared to Elixir’s standard pipe syntax.*
 
 ### Constructors
 
@@ -37,7 +39,7 @@ Monex provides constructors for each monad, allowing values to be wrapped in the
 
 ### Refinements
 
-Refinements allow for inspection of monadic values and the extraction of useful information:
+Refinements allow inspection of monadic values and extraction of useful information:
 
 - **`just?/1`**: Checks if a `Maybe` value is a `Just`.
 - **`nothing?/1`**: Checks if a `Maybe` value is `Nothing`.
@@ -67,10 +69,10 @@ Matching provides a way to handle different cases of a monadic value (`Right`, `
 
 ### Sequencing
 
-Monads allow for chaining multiple computations in sequence, passing results from one computation to the next:
+Monads allow chaining multiple computations in sequence, passing results from one computation to the next:
 
 - **`sequence/1`**: Sequences a list of monads, returning a monad with a list of all `Right` or `Just` values, or the first `Left` or `Nothing` encountered.
-- **`traverse/2`**: Applies a function to a list that returns monads, sequencing the results and propagating successes or failures.
+- **`traverse/2`**: Applies a function to each element in a list that returns monads, sequencing the results and propagating successes or failures.
 
 ### Validation
 
