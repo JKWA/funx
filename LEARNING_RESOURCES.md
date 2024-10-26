@@ -26,21 +26,19 @@ The `Monex.Either` monad extends the `Monex.Maybe` monad by handling two distinc
 
 This post compares two approaches to handling business logic in Elixir: a typical tuple-based approach and monadic composition. It demonstrates how monads, specifically the `Monex.Either` monad, abstract away error handling and streamline operations by leveraging functions like `bind` and `map`. This post shows how monads can enhance composability and maintainability in complex workflows.
 
-### [Elixir and Monads: Task](https://www.joekoski.com/blog/2024/07/01/monad-task.html)
+### [Elixir and Monads: Effect](https://www.joekoski.com/blog/2024/07/07/monad-lazy-task-either.html)
 
-This post addresses the challenges of using Elixir’s eager `Task` in monadic composition. It introduces `Monex.LazyTask`, a module that defers task execution until explicitly invoked, allowing tasks to be composed and passed between processes.
+Here’s the updated paragraph:
 
-### [Elixir and Monads: LazyTaskEither](https://www.joekoski.com/blog/2024/07/07/monad-lazy-task-either.html)
-
-`Monex.LazyTaskEither` combines the error handling of `Monex.Either` with the deferred execution of `LazyTask`, allowing for the composition of asynchronous operations that may fail. This post explains how `LazyTaskEither` manages both success (`Right`) and error (`Left`) contexts while deferring execution until `run/1` is called. It covers key functions like `bind`, `map`, and `ap`, showing how to integrate error handling into complex, asynchronous workflows in a clean, functional style.
+`Monex.Effect` combines error handling with deferred execution, enabling the composition of asynchronous operations that may fail. This post explains how `Monex.Effect` manages both success (`Right`) and error (`Left`) contexts while deferring execution until `run/1` is called. It covers key functions like `bind`, `map`, and `ap`, demonstrating how to integrate error handling into complex, asynchronous workflows in a clean, functional style.
 
 ### [Elixir and Monads: Async Example](https://www.joekoski.com/blog/2024/07/09/monad-example-2.html)
 
-Continuing from [the previous post](https://www.joekoski.com/blog/2024/06/27/monad-example.html) on handling business logic with the `Monex.Either` monad, this post extends the discussion to asynchronous operations using `Monex.LazyTaskEither`. It demonstrates how monadic composition can be applied to handle tasks like input validation and availability checks while managing both success (`Right`) and failure (`Left`) paths. By deferring execution with `Monex.LazyTaskEither`, asynchronous workflows are structured in the same way as synchronous ones, maintaining consistency and composability in error handling.
+Continuing from [the previous post](https://www.joekoski.com/blog/2024/06/27/monad-example.html) on handling business logic with the `Monex.Either` monad, this post extends the discussion to asynchronous operations using `Monex.Effect`. It demonstrates how monadic composition can be applied to handle tasks like input validation and availability checks while managing both success (`Right`) and failure (`Left`) paths. By deferring execution with `Monex.Effect`, asynchronous workflows are structured in the same way as synchronous ones, maintaining consistency and composability in error handling.
 
 ### [Elixir and Applicatives: Validation](https://www.joekoski.com/blog/2024/07/11/applicative-validation.html)
 
-This post explores how the applicative approach to validation allows the collection of all errors without short-circuiting, unlike monads. It introduces `sequence_a/2` (sequence applicative) in the `Monex.Either` and `Monex.LazyTaskEither`, along with `validate/2`, which accumulates errors rather than stopping at the first failure. This post highlights the benefits of applicative validation in scenarios requiring multiple checks.
+This post explores how the applicative approach to validation allows the collection of all errors without short-circuiting, unlike monads. It introduces `sequence_a/2` (sequence applicative) in the `Monex.Either` and `Monex.Effect`, along with `validate/2`, which accumulates errors rather than stopping at the first failure. This post highlights the benefits of applicative validation in scenarios requiring multiple checks.
 
 ### [Elixir and Monads: Operators](https://www.joekoski.com/blog/2024/07/14/monad-operators.html)
 

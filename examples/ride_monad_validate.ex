@@ -1,6 +1,6 @@
-defmodule Examples.RideMonadValidation do
+defmodule Examples.RideValidationMonad do
   @moduledoc """
-  The `Examples.RideMonadValidation` module demonstrates how to manage ride operations using the `Either` monad from the `Monex` library,
+  The `Examples.RideValidationMonad` module demonstrates how to manage ride operations using the `Either` monad from the `Monex` library,
   with a focus on validating multiple conditions for a patron before allowing them to take a ride.
 
   This module showcases how to:
@@ -31,7 +31,7 @@ defmodule Examples.RideMonadValidation do
 
   ## Examples
 
-      iex> patron = Examples.RideMonadValidation.register_patron("John", 170, 2)
+      iex> patron = Examples.RideValidationMonad.register_patron("John", 170, 2)
       %Monex.Either.Right{value: %Examples.Patron{name: "John", height: 170, tickets: 2}}
 
   """
@@ -45,12 +45,12 @@ defmodule Examples.RideMonadValidation do
 
   ## Examples
 
-      iex> patron = Examples.RideMonadValidation.register_patron("John", 170, 2)
-      iex> Examples.RideMonadValidation.check_valid_height(patron)
+      iex> patron = Examples.RideValidationMonad.register_patron("John", 170, 2)
+      iex> Examples.RideValidationMonad.check_valid_height(patron)
       %Monex.Either.Right{value: %Examples.Patron{...}}
 
-      iex> patron = Examples.RideMonadValidation.register_patron("Shorty", 140, 1)
-      iex> Examples.RideMonadValidation.check_valid_height(patron)
+      iex> patron = Examples.RideValidationMonad.register_patron("Shorty", 140, 1)
+      iex> Examples.RideValidationMonad.check_valid_height(patron)
       %Monex.Either.Left{value: "Patron's height is not valid"}
 
   """
@@ -65,12 +65,12 @@ defmodule Examples.RideMonadValidation do
 
   ## Examples
 
-      iex> patron = Examples.RideMonadValidation.register_patron("John", 170, 2)
-      iex> Examples.RideMonadValidation.check_ticket_availability(patron)
+      iex> patron = Examples.RideValidationMonad.register_patron("John", 170, 2)
+      iex> Examples.RideValidationMonad.check_ticket_availability(patron)
       %Monex.Either.Right{value: %Examples.Patron{...}}
 
-      iex> patron = Examples.RideMonadValidation.register_patron("Ticketless", 180, 0)
-      iex> Examples.RideMonadValidation.check_ticket_availability(patron)
+      iex> patron = Examples.RideValidationMonad.register_patron("Ticketless", 180, 0)
+      iex> Examples.RideValidationMonad.check_ticket_availability(patron)
       %Monex.Either.Left{value: "Patron is out of tickets"}
 
   """
@@ -88,12 +88,12 @@ defmodule Examples.RideMonadValidation do
 
   ## Examples
 
-      iex> patron = Examples.RideMonadValidation.register_patron("John", 170, 2)
-      iex> Examples.RideMonadValidation.validate_patron(patron)
+      iex> patron = Examples.RideValidationMonad.register_patron("John", 170, 2)
+      iex> Examples.RideValidationMonad.validate_patron(patron)
       %Monex.Either.Right{value: %Examples.Patron{...}}
 
-      iex> patron = Examples.RideMonadValidation.register_patron("Shorty", 140, 1)
-      iex> Examples.RideMonadValidation.validate_patron(patron)
+      iex> patron = Examples.RideValidationMonad.register_patron("Shorty", 140, 1)
+      iex> Examples.RideValidationMonad.validate_patron(patron)
       %Monex.Either.Left{value: "Patron's height is not valid"}
 
   """
@@ -108,12 +108,12 @@ defmodule Examples.RideMonadValidation do
 
   ## Examples
 
-      iex> patron = Examples.RideMonadValidation.register_patron("John", 170, 2)
-      iex> Examples.RideMonadValidation.take_ride(patron)
+      iex> patron = Examples.RideValidationMonad.register_patron("John", 170, 2)
+      iex> Examples.RideValidationMonad.take_ride(patron)
       %Monex.Either.Right{value: %Examples.Patron{tickets: 1}}
 
-      iex> patron = Examples.RideMonadValidation.register_patron("Shorty", 140, 2)
-      iex> Examples.RideMonadValidation.take_ride(patron)
+      iex> patron = Examples.RideValidationMonad.register_patron("Shorty", 140, 2)
+      iex> Examples.RideValidationMonad.take_ride(patron)
       %Monex.Either.Left{value: "Patron's height is not valid"}
 
   """
@@ -129,8 +129,8 @@ defmodule Examples.RideMonadValidation do
 
   ## Examples
 
-      iex> patron = Examples.RideMonadValidation.register_patron("John", 170, 2)
-      iex> Examples.RideMonadValidation.add_ticket(patron)
+      iex> patron = Examples.RideValidationMonad.register_patron("John", 170, 2)
+      iex> Examples.RideValidationMonad.add_ticket(patron)
       %Monex.Either.Right{value: %Examples.Patron{tickets: 3}}
 
   """

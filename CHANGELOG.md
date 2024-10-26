@@ -14,8 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Monex.Identity`
   - `Monex.Maybe`
   - `Monex.Either`
-  - `Monex.LazyTask`
-  - `Monex.LazyTaskEither`
+  - `Monex.Effect`
   - `Monex.Predicate`
   - `Monex.Monad`
   - `Monex.Operators`

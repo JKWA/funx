@@ -15,8 +15,7 @@ Monads in Monex support operations like `bind`, `map`, and `ap`, allowing for fl
 - **Identity**: A base monad that returns its value unchanged.
 - **Maybe**: Encapsulates optional values as `Just` (a value) or `Nothing` (no value).
 - **Either**: Represents a computation that can result in either `Right` (success) or `Left` (error).
-- **LazyTask**: Handles asynchronous computations that can be deferred.
-- **LazyTaskEither**: Handles asynchronous computations that may result in success or failure, with deferred execution.
+- **Effect**: Handles asynchronous computations that may result in success or failure, with deferred execution.
 
 ### Operators
 

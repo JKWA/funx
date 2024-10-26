@@ -1,6 +1,6 @@
-defmodule LazyTaskEitherTest do
+defmodule EffectTest do
   use ExUnit.Case
-  import Monex.LazyTaskEither
+  import Monex.Effect
   alias Monex.{Either, Maybe}
 
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
@@ -143,7 +143,7 @@ defmodule LazyTaskEitherTest do
   end
 
   describe "lift_either/1" do
-    test "wraps an Either.Right into a LazyTaskEither.Right" do
+    test "wraps an Either.Right into a Effect.Right" do
       either = %Either.Right{value: 42}
 
       result =
@@ -153,7 +153,7 @@ defmodule LazyTaskEitherTest do
       assert result == Either.right(42)
     end
 
-    test "wraps an Either.Left into a LazyTaskEither.Left" do
+    test "wraps an Either.Left into a Effect.Left" do
       either = %Either.Left{value: "error"}
 
       result =
@@ -165,7 +165,7 @@ defmodule LazyTaskEitherTest do
   end
 
   describe "lift_option/2" do
-    test "wraps a Just value into a LazyTaskEither.Right" do
+    test "wraps a Just value into a Effect.Right" do
       maybe = Maybe.just(42)
 
       result =
@@ -175,7 +175,7 @@ defmodule LazyTaskEitherTest do
       assert result == Either.right(42)
     end
 
-    test "wraps a Nothing value into a LazyTaskEither.Left" do
+    test "wraps a Nothing value into a Effect.Left" do
       maybe = Maybe.nothing()
 
       result =
@@ -186,7 +186,7 @@ defmodule LazyTaskEitherTest do
     end
   end
 
-  describe "fold_r/3 with results of LazyTaskEither" do
+  describe "fold_r/3 with results of Effect" do
     test "applies right function for a Right value returned by a task" do
       right_value = right(42)
 
@@ -429,37 +429,37 @@ defmodule LazyTaskEitherTest do
   end
 
   describe "from_result/1" do
-    test "converts {:ok, value} to LazyTaskEither.Right" do
+    test "converts {:ok, value} to Effect.Right" do
       result = from_result({:ok, 42})
       assert run(result) == Either.right(42)
     end
 
-    test "converts {:error, reason} to LazyTaskEither.Left" do
+    test "converts {:error, reason} to Effect.Left" do
       result = from_result({:error, "error"})
       assert run(result) == Either.left("error")
     end
   end
 
   describe "to_result/1" do
-    test "converts LazyTaskEither.Right to {:ok, value}" do
-      lazy_result = right(42)
-      assert to_result(lazy_result) == {:ok, 42}
+    test "converts Effect.Right to {:ok, value}" do
+      effect_result = right(42)
+      assert to_result(effect_result) == {:ok, 42}
     end
 
-    test "converts LazyTaskEither.Left to {:error, reason}" do
-      lazy_error = left("error")
-      assert to_result(lazy_error) == {:error, "error"}
+    test "converts Effect.Left to {:error, reason}" do
+      effect_error = left("error")
+      assert to_result(effect_error) == {:error, "error"}
     end
   end
 
   describe "from_try/1" do
-    test "converts a successful function into LazyTaskEither.Right" do
+    test "converts a successful function into Effect.Right" do
       result = from_try(fn -> 42 end)
 
       assert run(result) == %Either.Right{value: 42}
     end
 
-    test "converts a raised exception into LazyTaskEither.Left" do
+    test "converts a raised exception into Effect.Left" do
       result = from_try(fn -> raise "error" end)
 
       assert run(result) == %Either.Left{value: %RuntimeError{message: "error"}}
@@ -467,17 +467,17 @@ defmodule LazyTaskEitherTest do
   end
 
   describe "to_try!/1" do
-    test "returns value from LazyTaskEither.Right" do
-      lazy_result = right(42)
-      assert to_try!(lazy_result) == 42
+    test "returns value from Effect.Right" do
+      effect_result = right(42)
+      assert to_try!(effect_result) == 42
     end
 
-    test "raises the reason from LazyTaskEither.Left" do
+    test "raises the reason from Effect.Left" do
       exception = %RuntimeError{message: "something went wrong"}
-      lazy_error = left(exception)
+      effect_error = left(exception)
 
       assert_raise RuntimeError, "something went wrong", fn ->
-        to_try!(lazy_error)
+        to_try!(effect_error)
       end
     end
   end
