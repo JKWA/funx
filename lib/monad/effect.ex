@@ -22,7 +22,7 @@ defmodule Monex.Effect do
 
   ### Lifts
     - `lift_either/1`: Lifts an `Either` value to a `Effect` monad.
-    - `lift_option/2`: Lifts a `Maybe` value to a `Effect` monad.
+    - `lift_maybe/2`: Lifts a `Maybe` value to a `Effect` monad.
     - `lift_predicate/3`: Lifts a value into a `Effect` based on a predicate.
 
   ### Elixir Interops
@@ -151,18 +151,18 @@ defmodule Monex.Effect do
   ## Examples
 
       iex> maybe = Monex.Maybe.just(42)
-      iex> result = Monex.Effect.lift_option(maybe, fn -> "No value" end)
+      iex> result = Monex.Effect.lift_maybe(maybe, fn -> "No value" end)
       iex> Monex.Effect.run(result)
       %Monex.Either.Right{value: 42}
 
       iex> maybe = Monex.Maybe.nothing()
-      iex> result = Monex.Effect.lift_option(maybe, fn -> "No value" end)
+      iex> result = Monex.Effect.lift_maybe(maybe, fn -> "No value" end)
       iex> Monex.Effect.run(result)
       %Monex.Either.Left{value: "No value"}
   """
-  @spec lift_option(Maybe.t(right), (-> left)) :: t(left, right)
+  @spec lift_maybe(Maybe.t(right), (-> left)) :: t(left, right)
         when left: term(), right: term()
-  def lift_option(maybe, on_none) do
+  def lift_maybe(maybe, on_none) do
     maybe
     |> fold_r(
       fn value -> Right.pure(value) end,

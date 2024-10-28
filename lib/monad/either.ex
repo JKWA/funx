@@ -28,7 +28,7 @@ defmodule Monex.Either do
     - `validate/2`: Validates a value using a list of validators, collecting errors from `Left` values.
 
   ### Lifts
-    - `lift_option/2`: Lifts a `Maybe` value to an `Either` monad.
+    - `lift_maybe/2`: Lifts a `Maybe` value to an `Either` monad.
     - `lift_predicate/3`: Lifts a value into an `Either` based on a predicate.
 
   ### Elixir Interops
@@ -307,13 +307,13 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.lift_option(Monex.Maybe.just(5), fn -> "error" end)
+      iex> Monex.Either.lift_maybe(Monex.Maybe.just(5), fn -> "error" end)
       %Monex.Either.Right{value: 5}
 
-      iex> Monex.Either.lift_option(Monex.Maybe.nothing(), fn -> "error" end)
+      iex> Monex.Either.lift_maybe(Monex.Maybe.nothing(), fn -> "error" end)
       %Monex.Either.Left{value: "error"}
   """
-  def lift_option(maybe, on_none) do
+  def lift_maybe(maybe, on_none) do
     maybe
     |> fold_r(
       fn value -> Right.pure(value) end,

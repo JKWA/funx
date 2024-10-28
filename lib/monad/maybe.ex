@@ -39,6 +39,7 @@ defmodule Monex.Maybe do
   import Monex.Foldable, only: [fold_r: 3]
   alias Monex.Maybe.{Just, Nothing}
   alias Monex.Either.{Right, Left}
+  alias Monex.Identity
 
   @type t(value) :: Just.t(value) | Nothing.t()
 
@@ -211,6 +212,25 @@ defmodule Monex.Maybe do
     list
     |> Enum.map(func)
     |> sequence()
+  end
+
+  @doc """
+  Converts an `Identity` value into a `Maybe`. If `Identity` has a value, it is converted to `Just`;
+  otherwise, it is converted to `Nothing`.
+
+  ## Examples
+
+      iex> Monex.Maybe.lift_identity(Monex.Identity.pure(5))
+      %Monex.Maybe.Just{value: 5}
+
+      iex> Monex.Maybe.lift_identity(Monex.Identity.pure(nil))
+      %Monex.Maybe.Nothing{}
+  """
+  def lift_identity(identity) do
+    case identity do
+      %Identity{value: nil} -> nothing()
+      %Identity{value: value} -> just(value)
+    end
   end
 
   @doc """

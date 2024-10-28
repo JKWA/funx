@@ -6,6 +6,7 @@ defmodule Monex.MaybeTest do
 
   alias Monex.{Either, Eq, Ord}
   alias Monex.Maybe.{Just, Nothing}
+  alias Monex.Identity
 
   describe "Just.pure/1" do
     test "wraps a non-nil value in a Just monad" do
@@ -369,6 +370,18 @@ defmodule Monex.MaybeTest do
     test "Nothing is equal to Nothing in terms of ordering", %{ord: ord} do
       assert ord.le?.(nothing(), nothing()) == true
       assert ord.ge?.(nothing(), nothing()) == true
+    end
+  end
+
+  describe "lift_identity/1" do
+    test "converts Identity with a value to Just" do
+      result = Identity.pure(42) |> lift_identity()
+      assert result == just(42)
+    end
+
+    test "converts Identity with nil to Nothing" do
+      result = Identity.pure(nil) |> lift_identity()
+      assert result == nothing()
     end
   end
 

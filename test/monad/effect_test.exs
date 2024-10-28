@@ -164,12 +164,12 @@ defmodule EffectTest do
     end
   end
 
-  describe "lift_option/2" do
+  describe "lift_maybe/2" do
     test "wraps a Just value into a Effect.Right" do
       maybe = Maybe.just(42)
 
       result =
-        lift_option(maybe, fn -> "No value" end)
+        lift_maybe(maybe, fn -> "No value" end)
         |> run()
 
       assert result == Either.right(42)
@@ -179,7 +179,7 @@ defmodule EffectTest do
       maybe = Maybe.nothing()
 
       result =
-        lift_option(maybe, fn -> "No value" end)
+        lift_maybe(maybe, fn -> "No value" end)
         |> run()
 
       assert result == Either.left("No value")

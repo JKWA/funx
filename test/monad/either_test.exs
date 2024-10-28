@@ -417,11 +417,11 @@ defmodule Monex.EitherTest do
     end
   end
 
-  describe "lift_option/2" do
+  describe "lift_maybe/2" do
     test "returns Right when the function returns Just" do
       result =
         Maybe.just(5)
-        |> lift_option(fn -> "Missing value" end)
+        |> lift_maybe(fn -> "Missing value" end)
 
       assert result == right(5)
     end
@@ -429,7 +429,7 @@ defmodule Monex.EitherTest do
     test "returns Left when the function returns Nothing" do
       result =
         Maybe.nothing()
-        |> lift_option(fn -> "Missing value" end)
+        |> lift_maybe(fn -> "Missing value" end)
 
       assert result == left("Missing value")
     end
