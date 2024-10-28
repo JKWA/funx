@@ -85,7 +85,7 @@ Monex supports validation workflows by combining multiple checks into a single m
 Lifting provides functionality to convert values between monads or wrap non-monadic values in a monadic context:
 
 - **`lift_predicate/3`**: Lifts a value into a monad based on a predicate. If the predicate holds, the value is wrapped in a success; otherwise, it becomes a failure.
-- **`lift_option/2`**: Converts a `Maybe` monad into an `Either` monad. If the `Maybe` is `Nothing`, it returns a `Left` with an error message.
+- **`lift_maybe/2`**: Converts a `Maybe` monad into an `Either` monad. If the `Maybe` is `Nothing`, it returns a `Left` with an error message.
 
 ### Elixir Interops
 

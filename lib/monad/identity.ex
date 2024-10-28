@@ -9,8 +9,18 @@ defmodule Monex.Identity do
     - `Monex.Ord`: Defines ordering logic for `Identity` values.
     - `String.Chars`: Converts an `Identity` value into a string representation.
 
-  The `Identity` monad provides a way to wrap a value in a minimal context and perform monadic operations.
+  Telemetry Events:
+    - `[:monex, :identity, :ap]`: Emitted when the `ap` operation is called.
+    - `[:monex, :identity, :bind]`: Emitted when the `bind` operation is called.
+    - `[:monex, :identity, :map]`: Emitted when the `map` operation is called.
+
+  Telemetry Configuration:
+    - `:telemetry_enabled` (default: `true`): Enable or disable telemetry.
+    - `:telemetry_prefix` (default: `[:monex]`): Set a custom prefix for telemetry events.
   """
+
+  alias Monex.TelemetryUtils
+
   @enforce_keys [:value]
   defstruct [:value]
 
@@ -61,11 +71,59 @@ defmodule Monex.Identity do
   defimpl Monex.Monad do
     alias Monex.Identity
 
-    def bind(%Identity{value: value}, func), do: func.(value)
+    def bind(%Identity{value: value}, func) do
+      start_time = System.monotonic_time()
+      result = func.(value)
 
-    def map(%Identity{value: value}, func), do: Identity.pure(func.(value))
+      if Application.get_env(:monex, :telemetry_enabled, true) do
+        :telemetry.execute(
+          Application.get_env(:monex, :telemetry_prefix, [:monex]) ++ [:identity, :bind],
+          %{duration: System.monotonic_time() - start_time},
+          %{
+            initial_value: TelemetryUtils.summarize(value),
+            transformed_value: TelemetryUtils.summarize(result.value)
+          }
+        )
+      end
 
-    def ap(%Identity{value: func}, %Identity{value: value}), do: Identity.pure(func.(value))
+      result
+    end
+
+    def map(%Identity{value: value}, func) do
+      start_time = System.monotonic_time()
+      result = Identity.pure(func.(value))
+
+      if Application.get_env(:monex, :telemetry_enabled, true) do
+        :telemetry.execute(
+          Application.get_env(:monex, :telemetry_prefix, [:monex]) ++ [:identity, :map],
+          %{duration: System.monotonic_time() - start_time},
+          %{
+            initial_value: TelemetryUtils.summarize(value),
+            transformed_value: TelemetryUtils.summarize(result.value)
+          }
+        )
+      end
+
+      result
+    end
+
+    def ap(%Identity{value: func}, %Identity{value: value}) do
+      start_time = System.monotonic_time()
+      result = Identity.pure(func.(value))
+
+      if Application.get_env(:monex, :telemetry_enabled, true) do
+        :telemetry.execute(
+          Application.get_env(:monex, :telemetry_prefix, [:monex]) ++ [:identity, :ap],
+          %{duration: System.monotonic_time() - start_time},
+          %{
+            initial_value: TelemetryUtils.summarize(value),
+            transformed_value: TelemetryUtils.summarize(result.value)
+          }
+        )
+      end
+
+      result
+    end
   end
 
   defimpl String.Chars do

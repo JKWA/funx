@@ -39,7 +39,8 @@ defmodule Monex.MixProject do
       {:earmark, "~> 1.4", only: :dev, runtime: false},
       {:makeup_elixir, "~> 0.16", only: :dev, runtime: false},
       {:dialyxir, "~> 1.4", only: :dev, runtime: false},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:telemetry, "~> 1.0"}
     ]
   end
 end

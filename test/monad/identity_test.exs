@@ -1,8 +1,13 @@
 defmodule Monex.IdentityTest do
-  use ExUnit.Case, async: true
+  use Monex.TestCase, async: true
+
   import Monex.Identity
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
   alias Monex.{Identity, Eq, Ord}
+
+  defp multiply_by_2(x), do: x * 2
+
+  setup [:with_telemetry_config]
 
   describe "pure/1" do
     test "wraps a value in the Identity monad" do
@@ -20,6 +25,37 @@ defmodule Monex.IdentityTest do
     test "applies a function in an Identity monad to a value in another Identity monad" do
       assert ap(pure(&(&1 + 1)), pure(42)) == pure(43)
     end
+
+    @tag :telemetry
+    test "emits telemetry by default" do
+      capture_telemetry([:monex, :identity, :ap], self())
+
+      result = ap(pure(&multiply_by_2/1), pure(10))
+      result_value = result.value
+
+      assert telemetry_event(10, result_value)
+    end
+
+    @tag :telemetry
+    test "does not emit telemetry when disabled" do
+      Application.put_env(:monex, :telemetry_enabled, false)
+      capture_telemetry([:monex, :identity, :ap], self())
+
+      ap(pure(&multiply_by_2/1), pure(10))
+
+      refute_receive {:telemetry_event, _, _}
+    end
+
+    @tag :telemetry
+    test "uses custom telemetry prefix" do
+      Application.put_env(:monex, :telemetry_prefix, [:custom, :monex])
+      capture_telemetry([:custom, :monex, :identity, :ap], self())
+
+      result = ap(pure(&multiply_by_2/1), pure(10))
+      result_value = result.value
+
+      assert telemetry_event(10, result_value)
+    end
   end
 
   describe "bind/2" do
@@ -28,13 +64,73 @@ defmodule Monex.IdentityTest do
                pure(42)
                |> bind(fn x -> pure(div(x, 2)) end)
     end
+
+    @tag :telemetry
+    test "emits telemetry by default" do
+      capture_telemetry([:monex, :identity, :bind], self())
+
+      result = bind(pure(10), &pure(multiply_by_2(&1)))
+      transformed_value = result.value
+
+      assert telemetry_event(10, transformed_value)
+    end
+
+    @tag :telemetry
+    test "does not emit telemetry when disabled" do
+      Application.put_env(:monex, :telemetry_enabled, false)
+      capture_telemetry([:monex, :identity, :bind], self())
+
+      bind(pure(10), &pure(multiply_by_2(&1)))
+
+      refute_receive {:telemetry_event, _, _}
+    end
+
+    @tag :telemetry
+    test "uses custom telemetry prefix" do
+      Application.put_env(:monex, :telemetry_prefix, [:custom, :monex])
+      capture_telemetry([:custom, :monex, :identity, :bind], self())
+
+      result = bind(pure(10), &pure(multiply_by_2(&1)))
+      transformed_value = result.value
+
+      assert telemetry_event(10, transformed_value)
+    end
   end
 
   describe "map/2" do
     test "applies a function to the value inside the Identity monad" do
-      assert %Identity{value: 43} =
-               pure(42)
-               |> map(&(&1 + 1))
+      assert %Identity{value: 20} = pure(10) |> map(&multiply_by_2/1)
+    end
+
+    @tag :telemetry
+    test "emits telemetry by default" do
+      capture_telemetry([:monex, :identity, :map], self())
+
+      result = map(pure(10), &multiply_by_2/1)
+      transformed_value = result.value
+
+      assert telemetry_event(10, transformed_value)
+    end
+
+    @tag :telemetry
+    test "does not emit telemetry when disabled" do
+      Application.put_env(:monex, :telemetry_enabled, false)
+      capture_telemetry([:monex, :identity, :map], self())
+
+      map(pure(10), &multiply_by_2/1)
+
+      refute_receive {:telemetry_event, _, _}
+    end
+
+    @tag :telemetry
+    test "uses custom telemetry prefix" do
+      Application.put_env(:monex, :telemetry_prefix, [:custom, :monex])
+      capture_telemetry([:custom, :monex, :identity, :map], self())
+
+      result = map(pure(10), &multiply_by_2/1)
+      transformed_value = result.value
+
+      assert telemetry_event(10, transformed_value)
     end
   end
 
