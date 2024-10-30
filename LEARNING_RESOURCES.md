@@ -1,6 +1,20 @@
 # Learning Resources
 
-## Blog Posts
+## The Basics of a Monad
+
+### [Elixir and Functors: Map in Monads](https://www.joekoski.com/blog/2024/09/01/fp-map.html)
+
+This post introduces **functors**—structures that use `map` to apply transformations to values within a structure. We’ll look at how the `Identity`, `Maybe`, and `Either` monads implement `map`, showcasing the unique context each brings to this process.
+
+### [Elixir and Functors: Apply in Monads](https://www.joekoski.com/blog/2024/09/05/fp-ap.html)
+
+This post introduces **applicatives**—structures that extend functors by allowing values within a context to be applied to functions in the same context using `ap`. We’ll explore how the `Identity`, `Maybe`, and `Either` monads implement `ap` within their unique contexts.
+
+### [Elixir and Monads: Bind in Monads](https://www.joekoski.com/blog/2024/09/03/fp-bind.html)
+
+This post introduces **monads**, structures that extend applicatives by adding `bind` for chaining and flattening a sequence of transformations within the same context. We’ll explore how the `Identity`, `Maybe`, and `Either` monads implement `bind` within their unique contexts.
+
+## Building Monads in Elixir
 
 ### [Elixir and Monads: Naming Challenges](https://www.joekoski.com/blog/2024/06/10/monad-naming-conventions.html)
 
