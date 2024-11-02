@@ -14,6 +14,16 @@ This post introduces **applicatives**—structures that extend functors by allow
 
 This post introduces **monads**, structures that extend applicatives by adding `bind` for chaining and flattening a sequence of transformations within the same context. We’ll explore how the `Identity`, `Maybe`, and `Either` monads implement `bind` within their unique contexts.
 
+## Ordering in Monads
+
+### [Monad Basics: Order](https://www.joekoski.com/blog/2024/09/10/fp-ord.html)
+
+This post explores custom comparison logic in Elixir with Monex's `Monex.Ord.Utils` utilities. We’ll examine how Monex enables meaningful comparisons for both plain and monadic values, allowing flexible ordering beyond basic operators.
+
+### [Monad Basics: Composing Order](https://www.joekoski.com/blog/2024/09/10/fp-ord-compose.html)
+
+Building on `Monex.Ord.Utils`, this post covers `contramap`, `comparator`, and `reverse` utilities for composing complex sorting logic from simple, modular components.
+
 ## Building Monads in Elixir
 
 ### [Elixir and Monads: Naming Challenges](https://www.joekoski.com/blog/2024/06/10/monad-naming-conventions.html)

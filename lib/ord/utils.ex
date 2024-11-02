@@ -5,17 +5,27 @@ defmodule Monex.Ord.Utils do
   or implement the `Monex.Ord` protocol.
   """
 
-  alias Monex.Ord.{Any}
+  alias Monex.Ord
 
-  # def contramap(f, ord_module) do
-  #   %{
-  #     lt?: fn a, b -> ord_module.lt?(f.(a), f.(b)) end,
-  #     le?: fn a, b -> ord_module.le?(f.(a), f.(b)) end,
-  #     gt?: fn a, b -> ord_module.gt?(f.(a), f.(b)) end,
-  #     ge?: fn a, b -> ord_module.ge?(f.(a), f.(b)) end
-  #   }
-  # end
+  @doc """
+  Transforms an ordering by applying a function `f` to values before comparison.
 
+  The `ord` parameter can be an `Ord` module or a custom comparator map with comparison functions (`:lt?`, `:le?`, `:gt?`, and `:ge?`).
+  When an `Ord` module is provided, it wraps the module’s functions to apply `f` to each value before invoking the comparison.
+  If a custom comparator map is provided, it wraps the functions in the map to apply `f` to each value.
+
+  ## Examples
+
+    iex> ord = Monex.Ord.Utils.contramap(&String.length/1, Ord.Any)
+    iex> ord[:lt?].("short", "longer")
+    true
+  """
+  @spec contramap((any() -> any()), module() | map()) :: %{
+          lt?: (any(), any() -> boolean()),
+          le?: (any(), any() -> boolean()),
+          gt?: (any(), any() -> boolean()),
+          ge?: (any(), any() -> boolean())
+        }
   def contramap(f, ord) when is_atom(ord) do
     %{
       lt?: fn a, b -> ord.lt?(f.(a), f.(b)) end,
@@ -34,7 +44,7 @@ defmodule Monex.Ord.Utils do
     }
   end
 
-  def contramap(f), do: contramap(f, Any)
+  def contramap(f), do: contramap(f, Ord)
 
   @doc """
   Returns the maximum of two values, with an optional custom `Ord`.
@@ -44,7 +54,7 @@ defmodule Monex.Ord.Utils do
   If a custom comparator map is provided, it expects a `:ge?` function in the map that compares the two values.
   """
   @spec max(any(), any()) :: any()
-  def max(a, b, ord \\ Any) do
+  def max(a, b, ord \\ Ord) do
     if (is_atom(ord) && ord.ge?(a, b)) || (is_map(ord) && ord[:ge?].(a, b)), do: a, else: b
   end
 
@@ -55,7 +65,7 @@ defmodule Monex.Ord.Utils do
   If an `Ord` module is provided, it calls `le?/2` directly from that module.
   If a custom comparator map is provided, it expects a `:le?` function in the map that compares the two values.
   """
-  def min(a, b, ord \\ Any) do
+  def min(a, b, ord \\ Ord) do
     if (is_atom(ord) && ord.le?(a, b)) || (is_map(ord) && ord[:le?].(a, b)), do: a, else: b
   end
 
@@ -66,7 +76,7 @@ defmodule Monex.Ord.Utils do
   If an `Ord` module is provided, it calls `lt?/2` and `gt?/2` directly from that module.
   If a custom comparator map is provided, it expects `:lt?` and `:gt?` functions in the map that compare the values.
   """
-  def clamp(value, min, max, ord \\ Any) do
+  def clamp(value, min, max, ord \\ Ord) do
     lt? = if is_atom(ord), do: &ord.lt?/2, else: ord[:lt?]
     gt? = if is_atom(ord), do: &ord.gt?/2, else: ord[:gt?]
 
@@ -84,7 +94,7 @@ defmodule Monex.Ord.Utils do
   If an `Ord` module is provided, it calls `ge?/2` and `le?/2` directly from that module.
   If a custom comparator map is provided, it expects `:ge?` and `:le?` functions in the map that compare the values.
   """
-  def between(value, min, max, ord \\ Any) do
+  def between(value, min, max, ord \\ Ord) do
     (is_atom(ord) && ord.ge?(value, min) && ord.le?(value, max)) ||
       (is_map(ord) && ord[:ge?].(value, min) && ord[:le?].(value, max))
   end
@@ -96,7 +106,7 @@ defmodule Monex.Ord.Utils do
   If an `Ord` module is provided, it calls `lt?/2` and `gt?/2` directly from that module.
   If a custom comparator map is provided, it expects `:lt?` and `:gt?` functions in the map that compare the values.
   """
-  def compare(a, b, ord \\ Any) do
+  def compare(a, b, ord \\ Ord) do
     lt? = if is_atom(ord), do: &ord.lt?/2, else: ord[:lt?]
     gt? = if is_atom(ord), do: &ord.gt?/2, else: ord[:gt?]
 
@@ -110,7 +120,7 @@ defmodule Monex.Ord.Utils do
   @doc """
   Reverses the ordering logic.
   """
-  def reverse(ord \\ Any)
+  def reverse(ord \\ Ord)
 
   def reverse(ord) when is_atom(ord) do
     %{
@@ -136,7 +146,7 @@ defmodule Monex.Ord.Utils do
 
   Useful for sorting with `Enum.sort/2` or similar functions.
   """
-  @spec comparator(module()) :: (any(), any() -> boolean())
+  @spec comparator(module() | map()) :: (any(), any() -> boolean())
   def comparator(ord_module) do
     fn a, b -> compare(a, b, ord_module) != :gt end
   end
