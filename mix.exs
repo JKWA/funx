@@ -20,6 +20,18 @@ defmodule Monex.MixProject do
         filter_prefix: "Examples",
         source_url: "https://github.com/JKWA/monex",
         source_url_pattern: "https://github.com/JKWA/monex/blob/main/%{path}#L%{line}"
+      ],
+      package: [
+        name: "monex",
+        description:
+          "Functional programming abstractions for Elixir, providing monads and related tools.",
+        licenses: ["MIT"],
+        maintainers: ["Joseph Koski"],
+        links: %{
+          "GitHub" => "https://github.com/JKWA/monex",
+          "Docs" => "https://jkwa.github.io/monex/readme.html"
+        },
+        exclude_patterns: ["examples/**", "test/**", "*.md"]
       ]
     ]
   end
