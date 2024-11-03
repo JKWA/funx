@@ -96,6 +96,27 @@ Monex integrates with common Elixir idioms and data structures like `{:ok, value
 - **`from_try/1`**: Wraps a function in an `Either` monad, catching exceptions as `Left`.
 - **`to_try!/1`**: Extracts a value from an `Either` monad or raises an exception if it is a `Left`.
 
+### Comparison: Equality (`Eq`) and Ordering (`Ord`)
+
+Monex provides `Eq` and `Ord` modules for flexible, domain-specific equality and ordering of monadic values.
+
+#### Equality (`Eq`)
+
+The `Eq` module allows defining custom equality rules, centralizing comparisons based on domain-specific criteria.
+
+- **Custom Equality**: Implement `Eq` to define what equality means within your domain. For example, `Maybe.just(5)` is equal to `Maybe.just(5)`, while `Maybe.nothing()` is not equal to `Maybe.just(5)`.
+- **Domain-Aligned Comparisons**: Customize equality checks to suit specific needs, such as comparing users by `first_name` and `last_name` alone, instead of default struct comparison.
+
+#### Ordering (`Ord`)
+
+The `Ord` module enables ordering rules for meaningful comparisons, supporting flexible sorting of monadic values.
+
+- **Custom Order**: Implement `Ord` to define ordering logic, such as sorting users by `last_name`, then by `first_name`.
+- **Built-In Utilities**: Functions like `compare`, `min`, and `max` enforce consistency across comparisons based on custom rules.
+- **Nested Ordering**: For monadic values like `Identity` or `Maybe`, `Ord` can delegate to the contained values, enabling deep comparisons.
+
+Centralizing `Eq` and `Ord` definitions ensures consistent, maintainable comparisons, making it easy to update as domain requirements evolve.
+
 ## Installation
 
 To use Monex, add it to the list of dependencies in `mix.exs`:
