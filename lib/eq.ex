@@ -1,6 +1,6 @@
 defprotocol Monex.Eq do
   @moduledoc """
-  The `Monex.Eq` protocol defines an equality function, `equals?/2`, for comparing two values.
+  The `Monex.Eq` protocol defines an equality function, `eq?/2`, for comparing two values.
 
   Types that implement this protocol can define custom equality logic for comparing instances of their type.
 
@@ -16,19 +16,24 @@ defprotocol Monex.Eq do
 
   ## Examples
 
-      iex> Monex.Eq.equals?(Monex.Maybe.just(3), Monex.Maybe.just(3))
+      iex> Monex.Eq.eq?(Monex.Maybe.just(3), Monex.Maybe.just(3))
       true
 
-      iex> Monex.Eq.equals?(Monex.Maybe.just(3), Monex.Maybe.just(5))
+      iex> Monex.Eq.eq?(Monex.Maybe.just(3), Monex.Maybe.just(5))
       false
 
-      iex> Monex.Eq.equals?(Monex.Maybe.nothing(), Monex.Maybe.nothing())
+      iex> Monex.Eq.eq?(Monex.Maybe.nothing(), Monex.Maybe.nothing())
       true
 
-      iex> Monex.Eq.equals?(Monex.Maybe.nothing(), Monex.Maybe.just(5))
+      iex> Monex.Eq.eq?(Monex.Maybe.nothing(), Monex.Maybe.just(5))
       false
   """
-  def equals?(a, b)
+  def eq?(a, b)
+
+  @doc """
+  Creates an `Eq` instance for Monads given an `Eq` for the inner value.
+  """
+  def get_eq(eq_for_value)
 end
 
 defimpl Monex.Eq, for: Any do
@@ -45,14 +50,32 @@ defimpl Monex.Eq, for: Any do
 
   ## Examples
 
-      iex> Monex.Eq.equals?(Monex.Maybe.just(3), Monex.Maybe.just(3))
+      iex> Monex.Eq.eq?(3, 3)
       true
 
-      iex> Monex.Eq.equals?(Monex.Maybe.just(3), Monex.Maybe.just(5))
+      iex> Monex.Eq.eq?(3, 5)
       false
-
-      iex> Monex.Eq.equals?(Monex.Maybe.nothing(), Monex.Maybe.nothing())
-      true
   """
-  def equals?(a, b), do: a == b
+  def eq?(a, b), do: a == b
+
+  @doc """
+  Returns a generic `Eq` instance based on the default equality behavior for any type.
+
+  If the `Eq` instance provided for the inner type can’t be matched specifically,
+  it falls back to using `==` for any values.
+
+  ## Examples
+
+      iex> default_eq = Monex.Eq.get_eq(Monex.Eq)
+      iex> default_eq[:eq?].(3, 3)
+      true
+
+      iex> default_eq[:eq?].(3, 5)
+      false
+  """
+  def get_eq(_inner_eq) do
+    %{
+      eq?: fn a, b -> a == b end
+    }
+  end
 end

@@ -81,11 +81,20 @@ defmodule Monex.Maybe.Just do
   defimpl Monex.Eq do
     alias Monex.Maybe.{Just, Nothing}
 
-    def equals?(%Just{value: v1}, %Just{value: v2}) do
+    def eq?(%Just{value: v1}, %Just{value: v2}) do
       v1 == v2
     end
 
-    def equals?(%Just{}, %Nothing{}), do: false
+    def eq?(%Just{}, %Nothing{}), do: false
+
+    def get_eq(eq_for_value) do
+      %{
+        eq?: fn
+          %Just{value: a}, %Just{value: b} -> eq_for_value[:eq?].(a, b)
+          _, _ -> false
+        end
+      }
+    end
   end
 
   defimpl Monex.Ord do

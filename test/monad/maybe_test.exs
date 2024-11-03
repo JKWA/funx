@@ -2,6 +2,8 @@ defmodule Monex.MaybeTest do
   use ExUnit.Case, async: true
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
   import Monex.Foldable, only: [fold_r: 3]
+  import Monex.Eq, only: [get_eq: 1]
+
   import Monex.Maybe
 
   alias Monex.{Either, Eq, Ord}
@@ -202,52 +204,52 @@ defmodule Monex.MaybeTest do
 
   # Ord and Eq Tests
 
-  describe "Eq.equals?/2" do
+  describe "Eq.eq?/2" do
     test "returns true for equal Just values" do
-      assert Eq.equals?(just(1), just(1)) == true
+      assert Eq.eq?(just(1), just(1)) == true
     end
 
     test "returns false for different Just values" do
-      assert Eq.equals?(just(1), just(2)) == false
+      assert Eq.eq?(just(1), just(2)) == false
     end
 
     test "returns true for two Nothing values" do
-      assert Eq.equals?(nothing(), nothing()) == true
+      assert Eq.eq?(nothing(), nothing()) == true
     end
 
     test "returns false for Just and Nothing comparison" do
-      assert Eq.equals?(just(1), nothing()) == false
+      assert Eq.eq?(just(1), nothing()) == false
     end
 
     test "returns false for Nothing and Just comparison" do
-      assert Eq.equals?(nothing(), just(1)) == false
+      assert Eq.eq?(nothing(), just(1)) == false
     end
   end
 
   describe "get_eq/1" do
     setup do
-      number_eq = %{equals?: &Kernel.==/2}
+      number_eq = %{eq?: &Kernel.==/2}
       {:ok, eq: get_eq(number_eq)}
     end
 
     test "returns true for equal Just values", %{eq: eq} do
-      assert eq.equals?.(just(1), just(1)) == true
+      assert eq.eq?.(just(1), just(1)) == true
     end
 
     test "returns false for different Just values", %{eq: eq} do
-      assert eq.equals?.(just(1), just(2)) == false
+      assert eq.eq?.(just(1), just(2)) == false
     end
 
     test "returns true for two Nothing values", %{eq: eq} do
-      assert eq.equals?.(nothing(), nothing()) == true
+      assert eq.eq?.(nothing(), nothing()) == true
     end
 
     test "returns false for Just and Nothing comparison", %{eq: eq} do
-      assert eq.equals?.(just(1), nothing()) == false
+      assert eq.eq?.(just(1), nothing()) == false
     end
 
     test "returns false for Nothing and Just comparison", %{eq: eq} do
-      assert eq.equals?.(nothing(), just(1)) == false
+      assert eq.eq?.(nothing(), just(1)) == false
     end
   end
 

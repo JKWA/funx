@@ -48,15 +48,6 @@ defmodule Monex.Identity do
   @spec extract(t(value)) :: value when value: term()
   def extract(%__MODULE__{value: value}), do: value
 
-  def get_eq(custom_eq) do
-    %{
-      equals?: fn
-        %__MODULE__{value: v1}, %__MODULE__{value: v2} -> custom_eq.equals?.(v1, v2)
-        _, _ -> false
-      end
-    }
-  end
-
   def get_ord(custom_ord) do
     %{
       lt?: fn
@@ -135,8 +126,20 @@ defmodule Monex.Identity do
   defimpl Monex.Eq do
     alias Monex.Identity
 
-    def equals?(%Identity{value: v1}, %Identity{value: v2}) do
+    @doc """
+    Returns `true` if the inner values of two `Identity` instances are equal, otherwise returns `false`.
+    """
+    def eq?(%Identity{value: v1}, %Identity{value: v2}) do
       v1 == v2
+    end
+
+    def get_eq(eq_for_value) do
+      %{
+        eq?: fn
+          %Identity{value: a}, %Identity{value: b} -> eq_for_value[:eq?].(a, b)
+          _, _ -> false
+        end
+      }
     end
   end
 

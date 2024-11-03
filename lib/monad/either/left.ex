@@ -68,8 +68,18 @@ defmodule Monex.Either.Left do
 
   defimpl Monex.Eq do
     alias Monex.Either.{Left, Right}
-    def equals?(%Left{value: v1}, %Left{value: v2}), do: v1 == v2
-    def equals?(%Left{}, %Right{}), do: false
+
+    def eq?(%Left{value: v1}, %Left{value: v2}), do: v1 == v2
+    def eq?(%Left{}, %Right{}), do: false
+
+    def get_eq(eq_for_value) do
+      %{
+        eq?: fn
+          %Left{value: a}, %Left{value: b} -> eq_for_value[:eq?].(a, b)
+          _, _ -> false
+        end
+      }
+    end
   end
 
   defimpl Monex.Ord do

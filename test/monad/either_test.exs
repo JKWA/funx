@@ -1,6 +1,8 @@
 defmodule Monex.EitherTest do
   use ExUnit.Case, async: true
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Monex.Eq, only: [get_eq: 1]
+
   import Monex.Foldable, only: [fold_r: 3]
   import Monex.Either
 
@@ -276,52 +278,52 @@ defmodule Monex.EitherTest do
     end
   end
 
-  describe "Eq.equals?/2" do
+  describe "Eq.eq?/2" do
     test "returns true for equal Right values" do
-      assert Eq.equals?(right(1), right(1)) == true
+      assert Eq.eq?(right(1), right(1)) == true
     end
 
     test "returns false for different Right values" do
-      assert Eq.equals?(right(1), right(2)) == false
+      assert Eq.eq?(right(1), right(2)) == false
     end
 
     test "returns true for two Left values" do
-      assert Eq.equals?(left(1), left(1)) == true
+      assert Eq.eq?(left(1), left(1)) == true
     end
 
     test "returns false for Right and Left comparison" do
-      assert Eq.equals?(right(1), left(1)) == false
+      assert Eq.eq?(right(1), left(1)) == false
     end
 
     test "returns false for Left and Right comparison" do
-      assert Eq.equals?(left(1), right(1)) == false
+      assert Eq.eq?(left(1), right(1)) == false
     end
   end
 
   describe "get_eq/1" do
     setup do
-      number_eq = %{equals?: &Kernel.==/2}
+      number_eq = %{eq?: &Kernel.==/2}
       {:ok, eq: get_eq(number_eq)}
     end
 
     test "returns true for equal Right values", %{eq: eq} do
-      assert eq.equals?.(right(1), right(1)) == true
+      assert eq.eq?.(right(1), right(1)) == true
     end
 
     test "returns false for different Right values", %{eq: eq} do
-      assert eq.equals?.(right(1), right(2)) == false
+      assert eq.eq?.(right(1), right(2)) == false
     end
 
     test "returns true for two Left values", %{eq: eq} do
-      assert eq.equals?.(left(1), left(1)) == true
+      assert eq.eq?.(left(1), left(1)) == true
     end
 
     test "returns false for Right and Left comparison", %{eq: eq} do
-      assert eq.equals?.(right(1), left(1)) == false
+      assert eq.eq?.(right(1), left(1)) == false
     end
 
     test "returns false for Left and Right comparison", %{eq: eq} do
-      assert eq.equals?.(left(1), right(1)) == false
+      assert eq.eq?.(left(1), right(1)) == false
     end
   end
 

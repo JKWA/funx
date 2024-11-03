@@ -58,10 +58,19 @@ defmodule Monex.Maybe.Nothing do
   end
 
   defimpl Monex.Eq do
-    alias Monex.Maybe.{Nothing, Just}
+    alias Monex.Maybe.Nothing
 
-    def equals?(%Nothing{}, %Nothing{}), do: true
-    def equals?(%Nothing{}, %Just{}), do: false
+    def eq?(%Nothing{}, %Nothing{}), do: true
+    def eq?(%Nothing{}, _), do: false
+
+    def get_eq(_eq_for_value) do
+      %{
+        eq?: fn
+          %Nothing{}, %Nothing{} -> true
+          _, _ -> false
+        end
+      }
+    end
   end
 
   defimpl Monex.Ord do

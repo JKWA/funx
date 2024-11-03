@@ -24,6 +24,12 @@ This post explores custom comparison logic in Elixir with Monex's `Monex.Ord.Uti
 
 Building on `Monex.Ord.Utils`, this post covers `contramap`, `comparator`, and `reverse` utilities for composing complex sorting logic from simple, modular components.
 
+## Defining Equality and Ordering in the Domain
+
+### [FP Basics: Domain-Specific Eq and Ord](https://www.joekoski.com/blog/2024/09/16/fp-domain.html)
+
+This post explores how to centralize equality (`Monex.Eq`) and ordering (`Monex.Ord`) in the domain using Elixir’s Monex library. By defining `Eq` and `Ord` in the `Example.User` module, the application gains consistent, domain-specific rules for comparing and ordering users. This approach keeps equality and ordering logic adaptable, maintainable, and aligned with the domain’s evolving requirements.
+
 ## Building Monads in Elixir
 
 ### [Elixir and Monads: Naming Challenges](https://www.joekoski.com/blog/2024/06/10/monad-naming-conventions.html)

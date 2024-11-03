@@ -3,6 +3,8 @@ defmodule Monex.IdentityTest do
 
   import Monex.Identity
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Monex.Eq, only: [get_eq: 1]
+
   alias Monex.{Identity, Eq, Ord}
 
   defp multiply_by_2(x), do: x * 2
@@ -141,28 +143,28 @@ defmodule Monex.IdentityTest do
     end
   end
 
-  describe "Eq.equals?/2" do
+  describe "Eq.eq?/2" do
     test "returns true for equal Just values" do
-      assert Eq.equals?(pure(1), pure(1)) == true
+      assert Eq.eq?(pure(1), pure(1)) == true
     end
 
     test "returns false for different Just values" do
-      assert Eq.equals?(pure(1), pure(2)) == false
+      assert Eq.eq?(pure(1), pure(2)) == false
     end
   end
 
   describe "get_eq/1" do
     setup do
-      number_eq = %{equals?: &Kernel.==/2}
+      number_eq = %{eq?: &Kernel.==/2}
       {:ok, eq: get_eq(number_eq)}
     end
 
     test "returns true for equal Just values", %{eq: eq} do
-      assert eq.equals?.(pure(1), pure(1)) == true
+      assert eq.eq?.(pure(1), pure(1)) == true
     end
 
     test "returns false for different Just values", %{eq: eq} do
-      assert eq.equals?.(pure(1), pure(2)) == false
+      assert eq.eq?.(pure(1), pure(2)) == false
     end
   end
 

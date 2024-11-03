@@ -143,29 +143,6 @@ defmodule Monex.Either do
   end
 
   @doc """
-  Creates a custom equality function for `Either` values using the provided `custom_eq`.
-
-  ## Examples
-
-      iex> eq = Monex.Either.get_eq(%{equals?: fn x, y -> x == y end})
-      iex> eq.equals?.(Monex.Either.right(5), Monex.Either.right(5))
-      true
-
-      iex> eq.equals?.(Monex.Either.right(5), Monex.Either.left("error"))
-      false
-  """
-  def get_eq(custom_eq) do
-    %{
-      equals?: fn
-        %Right{value: v1}, %Right{value: v2} -> custom_eq.equals?.(v1, v2)
-        %Left{}, %Right{} -> false
-        %Right{}, %Left{} -> false
-        %Left{value: v1}, %Left{value: v2} -> v1 == v2
-      end
-    }
-  end
-
-  @doc """
   Creates a custom ordering function for `Either` values using the provided `custom_ord`.
 
   ## Examples

@@ -137,28 +137,6 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Creates a custom equality function for `Maybe` values using the provided `custom_eq`.
-
-  ## Examples
-
-      iex> eq = Monex.Maybe.get_eq(%{equals?: fn x, y -> x == y end})
-      iex> eq.equals?.(Monex.Maybe.just(5), Monex.Maybe.just(5))
-      true
-
-      iex> eq.equals?.(Monex.Maybe.just(5), Monex.Maybe.nothing())
-      false
-  """
-  def get_eq(custom_eq) do
-    %{
-      equals?: fn
-        %Just{value: v1}, %Just{value: v2} -> custom_eq.equals?.(v1, v2)
-        %Nothing{}, %Nothing{} -> true
-        _, _ -> false
-      end
-    }
-  end
-
-  @doc """
   Creates a custom ordering function for `Maybe` values using the provided `custom_ord`.
 
   ## Examples
