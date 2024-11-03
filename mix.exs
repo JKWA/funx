@@ -32,15 +32,6 @@ defmodule Monex.MixProject do
           "Docs" => "https://jkwa.github.io/monex/readme.html"
         },
         exclude_patterns: ["examples/**", "test/**", "*.md"]
-      ],
-      git_hooks: [
-        pre_push: [
-          tasks: [
-            "mix test",
-            "mix credo"
-          ],
-          verbose: true
-        ]
       ]
     ]
   end
@@ -61,7 +52,6 @@ defmodule Monex.MixProject do
       {:makeup_elixir, "~> 0.16", only: :dev, runtime: false},
       {:dialyxir, "~> 1.4", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:git_hooks, "~> 0.7", only: [:dev], runtime: false},
       {:telemetry, "~> 1.0"}
     ]
   end
