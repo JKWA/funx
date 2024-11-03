@@ -1,0 +1,42 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Erlang and Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.16'
+        otp-version: '26.0'
+
+    - name: Install Hex and Rebar
+      run: |
+        mix local.hex --force
+        mix local.rebar --force
+
+    - name: Install Dependencies
+      run: mix deps.get
+
+    - name: Run Credo for Code Consistency
+      run: mix credo --strict
+      continue-on-error: false
+
+    - name: Run Tests with ExUnit
+      run: mix test
+      continue-on-error: false
