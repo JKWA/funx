@@ -77,39 +77,32 @@ defmodule Monex.Maybe.Just do
       just_func.(value)
     end
   end
+end
 
-  defimpl Monex.Eq do
-    alias Monex.Maybe.{Just, Nothing}
+defimpl Monex.Eq, for: Monex.Just do
+  alias Monex.Maybe.{Just, Nothing}
+  alias Monex.Eq
 
-    def eq?(%Just{value: v1}, %Just{value: v2}) do
-      v1 == v2
-    end
+  def eq?(%Just{value: v1}, %Just{value: v2}), do: Eq.eq?(v1, v2)
+  def eq?(%Just{}, %Nothing{}), do: false
 
-    def eq?(%Just{}, %Nothing{}), do: false
-
-    def get_eq(eq_for_value) do
-      %{
-        eq?: fn
-          %Just{value: a}, %Just{value: b} -> eq_for_value[:eq?].(a, b)
-          _, _ -> false
-        end
-      }
-    end
+  def get_eq(eq_for_value) do
+    %{
+      eq?: fn
+        %Just{value: a}, %Just{value: b} -> eq_for_value[:eq?].(a, b)
+        _, _ -> false
+      end
+    }
   end
+end
 
-  defimpl Monex.Ord do
-    alias Monex.Maybe.{Just, Nothing}
+defimpl Monex.Ord, for: Monex.Just do
+  alias Monex.Maybe.{Just, Nothing}
+  alias Monex.Ord
 
-    def lt?(%Just{value: v1}, %Just{value: v2}) do
-      v1 < v2
-    end
-
-    def lt?(%Just{}, %Nothing{}) do
-      false
-    end
-
-    def le?(a, b), do: not Monex.Ord.gt?(a, b)
-    def gt?(a, b), do: Monex.Ord.lt?(b, a)
-    def ge?(a, b), do: not Monex.Ord.lt?(a, b)
-  end
+  def lt?(%Just{value: v1}, %Just{value: v2}), do: Ord.lt?(v1, v2)
+  def lt?(%Just{}, %Nothing{}), do: false
+  def le?(a, b), do: not Monex.Ord.gt?(a, b)
+  def gt?(a, b), do: Monex.Ord.lt?(b, a)
+  def ge?(a, b), do: not Monex.Ord.lt?(a, b)
 end

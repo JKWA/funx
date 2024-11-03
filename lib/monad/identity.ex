@@ -122,36 +122,31 @@ defmodule Monex.Identity do
 
     def to_string(%Identity{value: value}), do: "Identity(#{value})"
   end
+end
 
-  defimpl Monex.Eq do
-    alias Monex.Identity
+defimpl Monex.Eq, for: Monex.Identity do
+  alias Monex.Identity
+  alias Monex.Eq
 
-    @doc """
-    Returns `true` if the inner values of two `Identity` instances are equal, otherwise returns `false`.
-    """
-    def eq?(%Identity{value: v1}, %Identity{value: v2}) do
-      v1 == v2
-    end
+  def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.eq?(v1, v2)
 
-    def get_eq(eq_for_value) do
-      %{
-        eq?: fn
-          %Identity{value: a}, %Identity{value: b} -> eq_for_value[:eq?].(a, b)
-          _, _ -> false
-        end
-      }
-    end
+  def get_eq(eq_for_value) do
+    %{
+      eq?: fn
+        %Identity{value: a}, %Identity{value: b} -> eq_for_value[:eq?].(a, b)
+        _, _ -> false
+      end
+    }
   end
+end
 
-  defimpl Monex.Ord do
-    alias Monex.Identity
+defimpl Monex.Ord, for: Monex.Identity do
+  alias Monex.Ord
+  alias Monex.Identity
 
-    def lt?(%Identity{value: v1}, %Identity{value: v2}) do
-      v1 < v2
-    end
+  def lt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.lt?(v1, v2)
 
-    def le?(a, b), do: not Monex.Ord.gt?(a, b)
-    def gt?(a, b), do: Monex.Ord.lt?(b, a)
-    def ge?(a, b), do: not Monex.Ord.lt?(a, b)
-  end
+  def le?(a, b), do: not Ord.gt?(a, b)
+  def gt?(a, b), do: Ord.lt?(b, a)
+  def ge?(a, b), do: not Ord.lt?(a, b)
 end

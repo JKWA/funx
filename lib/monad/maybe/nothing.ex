@@ -56,30 +56,30 @@ defmodule Monex.Maybe.Nothing do
       nothing_func.()
     end
   end
+end
 
-  defimpl Monex.Eq do
-    alias Monex.Maybe.Nothing
+defimpl Monex.Eq, for: Monex.Maybe.Nothing do
+  alias Monex.Maybe.Nothing
 
-    def eq?(%Nothing{}, %Nothing{}), do: true
-    def eq?(%Nothing{}, _), do: false
+  def eq?(%Nothing{}, %Nothing{}), do: true
+  def eq?(%Nothing{}, _), do: false
 
-    def get_eq(_eq_for_value) do
-      %{
-        eq?: fn
-          %Nothing{}, %Nothing{} -> true
-          _, _ -> false
-        end
-      }
-    end
+  def get_eq(_eq_for_value) do
+    %{
+      eq?: fn
+        %Nothing{}, %Nothing{} -> true
+        _, _ -> false
+      end
+    }
   end
+end
 
-  defimpl Monex.Ord do
-    alias Monex.Maybe.{Nothing, Just}
+defimpl Monex.Ord, for: Monex.Maybe.Nothing do
+  alias Monex.Maybe.{Nothing, Just}
 
-    def lt?(%Nothing{}, %Just{}), do: true
-    def lt?(%Nothing{}, %Nothing{}), do: false
-    def le?(a, b), do: not Monex.Ord.gt?(a, b)
-    def gt?(a, b), do: Monex.Ord.lt?(b, a)
-    def ge?(a, b), do: not Monex.Ord.lt?(a, b)
-  end
+  def lt?(%Nothing{}, %Just{}), do: true
+  def lt?(%Nothing{}, %Nothing{}), do: false
+  def le?(a, b), do: not Monex.Ord.gt?(a, b)
+  def gt?(a, b), do: Monex.Ord.lt?(b, a)
+  def ge?(a, b), do: not Monex.Ord.lt?(a, b)
 end

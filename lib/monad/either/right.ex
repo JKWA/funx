@@ -66,29 +66,32 @@ defmodule Monex.Either.Right do
       right_func.(value)
     end
   end
+end
 
-  defimpl Monex.Eq do
-    alias Monex.Either.{Left, Right}
+defimpl Monex.Eq, for: Monex.Either.Right do
+  alias Monex.Either.{Left, Right}
+  alias Monex.Eq
 
-    def eq?(%Right{value: v1}, %Right{value: v2}), do: v1 == v2
-    def eq?(%Right{}, %Left{}), do: false
+  def eq?(%Right{value: v1}, %Right{value: v2}), do: Eq.eq?(v1, v2)
+  def eq?(%Right{}, %Left{}), do: false
 
-    def get_eq(eq_for_value) do
-      %{
-        eq?: fn
-          %Right{value: a}, %Right{value: b} -> eq_for_value[:eq?].(a, b)
-          _, _ -> false
-        end
-      }
-    end
+  def get_eq(eq_for_value) do
+    %{
+      eq?: fn
+        %Right{value: a}, %Right{value: b} -> eq_for_value[:eq?].(a, b)
+        _, _ -> false
+      end
+    }
   end
+end
 
-  defimpl Monex.Ord do
-    alias Monex.Either.{Left, Right}
-    def lt?(%Right{value: v1}, %Right{value: v2}), do: v1 < v2
-    def lt?(%Right{}, %Left{}), do: false
-    def le?(a, b), do: not Monex.Ord.gt?(a, b)
-    def gt?(a, b), do: Monex.Ord.lt?(b, a)
-    def ge?(a, b), do: not Monex.Ord.lt?(a, b)
-  end
+defimpl Monex.Ord, for: Monex.Either.Right do
+  alias Monex.Either.{Left, Right}
+  alias Monex.Ord
+
+  def lt?(%Right{value: v1}, %Right{value: v2}), do: Ord.lt?(v1, v2)
+  def lt?(%Right{}, %Left{}), do: false
+  def le?(a, b), do: not Monex.Ord.gt?(a, b)
+  def gt?(a, b), do: Monex.Ord.lt?(b, a)
+  def ge?(a, b), do: not Monex.Ord.lt?(a, b)
 end
