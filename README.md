@@ -1,5 +1,7 @@
 # Monex
 
+[![Continuous Integration](https://github.com/JKWA/monex/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/monex/actions/workflows/ci.yml)
+
 [View the code on GitHub](https://github.com/JKWA/monex)
 
 Elixir is a dynamically typed language and lacks the static type system commonly used in functional languages to enforce monadic patterns. Instead, Elixir uses pattern matching, `defimpl`, and custom structs to create structured abstractions that provide runtime guarantees but lack the compile-time type safety of statically typed languages.
