@@ -1,4 +1,6 @@
 defmodule Monex.ReaderTest do
+  @moduledoc false
+
   use ExUnit.Case
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
   import Monex.Reader

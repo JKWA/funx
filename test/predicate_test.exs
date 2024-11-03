@@ -1,4 +1,6 @@
 defmodule Monex.PredicateTest do
+  @moduledoc false
+
   use ExUnit.Case
   import Monex.Foldable, only: [fold_r: 3]
 

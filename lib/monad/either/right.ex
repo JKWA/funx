@@ -50,13 +50,13 @@ defmodule Monex.Either.Right do
   end
 
   defimpl String.Chars do
-    alias Monex.Either.{Right}
+    alias Monex.Either.Right
 
     def to_string(%Right{value: value}), do: "Right(#{value})"
   end
 
   defimpl Monex.Foldable do
-    alias Monex.Either.{Right}
+    alias Monex.Either.Right
 
     def fold_l(%Right{value: value}, right_func, _left_func) do
       right_func.(value)

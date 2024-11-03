@@ -1,4 +1,6 @@
 defmodule Monex.EqAnyTest do
+  @moduledoc false
+
   use ExUnit.Case
   alias Monex.Eq
 

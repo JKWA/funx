@@ -1,4 +1,6 @@
 defmodule Monex.EitherTest do
+  @moduledoc false
+
   use ExUnit.Case, async: true
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
   import Monex.Eq, only: [get_eq: 1]
@@ -6,7 +8,7 @@ defmodule Monex.EitherTest do
   import Monex.Foldable, only: [fold_r: 3]
   import Monex.Either
 
-  alias Monex.{Maybe, Eq, Ord}
+  alias Monex.{Eq, Maybe, Ord}
   alias Monex.Either.{Left, Right}
 
   describe "pure/1" do

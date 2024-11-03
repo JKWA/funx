@@ -1,11 +1,13 @@
 defmodule Monex.Ord.UtilsTest do
+  @moduledoc false
+
   use ExUnit.Case, async: true
 
   import Kernel, except: [min: 2, max: 2]
   import Monex.Ord.Utils
 
-  alias Monex.Ord.{Any}
-  alias Monex.{Maybe, Either, Identity}
+  alias Monex.{Either, Identity, Maybe}
+  alias Monex.Ord.Any
 
   describe "clamp/4" do
     test "returns the value if within the range" do

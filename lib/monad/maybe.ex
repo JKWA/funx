@@ -40,7 +40,7 @@ defmodule Monex.Maybe do
   import Monex.Monad, only: [bind: 2]
   import Monex.Foldable, only: [fold_r: 3]
   alias Monex.Maybe.{Just, Nothing}
-  alias Monex.Either.{Right, Left}
+  alias Monex.Either.{Left, Right}
   alias Monex.Identity
 
   @type t(value) :: Just.t(value) | Nothing.t()
@@ -293,6 +293,7 @@ defmodule Monex.Maybe do
       %Monex.Maybe.Nothing{}
   """
   @spec from_try((-> right)) :: t(right) when right: term()
+  # credo:disable-for-next-line
   def from_try(func) do
     try do
       result = func.()

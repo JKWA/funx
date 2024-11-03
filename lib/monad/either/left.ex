@@ -49,7 +49,7 @@ defmodule Monex.Either.Left do
   end
 
   defimpl String.Chars do
-    alias Monex.Either.{Left}
+    alias Monex.Either.Left
 
     def to_string(%Left{value: value}), do: "Left(#{value})"
   end

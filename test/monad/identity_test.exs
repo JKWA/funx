@@ -1,11 +1,13 @@
 defmodule Monex.IdentityTest do
+  @moduledoc false
+
   use Monex.TestCase, async: true
 
   import Monex.Identity
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
   import Monex.Eq, only: [get_eq: 1]
 
-  alias Monex.{Identity, Eq, Ord}
+  alias Monex.{Eq, Identity, Ord}
 
   defp multiply_by_2(x), do: x * 2
 

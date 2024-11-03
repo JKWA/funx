@@ -1,4 +1,6 @@
 defmodule Monex.TelemetryUtilsTest do
+  @moduledoc false
+
   use ExUnit.Case, async: true
   alias Monex.TelemetryUtils
 

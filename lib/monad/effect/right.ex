@@ -1,9 +1,30 @@
 defmodule Monex.Effect.Right do
+  @moduledoc """
+  Represents the `Right` variant of the `Effect` monad, used to model a successful computation in an asynchronous context.
+
+  This module implements the following protocols:
+    - `Monex.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions to handle monadic operations within an effectful, lazy execution context.
+    - `String.Chars`: Provides a `to_string/1` function to represent `Right` values as strings.
+
+  The `Right` effect allows the computation to proceed with successful values, supporting lazy, asynchronous tasks.
+  """
   @enforce_keys [:effect]
   defstruct [:effect]
 
   @type t(right) :: %__MODULE__{effect: (-> Task.t(%Monex.Either.Right{value: right}))}
 
+  @doc """
+  Creates a new `Right` effect.
+
+  The `pure/1` function wraps a value in the `Right` effect monad, representing an asynchronous success.
+
+  ## Examples
+
+      iex> Monex.Effect.Right.pure("success")
+      %Monex.Effect.Right{
+        effect: #Function<...>  # (an asynchronous task returning `Right`)
+      }
+  """
   @spec pure(right) :: t(right) when right: term()
   def pure(value) do
     %__MODULE__{
@@ -13,8 +34,7 @@ defmodule Monex.Effect.Right do
 
   defimpl Monex.Monad do
     alias Monex.Effect
-    alias Effect.{Right, Left}
-
+    alias Effect.{Left, Right}
     alias Monex.Either
 
     @spec ap(Right.t((right -> result)), Effect.t(left, right)) ::

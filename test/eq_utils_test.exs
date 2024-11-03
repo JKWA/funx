@@ -1,4 +1,6 @@
 defmodule Monex.Eq.UtilsTest do
+  @moduledoc false
+
   use ExUnit.Case, async: true
 
   alias Monex.Eq.Utils

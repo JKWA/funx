@@ -35,8 +35,8 @@ defmodule Monex.Effect do
   import Monex.Monad, only: [ap: 2, map: 2]
   import Monex.Foldable, only: [fold_r: 3]
 
-  alias Monex.{Either, Maybe, Effect}
-  alias Effect.{Right, Left}
+  alias Monex.{Effect, Either, Maybe}
+  alias Effect.{Left, Right}
 
   @type t(left, right) :: Left.t(left) | Right.t(right)
 

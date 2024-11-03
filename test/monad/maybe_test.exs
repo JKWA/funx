@@ -1,14 +1,16 @@
 defmodule Monex.MaybeTest do
-  use ExUnit.Case, async: true
-  import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Monex.Foldable, only: [fold_r: 3]
-  import Monex.Eq, only: [get_eq: 1]
+  @moduledoc false
 
+  use ExUnit.Case, async: true
+
+  import Monex.Eq, only: [get_eq: 1]
+  import Monex.Foldable, only: [fold_r: 3]
   import Monex.Maybe
+  import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
 
   alias Monex.{Either, Eq, Ord}
-  alias Monex.Maybe.{Just, Nothing}
   alias Monex.Identity
+  alias Monex.Maybe.{Just, Nothing}
 
   describe "Just.pure/1" do
     test "wraps a non-nil value in a Just monad" do
