@@ -3,7 +3,7 @@ defmodule Monex.EitherTest do
 
   use ExUnit.Case, async: true
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Monex.Foldable, only: [fold_r: 3]
+  import Monex.Foldable, only: [fold_l: 3, fold_r: 3]
   import Monex.Either
 
   alias Monex.{Eq, Maybe, Ord}
@@ -92,6 +92,24 @@ defmodule Monex.EitherTest do
       result =
         left("error")
         |> fold_r(fn x -> "Right #{x}" end, fn value -> "Left: #{value}" end)
+
+      assert result == "Left: error"
+    end
+  end
+
+  describe "fold_l/3" do
+    test "applies the right_func to a Right value" do
+      result =
+        right(42)
+        |> fold_l(fn x -> "Right #{x}" end, fn -> "Left" end)
+
+      assert result == "Right 42"
+    end
+
+    test "applies the left_func to a Left value" do
+      result =
+        left("error")
+        |> fold_l(fn x -> "Right #{x}" end, fn value -> "Left: #{value}" end)
 
       assert result == "Left: error"
     end

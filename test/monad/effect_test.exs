@@ -6,7 +6,7 @@ defmodule EffectTest do
   alias Monex.{Either, Maybe}
 
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Monex.Foldable, only: [fold_r: 3]
+  import Monex.Foldable, only: [fold_l: 3, fold_r: 3]
 
   describe "ap/2" do
     test "ap applies a function inside a Right monad to a value inside another Right monad" do
@@ -210,6 +210,36 @@ defmodule EffectTest do
         left_value
         |> run()
         |> fold_r(
+          fn _value -> "This should not be called" end,
+          fn error -> "Error: #{error}" end
+        )
+
+      assert result == "Error: Something went wrong"
+    end
+  end
+
+  describe "fold_l/3 with results of Effect" do
+    test "applies right function for a Right value returned by a task" do
+      right_value = right(42)
+
+      result =
+        right_value
+        |> run()
+        |> fold_l(
+          fn value -> "Right value is: #{value}" end,
+          fn _error -> "This should not be called" end
+        )
+
+      assert result == "Right value is: 42"
+    end
+
+    test "applies left function for a Left value returned by a task" do
+      left_value = left("Something went wrong")
+
+      result =
+        left_value
+        |> run()
+        |> fold_l(
           fn _value -> "This should not be called" end,
           fn error -> "Error: #{error}" end
         )

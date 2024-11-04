@@ -16,4 +16,4 @@ pre_push:
 	@echo "Running Credo..."
 	MIX_ENV=dev mix credo --strict
 	@echo "Running tests..."
-	MIX_ENV=test mix test
+	MIX_ENV=test mix coveralls.html

@@ -2,7 +2,7 @@ defmodule Monex.PredicateTest do
   @moduledoc false
 
   use ExUnit.Case
-  import Monex.Foldable, only: [fold_r: 3]
+  import Monex.Foldable, only: [fold_l: 3, fold_r: 3]
 
   alias Monex.Predicate
 
@@ -62,6 +62,26 @@ defmodule Monex.PredicateTest do
       false_func = fn -> "False case executed" end
 
       result = fold_r(pred, true_func, false_func)
+      assert result == "False case executed"
+    end
+  end
+
+  describe "fold_l/3" do
+    test "applies true_func when predicate returns true" do
+      pred = fn -> true end
+      true_func = fn -> "True case executed" end
+      false_func = fn -> "False case executed" end
+
+      result = fold_l(pred, true_func, false_func)
+      assert result == "True case executed"
+    end
+
+    test "applies false_func when predicate returns false" do
+      pred = fn -> false end
+      true_func = fn -> "True case executed" end
+      false_func = fn -> "False case executed" end
+
+      result = fold_l(pred, true_func, false_func)
       assert result == "False case executed"
     end
   end

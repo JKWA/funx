@@ -15,6 +15,32 @@ defmodule Monex.Eq.UtilsTest do
     end
   end
 
+  describe "equal?/3" do
+    test "uses the default Eq module to check equality" do
+      # Assuming `Eq` defaults to simple equality comparison
+      assert Utils.equal?(1, 1) == true
+      assert Utils.equal?(1, 2) == false
+    end
+
+    test "uses a custom module for equality check" do
+      defmodule MockEq do
+        def eq?(a, b), do: a === b
+      end
+
+      assert Utils.equal?(1, 1, MockEq) == true
+      assert Utils.equal?(1, 2, MockEq) == false
+    end
+
+    test "uses a custom map with an eq? function for equality check" do
+      custom_eq = %{
+        eq?: fn a, b -> String.downcase(a) == String.downcase(b) end
+      }
+
+      assert Utils.equal?("Alice", "ALICE", custom_eq) == true
+      assert Utils.equal?("Alice", "Bob", custom_eq) == false
+    end
+  end
+
   describe "eq_by?/3" do
     test "checks equality of values by applying a projection function" do
       person1 = %{name: "Alice", age: 30}
@@ -26,6 +52,19 @@ defmodule Monex.Eq.UtilsTest do
 
       assert Utils.eq_by?(& &1.age, person1, person2) == false
       assert Utils.eq_by?(& &1.age, person1, person3) == true
+    end
+
+    test "checks equality using a custom eq? map function" do
+      person1 = %{name: "Alice", age: 30}
+      person2 = %{name: "Alice", age: 25}
+      person3 = %{name: "Bob", age: 30}
+
+      custom_eq = %{
+        eq?: fn a, b -> String.downcase(a) == String.downcase(b) end
+      }
+
+      assert Utils.eq_by?(& &1.name, person1, person2, custom_eq) == true
+      assert Utils.eq_by?(& &1.name, person1, person3, custom_eq) == false
     end
   end
 
@@ -159,6 +198,39 @@ defmodule Monex.Eq.UtilsTest do
       result = Enum.filter(list, Utils.to_predicate(target, within_5_eq_maybe()))
 
       assert result == [Maybe.just(10), Maybe.just(12), Maybe.just(15)]
+    end
+  end
+
+  defmodule Within5Eq do
+    def eq?(a, b), do: abs(a - b) <= 5
+  end
+
+  describe "to_predicate/2 with module-based equality" do
+    test "filters elements within 5 units of target number" do
+      list = [1, 2, 3, 8, 10, 15, 20]
+      target_number = 10
+
+      result = Enum.filter(list, Utils.to_predicate(target_number, Within5Eq))
+
+      assert result == [8, 10, 15]
+    end
+
+    test "returns an empty list if no elements are within 5 units of target number" do
+      list = [1, 2, 3, 20, 25]
+      target_number = 10
+
+      result = Enum.filter(list, Utils.to_predicate(target_number, Within5Eq))
+
+      assert result == []
+    end
+
+    test "includes all elements if all are within 5 units of target number" do
+      list = [7, 8, 10, 12, 14]
+      target_number = 10
+
+      result = Enum.filter(list, Utils.to_predicate(target_number, Within5Eq))
+
+      assert result == [7, 8, 10, 12, 14]
     end
   end
 end
