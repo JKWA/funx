@@ -48,12 +48,6 @@ defmodule Monex.Either.Left do
     def map(%Left{} = left, _func), do: left
   end
 
-  defimpl String.Chars do
-    alias Monex.Either.Left
-
-    def to_string(%Left{value: value}), do: "Left(#{value})"
-  end
-
   defimpl Monex.Foldable do
     alias Monex.Either.Left
 
@@ -67,21 +61,18 @@ defmodule Monex.Either.Left do
   end
 end
 
+defimpl String.Chars, for: Monex.Either.Left do
+  alias Monex.Either.Left
+
+  def to_string(%Left{value: value}), do: "Left(#{value})"
+end
+
 defimpl Monex.Eq, for: Monex.Either.Left do
   alias Monex.Either.{Left, Right}
   alias Monex.Eq
 
   def eq?(%Left{value: v1}, %Left{value: v2}), do: Eq.eq?(v1, v2)
   def eq?(%Left{}, %Right{}), do: false
-
-  def get_eq(eq_for_value) do
-    %{
-      eq?: fn
-        %Left{value: a}, %Left{value: b} -> eq_for_value[:eq?].(a, b)
-        _, _ -> false
-      end
-    }
-  end
 end
 
 defimpl Monex.Ord, for: Monex.Either.Left do

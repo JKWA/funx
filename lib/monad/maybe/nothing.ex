@@ -63,15 +63,6 @@ defimpl Monex.Eq, for: Monex.Maybe.Nothing do
 
   def eq?(%Nothing{}, %Nothing{}), do: true
   def eq?(%Nothing{}, _), do: false
-
-  def get_eq(_eq_for_value) do
-    %{
-      eq?: fn
-        %Nothing{}, %Nothing{} -> true
-        _, _ -> false
-      end
-    }
-  end
 end
 
 defimpl Monex.Ord, for: Monex.Maybe.Nothing do

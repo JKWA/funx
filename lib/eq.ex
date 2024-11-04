@@ -29,11 +29,6 @@ defprotocol Monex.Eq do
       false
   """
   def eq?(a, b)
-
-  @doc """
-  Creates an `Eq` instance for Monads given an `Eq` for the inner value.
-  """
-  def get_eq(eq_for_value)
 end
 
 defimpl Monex.Eq, for: Any do
@@ -57,25 +52,4 @@ defimpl Monex.Eq, for: Any do
       false
   """
   def eq?(a, b), do: a == b
-
-  @doc """
-  Returns a generic `Eq` instance based on the default equality behavior for any type.
-
-  If the `Eq` instance provided for the inner type can’t be matched specifically,
-  it falls back to using `==` for any values.
-
-  ## Examples
-
-      iex> default_eq = Monex.Eq.get_eq(Monex.Eq)
-      iex> default_eq[:eq?].(3, 3)
-      true
-
-      iex> default_eq[:eq?].(3, 5)
-      false
-  """
-  def get_eq(_inner_eq) do
-    %{
-      eq?: fn a, b -> a == b end
-    }
-  end
 end

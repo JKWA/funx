@@ -94,12 +94,4 @@ defmodule Monex.Effect.Right do
       }
     end
   end
-
-  defimpl String.Chars do
-    alias Monex.Effect.Right
-
-    def to_string(%Right{effect: effect}) do
-      "Right(#{Task.await(effect.())})"
-    end
-  end
 end

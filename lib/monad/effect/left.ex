@@ -57,12 +57,4 @@ defmodule Monex.Effect.Left do
           when left: term(), right: term()
     def ap(%Left{} = left, _), do: left
   end
-
-  defimpl String.Chars do
-    alias Monex.Effect.Left
-
-    def to_string(%Left{effect: effect}) do
-      "Left(#{Task.await(effect.())})"
-    end
-  end
 end

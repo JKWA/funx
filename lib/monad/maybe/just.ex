@@ -79,24 +79,15 @@ defmodule Monex.Maybe.Just do
   end
 end
 
-defimpl Monex.Eq, for: Monex.Just do
+defimpl Monex.Eq, for: Monex.Maybe.Just do
   alias Monex.Maybe.{Just, Nothing}
   alias Monex.Eq
 
   def eq?(%Just{value: v1}, %Just{value: v2}), do: Eq.eq?(v1, v2)
   def eq?(%Just{}, %Nothing{}), do: false
-
-  def get_eq(eq_for_value) do
-    %{
-      eq?: fn
-        %Just{value: a}, %Just{value: b} -> eq_for_value[:eq?].(a, b)
-        _, _ -> false
-      end
-    }
-  end
 end
 
-defimpl Monex.Ord, for: Monex.Just do
+defimpl Monex.Ord, for: Monex.Maybe.Just do
   alias Monex.Maybe.{Just, Nothing}
   alias Monex.Ord
 

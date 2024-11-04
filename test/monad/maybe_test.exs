@@ -3,7 +3,6 @@ defmodule Monex.MaybeTest do
 
   use ExUnit.Case, async: true
 
-  import Monex.Eq, only: [get_eq: 1]
   import Monex.Foldable, only: [fold_r: 3]
   import Monex.Maybe
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]

@@ -48,6 +48,15 @@ defmodule Monex.Identity do
   @spec extract(t(value)) :: value when value: term()
   def extract(%__MODULE__{value: value}), do: value
 
+  def get_eq(eq_for_value) do
+    %{
+      eq?: fn
+        %__MODULE__{value: a}, %__MODULE__{value: b} -> eq_for_value[:eq?].(a, b)
+        _, _ -> false
+      end
+    }
+  end
+
   def get_ord(custom_ord) do
     %{
       lt?: fn
@@ -129,15 +138,6 @@ defimpl Monex.Eq, for: Monex.Identity do
   alias Monex.Eq
 
   def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.eq?(v1, v2)
-
-  def get_eq(eq_for_value) do
-    %{
-      eq?: fn
-        %Identity{value: a}, %Identity{value: b} -> eq_for_value[:eq?].(a, b)
-        _, _ -> false
-      end
-    }
-  end
 end
 
 defimpl Monex.Ord, for: Monex.Identity do

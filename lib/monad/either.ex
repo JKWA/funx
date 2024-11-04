@@ -41,6 +41,7 @@ defmodule Monex.Either do
   import Monex.Monad, only: [bind: 2]
   import Monex.Foldable, only: [fold_r: 3]
   alias Monex.Either.{Left, Right}
+  alias Monex.Eq
 
   @type t(left, right) :: Left.t(left) | Right.t(right)
 
@@ -140,6 +141,26 @@ defmodule Monex.Either do
       fn value -> value end,
       fn _left_value -> default end
     )
+  end
+
+  @doc """
+  Creates a custom equality function for `Either` values using the provided `custom_eq`.
+  ## Examples
+      iex> eq = Monex.Either.get_eq(%{eq?: fn x, y -> x == y end})
+      iex> eq.eq?.(Monex.Either.right(5), Monex.Either.right(5))
+      true
+      iex> eq.eq?.(Monex.Either.right(5), Monex.Either.left("error"))
+      false
+  """
+  def get_eq(custom_eq) do
+    %{
+      eq?: fn
+        %Right{value: v1}, %Right{value: v2} -> custom_eq.eq?.(v1, v2)
+        %Left{}, %Right{} -> false
+        %Right{}, %Left{} -> false
+        %Left{value: v1}, %Left{value: v2} -> Eq.eq?(v1, v2)
+      end
+    }
   end
 
   @doc """

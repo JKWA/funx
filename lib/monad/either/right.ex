@@ -74,15 +74,6 @@ defimpl Monex.Eq, for: Monex.Either.Right do
 
   def eq?(%Right{value: v1}, %Right{value: v2}), do: Eq.eq?(v1, v2)
   def eq?(%Right{}, %Left{}), do: false
-
-  def get_eq(eq_for_value) do
-    %{
-      eq?: fn
-        %Right{value: a}, %Right{value: b} -> eq_for_value[:eq?].(a, b)
-        _, _ -> false
-      end
-    }
-  end
 end
 
 defimpl Monex.Ord, for: Monex.Either.Right do

@@ -136,6 +136,16 @@ defmodule Monex.Maybe do
     fold_r(maybe, fn value -> value end, fn -> default end)
   end
 
+  def get_eq(custom_eq) do
+    %{
+      eq?: fn
+        %Just{value: v1}, %Just{value: v2} -> custom_eq.eq?.(v1, v2)
+        %Nothing{}, %Nothing{} -> true
+        _, _ -> false
+      end
+    }
+  end
+
   @doc """
   Creates a custom ordering function for `Maybe` values using the provided `custom_ord`.
 

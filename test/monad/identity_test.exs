@@ -5,7 +5,6 @@ defmodule Monex.IdentityTest do
 
   import Monex.Identity
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Monex.Eq, only: [get_eq: 1]
 
   alias Monex.{Eq, Identity, Ord}
 
