@@ -42,10 +42,6 @@ defimpl Monex.Monad, for: Monex.Either.Left do
         when value: term()
   def ap(%Left{} = left, _), do: left
 
-  @spec ap(Left.t(value), term()) :: Left.t(value)
-        when value: term()
-  def ap(_, %Left{} = left), do: left
-
   @spec bind(Left.t(value), (term() -> Left.t(result))) :: Left.t(value)
         when value: term(), result: term()
   def bind(%Left{} = left, _func), do: left

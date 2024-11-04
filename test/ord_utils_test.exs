@@ -68,7 +68,32 @@ defmodule Monex.Ord.UtilsTest do
 
   describe "reverse/1" do
     test "reverses the ordering logic" do
-      rev_ord = reverse(Any)
+      rev_ord = reverse()
+
+      assert rev_ord.gt?.(Maybe.just(10), Maybe.just(5)) ==
+               Any.lt?(Maybe.just(10), Maybe.just(5))
+
+      assert rev_ord.lt?.(Either.right(5), Either.right(10)) ==
+               Any.gt?(Either.right(5), Either.right(10))
+
+      assert rev_ord.le?.(Identity.pure(10), Identity.pure(10)) ==
+               Any.ge?(Identity.pure(10), Identity.pure(10))
+
+      assert rev_ord.ge?.(Maybe.just(5), Maybe.just(5)) ==
+               Any.le?(Maybe.just(5), Maybe.just(5))
+    end
+  end
+
+  describe "reverse/1 map" do
+    test "reverses the ordering logic" do
+      ord_map = %{
+        lt?: &Kernel.<(&1, &2),
+        le?: &Kernel.<=(&1, &2),
+        gt?: &Kernel.>(&1, &2),
+        ge?: &Kernel.>=(&1, &2)
+      }
+
+      rev_ord = reverse(ord_map)
 
       assert rev_ord.gt?.(Maybe.just(10), Maybe.just(5)) ==
                Any.lt?(Maybe.just(10), Maybe.just(5))
@@ -133,6 +158,55 @@ defmodule Monex.Ord.UtilsTest do
       assert compare({"banana", 6}, {"apple", 5}, tuple_name_length) == :gt
       assert compare({"pear", 4}, {"peach", 5}, tuple_name_length) == :lt
       assert compare({"grape", 5}, {"peach", 5}, tuple_name_length) == :eq
+    end
+  end
+
+  describe "composed contramap/2 map" do
+    setup do
+      ord_map = %{
+        lt?: &Kernel.<(&1, &2),
+        le?: &Kernel.<=(&1, &2),
+        gt?: &Kernel.>(&1, &2),
+        ge?: &Kernel.>=(&1, &2)
+      }
+
+      {:ok, string_length: contramap(&String.length/1, ord_map)}
+    end
+
+    test "compares 'banana' and 'apple' by length", %{string_length: string_length} do
+      assert string_length.lt?.("banana", "apple") == false
+      assert string_length.lt?.("apple", "banana") == true
+    end
+
+    test "returns the maximum of two strings by length", %{string_length: string_length} do
+      assert max("banana", "apple", string_length) == "banana"
+    end
+
+    test "returns the minimum of two strings by length", %{string_length: string_length} do
+      assert min("banana", "apple", string_length) == "apple"
+    end
+
+    test "clamps a value between 'apple' and 'cantaloupe' by length", %{
+      string_length: string_length
+    } do
+      assert clamp("banana", "apple", "cantaloupe", string_length) == "banana"
+      assert clamp("berry", "apple", "cantaloupe", string_length) == "berry"
+      assert clamp("watermelon", "apple", "cantaloupe", string_length) == "watermelon"
+    end
+
+    test "checks if 'banana' is between 'apple' and 'cantaloupe' by length", %{
+      string_length: string_length
+    } do
+      assert between("banana", "apple", "cantaloupe", string_length) == true
+      assert between("berry", "banana", "cantaloupe", string_length) == false
+    end
+
+    test "compares two strings by length and returns :lt, :eq, or :gt", %{
+      string_length: string_length
+    } do
+      assert compare("banana", "apple", string_length) == :gt
+      assert compare("apple", "banana", string_length) == :lt
+      assert compare("pear", "bear", string_length) == :eq
     end
   end
 

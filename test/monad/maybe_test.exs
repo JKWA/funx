@@ -381,6 +381,10 @@ defmodule Monex.MaybeTest do
       assert ord.gt?.(just(42), nothing()) == true
     end
 
+    test "A Just value is not less than Nothing", %{ord: ord} do
+      assert ord.lt?.(just(42), nothing()) == false
+    end
+
     test "Orders Just values based on their contained values", %{ord: ord} do
       assert ord.lt?.(just(42), just(43)) == true
       assert ord.gt?.(just(43), just(42)) == true

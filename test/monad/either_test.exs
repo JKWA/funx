@@ -418,10 +418,12 @@ defmodule Monex.EitherTest do
 
     test "Left is less than any Right", %{ord: ord} do
       assert ord[:lt?].(left(100), right(1)) == true
+      assert ord[:lt?].(right(1), left(100)) == false
     end
 
     test "Right is greater than Left", %{ord: ord} do
       assert ord[:gt?].(right(1), left(100)) == true
+      assert ord[:gt?].(left(100), right(1)) == false
     end
 
     test "Orders Right values based on their contained values", %{ord: ord} do

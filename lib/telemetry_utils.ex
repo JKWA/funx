@@ -125,6 +125,8 @@ defmodule Monex.TelemetryUtils do
   def summarize(value) when is_port(value), do: :port
   def summarize(value) when is_reference(value), do: :reference
 
-  # Catch-all for unknown types
+  # Catch-all for possible unknown types (cannot test this line)
+  # coveralls-ignore-start
   def summarize(_), do: :unknown
+  # coveralls-ignore-stop
 end

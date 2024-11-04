@@ -160,12 +160,16 @@ defmodule Monex.IdentityTest do
       {:ok, eq: get_eq(number_eq)}
     end
 
-    test "returns true for equal Just values", %{eq: eq} do
+    test "returns true for equal values", %{eq: eq} do
       assert eq.eq?.(pure(1), pure(1)) == true
     end
 
-    test "returns false for different Just values", %{eq: eq} do
+    test "returns false for different values", %{eq: eq} do
       assert eq.eq?.(pure(1), pure(2)) == false
+    end
+
+    test "returns false for non identity monads", %{eq: eq} do
+      assert eq.eq?.(pure(2), 2) == false
     end
   end
 
