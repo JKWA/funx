@@ -21,6 +21,13 @@ defmodule Monex.MixProject do
         source_url: "https://github.com/JKWA/monex",
         source_url_pattern: "https://github.com/JKWA/monex/blob/main/%{path}#L%{line}"
       ],
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ],
       package: [
         name: "monex",
         description:
@@ -52,6 +59,8 @@ defmodule Monex.MixProject do
       {:makeup_elixir, "~> 0.16", only: :dev, runtime: false},
       {:dialyxir, "~> 1.4", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18", only: [:dev, :test], runtime: false},
+      {:castore, "~> 1.0", only: [:dev, :test]},
       {:telemetry, "~> 1.0"}
     ]
   end
