@@ -303,7 +303,6 @@ defmodule Monex.Maybe do
       %Monex.Maybe.Nothing{}
   """
   @spec from_try((-> right)) :: t(right) when right: term()
-  # credo:disable-for-next-line
   def from_try(func) do
     try do
       result = func.()

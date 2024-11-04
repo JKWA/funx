@@ -468,6 +468,29 @@ defmodule Monex.MaybeTest do
     end
   end
 
+  describe "from_try/1" do
+    test "returns Just when the function executes successfully" do
+      result = from_try(fn -> 5 end)
+      assert result == just(5)
+    end
+
+    test "returns Just when the function returns a complex value" do
+      complex_value = %{name: "Alice", age: 30}
+      result = from_try(fn -> complex_value end)
+      assert result == just(complex_value)
+    end
+
+    test "returns Nothing when the function raises an exception" do
+      result = from_try(fn -> raise "error" end)
+      assert result == nothing()
+    end
+
+    test "returns Nothing when the function raises a different exception" do
+      result = from_try(fn -> :erlang.error(:badarith) end)
+      assert result == nothing()
+    end
+  end
+
   describe "to_try!/2" do
     test "returns value from Maybe.Just" do
       assert to_try!(%Just{value: 42}) == 42

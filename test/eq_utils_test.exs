@@ -202,6 +202,7 @@ defmodule Monex.Eq.UtilsTest do
   end
 
   defmodule Within5Eq do
+    @moduledoc false
     def eq?(a, b), do: abs(a - b) <= 5
   end
 

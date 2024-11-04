@@ -2,11 +2,30 @@ defmodule EffectTest do
   @moduledoc false
 
   use ExUnit.Case
-  import Monex.Effect
-  alias Monex.{Either, Maybe}
 
+  import Monex.Effect
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
   import Monex.Foldable, only: [fold_l: 3, fold_r: 3]
+
+  alias Monex.{Either, Maybe}
+
+  describe "right/1" do
+    test "wraps a value in a Right struct" do
+      result = right(42) |> run()
+      assert result == %Either.Right{right: 42}
+    end
+  end
+
+  describe "pure/1" do
+    test "wraps a value in a Right struct" do
+      result = pure(42) |> run()
+      assert result == %Either.Right{right: 42}
+    end
+
+    test "pure is an alias for right" do
+      assert pure(42) |> run() == right(42) |> run()
+    end
+  end
 
   describe "ap/2" do
     test "ap applies a function inside a Right monad to a value inside another Right monad" do
@@ -123,6 +142,21 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.left("error")
+    end
+
+    test "map returns a Left if the effect resolves to a Left error" do
+      error_effect = %Monex.Effect.Right{
+        effect: fn ->
+          Task.async(fn -> %Either.Left{left: "error"} end)
+        end
+      }
+
+      result =
+        error_effect
+        |> map(fn _value -> raise "Should not be called" end)
+        |> run()
+
+      assert result == %Either.Left{left: "error"}
     end
   end
 
