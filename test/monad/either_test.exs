@@ -23,7 +23,7 @@ defmodule Monex.EitherTest do
 
   describe "left/1" do
     test "wraps an error value in a Left monad" do
-      assert %Left{value: "error"} = left("error")
+      assert %Left{left: "error"} = left("error")
     end
   end
 
@@ -49,13 +49,13 @@ defmodule Monex.EitherTest do
     end
 
     test "returns Left when binding over a Left monad" do
-      assert %Left{value: "error"} =
+      assert %Left{left: "error"} =
                left("error")
                |> bind(fn _ -> right(10) end)
     end
 
     test "returns Left when the function returns Left" do
-      assert %Left{value: "error"} =
+      assert %Left{left: "error"} =
                right(42)
                |> bind(fn _ -> left("error") end)
     end
@@ -495,7 +495,7 @@ defmodule Monex.EitherTest do
     test "converts a raised exception into Left" do
       result = from_try(fn -> raise "error" end)
 
-      assert result == %Left{value: %RuntimeError{message: "error"}}
+      assert result == %Left{left: %RuntimeError{message: "error"}}
     end
   end
 
@@ -507,7 +507,7 @@ defmodule Monex.EitherTest do
     end
 
     test "raises RuntimeError for Left" do
-      left_result = %Left{value: "something went wrong"}
+      left_result = %Left{left: "something went wrong"}
 
       assert_raise RuntimeError, "something went wrong", fn ->
         to_try!(left_result)

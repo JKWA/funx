@@ -11,7 +11,7 @@ defmodule Monex.Effect.Left do
   @enforce_keys [:effect]
   defstruct [:effect]
 
-  @type t(left) :: %__MODULE__{effect: (-> Task.t(%Monex.Either.Left{value: left}))}
+  @type t(left) :: %__MODULE__{effect: (-> Task.t(%Monex.Either.Left{left: left}))}
 
   @doc """
   Creates a new `Left` effect.
@@ -28,7 +28,7 @@ defmodule Monex.Effect.Left do
   @spec pure(left) :: t(left) when left: term()
   def pure(value) do
     %__MODULE__{
-      effect: fn -> Task.async(fn -> %Monex.Either.Left{value: value} end) end
+      effect: fn -> Task.async(fn -> %Monex.Either.Left{left: value} end) end
     }
   end
 end

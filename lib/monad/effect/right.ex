@@ -69,8 +69,8 @@ defimpl Monex.Monad, for: Monex.Effect.Right do
                 %Left{effect: next_effect} -> Task.await(next_effect.())
               end
 
-            %Either.Left{value: left_value} ->
-              %Either.Left{value: left_value}
+            %Either.Left{left: left_value} ->
+              %Either.Left{left: left_value}
           end
         end)
       end
@@ -87,8 +87,8 @@ defimpl Monex.Monad, for: Monex.Effect.Right do
             %Either.Right{value: value} ->
               %Either.Right{value: mapper.(value)}
 
-            %Either.Left{value: error} ->
-              %Either.Left{value: error}
+            %Either.Left{left: error} ->
+              %Either.Left{left: error}
           end
         end)
       end

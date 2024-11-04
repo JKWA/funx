@@ -71,7 +71,7 @@ defmodule Monex.Effect do
 
       iex> result = Monex.Effect.left("error")
       iex> Monex.Effect.run(result)
-      %Monex.Either.Left{value: "error"}
+      %Monex.Either.Left{left: "error"}
   """
   @spec left(left) :: t(left, term()) when left: term()
   def left(value), do: Left.pure(value)
@@ -107,7 +107,7 @@ defmodule Monex.Effect do
 
       iex> result = Monex.Effect.lift_predicate(3, &(&1 > 5), fn -> "too small" end)
       iex> Monex.Effect.run(result)
-      %Monex.Either.Left{value: "too small"}
+      %Monex.Either.Left{left: "too small"}
   """
   @spec lift_predicate(term(), (term() -> boolean()), (-> left)) :: t(left, term())
         when left: term()
@@ -129,17 +129,17 @@ defmodule Monex.Effect do
       iex> Monex.Effect.run(result)
       %Monex.Either.Right{value: 42}
 
-      iex> either = %Monex.Either.Left{value: "error"}
+      iex> either = %Monex.Either.Left{left: "error"}
       iex> result = Monex.Effect.lift_either(either)
       iex> Monex.Effect.run(result)
-      %Monex.Either.Left{value: "error"}
+      %Monex.Either.Left{left: "error"}
   """
   @spec lift_either(Either.t(left, right)) :: t(left, right) when left: term(), right: term()
   def lift_either(%Either.Right{value: right_value}) do
     Right.pure(right_value)
   end
 
-  def lift_either(%Either.Left{value: left_value}) do
+  def lift_either(%Either.Left{left: left_value}) do
     Left.pure(left_value)
   end
 
@@ -158,7 +158,7 @@ defmodule Monex.Effect do
       iex> maybe = Monex.Maybe.nothing()
       iex> result = Monex.Effect.lift_maybe(maybe, fn -> "No value" end)
       iex> Monex.Effect.run(result)
-      %Monex.Either.Left{value: "No value"}
+      %Monex.Either.Left{left: "No value"}
   """
   @spec lift_maybe(Maybe.t(right), (-> left)) :: t(left, right)
         when left: term(), right: term()
@@ -184,7 +184,7 @@ defmodule Monex.Effect do
       iex> effects = [Monex.Effect.right(1), Monex.Effect.left("error")]
       iex> result = Monex.Effect.sequence(effects)
       iex> Monex.Effect.run(result)
-      %Monex.Either.Left{value: "error"}
+      %Monex.Either.Left{left: "error"}
   """
   @spec sequence([t(left, right)]) :: t(left, [right]) when left: term(), right: term()
   def sequence(list) do
@@ -211,7 +211,7 @@ defmodule Monex.Effect do
 
       iex> result = Monex.Effect.traverse([1, -2, 3], fn num -> is_positive.(num) end)
       iex> Monex.Effect.run(result)
-      %Monex.Either.Left{value: "-2 is not positive"}
+      %Monex.Either.Left{left: "-2 is not positive"}
   """
 
   @spec traverse([input], (input -> t(left, right))) :: t(left, [right])
@@ -230,7 +230,7 @@ defmodule Monex.Effect do
       iex> effects = [Monex.Effect.right(1), Monex.Effect.left("Error 1"), Monex.Effect.left("Error 2")]
       iex> result = Monex.Effect.sequence_a(effects)
       iex> Monex.Effect.run(result)
-      %Monex.Either.Left{value: ["Error 1", "Error 2"]}
+      %Monex.Either.Left{left: ["Error 1", "Error 2"]}
   """
   @spec sequence_a([t(error, value)]) :: t([error], [value])
         when error: term(), value: term()
@@ -254,20 +254,20 @@ defmodule Monex.Effect do
             %Left{effect: effect}
         end
 
-      %Either.Left{value: error} ->
+      %Either.Left{left: error} ->
         sequence_a(tail)
         |> case do
           %Right{} ->
             %Left{
               effect: fn ->
-                Task.async(fn -> %Either.Left{value: [error]} end)
+                Task.async(fn -> %Either.Left{left: [error]} end)
               end
             }
 
           %Left{effect: effect} ->
             %Left{
               effect: fn ->
-                Task.async(fn -> %Either.Left{value: [error | Task.await(effect.()).value]} end)
+                Task.async(fn -> %Either.Left{left: [error | Task.await(effect.()).left]} end)
               end
             }
         end
@@ -294,11 +294,11 @@ defmodule Monex.Effect do
 
         iex> result = Monex.Effect.validate(3, validators)
         iex> Monex.Effect.run(result)
-        %Monex.Either.Left{value: ["Value must be even"]}
+        %Monex.Either.Left{left: ["Value must be even"]}
 
         iex> result = Monex.Effect.validate(-3, validators)
         iex> Monex.Effect.run(result)
-        %Monex.Either.Left{value: ["Value must be positive", "Value must be even"]}
+        %Monex.Either.Left{left: ["Value must be positive", "Value must be even"]}
   """
 
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
@@ -320,7 +320,7 @@ defmodule Monex.Effect do
         %Left{
           effect: fn ->
             Task.async(fn ->
-              %Either.Left{value: Task.await(effect.()).value}
+              %Either.Left{left: Task.await(effect.()).left}
             end)
           end
         }
@@ -339,7 +339,7 @@ defmodule Monex.Effect do
       %Left{effect: effect} ->
         %Left{
           effect: fn ->
-            Task.async(fn -> %Either.Left{value: [Task.await(effect.()).value]} end)
+            Task.async(fn -> %Either.Left{left: [Task.await(effect.()).left]} end)
           end
         }
     end
@@ -356,7 +356,7 @@ defmodule Monex.Effect do
 
       iex> result = Monex.Effect.from_result({:error, "error"})
       iex> Monex.Effect.run(result)
-      %Monex.Either.Left{value: "error"}
+      %Monex.Either.Left{left: "error"}
   """
   @spec from_result({:ok, right} | {:error, left}) :: t(left, right)
         when left: term(), right: term()
@@ -381,7 +381,7 @@ defmodule Monex.Effect do
   def to_result(effect) do
     case run(effect) do
       %Either.Right{value: value} -> {:ok, value}
-      %Either.Left{value: reason} -> {:error, reason}
+      %Either.Left{left: reason} -> {:error, reason}
     end
   end
 
@@ -396,7 +396,7 @@ defmodule Monex.Effect do
 
       iex> result = Monex.Effect.from_try(fn -> raise "error" end)
       iex> Monex.Effect.run(result)
-      %Monex.Either.Left{value: %RuntimeError{message: "error"}}
+      %Monex.Either.Left{left: %RuntimeError{message: "error"}}
   """
   @spec from_try((-> right)) :: t(Exception.t(), right) when right: term()
   def from_try(func) do
@@ -427,7 +427,7 @@ defmodule Monex.Effect do
   def to_try!(effect) do
     case run(effect) do
       %Either.Right{value: value} -> value
-      %Either.Left{value: reason} -> raise reason
+      %Either.Left{left: reason} -> raise reason
     end
   end
 end

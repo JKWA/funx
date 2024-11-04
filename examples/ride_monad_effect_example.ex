@@ -52,7 +52,7 @@ defmodule Examples.RideEffectMonad do
       iex> task = Examples.RideEffectMonad.register_patron("Shorty", 140, 1)
       iex> task = Examples.RideEffectMonad.check_valid_height(task)
       iex> Monex.Effect.run(task)
-      %Monex.Either.Left{value: "Patron's height is not valid"}
+      %Monex.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec check_valid_height(effect_t()) :: effect_t()
@@ -83,7 +83,7 @@ defmodule Examples.RideEffectMonad do
       iex> task = Examples.RideEffectMonad.register_patron("Ticketless", 180, 0)
       iex> task = Examples.RideEffectMonad.check_ticket_availability(task)
       iex> Monex.Effect.run(task)
-      %Monex.Either.Left{value: "Patron is out of tickets"}
+      %Monex.Either.Left{left: "Patron is out of tickets"}
 
   """
   @spec check_ticket_availability(effect_t()) :: effect_t()
@@ -114,7 +114,7 @@ defmodule Examples.RideEffectMonad do
       iex> task = Examples.RideEffectMonad.register_patron("Shorty", 140, 2)
       iex> task = Examples.RideEffectMonad.take_ride(task)
       iex> Monex.Effect.run(task)
-      %Monex.Either.Left{value: "Patron's height is not valid"}
+      %Monex.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec take_ride(effect_t()) :: effect_t()

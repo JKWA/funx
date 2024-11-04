@@ -120,7 +120,7 @@ defmodule Basic.Map do
       %Monex.Either.Right{value: 5}
 
       iex> Basic.Map.add_two_either("Oops, error")
-      %Monex.Either.Left{value: "Oops, error"}
+      %Monex.Either.Left{left: "Oops, error"}
   """
   @spec add_two_either(integer() | String.t()) :: Either.t(String.t(), integer())
   def add_two_either(value) when is_integer(value) do

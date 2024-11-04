@@ -122,7 +122,7 @@ defmodule Basic.Bind do
       %Monex.Either.Right{value: 4}
 
       iex> Basic.Bind.add_one_either(nil)
-      %Monex.Either.Left{value: "Value must not be nil"}
+      %Monex.Either.Left{left: "Value must not be nil"}
   """
   def add_one_either(value) when is_integer(value) or is_nil(value) do
     value
@@ -141,7 +141,7 @@ defmodule Basic.Bind do
       %Monex.Either.Right{value: 5}
 
       iex> Basic.Bind.add_two_either(nil)
-      %Monex.Either.Left{value: "Value must not be nil"}
+      %Monex.Either.Left{left: "Value must not be nil"}
   """
   @spec add_two_either(integer() | nil) :: Either.t(String.t(), integer())
   def add_two_either(value) when is_integer(value) or is_nil(value) do

@@ -156,7 +156,7 @@ defmodule EffectTest do
     end
 
     test "wraps an Either.Left into a Effect.Left" do
-      either = %Either.Left{value: "error"}
+      either = %Either.Left{left: "error"}
 
       result =
         lift_either(either)
@@ -464,7 +464,7 @@ defmodule EffectTest do
     test "converts a raised exception into Effect.Left" do
       result = from_try(fn -> raise "error" end)
 
-      assert run(result) == %Either.Left{value: %RuntimeError{message: "error"}}
+      assert run(result) == %Either.Left{left: %RuntimeError{message: "error"}}
     end
   end
 

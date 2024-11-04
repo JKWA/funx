@@ -51,7 +51,7 @@ defmodule Examples.RideValidationMonad do
 
       iex> patron = Examples.RideValidationMonad.register_patron("Shorty", 140, 1)
       iex> Examples.RideValidationMonad.check_valid_height(patron)
-      %Monex.Either.Left{value: "Patron's height is not valid"}
+      %Monex.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec check_valid_height(Patron.t()) :: either_t
@@ -71,7 +71,7 @@ defmodule Examples.RideValidationMonad do
 
       iex> patron = Examples.RideValidationMonad.register_patron("Ticketless", 180, 0)
       iex> Examples.RideValidationMonad.check_ticket_availability(patron)
-      %Monex.Either.Left{value: "Patron is out of tickets"}
+      %Monex.Either.Left{left: "Patron is out of tickets"}
 
   """
   @spec check_ticket_availability(Patron.t()) :: either_t
@@ -94,7 +94,7 @@ defmodule Examples.RideValidationMonad do
 
       iex> patron = Examples.RideValidationMonad.register_patron("Shorty", 140, 1)
       iex> Examples.RideValidationMonad.validate_patron(patron)
-      %Monex.Either.Left{value: "Patron's height is not valid"}
+      %Monex.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec validate_patron(Patron.t()) :: either_t
@@ -114,7 +114,7 @@ defmodule Examples.RideValidationMonad do
 
       iex> patron = Examples.RideValidationMonad.register_patron("Shorty", 140, 2)
       iex> Examples.RideValidationMonad.take_ride(patron)
-      %Monex.Either.Left{value: "Patron's height is not valid"}
+      %Monex.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec take_ride(either_t) :: either_t

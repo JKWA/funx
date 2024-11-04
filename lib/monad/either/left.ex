@@ -10,10 +10,10 @@ defmodule Monex.Either.Left do
 
   The `Left` monad propagates the wrapped error through operations without executing the success logic.
   """
-  @enforce_keys [:value]
-  defstruct [:value]
+  @enforce_keys [:left]
+  defstruct [:left]
 
-  @type t(value) :: %__MODULE__{value: value}
+  @type t(value) :: %__MODULE__{left: value}
 
   @doc """
   Creates a new `Left` value.
@@ -23,16 +23,16 @@ defmodule Monex.Either.Left do
   ## Examples
 
       iex> Monex.Either.Left.pure("error")
-      %Monex.Either.Left{value: "error"}
+      %Monex.Either.Left{left: "error"}
   """
   @spec pure(value) :: t(value) when value: term()
-  def pure(value), do: %__MODULE__{value: value}
+  def pure(value), do: %__MODULE__{left: value}
 end
 
 defimpl String.Chars, for: Monex.Either.Left do
   alias Monex.Either.Left
 
-  def to_string(%Left{value: value}), do: "Left(#{value})"
+  def to_string(%Left{left: left}), do: "Left(#{left})"
 end
 
 defimpl Monex.Monad, for: Monex.Either.Left do
@@ -58,12 +58,12 @@ end
 defimpl Monex.Foldable, for: Monex.Either.Left do
   alias Monex.Either.Left
 
-  def fold_l(%Left{value: value}, _right_func, left_func) do
-    left_func.(value)
+  def fold_l(%Left{left: left}, _right_func, left_func) do
+    left_func.(left)
   end
 
-  def fold_r(%Left{value: value}, _right_func, left_func) do
-    left_func.(value)
+  def fold_r(%Left{left: left}, _right_func, left_func) do
+    left_func.(left)
   end
 end
 
@@ -71,7 +71,7 @@ defimpl Monex.Eq, for: Monex.Either.Left do
   alias Monex.Either.{Left, Right}
   alias Monex.Eq
 
-  def eq?(%Left{value: v1}, %Left{value: v2}), do: Eq.eq?(v1, v2)
+  def eq?(%Left{left: v1}, %Left{left: v2}), do: Eq.eq?(v1, v2)
   def eq?(%Left{}, %Right{}), do: false
 end
 
@@ -79,7 +79,7 @@ defimpl Monex.Ord, for: Monex.Either.Left do
   alias Monex.Either.{Left, Right}
   alias Monex.Ord
 
-  def lt?(%Left{value: v1}, %Left{value: v2}), do: Ord.lt?(v1, v2)
+  def lt?(%Left{left: v1}, %Left{left: v2}), do: Ord.lt?(v1, v2)
   def lt?(%Left{}, %Right{}), do: true
   def le?(a, b), do: not Monex.Ord.gt?(a, b)
   def gt?(a, b), do: Monex.Ord.lt?(b, a)

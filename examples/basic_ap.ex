@@ -108,7 +108,7 @@ defmodule Basic.Ap do
       %Monex.Either.Right{value: #Function<...>}
 
       iex> Basic.Ap.get_wind_adjustment_either(nil)
-      %Monex.Either.Left{value: "Wind speed not available"}
+      %Monex.Either.Left{left: "Wind speed not available"}
   """
   @spec get_wind_adjustment_either(integer() | nil) ::
           Either.t(String.t(), (integer() -> integer()))
@@ -127,10 +127,10 @@ defmodule Basic.Ap do
       %Monex.Either.Right{value: 90}
 
       iex> Basic.Ap.get_wind_adjustment_either(nil) |> Basic.Ap.calculate_adjusted_airspeed_either(100)
-      %Monex.Either.Left{value: "Wind speed not available"}
+      %Monex.Either.Left{left: "Wind speed not available"}
 
       iex> Basic.Ap.get_wind_adjustment_either(10) |> Basic.Ap.calculate_adjusted_airspeed_either(nil)
-      %Monex.Either.Left{value: "Air speed not available"}
+      %Monex.Either.Left{left: "Air speed not available"}
   """
   @spec calculate_adjusted_airspeed_either(
           Either.t(String.t(), (integer() -> integer())),

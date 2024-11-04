@@ -28,7 +28,7 @@ defmodule Examples.RideMonadReader do
       # Running the validation with the adult ride configuration
       alice_ride |> Monex.Reader.run(adult_config)
       # Expected Output:
-      # %Monex.Either.Left{value: ["Patron's height is not valid for this ride"]}
+      # %Monex.Either.Left{left: ["Patron's height is not valid for this ride"]}
   """
 
   import Monex.Monad, only: [map: 2]
