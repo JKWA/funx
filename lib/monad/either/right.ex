@@ -28,43 +28,43 @@ defmodule Monex.Either.Right do
   """
   @spec pure(value) :: t(value) when value: term()
   def pure(value), do: %__MODULE__{value: value}
+end
 
-  defimpl Monex.Monad do
-    alias Monex.Either.{Left, Right}
+defimpl String.Chars, for: Monex.Either.Right do
+  alias Monex.Either.Right
 
-    @spec ap(Right.t((value -> result)), Right.t(value)) :: Right.t(result)
-          when value: term(), result: term()
-    def ap(%Right{value: func}, %Right{value: value}), do: Right.pure(func.(value))
+  def to_string(%Right{value: value}), do: "Right(#{value})"
+end
 
-    @spec ap(term(), Left.t(value)) :: Left.t(value)
-          when value: term()
-    def ap(_, %Left{} = left), do: left
+defimpl Monex.Monad, for: Monex.Either.Right do
+  alias Monex.Either.{Left, Right}
 
-    @spec bind(Right.t(value), (value -> Right.t(result))) :: Right.t(result)
-          when value: term(), result: term()
-    def bind(%Right{value: value}, func), do: func.(value)
+  @spec ap(Right.t((value -> result)), Right.t(value)) :: Right.t(result)
+        when value: term(), result: term()
+  def ap(%Right{value: func}, %Right{value: value}), do: Right.pure(func.(value))
 
-    @spec map(Right.t(value), (value -> result)) :: Right.t(result)
-          when value: term(), result: term()
-    def map(%Right{value: value}, func), do: Right.pure(func.(value))
+  @spec ap(term(), Left.t(value)) :: Left.t(value)
+        when value: term()
+  def ap(_, %Left{} = left), do: left
+
+  @spec bind(Right.t(value), (value -> Right.t(result))) :: Right.t(result)
+        when value: term(), result: term()
+  def bind(%Right{value: value}, func), do: func.(value)
+
+  @spec map(Right.t(value), (value -> result)) :: Right.t(result)
+        when value: term(), result: term()
+  def map(%Right{value: value}, func), do: Right.pure(func.(value))
+end
+
+defimpl Monex.Foldable, for: Monex.Either.Right do
+  alias Monex.Either.Right
+
+  def fold_l(%Right{value: value}, right_func, _left_func) do
+    right_func.(value)
   end
 
-  defimpl String.Chars do
-    alias Monex.Either.Right
-
-    def to_string(%Right{value: value}), do: "Right(#{value})"
-  end
-
-  defimpl Monex.Foldable do
-    alias Monex.Either.Right
-
-    def fold_l(%Right{value: value}, right_func, _left_func) do
-      right_func.(value)
-    end
-
-    def fold_r(%Right{value: value}, right_func, _left_func) do
-      right_func.(value)
-    end
+  def fold_r(%Right{value: value}, right_func, _left_func) do
+    right_func.(value)
   end
 end
 

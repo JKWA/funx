@@ -27,44 +27,44 @@ defmodule Monex.Either.Left do
   """
   @spec pure(value) :: t(value) when value: term()
   def pure(value), do: %__MODULE__{value: value}
-
-  defimpl Monex.Monad do
-    alias Monex.Either.Left
-
-    @spec ap(Left.t(value), Left.t(value)) :: Left.t(value)
-          when value: term()
-    def ap(%Left{} = left, _), do: left
-
-    @spec ap(Left.t(value), term()) :: Left.t(value)
-          when value: term()
-    def ap(_, %Left{} = left), do: left
-
-    @spec bind(Left.t(value), (term() -> Left.t(result))) :: Left.t(value)
-          when value: term(), result: term()
-    def bind(%Left{} = left, _func), do: left
-
-    @spec map(Left.t(value), (term() -> term())) :: Left.t(value)
-          when value: term()
-    def map(%Left{} = left, _func), do: left
-  end
-
-  defimpl Monex.Foldable do
-    alias Monex.Either.Left
-
-    def fold_l(%Left{value: value}, _right_func, left_func) do
-      left_func.(value)
-    end
-
-    def fold_r(%Left{value: value}, _right_func, left_func) do
-      left_func.(value)
-    end
-  end
 end
 
 defimpl String.Chars, for: Monex.Either.Left do
   alias Monex.Either.Left
 
   def to_string(%Left{value: value}), do: "Left(#{value})"
+end
+
+defimpl Monex.Monad, for: Monex.Either.Left do
+  alias Monex.Either.Left
+
+  @spec ap(Left.t(value), Left.t(value)) :: Left.t(value)
+        when value: term()
+  def ap(%Left{} = left, _), do: left
+
+  @spec ap(Left.t(value), term()) :: Left.t(value)
+        when value: term()
+  def ap(_, %Left{} = left), do: left
+
+  @spec bind(Left.t(value), (term() -> Left.t(result))) :: Left.t(value)
+        when value: term(), result: term()
+  def bind(%Left{} = left, _func), do: left
+
+  @spec map(Left.t(value), (term() -> term())) :: Left.t(value)
+        when value: term()
+  def map(%Left{} = left, _func), do: left
+end
+
+defimpl Monex.Foldable, for: Monex.Either.Left do
+  alias Monex.Either.Left
+
+  def fold_l(%Left{value: value}, _right_func, left_func) do
+    left_func.(value)
+  end
+
+  def fold_r(%Left{value: value}, _right_func, left_func) do
+    left_func.(value)
+  end
 end
 
 defimpl Monex.Eq, for: Monex.Either.Left do

@@ -25,36 +25,36 @@ defmodule Monex.Maybe.Nothing do
   """
   @spec pure() :: t()
   def pure, do: %__MODULE__{}
+end
 
-  defimpl Monex.Monad, for: Monex.Maybe.Nothing do
-    alias Monex.Maybe.Nothing
+defimpl String.Chars, for: Monex.Maybe.Nothing do
+  alias Monex.Maybe.Nothing
 
-    @spec bind(Nothing.t(), (term() -> Nothing.t())) :: Nothing.t()
-    def bind(%Nothing{}, _func), do: %Nothing{}
+  def to_string(%Nothing{}), do: "Nothing"
+end
 
-    @spec map(Nothing.t(), (term() -> term())) :: Nothing.t()
-    def map(%Nothing{}, _func), do: %Nothing{}
+defimpl Monex.Monad, for: Monex.Maybe.Nothing do
+  alias Monex.Maybe.Nothing
 
-    @spec ap(Nothing.t(), Nothing.t()) :: Nothing.t()
-    def ap(%Nothing{}, _func), do: %Nothing{}
+  @spec bind(Nothing.t(), (term() -> Nothing.t())) :: Nothing.t()
+  def bind(%Nothing{}, _func), do: %Nothing{}
+
+  @spec map(Nothing.t(), (term() -> term())) :: Nothing.t()
+  def map(%Nothing{}, _func), do: %Nothing{}
+
+  @spec ap(Nothing.t(), Nothing.t()) :: Nothing.t()
+  def ap(%Nothing{}, _func), do: %Nothing{}
+end
+
+defimpl Monex.Foldable, for: Monex.Maybe.Nothing do
+  alias Monex.Maybe.Nothing
+
+  def fold_l(%Nothing{}, _just_func, nothing_func) do
+    nothing_func.()
   end
 
-  defimpl String.Chars do
-    alias Monex.Maybe.Nothing
-
-    def to_string(%Nothing{}), do: "Nothing"
-  end
-
-  defimpl Monex.Foldable do
-    alias Monex.Maybe.Nothing
-
-    def fold_l(%Nothing{}, _just_func, nothing_func) do
-      nothing_func.()
-    end
-
-    def fold_r(%Nothing{}, _just_func, nothing_func) do
-      nothing_func.()
-    end
+  def fold_r(%Nothing{}, _just_func, nothing_func) do
+    nothing_func.()
   end
 end
 
