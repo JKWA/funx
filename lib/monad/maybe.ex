@@ -236,7 +236,7 @@ defmodule Monex.Maybe do
   """
   def lift_either(either) do
     case either do
-      %Right{value: value} -> just(value)
+      %Right{right: value} -> just(value)
       %Left{} -> nothing()
     end
   end

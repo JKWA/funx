@@ -146,7 +146,7 @@ defmodule EffectTest do
 
   describe "lift_either/1" do
     test "wraps an Either.Right into a Effect.Right" do
-      either = %Either.Right{value: 42}
+      either = %Either.Right{right: 42}
 
       result =
         lift_either(either)
@@ -458,7 +458,7 @@ defmodule EffectTest do
     test "converts a successful function into Effect.Right" do
       result = from_try(fn -> 42 end)
 
-      assert run(result) == %Either.Right{value: 42}
+      assert run(result) == %Either.Right{right: 42}
     end
 
     test "converts a raised exception into Effect.Left" do

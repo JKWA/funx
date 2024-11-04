@@ -11,7 +11,7 @@ defmodule Monex.Effect.Right do
   @enforce_keys [:effect]
   defstruct [:effect]
 
-  @type t(right) :: %__MODULE__{effect: (-> Task.t(%Monex.Either.Right{value: right}))}
+  @type t(right) :: %__MODULE__{effect: (-> Task.t(%Monex.Either.Right{right: right}))}
 
   @doc """
   Creates a new `Right` effect.
@@ -28,7 +28,7 @@ defmodule Monex.Effect.Right do
   @spec pure(right) :: t(right) when right: term()
   def pure(value) do
     %__MODULE__{
-      effect: fn -> Task.async(fn -> %Monex.Either.Right{value: value} end) end
+      effect: fn -> Task.async(fn -> %Monex.Either.Right{right: value} end) end
     }
   end
 end
@@ -45,9 +45,9 @@ defimpl Monex.Monad, for: Monex.Effect.Right do
     %Right{
       effect: fn ->
         Task.async(fn ->
-          %Either.Right{value: func} = Task.await(effect_func.())
-          %Either.Right{value: value} = Task.await(effect_value.())
-          %Either.Right{value: func.(value)}
+          %Either.Right{right: func} = Task.await(effect_func.())
+          %Either.Right{right: value} = Task.await(effect_value.())
+          %Either.Right{right: func.(value)}
         end)
       end
     }
@@ -63,7 +63,7 @@ defimpl Monex.Monad, for: Monex.Effect.Right do
       effect: fn ->
         Task.async(fn ->
           case Task.await(effect.()) do
-            %Monex.Either.Right{value: value} ->
+            %Monex.Either.Right{right: value} ->
               case binder.(value) do
                 %Right{effect: next_effect} -> Task.await(next_effect.())
                 %Left{effect: next_effect} -> Task.await(next_effect.())
@@ -84,8 +84,8 @@ defimpl Monex.Monad, for: Monex.Effect.Right do
       effect: fn ->
         Task.async(fn ->
           case Task.await(effect.()) do
-            %Either.Right{value: value} ->
-              %Either.Right{value: mapper.(value)}
+            %Either.Right{right: value} ->
+              %Either.Right{right: mapper.(value)}
 
             %Either.Left{left: error} ->
               %Either.Left{left: error}

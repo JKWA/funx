@@ -11,13 +11,13 @@ defmodule Monex.EitherTest do
 
   describe "pure/1" do
     test "wraps a value in a Right monad" do
-      assert %Right{value: 42} = pure(42)
+      assert %Right{right: 42} = pure(42)
     end
   end
 
   describe "right/1" do
     test "wraps a value in a Right monad" do
-      assert %Right{value: 42} = right(42)
+      assert %Right{right: 42} = right(42)
     end
   end
 
@@ -29,7 +29,7 @@ defmodule Monex.EitherTest do
 
   describe "map/2" do
     test "applies a function to the value inside a Right monad" do
-      assert %Right{value: 43} =
+      assert %Right{right: 43} =
                right(42)
                |> map(&(&1 + 1))
     end
@@ -43,7 +43,7 @@ defmodule Monex.EitherTest do
 
   describe "bind/2" do
     test "applies a function returning a monad to the value inside a Right monad" do
-      assert %Right{value: 21} =
+      assert %Right{right: 21} =
                right(42)
                |> bind(fn x -> right(div(x, 2)) end)
     end
@@ -489,7 +489,7 @@ defmodule Monex.EitherTest do
     test "converts a successful function into Right" do
       result = from_try(fn -> 42 end)
 
-      assert result == %Right{value: 42}
+      assert result == %Right{right: 42}
     end
 
     test "converts a raised exception into Left" do
@@ -501,7 +501,7 @@ defmodule Monex.EitherTest do
 
   describe "to_try!/1" do
     test "returns value from Right" do
-      right_result = %Right{value: 42}
+      right_result = %Right{right: 42}
 
       assert to_try!(right_result) == 42
     end

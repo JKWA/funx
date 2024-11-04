@@ -117,7 +117,7 @@ defmodule Basic.Map do
   ## Examples
 
       iex> Basic.Map.add_two_either(3)
-      %Monex.Either.Right{value: 5}
+      %Monex.Either.Right{right: 5}
 
       iex> Basic.Map.add_two_either("Oops, error")
       %Monex.Either.Left{left: "Oops, error"}

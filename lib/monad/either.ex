@@ -51,7 +51,7 @@ defmodule Monex.Either do
   ## Examples
 
       iex> Monex.Either.right(5)
-      %Monex.Either.Right{value: 5}
+      %Monex.Either.Right{right: 5}
   """
   def right(value), do: Right.pure(value)
 
@@ -105,7 +105,7 @@ defmodule Monex.Either do
   ## Examples
 
       iex> Monex.Either.filter_or_else(Monex.Either.right(5), fn x -> x > 3 end, fn -> "error" end)
-      %Monex.Either.Right{value: 5}
+      %Monex.Either.Right{right: 5}
 
       iex> Monex.Either.filter_or_else(Monex.Either.right(2), fn x -> x > 3 end, fn -> "error" end)
       %Monex.Either.Left{left: "error"}
@@ -155,7 +155,7 @@ defmodule Monex.Either do
   def get_eq(custom_eq) do
     %{
       eq?: fn
-        %Right{value: v1}, %Right{value: v2} -> custom_eq.eq?.(v1, v2)
+        %Right{right: v1}, %Right{right: v2} -> custom_eq.eq?.(v1, v2)
         %Left{}, %Right{} -> false
         %Right{}, %Left{} -> false
         %Left{left: v1}, %Left{left: v2} -> Eq.eq?(v1, v2)
@@ -177,14 +177,14 @@ defmodule Monex.Either do
       lt?: fn
         %Left{}, %Right{} -> true
         %Right{}, %Left{} -> false
-        %Right{value: v1}, %Right{value: v2} -> custom_ord.lt?.(v1, v2)
+        %Right{right: v1}, %Right{right: v2} -> custom_ord.lt?.(v1, v2)
         %Left{}, %Left{} -> false
       end,
       le?: fn a, b -> not get_ord(custom_ord).gt?.(a, b) end,
       gt?: fn
         %Right{}, %Left{} -> true
         %Left{}, %Right{} -> false
-        %Right{value: v1}, %Right{value: v2} -> custom_ord.lt?.(v2, v1)
+        %Right{right: v1}, %Right{right: v2} -> custom_ord.lt?.(v2, v1)
         %Left{}, %Left{} -> false
       end,
       ge?: fn a, b -> not get_ord(custom_ord).lt?.(a, b) end
@@ -197,7 +197,7 @@ defmodule Monex.Either do
   ## Examples
 
       iex> Monex.Either.sequence([Monex.Either.right(1), Monex.Either.right(2)])
-      %Monex.Either.Right{value: [1, 2]}
+      %Monex.Either.Right{right: [1, 2]}
 
       iex> Monex.Either.sequence([Monex.Either.right(1), Monex.Either.left("error")])
       %Monex.Either.Left{left: "error"}
@@ -219,7 +219,7 @@ defmodule Monex.Either do
   ## Examples
 
       iex> Monex.Either.traverse(&Monex.Either.right/1, [1, 2, 3])
-      %Monex.Either.Right{value: [1, 2, 3]}
+      %Monex.Either.Right{right: [1, 2, 3]}
   """
   @spec traverse((a -> t(error, b)), [a]) :: t(error, [b])
         when error: term(), a: term(), b: term()
@@ -243,17 +243,17 @@ defmodule Monex.Either do
 
   def sequence_a([head | tail]) do
     case head do
-      %Right{value: value} ->
+      %Right{right: value} ->
         sequence_a(tail)
         |> case do
-          %Right{value: values} -> right([value | values])
+          %Right{right: values} -> right([value | values])
           %Left{left: errors} -> left(errors)
         end
 
       %Left{left: error} ->
         sequence_a(tail)
         |> case do
-          %Right{value: _values} -> left([error])
+          %Right{right: _values} -> left([error])
           %Left{left: errors} -> left([error | errors])
         end
     end
@@ -274,7 +274,7 @@ defmodule Monex.Either do
     ### Validate
 
         iex> Monex.Either.validate(4, validators)
-        %Monex.Either.Right{value: 4}
+        %Monex.Either.Right{right: 4}
 
         iex> Monex.Either.validate(3, validators)
         %Monex.Either.Left{left: ["Value must be even"]}
@@ -306,7 +306,7 @@ defmodule Monex.Either do
   ## Examples
 
       iex> Monex.Either.lift_maybe(Monex.Maybe.just(5), fn -> "error" end)
-      %Monex.Either.Right{value: 5}
+      %Monex.Either.Right{right: 5}
 
       iex> Monex.Either.lift_maybe(Monex.Maybe.nothing(), fn -> "error" end)
       %Monex.Either.Left{left: "error"}
@@ -325,7 +325,7 @@ defmodule Monex.Either do
   ## Examples
 
       iex> Monex.Either.lift_predicate(5, fn x -> x > 3 end, fn -> "too small" end)
-      %Monex.Either.Right{value: 5}
+      %Monex.Either.Right{right: 5}
 
       iex> Monex.Either.lift_predicate(2, fn x -> x > 3 end, fn -> "too small" end)
       %Monex.Either.Left{left: "too small"}
@@ -344,7 +344,7 @@ defmodule Monex.Either do
   ## Examples
 
       iex> Monex.Either.from_result({:ok, 5})
-      %Monex.Either.Right{value: 5}
+      %Monex.Either.Right{right: 5}
 
       iex> Monex.Either.from_result({:error, "error"})
       %Monex.Either.Left{left: "error"}
@@ -369,7 +369,7 @@ defmodule Monex.Either do
         when left: term(), right: term()
   def to_result(either) do
     case either do
-      %Right{value: value} -> {:ok, value}
+      %Right{right: value} -> {:ok, value}
       %Left{left: reason} -> {:error, reason}
     end
   end
@@ -380,7 +380,7 @@ defmodule Monex.Either do
   ## Examples
 
       iex> Monex.Either.from_try(fn -> 5 end)
-      %Monex.Either.Right{value: 5}
+      %Monex.Either.Right{right: 5}
 
       iex> Monex.Either.from_try(fn -> raise "error" end)
       %Monex.Either.Left{left: %RuntimeError{message: "error"}}
@@ -411,7 +411,7 @@ defmodule Monex.Either do
         when left: term(), right: term()
   def to_try!(either) do
     case either do
-      %Right{value: value} ->
+      %Right{right: value} ->
         value
 
       %Left{left: reason} ->

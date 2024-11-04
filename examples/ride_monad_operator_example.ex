@@ -29,7 +29,7 @@ defmodule Examples.RideMonadOperator do
   ## Examples
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
-      %Monex.Either.Right{value: %Examples.Patron{name: "John", height: 170, tickets: 2}}
+      %Monex.Either.Right{right: %Examples.Patron{name: "John", height: 170, tickets: 2}}
 
   """
   @spec register_patron(String.t(), integer(), integer()) :: either_t()
@@ -45,7 +45,7 @@ defmodule Examples.RideMonadOperator do
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
       iex> Examples.RideMonadOperator.check_valid_height(patron)
-      %Monex.Either.Right{value: %Examples.Patron{...}}
+      %Monex.Either.Right{right: %Examples.Patron{...}}
 
       iex> patron = Examples.RideMonadOperator.register_patron("Shorty", 140, 1)
       iex> Examples.RideMonadOperator.check_valid_height(patron)
@@ -66,7 +66,7 @@ defmodule Examples.RideMonadOperator do
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
       iex> Examples.RideMonadOperator.check_ticket_availability(patron)
-      %Monex.Either.Right{value: %Examples.Patron{...}}
+      %Monex.Either.Right{right: %Examples.Patron{...}}
 
       iex> patron = Examples.RideMonadOperator.register_patron("Ticketless", 180, 0)
       iex> Examples.RideMonadOperator.check_ticket_availability(patron)
@@ -88,7 +88,7 @@ defmodule Examples.RideMonadOperator do
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
       iex> Examples.RideMonadOperator.take_ride(patron)
-      %Monex.Either.Right{value: %Examples.Patron{tickets: 1}}
+      %Monex.Either.Right{right: %Examples.Patron{tickets: 1}}
 
       iex> patron = Examples.RideMonadOperator.register_patron("Shorty", 140, 2)
       iex> Examples.RideMonadOperator.take_ride(patron)
@@ -110,7 +110,7 @@ defmodule Examples.RideMonadOperator do
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
       iex> Examples.RideMonadOperator.add_ticket(patron)
-      %Monex.Either.Right{value: %Examples.Patron{tickets: 3}}
+      %Monex.Either.Right{right: %Examples.Patron{tickets: 3}}
 
   """
   @spec add_ticket(either_t()) :: either_t()

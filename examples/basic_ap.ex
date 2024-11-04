@@ -105,7 +105,7 @@ defmodule Basic.Ap do
   ## Examples
 
       iex> Basic.Ap.get_wind_adjustment_either(10)
-      %Monex.Either.Right{value: #Function<...>}
+      %Monex.Either.Right{right: #Function<...>}
 
       iex> Basic.Ap.get_wind_adjustment_either(nil)
       %Monex.Either.Left{left: "Wind speed not available"}
@@ -124,7 +124,7 @@ defmodule Basic.Ap do
   ## Examples
 
       iex> Basic.Ap.get_wind_adjustment_either(10) |> Basic.Ap.calculate_adjusted_airspeed_either(100)
-      %Monex.Either.Right{value: 90}
+      %Monex.Either.Right{right: 90}
 
       iex> Basic.Ap.get_wind_adjustment_either(nil) |> Basic.Ap.calculate_adjusted_airspeed_either(100)
       %Monex.Either.Left{left: "Wind speed not available"}

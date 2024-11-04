@@ -119,7 +119,7 @@ defmodule Basic.Bind do
   ## Examples
 
       iex> Basic.Bind.add_one_either(3)
-      %Monex.Either.Right{value: 4}
+      %Monex.Either.Right{right: 4}
 
       iex> Basic.Bind.add_one_either(nil)
       %Monex.Either.Left{left: "Value must not be nil"}
@@ -138,7 +138,7 @@ defmodule Basic.Bind do
   ## Examples
 
       iex> Basic.Bind.add_two_either(3)
-      %Monex.Either.Right{value: 5}
+      %Monex.Either.Right{right: 5}
 
       iex> Basic.Bind.add_two_either(nil)
       %Monex.Either.Left{left: "Value must not be nil"}
