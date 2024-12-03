@@ -70,7 +70,7 @@ defmodule Example.User do
       iex> eq_age = Example.User.eq_age()
       iex> user1 = Example.User.create_user("Alice", "Smith", :user, 25)
       iex> user2 = Example.User.create_user("Bob", "Brown", :admin, 25)
-      iex> Monex.Eq.Utils.equal?(user1, user2, eq_age)
+      iex> Monex.Eq.Utils.eq?(user1, user2, eq_age)
       true
   """
   def eq_age do
@@ -108,7 +108,7 @@ defimpl Monex.Eq, for: Example.User do
 
       iex> user1 = Example.User.create_user("John", "Doe", :user)
       iex> user2 = Example.User.create_user("John", "Doe", :admin)
-      iex> Monex.Eq.Utils.equal?(user1, user2)
+      iex> Monex.Eq.Utils.eq?(user1, user2)
       true
   """
   def eq?(%Example.User{first_name: fn1, last_name: ln1}, %Example.User{
@@ -118,15 +118,11 @@ defimpl Monex.Eq, for: Example.User do
     fn1 == fn2 and ln1 == ln2
   end
 
-  def eq?(_, _), do: false
-
-  @doc """
-  Returns a default `Eq` implementation for equality comparison.
-
-  This is useful for comparing non-`User` types or using a generic equality check.
-  """
-  def get_eq(_inner_eq) do
-    %{eq?: fn a, b -> a == b end}
+  def not_eq?(%Example.User{first_name: fn1, last_name: ln1}, %Example.User{
+        first_name: fn2,
+        last_name: ln2
+      }) do
+    not (fn1 == fn2 and ln1 == ln2)
   end
 end
 

@@ -74,6 +74,9 @@ defimpl Monex.Eq, for: Monex.Either.Right do
 
   def eq?(%Right{right: v1}, %Right{right: v2}), do: Eq.eq?(v1, v2)
   def eq?(%Right{}, %Left{}), do: false
+
+  def not_eq?(%Right{right: v1}, %Right{right: v2}), do: not Eq.eq?(v1, v2)
+  def not_eq?(%Right{}, %Left{}), do: true
 end
 
 defimpl Monex.Ord, for: Monex.Either.Right do

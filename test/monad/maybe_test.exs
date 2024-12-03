@@ -245,6 +245,28 @@ defmodule Monex.MaybeTest do
     end
   end
 
+  describe "Eq.not_eq?/2" do
+    test "returns false for equal Just values" do
+      assert Eq.not_eq?(just(1), just(1)) == false
+    end
+
+    test "returns true for different Just values" do
+      assert Eq.not_eq?(just(1), just(2)) == true
+    end
+
+    test "returns false for two Nothing values" do
+      assert Eq.not_eq?(nothing(), nothing()) == false
+    end
+
+    test "returns true for Just and Nothing comparison" do
+      assert Eq.not_eq?(just(1), nothing()) == true
+    end
+
+    test "returns true for Nothing and Just comparison" do
+      assert Eq.not_eq?(nothing(), just(1)) == true
+    end
+  end
+
   describe "get_eq/1" do
     setup do
       number_eq = %{eq?: &Kernel.==/2}

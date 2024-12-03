@@ -15,11 +15,20 @@ defmodule Monex.Eq.UtilsTest do
     end
   end
 
-  describe "equal?/3" do
+  describe "contramap/2 with not_eq?/2" do
+    test "applies the function before comparing values using not_eq?" do
+      eq_by_length = Utils.contramap(&String.length/1)
+
+      assert eq_by_length.not_eq?.("short_a", "short_b") == false
+      assert eq_by_length.not_eq?.("short", "longer") == true
+    end
+  end
+
+  describe "eq?/3" do
     test "uses the default Eq module to check equality" do
       # Assuming `Eq` defaults to simple equality comparison
-      assert Utils.equal?(1, 1) == true
-      assert Utils.equal?(1, 2) == false
+      assert Utils.eq?(1, 1) == true
+      assert Utils.eq?(1, 2) == false
     end
 
     test "uses a custom module for equality check" do
@@ -27,8 +36,8 @@ defmodule Monex.Eq.UtilsTest do
         def eq?(a, b), do: a === b
       end
 
-      assert Utils.equal?(1, 1, MockEq) == true
-      assert Utils.equal?(1, 2, MockEq) == false
+      assert Utils.eq?(1, 1, MockEq) == true
+      assert Utils.eq?(1, 2, MockEq) == false
     end
 
     test "uses a custom map with an eq? function for equality check" do
@@ -36,8 +45,8 @@ defmodule Monex.Eq.UtilsTest do
         eq?: fn a, b -> String.downcase(a) == String.downcase(b) end
       }
 
-      assert Utils.equal?("Alice", "ALICE", custom_eq) == true
-      assert Utils.equal?("Alice", "Bob", custom_eq) == false
+      assert Utils.eq?("Alice", "ALICE", custom_eq) == true
+      assert Utils.eq?("Alice", "Bob", custom_eq) == false
     end
   end
 
@@ -86,7 +95,8 @@ defmodule Monex.Eq.UtilsTest do
 
   def custom_eq do
     %{
-      eq?: fn a, b -> a.name == b.name and a.age == b.age end
+      eq?: fn a, b -> a.name == b.name and a.age == b.age end,
+      not_eq?: fn a, b -> not (a.name == b.name and a.age == b.age) end
     }
   end
 
@@ -100,6 +110,19 @@ defmodule Monex.Eq.UtilsTest do
 
       assert eq_with_custom[:eq?].(person1, person2) == true
       assert eq_with_custom[:eq?].(person1, person3) == false
+    end
+  end
+
+  describe "contramap/2 with custom Eq and not_eq?" do
+    test "applies the function before comparing full maps with custom not_eq?" do
+      eq_with_custom = Utils.contramap(& &1, custom_eq())
+
+      person1 = %{name: "Alice", age: 30}
+      person2 = %{name: "Alice", age: 30}
+      person3 = %{name: "Alice", age: 25}
+
+      assert eq_with_custom[:not_eq?].(person1, person2) == false
+      assert eq_with_custom[:not_eq?].(person1, person3) == true
     end
   end
 

@@ -138,6 +138,8 @@ defimpl Monex.Eq, for: Monex.Identity do
   alias Monex.Eq
 
   def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.eq?(v1, v2)
+
+  def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: not Eq.eq?(v1, v2)
 end
 
 defimpl Monex.Ord, for: Monex.Identity do

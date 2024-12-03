@@ -85,6 +85,9 @@ defimpl Monex.Eq, for: Monex.Maybe.Just do
 
   def eq?(%Just{value: v1}, %Just{value: v2}), do: Eq.eq?(v1, v2)
   def eq?(%Just{}, %Nothing{}), do: false
+
+  def not_eq?(%Just{value: v1}, %Just{value: v2}), do: not Eq.eq?(v1, v2)
+  def not_eq?(%Just{}, %Nothing{}), do: true
 end
 
 defimpl Monex.Ord, for: Monex.Maybe.Just do

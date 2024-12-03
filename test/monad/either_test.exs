@@ -318,6 +318,28 @@ defmodule Monex.EitherTest do
     end
   end
 
+  describe "Eq.not_eq?/2" do
+    test "returns false for equal Right values" do
+      assert Eq.not_eq?(right(1), right(1)) == false
+    end
+
+    test "returns true for different Right values" do
+      assert Eq.not_eq?(right(1), right(2)) == true
+    end
+
+    test "returns false for two equal Left values" do
+      assert Eq.not_eq?(left(1), left(1)) == false
+    end
+
+    test "returns true for Right and Left comparison" do
+      assert Eq.not_eq?(right(1), left(1)) == true
+    end
+
+    test "returns true for Left and Right comparison" do
+      assert Eq.not_eq?(left(1), right(1)) == true
+    end
+  end
+
   describe "get_eq/1" do
     setup do
       number_eq = %{eq?: &Kernel.==/2}
