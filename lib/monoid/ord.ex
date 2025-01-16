@@ -1,3 +1,5 @@
+# credo:disable-for-this-file
+
 defmodule Monex.Monoid.Ord do
   @moduledoc """
   A monoid implementation for ordering logic (Ord).
