@@ -5,6 +5,7 @@ defmodule Monex.Ord.Utils do
   or implement the `Monex.Ord` protocol.
   """
 
+  alias Monex.Monoid
   alias Monex.Ord
 
   @doc """
@@ -149,5 +150,23 @@ defmodule Monex.Ord.Utils do
   @spec comparator(module() | map()) :: (any(), any() -> boolean())
   def comparator(ord_module) do
     fn a, b -> compare(a, b, ord_module) != :gt end
+  end
+
+  @doc """
+  Combines two `Ord` comparators into a single composite comparator.
+
+  The resulting `Ord` comparator applies the logic of the first comparator and
+  uses the second as a fallback when the first is inconclusive.
+
+  """
+
+  @spec combine(Ord.t(), Ord.t()) :: Ord.t()
+  @spec combine([Ord.t()]) :: Ord.t()
+  def combine(ord1, ord2) do
+    Monoid.Utils.concat(%Monoid.Ord{}, ord1, ord2)
+  end
+
+  def combine(order_list) when is_list(order_list) do
+    Monoid.Utils.concat(%Monoid.Ord{}, order_list)
   end
 end

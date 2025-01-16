@@ -217,4 +217,71 @@ defmodule Monex.Ord.UtilsTest do
       assert comparator(Any).(10, 10)
     end
   end
+
+  describe "combine/2 and combine/1" do
+    alias Monex.Monoid.Ord
+
+    test "combines two Ord comparators" do
+      ord1 = %Ord{
+        lt?: fn a, b -> a < b end,
+        gt?: fn a, b -> a > b end,
+        le?: fn a, b -> a <= b end,
+        ge?: fn a, b -> a >= b end
+      }
+
+      ord2 = %Ord{
+        lt?: fn a, b -> String.length(a) < String.length(b) end,
+        gt?: fn a, b -> String.length(a) > String.length(b) end,
+        le?: fn a, b -> String.length(a) <= String.length(b) end,
+        ge?: fn a, b -> String.length(a) >= String.length(b) end
+      }
+
+      combined = combine(ord1, ord2)
+
+      assert combined.lt?.("apple", "banana") == true
+      assert combined.lt?.("apple", "pear") == true
+
+      assert combined.gt?.("pear", "banana") == true
+      assert combined.gt?.("apple", "apple") == false
+    end
+
+    test "combines a list of Ord comparators" do
+      ord1 = %Ord{
+        lt?: fn a, b -> a < b end,
+        gt?: fn a, b -> a > b end,
+        le?: fn a, b -> a <= b end,
+        ge?: fn a, b -> a >= b end
+      }
+
+      ord2 = %Ord{
+        lt?: fn a, b -> String.length(a) < String.length(b) end,
+        gt?: fn a, b -> String.length(a) > String.length(b) end,
+        le?: fn a, b -> String.length(a) <= String.length(b) end,
+        ge?: fn a, b -> String.length(a) >= String.length(b) end
+      }
+
+      ord3 = %Ord{
+        lt?: fn a, b -> Enum.sum(String.to_charlist(a)) < Enum.sum(String.to_charlist(b)) end,
+        gt?: fn a, b -> Enum.sum(String.to_charlist(a)) > Enum.sum(String.to_charlist(b)) end,
+        le?: fn a, b -> Enum.sum(String.to_charlist(a)) <= Enum.sum(String.to_charlist(b)) end,
+        ge?: fn a, b -> Enum.sum(String.to_charlist(a)) >= Enum.sum(String.to_charlist(b)) end
+      }
+
+      combined = combine([ord1, ord2, ord3])
+
+      assert combined.lt?.("apple", "banana") == true
+      assert combined.gt?.("pear", "apple") == true
+      assert combined.le?.("apple", "apple") == true
+      assert combined.ge?.("banana", "apple") == true
+    end
+
+    test "combines an empty list of Ord comparators" do
+      combined = combine([])
+
+      assert combined.lt?.("apple", "banana") == true
+      assert combined.gt?.("pear", "apple") == true
+      assert combined.le?.("apple", "apple") == true
+      assert combined.ge?.("banana", "apple") == true
+    end
+  end
 end
