@@ -6,7 +6,7 @@ defmodule Monex.Math do
   such as addition and multiplication over values or lists of values.
   """
 
-  import Monex.Monoid.Utils, only: [concat: 2, concat: 3]
+  import Monex.Monoid.Utils, only: [append: 3, concat: 2]
   alias Monex.Monoid.{Product, Sum}
 
   @doc """
@@ -19,7 +19,7 @@ defmodule Monex.Math do
   """
   @spec sum(number(), number()) :: number()
   def sum(a, b) do
-    concat(%Sum{}, a, b)
+    append(%Sum{}, a, b)
   end
 
   @doc """
@@ -48,7 +48,7 @@ defmodule Monex.Math do
   """
   @spec product(number(), number()) :: number()
   def product(a, b) do
-    concat(%Product{}, a, b)
+    append(%Product{}, a, b)
   end
 
   @doc """

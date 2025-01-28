@@ -6,6 +6,7 @@ defmodule Monex.Eq.Utils do
   """
 
   alias Monex.Eq
+  alias Monex.Monoid
 
   @doc """
   Transforms an equality check by applying a function `f` to values before comparison.
@@ -46,18 +47,6 @@ defmodule Monex.Eq.Utils do
   def eq_by?(f, a, b), do: eq_by?(f, a, b, Eq)
 
   @doc """
-  Returns `true` if values are not equal, using a specified or default `Eq`.
-
-  The `eq` parameter can be an `Eq` module or a custom comparator map with an `:eq?` function.
-  """
-  def not_eq?(a, b, eq \\ Eq) do
-    case eq do
-      module when is_atom(module) -> not module.eq?(a, b)
-      %{} = custom_map -> not custom_map[:eq?].(a, b)
-    end
-  end
-
-  @doc """
   Returns true if two values are equal, using a specified or default `Eq`.
   """
   def eq?(a, b, module) when is_atom(module) do
@@ -69,6 +58,106 @@ defmodule Monex.Eq.Utils do
   end
 
   def eq?(a, b), do: eq?(a, b, Eq)
+
+  @doc """
+  Returns false if two values are not equal, using a specified or default `Eq`.
+  """
+  def not_eq?(a, b, module) when is_atom(module) do
+    module.not_eq?(a, b)
+  end
+
+  def not_eq?(a, b, %{} = custom_map) do
+    custom_map[:not_eq?].(a, b)
+  end
+
+  def not_eq?(a, b), do: not_eq?(a, b, Eq)
+
+  @doc """
+  Combines two equality comparators using the `Eq.All` monoid.
+
+  This function merges two equality comparisons, requiring **both** to return `true`
+  for the final result to be considered equal. This enforces a **strict** equality rule,
+  where all comparators must agree.
+
+  ## Examples
+
+      iex> eq1 = Monex.Eq.Utils.contramap(& &1.name)
+      iex> eq2 = Monex.Eq.Utils.contramap(& &1.age)
+      iex> combined = append_all(eq1, eq2)
+      iex> Monex.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
+      true
+      iex> Monex.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+      false
+
+  """
+  def append_all(a, b) do
+    Monoid.Utils.append(%Monoid.Eq.All{}, a, b)
+  end
+
+  @doc """
+  Combines two equality comparators using the `Eq.Any` monoid.
+
+  This function merges two equality comparisons, where **at least one**
+  must return `true` for the final result to be considered equal. This
+  allows for a **looser** equality rule where satisfying any comparator
+  is sufficient.
+
+  ## Examples
+
+      iex> eq1 = Monex.Eq.Utils.contramap(& &1.name)
+      iex> eq2 = Monex.Eq.Utils.contramap(& &1.age)
+      iex> combined = append_any(eq1, eq2)
+      iex> Monex.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+      true
+      iex> Monex.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
+      false
+
+  """
+  def append_any(a, b) do
+    Monoid.Utils.append(%Monoid.Eq.Any{}, a, b)
+  end
+
+  @doc """
+  Concatenates a list of equality comparators using the `Eq.All` monoid.
+
+  The resulting comparator requires **all** comparators in the list to agree
+  that two values are equal.
+
+  ## Examples
+
+      iex> eq1 = Monex.Eq.Utils.contramap(& &1.name)
+      iex> eq2 = Monex.Eq.Utils.contramap(& &1.age)
+      iex> combined = concat_all([eq1, eq2])
+      iex> Monex.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
+      true
+      iex> Monex.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+      false
+
+  """
+  def concat_all(eq_list) when is_list(eq_list) do
+    Monoid.Utils.concat(%Monoid.Eq.All{}, eq_list)
+  end
+
+  @doc """
+  Concatenates a list of equality comparators using the `Eq.Any` monoid.
+
+  The resulting comparator allows **any** comparator in the list to determine
+  equality, making it more permissive.
+
+  ## Examples
+
+      iex> eq1 = Monex.Eq.Utils.contramap(& &1.name)
+      iex> eq2 = Monex.Eq.Utils.contramap(& &1.age)
+      iex> combined = concat_any([eq1, eq2])
+      iex> Monex.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+      true
+      iex> Monex.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
+      false
+
+  """
+  def concat_any(eq_list) when is_list(eq_list) do
+    Monoid.Utils.concat(%Monoid.Eq.Any{}, eq_list)
+  end
 
   @doc """
   Converts an `Eq` comparator into a single-argument predicate function for use in `Enum` functions.

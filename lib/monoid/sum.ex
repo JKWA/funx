@@ -15,7 +15,7 @@ defimpl Monex.Monoid, for: Monex.Monoid.Sum do
   alias Monex.Monoid.Sum
 
   @spec empty(Sum.t()) :: Sum.t()
-  def empty(_), do: %Sum{value: 0}
+  def empty(_), do: %Sum{}
 
   @spec append(Sum.t(), Sum.t()) :: Sum.t()
   def append(%Sum{value: a}, %Sum{value: b}) do

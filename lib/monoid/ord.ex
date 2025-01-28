@@ -14,16 +14,15 @@ defmodule Monex.Monoid.Ord do
           ge?: (any(), any() -> boolean())
         }
 
-  defstruct lt?: &Monex.Monoid.Ord.default_val?/2,
-            le?: &Monex.Monoid.Ord.default_val?/2,
-            gt?: &Monex.Monoid.Ord.default_val?/2,
-            ge?: &Monex.Monoid.Ord.default_val?/2
+  defstruct lt?: &Monex.Monoid.Ord.default_lt?/2,
+            le?: &Monex.Monoid.Ord.default_le?/2,
+            gt?: &Monex.Monoid.Ord.default_gt?/2,
+            ge?: &Monex.Monoid.Ord.default_ge?/2
 
-  @doc """
-  A default comparison function that always returns `true`.
-  """
-  @spec default_val?(any(), any()) :: boolean()
-  def default_val?(_, _), do: true
+  def default_lt?(_, _), do: false
+  def default_le?(_, _), do: true
+  def default_gt?(_, _), do: false
+  def default_ge?(_, _), do: true
 end
 
 defimpl Monex.Monoid, for: Monex.Monoid.Ord do
@@ -31,12 +30,7 @@ defimpl Monex.Monoid, for: Monex.Monoid.Ord do
 
   @spec empty(any()) :: Ord.t()
   def empty(_) do
-    %Ord{
-      lt?: &Ord.default_val?/2,
-      le?: &Ord.default_val?/2,
-      gt?: &Ord.default_val?/2,
-      ge?: &Ord.default_val?/2
-    }
+    %Ord{}
   end
 
   @spec append(Ord.t(), Ord.t()) :: Ord.t()

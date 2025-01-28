@@ -8,6 +8,7 @@ defmodule Monex.Ord.UtilsTest do
 
   alias Monex.{Either, Identity, Maybe}
   alias Monex.Ord.Any
+  alias Monex.Test.Person
 
   describe "clamp/4" do
     test "returns the value if within the range" do
@@ -218,70 +219,61 @@ defmodule Monex.Ord.UtilsTest do
     end
   end
 
-  describe "combine/2 and combine/1" do
-    alias Monex.Monoid.Ord
-
-    test "combines two Ord comparators" do
-      ord1 = %Ord{
-        lt?: fn a, b -> a < b end,
-        gt?: fn a, b -> a > b end,
-        le?: fn a, b -> a <= b end,
-        ge?: fn a, b -> a >= b end
-      }
-
-      ord2 = %Ord{
-        lt?: fn a, b -> String.length(a) < String.length(b) end,
-        gt?: fn a, b -> String.length(a) > String.length(b) end,
-        le?: fn a, b -> String.length(a) <= String.length(b) end,
-        ge?: fn a, b -> String.length(a) >= String.length(b) end
-      }
-
-      combined = combine(ord1, ord2)
-
-      assert combined.lt?.("apple", "banana") == true
-      assert combined.lt?.("apple", "pear") == true
-
-      assert combined.gt?.("pear", "banana") == true
-      assert combined.gt?.("apple", "apple") == false
+  describe "to_eq/1" do
+    test "eq with identical values" do
+      assert to_eq().eq?.(:apple, :apple)
+      assert to_eq().eq?.(1, 1)
+      assert to_eq().eq?.("test", "test")
     end
 
-    test "combines a list of Ord comparators" do
-      ord1 = %Ord{
-        lt?: fn a, b -> a < b end,
-        gt?: fn a, b -> a > b end,
-        le?: fn a, b -> a <= b end,
-        ge?: fn a, b -> a >= b end
-      }
-
-      ord2 = %Ord{
-        lt?: fn a, b -> String.length(a) < String.length(b) end,
-        gt?: fn a, b -> String.length(a) > String.length(b) end,
-        le?: fn a, b -> String.length(a) <= String.length(b) end,
-        ge?: fn a, b -> String.length(a) >= String.length(b) end
-      }
-
-      ord3 = %Ord{
-        lt?: fn a, b -> Enum.sum(String.to_charlist(a)) < Enum.sum(String.to_charlist(b)) end,
-        gt?: fn a, b -> Enum.sum(String.to_charlist(a)) > Enum.sum(String.to_charlist(b)) end,
-        le?: fn a, b -> Enum.sum(String.to_charlist(a)) <= Enum.sum(String.to_charlist(b)) end,
-        ge?: fn a, b -> Enum.sum(String.to_charlist(a)) >= Enum.sum(String.to_charlist(b)) end
-      }
-
-      combined = combine([ord1, ord2, ord3])
-
-      assert combined.lt?.("apple", "banana") == true
-      assert combined.gt?.("pear", "apple") == true
-      assert combined.le?.("apple", "apple") == true
-      assert combined.ge?.("banana", "apple") == true
+    test "not eq different values" do
+      assert to_eq().not_eq?.(:apple, :banana)
+      assert to_eq().not_eq?.(1, 2)
+      assert to_eq().not_eq?.("test", "different")
     end
+  end
 
-    test "combines an empty list of Ord comparators" do
-      combined = combine([])
+  defp ord_name, do: contramap(& &1.name)
+  defp ord_age, do: contramap(& &1.age)
+  defp ord_append, do: append(ord_name(), ord_age())
+  defp ord_concat, do: concat([ord_name(), ord_age()])
+  defp ord_concat_age, do: concat([ord_age(), ord_name()])
 
-      assert combined.lt?.("apple", "banana") == true
-      assert combined.gt?.("pear", "apple") == true
-      assert combined.le?.("apple", "apple") == true
-      assert combined.ge?.("banana", "apple") == true
+  defp ord_empty, do: concat([])
+
+  describe "Ord Monoid" do
+    test "with ordered persons" do
+      alice = %Person{name: "Alice", age: 30}
+      bob = %Person{name: "Bob", age: 25}
+
+      assert compare(alice, bob, ord_name()) == :lt
+      assert compare(bob, alice, ord_name()) == :gt
+      assert compare(alice, alice, ord_name()) == :eq
+
+      assert compare(alice, bob, ord_age()) == :gt
+      assert compare(bob, alice, ord_age()) == :lt
+      assert compare(alice, alice, ord_age()) == :eq
+
+      assert compare(alice, bob, ord_append()) == :lt
+      assert compare(bob, alice, ord_append()) == :gt
+      assert compare(alice, alice, ord_append()) == :eq
+
+      assert compare(alice, bob, ord_concat()) == :lt
+      assert compare(bob, alice, ord_concat()) == :gt
+      assert compare(alice, alice, ord_concat()) == :eq
+
+      assert compare(alice, bob, ord_concat_age()) == :gt
+      assert compare(bob, alice, ord_concat_age()) == :lt
+      assert compare(alice, alice, ord_concat_age()) == :eq
+
+      assert compare(alice, bob, ord_empty()) == :eq
+      assert compare(bob, alice, ord_empty()) == :eq
+      assert compare(alice, alice, ord_empty()) == :eq
+
+      assert ord_concat().lt?.(alice, bob)
+      assert ord_concat().le?.(alice, alice)
+      assert ord_concat().gt?.(bob, alice)
+      assert ord_concat().ge?.(bob, alice)
     end
   end
 end

@@ -153,20 +153,42 @@ defmodule Monex.Ord.Utils do
   end
 
   @doc """
-  Combines two `Ord` comparators into a single composite comparator.
+  Converts an `Ord` instance into an equality comparator.
 
-  The resulting `Ord` comparator applies the logic of the first comparator and
-  uses the second as a fallback when the first is inconclusive.
+  This function creates a map containing two functions:
+    - `eq?/2`: Returns `true` if `a` and `b` are considered equal by the given `Ord`.
+    - `not_eq?/2`: Returns `true` if `a` and `b` are not considered equal by the given `Ord`.
 
   """
-
-  @spec combine(Ord.t(), Ord.t()) :: Ord.t()
-  @spec combine([Ord.t()]) :: Ord.t()
-  def combine(ord1, ord2) do
-    Monoid.Utils.concat(%Monoid.Ord{}, ord1, ord2)
+  @spec to_eq(Monex.Ord.t()) :: Monex.Eq.t()
+  def to_eq(ord \\ Ord) do
+    %{
+      eq?: fn a, b -> compare(a, b, ord) == :eq end,
+      not_eq?: fn a, b -> compare(a, b, ord) != :eq end
+    }
   end
 
-  def combine(order_list) when is_list(order_list) do
-    Monoid.Utils.concat(%Monoid.Ord{}, order_list)
+  @doc """
+  Appends two `Ord` instances, combining their comparison logic.
+
+  If the first `Ord` comparator determines an order, that result is used.
+  If not, the second comparator is used as a fallback.
+
+  """
+  @spec append(Monex.Monoid.Ord.t(), Monex.Monoid.Ord.t()) :: Monex.Monoid.Ord.t()
+  def append(a, b) do
+    Monoid.Utils.append(%Monex.Monoid.Ord{}, a, b)
+  end
+
+  @doc """
+  Concatenates a list of `Ord` instances into a single composite comparator.
+
+  This function reduces a list of `Ord` comparators into a single `Ord`,
+  applying them in sequence until an order is determined.
+
+  """
+  @spec concat([Monex.Monoid.Ord.t()]) :: Monex.Monoid.Ord.t()
+  def concat(ord_list) when is_list(ord_list) do
+    Monoid.Utils.concat(%Monex.Monoid.Ord{}, ord_list)
   end
 end

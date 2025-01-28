@@ -3,8 +3,8 @@ defmodule Monex.MacrosTest do
   use ExUnit.Case, async: true
 
   alias Monex.Eq
-  alias Monex.MacrosTest.Person
   alias Monex.Ord
+  alias Monex.Test.Person
 
   describe "eq_for/2 macro" do
     test "eq?/2 compares structs based on the specified field" do

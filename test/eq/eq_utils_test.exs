@@ -5,6 +5,7 @@ defmodule Monex.Eq.UtilsTest do
 
   alias Monex.Eq.Utils
   alias Monex.Maybe
+  alias Monex.Test.Person
 
   describe "contramap/2" do
     test "applies the function before comparing values using eq?" do
@@ -256,5 +257,75 @@ defmodule Monex.Eq.UtilsTest do
 
       assert result == [7, 8, 10, 12, 14]
     end
+  end
+
+  defp eq_name, do: Monex.Eq.Utils.contramap(& &1.name)
+  defp eq_age, do: Monex.Eq.Utils.contramap(& &1.age)
+  defp eq_all, do: Utils.append_all(eq_name(), eq_age())
+  defp eq_any, do: Utils.append_any(eq_name(), eq_age())
+
+  describe "Eq Monoid" do
+    test "append with equal persons" do
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 30}
+
+      assert Utils.eq?(alice1, alice2, eq_name())
+      assert Utils.eq?(alice1, alice2, eq_age())
+      assert Utils.eq?(alice1, alice2, eq_all())
+      assert Utils.eq?(alice1, alice2, eq_any())
+
+      refute Utils.not_eq?(alice1, alice2, eq_name())
+      refute Utils.not_eq?(alice1, alice2, eq_age())
+      refute Utils.not_eq?(alice1, alice2, eq_all())
+      refute Utils.not_eq?(alice1, alice2, eq_any())
+    end
+
+    test "append with not equal persons" do
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 29}
+
+      assert Utils.eq?(alice1, alice2, eq_name())
+      refute Utils.eq?(alice1, alice2, eq_age())
+      refute Utils.eq?(alice1, alice2, eq_all())
+      assert Utils.eq?(alice1, alice2, eq_any())
+
+      refute Utils.not_eq?(alice1, alice2, eq_name())
+      assert Utils.not_eq?(alice1, alice2, eq_age())
+      assert Utils.not_eq?(alice1, alice2, eq_all())
+      refute Utils.not_eq?(alice1, alice2, eq_any())
+    end
+  end
+
+  defp eq_concat_all, do: Utils.concat_all([eq_name(), eq_age()])
+  defp eq_concat_any, do: Utils.concat_any([eq_name(), eq_age()])
+
+  test "concat with equal persons" do
+    alice1 = %Person{name: "Alice", age: 30}
+    alice2 = %Person{name: "Alice", age: 30}
+
+    assert Utils.eq?(alice1, alice2, eq_name())
+    assert Utils.eq?(alice1, alice2, eq_age())
+    assert Utils.eq?(alice1, alice2, eq_concat_all())
+    assert Utils.eq?(alice1, alice2, eq_concat_any())
+
+    refute Utils.not_eq?(alice1, alice2, eq_name())
+    refute Utils.not_eq?(alice1, alice2, eq_age())
+    refute Utils.not_eq?(alice1, alice2, eq_concat_all())
+    refute Utils.not_eq?(alice1, alice2, eq_concat_any())
+  end
+
+  test "concat with not equal persons" do
+    alice1 = %Person{name: "Alice", age: 30}
+    alice2 = %Person{name: "Alice", age: 29}
+
+    assert Utils.eq?(alice1, alice2, eq_name())
+    refute Utils.eq?(alice1, alice2, eq_age())
+    refute Utils.eq?(alice1, alice2, eq_concat_all())
+    assert Utils.eq?(alice1, alice2, eq_concat_any())
+
+    refute Utils.not_eq?(alice1, alice2, eq_name())
+    assert Utils.not_eq?(alice1, alice2, eq_age())
+    assert Utils.not_eq?(alice1, alice2, eq_concat_all())
+    refute Utils.not_eq?(alice1, alice2, eq_concat_any())
   end
 end

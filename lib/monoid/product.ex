@@ -15,7 +15,7 @@ defimpl Monex.Monoid, for: Monex.Monoid.Product do
   alias Monex.Monoid.Product
 
   @spec empty(Product.t()) :: Product.t()
-  def empty(_), do: %Product{value: 1}
+  def empty(_), do: %Product{}
 
   @spec append(Product.t(), Product.t()) :: Product.t()
   def append(%Product{value: a}, %Product{value: b}) do

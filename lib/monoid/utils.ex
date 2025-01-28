@@ -9,39 +9,57 @@ defmodule Monex.Monoid.Utils do
   import Monex.Monoid, only: [empty: 1, append: 2, wrap: 2, unwrap: 1]
 
   @doc """
-  Combines a list of values into a single result using the given monoid.
+  Appends two values within a given monoid.
 
-  If the list is empty, the monoid's identity element is returned.
+  This function wraps the input values using the provided `monoid`, applies
+  the `append/2` operation, and then unwraps the result.
+
+  ## Parameters
+    - `monoid` – The monoid struct defining how values should be combined.
+    - `a` – The first value to be appended.
+    - `b` – The second value to be appended.
 
   ## Examples
 
-      iex> Monex.Monoid.Utils.concat(%Monex.Monoid.Sum{}, [1, 2, 3])
-      6
+      iex> append(%Monoid.Sum{}, 3, 5)
+      8
 
-      iex> Monex.Monoid.Utils.concat(%Monex.Monoid.Product{}, [])
-      1
+      iex> append(%Monoid.Ord{}, :apple, :banana)
+      :lt
+
   """
-  @spec concat(struct(), [any()]) :: any()
+  @spec append(struct(), any(), any()) :: any()
+  def append(monoid, a, b) when is_struct(monoid) do
+    append(wrap(monoid, a), wrap(monoid, b)) |> unwrap()
+  end
+
+  @doc """
+  Concatenates two values within a given monoid.
+
+  This function wraps the input values using the provided `monoid`, applies
+  the `append/2` operation, and then unwraps the result.
+
+  (Note: `concat/3` is functionally identical to `append/3` but is likely
+  provided for naming consistency with operations that reduce over lists.)
+
+  ## Parameters
+    - `monoid` – The monoid struct defining how values should be combined.
+    - `a` – The first value to be concatenated.
+    - `b` – The second value to be concatenated.
+
+  ## Examples
+
+      iex> concat(%Monoid.Sum{}, 3, 5)
+      8
+
+      iex> concat(%Monoid.Ord{}, :apple, :banana)
+      :lt
+
+  """
   def concat(monoid, values) when is_struct(monoid) and is_list(values) do
     Enum.reduce(values, empty(monoid), fn value, acc ->
       append(acc, wrap(monoid, value))
     end)
     |> unwrap()
-  end
-
-  @doc """
-  Combines two values into a single result using the given monoid.
-
-  ## Examples
-
-      iex> Monex.Monoid.Utils.concat(%Monex.Monoid.Sum{}, 1, 2)
-      3
-
-      iex> Monex.Monoid.Utils.concat(%Monex.Monoid.Product{}, 4, 5)
-      20
-  """
-  @spec concat(struct(), any(), any()) :: any()
-  def concat(monoid, a, b) when is_struct(monoid) do
-    append(wrap(monoid, a), wrap(monoid, b)) |> unwrap()
   end
 end
