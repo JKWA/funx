@@ -259,8 +259,8 @@ defmodule Monex.Eq.UtilsTest do
     end
   end
 
-  defp eq_name, do: Monex.Eq.Utils.contramap(& &1.name)
-  defp eq_age, do: Monex.Eq.Utils.contramap(& &1.age)
+  defp eq_name, do: Utils.contramap(& &1.name)
+  defp eq_age, do: Utils.contramap(& &1.age)
   defp eq_all, do: Utils.append_all(eq_name(), eq_age())
   defp eq_any, do: Utils.append_any(eq_name(), eq_age())
 

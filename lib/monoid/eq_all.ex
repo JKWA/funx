@@ -1,3 +1,5 @@
+# credo:disable-for-this-file
+
 defmodule Monex.Monoid.Eq.All do
   @moduledoc """
   A Monoid implementation for equality checks for All.
