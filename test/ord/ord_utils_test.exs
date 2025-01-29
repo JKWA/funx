@@ -238,6 +238,7 @@ defmodule Monex.Ord.UtilsTest do
   defp ord_append, do: append(ord_name(), ord_age())
   defp ord_concat, do: concat([ord_name(), ord_age()])
   defp ord_concat_age, do: concat([ord_age(), ord_name()])
+  defp ord_concat_default, do: concat([Monex.Ord])
 
   defp ord_empty, do: concat([])
 
@@ -274,6 +275,15 @@ defmodule Monex.Ord.UtilsTest do
       assert ord_concat().le?.(alice, alice)
       assert ord_concat().gt?.(bob, alice)
       assert ord_concat().ge?.(bob, alice)
+    end
+
+    test "with default ord persons (age)" do
+      alice = %Person{name: "Alice", age: 30}
+      bob = %Person{name: "Bob", age: 25}
+
+      assert compare(bob, alice, ord_concat_default()) == :lt
+      assert compare(alice, bob, ord_concat_default()) == :gt
+      assert compare(alice, alice, ord_concat_default()) == :eq
     end
   end
 end

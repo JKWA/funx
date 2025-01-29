@@ -43,9 +43,17 @@ defimpl Monex.Monoid, for: Monex.Monoid.Ord do
     }
   end
 
-  @spec wrap(Ord.t(), map()) :: Ord.t()
   def wrap(%Ord{}, %{lt?: lt?, le?: le?, gt?: gt?, ge?: ge?}) do
     %Ord{lt?: lt?, le?: le?, gt?: gt?, ge?: ge?}
+  end
+
+  def wrap(%Ord{}, ord) when is_atom(ord) do
+    %Ord{
+      lt?: &ord.lt?/2,
+      le?: &ord.le?/2,
+      gt?: &ord.gt?/2,
+      ge?: &ord.ge?/2
+    }
   end
 
   @spec unwrap(Ord.t()) :: map()

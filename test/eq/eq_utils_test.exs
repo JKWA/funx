@@ -299,6 +299,9 @@ defmodule Monex.Eq.UtilsTest do
   defp eq_concat_all, do: Utils.concat_all([eq_name(), eq_age()])
   defp eq_concat_any, do: Utils.concat_any([eq_name(), eq_age()])
 
+  defp eq_concat_all_default, do: Utils.concat_all([Monex.Eq])
+  defp eq_concat_any_default, do: Utils.concat_any([Monex.Eq])
+
   test "concat with equal persons" do
     alice1 = %Person{name: "Alice", age: 30}
     alice2 = %Person{name: "Alice", age: 30}
@@ -327,5 +330,33 @@ defmodule Monex.Eq.UtilsTest do
     assert Utils.not_eq?(alice1, alice2, eq_age())
     assert Utils.not_eq?(alice1, alice2, eq_concat_all())
     refute Utils.not_eq?(alice1, alice2, eq_concat_any())
+  end
+
+  test "concat all with default (age)" do
+    alice1 = %Person{name: "Alice", age: 30}
+    alice2 = %Person{name: "Alice", age: 29}
+    bob = %Person{name: "Bob", age: 30}
+
+    assert Utils.eq?(alice1, alice1, eq_concat_all_default())
+    refute Utils.eq?(alice1, alice2, eq_concat_all_default())
+    assert Utils.eq?(alice1, bob, eq_concat_all_default())
+
+    refute Utils.not_eq?(alice1, alice1, eq_concat_all_default())
+    assert Utils.not_eq?(alice1, alice2, eq_concat_all_default())
+    refute Utils.not_eq?(alice1, bob, eq_concat_all_default())
+  end
+
+  test "concat any with default (age)" do
+    alice1 = %Person{name: "Alice", age: 30}
+    alice2 = %Person{name: "Alice", age: 29}
+    bob = %Person{name: "Bob", age: 30}
+
+    assert Utils.eq?(alice1, alice1, eq_concat_any_default())
+    refute Utils.eq?(alice1, alice2, eq_concat_any_default())
+    assert Utils.eq?(alice1, bob, eq_concat_any_default())
+
+    refute Utils.not_eq?(alice1, alice1, eq_concat_any_default())
+    assert Utils.not_eq?(alice1, alice2, eq_concat_any_default())
+    refute Utils.not_eq?(alice1, bob, eq_concat_any_default())
   end
 end

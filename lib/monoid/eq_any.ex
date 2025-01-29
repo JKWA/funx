@@ -29,6 +29,13 @@ defimpl Monex.Monoid, for: Monex.Monoid.Eq.Any do
     %Any{eq?: eq?, not_eq?: not_eq?}
   end
 
+  def wrap(%Any{}, eq) when is_atom(eq) do
+    %Any{
+      eq?: &eq.eq?/2,
+      not_eq?: &eq.not_eq?/2
+    }
+  end
+
   def unwrap(%Any{eq?: eq?, not_eq?: not_eq?}) do
     %{eq?: eq?, not_eq?: not_eq?}
   end
