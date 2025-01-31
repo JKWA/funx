@@ -39,9 +39,6 @@ defmodule Monex.Monoid.Utils do
   This function wraps the input values using the provided `monoid`, applies
   the `append/2` operation, and then unwraps the result.
 
-  (Note: `concat/3` is functionally identical to `append/3` but is likely
-  provided for naming consistency with operations that reduce over lists.)
-
   ## Parameters
     - `monoid` – The monoid struct defining how values should be combined.
     - `a` – The first value to be concatenated.

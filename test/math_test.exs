@@ -57,4 +57,24 @@ defmodule Monex.MathTest do
       assert Math.product([7]) == 7
     end
   end
+
+  describe "max/1" do
+    test "takes max from a list of numbers" do
+      assert Math.max([2, 3, 4]) == 4
+    end
+
+    test "handles an empty list by returning min finite" do
+      assert Math.max([]) == Float.min_finite()
+    end
+
+    test "handles a single element list" do
+      assert Math.max([7]) == 7
+    end
+  end
+
+  describe "max/2" do
+    test "takes max from two numbers" do
+      assert Math.max(1, 2) == 2
+    end
+  end
 end

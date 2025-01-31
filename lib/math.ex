@@ -7,7 +7,7 @@ defmodule Monex.Math do
   """
 
   import Monex.Monoid.Utils, only: [append: 3, concat: 2]
-  alias Monex.Monoid.{Product, Sum}
+  alias Monex.Monoid.{Max, Product, Sum}
 
   @doc """
   Sums two numbers using the `Sum` monoid.
@@ -65,5 +65,13 @@ defmodule Monex.Math do
   @spec product([number()]) :: number()
   def product(list) when is_list(list) do
     concat(%Product{}, list)
+  end
+
+  def max(a, b) do
+    append(%Max{value: Float.min_finite()}, a, b)
+  end
+
+  def max(list) when is_list(list) do
+    concat(%Max{value: Float.min_finite()}, list)
   end
 end

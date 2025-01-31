@@ -20,9 +20,9 @@ defmodule Monex.Monoid.Ord do
             ge?: &Monex.Monoid.Ord.default_ge?/2
 
   def default_lt?(_, _), do: false
-  def default_le?(_, _), do: true
+  def default_le?(_, _), do: false
   def default_gt?(_, _), do: false
-  def default_ge?(_, _), do: true
+  def default_ge?(_, _), do: false
 end
 
 defimpl Monex.Monoid, for: Monex.Monoid.Ord do
