@@ -93,15 +93,7 @@ defmodule Monex.PredicateTest do
   def vip?(_), do: false
 
   describe "p_all" do
-    test "p_all/2 combines two predicates using AND" do
-      can_enter = Predicate.p_all(&adult?/1, &vip?/1)
-
-      assert can_enter.(%Person{age: 20, ticket: :vip})
-      refute can_enter.(%Person{age: 20, ticket: :basic})
-      refute can_enter.(%Person{age: 17, ticket: :vip})
-    end
-
-    test "p_all/1 combines list of predicates using AND" do
+    test "combines list of predicates using AND" do
       can_enter = Predicate.p_all([&adult?/1, &vip?/1])
 
       assert can_enter.(%Person{age: 20, ticket: :vip})
@@ -109,7 +101,7 @@ defmodule Monex.PredicateTest do
       refute can_enter.(%Person{age: 17, ticket: :vip})
     end
 
-    test "p_all/1 combines list of one predicate with AND" do
+    test "combines list of one predicate with AND" do
       can_enter = Predicate.p_all([&vip?/1])
 
       assert can_enter.(%Person{age: 20, ticket: :vip})
@@ -117,7 +109,7 @@ defmodule Monex.PredicateTest do
       assert can_enter.(%Person{age: 17, ticket: :vip})
     end
 
-    test "p_all/1 combines no predicates as true" do
+    test "combines no predicates as true" do
       can_enter = Predicate.p_all([])
 
       assert can_enter.(%Person{age: 20, ticket: :vip})
@@ -126,17 +118,8 @@ defmodule Monex.PredicateTest do
     end
   end
 
-  describe "p_any" do
-    test "p_any/2 combines two predicates using OR" do
-      can_enter = Predicate.p_any(&adult?/1, &vip?/1)
-
-      assert can_enter.(%Person{age: 20, ticket: :vip})
-      assert can_enter.(%Person{age: 20, ticket: :basic})
-      assert can_enter.(%Person{age: 17, ticket: :vip})
-      refute can_enter.(%Person{age: 17, ticket: :basic})
-    end
-
-    test "p_any/1 combines list of predicates using OR" do
+  describe "p_any/1" do
+    test "combines list of predicates using OR" do
       can_enter = Predicate.p_any([&adult?/1, &vip?/1])
 
       assert can_enter.(%Person{age: 20, ticket: :vip})
@@ -145,7 +128,7 @@ defmodule Monex.PredicateTest do
       refute can_enter.(%Person{age: 17, ticket: :basic})
     end
 
-    test "p_any/1 combines list of one predicate with OR" do
+    test "combines list of one predicate with OR" do
       can_enter = Predicate.p_any([&vip?/1])
 
       assert can_enter.(%Person{age: 20, ticket: :vip})
@@ -154,7 +137,7 @@ defmodule Monex.PredicateTest do
       refute can_enter.(%Person{age: 17, ticket: :basic})
     end
 
-    test "p_any/1 combines no predicates as false" do
+    test "combines no predicates as false" do
       can_enter = Predicate.p_any([])
 
       refute can_enter.(%Person{age: 20, ticket: :vip})
@@ -164,16 +147,8 @@ defmodule Monex.PredicateTest do
     end
   end
 
-  describe "p_none" do
-    test "p_none/2 combines two predicates using AND and negates" do
-      can_not_enter = Predicate.p_none(&adult?/1, &vip?/1)
-
-      refute can_not_enter.(%Person{age: 20, ticket: :vip})
-      refute can_not_enter.(%Person{age: 20, ticket: :basic})
-      assert can_not_enter.(%Person{age: 17, ticket: :basic})
-    end
-
-    test "p_none/1 combines list of predicates using AND and negates" do
+  describe "p_none/1" do
+    test "combines list of predicates using AND and negates" do
       can_not_enter = Predicate.p_none([&adult?/1, &vip?/1])
 
       refute can_not_enter.(%Person{age: 20, ticket: :vip})
@@ -181,7 +156,7 @@ defmodule Monex.PredicateTest do
       assert can_not_enter.(%Person{age: 17, ticket: :basic})
     end
 
-    test "p_none/1 combines list of one predicate with AND and negates" do
+    test "combines list of one predicate with AND and negates" do
       can_not_enter = Predicate.p_none([&vip?/1])
 
       refute can_not_enter.(%Person{age: 20, ticket: :vip})
@@ -189,7 +164,7 @@ defmodule Monex.PredicateTest do
       assert can_not_enter.(%Person{age: 17, ticket: :basic})
     end
 
-    test "p_none/1 combines no predicates as true" do
+    test "combines no predicates as true" do
       can_not_enter = Predicate.p_none([])
 
       assert can_not_enter.(%Person{age: 20, ticket: :vip})

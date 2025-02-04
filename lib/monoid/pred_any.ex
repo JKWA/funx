@@ -11,13 +11,12 @@ end
 
 defimpl Monex.Monoid, for: Monex.Monoid.Predicate.Any do
   alias Monex.Monoid.Predicate.Any
-  alias Monex.Predicate
 
   def empty(_), do: %Any{}
 
   def append(%Any{} = p1, %Any{} = p2) do
     %Any{
-      value: Predicate.p_or(p1.value, p2.value)
+      value: fn value -> p1.value.(value) or p2.value.(value) end
     }
   end
 
