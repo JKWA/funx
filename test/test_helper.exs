@@ -9,7 +9,8 @@ defmodule Monex.Test.Person do
   @moduledoc """
   A simple struct representing a person.
   """
-  defstruct [:name, :age]
+  defstruct name: "UNKNOWN", age: 0, ticket: :basic
+
   Monex.Macros.ord_for(Monex.Test.Person, :age)
   Monex.Macros.eq_for(Monex.Test.Person, :age)
 end

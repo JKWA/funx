@@ -41,6 +41,8 @@ defmodule Monex.Predicate do
       iex> is_adult.(%{age: 16})
       false
   """
+  import Monex.Monoid.Utils, only: [append: 3, concat: 2]
+  alias Monex.Monoid.Predicate.{All, Any}
 
   defstruct predicate: nil
 
@@ -95,5 +97,29 @@ defmodule Monex.Predicate do
   """
   def p_not(pred) do
     fn value -> not pred.(value) end
+  end
+
+  def p_all(a, b) do
+    append(%All{}, a, b)
+  end
+
+  def p_all(p_list) when is_list(p_list) do
+    concat(%All{}, p_list)
+  end
+
+  def p_any(a, b) do
+    append(%Any{}, a, b)
+  end
+
+  def p_any(p_list) when is_list(p_list) do
+    concat(%Any{}, p_list)
+  end
+
+  def p_none(a, b) do
+    p_not(p_any(a, b))
+  end
+
+  def p_none(p_list) when is_list(p_list) do
+    p_not(p_any(p_list))
   end
 end

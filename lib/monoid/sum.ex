@@ -23,8 +23,8 @@ defimpl Monex.Monoid, for: Monex.Monoid.Sum do
   end
 
   @spec wrap(Sum.t(), number()) :: Sum.t()
-  def wrap(%Sum{}, value), do: %Sum{value: value}
+  def wrap(%Sum{}, value) when is_number(value), do: %Sum{value: value}
 
   @spec unwrap(Sum.t()) :: number()
-  def unwrap(%Sum{value: value}), do: value
+  def unwrap(%Sum{value: value}) when is_number(value), do: value
 end

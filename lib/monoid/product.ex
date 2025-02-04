@@ -23,8 +23,8 @@ defimpl Monex.Monoid, for: Monex.Monoid.Product do
   end
 
   @spec wrap(Product.t(), number()) :: Product.t()
-  def wrap(%Product{}, value), do: %Product{value: value}
+  def wrap(%Product{}, value) when is_number(value), do: %Product{value: value}
 
   @spec unwrap(Product.t()) :: number()
-  def unwrap(%Product{value: value}), do: value
+  def unwrap(%Product{value: value}) when is_number(value), do: value
 end
