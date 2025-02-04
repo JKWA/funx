@@ -77,8 +77,6 @@ defmodule Monex.Predicate do
 
   @type t() :: (term() -> boolean())
 
-  defstruct predicate: nil
-
   @doc """
   Combines two predicates (`pred1` and `pred2`) using logical AND.
   Returns a predicate that evaluates to `true` only if both `pred1` and `pred2` return `true`.
