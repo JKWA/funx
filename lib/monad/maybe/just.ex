@@ -96,7 +96,13 @@ defimpl Monex.Ord, for: Monex.Maybe.Just do
 
   def lt?(%Just{value: v1}, %Just{value: v2}), do: Ord.lt?(v1, v2)
   def lt?(%Just{}, %Nothing{}), do: false
-  def le?(a, b), do: not Monex.Ord.gt?(a, b)
-  def gt?(a, b), do: Monex.Ord.lt?(b, a)
-  def ge?(a, b), do: not Monex.Ord.lt?(a, b)
+
+  def le?(%Just{value: v1}, %Just{value: v2}), do: Ord.le?(v1, v2)
+  def le?(%Just{}, %Nothing{}), do: false
+
+  def gt?(%Just{value: v1}, %Just{value: v2}), do: Ord.gt?(v1, v2)
+  def gt?(%Just{}, %Nothing{}), do: true
+
+  def ge?(%Just{value: v1}, %Just{value: v2}), do: Ord.ge?(v1, v2)
+  def ge?(%Just{}, %Nothing{}), do: true
 end

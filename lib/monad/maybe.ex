@@ -136,6 +136,9 @@ defmodule Monex.Maybe do
     fold_r(maybe, fn value -> value end, fn -> default end)
   end
 
+  def or_else(%Nothing{}, fallback_fun) when is_function(fallback_fun, 0), do: fallback_fun.()
+  def or_else(%Just{} = just, _fallback_fun), do: just
+
   def get_eq(custom_eq) do
     %{
       eq?: fn

@@ -554,4 +554,30 @@ defmodule Monex.MaybeTest do
       assert to_result(%Nothing{}) == {:error, :nothing}
     end
   end
+
+  describe "or_else/2" do
+    test "returns the first Just value without calling the fallback" do
+      assert or_else(just(42), fn -> just(100) end) == just(42)
+    end
+
+    test "calls the fallback function when given Nothing" do
+      assert or_else(nothing(), fn -> just(100) end) == just(100)
+    end
+
+    test "returns Nothing if both the original and fallback are Nothing" do
+      assert or_else(nothing(), fn -> nothing() end) == nothing()
+    end
+
+    test "fallback function is not called when the first Maybe is Just" do
+      refute_receive {:fallback_called}
+
+      result =
+        or_else(just(42), fn ->
+          send(self(), {:fallback_called})
+          just(100)
+        end)
+
+      assert result == just(42)
+    end
+  end
 end

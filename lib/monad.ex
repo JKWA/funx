@@ -10,6 +10,7 @@ defprotocol Monex.Monad do
   - `bind/2`: Chains operations by passing the unwrapped value into a function that returns another monad.
   - `ap/2`: Applies a monadic function to another monadic value.
   """
+  @fallback_to_any true
 
   @type t() :: term()
 
@@ -71,4 +72,15 @@ defprotocol Monex.Monad do
   """
   @spec map(t(), (term() -> term())) :: t()
   def map(m, func)
+end
+
+defimpl Monex.Monad, for: Any do
+  @spec ap(any(), any()) :: any()
+  def ap(func, value) when is_function(func, 1), do: func.(value)
+
+  @spec bind(any(), (any() -> any())) :: any()
+  def bind(value, func) when is_function(func, 1), do: func.(value)
+
+  @spec map(any(), (any() -> any())) :: any()
+  def map(value, func) when is_function(func, 1), do: func.(value)
 end

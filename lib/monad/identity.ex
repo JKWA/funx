@@ -139,7 +139,7 @@ defimpl Monex.Eq, for: Monex.Identity do
 
   def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.eq?(v1, v2)
 
-  def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: not Eq.eq?(v1, v2)
+  def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.not_eq?(v1, v2)
 end
 
 defimpl Monex.Ord, for: Monex.Identity do
@@ -147,8 +147,7 @@ defimpl Monex.Ord, for: Monex.Identity do
   alias Monex.Identity
 
   def lt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.lt?(v1, v2)
-
-  def le?(a, b), do: not Ord.gt?(a, b)
-  def gt?(a, b), do: Ord.lt?(b, a)
-  def ge?(a, b), do: not Ord.lt?(a, b)
+  def le?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.le?(v1, v2)
+  def gt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.gt?(v1, v2)
+  def ge?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.ge?(v1, v2)
 end
