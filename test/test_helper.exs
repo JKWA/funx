@@ -11,6 +11,6 @@ defmodule Monex.Test.Person do
   """
   defstruct name: "UNKNOWN", age: 0, ticket: :basic
 
-  Monex.Macros.ord_for(Monex.Test.Person, :age)
-  Monex.Macros.eq_for(Monex.Test.Person, :age)
+  Monex.Macros.ord_for(Monex.Test.Person, :name)
+  Monex.Macros.eq_for(Monex.Test.Person, :name)
 end

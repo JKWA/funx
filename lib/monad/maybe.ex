@@ -38,7 +38,7 @@ defmodule Monex.Maybe do
     - `to_result/1`: Converts a `Maybe` to a result (`{:ok, value}` or `{:error, :nothing}`).
   """
   import Monex.Monad, only: [bind: 2]
-  import Monex.Foldable, only: [fold_r: 3]
+  import Monex.Foldable, only: [fold_l: 3]
   alias Monex.Maybe.{Just, Nothing}
   alias Monex.Either.{Left, Right}
   alias Monex.Identity
@@ -133,7 +133,7 @@ defmodule Monex.Maybe do
       0
   """
   def get_or_else(maybe, default) do
-    fold_r(maybe, fn value -> value end, fn -> default end)
+    fold_l(maybe, fn value -> value end, fn -> default end)
   end
 
   def or_else(%Nothing{}, fallback_fun) when is_function(fallback_fun, 0), do: fallback_fun.()
@@ -158,6 +158,7 @@ defmodule Monex.Maybe do
       iex> ord.lt?.(Monex.Maybe.just(3), Monex.Maybe.just(5))
       true
   """
+
   def get_ord(custom_ord) do
     %{
       lt?: fn
@@ -201,7 +202,7 @@ defmodule Monex.Maybe do
       iex> Monex.Maybe.traverse(fn x -> Monex.Maybe.just(x * 2) end, [1, 2])
       %Monex.Maybe.Just{value: [2, 4]}
   """
-  def traverse(func, list) do
+  def traverse(func, list) when is_list(list) do
     list
     |> Enum.map(func)
     |> sequence()
@@ -256,7 +257,7 @@ defmodule Monex.Maybe do
       %Monex.Maybe.Nothing{}
   """
   def lift_predicate(value, predicate) do
-    Monex.Foldable.fold_r(
+    Monex.Foldable.fold_l(
       fn -> predicate.(value) end,
       fn -> just(value) end,
       fn -> nothing() end
@@ -291,7 +292,7 @@ defmodule Monex.Maybe do
   """
   @spec to_nil(t(value)) :: nil | value when value: term()
   def to_nil(maybe) do
-    fold_r(maybe, fn value -> value end, fn -> nil end)
+    fold_l(maybe, fn value -> value end, fn -> nil end)
   end
 
   @doc """

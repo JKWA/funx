@@ -235,17 +235,20 @@ defmodule Monex.Ord.UtilsTest do
 
   defp ord_name, do: contramap(& &1.name)
   defp ord_age, do: contramap(& &1.age)
+  defp ord_ticket, do: contramap(& &1.ticket)
   defp ord_append, do: append(ord_name(), ord_age())
   defp ord_concat, do: concat([ord_name(), ord_age()])
-  defp ord_concat_age, do: concat([ord_age(), ord_name()])
+  defp ord_concat_age, do: concat([ord_age(), ord_ticket(), Monex.Ord])
   defp ord_concat_default, do: concat([Monex.Ord])
 
   defp ord_empty, do: concat([])
 
   describe "Ord Monoid" do
     test "with ordered persons" do
-      alice = %Person{name: "Alice", age: 30}
-      bob = %Person{name: "Bob", age: 25}
+      alice = %Person{name: "Alice", age: 30, ticket: :b}
+      bob = %Person{name: "Bob", age: 25, ticket: :a}
+      bob_b = %Person{name: "Bob", age: 30, ticket: :a}
+      bob_c = %Person{name: "Bob", age: 30, ticket: :b}
 
       assert compare(alice, bob, ord_name()) == :lt
       assert compare(bob, alice, ord_name()) == :gt
@@ -254,6 +257,10 @@ defmodule Monex.Ord.UtilsTest do
       assert compare(alice, bob, ord_age()) == :gt
       assert compare(bob, alice, ord_age()) == :lt
       assert compare(alice, alice, ord_age()) == :eq
+
+      assert compare(alice, bob, ord_ticket()) == :gt
+      assert compare(bob, alice, ord_ticket()) == :lt
+      assert compare(alice, alice, ord_ticket()) == :eq
 
       assert compare(alice, bob, ord_append()) == :lt
       assert compare(bob, alice, ord_append()) == :gt
@@ -266,6 +273,8 @@ defmodule Monex.Ord.UtilsTest do
       assert compare(alice, bob, ord_concat_age()) == :gt
       assert compare(bob, alice, ord_concat_age()) == :lt
       assert compare(alice, alice, ord_concat_age()) == :eq
+      assert compare(alice, bob_b, ord_concat_age()) == :gt
+      assert compare(alice, bob_c, ord_concat_age()) == :lt
 
       assert compare(alice, bob, ord_empty()) == :eq
       assert compare(bob, alice, ord_empty()) == :eq
@@ -277,12 +286,12 @@ defmodule Monex.Ord.UtilsTest do
       assert ord_concat().ge?.(bob, alice)
     end
 
-    test "with default ord persons (age)" do
+    test "with default ord persons (name)" do
       alice = %Person{name: "Alice", age: 30}
       bob = %Person{name: "Bob", age: 25}
 
-      assert compare(bob, alice, ord_concat_default()) == :lt
-      assert compare(alice, bob, ord_concat_default()) == :gt
+      assert compare(alice, bob, ord_concat_default()) == :lt
+      assert compare(bob, alice, ord_concat_default()) == :gt
       assert compare(alice, alice, ord_concat_default()) == :eq
     end
   end

@@ -36,10 +36,34 @@ defimpl Monex.Monoid, for: Monex.Monoid.Ord do
   @spec append(Ord.t(), Ord.t()) :: Ord.t()
   def append(%Ord{} = ord1, %Ord{} = ord2) do
     %Ord{
-      lt?: fn a, b -> ord1.lt?.(a, b) or (not ord1.gt?.(a, b) and ord2.lt?.(a, b)) end,
-      le?: fn a, b -> ord1.le?.(a, b) or (not ord1.gt?.(a, b) and ord2.le?.(a, b)) end,
-      gt?: fn a, b -> ord1.gt?.(a, b) or (not ord1.lt?.(a, b) and ord2.gt?.(a, b)) end,
-      ge?: fn a, b -> ord1.ge?.(a, b) or (not ord1.lt?.(a, b) and ord2.ge?.(a, b)) end
+      lt?: fn a, b ->
+        cond do
+          ord1.lt?.(a, b) -> true
+          ord1.gt?.(a, b) -> false
+          true -> ord2.lt?.(a, b)
+        end
+      end,
+      le?: fn a, b ->
+        cond do
+          ord1.lt?.(a, b) -> true
+          ord1.gt?.(a, b) -> false
+          true -> ord2.le?.(a, b)
+        end
+      end,
+      gt?: fn a, b ->
+        cond do
+          ord1.gt?.(a, b) -> true
+          ord1.lt?.(a, b) -> false
+          true -> ord2.gt?.(a, b)
+        end
+      end,
+      ge?: fn a, b ->
+        cond do
+          ord1.gt?.(a, b) -> true
+          ord1.lt?.(a, b) -> false
+          true -> ord2.ge?.(a, b)
+        end
+      end
     }
   end
 
