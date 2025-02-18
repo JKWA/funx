@@ -164,10 +164,10 @@ defmodule Monex.IdentityTest do
     end
   end
 
-  describe "get_eq/1" do
+  describe "lift_eq/1" do
     setup do
       number_eq = %{eq?: &Kernel.==/2}
-      {:ok, eq: get_eq(number_eq)}
+      {:ok, eq: lift_eq(number_eq)}
     end
 
     test "returns true for equal values", %{eq: eq} do
@@ -239,10 +239,10 @@ defmodule Monex.IdentityTest do
     end
   end
 
-  describe "get_ord/1" do
+  describe "lift_ord/1" do
     setup do
       number_ord = %{lt?: &Kernel.</2}
-      {:ok, ord: get_ord(number_ord)}
+      {:ok, ord: lift_ord(number_ord)}
     end
 
     test "Orders Identity values based on their contained values", %{ord: ord} do

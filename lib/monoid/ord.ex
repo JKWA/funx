@@ -14,15 +14,12 @@ defmodule Monex.Monoid.Ord do
           ge?: (any(), any() -> boolean())
         }
 
-  defstruct lt?: &Monex.Monoid.Ord.default_lt?/2,
-            le?: &Monex.Monoid.Ord.default_le?/2,
-            gt?: &Monex.Monoid.Ord.default_gt?/2,
-            ge?: &Monex.Monoid.Ord.default_ge?/2
+  defstruct lt?: &Monex.Monoid.Ord.default?/2,
+            le?: &Monex.Monoid.Ord.default?/2,
+            gt?: &Monex.Monoid.Ord.default?/2,
+            ge?: &Monex.Monoid.Ord.default?/2
 
-  def default_lt?(_, _), do: false
-  def default_le?(_, _), do: false
-  def default_gt?(_, _), do: false
-  def default_ge?(_, _), do: false
+  def default?(_, _), do: false
 end
 
 defimpl Monex.Monoid, for: Monex.Monoid.Ord do

@@ -16,8 +16,8 @@ defmodule Monex.Either do
     - `get_or_else/2`: Retrieves the value from a `Right`, returning a default if `Left`.
 
   ### Comparison
-    - `get_eq/1`: Returns a custom equality function for `Either` values.
-    - `get_ord/1`: Returns a custom ordering function for `Either` values.
+    - `lift_eq/1`: Returns a custom equality function for `Either` values.
+    - `lift_ord/1`: Returns a custom ordering function for `Either` values.
 
   ### Sequencing
     - `sequence/1`: Sequences a list of `Either` values.
@@ -146,13 +146,13 @@ defmodule Monex.Either do
   @doc """
   Creates a custom equality function for `Either` values using the provided `custom_eq`.
   ## Examples
-      iex> eq = Monex.Either.get_eq(%{eq?: fn x, y -> x == y end})
+      iex> eq = Monex.Either.lift_eq(%{eq?: fn x, y -> x == y end})
       iex> eq.eq?.(Monex.Either.right(5), Monex.Either.right(5))
       true
       iex> eq.eq?.(Monex.Either.right(5), Monex.Either.left("error"))
       false
   """
-  def get_eq(custom_eq) do
+  def lift_eq(custom_eq) do
     %{
       eq?: fn
         %Right{right: v1}, %Right{right: v2} -> custom_eq.eq?.(v1, v2)
@@ -168,11 +168,11 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> ord = Monex.Either.get_ord(%{lt?: fn x, y -> x < y end})
+      iex> ord = Monex.Either.lift_ord(%{lt?: fn x, y -> x < y end})
       iex> ord.lt?.(Monex.Either.right(3), Monex.Either.right(5))
       true
   """
-  def get_ord(custom_ord) do
+  def lift_ord(custom_ord) do
     %{
       lt?: fn
         %Left{}, %Right{} -> true
@@ -180,14 +180,14 @@ defmodule Monex.Either do
         %Right{right: v1}, %Right{right: v2} -> custom_ord.lt?.(v1, v2)
         %Left{}, %Left{} -> false
       end,
-      le?: fn a, b -> not get_ord(custom_ord).gt?.(a, b) end,
+      le?: fn a, b -> not lift_ord(custom_ord).gt?.(a, b) end,
       gt?: fn
         %Right{}, %Left{} -> true
         %Left{}, %Right{} -> false
         %Right{right: v1}, %Right{right: v2} -> custom_ord.lt?.(v2, v1)
         %Left{}, %Left{} -> false
       end,
-      ge?: fn a, b -> not get_ord(custom_ord).lt?.(a, b) end
+      ge?: fn a, b -> not lift_ord(custom_ord).lt?.(a, b) end
     }
   end
 

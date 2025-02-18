@@ -18,8 +18,8 @@ defmodule Monex.Maybe do
     - `nothing?/1`: Checks if a `Maybe` is a `Nothing` value.
 
   ### Comparison
-    - `get_eq/1`: Returns a custom equality function for `Maybe` values.
-    - `get_ord/1`: Returns a custom ordering function for `Maybe` values.
+    - `lift_eq/1`: Returns a custom equality function for `Maybe` values.
+    - `lift_ord/1`: Returns a custom ordering function for `Maybe` values.
 
   ### Matching & Filtering
     - `filter/2`: Filters the value inside a `Maybe` using a predicate.
@@ -139,7 +139,7 @@ defmodule Monex.Maybe do
   def or_else(%Nothing{}, fallback_fun) when is_function(fallback_fun, 0), do: fallback_fun.()
   def or_else(%Just{} = just, _fallback_fun), do: just
 
-  def get_eq(custom_eq) do
+  def lift_eq(custom_eq) do
     %{
       eq?: fn
         %Just{value: v1}, %Just{value: v2} -> custom_eq.eq?.(v1, v2)
@@ -154,12 +154,12 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> ord = Monex.Maybe.get_ord(%{lt?: fn x, y -> x < y end})
+      iex> ord = Monex.Maybe.lift_ord(%{lt?: fn x, y -> x < y end})
       iex> ord.lt?.(Monex.Maybe.just(3), Monex.Maybe.just(5))
       true
   """
 
-  def get_ord(custom_ord) do
+  def lift_ord(custom_ord) do
     %{
       lt?: fn
         %Nothing{}, %Just{} -> true
@@ -167,9 +167,9 @@ defmodule Monex.Maybe do
         %Just{value: v1}, %Just{value: v2} -> custom_ord.lt?.(v1, v2)
         %Nothing{}, %Nothing{} -> false
       end,
-      le?: fn a, b -> not get_ord(custom_ord).gt?.(a, b) end,
-      gt?: fn a, b -> get_ord(custom_ord).lt?.(b, a) end,
-      ge?: fn a, b -> not get_ord(custom_ord).lt?.(a, b) end
+      le?: fn a, b -> not lift_ord(custom_ord).gt?.(a, b) end,
+      gt?: fn a, b -> lift_ord(custom_ord).lt?.(b, a) end,
+      ge?: fn a, b -> not lift_ord(custom_ord).lt?.(a, b) end
     }
   end
 

@@ -5,8 +5,8 @@ defmodule Monex.Monoid.MaxTest do
   alias Monex.Monoid
   alias Monex.Test.Person
 
-  defp ord_ticket, do: Maybe.get_ord(contramap(& &1.ticket, Monex.Ord))
-  defp ord_age, do: Maybe.get_ord(contramap(& &1.age, Monex.Ord))
+  defp ord_ticket, do: Maybe.lift_ord(contramap(& &1.ticket, Monex.Ord))
+  defp ord_age, do: Maybe.lift_ord(contramap(& &1.age, Monex.Ord))
 
   def max_age(people) do
     Monoid.Utils.concat(
