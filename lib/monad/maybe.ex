@@ -37,7 +37,7 @@ defmodule Monex.Maybe do
     - `from_result/1`: Converts a result (`{:ok, _}` or `{:error, _}`) to a `Maybe`.
     - `to_result/1`: Converts a `Maybe` to a result (`{:ok, value}` or `{:error, :nothing}`).
   """
-  import Monex.Monad, only: [bind: 2]
+  import Monex.Monad, only: [bind: 2, map: 2]
   import Monex.Foldable, only: [fold_l: 3]
   alias Monex.Maybe.{Just, Nothing}
   alias Monex.Either.{Left, Right}
@@ -184,6 +184,7 @@ defmodule Monex.Maybe do
       iex> Monex.Maybe.sequence([Monex.Maybe.just(1), Monex.Maybe.nothing()])
       %Monex.Maybe.Nothing{}
   """
+  @spec sequence([t(value)]) :: t([value]) when value: any()
   def sequence([]), do: pure([])
 
   def sequence([head | tail]) do
@@ -195,17 +196,36 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Applies a function to each element of a list and sequences the result.
+  Applies a function to each element of a list, sequencing the results into a single `Maybe`.
+
+  If the function returns `Just` for every element, the result is `Just` containing a list of transformed values.
+  If the function returns `Nothing` for any element, the traversal short-circuits and returns `Nothing`.
+
+  This function uses a fold to process the list efficiently, halting early on `Nothing` and ensuring tail-recursive safety through `Enum.reduce_while/3`.
 
   ## Examples
 
-      iex> Monex.Maybe.traverse(fn x -> Monex.Maybe.just(x * 2) end, [1, 2])
+      iex> Monex.Maybe.traverse([1, 2], fn x -> Monex.Maybe.just(x * 2) end)
       %Monex.Maybe.Just{value: [2, 4]}
+
+      iex> Monex.Maybe.traverse([1, nil, 3], fn
+      ...>   nil -> Monex.Maybe.nothing()
+      ...>   x -> Monex.Maybe.just(x * 2)
+      ...> end)
+      %Monex.Maybe.Nothing{}
   """
-  def traverse(func, list) when is_list(list) do
+  @spec traverse([input], (input -> t(output))) :: t([output]) when input: any(), output: any()
+  def traverse([], _func), do: pure([])
+
+  def traverse(list, func) when is_list(list) do
     list
-    |> Enum.map(func)
-    |> sequence()
+    |> Enum.reduce_while(pure([]), fn item, %Just{value: acc} ->
+      case func.(item) do
+        %Just{value: value} -> {:cont, pure([value | acc])}
+        %Nothing{} -> {:halt, nothing()}
+      end
+    end)
+    |> map(&:lists.reverse/1)
   end
 
   @doc """

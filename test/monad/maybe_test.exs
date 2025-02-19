@@ -190,19 +190,24 @@ defmodule Monex.MaybeTest do
 
   describe "traverse/2" do
     test "applies a function and sequences the results" do
-      result = traverse(&just/1, [1, 2, 3])
+      result = traverse([1, 2, 3], &just/1)
       assert result == just([1, 2, 3])
+    end
+
+    test "empty returns just an empty list" do
+      result = traverse([], &just/1)
+      assert result == just([])
     end
 
     test "returns Nothing if the function returns Nothing for any element" do
       result =
         traverse(
+          [1, 2, 3],
           fn x ->
             if x > 1,
               do: nothing(),
               else: just(x)
-          end,
-          [1, 2, 3]
+          end
         )
 
       assert result == nothing()
