@@ -171,6 +171,23 @@ defmodule Monex.MaybeTest do
     end
   end
 
+  describe "guard/2" do
+    test "returns Just value when boolean is true" do
+      maybe_value = just(42)
+      assert guard(maybe_value, true) == maybe_value
+    end
+
+    test "returns Nothing when boolean is false" do
+      maybe_value = just(42)
+      assert guard(maybe_value, false) == nothing()
+    end
+
+    test "returns Nothing when given Nothing" do
+      nothing_value = nothing()
+      assert guard(nothing_value, true) == nothing_value
+    end
+  end
+
   describe "filter/2" do
     test "returns Just value when predicate is true" do
       maybe_value = just(42)

@@ -76,28 +76,6 @@ defmodule Monex.Maybe do
   def nothing, do: Nothing.pure()
 
   @doc """
-  Filters the value inside a `Maybe` using the given `predicate`. If the predicate returns `true`,
-  the value is kept, otherwise `Nothing` is returned.
-
-  ## Examples
-
-      iex> Monex.Maybe.filter(Monex.Maybe.just(5), fn x -> x > 3 end)
-      %Monex.Maybe.Just{value: 5}
-
-      iex> Monex.Maybe.filter(Monex.Maybe.just(2), fn x -> x > 3 end)
-      %Monex.Maybe.Nothing{}
-  """
-  def filter(maybe, predicate) do
-    bind(maybe, fn value ->
-      if predicate.(value) do
-        pure(value)
-      else
-        nothing()
-      end
-    end)
-  end
-
-  @doc """
   Returns `true` if the `Maybe` is a `Just` value.
 
   ## Examples
@@ -158,6 +136,48 @@ defmodule Monex.Maybe do
   @spec or_else(t(value), (-> t(value))) :: t(value) when value: var
   def or_else(%Nothing{}, fallback_fun) when is_function(fallback_fun, 0), do: fallback_fun.()
   def or_else(%Just{} = just, _fallback_fun), do: just
+
+  @doc """
+  Conditionally keeps the given `Maybe` value based on the provided boolean.
+
+  If the boolean is `true`, the `Maybe` value is returned unchanged. If the boolean is `false`, `Nothing` is returned.
+
+  ## Examples
+
+      iex> Monex.Maybe.guard(Monex.Maybe.just(5), true)
+      %Monex.Maybe.Just{value: 5}
+
+      iex> Monex.Maybe.guard(Monex.Maybe.just(5), false)
+      %Monex.Maybe.Nothing{}
+
+      iex> Monex.Maybe.guard(Monex.Maybe.nothing(), true)
+      %Monex.Maybe.Nothing{}
+  """
+  @spec guard(t(value), boolean) :: t(value) when value: var
+  def guard(value, true), do: value
+  def guard(_value, false), do: nothing()
+
+  @doc """
+  Filters the value inside a `Maybe` using the given `predicate`. If the predicate returns `true`,
+  the value is kept, otherwise `Nothing` is returned.
+
+  ## Examples
+
+      iex> Monex.Maybe.filter(Monex.Maybe.just(5), fn x -> x > 3 end)
+      %Monex.Maybe.Just{value: 5}
+
+      iex> Monex.Maybe.filter(Monex.Maybe.just(2), fn x -> x > 3 end)
+      %Monex.Maybe.Nothing{}
+  """
+  def filter(maybe, predicate) do
+    bind(maybe, fn value ->
+      if predicate.(value) do
+        pure(value)
+      else
+        nothing()
+      end
+    end)
+  end
 
   @doc """
   Lifts a custom equality function into the `Maybe` context.
