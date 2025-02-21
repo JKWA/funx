@@ -5,6 +5,11 @@ defmodule Monex.Eq.Utils do
   or implement the `Monex.Eq` protocol.
   """
 
+  @type eq_map() :: %{
+          eq?: (any(), any() -> boolean()),
+          not_eq?: (any(), any() -> boolean())
+        }
+
   alias Monex.Eq
   alias Monex.Monoid
 

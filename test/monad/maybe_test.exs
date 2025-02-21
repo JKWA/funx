@@ -226,6 +226,50 @@ defmodule Monex.MaybeTest do
     end
   end
 
+  describe "concat/1" do
+    test "returns an empty list when given an empty list" do
+      assert concat([]) == []
+    end
+
+    test "filters out Nothing and unwraps Just values" do
+      assert concat([just(1), nothing(), just(2)]) == [1, 2]
+    end
+
+    test "returns an empty list when all values are Nothing" do
+      assert concat([nothing(), nothing()]) == []
+    end
+
+    test "handles a list with only Just values" do
+      assert concat([just("a"), just("b"), just("c")]) == ["a", "b", "c"]
+    end
+  end
+
+  describe "concat_map/2" do
+    test "returns an empty list when given an empty list" do
+      assert concat_map([], fn x -> x end) == []
+    end
+
+    test "applies the function and collects Just values" do
+      fun = fn x -> if rem(x, 2) == 0, do: just(x), else: nothing() end
+      assert concat_map([1, 2, 3, 4], fun) == [2, 4]
+    end
+
+    test "returns an empty list when the function always returns Nothing" do
+      fun = fn _ -> nothing() end
+      assert concat_map([1, 2, 3], fun) == []
+    end
+
+    test "handles all Just returns from the function" do
+      fun = fn x -> just(x * 2) end
+      assert concat_map([1, 2, 3], fun) == [2, 4, 6]
+    end
+
+    test "handles mixed Just and Nothing results" do
+      fun = fn x -> if x > 0, do: just(x), else: nothing() end
+      assert concat_map([-1, 0, 1, 2], fun) == [1, 2]
+    end
+  end
+
   # Ord and Eq Tests
 
   describe "Eq.eq?/2" do
@@ -280,22 +324,27 @@ defmodule Monex.MaybeTest do
 
     test "returns true for equal Just values", %{eq: eq} do
       assert eq.eq?.(just(1), just(1)) == true
+      assert eq.not_eq?.(just(1), just(1)) == false
     end
 
     test "returns false for different Just values", %{eq: eq} do
       assert eq.eq?.(just(1), just(2)) == false
+      assert eq.not_eq?.(just(1), just(2)) == true
     end
 
     test "returns true for two Nothing values", %{eq: eq} do
       assert eq.eq?.(nothing(), nothing()) == true
+      assert eq.not_eq?.(nothing(), nothing()) == false
     end
 
     test "returns false for Just and Nothing comparison", %{eq: eq} do
       assert eq.eq?.(just(1), nothing()) == false
+      assert eq.not_eq?.(just(1), nothing()) == true
     end
 
     test "returns false for Nothing and Just comparison", %{eq: eq} do
       assert eq.eq?.(nothing(), just(1)) == false
+      assert eq.not_eq?.(nothing(), just(1)) == true
     end
   end
 
@@ -468,6 +517,35 @@ defmodule Monex.MaybeTest do
         |> lift_predicate(pred)
 
       assert result == nothing()
+    end
+  end
+
+  describe "to_predicate/1" do
+    test "returns true for Just values" do
+      assert to_predicate(just(42)) == true
+      assert to_predicate(just("hello")) == true
+      assert to_predicate(just(%{key: "value"})) == true
+    end
+
+    test "returns false for Nothing" do
+      assert to_predicate(nothing()) == false
+    end
+
+    test "works in Enum.filter/2 to keep Just values" do
+      list = [just(1), nothing(), just(3), nothing(), just(5)]
+
+      result = Enum.filter(list, &to_predicate/1)
+
+      assert result == [just(1), just(3), just(5)]
+    end
+
+    test "filters out Nothing values when used in a pipeline" do
+      result =
+        [just("a"), nothing(), just("b")]
+        |> Enum.filter(&to_predicate/1)
+        |> Enum.map(fn %Just{value: v} -> v end)
+
+      assert result == ["a", "b"]
     end
   end
 

@@ -41,7 +41,9 @@ defmodule Monex.Maybe do
   import Monex.Foldable, only: [fold_l: 3]
   alias Monex.Maybe.{Just, Nothing}
   alias Monex.Either.{Left, Right}
+  alias Monex.Eq
   alias Monex.Identity
+  alias Monex.Ord
 
   @type t(value) :: Just.t(value) | Nothing.t()
 
@@ -53,12 +55,13 @@ defmodule Monex.Maybe do
       iex> Monex.Maybe.pure(5)
       %Monex.Maybe.Just{value: 5}
   """
-
+  @spec pure(any()) :: Just.t(any())
   def pure(value), do: Just.pure(value)
 
   @doc """
   Alias for `pure/1`.
   """
+  @spec just(any()) :: Just.t(any())
   def just(value), do: Just.pure(value)
 
   @doc """
@@ -69,6 +72,7 @@ defmodule Monex.Maybe do
       iex> Monex.Maybe.nothing()
       %Monex.Maybe.Nothing{}
   """
+  @spec nothing() :: Nothing.t()
   def nothing, do: Nothing.pure()
 
   @doc """
@@ -104,6 +108,7 @@ defmodule Monex.Maybe do
       iex> Monex.Maybe.just?(Monex.Maybe.nothing())
       false
   """
+  @spec just?(t(any())) :: boolean()
   def just?(%Just{}), do: true
   def just?(_), do: false
 
@@ -118,6 +123,8 @@ defmodule Monex.Maybe do
       iex> Monex.Maybe.nothing?(Monex.Maybe.just(5))
       false
   """
+
+  @spec nothing?(t(any())) :: boolean()
   def nothing?(%Nothing{}), do: true
   def nothing?(_), do: false
 
@@ -132,20 +139,59 @@ defmodule Monex.Maybe do
       iex> Monex.Maybe.get_or_else(Monex.Maybe.nothing(), 0)
       0
   """
+  @spec get_or_else(t(value), value) :: value when value: var
   def get_or_else(maybe, default) do
     fold_l(maybe, fn value -> value end, fn -> default end)
   end
 
+  @doc """
+  Returns the current `Just` value or invokes the provided fallback function if the value is `Nothing`.
+
+  ## Examples
+
+      iex> Monex.Maybe.or_else(Monex.Maybe.nothing(), fn -> Monex.Maybe.just(42) end)
+      %Monex.Maybe.Just{value: 42}
+
+      iex> Monex.Maybe.or_else(Monex.Maybe.just(10), fn -> Monex.Maybe.just(42) end)
+      %Monex.Maybe.Just{value: 10}
+  """
+  @spec or_else(t(value), (-> t(value))) :: t(value) when value: var
   def or_else(%Nothing{}, fallback_fun) when is_function(fallback_fun, 0), do: fallback_fun.()
   def or_else(%Just{} = just, _fallback_fun), do: just
 
+  @doc """
+  Lifts a custom equality function into the `Maybe` context.
+
+  This allows comparing `Maybe` values with the provided `custom_eq`. Two `Just` values are compared using the custom equality function, two `Nothing` values are considered equal, and comparisons between `Just` and `Nothing` always return false.
+
+  ## Examples
+
+      iex> eq = Monex.Maybe.lift_eq(%{eq?: fn x, y -> x == y end})
+      iex> eq.eq?.(Monex.Maybe.just(5), Monex.Maybe.just(5))
+      true
+
+      iex> eq.eq?.(Monex.Maybe.just(5), Monex.Maybe.just(10))
+      false
+
+      iex> eq.eq?.(Monex.Maybe.nothing(), Monex.Maybe.nothing())
+      true
+
+      iex> eq.eq?.(Monex.Maybe.just(5), Monex.Maybe.nothing())
+      false
+  """
+
+  @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
   def lift_eq(custom_eq) do
+    eq_fn = fn
+      %Just{value: v1}, %Just{value: v2} -> custom_eq.eq?.(v1, v2)
+      %Nothing{}, %Nothing{} -> true
+      %Nothing{}, %Just{} -> false
+      %Just{}, %Nothing{} -> false
+    end
+
     %{
-      eq?: fn
-        %Just{value: v1}, %Just{value: v2} -> custom_eq.eq?.(v1, v2)
-        %Nothing{}, %Nothing{} -> true
-        _, _ -> false
-      end
+      eq?: eq_fn,
+      not_eq?: fn a, b -> not eq_fn.(a, b) end
     }
   end
 
@@ -159,6 +205,7 @@ defmodule Monex.Maybe do
       true
   """
 
+  @spec lift_ord(Ord.Utils.ord_map()) :: Ord.Utils.ord_map()
   def lift_ord(custom_ord) do
     %{
       lt?: fn
@@ -171,6 +218,67 @@ defmodule Monex.Maybe do
       gt?: fn a, b -> lift_ord(custom_ord).lt?.(b, a) end,
       ge?: fn a, b -> not lift_ord(custom_ord).lt?.(a, b) end
     }
+  end
+
+  @doc """
+  Removes `Nothing` values from a list of `Maybe` and returns a list of unwrapped `Just` values.
+
+  This function is useful when you have a list of `Maybe` values and want to extract only the present values (`Just`), discarding any `Nothing` values.
+
+  It processes the list with a single pass, ensuring efficient filtering and extraction.
+
+  ## Examples
+
+      iex> Monex.Maybe.concat([Just.new(1), Nothing.new(), Just.new(2)])
+      [1, 2]
+
+      iex> Monex.Maybe.concat([Nothing.new(), Nothing.new()])
+      []
+
+      iex> Monex.Maybe.concat([Just.new("a"), Just.new("b"), Just.new("c")])
+      ["a", "b", "c"]
+  """
+  @spec concat([t(output)]) :: [output] when output: any()
+  def concat(list) when is_list(list) do
+    list
+    |> Enum.reduce([], fn
+      %Just{value: value}, acc -> [value | acc]
+      %Nothing{}, acc -> acc
+    end)
+    |> :lists.reverse()
+  end
+
+  @doc """
+  Maps a function over a list, collecting unwrapped `Just` values and discarding `Nothing` values in a single pass.
+
+  This function combines mapping and filtering into one operation, making it more efficient than mapping and then calling `concat`. It applies the given function to each element of the list and immediately collects any `Just` values.
+
+  ## Examples
+
+      iex> Monex.Maybe.concat_map([1, 2, 3, 4], fn x -> if rem(x, 2) == 0, do: Just.new(x), else: Nothing.new() end)
+      [2, 4]
+
+      iex> Monex.Maybe.concat_map([1, nil, 3], fn
+      ...>   nil -> Nothing.new()
+      ...>   x -> Just.new(x * 2)
+      ...> end)
+      [2, 6]
+
+      iex> Monex.Maybe.concat_map([1, 2, 3], fn x -> Just.new(x + 1) end)
+      [2, 3, 4]
+
+      iex> Monex.Maybe.concat_map([], fn x -> Just.new(x) end)
+      []
+  """
+  @spec concat_map([input], (input -> t(output))) :: [output] when input: any(), output: any()
+  def concat_map(list, func) when is_list(list) and is_function(func, 1) do
+    Enum.reduce(list, [], fn item, acc ->
+      case func.(item) do
+        %Just{value: value} -> [value | acc]
+        %Nothing{} -> acc
+      end
+    end)
+    |> :lists.reverse()
   end
 
   @doc """
@@ -217,7 +325,7 @@ defmodule Monex.Maybe do
   @spec traverse([input], (input -> t(output))) :: t([output]) when input: any(), output: any()
   def traverse([], _func), do: pure([])
 
-  def traverse(list, func) when is_list(list) do
+  def traverse(list, func) when is_list(list) and is_function(func, 1) do
     list
     |> Enum.reduce_while(pure([]), fn item, %Just{value: acc} ->
       case func.(item) do
@@ -276,12 +384,18 @@ defmodule Monex.Maybe do
       iex> Monex.Maybe.lift_predicate(2, fn x -> x > 3 end)
       %Monex.Maybe.Nothing{}
   """
+  @spec lift_predicate(term(), (term() -> boolean())) :: t(term())
   def lift_predicate(value, predicate) do
-    Monex.Foldable.fold_l(
+    fold_l(
       fn -> predicate.(value) end,
       fn -> just(value) end,
       fn -> nothing() end
     )
+  end
+
+  @spec to_predicate(t(any())) :: boolean()
+  def to_predicate(maybe) do
+    fold_l(maybe, fn _value -> true end, fn -> false end)
   end
 
   @doc """

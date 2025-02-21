@@ -5,6 +5,13 @@ defmodule Monex.Ord.Utils do
   or implement the `Monex.Ord` protocol.
   """
 
+  @type ord_map() :: %{
+          lt?: (any(), any() -> boolean()),
+          le?: (any(), any() -> boolean()),
+          gt?: (any(), any() -> boolean()),
+          ge?: (any(), any() -> boolean())
+        }
+
   alias Monex.Monoid
   alias Monex.Ord
 
