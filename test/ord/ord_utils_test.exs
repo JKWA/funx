@@ -9,6 +9,7 @@ defmodule Monex.Ord.UtilsTest do
   alias Monex.{Either, Identity, Maybe}
   alias Monex.Ord.Any
   alias Monex.Test.Person
+  doctest Monex.Ord.Utils
 
   describe "clamp/4" do
     test "returns the value if within the range" do

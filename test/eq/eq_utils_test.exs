@@ -7,6 +7,8 @@ defmodule Monex.Eq.UtilsTest do
   alias Monex.Maybe
   alias Monex.Test.Person
 
+  doctest Monex.Eq.Utils
+
   describe "contramap/2" do
     test "applies the function before comparing values using eq?" do
       eq_by_length = Utils.contramap(&String.length/1)

@@ -1,42 +1,62 @@
 defmodule Monex.Maybe do
   @moduledoc """
-  The `Monex.Maybe` module provides an implementation of the `Maybe` monad, representing optional values as either `Just` (a value) or `Nothing` (no value).
+  The `Monex.Maybe` module provides an implementation of the `Maybe` monad, giving you a convenient way to represent optional values in Elixir. By encapsulating values in `Just` or `Nothing`, this module lets you handle the presence or absence of data in a consistent, composable manner.
+
+  ## Features
+
+  - **Constructors**: Easily create `Maybe` values.
+  - **Lifting Functions**: Convert standard or custom types into `Maybe` values.
+  - **Checks & Filters**: Determine whether a `Maybe` is `Just` or `Nothing` and filter data accordingly.
+  - **List Operations**: Efficiently transform and collect `Maybe` values in lists.
+  - **Interop**: Translate between `Maybe` and native Elixir constructs like `nil`, tuples, or exceptions.
+
+  ### Usage Overview
+
+  1. **Construct**: Use `just/1` or `nothing/0` to build `Maybe` values.
+  2. **Check**: Use `just?/1` or `nothing?/1` to see if you have a `Just` or `Nothing`.
+  3. **Filter & Transform**: Apply `filter/2`, `map`, or `bind` for transformations.
+  4. **Extract**: Use `get_or_else/2`, `to_nil/1`, or `to_try!/2` to retrieve the raw data.
 
   ### Constructors
-    - `pure/1`: Wraps a value in the `Just` monad.
-    - `just/1`: Alias for `pure/1`.
-    - `nothing/0`: Returns a `Nothing` value.
 
-  ### Lifts
-    - `lift_predicate/2`: Lifts a value into a `Maybe` based on a predicate.
-    - `lift_identity/1`: Converts an `Identity` value to a `Maybe`.
-    - `lift_either/1`: Lifts an `Either` value to a `Maybe`.
+  - `pure/1`: Wraps a value in `Just`.
+  - `just/1`: Alias for `pure/1`.
+  - `nothing/0`: Returns a `Nothing` value.
 
+  ### Lifting Functions
 
-  ### Refinements
-    - `just?/1`: Checks if a `Maybe` is a `Just` value.
-    - `nothing?/1`: Checks if a `Maybe` is a `Nothing` value.
+  - `lift_predicate/2`: Converts a value to `Just` if it meets a predicate, otherwise `Nothing`.
+  - `lift_identity/1`: Converts an `Identity` to a `Maybe`.
+  - `lift_either/1`: Converts an `Either` to a `Maybe`.
+  - `lift_eq/1`: Lifts an equality function for `Maybe` values.
+  - `lift_ord/1`: Lifts an ordering function for `Maybe` values.
 
-  ### Comparison
-    - `lift_eq/1`: Returns a custom equality function for `Maybe` values.
-    - `lift_ord/1`: Returns a custom ordering function for `Maybe` values.
+  ### Checks & Filters
 
-  ### Matching & Filtering
-    - `filter/2`: Filters the value inside a `Maybe` using a predicate.
-    - `get_or_else/2`: Retrieves the value from a `Maybe`, returning a default if `Nothing`.
+  - `just?/1`: Checks if a `Maybe` is `Just`.
+  - `nothing?/1`: Checks if a `Maybe` is `Nothing`.
+  - `filter/2`: Keeps the value if it matches a predicate, otherwise returns `Nothing`.
+  - `guard/2`: Retains the `Maybe` if the boolean is `true`, otherwise returns `Nothing`.
+  - `get_or_else/2`: Returns the value or a default.
+  - `or_else/2`: Returns the `Just` value or calls a fallback function if `Nothing`.
 
-  ### Sequencing
-    - `sequence/1`: Sequences a list of `Maybe` values.
-    - `traverse/2`: Applies a function to a list and sequences the result.
+  ### Working with Lists
 
-  ### Elixir Interops
-    - `from_nil/1`: Converts `nil` to a `Maybe`.
-    - `to_nil/1`: Converts a `Maybe` to `nil` or its value.
-    - `from_try/1`: Wraps a value in a `Maybe`, catching exceptions.
-    - `to_try!/2`: Converts a `Maybe` to its value or raises an exception if `Nothing`.
-    - `from_result/1`: Converts a result (`{:ok, _}` or `{:error, _}`) to a `Maybe`.
-    - `to_result/1`: Converts a `Maybe` to a result (`{:ok, value}` or `{:error, :nothing}`).
+  - `concat/1`: Extracts present values (`Just`) from a list of `Maybe`.
+  - `concat_map/2`: Maps and extracts `Just` values in one pass.
+  - `sequence/1`: Converts a list of `Maybe` into a single `Maybe` containing a list.
+  - `traverse/2`: Applies a function to each element and sequences the results, returning one `Maybe`.
+
+  ### Elixir Interop
+
+  - `from_nil/1`: Converts `nil` to `Nothing`, otherwise `Just`.
+  - `to_nil/1`: Returns the underlying value or `nil`.
+  - `from_try/1`: Executes a function and wraps its result in `Maybe` or returns `Nothing` on exception.
+  - `to_try!/2`: Extracts the value or raises an error if `Nothing`.
+  - `from_result/1`: Converts `{:ok, _}` or `{:error, _}` tuples to `Maybe`.
+  - `to_result/1`: Turns a `Maybe` into `{:ok, value}` or `{:error, :nothing}`.
   """
+
   import Monex.Monad, only: [bind: 2, map: 2]
   import Monex.Foldable, only: [fold_l: 3]
   alias Monex.Maybe.{Just, Nothing}
@@ -48,7 +68,7 @@ defmodule Monex.Maybe do
   @type t(value) :: Just.t(value) | Nothing.t()
 
   @doc """
-  Wraps a value in the `Just` monad.
+  Wraps a value in `Just`.
 
   ## Examples
 
@@ -76,7 +96,7 @@ defmodule Monex.Maybe do
   def nothing, do: Nothing.pure()
 
   @doc """
-  Returns `true` if the `Maybe` is a `Just` value.
+  Returns `true` if the `Maybe` is `Just`, otherwise `false`.
 
   ## Examples
 
@@ -91,7 +111,7 @@ defmodule Monex.Maybe do
   def just?(_), do: false
 
   @doc """
-  Returns `true` if the `Maybe` is a `Nothing` value.
+  Returns `true` if the `Maybe` is `Nothing`, otherwise `false`.
 
   ## Examples
 
@@ -101,13 +121,12 @@ defmodule Monex.Maybe do
       iex> Monex.Maybe.nothing?(Monex.Maybe.just(5))
       false
   """
-
   @spec nothing?(t(any())) :: boolean()
   def nothing?(%Nothing{}), do: true
   def nothing?(_), do: false
 
   @doc """
-  Retrieves the value from a `Maybe`, returning the `default` value if `Nothing`.
+  Retrieves the value from a `Maybe`, returning `default` if `Nothing`.
 
   ## Examples
 
@@ -123,7 +142,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Returns the current `Just` value or invokes the provided fallback function if the value is `Nothing`.
+  Returns the current `Just` value or invokes the `fallback_fun` if `Nothing`.
 
   ## Examples
 
@@ -138,9 +157,7 @@ defmodule Monex.Maybe do
   def or_else(%Just{} = just, _fallback_fun), do: just
 
   @doc """
-  Conditionally keeps the given `Maybe` value based on the provided boolean.
-
-  If the boolean is `true`, the `Maybe` value is returned unchanged. If the boolean is `false`, `Nothing` is returned.
+  Retains the given `Maybe` value if `condition` is `true`, otherwise returns `Nothing`.
 
   ## Examples
 
@@ -158,8 +175,7 @@ defmodule Monex.Maybe do
   def guard(_value, false), do: nothing()
 
   @doc """
-  Filters the value inside a `Maybe` using the given `predicate`. If the predicate returns `true`,
-  the value is kept, otherwise `Nothing` is returned.
+  Filters the value inside a `Maybe` using `predicate`. If the predicate is `true`, returns `Just`; otherwise `Nothing`.
 
   ## Examples
 
@@ -180,26 +196,19 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Lifts a custom equality function into the `Maybe` context.
-
-  This allows comparing `Maybe` values with the provided `custom_eq`. Two `Just` values are compared using the custom equality function, two `Nothing` values are considered equal, and comparisons between `Just` and `Nothing` always return false.
+  Lifts an equality function to compare `Maybe` values:
+    - `Just` vs `Just`: Uses the custom equality function.
+    - `Nothing` vs `Nothing`: Always `true`.
+    - `Just` vs `Nothing` or vice versa: Always `false`.
 
   ## Examples
 
       iex> eq = Monex.Maybe.lift_eq(%{eq?: fn x, y -> x == y end})
       iex> eq.eq?.(Monex.Maybe.just(5), Monex.Maybe.just(5))
       true
-
       iex> eq.eq?.(Monex.Maybe.just(5), Monex.Maybe.just(10))
       false
-
-      iex> eq.eq?.(Monex.Maybe.nothing(), Monex.Maybe.nothing())
-      true
-
-      iex> eq.eq?.(Monex.Maybe.just(5), Monex.Maybe.nothing())
-      false
   """
-
   @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
   def lift_eq(custom_eq) do
     eq_fn = fn
@@ -216,7 +225,9 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Creates a custom ordering function for `Maybe` values using the provided `custom_ord`.
+  Adapts an ordering function to compare `Maybe` values:
+    - `Nothing` is considered less than any `Just`.
+    - Two `Just` values are compared by the provided function.
 
   ## Examples
 
@@ -224,7 +235,6 @@ defmodule Monex.Maybe do
       iex> ord.lt?.(Monex.Maybe.just(3), Monex.Maybe.just(5))
       true
   """
-
   @spec lift_ord(Ord.Utils.ord_map()) :: Ord.Utils.ord_map()
   def lift_ord(custom_ord) do
     %{
@@ -243,19 +253,15 @@ defmodule Monex.Maybe do
   @doc """
   Removes `Nothing` values from a list of `Maybe` and returns a list of unwrapped `Just` values.
 
-  This function is useful when you have a list of `Maybe` values and want to extract only the present values (`Just`), discarding any `Nothing` values.
-
-  It processes the list with a single pass, ensuring efficient filtering and extraction.
-
   ## Examples
 
-      iex> Monex.Maybe.concat([Just.new(1), Nothing.new(), Just.new(2)])
+      iex> Monex.Maybe.concat([Monex.Maybe.pure(1), Monex.Maybe.nothing(), Monex.Maybe.pure(2)])
       [1, 2]
 
-      iex> Monex.Maybe.concat([Nothing.new(), Nothing.new()])
+      iex> Monex.Maybe.concat([Monex.Maybe.nothing(), Monex.Maybe.nothing()])
       []
 
-      iex> Monex.Maybe.concat([Just.new("a"), Just.new("b"), Just.new("c")])
+      iex> Monex.Maybe.concat([Monex.Maybe.pure("a"), Monex.Maybe.pure("b"), Monex.Maybe.pure("c")])
       ["a", "b", "c"]
   """
   @spec concat([t(output)]) :: [output] when output: any()
@@ -269,25 +275,25 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Maps a function over a list, collecting unwrapped `Just` values and discarding `Nothing` values in a single pass.
-
-  This function combines mapping and filtering into one operation, making it more efficient than mapping and then calling `concat`. It applies the given function to each element of the list and immediately collects any `Just` values.
+  Maps a function over a list, collecting unwrapped `Just` values and ignoring `Nothing` in a single pass.
 
   ## Examples
 
-      iex> Monex.Maybe.concat_map([1, 2, 3, 4], fn x -> if rem(x, 2) == 0, do: Just.new(x), else: Nothing.new() end)
+      iex> Monex.Maybe.concat_map([1, 2, 3, 4], fn x ->
+      ...>   if rem(x, 2) == 0, do: Monex.Maybe.pure(x), else: Monex.Maybe.nothing()
+      ...> end)
       [2, 4]
 
       iex> Monex.Maybe.concat_map([1, nil, 3], fn
-      ...>   nil -> Nothing.new()
-      ...>   x -> Just.new(x * 2)
+      ...>   nil -> Monex.Maybe.nothing()
+      ...>   x -> Monex.Maybe.pure(x * 2)
       ...> end)
       [2, 6]
 
-      iex> Monex.Maybe.concat_map([1, 2, 3], fn x -> Just.new(x + 1) end)
+      iex> Monex.Maybe.concat_map([1, 2, 3], fn x -> Monex.Maybe.pure(x + 1) end)
       [2, 3, 4]
 
-      iex> Monex.Maybe.concat_map([], fn x -> Just.new(x) end)
+      iex> Monex.Maybe.concat_map([], fn x -> Monex.Maybe.pure(x) end)
       []
   """
   @spec concat_map([input], (input -> t(output))) :: [output] when input: any(), output: any()
@@ -302,7 +308,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Sequences a list of `Maybe` values into a `Maybe` of a list.
+  Converts a list of `Maybe` values into a `Maybe` containing a list. If any element is `Nothing`, the entire result is `Nothing`.
 
   ## Examples
 
@@ -324,12 +330,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Applies a function to each element of a list, sequencing the results into a single `Maybe`.
-
-  If the function returns `Just` for every element, the result is `Just` containing a list of transformed values.
-  If the function returns `Nothing` for any element, the traversal short-circuits and returns `Nothing`.
-
-  This function uses a fold to process the list efficiently, halting early on `Nothing` and ensuring tail-recursive safety through `Enum.reduce_while/3`.
+  Applies a function to each element of a list, collecting results into a single `Maybe`. If any call returns `Nothing`, the operation halts and returns `Nothing`.
 
   ## Examples
 
@@ -357,8 +358,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Converts an `Identity` value into a `Maybe`. If `Identity` has a value, it is converted to `Just`;
-  otherwise, it is converted to `Nothing`.
+  Converts an `Identity` value into a `Maybe`. If the value is `nil`, returns `Nothing`; otherwise `Just`.
 
   ## Examples
 
@@ -376,7 +376,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Converts an `Either` value into a `Maybe`. `Right` is converted to `Just`, `Left` is converted to `Nothing`.
+  Converts an `Either` to a `Maybe`. `Right` becomes `Just`, and `Left` becomes `Nothing`.
 
   ## Examples
 
@@ -394,7 +394,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Lifts a value into a `Maybe` based on the result of a predicate.
+  Lifts a value into `Maybe` based on a predicate. If `predicate.(value)` is `true`, returns `Just(value)`; otherwise `Nothing`.
 
   ## Examples
 
@@ -419,7 +419,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Converts `nil` to `Nothing`, and any other value to `Just`.
+  Converts `nil` to `Nothing`; any other value becomes `Just`.
 
   ## Examples
 
@@ -434,7 +434,7 @@ defmodule Monex.Maybe do
   def from_nil(value), do: just(value)
 
   @doc """
-  Converts a `Maybe` to `nil` or its wrapped value.
+  Converts a `Maybe` to its wrapped value or `nil`.
 
   ## Examples
 
@@ -450,7 +450,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Wraps a value in a `Maybe`, catching any exceptions. If an exception occurs, `Nothing` is returned.
+  Executes a function within a `Maybe` context, returning `Nothing` if an exception occurs.
 
   ## Examples
 
@@ -472,7 +472,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Converts a `Maybe` to its wrapped value, raising an exception if it is `Nothing`.
+  Extracts a value from a `Maybe`, raising an exception if `Nothing`.
 
   ## Examples
 
@@ -491,7 +491,7 @@ defmodule Monex.Maybe do
   end
 
   @doc """
-  Converts a result (`{:ok, _}` or `{:error, _}`) to a `Maybe`.
+  Converts a result tuple to a `Maybe`. `{:ok, value}` becomes `Just(value)`, while `{:error, _}` becomes `Nothing`.
 
   ## Examples
 
@@ -506,7 +506,7 @@ defmodule Monex.Maybe do
   def from_result({:error, _reason}), do: nothing()
 
   @doc """
-  Converts a `Maybe` to a result (`{:ok, value}` or `{:error, :nothing}`).
+  Converts a `Maybe` to a result tuple. `Just(value)` becomes `{:ok, value}`, while `Nothing` becomes `{:error, :nothing}`.
 
   ## Examples
 
