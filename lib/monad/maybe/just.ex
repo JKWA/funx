@@ -52,7 +52,7 @@ defimpl Monex.Monad, for: Monex.Maybe.Just do
   def ap(%Just{value: func}, %Just{value: value}),
     do: Just.pure(func.(value))
 
-  def ap(_, %Nothing{}), do: %Nothing{}
+  def ap(%Just{}, %Nothing{}), do: %Nothing{}
 
   @spec map(Just.t(value), (value -> result)) :: Just.t(result)
         when value: term(), result: term()

@@ -171,8 +171,8 @@ defmodule Monex.Maybe do
       %Monex.Maybe.Nothing{}
   """
   @spec guard(t(value), boolean) :: t(value) when value: var
-  def guard(value, true), do: value
-  def guard(_value, false), do: nothing()
+  def guard(maybe, true), do: maybe
+  def guard(_maybe, false), do: nothing()
 
   @doc """
   Filters the value inside a `Maybe` using `predicate`. If the predicate is `true`, returns `Just`; otherwise `Nothing`.
