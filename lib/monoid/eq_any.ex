@@ -20,8 +20,8 @@ defimpl Monex.Monoid, for: Monex.Monoid.Eq.Any do
 
   def append(%Any{} = eq1, %Any{} = eq2) do
     %Any{
-      eq?: fn a, b -> eq1.eq?.(a, b) or eq2.eq?.(a, b) end,
-      not_eq?: fn a, b -> eq1.not_eq?.(a, b) and eq2.not_eq?.(a, b) end
+      eq?: fn a, b -> eq1.eq?.(a, b) || eq2.eq?.(a, b) end,
+      not_eq?: fn a, b -> eq1.not_eq?.(a, b) && eq2.not_eq?.(a, b) end
     }
   end
 

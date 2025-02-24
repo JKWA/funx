@@ -19,8 +19,8 @@ defimpl Monex.Monoid, for: Monex.Monoid.Eq.All do
 
   def append(%All{} = eq1, %All{} = eq2) do
     %All{
-      eq?: fn a, b -> eq1.eq?.(a, b) and eq2.eq?.(a, b) end,
-      not_eq?: fn a, b -> eq1.not_eq?.(a, b) or eq2.not_eq?.(a, b) end
+      eq?: fn a, b -> eq1.eq?.(a, b) && eq2.eq?.(a, b) end,
+      not_eq?: fn a, b -> eq1.not_eq?.(a, b) || eq2.not_eq?.(a, b) end
     }
   end
 
