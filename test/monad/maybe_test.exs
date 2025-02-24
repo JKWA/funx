@@ -10,6 +10,7 @@ defmodule Monex.MaybeTest do
   import Monex.Foldable, only: [fold_l: 3, fold_r: 3]
   import Monex.Maybe
   import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Monex.Filterable, only: [filter: 2, filter_map: 2, guard: 2]
 
   alias Monex.{Either, Eq, Ord}
   alias Monex.Identity
@@ -206,6 +207,23 @@ defmodule Monex.MaybeTest do
     test "returns Nothing when given Nothing" do
       nothing_value = nothing()
       assert filter(nothing_value, fn _ -> true end) == nothing_value
+    end
+  end
+
+  describe "filter_map/2" do
+    test "returns transformed Just value when function returns Just" do
+      maybe_value = just(42)
+      assert filter_map(maybe_value, fn x -> just(x * 2) end) == just(84)
+    end
+
+    test "returns Nothing when function returns Nothing" do
+      maybe_value = just(42)
+      assert filter_map(maybe_value, fn _ -> nothing() end) == nothing()
+    end
+
+    test "returns Nothing when given Nothing" do
+      nothing_value = nothing()
+      assert filter_map(nothing_value, fn x -> just(x * 2) end) == nothing_value
     end
   end
 

@@ -79,6 +79,39 @@ defimpl Monex.Foldable, for: Monex.Maybe.Just do
   end
 end
 
+defimpl Monex.Filterable, for: Monex.Maybe.Just do
+  alias Monex.Maybe
+  alias Monex.Maybe.Just
+  alias Monex.Monad
+
+  @spec guard(Monex.Maybe.Just.t(value), boolean()) :: Monex.Maybe.t(value)
+        when value: var
+  def guard(%Just{} = maybe, true), do: maybe
+  def guard(%Just{}, false), do: Maybe.nothing()
+
+  @spec filter(Monex.Maybe.Just.t(value), (value -> boolean())) :: Monex.Maybe.t(value)
+        when value: var
+  def filter(%Just{} = maybe, predicate) do
+    Monad.bind(maybe, fn value ->
+      if predicate.(value) do
+        Maybe.pure(value)
+      else
+        Maybe.nothing()
+      end
+    end)
+  end
+
+  @spec filter_map(Monex.Maybe.Just.t(value), (value -> Monex.Maybe.t(result))) ::
+          Monex.Maybe.t(result)
+        when value: var, result: var
+  def filter_map(%Just{value: value}, func) do
+    case func.(value) do
+      %Just{} = just -> just
+      _ -> Maybe.nothing()
+    end
+  end
+end
+
 defimpl Monex.Eq, for: Monex.Maybe.Just do
   alias Monex.Maybe.{Just, Nothing}
   alias Monex.Eq

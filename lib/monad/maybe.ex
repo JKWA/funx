@@ -157,45 +157,6 @@ defmodule Monex.Maybe do
   def or_else(%Just{} = just, _fallback_fun), do: just
 
   @doc """
-  Retains the given `Maybe` value if `condition` is `true`, otherwise returns `Nothing`.
-
-  ## Examples
-
-      iex> Monex.Maybe.guard(Monex.Maybe.just(5), true)
-      %Monex.Maybe.Just{value: 5}
-
-      iex> Monex.Maybe.guard(Monex.Maybe.just(5), false)
-      %Monex.Maybe.Nothing{}
-
-      iex> Monex.Maybe.guard(Monex.Maybe.nothing(), true)
-      %Monex.Maybe.Nothing{}
-  """
-  @spec guard(t(value), boolean) :: t(value) when value: var
-  def guard(maybe, true), do: maybe
-  def guard(_maybe, false), do: nothing()
-
-  @doc """
-  Filters the value inside a `Maybe` using `predicate`. If the predicate is `true`, returns `Just`; otherwise `Nothing`.
-
-  ## Examples
-
-      iex> Monex.Maybe.filter(Monex.Maybe.just(5), fn x -> x > 3 end)
-      %Monex.Maybe.Just{value: 5}
-
-      iex> Monex.Maybe.filter(Monex.Maybe.just(2), fn x -> x > 3 end)
-      %Monex.Maybe.Nothing{}
-  """
-  def filter(maybe, predicate) do
-    bind(maybe, fn value ->
-      if predicate.(value) do
-        pure(value)
-      else
-        nothing()
-      end
-    end)
-  end
-
-  @doc """
   Lifts an equality function to compare `Maybe` values:
     - `Just` vs `Just`: Uses the custom equality function.
     - `Nothing` vs `Nothing`: Always `true`.

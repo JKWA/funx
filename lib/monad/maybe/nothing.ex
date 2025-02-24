@@ -58,6 +58,20 @@ defimpl Monex.Foldable, for: Monex.Maybe.Nothing do
   end
 end
 
+defimpl Monex.Filterable, for: Monex.Maybe.Nothing do
+  alias Monex.Maybe.Nothing
+
+  @spec guard(Monex.Maybe.Nothing.t(), boolean()) :: Monex.Maybe.t(any())
+  def guard(%Nothing{}, _boolean), do: %Nothing{}
+
+  @spec filter(Monex.Maybe.Nothing.t(), (any() -> boolean())) :: Monex.Maybe.t(any())
+  def filter(%Nothing{}, _predicate), do: %Nothing{}
+
+  @spec filter_map(Monex.Maybe.Nothing.t(), (any() -> Monex.Maybe.t(any()))) ::
+          Monex.Maybe.Nothing.t()
+  def filter_map(%Nothing{}, _func), do: %Nothing{}
+end
+
 defimpl Monex.Eq, for: Monex.Maybe.Nothing do
   alias Monex.Maybe.{Nothing, Just}
 
