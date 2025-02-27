@@ -98,6 +98,7 @@ defimpl Monex.Ord, for: Any do
       iex> Monex.Ord.lt?(Monex.Maybe.nothing(), Monex.Maybe.just(5))
       true
   """
+  @spec lt?(any(), any()) :: boolean()
   def lt?(a, b), do: a < b
 
   @doc """
@@ -113,6 +114,7 @@ defimpl Monex.Ord, for: Any do
       iex> Monex.Ord.le?(Monex.Maybe.just(5), Monex.Maybe.just(5))
       true
   """
+  @spec le?(any(), any()) :: boolean()
   def le?(a, b), do: a <= b
 
   @doc """
@@ -128,6 +130,7 @@ defimpl Monex.Ord, for: Any do
       iex> Monex.Ord.gt?(Monex.Maybe.just(3), Monex.Maybe.nothing())
       true
   """
+  @spec gt?(any(), any()) :: boolean()
   def gt?(a, b), do: a > b
 
   @doc """
@@ -143,5 +146,6 @@ defimpl Monex.Ord, for: Any do
       iex> Monex.Ord.ge?(Monex.Maybe.just(3), Monex.Maybe.just(5))
       false
   """
+  @spec ge?(any(), any()) :: boolean()
   def ge?(a, b), do: a >= b
 end

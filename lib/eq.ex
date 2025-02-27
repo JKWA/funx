@@ -78,6 +78,9 @@ defimpl Monex.Eq, for: Any do
   This implementation uses Elixir's built-in equality operator (`==`) to compare values.
   """
 
+  @spec eq?(any(), any()) :: boolean()
   def eq?(a, b), do: a == b
+
+  @spec not_eq?(any(), any()) :: boolean()
   def not_eq?(a, b), do: a != b
 end

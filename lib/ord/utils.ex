@@ -28,22 +28,11 @@ defmodule Monex.Ord.Utils do
       iex> ord[:lt?].("cat", "zebra")
       true
   """
-  @spec contramap((any() -> any()), module() | map()) :: %{
-          lt?: (any(), any() -> boolean()),
-          le?: (any(), any() -> boolean()),
-          gt?: (any(), any() -> boolean()),
-          ge?: (any(), any() -> boolean())
-        }
-  def contramap(f, ord) when is_atom(ord) do
-    %{
-      lt?: fn a, b -> ord.lt?(f.(a), f.(b)) end,
-      le?: fn a, b -> ord.le?(f.(a), f.(b)) end,
-      gt?: fn a, b -> ord.gt?(f.(a), f.(b)) end,
-      ge?: fn a, b -> ord.ge?(f.(a), f.(b)) end
-    }
-  end
+  @spec contramap((a -> b), module | ord_map()) :: ord_map()
+        when a: any, b: any
+  def contramap(f, ord \\ Ord) do
+    ord = to_ord_map(ord)
 
-  def contramap(f, ord) when is_map(ord) do
     %{
       lt?: fn a, b -> ord[:lt?].(f.(a), f.(b)) end,
       le?: fn a, b -> ord[:le?].(f.(a), f.(b)) end,
@@ -51,8 +40,6 @@ defmodule Monex.Ord.Utils do
       ge?: fn a, b -> ord[:ge?].(f.(a), f.(b)) end
     }
   end
-
-  def contramap(f), do: contramap(f, Ord)
 
   @doc """
   Returns the maximum of two values, with an optional custom `Ord`.
@@ -66,9 +53,12 @@ defmodule Monex.Ord.Utils do
       iex> Monex.Ord.Utils.max("cat", "zebra", ord)
       "zebra"
   """
-  @spec max(any(), any()) :: any()
+  @spec max(a, a, module | ord_map()) :: a
+        when a: any
   def max(a, b, ord \\ Ord) do
-    if (is_atom(ord) && ord.ge?(a, b)) || (is_map(ord) && ord[:ge?].(a, b)), do: a, else: b
+    ord = to_ord_map(ord)
+
+    if ord[:ge?].(a, b), do: a, else: b
   end
 
   @doc """
@@ -83,9 +73,12 @@ defmodule Monex.Ord.Utils do
       iex> Monex.Ord.Utils.min("apple", "kiwi", ord)
       "kiwi"
   """
-  @spec min(any(), any()) :: any()
+  @spec min(a, a, module | ord_map()) :: a
+        when a: any
   def min(a, b, ord \\ Ord) do
-    if (is_atom(ord) && ord.le?(a, b)) || (is_map(ord) && ord[:le?].(a, b)), do: a, else: b
+    ord = to_ord_map(ord)
+
+    if ord[:le?].(a, b), do: a, else: b
   end
 
   @doc """
@@ -102,14 +95,14 @@ defmodule Monex.Ord.Utils do
       iex> Monex.Ord.Utils.clamp(15, 1, 10)
       10
   """
-  @spec clamp(any(), any(), any(), module() | map()) :: any()
+  @spec clamp(a, a, a, module | ord_map()) :: a
+        when a: any
   def clamp(value, min, max, ord \\ Ord) do
-    lt? = if is_atom(ord), do: &ord.lt?/2, else: ord[:lt?]
-    gt? = if is_atom(ord), do: &ord.gt?/2, else: ord[:gt?]
+    ord = to_ord_map(ord)
 
     cond do
-      lt?.(value, min) -> min
-      gt?.(value, max) -> max
+      ord[:lt?].(value, min) -> min
+      ord[:gt?].(value, max) -> max
       true -> value
     end
   end
@@ -128,10 +121,12 @@ defmodule Monex.Ord.Utils do
       iex> Monex.Ord.Utils.between(11, 1, 10)
       false
   """
-  @spec between(any(), any(), any(), module() | map()) :: boolean()
+  @spec between(a, a, a, module | ord_map()) :: boolean()
+        when a: any
   def between(value, min, max, ord \\ Ord) do
-    (is_atom(ord) && ord.ge?(value, min) && ord.le?(value, max)) ||
-      (is_map(ord) && ord[:ge?].(value, min) && ord[:le?].(value, max))
+    ord = to_ord_map(ord)
+
+    ord[:ge?].(value, min) && ord[:le?].(value, max)
   end
 
   @doc """
@@ -148,14 +143,14 @@ defmodule Monex.Ord.Utils do
       iex> Monex.Ord.Utils.compare(9, 4)
       :gt
   """
-  @spec compare(any(), any(), module() | map()) :: :lt | :eq | :gt
+  @spec compare(a, a, module | ord_map()) :: :lt | :eq | :gt
+        when a: any
   def compare(a, b, ord \\ Ord) do
-    lt? = if is_atom(ord), do: &ord.lt?/2, else: ord[:lt?]
-    gt? = if is_atom(ord), do: &ord.gt?/2, else: ord[:gt?]
+    ord = to_ord_map(ord)
 
     cond do
-      lt?.(a, b) -> :lt
-      gt?.(a, b) -> :gt
+      ord[:lt?].(a, b) -> :lt
+      ord[:gt?].(a, b) -> :gt
       true -> :eq
     end
   end
@@ -169,24 +164,15 @@ defmodule Monex.Ord.Utils do
       iex> ord[:lt?].(10, 5)
       true
   """
-  @spec reverse(module() | ord_map()) :: ord_map()
-  def reverse(ord \\ Ord)
+  @spec reverse(module | ord_map()) :: ord_map()
+  def reverse(ord \\ Ord) do
+    ord = to_ord_map(ord)
 
-  def reverse(ord) when is_atom(ord) do
     %{
-      lt?: fn a, b -> ord.gt?(a, b) end,
-      le?: fn a, b -> ord.ge?(a, b) end,
-      gt?: fn a, b -> ord.lt?(a, b) end,
-      ge?: fn a, b -> ord.le?(a, b) end
-    }
-  end
-
-  def reverse(%{lt?: lt?, le?: le?, gt?: gt?, ge?: ge?}) do
-    %{
-      lt?: gt?,
-      le?: ge?,
-      gt?: lt?,
-      ge?: le?
+      lt?: ord[:gt?],
+      le?: ord[:ge?],
+      gt?: ord[:lt?],
+      ge?: ord[:le?]
     }
   end
 
@@ -220,8 +206,10 @@ defmodule Monex.Ord.Utils do
       iex> eq[:eq?].(5, 5)
       true
   """
-  @spec to_eq(Monex.Ord.t()) :: Monex.Eq.t()
+  @spec to_eq(Monex.Ord.t() | ord_map()) :: Monex.Eq.t()
   def to_eq(ord \\ Ord) do
+    ord = to_ord_map(ord)
+
     %{
       eq?: fn a, b -> compare(a, b, ord) == :eq end,
       not_eq?: fn a, b -> compare(a, b, ord) != :eq end
@@ -266,5 +254,16 @@ defmodule Monex.Ord.Utils do
   @spec concat([Monex.Monoid.Ord.t()]) :: Monex.Monoid.Ord.t()
   def concat(ord_list) when is_list(ord_list) do
     Monoid.Utils.concat(%Monex.Monoid.Ord{}, ord_list)
+  end
+
+  defp to_ord_map(%{} = ord_map), do: ord_map
+
+  defp to_ord_map(module) when is_atom(module) do
+    %{
+      lt?: &module.lt?/2,
+      le?: &module.le?/2,
+      gt?: &module.gt?/2,
+      ge?: &module.ge?/2
+    }
   end
 end

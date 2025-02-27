@@ -28,21 +28,16 @@ defmodule Monex.Eq.Utils do
       iex> eq.eq?.(%{age: 30}, %{age: 25})
       false
   """
-  def contramap(f, module) when is_atom(module) do
+  @spec contramap((a -> b), module | eq_map()) :: eq_map()
+        when a: any, b: any
+  def contramap(f, eq \\ Eq) do
+    eq = to_eq_map(eq)
+
     %{
-      eq?: fn a, b -> module.eq?(f.(a), f.(b)) end,
-      not_eq?: fn a, b -> module.not_eq?(f.(a), f.(b)) end
+      eq?: fn a, b -> eq[:eq?].(f.(a), f.(b)) end,
+      not_eq?: fn a, b -> eq[:not_eq?].(f.(a), f.(b)) end
     }
   end
-
-  def contramap(f, %{} = custom_map) do
-    %{
-      eq?: fn a, b -> custom_map[:eq?].(f.(a), f.(b)) end,
-      not_eq?: fn a, b -> custom_map[:not_eq?].(f.(a), f.(b)) end
-    }
-  end
-
-  def contramap(f), do: contramap(f, Eq)
 
   @doc """
   Checks equality of values by applying a projection function, using a specified or default `Eq`.
@@ -56,15 +51,12 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 25})
       false
   """
-  def eq_by?(f, a, b, module) when is_atom(module) do
-    module.eq?(f.(a), f.(b))
+  @spec eq_by?((a -> b), a, a, module | eq_map()) :: boolean()
+        when a: any, b: any
+  def eq_by?(f, a, b, eq \\ Eq) do
+    eq = to_eq_map(eq)
+    eq[:eq?].(f.(a), f.(b))
   end
-
-  def eq_by?(f, a, b, %{} = custom_map) do
-    custom_map[:eq?].(f.(a), f.(b))
-  end
-
-  def eq_by?(f, a, b), do: eq_by?(f, a, b, Eq)
 
   @doc """
   Returns true if two values are equal, using a specified or default `Eq`.
@@ -76,15 +68,12 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?("foo", "bar")
       false
   """
-  def eq?(a, b, module) when is_atom(module) do
-    module.eq?(a, b)
+  @spec eq?(a, a, module | eq_map()) :: boolean()
+        when a: any
+  def eq?(a, b, eq \\ Eq) do
+    eq = to_eq_map(eq)
+    eq[:eq?].(a, b)
   end
-
-  def eq?(a, b, %{} = custom_map) do
-    custom_map[:eq?].(a, b)
-  end
-
-  def eq?(a, b), do: eq?(a, b, Eq)
 
   @doc """
   Returns false if two values are not equal, using a specified or default `Eq`.
@@ -96,15 +85,12 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.not_eq?("foo", "foo")
       false
   """
-  def not_eq?(a, b, module) when is_atom(module) do
-    module.not_eq?(a, b)
+  @spec not_eq?(a, a, module | eq_map()) :: boolean()
+        when a: any
+  def not_eq?(a, b, eq \\ Eq) do
+    eq = to_eq_map(eq)
+    eq[:not_eq?].(a, b)
   end
-
-  def not_eq?(a, b, %{} = custom_map) do
-    custom_map[:not_eq?].(a, b)
-  end
-
-  def not_eq?(a, b), do: not_eq?(a, b, Eq)
 
   @doc """
   Combines two equality comparators using the `Eq.All` monoid.
@@ -123,6 +109,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
+  @spec append_all(boolean(), boolean()) :: boolean()
   def append_all(a, b) do
     Monoid.Utils.append(%Monoid.Eq.All{}, a, b)
   end
@@ -143,6 +130,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
       false
   """
+  @spec append_any(boolean(), boolean()) :: boolean()
   def append_any(a, b) do
     Monoid.Utils.append(%Monoid.Eq.Any{}, a, b)
   end
@@ -163,6 +151,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
+  @spec concat_all([boolean()]) :: boolean()
   def concat_all(eq_list) when is_list(eq_list) do
     Monoid.Utils.concat(%Monoid.Eq.All{}, eq_list)
   end
@@ -183,6 +172,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
       false
   """
+  @spec concat_any([boolean()]) :: boolean()
   def concat_any(eq_list) when is_list(eq_list) do
     Monoid.Utils.concat(%Monoid.Eq.Any{}, eq_list)
   end
@@ -200,13 +190,20 @@ defmodule Monex.Eq.Utils do
       iex> Enum.filter([%{name: "Alice"}, %{name: "Bob"}], predicate)
       [%{name: "Alice"}]
   """
-  @spec to_predicate(any(), module() | map()) :: (any() -> boolean())
+  @spec to_predicate(a, module | eq_map()) :: (a -> boolean())
+        when a: any
   def to_predicate(target, eq \\ Eq) do
-    fn elem ->
-      case eq do
-        module when is_atom(module) -> module.eq?(elem, target)
-        %{} = custom_map -> custom_map[:eq?].(elem, target)
-      end
-    end
+    eq = to_eq_map(eq)
+
+    fn elem -> eq[:eq?].(elem, target) end
+  end
+
+  defp to_eq_map(%{} = eq_map), do: eq_map
+
+  defp to_eq_map(module) when is_atom(module) do
+    %{
+      eq?: &module.eq?/2,
+      not_eq?: &module.not_eq?/2
+    }
   end
 end
