@@ -45,7 +45,8 @@ defmodule Monex.Eq.UtilsTest do
 
     test "uses a custom map with an eq? function for equality check" do
       custom_eq = %{
-        eq?: fn a, b -> String.downcase(a) == String.downcase(b) end
+        eq?: fn a, b -> String.downcase(a) == String.downcase(b) end,
+        not_eq?: fn a, b -> String.downcase(a) != String.downcase(b) end
       }
 
       assert Utils.eq?("Alice", "ALICE", custom_eq) == true
@@ -72,7 +73,8 @@ defmodule Monex.Eq.UtilsTest do
       person3 = %{name: "Bob", age: 30}
 
       custom_eq = %{
-        eq?: fn a, b -> String.downcase(a) == String.downcase(b) end
+        eq?: fn a, b -> String.downcase(a) == String.downcase(b) end,
+        not_eq?: fn a, b -> String.downcase(a) != String.downcase(b) end
       }
 
       assert Utils.eq_by?(& &1.name, person1, person2, custom_eq) == true
@@ -144,7 +146,8 @@ defmodule Monex.Eq.UtilsTest do
 
   def within_5_eq do
     %{
-      eq?: fn a, b -> abs(a - b) <= 5 end
+      eq?: fn a, b -> abs(a - b) <= 5 end,
+      not_eq?: fn a, b -> not within_5_eq()[:eq?].(a, b) end
     }
   end
 
@@ -182,7 +185,8 @@ defmodule Monex.Eq.UtilsTest do
       eq?: fn
         %Maybe.Just{value: a}, %Maybe.Just{value: b} -> abs(a - b) <= 5
         _, _ -> false
-      end
+      end,
+      not_eq?: fn a, b -> not within_5_eq_maybe()[:eq?].(a, b) end
     }
   end
 

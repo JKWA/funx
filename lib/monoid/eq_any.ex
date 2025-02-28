@@ -4,6 +4,10 @@ defmodule Monex.Monoid.Eq.Any do
   @moduledoc """
   A Monoid implementation for equality checks for Any.
   """
+  @type t :: %__MODULE__{
+          eq?: (any(), any() -> boolean()),
+          not_eq?: (any(), any() -> boolean())
+        }
 
   defstruct eq?: &Monex.Monoid.Eq.Any.default_eq?/2,
             not_eq?: &Monex.Monoid.Eq.Any.default_not_eq?/2

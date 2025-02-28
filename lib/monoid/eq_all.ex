@@ -4,6 +4,12 @@ defmodule Monex.Monoid.Eq.All do
   @moduledoc """
   A Monoid implementation for equality checks for All.
   """
+
+  @type t :: %__MODULE__{
+          eq?: (any(), any() -> boolean()),
+          not_eq?: (any(), any() -> boolean())
+        }
+
   defstruct eq?: &Monex.Monoid.Eq.All.default_eq?/2,
             not_eq?: &Monex.Monoid.Eq.All.default_not_eq?/2
 

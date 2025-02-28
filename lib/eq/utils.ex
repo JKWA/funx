@@ -10,6 +10,8 @@ defmodule Monex.Eq.Utils do
           not_eq?: (any(), any() -> boolean())
         }
 
+  @type eq_t() :: Monex.Eq.t() | eq_map()
+
   alias Monex.Eq
   alias Monex.Monoid
 
@@ -28,7 +30,7 @@ defmodule Monex.Eq.Utils do
       iex> eq.eq?.(%{age: 30}, %{age: 25})
       false
   """
-  @spec contramap((a -> b), module | eq_map()) :: eq_map()
+  @spec contramap((a -> b), eq_t()) :: eq_map()
         when a: any, b: any
   def contramap(f, eq \\ Eq) do
     eq = to_eq_map(eq)
@@ -51,7 +53,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 25})
       false
   """
-  @spec eq_by?((a -> b), a, a, module | eq_map()) :: boolean()
+  @spec eq_by?((a -> b), a, a, eq_t()) :: boolean()
         when a: any, b: any
   def eq_by?(f, a, b, eq \\ Eq) do
     eq = to_eq_map(eq)
@@ -68,7 +70,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?("foo", "bar")
       false
   """
-  @spec eq?(a, a, module | eq_map()) :: boolean()
+  @spec eq?(a, a, eq_t()) :: boolean()
         when a: any
   def eq?(a, b, eq \\ Eq) do
     eq = to_eq_map(eq)
@@ -85,7 +87,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.not_eq?("foo", "foo")
       false
   """
-  @spec not_eq?(a, a, module | eq_map()) :: boolean()
+  @spec not_eq?(a, a, eq_t()) :: boolean()
         when a: any
   def not_eq?(a, b, eq \\ Eq) do
     eq = to_eq_map(eq)
@@ -109,7 +111,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
-  @spec append_all(boolean(), boolean()) :: boolean()
+  @spec append_all(Monoid.Eq.All.t(), Monoid.Eq.All.t()) :: Monoid.Eq.All.t()
   def append_all(a, b) do
     Monoid.Utils.append(%Monoid.Eq.All{}, a, b)
   end
@@ -130,7 +132,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
       false
   """
-  @spec append_any(boolean(), boolean()) :: boolean()
+  @spec append_any(Monoid.Eq.Any.t(), Monoid.Eq.Any.t()) :: Monoid.Eq.Any.t()
   def append_any(a, b) do
     Monoid.Utils.append(%Monoid.Eq.Any{}, a, b)
   end
@@ -151,7 +153,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
-  @spec concat_all([boolean()]) :: boolean()
+  @spec concat_all([Monoid.Eq.All.t()]) :: Monoid.Eq.All.t()
   def concat_all(eq_list) when is_list(eq_list) do
     Monoid.Utils.concat(%Monoid.Eq.All{}, eq_list)
   end
@@ -172,7 +174,7 @@ defmodule Monex.Eq.Utils do
       iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
       false
   """
-  @spec concat_any([boolean()]) :: boolean()
+  @spec concat_any([Monoid.Eq.Any.t()]) :: Monoid.Eq.Any.t()
   def concat_any(eq_list) when is_list(eq_list) do
     Monoid.Utils.concat(%Monoid.Eq.Any{}, eq_list)
   end
@@ -190,7 +192,7 @@ defmodule Monex.Eq.Utils do
       iex> Enum.filter([%{name: "Alice"}, %{name: "Bob"}], predicate)
       [%{name: "Alice"}]
   """
-  @spec to_predicate(a, module | eq_map()) :: (a -> boolean())
+  @spec to_predicate(a, eq_t()) :: (a -> boolean())
         when a: any
   def to_predicate(target, eq \\ Eq) do
     eq = to_eq_map(eq)
@@ -198,7 +200,10 @@ defmodule Monex.Eq.Utils do
     fn elem -> eq[:eq?].(elem, target) end
   end
 
-  defp to_eq_map(%{} = eq_map), do: eq_map
+  defp to_eq_map(%{eq?: eq_fun, not_eq?: not_eq_fun} = eq_map)
+       when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) do
+    eq_map
+  end
 
   defp to_eq_map(module) when is_atom(module) do
     %{
