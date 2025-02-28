@@ -1,6 +1,7 @@
 defmodule Monex.EnumTest do
   use ExUnit.Case, async: true
   alias Monex.Enum
+  doctest Monex.Enum
 
   describe "uniq/2" do
     test "removes duplicates" do
