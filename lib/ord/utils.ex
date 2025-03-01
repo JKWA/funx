@@ -58,9 +58,10 @@ defmodule Monex.Ord.Utils do
   @spec max(a, a, ord_t()) :: a
         when a: any
   def max(a, b, ord \\ Ord) do
-    ord = to_ord_map(ord)
-
-    if ord[:ge?].(a, b), do: a, else: b
+    case compare(a, b, ord) do
+      :lt -> b
+      _ -> a
+    end
   end
 
   @doc """
@@ -78,9 +79,10 @@ defmodule Monex.Ord.Utils do
   @spec min(a, a, ord_t()) :: a
         when a: any
   def min(a, b, ord \\ Ord) do
-    ord = to_ord_map(ord)
-
-    if ord[:le?].(a, b), do: a, else: b
+    case compare(a, b, ord) do
+      :gt -> b
+      _ -> a
+    end
   end
 
   @doc """
@@ -100,13 +102,9 @@ defmodule Monex.Ord.Utils do
   @spec clamp(a, a, a, ord_t()) :: a
         when a: any
   def clamp(value, min, max, ord \\ Ord) do
-    ord = to_ord_map(ord)
-
-    cond do
-      ord[:lt?].(value, min) -> min
-      ord[:gt?].(value, max) -> max
-      true -> value
-    end
+    value
+    |> max(min, ord)
+    |> min(max, ord)
   end
 
   @doc """
@@ -126,9 +124,7 @@ defmodule Monex.Ord.Utils do
   @spec between(a, a, a, ord_t()) :: boolean()
         when a: any
   def between(value, min, max, ord \\ Ord) do
-    ord = to_ord_map(ord)
-
-    ord[:ge?].(value, min) && ord[:le?].(value, max)
+    compare(value, min, ord) != :lt && compare(value, max, ord) != :gt
   end
 
   @doc """
@@ -210,8 +206,6 @@ defmodule Monex.Ord.Utils do
   """
   @spec to_eq(ord_t()) :: Monex.Eq.Utils.eq_map()
   def to_eq(ord \\ Ord) do
-    ord = to_ord_map(ord)
-
     %{
       eq?: fn a, b -> compare(a, b, ord) == :eq end,
       not_eq?: fn a, b -> compare(a, b, ord) != :eq end
@@ -258,14 +252,14 @@ defmodule Monex.Ord.Utils do
     Monoid.Utils.concat(%Monex.Monoid.Ord{}, ord_list)
   end
 
-  defp to_ord_map(%{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun} = ord_map)
-       when is_function(lt_fun, 2) and
-              is_function(le_fun, 2) and
-              is_function(gt_fun, 2) and
-              is_function(ge_fun, 2),
-       do: ord_map
+  def to_ord_map(%{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun} = ord_map)
+      when is_function(lt_fun, 2) and
+             is_function(le_fun, 2) and
+             is_function(gt_fun, 2) and
+             is_function(ge_fun, 2),
+      do: ord_map
 
-  defp to_ord_map(module) when is_atom(module) do
+  def to_ord_map(module) when is_atom(module) do
     %{
       lt?: &module.lt?/2,
       le?: &module.le?/2,

@@ -178,6 +178,14 @@ defmodule Monex.Ord.UtilsTest do
     test "compares 'banana' and 'apple' by length", %{string_length: string_length} do
       assert string_length.lt?.("banana", "apple") == false
       assert string_length.lt?.("apple", "banana") == true
+      assert string_length.gt?.("banana", "apple") == true
+      assert string_length.gt?.("apple", "banana") == false
+      assert string_length.ge?.("banana", "apple") == true
+      assert string_length.ge?.("apple", "banana") == false
+      assert string_length.ge?.("apple", "apple") == true
+      assert string_length.le?.("banana", "apple") == false
+      assert string_length.le?.("apple", "banana") == true
+      assert string_length.le?.("apple", "apple") == true
     end
 
     test "returns the maximum of two strings by length", %{string_length: string_length} do
