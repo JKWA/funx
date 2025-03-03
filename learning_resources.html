@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="monex v0.1.0">
+
+
+    <title>Learning Resources — monex v0.1.0</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-7F7EFC5D.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+monex
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of monex</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/LEARNING_RESOURCES.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+
+    <span>Learning Resources</span>
+  </h1>
+
+<h2 id="the-basics-of-a-monad" class="section-heading">
+  <a href="#the-basics-of-a-monad" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">The Basics of a Monad</span>
+</h2>
+<h3 id="elixir-and-functors-map-in-monads" class="section-heading">
+  <a href="#elixir-and-functors-map-in-monads" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/09/01/fp-map.html">Elixir and Functors: Map in Monads</a></span>
+</h3>
+<p>This post introduces <strong>functors</strong>—structures that use <code class="inline">map</code> to apply transformations to values within a structure. We’ll look at how the <a href="Monex.Identity.html"><code class="inline">Monex.Identity</code></a>, <a href="Monex.Maybe.html"><code class="inline">Monex.Maybe</code></a>, and <a href="Monex.Either.html"><code class="inline">Monex.Either</code></a> monads implement <code class="inline">map</code>, showcasing the unique context each brings to this process.</p><h3 id="elixir-and-functors-apply-in-monads" class="section-heading">
+  <a href="#elixir-and-functors-apply-in-monads" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/09/05/fp-ap.html">Elixir and Functors: Apply in Monads</a></span>
+</h3>
+<p>This post introduces <strong>applicatives</strong>—structures that extend functors by allowing values within a context to be applied to functions in the same context using <code class="inline">ap</code>. We’ll explore how the <a href="Monex.Identity.html"><code class="inline">Monex.Identity</code></a>, <a href="Monex.Maybe.html"><code class="inline">Monex.Maybe</code></a>, and <a href="Monex.Either.html"><code class="inline">Monex.Either</code></a> monads implement <code class="inline">ap</code> within their unique contexts.</p><h3 id="elixir-and-monads-bind-in-monads" class="section-heading">
+  <a href="#elixir-and-monads-bind-in-monads" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/09/03/fp-bind.html">Elixir and Monads: Bind in Monads</a></span>
+</h3>
+<p>This post introduces <strong>monads</strong>, structures that extend applicatives by adding <code class="inline">bind</code> for chaining and flattening a sequence of transformations within the same context. We’ll explore how the <a href="Monex.Identity.html"><code class="inline">Monex.Identity</code></a>, <a href="Monex.Maybe.html"><code class="inline">Monex.Maybe</code></a>, and <a href="Monex.Either.html"><code class="inline">Monex.Either</code></a> monads implement <code class="inline">bind</code> within their unique contexts.</p><h2 id="ordering-in-monads" class="section-heading">
+  <a href="#ordering-in-monads" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Ordering in Monads</span>
+</h2>
+<h3 id="monad-basics-order" class="section-heading">
+  <a href="#monad-basics-order" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/09/10/fp-ord.html">Monad Basics: Order</a></span>
+</h3>
+<p>This post explores custom comparison logic in Elixir with Monex's <a href="Monex.Ord.Utils.html"><code class="inline">Monex.Ord.Utils</code></a> utilities. We’ll examine how Monex enables meaningful comparisons for both plain and monadic values, allowing flexible ordering beyond basic operators.</p><h3 id="monad-basics-composing-order" class="section-heading">
+  <a href="#monad-basics-composing-order" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/09/10/fp-ord-compose.html">Monad Basics: Composing Order</a></span>
+</h3>
+<p>Building on <a href="Monex.Ord.Utils.html"><code class="inline">Monex.Ord.Utils</code></a>, this post covers <code class="inline">contramap</code>, <code class="inline">comparator</code>, and <code class="inline">reverse</code> utilities for composing complex sorting logic from simple, modular components.</p><h2 id="defining-equality-and-ordering-in-the-domain" class="section-heading">
+  <a href="#defining-equality-and-ordering-in-the-domain" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Defining Equality and Ordering in the Domain</span>
+</h2>
+<h3 id="fp-basics-domain-specific-eq-and-ord" class="section-heading">
+  <a href="#fp-basics-domain-specific-eq-and-ord" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/09/16/fp-domain.html">FP Basics: Domain-Specific Eq and Ord</a></span>
+</h3>
+<p>This post explores how to centralize equality (<a href="Monex.Eq.html"><code class="inline">Monex.Eq</code></a>) and ordering (<a href="Monex.Ord.html"><code class="inline">Monex.Ord</code></a>) in the domain using Elixir’s Monex library. By defining <code class="inline">Eq</code> and <code class="inline">Ord</code> in the <a href="Example.User.html"><code class="inline">Example.User</code></a> module, the application gains consistent, domain-specific rules for comparing and ordering users. This approach keeps equality and ordering logic adaptable, maintainable, and aligned with the domain’s evolving requirements.</p><h2 id="building-monads-in-elixir" class="section-heading">
+  <a href="#building-monads-in-elixir" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Building Monads in Elixir</span>
+</h2>
+<h3 id="elixir-and-monads-naming-challenges" class="section-heading">
+  <a href="#elixir-and-monads-naming-challenges" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/06/10/monad-naming-conventions.html">Elixir and Monads: Naming Challenges</a></span>
+</h3>
+<p>This post explores the challenges of learning functional programming, which include mastering abstractions grounded in mathematical principles and navigating the moving target of naming conventions across languages and libraries. It also discusses the naming decisions for the Monex library, which brings monadic structures to Elixir.</p><h3 id="elixir-and-monads-identity" class="section-heading">
+  <a href="#elixir-and-monads-identity" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/06/15/monad-identity.html">Elixir and Monads: Identity</a></span>
+</h3>
+<p>This post introduces the fundamentals of the <a href="Monex.Identity.html"><code class="inline">Monex.Identity</code></a> monad, the simplest monad used to wrap and operate on a single value. It lays the groundwork for understanding monads in Elixir by explaining key functions like <code class="inline">map</code>, <code class="inline">bind</code>, and <code class="inline">ap</code>, and their implementation using Elixir's <code class="inline">defprotocol</code>. By starting with the basic Identity monad, this post sets the stage for more complex monads to follow.</p><h3 id="elixir-and-monads-equality-and-order" class="section-heading">
+  <a href="#elixir-and-monads-equality-and-order" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/06/17/eq-ord.html">Elixir and Monads: Equality and Order</a></span>
+</h3>
+<p>Building on the Identity monad, this post introduces custom protocols to handle equality and ordering within monads. It explains the <a href="Monex.Eq.html"><code class="inline">Monex.Eq</code></a> protocol for comparing monadic values and the <a href="Monex.Ord.html"><code class="inline">Monex.Ord</code></a> protocol for ordering them, extending the principles of the Identity monad with new functionality. These protocols show how monads establish consistent comparisons and ordering across different contexts.</p><h3 id="elixir-and-monads-maybe" class="section-heading">
+  <a href="#elixir-and-monads-maybe" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/06/20/monad-maybe.html">Elixir and Monads: Maybe</a></span>
+</h3>
+<p>The <a href="Monex.Maybe.html"><code class="inline">Monex.Maybe</code></a> monad expands on the previous concepts by introducing the notion of optional values, represented by <code class="inline">Just</code> and <code class="inline">Nothing</code>. This post demonstrates how to handle missing values safely without null checks, extending the Identity monad’s principles to more practical scenarios. It also shows how the <code class="inline">Eq</code> and <code class="inline">Ord</code> protocols apply to the <code class="inline">Maybe</code> context, while introducing operations like <code class="inline">filter</code>, <code class="inline">fold</code>, and <code class="inline">get_or_else</code>.</p><h3 id="elixir-and-monads-either" class="section-heading">
+  <a href="#elixir-and-monads-either" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/06/25/monad-either.html">Elixir and Monads: Either</a></span>
+</h3>
+<p>The <a href="Monex.Either.html"><code class="inline">Monex.Either</code></a> monad extends the <a href="Monex.Maybe.html"><code class="inline">Monex.Maybe</code></a> monad by handling two distinct possibilities: <code class="inline">Right</code> (success) and <code class="inline">Left</code> (error). This post explores how <code class="inline">Either</code> differs from <code class="inline">Maybe</code>, particularly in managing error propagation. Functions like <code class="inline">ap</code>, <code class="inline">bind</code>, and <code class="inline">map</code> are adapted to handle success and failure paths, while <code class="inline">fold</code>, <code class="inline">sequence</code>, and <code class="inline">traverse</code> enable working with lists of <code class="inline">Either</code> values. This demonstrates how monads manage multiple outcomes and deal with success and error paths in effectful code.</p><h3 id="elixir-and-monads-example" class="section-heading">
+  <a href="#elixir-and-monads-example" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/06/27/monad-example.html">Elixir and Monads: Example</a></span>
+</h3>
+<p>This post compares two approaches to handling business logic in Elixir: a typical tuple-based approach and monadic composition. It demonstrates how monads, specifically the <a href="Monex.Either.html"><code class="inline">Monex.Either</code></a> monad, abstract away error handling and streamline operations by leveraging functions like <code class="inline">bind</code> and <code class="inline">map</code>. This post shows how monads can enhance composability and maintainability in complex workflows.</p><h3 id="elixir-and-monads-effect" class="section-heading">
+  <a href="#elixir-and-monads-effect" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/07/07/monad-lazy-task-either.html">Elixir and Monads: Effect</a></span>
+</h3>
+<p>Here’s the updated paragraph:</p><p><a href="Monex.Effect.html"><code class="inline">Monex.Effect</code></a> combines error handling with deferred execution, enabling the composition of asynchronous operations that may fail. This post explains how <a href="Monex.Effect.html"><code class="inline">Monex.Effect</code></a> manages both success (<code class="inline">Right</code>) and error (<code class="inline">Left</code>) contexts while deferring execution until <code class="inline">run/1</code> is called. It covers key functions like <code class="inline">bind</code>, <code class="inline">map</code>, and <code class="inline">ap</code>, demonstrating how to integrate error handling into complex, asynchronous workflows in a clean, functional style.</p><h3 id="elixir-and-monads-async-example" class="section-heading">
+  <a href="#elixir-and-monads-async-example" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/07/09/monad-example-2.html">Elixir and Monads: Async Example</a></span>
+</h3>
+<p>Continuing from <a href="https://www.joekoski.com/blog/2024/06/27/monad-example.html">the previous post</a> on handling business logic with the <a href="Monex.Either.html"><code class="inline">Monex.Either</code></a> monad, this post extends the discussion to asynchronous operations using <a href="Monex.Effect.html"><code class="inline">Monex.Effect</code></a>. It demonstrates how monadic composition can be applied to handle tasks like input validation and availability checks while managing both success (<code class="inline">Right</code>) and failure (<code class="inline">Left</code>) paths. By deferring execution with <a href="Monex.Effect.html"><code class="inline">Monex.Effect</code></a>, asynchronous workflows are structured in the same way as synchronous ones, maintaining consistency and composability in error handling.</p><h3 id="elixir-and-applicatives-validation" class="section-heading">
+  <a href="#elixir-and-applicatives-validation" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/07/11/applicative-validation.html">Elixir and Applicatives: Validation</a></span>
+</h3>
+<p>This post explores how the applicative approach to validation allows the collection of all errors without short-circuiting, unlike monads. It introduces <code class="inline">sequence_a/2</code> (sequence applicative) in the <a href="Monex.Either.html"><code class="inline">Monex.Either</code></a> and <a href="Monex.Effect.html"><code class="inline">Monex.Effect</code></a>, along with <code class="inline">validate/2</code>, which accumulates errors rather than stopping at the first failure. This post highlights the benefits of applicative validation in scenarios requiring multiple checks.</p><h3 id="elixir-and-monads-operators" class="section-heading">
+  <a href="#elixir-and-monads-operators" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/07/14/monad-operators.html">Elixir and Monads: Operators</a></span>
+</h3>
+<p>Inspired by Haskell's monadic operators, this post introduces custom operators for working with monads in Elixir using macros. It defines operators like <code class="inline">~&gt;</code>, <code class="inline">~&gt;&gt;</code>, and <code class="inline">&lt;&lt;~</code> for <code class="inline">map</code>, <code class="inline">bind</code>, and <code class="inline">ap</code> functions, enabling more concise and expressive monadic composition. The post also explores the trade-offs between conciseness and readability when using custom operators.</p><h3 id="elixir-and-monads-reader" class="section-heading">
+  <a href="#elixir-and-monads-reader" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><a href="https://www.joekoski.com/blog/2024/07/18/mondad-reader.html">Elixir and Monads: Reader</a></span>
+</h3>
+<p>The Reader monad, also known as the Environment monad, brings dependency injection to functional programming, allowing computations to access shared context without directly passing it to every function. This post covers <a href="Monex.Reader.html"><code class="inline">Monex.Reader</code></a>, demonstrating how it enables environment-based logic using <code class="inline">ask</code> and <code class="inline">run</code> for dynamic configuration injection.</p>
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="changelog.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Changelog
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+      <a href="license.html" class="bottom-actions-button" rel="next">
+        <span class="subheader">
+          Next Page →
+        </span>
+        <span class="title">
+LICENSE
+        </span>
+      </a>
+
+  </div>
+</div>
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/monex/0.1.0" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/monex/0.1.0">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/monex/0.1.0/show/LEARNING_RESOURCES.md">current file</a>)
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="monex.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>

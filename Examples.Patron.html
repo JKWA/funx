@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="monex v0.1.0">
+
+
+    <title>Examples.Patron — monex v0.1.0</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-7F7EFC5D.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="modules" class="page-module">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+monex
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of monex</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/examples/patron_example.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+    <span translate="no">Examples.Patron</span> 
+    <small class="app-vsn" translate="no">(monex v0.1.0)</small>
+
+  </h1>
+
+
+    <section id="moduledoc">
+<p>The <a href="Examples.Patron.html"><code class="inline">Examples.Patron</code></a> module provides an example of how to represent a patron visiting a venue or amusement park.
+It shows how to use Monex’s <code class="inline">Predicate</code> module to combine and work with multiple conditions in an easy-to-understand way.</p><p>This module covers:</p><ul><li>Creating a <code class="inline">Patron</code> with <a href="#new/3"><code class="inline">new/3</code></a>.</li><li>Checking the patron’s height using <a href="#too_short?/1"><code class="inline">too_short?/1</code></a>, <a href="#too_tall?/1"><code class="inline">too_tall?/1</code></a>, and <a href="#valid_height?/1"><code class="inline">valid_height?/1</code></a>.</li><li>Checking and adjusting the number of tickets with <a href="#has_ticket?/1"><code class="inline">has_ticket?/1</code></a>, <a href="#increment_ticket/1"><code class="inline">increment_ticket/1</code></a>, and <a href="#decrement_ticket/1"><code class="inline">decrement_ticket/1</code></a>.</li></ul><p>You will also learn how to use predicates, a powerful concept in Monex, to validate multiple conditions about a patron.</p>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+
+      </div>
+
+    </div>
+
+</div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#decrement_ticket/1" data-no-tooltip translate="no">decrement_ticket(patron)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Decrements the number of tickets a patron has by 1.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#has_ticket?/1" data-no-tooltip translate="no">has_ticket?(patron)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Checks if the patron has at least one ticket.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#increment_ticket/1" data-no-tooltip translate="no">increment_ticket(patron)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Increments the number of tickets a patron has by 1.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#new/3" data-no-tooltip translate="no">new(name, height, tickets)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Creates a new <code class="inline">Patron</code> with the given <code class="inline">name</code>, <code class="inline">height</code>, and number of <code class="inline">tickets</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#too_short?/1" data-no-tooltip translate="no">too_short?(patron)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Checks if the patron is too short (less than 150 cm).</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#too_tall?/1" data-no-tooltip translate="no">too_tall?(patron)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Checks if the patron is too tall (more than 200 cm).</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#valid_height?/1" data-no-tooltip translate="no">valid_height?(patron)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Checks if the patron's height is valid, meaning they are neither too short nor too tall.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+    <div class="types-list">
+<section class="detail" id="t:t/0">
+
+  <div class="detail-header">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">t()</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/examples/patron_example.ex#L19" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> t() :: %Examples.Patron{height: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">integer</a>(), name: <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>(), tickets: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">integer</a>()}</pre>
+
+      </div>
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+    <div class="functions-list">
+<section class="detail" id="decrement_ticket/1">
+
+  <div class="detail-header">
+    <a href="#decrement_ticket/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">decrement_ticket(patron)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/examples/patron_example.ex#L147" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> decrement_ticket(<a href="#t:t/0">t</a>()) :: <a href="#t:t/0">t</a>()</pre>
+
+      </div>
+
+<p>Decrements the number of tickets a patron has by 1.</p><h2 id="decrement_ticket/1-examples" class="section-heading">
+  <a href="#decrement_ticket/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="5794831121-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5794831121-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">decrement_ticket</span><span class="p" data-group-id="5794831121-2">(</span><span class="n">patron</span><span class="p" data-group-id="5794831121-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">patron</span><span class="o">.</span><span class="n">tickets</span><span class="w">
+</span><span class="mi">1</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="has_ticket?/1">
+
+  <div class="detail-header">
+    <a href="#has_ticket?/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">has_ticket?(patron)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/examples/patron_example.ex#L115" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> has_ticket?(<a href="#t:t/0">t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+
+      </div>
+
+<p>Checks if the patron has at least one ticket.</p><h2 id="has_ticket?/1-examples" class="section-heading">
+  <a href="#has_ticket?/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">patron_with_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="3466303900-1">(</span><span class="s">&quot;Ticket Holder&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">180</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="3466303900-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">has_ticket?</span><span class="p" data-group-id="3466303900-2">(</span><span class="n">patron_with_ticket</span><span class="p" data-group-id="3466303900-2">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="n">patron_no_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="3466303900-3">(</span><span class="s">&quot;No Ticket&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">175</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3466303900-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">has_ticket?</span><span class="p" data-group-id="3466303900-4">(</span><span class="n">patron_no_ticket</span><span class="p" data-group-id="3466303900-4">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="increment_ticket/1">
+
+  <div class="detail-header">
+    <a href="#increment_ticket/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">increment_ticket(patron)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/examples/patron_example.ex#L131" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> increment_ticket(<a href="#t:t/0">t</a>()) :: <a href="#t:t/0">t</a>()</pre>
+
+      </div>
+
+<p>Increments the number of tickets a patron has by 1.</p><h2 id="increment_ticket/1-examples" class="section-heading">
+  <a href="#increment_ticket/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="4740662217-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4740662217-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">increment_ticket</span><span class="p" data-group-id="4740662217-2">(</span><span class="n">patron</span><span class="p" data-group-id="4740662217-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">patron</span><span class="o">.</span><span class="n">tickets</span><span class="w">
+</span><span class="mi">3</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="new/3">
+
+  <div class="detail-header">
+    <a href="#new/3" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">new(name, height, tickets)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/examples/patron_example.ex#L34" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+<p>Creates a new <code class="inline">Patron</code> with the given <code class="inline">name</code>, <code class="inline">height</code>, and number of <code class="inline">tickets</code>.</p><h2 id="new/3-examples" class="section-heading">
+  <a href="#new/3-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">john</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="0863796402-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0863796402-1">)</span><span class="w">
+</span><span class="p" data-group-id="0863796402-2">%</span><span class="nc" data-group-id="0863796402-2">Examples.Patron</span><span class="p" data-group-id="0863796402-2">{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">height</span><span class="p">:</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0863796402-2">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="too_short?/1">
+
+  <div class="detail-header">
+    <a href="#too_short?/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">too_short?(patron)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/examples/patron_example.ex#L53" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> too_short?(<a href="#t:t/0">t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+
+      </div>
+
+<p>Checks if the patron is too short (less than 150 cm).</p><h2 id="too_short?/1-examples" class="section-heading">
+  <a href="#too_short?/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">john</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="9153951199-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9153951199-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">too_short?</span><span class="p" data-group-id="9153951199-2">(</span><span class="n">john</span><span class="p" data-group-id="9153951199-2">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="n">jane</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="9153951199-3">(</span><span class="s">&quot;Jane&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">160</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="9153951199-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">too_short?</span><span class="p" data-group-id="9153951199-4">(</span><span class="n">jane</span><span class="p" data-group-id="9153951199-4">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="too_tall?/1">
+
+  <div class="detail-header">
+    <a href="#too_tall?/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">too_tall?(patron)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/examples/patron_example.ex#L72" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> too_tall?(<a href="#t:t/0">t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+
+      </div>
+
+<p>Checks if the patron is too tall (more than 200 cm).</p><h2 id="too_tall?/1-examples" class="section-heading">
+  <a href="#too_tall?/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">tall_patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="8991933615-1">(</span><span class="s">&quot;Tall Guy&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="8991933615-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">too_tall?</span><span class="p" data-group-id="8991933615-2">(</span><span class="n">tall_patron</span><span class="p" data-group-id="8991933615-2">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="n">average_patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="8991933615-3">(</span><span class="s">&quot;Average Joe&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8991933615-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">too_tall?</span><span class="p" data-group-id="8991933615-4">(</span><span class="n">average_patron</span><span class="p" data-group-id="8991933615-4">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="valid_height?/1">
+
+  <div class="detail-header">
+    <a href="#valid_height?/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">valid_height?(patron)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/examples/patron_example.ex#L93" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> valid_height?(<a href="#t:t/0">t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+
+      </div>
+
+<p>Checks if the patron's height is valid, meaning they are neither too short nor too tall.</p><p>This combines the <a href="#too_short?/1"><code class="inline">too_short?/1</code></a> and <a href="#too_tall?/1"><code class="inline">too_tall?/1</code></a> predicates using Monex's <code class="inline">Predicate.p_and/2</code> and <code class="inline">Predicate.p_not/1</code>.</p><h2 id="valid_height?/1-examples" class="section-heading">
+  <a href="#valid_height?/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">short_patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="7736672177-1">(</span><span class="s">&quot;Shorty&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7736672177-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">valid_height?</span><span class="p" data-group-id="7736672177-2">(</span><span class="n">short_patron</span><span class="p" data-group-id="7736672177-2">)</span><span class="w">
+</span><span class="no">false</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="n">perfect_patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="7736672177-3">(</span><span class="s">&quot;Perfect Height&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">180</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7736672177-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.Patron</span><span class="o">.</span><span class="n">valid_height?</span><span class="p" data-group-id="7736672177-4">(</span><span class="n">perfect_patron</span><span class="p" data-group-id="7736672177-4">)</span><span class="w">
+</span><span class="no">true</span></code></pre>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/monex/0.1.0" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/monex/0.1.0">Hex Preview</a>
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="monex.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>

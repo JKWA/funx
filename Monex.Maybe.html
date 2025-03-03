@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="monex v0.1.0">
+
+
+    <title>Monex.Maybe — monex v0.1.0</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-7F7EFC5D.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="modules" class="page-module">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+monex
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of monex</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+    <span translate="no">Monex.Maybe</span> 
+    <small class="app-vsn" translate="no">(monex v0.1.0)</small>
+
+  </h1>
+
+
+    <section id="moduledoc">
+<p>The <a href="Monex.Maybe.html"><code class="inline">Monex.Maybe</code></a> module provides an implementation of the <code class="inline">Maybe</code> monad, giving you a convenient way to represent optional values in Elixir. By encapsulating values in <code class="inline">Just</code> or <code class="inline">Nothing</code>, this module lets you handle the presence or absence of data in a consistent, composable manner.</p><h2 id="module-features" class="section-heading">
+  <a href="#module-features" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Features</span>
+</h2>
+<ul><li><strong>Constructors</strong>: Easily create <code class="inline">Maybe</code> values.</li><li><strong>Lifting Functions</strong>: Convert standard or custom types into <code class="inline">Maybe</code> values.</li><li><strong>Checks &amp; Filters</strong>: Determine whether a <code class="inline">Maybe</code> is <code class="inline">Just</code> or <code class="inline">Nothing</code> and filter data accordingly.</li><li><strong>List Operations</strong>: Efficiently transform and collect <code class="inline">Maybe</code> values in lists.</li><li><strong>Interop</strong>: Translate between <code class="inline">Maybe</code> and native Elixir constructs like <code class="inline">nil</code>, tuples, or exceptions.</li></ul><h3 id="module-usage-overview" class="section-heading">
+  <a href="#module-usage-overview" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Usage Overview</span>
+</h3>
+<ol><li><strong>Construct</strong>: Use <a href="#just/1"><code class="inline">just/1</code></a> or <a href="#nothing/0"><code class="inline">nothing/0</code></a> to build <code class="inline">Maybe</code> values.</li><li><strong>Check</strong>: Use <a href="#just?/1"><code class="inline">just?/1</code></a> or <a href="#nothing?/1"><code class="inline">nothing?/1</code></a> to see if you have a <code class="inline">Just</code> or <code class="inline">Nothing</code>.</li><li><strong>Filter &amp; Transform</strong>: Apply <code class="inline">filter/2</code>, <code class="inline">map</code>, or <code class="inline">bind</code> for transformations.</li><li><strong>Extract</strong>: Use <a href="#get_or_else/2"><code class="inline">get_or_else/2</code></a>, <a href="#to_nil/1"><code class="inline">to_nil/1</code></a>, or <a href="#to_try!/2"><code class="inline">to_try!/2</code></a> to retrieve the raw data.</li></ol><h3 id="module-constructors" class="section-heading">
+  <a href="#module-constructors" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Constructors</span>
+</h3>
+<ul><li><a href="#pure/1"><code class="inline">pure/1</code></a>: Wraps a value in <code class="inline">Just</code>.</li><li><a href="#just/1"><code class="inline">just/1</code></a>: Alias for <a href="#pure/1"><code class="inline">pure/1</code></a>.</li><li><a href="#nothing/0"><code class="inline">nothing/0</code></a>: Returns a <code class="inline">Nothing</code> value.</li></ul><h3 id="module-lifting-functions" class="section-heading">
+  <a href="#module-lifting-functions" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Lifting Functions</span>
+</h3>
+<ul><li><a href="#lift_predicate/2"><code class="inline">lift_predicate/2</code></a>: Converts a value to <code class="inline">Just</code> if it meets a predicate, otherwise <code class="inline">Nothing</code>.</li><li><a href="#lift_identity/1"><code class="inline">lift_identity/1</code></a>: Converts an <code class="inline">Identity</code> to a <code class="inline">Maybe</code>.</li><li><a href="#lift_either/1"><code class="inline">lift_either/1</code></a>: Converts an <code class="inline">Either</code> to a <code class="inline">Maybe</code>.</li><li><a href="#lift_eq/1"><code class="inline">lift_eq/1</code></a>: Lifts an equality function for <code class="inline">Maybe</code> values.</li><li><a href="#lift_ord/1"><code class="inline">lift_ord/1</code></a>: Lifts an ordering function for <code class="inline">Maybe</code> values.</li></ul><h3 id="module-checks-filters" class="section-heading">
+  <a href="#module-checks-filters" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Checks &amp; Filters</span>
+</h3>
+<ul><li><a href="#just?/1"><code class="inline">just?/1</code></a>: Checks if a <code class="inline">Maybe</code> is <code class="inline">Just</code>.</li><li><a href="#nothing?/1"><code class="inline">nothing?/1</code></a>: Checks if a <code class="inline">Maybe</code> is <code class="inline">Nothing</code>.</li><li><code class="inline">filter/2</code>: Keeps the value if it matches a predicate, otherwise returns <code class="inline">Nothing</code>.</li><li><code class="inline">guard/2</code>: Retains the <code class="inline">Maybe</code> if the boolean is <code class="inline">true</code>, otherwise returns <code class="inline">Nothing</code>.</li><li><a href="#get_or_else/2"><code class="inline">get_or_else/2</code></a>: Returns the value or a default.</li><li><a href="#or_else/2"><code class="inline">or_else/2</code></a>: Returns the <code class="inline">Just</code> value or calls a fallback function if <code class="inline">Nothing</code>.</li></ul><h3 id="module-working-with-lists" class="section-heading">
+  <a href="#module-working-with-lists" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Working with Lists</span>
+</h3>
+<ul><li><a href="#concat/1"><code class="inline">concat/1</code></a>: Extracts present values (<code class="inline">Just</code>) from a list of <code class="inline">Maybe</code>.</li><li><a href="#concat_map/2"><code class="inline">concat_map/2</code></a>: Maps and extracts <code class="inline">Just</code> values in one pass.</li><li><a href="#sequence/1"><code class="inline">sequence/1</code></a>: Converts a list of <code class="inline">Maybe</code> into a single <code class="inline">Maybe</code> containing a list.</li><li><a href="#traverse/2"><code class="inline">traverse/2</code></a>: Applies a function to each element and sequences the results, returning one <code class="inline">Maybe</code>.</li></ul><h3 id="module-elixir-interop" class="section-heading">
+  <a href="#module-elixir-interop" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Elixir Interop</span>
+</h3>
+<ul><li><a href="#from_nil/1"><code class="inline">from_nil/1</code></a>: Converts <code class="inline">nil</code> to <code class="inline">Nothing</code>, otherwise <code class="inline">Just</code>.</li><li><a href="#to_nil/1"><code class="inline">to_nil/1</code></a>: Returns the underlying value or <code class="inline">nil</code>.</li><li><a href="#from_try/1"><code class="inline">from_try/1</code></a>: Executes a function and wraps its result in <code class="inline">Maybe</code> or returns <code class="inline">Nothing</code> on exception.</li><li><a href="#to_try!/2"><code class="inline">to_try!/2</code></a>: Extracts the value or raises an error if <code class="inline">Nothing</code>.</li><li><a href="#from_result/1"><code class="inline">from_result/1</code></a>: Converts <code class="inline">{:ok, _}</code> or <code class="inline">{:error, _}</code> tuples to <code class="inline">Maybe</code>.</li><li><a href="#to_result/1"><code class="inline">to_result/1</code></a>: Turns a <code class="inline">Maybe</code> into <code class="inline">{:ok, value}</code> or <code class="inline">{:error, :nothing}</code>.</li></ul>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:t/1" data-no-tooltip translate="no">t(value)</a>
+
+      </div>
+
+    </div>
+
+</div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#concat/1" data-no-tooltip translate="no">concat(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Removes <code class="inline">Nothing</code> values from a list of <code class="inline">Maybe</code> and returns a list of unwrapped <code class="inline">Just</code> values.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#concat_map/2" data-no-tooltip translate="no">concat_map(list, func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Maps a function over a list, collecting unwrapped <code class="inline">Just</code> values and ignoring <code class="inline">Nothing</code> in a single pass.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#from_nil/1" data-no-tooltip translate="no">from_nil(value)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts <code class="inline">nil</code> to <code class="inline">Nothing</code>; any other value becomes <code class="inline">Just</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#from_result/1" data-no-tooltip translate="no">from_result(arg)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts a result tuple to a <code class="inline">Maybe</code>. <code class="inline">{:ok, value}</code> becomes <code class="inline">Just(value)</code>, while <code class="inline">{:error, _}</code> becomes <code class="inline">Nothing</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#from_try/1" data-no-tooltip translate="no">from_try(func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Executes a function within a <code class="inline">Maybe</code> context, returning <code class="inline">Nothing</code> if an exception occurs.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#get_or_else/2" data-no-tooltip translate="no">get_or_else(maybe, default)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Retrieves the value from a <code class="inline">Maybe</code>, returning <code class="inline">default</code> if <code class="inline">Nothing</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#just/1" data-no-tooltip translate="no">just(value)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Alias for <a href="#pure/1"><code class="inline">pure/1</code></a>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#just?/1" data-no-tooltip translate="no">just?(arg1)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns <code class="inline">true</code> if the <code class="inline">Maybe</code> is <code class="inline">Just</code>, otherwise <code class="inline">false</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#lift_either/1" data-no-tooltip translate="no">lift_either(either)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts an <code class="inline">Either</code> to a <code class="inline">Maybe</code>. <code class="inline">Right</code> becomes <code class="inline">Just</code>, and <code class="inline">Left</code> becomes <code class="inline">Nothing</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#lift_eq/1" data-no-tooltip translate="no">lift_eq(custom_eq)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Lifts an equality function to compare <code class="inline">Maybe</code> values</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#lift_identity/1" data-no-tooltip translate="no">lift_identity(identity)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts an <code class="inline">Identity</code> value into a <code class="inline">Maybe</code>. If the value is <code class="inline">nil</code>, returns <code class="inline">Nothing</code>; otherwise <code class="inline">Just</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#lift_ord/1" data-no-tooltip translate="no">lift_ord(custom_ord)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Adapts an ordering function to compare <code class="inline">Maybe</code> values</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#lift_predicate/2" data-no-tooltip translate="no">lift_predicate(value, predicate)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Lifts a value into <code class="inline">Maybe</code> based on a predicate. If <code class="inline">predicate.(value)</code> is <code class="inline">true</code>, returns <code class="inline">Just(value)</code>; otherwise <code class="inline">Nothing</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#nothing/0" data-no-tooltip translate="no">nothing()</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns a <code class="inline">Nothing</code> value.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#nothing?/1" data-no-tooltip translate="no">nothing?(arg1)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns <code class="inline">true</code> if the <code class="inline">Maybe</code> is <code class="inline">Nothing</code>, otherwise <code class="inline">false</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#or_else/2" data-no-tooltip translate="no">or_else(just, fallback_fun)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns the current <code class="inline">Just</code> value or invokes the <code class="inline">fallback_fun</code> if <code class="inline">Nothing</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#pure/1" data-no-tooltip translate="no">pure(value)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Wraps a value in <code class="inline">Just</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#sequence/1" data-no-tooltip translate="no">sequence(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts a list of <code class="inline">Maybe</code> values into a <code class="inline">Maybe</code> containing a list. If any element is <code class="inline">Nothing</code>, the entire result is <code class="inline">Nothing</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_nil/1" data-no-tooltip translate="no">to_nil(maybe)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts a <code class="inline">Maybe</code> to its wrapped value or <code class="inline">nil</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_predicate/1" data-no-tooltip translate="no">to_predicate(maybe)</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_result/1" data-no-tooltip translate="no">to_result(maybe)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts a <code class="inline">Maybe</code> to a result tuple. <code class="inline">Just(value)</code> becomes <code class="inline">{:ok, value}</code>, while <code class="inline">Nothing</code> becomes <code class="inline">{:error, :nothing}</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_try!/2" data-no-tooltip translate="no">to_try!(maybe, message \\ &quot;Nothing value encountered&quot;)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Extracts a value from a <code class="inline">Maybe</code>, raising an exception if <code class="inline">Nothing</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#traverse/2" data-no-tooltip translate="no">traverse(list, func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Applies a function to each element of a list, collecting results into a single <code class="inline">Maybe</code>. If any call returns <code class="inline">Nothing</code>, the operation halts and returns <code class="inline">Nothing</code>.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+    <div class="types-list">
+<section class="detail" id="t:t/1">
+
+  <div class="detail-header">
+    <a href="#t:t/1" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">t(value)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L68" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> t(value) :: <a href="Monex.Maybe.Just.html#t:t/1">Monex.Maybe.Just.t</a>(value) | <a href="Monex.Maybe.Nothing.html#t:t/0">Monex.Maybe.Nothing.t</a>()</pre>
+
+      </div>
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+    <div class="functions-list">
+<section class="detail" id="concat/1">
+
+  <div class="detail-header">
+    <a href="#concat/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">concat(list)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L229" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> concat([<a href="#t:t/1">t</a>(output)]) :: [output] when output: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Removes <code class="inline">Nothing</code> values from a list of <code class="inline">Maybe</code> and returns a list of unwrapped <code class="inline">Just</code> values.</p><h2 id="concat/1-examples" class="section-heading">
+  <a href="#concat/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="9373443215-1">(</span><span class="p" data-group-id="9373443215-2">[</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9373443215-3">(</span><span class="mi">1</span><span class="p" data-group-id="9373443215-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9373443215-4">(</span><span class="p" data-group-id="9373443215-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9373443215-5">(</span><span class="mi">2</span><span class="p" data-group-id="9373443215-5">)</span><span class="p" data-group-id="9373443215-2">]</span><span class="p" data-group-id="9373443215-1">)</span><span class="w">
+</span><span class="p" data-group-id="9373443215-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9373443215-6">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="9373443215-7">(</span><span class="p" data-group-id="9373443215-8">[</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9373443215-9">(</span><span class="p" data-group-id="9373443215-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9373443215-10">(</span><span class="p" data-group-id="9373443215-10">)</span><span class="p" data-group-id="9373443215-8">]</span><span class="p" data-group-id="9373443215-7">)</span><span class="w">
+</span><span class="p" data-group-id="9373443215-11">[</span><span class="p" data-group-id="9373443215-11">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="9373443215-12">(</span><span class="p" data-group-id="9373443215-13">[</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9373443215-14">(</span><span class="s">&quot;a&quot;</span><span class="p" data-group-id="9373443215-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9373443215-15">(</span><span class="s">&quot;b&quot;</span><span class="p" data-group-id="9373443215-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9373443215-16">(</span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="9373443215-16">)</span><span class="p" data-group-id="9373443215-13">]</span><span class="p" data-group-id="9373443215-12">)</span><span class="w">
+</span><span class="p" data-group-id="9373443215-17">[</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="9373443215-17">]</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="concat_map/2">
+
+  <div class="detail-header">
+    <a href="#concat_map/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">concat_map(list, func)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L261" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> concat_map([input], (input -&gt; <a href="#t:t/1">t</a>(output))) :: [output]
+when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), output: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Maps a function over a list, collecting unwrapped <code class="inline">Just</code> values and ignoring <code class="inline">Nothing</code> in a single pass.</p><h2 id="concat_map/2-examples" class="section-heading">
+  <a href="#concat_map/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="9824928677-1">(</span><span class="p" data-group-id="9824928677-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="9824928677-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9824928677-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">rem</span><span class="p" data-group-id="9824928677-4">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9824928677-4">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9824928677-5">(</span><span class="n">x</span><span class="p" data-group-id="9824928677-5">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9824928677-6">(</span><span class="p" data-group-id="9824928677-6">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="9824928677-3">end</span><span class="p" data-group-id="9824928677-1">)</span><span class="w">
+</span><span class="p" data-group-id="9824928677-7">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="9824928677-7">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="9824928677-8">(</span><span class="p" data-group-id="9824928677-9">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9824928677-9">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9824928677-10">fn</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9824928677-11">(</span><span class="p" data-group-id="9824928677-11">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9824928677-12">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9824928677-12">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="9824928677-10">end</span><span class="p" data-group-id="9824928677-8">)</span><span class="w">
+</span><span class="p" data-group-id="9824928677-13">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p" data-group-id="9824928677-13">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="9824928677-14">(</span><span class="p" data-group-id="9824928677-15">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9824928677-15">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9824928677-16">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9824928677-17">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="9824928677-17">)</span><span class="w"> </span><span class="k" data-group-id="9824928677-16">end</span><span class="p" data-group-id="9824928677-14">)</span><span class="w">
+</span><span class="p" data-group-id="9824928677-18">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="9824928677-18">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="9824928677-19">(</span><span class="p" data-group-id="9824928677-20">[</span><span class="p" data-group-id="9824928677-20">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9824928677-21">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9824928677-22">(</span><span class="n">x</span><span class="p" data-group-id="9824928677-22">)</span><span class="w"> </span><span class="k" data-group-id="9824928677-21">end</span><span class="p" data-group-id="9824928677-19">)</span><span class="w">
+</span><span class="p" data-group-id="9824928677-23">[</span><span class="p" data-group-id="9824928677-23">]</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="from_nil/1">
+
+  <div class="detail-header">
+    <a href="#from_nil/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">from_nil(value)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L394" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> from_nil(nil | value) :: <a href="#t:t/1">t</a>(value) when value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Converts <code class="inline">nil</code> to <code class="inline">Nothing</code>; any other value becomes <code class="inline">Just</code>.</p><h2 id="from_nil/1-examples" class="section-heading">
+  <a href="#from_nil/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="2390209484-1">(</span><span class="no">nil</span><span class="p" data-group-id="2390209484-1">)</span><span class="w">
+</span><span class="p" data-group-id="2390209484-2">%</span><span class="nc" data-group-id="2390209484-2">Monex.Maybe.Nothing</span><span class="p" data-group-id="2390209484-2">{</span><span class="p" data-group-id="2390209484-2">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="2390209484-3">(</span><span class="mi">5</span><span class="p" data-group-id="2390209484-3">)</span><span class="w">
+</span><span class="p" data-group-id="2390209484-4">%</span><span class="nc" data-group-id="2390209484-4">Monex.Maybe.Just</span><span class="p" data-group-id="2390209484-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2390209484-4">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="from_result/1">
+
+  <div class="detail-header">
+    <a href="#from_result/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">from_result(arg)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L466" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> from_result({:ok, right} | {:error, <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()}) :: <a href="#t:t/1">t</a>(right) when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Converts a result tuple to a <code class="inline">Maybe</code>. <code class="inline">{:ok, value}</code> becomes <code class="inline">Just(value)</code>, while <code class="inline">{:error, _}</code> becomes <code class="inline">Nothing</code>.</p><h2 id="from_result/1-examples" class="section-heading">
+  <a href="#from_result/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="7107439198-1">(</span><span class="p" data-group-id="7107439198-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7107439198-2">}</span><span class="p" data-group-id="7107439198-1">)</span><span class="w">
+</span><span class="p" data-group-id="7107439198-3">%</span><span class="nc" data-group-id="7107439198-3">Monex.Maybe.Just</span><span class="p" data-group-id="7107439198-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7107439198-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="7107439198-4">(</span><span class="p" data-group-id="7107439198-5">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:something</span><span class="p" data-group-id="7107439198-5">}</span><span class="p" data-group-id="7107439198-4">)</span><span class="w">
+</span><span class="p" data-group-id="7107439198-6">%</span><span class="nc" data-group-id="7107439198-6">Monex.Maybe.Nothing</span><span class="p" data-group-id="7107439198-6">{</span><span class="p" data-group-id="7107439198-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="from_try/1">
+
+  <div class="detail-header">
+    <a href="#from_try/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">from_try(func)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L425" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> from_try((-&gt; right)) :: <a href="#t:t/1">t</a>(right) when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Executes a function within a <code class="inline">Maybe</code> context, returning <code class="inline">Nothing</code> if an exception occurs.</p><h2 id="from_try/1-examples" class="section-heading">
+  <a href="#from_try/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="7649737716-1">(</span><span class="k" data-group-id="7649737716-2">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="7649737716-2">end</span><span class="p" data-group-id="7649737716-1">)</span><span class="w">
+</span><span class="p" data-group-id="7649737716-3">%</span><span class="nc" data-group-id="7649737716-3">Monex.Maybe.Just</span><span class="p" data-group-id="7649737716-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7649737716-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="7649737716-4">(</span><span class="k" data-group-id="7649737716-5">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="7649737716-5">end</span><span class="p" data-group-id="7649737716-4">)</span><span class="w">
+</span><span class="p" data-group-id="7649737716-6">%</span><span class="nc" data-group-id="7649737716-6">Monex.Maybe.Nothing</span><span class="p" data-group-id="7649737716-6">{</span><span class="p" data-group-id="7649737716-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="get_or_else/2">
+
+  <div class="detail-header">
+    <a href="#get_or_else/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">get_or_else(maybe, default)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L140" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> get_or_else(<a href="#t:t/1">t</a>(value), value) :: value when value: var</pre>
+
+      </div>
+
+<p>Retrieves the value from a <code class="inline">Maybe</code>, returning <code class="inline">default</code> if <code class="inline">Nothing</code>.</p><h2 id="get_or_else/2-examples" class="section-heading">
+  <a href="#get_or_else/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="6094451465-1">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6094451465-2">(</span><span class="mi">5</span><span class="p" data-group-id="6094451465-2">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="6094451465-1">)</span><span class="w">
+</span><span class="mi">5</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="6094451465-3">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6094451465-4">(</span><span class="p" data-group-id="6094451465-4">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="6094451465-3">)</span><span class="w">
+</span><span class="mi">0</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="just/1">
+
+  <div class="detail-header">
+    <a href="#just/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">just(value)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L85" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> just(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="Monex.Maybe.Just.html#t:t/1">Monex.Maybe.Just.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+
+      </div>
+
+<p>Alias for <a href="#pure/1"><code class="inline">pure/1</code></a>.</p>
+  </section>
+</section>
+<section class="detail" id="just?/1">
+
+  <div class="detail-header">
+    <a href="#just?/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">just?(arg1)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L110" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> just?(<a href="#t:t/1">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+
+      </div>
+
+<p>Returns <code class="inline">true</code> if the <code class="inline">Maybe</code> is <code class="inline">Just</code>, otherwise <code class="inline">false</code>.</p><h2 id="just?/1-examples" class="section-heading">
+  <a href="#just?/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="0407488501-1">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0407488501-2">(</span><span class="mi">5</span><span class="p" data-group-id="0407488501-2">)</span><span class="p" data-group-id="0407488501-1">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="0407488501-3">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="0407488501-4">(</span><span class="p" data-group-id="0407488501-4">)</span><span class="p" data-group-id="0407488501-3">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="lift_either/1">
+
+  <div class="detail-header">
+    <a href="#lift_either/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">lift_either(either)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L350" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+<p>Converts an <code class="inline">Either</code> to a <code class="inline">Maybe</code>. <code class="inline">Right</code> becomes <code class="inline">Just</code>, and <code class="inline">Left</code> becomes <code class="inline">Nothing</code>.</p><h2 id="lift_either/1-examples" class="section-heading">
+  <a href="#lift_either/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="1843199729-1">(</span><span class="nc">Monex.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1843199729-2">(</span><span class="mi">5</span><span class="p" data-group-id="1843199729-2">)</span><span class="p" data-group-id="1843199729-1">)</span><span class="w">
+</span><span class="p" data-group-id="1843199729-3">%</span><span class="nc" data-group-id="1843199729-3">Monex.Maybe.Just</span><span class="p" data-group-id="1843199729-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1843199729-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="1843199729-4">(</span><span class="nc">Monex.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1843199729-5">(</span><span class="s">&quot;Error&quot;</span><span class="p" data-group-id="1843199729-5">)</span><span class="p" data-group-id="1843199729-4">)</span><span class="w">
+</span><span class="p" data-group-id="1843199729-6">%</span><span class="nc" data-group-id="1843199729-6">Monex.Maybe.Nothing</span><span class="p" data-group-id="1843199729-6">{</span><span class="p" data-group-id="1843199729-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="lift_eq/1">
+
+  <div class="detail-header">
+    <a href="#lift_eq/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">lift_eq(custom_eq)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L174" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> lift_eq(<a href="Monex.Eq.Utils.html#t:eq_map/0">Monex.Eq.Utils.eq_map</a>()) :: <a href="Monex.Eq.Utils.html#t:eq_map/0">Monex.Eq.Utils.eq_map</a>()</pre>
+
+      </div>
+
+<p>Lifts an equality function to compare <code class="inline">Maybe</code> values:</p><ul><li><code class="inline">Just</code> vs <code class="inline">Just</code>: Uses the custom equality function.</li><li><code class="inline">Nothing</code> vs <code class="inline">Nothing</code>: Always <code class="inline">true</code>.</li><li><code class="inline">Just</code> vs <code class="inline">Nothing</code> or vice versa: Always <code class="inline">false</code>.</li></ul><h2 id="lift_eq/1-examples" class="section-heading">
+  <a href="#lift_eq/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">lift_eq</span><span class="p" data-group-id="0915807696-1">(</span><span class="p" data-group-id="0915807696-2">%{</span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="0915807696-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="0915807696-3">end</span><span class="p" data-group-id="0915807696-2">}</span><span class="p" data-group-id="0915807696-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="0915807696-4">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0915807696-5">(</span><span class="mi">5</span><span class="p" data-group-id="0915807696-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0915807696-6">(</span><span class="mi">5</span><span class="p" data-group-id="0915807696-6">)</span><span class="p" data-group-id="0915807696-4">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="0915807696-7">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0915807696-8">(</span><span class="mi">5</span><span class="p" data-group-id="0915807696-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0915807696-9">(</span><span class="mi">10</span><span class="p" data-group-id="0915807696-9">)</span><span class="p" data-group-id="0915807696-7">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="lift_identity/1">
+
+  <div class="detail-header">
+    <a href="#lift_identity/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">lift_identity(identity)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L332" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+<p>Converts an <code class="inline">Identity</code> value into a <code class="inline">Maybe</code>. If the value is <code class="inline">nil</code>, returns <code class="inline">Nothing</code>; otherwise <code class="inline">Just</code>.</p><h2 id="lift_identity/1-examples" class="section-heading">
+  <a href="#lift_identity/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="7381268082-1">(</span><span class="nc">Monex.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7381268082-2">(</span><span class="mi">5</span><span class="p" data-group-id="7381268082-2">)</span><span class="p" data-group-id="7381268082-1">)</span><span class="w">
+</span><span class="p" data-group-id="7381268082-3">%</span><span class="nc" data-group-id="7381268082-3">Monex.Maybe.Just</span><span class="p" data-group-id="7381268082-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7381268082-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="7381268082-4">(</span><span class="nc">Monex.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7381268082-5">(</span><span class="no">nil</span><span class="p" data-group-id="7381268082-5">)</span><span class="p" data-group-id="7381268082-4">)</span><span class="w">
+</span><span class="p" data-group-id="7381268082-6">%</span><span class="nc" data-group-id="7381268082-6">Monex.Maybe.Nothing</span><span class="p" data-group-id="7381268082-6">{</span><span class="p" data-group-id="7381268082-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="lift_ord/1">
+
+  <div class="detail-header">
+    <a href="#lift_ord/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">lift_ord(custom_ord)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L200" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> lift_ord(<a href="Monex.Ord.Utils.html#t:ord_map/0">Monex.Ord.Utils.ord_map</a>()) :: <a href="Monex.Ord.Utils.html#t:ord_map/0">Monex.Ord.Utils.ord_map</a>()</pre>
+
+      </div>
+
+<p>Adapts an ordering function to compare <code class="inline">Maybe</code> values:</p><ul><li><code class="inline">Nothing</code> is considered less than any <code class="inline">Just</code>.</li><li>Two <code class="inline">Just</code> values are compared by the provided function.</li></ul><h2 id="lift_ord/1-examples" class="section-heading">
+  <a href="#lift_ord/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">lift_ord</span><span class="p" data-group-id="8026466490-1">(</span><span class="p" data-group-id="8026466490-2">%{</span><span class="ss">lt?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="8026466490-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="8026466490-3">end</span><span class="p" data-group-id="8026466490-2">}</span><span class="p" data-group-id="8026466490-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="8026466490-4">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8026466490-5">(</span><span class="mi">3</span><span class="p" data-group-id="8026466490-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8026466490-6">(</span><span class="mi">5</span><span class="p" data-group-id="8026466490-6">)</span><span class="p" data-group-id="8026466490-4">)</span><span class="w">
+</span><span class="no">true</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="lift_predicate/2">
+
+  <div class="detail-header">
+    <a href="#lift_predicate/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">lift_predicate(value, predicate)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L369" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> lift_predicate(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), (<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>())) :: <a href="#t:t/1">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>())</pre>
+
+      </div>
+
+<p>Lifts a value into <code class="inline">Maybe</code> based on a predicate. If <code class="inline">predicate.(value)</code> is <code class="inline">true</code>, returns <code class="inline">Just(value)</code>; otherwise <code class="inline">Nothing</code>.</p><h2 id="lift_predicate/2-examples" class="section-heading">
+  <a href="#lift_predicate/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3442602325-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3442602325-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="3442602325-2">end</span><span class="p" data-group-id="3442602325-1">)</span><span class="w">
+</span><span class="p" data-group-id="3442602325-3">%</span><span class="nc" data-group-id="3442602325-3">Monex.Maybe.Just</span><span class="p" data-group-id="3442602325-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3442602325-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3442602325-4">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3442602325-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="3442602325-5">end</span><span class="p" data-group-id="3442602325-4">)</span><span class="w">
+</span><span class="p" data-group-id="3442602325-6">%</span><span class="nc" data-group-id="3442602325-6">Monex.Maybe.Nothing</span><span class="p" data-group-id="3442602325-6">{</span><span class="p" data-group-id="3442602325-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="nothing/0">
+
+  <div class="detail-header">
+    <a href="#nothing/0" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">nothing()</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L96" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> nothing() :: <a href="Monex.Maybe.Nothing.html#t:t/0">Monex.Maybe.Nothing.t</a>()</pre>
+
+      </div>
+
+<p>Returns a <code class="inline">Nothing</code> value.</p><h2 id="nothing/0-examples" class="section-heading">
+  <a href="#nothing/0-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4964407020-1">(</span><span class="p" data-group-id="4964407020-1">)</span><span class="w">
+</span><span class="p" data-group-id="4964407020-2">%</span><span class="nc" data-group-id="4964407020-2">Monex.Maybe.Nothing</span><span class="p" data-group-id="4964407020-2">{</span><span class="p" data-group-id="4964407020-2">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="nothing?/1">
+
+  <div class="detail-header">
+    <a href="#nothing?/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">nothing?(arg1)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L125" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> nothing?(<a href="#t:t/1">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+
+      </div>
+
+<p>Returns <code class="inline">true</code> if the <code class="inline">Maybe</code> is <code class="inline">Nothing</code>, otherwise <code class="inline">false</code>.</p><h2 id="nothing?/1-examples" class="section-heading">
+  <a href="#nothing?/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="2170531050-1">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2170531050-2">(</span><span class="p" data-group-id="2170531050-2">)</span><span class="p" data-group-id="2170531050-1">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="2170531050-3">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2170531050-4">(</span><span class="mi">5</span><span class="p" data-group-id="2170531050-4">)</span><span class="p" data-group-id="2170531050-3">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="or_else/2">
+
+  <div class="detail-header">
+    <a href="#or_else/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">or_else(just, fallback_fun)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L156" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> or_else(<a href="#t:t/1">t</a>(value), (-&gt; <a href="#t:t/1">t</a>(value))) :: <a href="#t:t/1">t</a>(value) when value: var</pre>
+
+      </div>
+
+<p>Returns the current <code class="inline">Just</code> value or invokes the <code class="inline">fallback_fun</code> if <code class="inline">Nothing</code>.</p><h2 id="or_else/2-examples" class="section-heading">
+  <a href="#or_else/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="6957203724-1">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6957203724-2">(</span><span class="p" data-group-id="6957203724-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="6957203724-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6957203724-4">(</span><span class="mi">42</span><span class="p" data-group-id="6957203724-4">)</span><span class="w"> </span><span class="k" data-group-id="6957203724-3">end</span><span class="p" data-group-id="6957203724-1">)</span><span class="w">
+</span><span class="p" data-group-id="6957203724-5">%</span><span class="nc" data-group-id="6957203724-5">Monex.Maybe.Just</span><span class="p" data-group-id="6957203724-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="6957203724-5">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="6957203724-6">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6957203724-7">(</span><span class="mi">10</span><span class="p" data-group-id="6957203724-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="6957203724-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6957203724-9">(</span><span class="mi">42</span><span class="p" data-group-id="6957203724-9">)</span><span class="w"> </span><span class="k" data-group-id="6957203724-8">end</span><span class="p" data-group-id="6957203724-6">)</span><span class="w">
+</span><span class="p" data-group-id="6957203724-10">%</span><span class="nc" data-group-id="6957203724-10">Monex.Maybe.Just</span><span class="p" data-group-id="6957203724-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="6957203724-10">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="pure/1">
+
+  <div class="detail-header">
+    <a href="#pure/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">pure(value)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L79" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> pure(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="Monex.Maybe.Just.html#t:t/1">Monex.Maybe.Just.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+
+      </div>
+
+<p>Wraps a value in <code class="inline">Just</code>.</p><h2 id="pure/1-examples" class="section-heading">
+  <a href="#pure/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7762896708-1">(</span><span class="mi">5</span><span class="p" data-group-id="7762896708-1">)</span><span class="w">
+</span><span class="p" data-group-id="7762896708-2">%</span><span class="nc" data-group-id="7762896708-2">Monex.Maybe.Just</span><span class="p" data-group-id="7762896708-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7762896708-2">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="sequence/1">
+
+  <div class="detail-header">
+    <a href="#sequence/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">sequence(list)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L283" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> sequence([<a href="#t:t/1">t</a>(value)]) :: <a href="#t:t/1">t</a>([value]) when value: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Converts a list of <code class="inline">Maybe</code> values into a <code class="inline">Maybe</code> containing a list. If any element is <code class="inline">Nothing</code>, the entire result is <code class="inline">Nothing</code>.</p><h2 id="sequence/1-examples" class="section-heading">
+  <a href="#sequence/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="4233488412-1">(</span><span class="p" data-group-id="4233488412-2">[</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4233488412-3">(</span><span class="mi">1</span><span class="p" data-group-id="4233488412-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4233488412-4">(</span><span class="mi">2</span><span class="p" data-group-id="4233488412-4">)</span><span class="p" data-group-id="4233488412-2">]</span><span class="p" data-group-id="4233488412-1">)</span><span class="w">
+</span><span class="p" data-group-id="4233488412-5">%</span><span class="nc" data-group-id="4233488412-5">Monex.Maybe.Just</span><span class="p" data-group-id="4233488412-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4233488412-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4233488412-6">]</span><span class="p" data-group-id="4233488412-5">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="4233488412-7">(</span><span class="p" data-group-id="4233488412-8">[</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4233488412-9">(</span><span class="mi">1</span><span class="p" data-group-id="4233488412-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4233488412-10">(</span><span class="p" data-group-id="4233488412-10">)</span><span class="p" data-group-id="4233488412-8">]</span><span class="p" data-group-id="4233488412-7">)</span><span class="w">
+</span><span class="p" data-group-id="4233488412-11">%</span><span class="nc" data-group-id="4233488412-11">Monex.Maybe.Nothing</span><span class="p" data-group-id="4233488412-11">{</span><span class="p" data-group-id="4233488412-11">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_nil/1">
+
+  <div class="detail-header">
+    <a href="#to_nil/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">to_nil(maybe)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L409" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_nil(<a href="#t:t/1">t</a>(value)) :: nil | value when value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Converts a <code class="inline">Maybe</code> to its wrapped value or <code class="inline">nil</code>.</p><h2 id="to_nil/1-examples" class="section-heading">
+  <a href="#to_nil/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="1148305254-1">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1148305254-2">(</span><span class="mi">5</span><span class="p" data-group-id="1148305254-2">)</span><span class="p" data-group-id="1148305254-1">)</span><span class="w">
+</span><span class="mi">5</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="1148305254-3">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1148305254-4">(</span><span class="p" data-group-id="1148305254-4">)</span><span class="p" data-group-id="1148305254-3">)</span><span class="w">
+</span><span class="no">nil</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_predicate/1">
+
+  <div class="detail-header">
+    <a href="#to_predicate/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">to_predicate(maybe)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L378" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_predicate(<a href="#t:t/1">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+
+      </div>
+
+
+  </section>
+</section>
+<section class="detail" id="to_result/1">
+
+  <div class="detail-header">
+    <a href="#to_result/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">to_result(maybe)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L481" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_result(<a href="#t:t/1">t</a>(right)) :: {:ok, right} | {:error, :nothing} when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Converts a <code class="inline">Maybe</code> to a result tuple. <code class="inline">Just(value)</code> becomes <code class="inline">{:ok, value}</code>, while <code class="inline">Nothing</code> becomes <code class="inline">{:error, :nothing}</code>.</p><h2 id="to_result/1-examples" class="section-heading">
+  <a href="#to_result/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="1404849092-1">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1404849092-2">(</span><span class="mi">5</span><span class="p" data-group-id="1404849092-2">)</span><span class="p" data-group-id="1404849092-1">)</span><span class="w">
+</span><span class="p" data-group-id="1404849092-3">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1404849092-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="1404849092-4">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1404849092-5">(</span><span class="p" data-group-id="1404849092-5">)</span><span class="p" data-group-id="1404849092-4">)</span><span class="w">
+</span><span class="p" data-group-id="1404849092-6">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:nothing</span><span class="p" data-group-id="1404849092-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_try!/2">
+
+    <span id="to_try!/1"></span>
+
+  <div class="detail-header">
+    <a href="#to_try!/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">to_try!(maybe, message \\ &quot;Nothing value encountered&quot;)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L447" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_try!(<a href="#t:t/1">t</a>(right), <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>()) :: right | <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">no_return</a>() when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Extracts a value from a <code class="inline">Maybe</code>, raising an exception if <code class="inline">Nothing</code>.</p><h2 id="to_try!/2-examples" class="section-heading">
+  <a href="#to_try!/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="4429650870-1">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4429650870-2">(</span><span class="mi">5</span><span class="p" data-group-id="4429650870-2">)</span><span class="p" data-group-id="4429650870-1">)</span><span class="w">
+</span><span class="mi">5</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="4429650870-3">(</span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4429650870-4">(</span><span class="p" data-group-id="4429650870-4">)</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;No value found&quot;</span><span class="p" data-group-id="4429650870-3">)</span><span class="w">
+</span><span class="gt">** (RuntimeError) No value found</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="traverse/2">
+
+  <div class="detail-header">
+    <a href="#traverse/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">traverse(list, func)</h1>
+
+      <a href="https://github.com/JKWA/monex/blob/main/lib/monad/maybe.ex#L308" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> traverse([input], (input -&gt; <a href="#t:t/1">t</a>(output))) :: <a href="#t:t/1">t</a>([output])
+when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), output: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Applies a function to each element of a list, collecting results into a single <code class="inline">Maybe</code>. If any call returns <code class="inline">Nothing</code>, the operation halts and returns <code class="inline">Nothing</code>.</p><h2 id="traverse/2-examples" class="section-heading">
+  <a href="#traverse/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="1748155839-1">(</span><span class="p" data-group-id="1748155839-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1748155839-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1748155839-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1748155839-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1748155839-4">)</span><span class="w"> </span><span class="k" data-group-id="1748155839-3">end</span><span class="p" data-group-id="1748155839-1">)</span><span class="w">
+</span><span class="p" data-group-id="1748155839-5">%</span><span class="nc" data-group-id="1748155839-5">Monex.Maybe.Just</span><span class="p" data-group-id="1748155839-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1748155839-6">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1748155839-6">]</span><span class="p" data-group-id="1748155839-5">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="1748155839-7">(</span><span class="p" data-group-id="1748155839-8">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="1748155839-8">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1748155839-9">fn</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1748155839-10">(</span><span class="p" data-group-id="1748155839-10">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Monex.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1748155839-11">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1748155839-11">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="1748155839-9">end</span><span class="p" data-group-id="1748155839-7">)</span><span class="w">
+</span><span class="p" data-group-id="1748155839-12">%</span><span class="nc" data-group-id="1748155839-12">Monex.Maybe.Nothing</span><span class="p" data-group-id="1748155839-12">{</span><span class="p" data-group-id="1748155839-12">}</span></code></pre>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/monex/0.1.0" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/monex/0.1.0">Hex Preview</a>
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="monex.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
