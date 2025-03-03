@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-23946F80.js"></script>
+    <script src="dist/sidebar_items-C10E759F.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -144,9 +144,21 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
+        <a href="#deviation/1" data-no-tooltip translate="no">deviation(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Computes the deviations from the mean for a list of numbers.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
         <a href="#max/1" data-no-tooltip translate="no">max(list)</a>
 
       </div>
+
+        <div class="summary-synopsis"><p>Finds the maximum value in a list using the <code class="inline">Max</code> monoid.</p></div>
 
     </div>
 
@@ -155,6 +167,38 @@ such as addition and multiplication over values or lists of values.</p>
         <a href="#max/2" data-no-tooltip translate="no">max(a, b)</a>
 
       </div>
+
+        <div class="summary-synopsis"><p>Returns the maximum of two numbers using the <code class="inline">Max</code> monoid.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#mean/1" data-no-tooltip translate="no">mean(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Computes the arithmetic mean of a list of numbers.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#min/1" data-no-tooltip translate="no">min(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Finds the minimum value in a list using the <code class="inline">Min</code> monoid.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#min/2" data-no-tooltip translate="no">min(a, b)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns the minimum of two numbers using the <code class="inline">Min</code> monoid.</p></div>
 
     </div>
 
@@ -180,6 +224,36 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
+        <a href="#range/1" data-no-tooltip translate="no">range(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Computes the range (difference between max and min) of a list.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#square/1" data-no-tooltip translate="no">square(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Computes the square of a number.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#std_dev/1" data-no-tooltip translate="no">std_dev(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Computes the standard deviation of a list of numbers.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
         <a href="#sum/1" data-no-tooltip translate="no">sum(list)</a>
 
       </div>
@@ -198,6 +272,26 @@ such as addition and multiplication over values or lists of values.</p>
 
     </div>
 
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#sum_of_squares/1" data-no-tooltip translate="no">sum_of_squares(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Computes the sum of squares of a list of numbers.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#variance/1" data-no-tooltip translate="no">variance(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Computes the variance of a list of numbers.</p></div>
+
+    </div>
+
 </div>
 
   </section>
@@ -211,16 +305,16 @@ such as addition and multiplication over values or lists of values.</p>
       <span class="text">Functions</span>
     </h1>
     <div class="functions-list">
-<section class="detail" id="max/1">
+<section class="detail" id="deviation/1">
 
   <div class="detail-header">
-    <a href="#max/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#deviation/1" class="detail-link" data-no-tooltip title="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">max(list)</h1>
+    <h1 class="signature" translate="no">deviation(list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L74" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L237" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -230,7 +324,64 @@ such as addition and multiplication over values or lists of values.</p>
 
   <section class="docstring">
 
+      <div class="specs">
 
+          <pre translate="no"><span class="attribute">@spec</span> deviation([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]) :: <a href="Funx.Maybe.html#t:t/1">Funx.Maybe.t</a>([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()])</pre>
+
+      </div>
+
+<p>Computes the deviations from the mean for a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="deviation/1-examples" class="section-heading">
+  <a href="#deviation/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">deviation</span><span class="p" data-group-id="3930109274-1">(</span><span class="p" data-group-id="3930109274-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="3930109274-2">]</span><span class="p" data-group-id="3930109274-1">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3930109274-3">(</span><span class="p" data-group-id="3930109274-4">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">1.5</span><span class="p" data-group-id="3930109274-4">]</span><span class="p" data-group-id="3930109274-3">)</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">deviation</span><span class="p" data-group-id="3930109274-5">(</span><span class="p" data-group-id="3930109274-6">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3930109274-6">]</span><span class="p" data-group-id="3930109274-5">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3930109274-7">(</span><span class="p" data-group-id="3930109274-8">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p" data-group-id="3930109274-8">]</span><span class="p" data-group-id="3930109274-7">)</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">deviation</span><span class="p" data-group-id="3930109274-9">(</span><span class="p" data-group-id="3930109274-10">[</span><span class="p" data-group-id="3930109274-10">]</span><span class="p" data-group-id="3930109274-9">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3930109274-11">(</span><span class="p" data-group-id="3930109274-11">)</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="max/1">
+
+  <div class="detail-header">
+    <a href="#max/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">max(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L102" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> max([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()</pre>
+
+      </div>
+
+<p>Finds the maximum value in a list using the <code class="inline">Max</code> monoid.</p><p>Returns <code class="inline">Float.min_finite()</code> if the list is empty.</p><h2 id="max/1-examples" class="section-heading">
+  <a href="#max/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="2413886314-1">(</span><span class="p" data-group-id="2413886314-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2413886314-2">]</span><span class="p" data-group-id="2413886314-1">)</span><span class="w">
+</span><span class="mi">7</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="2413886314-3">(</span><span class="p" data-group-id="2413886314-4">[</span><span class="p" data-group-id="2413886314-4">]</span><span class="p" data-group-id="2413886314-3">)</span><span class="w">
+</span><span class="nc">Float</span><span class="o">.</span><span class="n">min_finite</span><span class="p" data-group-id="2413886314-5">(</span><span class="p" data-group-id="2413886314-5">)</span></code></pre>
   </section>
 </section>
 <section class="detail" id="max/2">
@@ -242,7 +393,7 @@ such as addition and multiplication over values or lists of values.</p>
     </a>
     <h1 class="signature" translate="no">max(a, b)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L70" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L84" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -252,7 +403,137 @@ such as addition and multiplication over values or lists of values.</p>
 
   <section class="docstring">
 
+      <div class="specs">
 
+          <pre translate="no"><span class="attribute">@spec</span> max(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()</pre>
+
+      </div>
+
+<p>Returns the maximum of two numbers using the <code class="inline">Max</code> monoid.</p><h2 id="max/2-examples" class="section-heading">
+  <a href="#max/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="7620870409-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="7620870409-1">)</span><span class="w">
+</span><span class="mi">7</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="7620870409-2">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="7620870409-2">)</span><span class="w">
+</span><span class="o">-</span><span class="mi">1</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="mean/1">
+
+  <div class="detail-header">
+    <a href="#mean/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">mean(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L154" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> mean([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]) :: <a href="Funx.Maybe.html#t:t/1">Funx.Maybe.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>())</pre>
+
+      </div>
+
+<p>Computes the arithmetic mean of a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="mean/1-examples" class="section-heading">
+  <a href="#mean/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">mean</span><span class="p" data-group-id="2072798502-1">(</span><span class="p" data-group-id="2072798502-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2072798502-2">]</span><span class="p" data-group-id="2072798502-1">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2072798502-3">(</span><span class="mf">2.5</span><span class="p" data-group-id="2072798502-3">)</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">mean</span><span class="p" data-group-id="2072798502-4">(</span><span class="p" data-group-id="2072798502-5">[</span><span class="p" data-group-id="2072798502-5">]</span><span class="p" data-group-id="2072798502-4">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2072798502-6">(</span><span class="p" data-group-id="2072798502-6">)</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="min/1">
+
+  <div class="detail-header">
+    <a href="#min/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">min(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L136" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> min([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()</pre>
+
+      </div>
+
+<p>Finds the minimum value in a list using the <code class="inline">Min</code> monoid.</p><p>Returns <code class="inline">Float.max_finite()</code> if the list is empty.</p><h2 id="min/1-examples" class="section-heading">
+  <a href="#min/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="0134571437-1">(</span><span class="p" data-group-id="0134571437-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0134571437-2">]</span><span class="p" data-group-id="0134571437-1">)</span><span class="w">
+</span><span class="mi">2</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="0134571437-3">(</span><span class="p" data-group-id="0134571437-4">[</span><span class="p" data-group-id="0134571437-4">]</span><span class="p" data-group-id="0134571437-3">)</span><span class="w">
+</span><span class="nc">Float</span><span class="o">.</span><span class="n">max_finite</span><span class="p" data-group-id="0134571437-5">(</span><span class="p" data-group-id="0134571437-5">)</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="min/2">
+
+  <div class="detail-header">
+    <a href="#min/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">min(a, b)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L118" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> min(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()</pre>
+
+      </div>
+
+<p>Returns the minimum of two numbers using the <code class="inline">Min</code> monoid.</p><h2 id="min/2-examples" class="section-heading">
+  <a href="#min/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="3450585124-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="3450585124-1">)</span><span class="w">
+</span><span class="mi">3</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="3450585124-2">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="3450585124-2">)</span><span class="w">
+</span><span class="o">-</span><span class="mi">5</span></code></pre>
   </section>
 </section>
 <section class="detail" id="product/1">
@@ -264,7 +545,7 @@ such as addition and multiplication over values or lists of values.</p>
     </a>
     <h1 class="signature" translate="no">product(list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L66" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L68" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -286,10 +567,10 @@ such as addition and multiplication over values or lists of values.</p>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="8235869140-1">(</span><span class="p" data-group-id="8235869140-2">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="8235869140-2">]</span><span class="p" data-group-id="8235869140-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="7097305176-1">(</span><span class="p" data-group-id="7097305176-2">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7097305176-2">]</span><span class="p" data-group-id="7097305176-1">)</span><span class="w">
 </span><span class="mi">24</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="8235869140-3">(</span><span class="p" data-group-id="8235869140-4">[</span><span class="p" data-group-id="8235869140-4">]</span><span class="p" data-group-id="8235869140-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="7097305176-3">(</span><span class="p" data-group-id="7097305176-4">[</span><span class="p" data-group-id="7097305176-4">]</span><span class="p" data-group-id="7097305176-3">)</span><span class="w">
 </span><span class="mi">1</span></code></pre>
   </section>
 </section>
@@ -302,7 +583,7 @@ such as addition and multiplication over values or lists of values.</p>
     </a>
     <h1 class="signature" translate="no">product(a, b)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L50" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L52" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -324,8 +605,127 @@ such as addition and multiplication over values or lists of values.</p>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="4009250090-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4009250090-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="8627297084-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="8627297084-1">)</span><span class="w">
 </span><span class="mi">12</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="range/1">
+
+  <div class="detail-header">
+    <a href="#range/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">range(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L174" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> range([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]) :: <a href="Funx.Maybe.html#t:t/1">Funx.Maybe.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>())</pre>
+
+      </div>
+
+<p>Computes the range (difference between max and min) of a list.</p><p>Returns <code class="inline">nothing()</code> if the list is empty.</p><h2 id="range/1-examples" class="section-heading">
+  <a href="#range/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">range</span><span class="p" data-group-id="5004610109-1">(</span><span class="p" data-group-id="5004610109-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5004610109-2">]</span><span class="p" data-group-id="5004610109-1">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="5004610109-3">(</span><span class="mi">5</span><span class="p" data-group-id="5004610109-3">)</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">range</span><span class="p" data-group-id="5004610109-4">(</span><span class="p" data-group-id="5004610109-5">[</span><span class="p" data-group-id="5004610109-5">]</span><span class="p" data-group-id="5004610109-4">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="5004610109-6">(</span><span class="p" data-group-id="5004610109-6">)</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="square/1">
+
+  <div class="detail-header">
+    <a href="#square/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">square(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L193" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> square(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()</pre>
+
+          <pre translate="no"><span class="attribute">@spec</span> square([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]) :: [<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]</pre>
+
+      </div>
+
+<p>Computes the square of a number.</p><h2 id="square/1-examples" class="section-heading">
+  <a href="#square/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">square</span><span class="p" data-group-id="5200727180-1">(</span><span class="mi">3</span><span class="p" data-group-id="5200727180-1">)</span><span class="w">
+</span><span class="mi">9</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">square</span><span class="p" data-group-id="5200727180-2">(</span><span class="o">-</span><span class="mi">4</span><span class="p" data-group-id="5200727180-2">)</span><span class="w">
+</span><span class="mi">16</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="std_dev/1">
+
+  <div class="detail-header">
+    <a href="#std_dev/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">std_dev(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L287" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> std_dev([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]) :: <a href="Funx.Maybe.html#t:t/1">Funx.Maybe.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>())</pre>
+
+      </div>
+
+<p>Computes the standard deviation of a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="std_dev/1-examples" class="section-heading">
+  <a href="#std_dev/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">std_dev</span><span class="p" data-group-id="9017733564-1">(</span><span class="p" data-group-id="9017733564-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="9017733564-2">]</span><span class="p" data-group-id="9017733564-1">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9017733564-3">(</span><span class="mf">1.118033988749895</span><span class="p" data-group-id="9017733564-3">)</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">std_dev</span><span class="p" data-group-id="9017733564-4">(</span><span class="p" data-group-id="9017733564-5">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9017733564-5">]</span><span class="p" data-group-id="9017733564-4">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9017733564-6">(</span><span class="mf">0.0</span><span class="p" data-group-id="9017733564-6">)</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">std_dev</span><span class="p" data-group-id="9017733564-7">(</span><span class="p" data-group-id="9017733564-8">[</span><span class="p" data-group-id="9017733564-8">]</span><span class="p" data-group-id="9017733564-7">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9017733564-9">(</span><span class="p" data-group-id="9017733564-9">)</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sum/1">
@@ -337,7 +737,7 @@ such as addition and multiplication over values or lists of values.</p>
     </a>
     <h1 class="signature" translate="no">sum(list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L37" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L39" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -359,10 +759,10 @@ such as addition and multiplication over values or lists of values.</p>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="3532043888-1">(</span><span class="p" data-group-id="3532043888-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="3532043888-2">]</span><span class="p" data-group-id="3532043888-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="9899880455-1">(</span><span class="p" data-group-id="9899880455-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9899880455-2">]</span><span class="p" data-group-id="9899880455-1">)</span><span class="w">
 </span><span class="mi">6</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="3532043888-3">(</span><span class="p" data-group-id="3532043888-4">[</span><span class="p" data-group-id="3532043888-4">]</span><span class="p" data-group-id="3532043888-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="9899880455-3">(</span><span class="p" data-group-id="9899880455-4">[</span><span class="p" data-group-id="9899880455-4">]</span><span class="p" data-group-id="9899880455-3">)</span><span class="w">
 </span><span class="mi">0</span></code></pre>
   </section>
 </section>
@@ -375,7 +775,7 @@ such as addition and multiplication over values or lists of values.</p>
     </a>
     <h1 class="signature" translate="no">sum(a, b)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L21" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L23" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -397,8 +797,90 @@ such as addition and multiplication over values or lists of values.</p>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="9625428226-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9625428226-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="5832713392-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5832713392-1">)</span><span class="w">
 </span><span class="mi">3</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="sum_of_squares/1">
+
+  <div class="detail-header">
+    <a href="#sum_of_squares/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">sum_of_squares(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L216" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> sum_of_squares([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()</pre>
+
+      </div>
+
+<p>Computes the sum of squares of a list of numbers.</p><p>Returns <code class="inline">0</code> if the list is empty.</p><h2 id="sum_of_squares/1-examples" class="section-heading">
+  <a href="#sum_of_squares/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum_of_squares</span><span class="p" data-group-id="8405282040-1">(</span><span class="p" data-group-id="8405282040-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="8405282040-2">]</span><span class="p" data-group-id="8405282040-1">)</span><span class="w">
+</span><span class="mi">14</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum_of_squares</span><span class="p" data-group-id="8405282040-3">(</span><span class="p" data-group-id="8405282040-4">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8405282040-4">]</span><span class="p" data-group-id="8405282040-3">)</span><span class="w">
+</span><span class="mi">29</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum_of_squares</span><span class="p" data-group-id="8405282040-5">(</span><span class="p" data-group-id="8405282040-6">[</span><span class="p" data-group-id="8405282040-6">]</span><span class="p" data-group-id="8405282040-5">)</span><span class="w">
+</span><span class="mi">0</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="variance/1">
+
+  <div class="detail-header">
+    <a href="#variance/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">variance(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/math.ex#L262" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> variance([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()]) :: <a href="Funx.Maybe.html#t:t/1">Funx.Maybe.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>())</pre>
+
+      </div>
+
+<p>Computes the variance of a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="variance/1-examples" class="section-heading">
+  <a href="#variance/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">variance</span><span class="p" data-group-id="3393101720-1">(</span><span class="p" data-group-id="3393101720-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="3393101720-2">]</span><span class="p" data-group-id="3393101720-1">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3393101720-3">(</span><span class="mf">1.25</span><span class="p" data-group-id="3393101720-3">)</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">variance</span><span class="p" data-group-id="3393101720-4">(</span><span class="p" data-group-id="3393101720-5">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3393101720-5">]</span><span class="p" data-group-id="3393101720-4">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3393101720-6">(</span><span class="mf">0.0</span><span class="p" data-group-id="3393101720-6">)</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">variance</span><span class="p" data-group-id="3393101720-7">(</span><span class="p" data-group-id="3393101720-8">[</span><span class="p" data-group-id="3393101720-8">]</span><span class="p" data-group-id="3393101720-7">)</span><span class="w">
+</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3393101720-9">(</span><span class="p" data-group-id="3393101720-9">)</span></code></pre>
   </section>
 </section>
 
