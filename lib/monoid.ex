@@ -6,18 +6,18 @@ defprotocol Monex.Monoid do
   This protocol provides four key functions:
 
   - `empty/1`: Returns the identity element for the given monoid.
-  - `append/2`: Combines two values in the context of the monoid.
-  - `wrap/2`: Wraps a value into the monoidal structure.
-  - `unwrap/1`: Extracts the underlying value from the monoidal structure.
+  - `append/2`: Combines two monoid structs.
+  - `wrap/2`: Wraps a value into the monoid struct.
+  - `unwrap/1`: Extracts the underlying value from the monoid struct.
   """
 
   @doc """
-  Returns the identity element for the given monoid.
+  Returns the identity element for the given monoid struct.
 
   The identity element is a special value that satisfies the property:
 
-      append(empty(monoid), x) == x
-      append(x, empty(monoid)) == x
+      append(empty(monoid_struct), x) == x
+      append(x, empty(monoid_struct)) == x
 
   ## Examples
 
@@ -25,10 +25,10 @@ defprotocol Monex.Monoid do
       %Monex.Monoid.Sum{value: 0}
   """
   @spec empty(t()) :: t()
-  def empty(monoid)
+  def empty(monoid_struct)
 
   @doc """
-  Combines two values in the context of the monoid.
+  Combines two monoid structs.
 
   The operation must satisfy associativity:
 
@@ -40,21 +40,21 @@ defprotocol Monex.Monoid do
       %Monex.Monoid.Sum{value: 3}
   """
   @spec append(t(), t()) :: t()
-  def append(a, b)
+  def append(monoid_struct_a, monoid_struct_b)
 
   @doc """
-  Wraps a value into the monoidal structure.
+  Wraps a value into the given monoid struct.
 
   ## Examples
 
-      iex> Monex.Monoid.wrap(10, %Monex.Monoid.Sum{})
+      iex> Monex.Monoid.wrap(%Monex.Monoid.Sum{}, 10)
       %Monex.Monoid.Sum{value: 10}
   """
-  @spec wrap(any(), t()) :: t()
-  def wrap(value, monoid)
+  @spec wrap(t(), any()) :: t()
+  def wrap(monoid_struct, value)
 
   @doc """
-  Extracts the underlying value from the monoidal structure.
+  Extracts the underlying value from the monoid struct.
 
   ## Examples
 
@@ -62,5 +62,5 @@ defprotocol Monex.Monoid do
       10
   """
   @spec unwrap(t()) :: any()
-  def unwrap(monoid)
+  def unwrap(monoid_struct)
 end

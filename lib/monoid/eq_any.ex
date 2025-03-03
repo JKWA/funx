@@ -18,6 +18,7 @@ defmodule Monex.Monoid.Eq.Any do
 end
 
 defimpl Monex.Monoid, for: Monex.Monoid.Eq.Any do
+  alias Monex.Eq.Utils
   alias Monex.Monoid.Eq.Any
 
   def empty(_), do: %Any{}
@@ -29,14 +30,12 @@ defimpl Monex.Monoid, for: Monex.Monoid.Eq.Any do
     }
   end
 
-  def wrap(%Any{}, %{eq?: eq?, not_eq?: not_eq?}) do
-    %Any{eq?: eq?, not_eq?: not_eq?}
-  end
+  def wrap(%Any{}, eq) do
+    eq = Utils.to_eq_map(eq)
 
-  def wrap(%Any{}, eq) when is_atom(eq) do
     %Any{
-      eq?: &eq.eq?/2,
-      not_eq?: &eq.not_eq?/2
+      eq?: eq[:eq?],
+      not_eq?: eq[:not_eq?]
     }
   end
 

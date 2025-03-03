@@ -200,12 +200,12 @@ defmodule Monex.Eq.Utils do
     fn elem -> eq[:eq?].(elem, target) end
   end
 
-  defp to_eq_map(%{eq?: eq_fun, not_eq?: not_eq_fun} = eq_map)
-       when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) do
+  def to_eq_map(%{eq?: eq_fun, not_eq?: not_eq_fun} = eq_map)
+      when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) do
     eq_map
   end
 
-  defp to_eq_map(module) when is_atom(module) do
+  def to_eq_map(module) when is_atom(module) do
     %{
       eq?: &module.eq?/2,
       not_eq?: &module.not_eq?/2

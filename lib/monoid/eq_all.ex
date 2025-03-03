@@ -19,6 +19,7 @@ defmodule Monex.Monoid.Eq.All do
 end
 
 defimpl Monex.Monoid, for: Monex.Monoid.Eq.All do
+  alias Monex.Eq.Utils
   alias Monex.Monoid.Eq.All
 
   def empty(_), do: %All{}
@@ -30,14 +31,12 @@ defimpl Monex.Monoid, for: Monex.Monoid.Eq.All do
     }
   end
 
-  def wrap(%All{}, %{eq?: eq?, not_eq?: not_eq?}) do
-    %All{eq?: eq?, not_eq?: not_eq?}
-  end
+  def wrap(%All{}, eq) do
+    eq = Utils.to_eq_map(eq)
 
-  def wrap(%All{}, eq) when is_atom(eq) do
     %All{
-      eq?: &eq.eq?/2,
-      not_eq?: &eq.not_eq?/2
+      eq?: eq[:eq?],
+      not_eq?: eq[:not_eq?]
     }
   end
 
