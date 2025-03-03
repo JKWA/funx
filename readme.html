@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="monex v0.1.0">
+    <meta name="project" content="funx v0.1.0">
 
 
-    <title>Monex — monex v0.1.0</title>
+    <title>Funx — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-7F7EFC5D.js"></script>
+    <script src="dist/sidebar_items-23946F80.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -47,7 +47,7 @@
 
       <div>
         <a href="readme.html" class="sidebar-projectName" translate="no">
-monex
+funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
           v0.1.0
@@ -90,7 +90,7 @@ Pages
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
-            <span class="sr-only">Search documentation of monex</span>
+            <span class="sr-only">Search documentation of funx</span>
             <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
           </label>
           <button type="submit" class="search-button" aria-label="Submit Search">
@@ -112,40 +112,40 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/README.md#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/README.md#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
 
-    <span>Monex</span>
+    <span>Funx</span>
   </h1>
 
-<p><a href="https://github.com/JKWA/monex/actions/workflows/ci.yml"><img src="https://github.com/JKWA/monex/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration"/></a></p><p><a href="https://github.com/JKWA/monex">View the code on GitHub</a></p><p>Elixir is a dynamically typed language and lacks the static type system commonly used in functional languages to enforce monadic patterns. Instead, Elixir uses pattern matching, <code class="inline">defimpl</code>, and custom structs to create structured abstractions that provide runtime guarantees but lack the compile-time type safety of statically typed languages.</p><p>Monex leverages these principles to deliver functional programming abstractions for Elixir.</p><h2 id="features" class="section-heading">
+<p><a href="https://github.com/JKWA/funx/actions/workflows/ci.yml"><img src="https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration"/></a></p><p><a href="https://github.com/JKWA/funx">View the code on GitHub</a></p><p>Elixir is a dynamically typed language and lacks the static type system commonly used in functional languages to enforce monadic patterns. Instead, Elixir uses pattern matching, <code class="inline">defimpl</code>, and custom structs to create structured abstractions that provide runtime guarantees but lack the compile-time type safety of statically typed languages.</p><p>Funx leverages these principles to deliver functional programming abstractions for Elixir.</p><h2 id="features" class="section-heading">
   <a href="#features" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Features</span>
 </h2>
-<p>Monex provides tools for working with monads, including constructors, refinements, folding, matching, and more.</p><h3 id="monads" class="section-heading">
+<p>Funx provides tools for working with monads, including constructors, refinements, folding, matching, and more.</p><h3 id="monads" class="section-heading">
   <a href="#monads" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Monads</span>
 </h3>
-<p>Monads in Monex support operations like <code class="inline">bind</code>, <code class="inline">map</code>, and <code class="inline">ap</code>, allowing flexible control over computations:</p><ul><li><strong>Identity</strong>: A base monad that returns its value unchanged.</li><li><strong>Maybe</strong>: Encapsulates optional values as <code class="inline">Just</code> (a value) or <code class="inline">Nothing</code> (no value).</li><li><strong>Either</strong>: Represents a computation that can result in either <code class="inline">Right</code> (success) or <code class="inline">Left</code> (error).</li><li><strong>Effect</strong>: Handles asynchronous computations that may result in success or failure, with deferred execution.</li></ul><h3 id="operators" class="section-heading">
+<p>Monads in Funx support operations like <code class="inline">bind</code>, <code class="inline">map</code>, and <code class="inline">ap</code>, allowing flexible control over computations:</p><ul><li><strong>Identity</strong>: A base monad that returns its value unchanged.</li><li><strong>Maybe</strong>: Encapsulates optional values as <code class="inline">Just</code> (a value) or <code class="inline">Nothing</code> (no value).</li><li><strong>Either</strong>: Represents a computation that can result in either <code class="inline">Right</code> (success) or <code class="inline">Left</code> (error).</li><li><strong>Effect</strong>: Handles asynchronous computations that may result in success or failure, with deferred execution.</li></ul><h3 id="operators" class="section-heading">
   <a href="#operators" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Operators</span>
 </h3>
-<p>Monex includes operators that provide a more concise syntax for working with monads:</p><ul><li><strong><code class="inline">~&gt;/2</code></strong>: Functor map. Applies a function to the value in a monad, transforming the value within the monadic context.</li><li><strong><code class="inline">~&gt;&gt;/2</code></strong>: Monad bind. Chains computations, passing the result of one monad to a function that returns another monad of the same type.</li><li><strong><code class="inline">&lt;&lt;~/2</code></strong>: Applicative apply. Applies a function wrapped in a monad to a value in another monad of the same type.</li></ul><p><em>Operators make code more compact, but they may impact readability compared to Elixir’s standard pipe syntax.</em></p><h3 id="constructors" class="section-heading">
+<p>Funx includes operators that provide a more concise syntax for working with monads:</p><ul><li><strong><code class="inline">~&gt;/2</code></strong>: Functor map. Applies a function to the value in a monad, transforming the value within the monadic context.</li><li><strong><code class="inline">~&gt;&gt;/2</code></strong>: Monad bind. Chains computations, passing the result of one monad to a function that returns another monad of the same type.</li><li><strong><code class="inline">&lt;&lt;~/2</code></strong>: Applicative apply. Applies a function wrapped in a monad to a value in another monad of the same type.</li></ul><p><em>Operators make code more compact, but they may impact readability compared to Elixir’s standard pipe syntax.</em></p><h3 id="constructors" class="section-heading">
   <a href="#constructors" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Constructors</span>
 </h3>
-<p>Monex provides constructors for each monad, allowing values to be wrapped in the appropriate monadic context:</p><ul><li><strong><code class="inline">pure/1</code></strong>: Wraps a value in a monad, initializing a computation with a known value.</li><li><strong><code class="inline">just/1</code></strong>: Constructs a <code class="inline">Just</code> for the <code class="inline">Maybe</code> monad, representing the presence of a value.</li><li><strong><code class="inline">nothing/0</code></strong>: Constructs a <code class="inline">Nothing</code> for the <code class="inline">Maybe</code> monad, representing the absence of a value.</li></ul><h3 id="refinements" class="section-heading">
+<p>Funx provides constructors for each monad, allowing values to be wrapped in the appropriate monadic context:</p><ul><li><strong><code class="inline">pure/1</code></strong>: Wraps a value in a monad, initializing a computation with a known value.</li><li><strong><code class="inline">just/1</code></strong>: Constructs a <code class="inline">Just</code> for the <code class="inline">Maybe</code> monad, representing the presence of a value.</li><li><strong><code class="inline">nothing/0</code></strong>: Constructs a <code class="inline">Nothing</code> for the <code class="inline">Maybe</code> monad, representing the absence of a value.</li></ul><h3 id="refinements" class="section-heading">
   <a href="#refinements" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -157,13 +157,13 @@ Pages
   </a>
   <span class="text">Comparison</span>
 </h3>
-<p>Monex provides tools for comparing monadic values:</p><ul><li><strong>Equality</strong>: Monads can be compared for equality using custom functions to determine if they represent the same state or value.</li><li><strong>Order</strong>: Monex supports ordering monads based on their contained values, enabling sorting or comparison between monadic values.</li></ul><h3 id="folding" class="section-heading">
+<p>Funx provides tools for comparing monadic values:</p><ul><li><strong>Equality</strong>: Monads can be compared for equality using custom functions to determine if they represent the same state or value.</li><li><strong>Order</strong>: Funx supports ordering monads based on their contained values, enabling sorting or comparison between monadic values.</li></ul><h3 id="folding" class="section-heading">
   <a href="#folding" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Folding</span>
 </h3>
-<p>Folding collapses a monadic structure into a single result by applying functions in a specific order. Monex defines two core folding operations:</p><ul><li><strong><code class="inline">fold_l/3</code></strong>: Folds a structure from the left, applying functions sequentially from left to right.</li><li><strong><code class="inline">fold_r/3</code></strong>: Folds a structure from the right, applying functions from right to left.</li></ul><p>Folding is used to reduce monadic or predicate-based structures to a single value, such as success or failure.</p><h3 id="matching" class="section-heading">
+<p>Folding collapses a monadic structure into a single result by applying functions in a specific order. Funx defines two core folding operations:</p><ul><li><strong><code class="inline">fold_l/3</code></strong>: Folds a structure from the left, applying functions sequentially from left to right.</li><li><strong><code class="inline">fold_r/3</code></strong>: Folds a structure from the right, applying functions from right to left.</li></ul><p>Folding is used to reduce monadic or predicate-based structures to a single value, such as success or failure.</p><h3 id="matching" class="section-heading">
   <a href="#matching" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -181,7 +181,7 @@ Pages
   </a>
   <span class="text">Validation</span>
 </h3>
-<p>Monex supports validation workflows by combining multiple checks into a single monadic operation:</p><ul><li><strong><code class="inline">sequence_a/1</code></strong>: Sequences a list of applicatives without short-circuiting, collecting all successes if all values are valid or accumulating all errors if any failures occur. This ensures that the entire list is processed, even if some elements fail, making it suitable for scenarios where gathering all errors is preferred over stopping at the first failure.</li></ul><h3 id="lifting" class="section-heading">
+<p>Funx supports validation workflows by combining multiple checks into a single monadic operation:</p><ul><li><strong><code class="inline">sequence_a/1</code></strong>: Sequences a list of applicatives without short-circuiting, collecting all successes if all values are valid or accumulating all errors if any failures occur. This ensures that the entire list is processed, even if some elements fail, making it suitable for scenarios where gathering all errors is preferred over stopping at the first failure.</li></ul><h3 id="lifting" class="section-heading">
   <a href="#lifting" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -193,30 +193,30 @@ Pages
   </a>
   <span class="text">Elixir Interops</span>
 </h3>
-<p>Monex integrates with common Elixir idioms and data structures like <code class="inline">{:ok, value}</code> and <code class="inline">{:error, reason}</code> tuples:</p><ul><li><strong><code class="inline">from_result/1</code></strong>: Converts a result tuple (<code class="inline">{:ok, value}</code> or <code class="inline">{:error, reason}</code>) into an <code class="inline">Either</code> monad.</li><li><strong><code class="inline">to_result/1</code></strong>: Converts an <code class="inline">Either</code> monad back into a result tuple.</li><li><strong><code class="inline">from_try/1</code></strong>: Wraps a function in an <code class="inline">Either</code> monad, catching exceptions as <code class="inline">Left</code>.</li><li><strong><code class="inline">to_try!/1</code></strong>: Extracts a value from an <code class="inline">Either</code> monad or raises an exception if it is a <code class="inline">Left</code>.</li></ul><h3 id="comparison-equality-eq-and-ordering-ord" class="section-heading">
+<p>Funx integrates with common Elixir idioms and data structures like <code class="inline">{:ok, value}</code> and <code class="inline">{:error, reason}</code> tuples:</p><ul><li><strong><code class="inline">from_result/1</code></strong>: Converts a result tuple (<code class="inline">{:ok, value}</code> or <code class="inline">{:error, reason}</code>) into an <code class="inline">Either</code> monad.</li><li><strong><code class="inline">to_result/1</code></strong>: Converts an <code class="inline">Either</code> monad back into a result tuple.</li><li><strong><code class="inline">from_try/1</code></strong>: Wraps a function in an <code class="inline">Either</code> monad, catching exceptions as <code class="inline">Left</code>.</li><li><strong><code class="inline">to_try!/1</code></strong>: Extracts a value from an <code class="inline">Either</code> monad or raises an exception if it is a <code class="inline">Left</code>.</li></ul><h3 id="comparison-equality-eq-and-ordering-ord" class="section-heading">
   <a href="#comparison-equality-eq-and-ordering-ord" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Comparison: Equality (<code class="inline">Eq</code>) and Ordering (<code class="inline">Ord</code>)</span>
 </h3>
-<p>Monex provides <code class="inline">Eq</code> and <code class="inline">Ord</code> modules for flexible, domain-specific equality and ordering of monadic values.</p><h4>Equality (<code class="inline">Eq</code>)</h4><p>The <code class="inline">Eq</code> module allows defining custom equality rules, centralizing comparisons based on domain-specific criteria.</p><ul><li><strong>Custom Equality</strong>: Implement <code class="inline">Eq</code> to define what equality means within your domain. For example, <code class="inline">Maybe.just(5)</code> is equal to <code class="inline">Maybe.just(5)</code>, while <code class="inline">Maybe.nothing()</code> is not equal to <code class="inline">Maybe.just(5)</code>.</li><li><strong>Domain-Aligned Comparisons</strong>: Customize equality checks to suit specific needs, such as comparing users by <code class="inline">first_name</code> and <code class="inline">last_name</code> alone, instead of default struct comparison.</li></ul><h4>Ordering (<code class="inline">Ord</code>)</h4><p>The <code class="inline">Ord</code> module enables ordering rules for meaningful comparisons, supporting flexible sorting of monadic values.</p><ul><li><strong>Custom Order</strong>: Implement <code class="inline">Ord</code> to define ordering logic, such as sorting users by <code class="inline">last_name</code>, then by <code class="inline">first_name</code>.</li><li><strong>Built-In Utilities</strong>: Functions like <code class="inline">compare</code>, <code class="inline">min</code>, and <code class="inline">max</code> enforce consistency across comparisons based on custom rules.</li><li><strong>Nested Ordering</strong>: For monadic values like <code class="inline">Identity</code> or <code class="inline">Maybe</code>, <code class="inline">Ord</code> can delegate to the contained values, enabling deep comparisons.</li></ul><p>Centralizing <code class="inline">Eq</code> and <code class="inline">Ord</code> definitions ensures consistent, maintainable comparisons, making it easy to update as domain requirements evolve.</p><h2 id="installation" class="section-heading">
+<p>Funx provides <code class="inline">Eq</code> and <code class="inline">Ord</code> modules for flexible, domain-specific equality and ordering of monadic values.</p><h4>Equality (<code class="inline">Eq</code>)</h4><p>The <code class="inline">Eq</code> module allows defining custom equality rules, centralizing comparisons based on domain-specific criteria.</p><ul><li><strong>Custom Equality</strong>: Implement <code class="inline">Eq</code> to define what equality means within your domain. For example, <code class="inline">Maybe.just(5)</code> is equal to <code class="inline">Maybe.just(5)</code>, while <code class="inline">Maybe.nothing()</code> is not equal to <code class="inline">Maybe.just(5)</code>.</li><li><strong>Domain-Aligned Comparisons</strong>: Customize equality checks to suit specific needs, such as comparing users by <code class="inline">first_name</code> and <code class="inline">last_name</code> alone, instead of default struct comparison.</li></ul><h4>Ordering (<code class="inline">Ord</code>)</h4><p>The <code class="inline">Ord</code> module enables ordering rules for meaningful comparisons, supporting flexible sorting of monadic values.</p><ul><li><strong>Custom Order</strong>: Implement <code class="inline">Ord</code> to define ordering logic, such as sorting users by <code class="inline">last_name</code>, then by <code class="inline">first_name</code>.</li><li><strong>Built-In Utilities</strong>: Functions like <code class="inline">compare</code>, <code class="inline">min</code>, and <code class="inline">max</code> enforce consistency across comparisons based on custom rules.</li><li><strong>Nested Ordering</strong>: For monadic values like <code class="inline">Identity</code> or <code class="inline">Maybe</code>, <code class="inline">Ord</code> can delegate to the contained values, enabling deep comparisons.</li></ul><p>Centralizing <code class="inline">Eq</code> and <code class="inline">Ord</code> definitions ensures consistent, maintainable comparisons, making it easy to update as domain requirements evolve.</p><h2 id="installation" class="section-heading">
   <a href="#installation" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Installation</span>
 </h2>
-<p>To use Monex, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="8988734958-1">do</span><span class="w">
-  </span><span class="p" data-group-id="8988734958-2">[</span><span class="w">
-    </span><span class="p" data-group-id="8988734958-3">{</span><span class="ss">:monex</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.0&quot;</span><span class="p" data-group-id="8988734958-3">}</span><span class="w">
-  </span><span class="p" data-group-id="8988734958-2">]</span><span class="w">
-</span><span class="k" data-group-id="8988734958-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
+<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="5381564316-1">do</span><span class="w">
+  </span><span class="p" data-group-id="5381564316-2">[</span><span class="w">
+    </span><span class="p" data-group-id="5381564316-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.0&quot;</span><span class="p" data-group-id="5381564316-3">}</span><span class="w">
+  </span><span class="p" data-group-id="5381564316-2">]</span><span class="w">
+</span><span class="k" data-group-id="5381564316-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
 </span></code></pre><h2 id="documentation" class="section-heading">
   <a href="#documentation" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Documentation</span>
 </h2>
-<p>Full documentation is available on <a href="https://jkwa.github.io/monex/readme.html">GitHub Pages</a>.</p><h2 id="contributing" class="section-heading">
+<p>Full documentation is available on <a href="https://jkwa.github.io/funx/readme.html">GitHub Pages</a>.</p><h2 id="contributing" class="section-heading">
   <a href="#contributing" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -261,11 +261,11 @@ Changelog
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/monex/0.1.0" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.1.0" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/monex/0.1.0">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.1.0">Hex Preview</a>
 
-              (<a href="https://preview.hex.pm/preview/monex/0.1.0/show/README.md">current file</a>)
+              (<a href="https://preview.hex.pm/preview/funx/0.1.0/show/README.md">current file</a>)
 
           </span>
 
@@ -274,7 +274,7 @@ Changelog
             Search HexDocs
           </button>
 
-            <a href="monex.epub" title="ePub version">
+            <a href="funx.epub" title="ePub version">
               Download ePub version
             </a>
 

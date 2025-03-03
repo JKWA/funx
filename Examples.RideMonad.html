@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="monex v0.1.0">
+    <meta name="project" content="funx v0.1.0">
 
 
-    <title>Examples.RideMonad — monex v0.1.0</title>
+    <title>Examples.RideMonad — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-7F7EFC5D.js"></script>
+    <script src="dist/sidebar_items-23946F80.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -47,7 +47,7 @@
 
       <div>
         <a href="readme.html" class="sidebar-projectName" translate="no">
-monex
+funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
           v0.1.0
@@ -90,7 +90,7 @@ Pages
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
-            <span class="sr-only">Search documentation of monex</span>
+            <span class="sr-only">Search documentation of funx</span>
             <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
           </label>
           <button type="submit" class="search-button" aria-label="Submit Search">
@@ -112,19 +112,19 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_example.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_example.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
     <span translate="no">Examples.RideMonad</span> 
-    <small class="app-vsn" translate="no">(monex v0.1.0)</small>
+    <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>The <a href="Examples.RideMonad.html"><code class="inline">Examples.RideMonad</code></a> module demonstrates how to handle ride management using monads with the <code class="inline">Monex</code> library.
+<p>The <a href="Examples.RideMonad.html"><code class="inline">Examples.RideMonad</code></a> module demonstrates how to handle ride management using monads with the <code class="inline">Funx</code> library.
 Monads help chain together operations like validation and ticket management, especially when dealing with success (<code class="inline">Right</code>) and failure (<code class="inline">Left</code>) cases.</p><p>This module replaces typical Elixir pattern matching with monads, providing a way to elegantly handle sequences of operations, where each operation can succeed or fail.</p><p>The key functions in this module:</p><ul><li><a href="#register_patron/3"><code class="inline">register_patron/3</code></a>: Registers a new patron, wrapping them in the <code class="inline">Either</code> monad.</li><li><a href="#check_valid_height/1"><code class="inline">check_valid_height/1</code></a>: Validates a patron’s height, returning either success (<code class="inline">Right</code>) or failure (<code class="inline">Left</code>).</li><li><a href="#check_ticket_availability/1"><code class="inline">check_ticket_availability/1</code></a>: Checks if the patron has enough tickets, using the same success/failure monad approach.</li><li><a href="#take_ride/1"><code class="inline">take_ride/1</code></a>: Combines validations and ticket deduction using monadic binding (<code class="inline">bind</code>).</li><li><a href="#add_ticket/1"><code class="inline">add_ticket/1</code></a>: Adds a ticket to the patron using function application in the monad.</li></ul><p>The <code class="inline">Either</code> monad is used to handle success (<code class="inline">Right</code>) and failure (<code class="inline">Left</code>) results in all functions.</p>
     </section>
 
@@ -230,7 +230,7 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
     </a>
     <h1 class="signature" translate="no">either_t()</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_example.ex#L23" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_example.ex#L23" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -242,7 +242,7 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> either_t() :: <a href="Monex.Either.html#t:t/2">Monex.Either.t</a>(<a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>(), <a href="Examples.Patron.html#t:t/0">Examples.Patron.t</a>())</pre>
+          <pre translate="no"><span class="attribute">@type</span> either_t() :: <a href="Funx.Either.html#t:t/2">Funx.Either.t</a>(<a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>(), <a href="Examples.Patron.html#t:t/0">Examples.Patron.t</a>())</pre>
 
       </div>
 
@@ -270,7 +270,7 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
     </a>
     <h1 class="signature" translate="no">add_ticket(patron)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_example.ex#L118" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_example.ex#L118" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -292,9 +292,9 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="2392048621-1">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="2392048621-1">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="2392048621-2">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2392048621-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">add_ticket</span><span class="p" data-group-id="2392048621-3">(</span><span class="n">patron</span><span class="p" data-group-id="2392048621-3">)</span><span class="w">
-</span><span class="p" data-group-id="2392048621-4">%</span><span class="nc" data-group-id="2392048621-4">Monex.Either.Right</span><span class="p" data-group-id="2392048621-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2392048621-5">%</span><span class="nc" data-group-id="2392048621-5">Examples.Patron</span><span class="p" data-group-id="2392048621-5">{</span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2392048621-5">}</span><span class="p" data-group-id="2392048621-4">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="2392132153-1">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="2392132153-1">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="2392132153-2">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2392132153-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">add_ticket</span><span class="p" data-group-id="2392132153-3">(</span><span class="n">patron</span><span class="p" data-group-id="2392132153-3">)</span><span class="w">
+</span><span class="p" data-group-id="2392132153-4">%</span><span class="nc" data-group-id="2392132153-4">Funx.Either.Right</span><span class="p" data-group-id="2392132153-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2392132153-5">%</span><span class="nc" data-group-id="2392132153-5">Examples.Patron</span><span class="p" data-group-id="2392132153-5">{</span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2392132153-5">}</span><span class="p" data-group-id="2392132153-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="check_ticket_availability/1">
@@ -306,7 +306,7 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
     </a>
     <h1 class="signature" translate="no">check_ticket_availability(patron)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_example.ex#L78" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_example.ex#L78" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -329,13 +329,13 @@ If the patron has tickets, returns <code class="inline">Right(patron)</code>, ot
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="7483485748-1">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="7483485748-1">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="7483485748-2">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7483485748-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">check_ticket_availability</span><span class="p" data-group-id="7483485748-3">(</span><span class="n">patron</span><span class="p" data-group-id="7483485748-3">)</span><span class="w">
-</span><span class="p" data-group-id="7483485748-4">%</span><span class="nc" data-group-id="7483485748-4">Monex.Either.Right</span><span class="p" data-group-id="7483485748-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7483485748-5">%</span><span class="nc" data-group-id="7483485748-5">Examples.Patron</span><span class="p" data-group-id="7483485748-5">{</span><span class="n">...</span><span class="p" data-group-id="7483485748-5">}</span><span class="p" data-group-id="7483485748-4">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="9533612782-1">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="9533612782-1">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="9533612782-2">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9533612782-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">check_ticket_availability</span><span class="p" data-group-id="9533612782-3">(</span><span class="n">patron</span><span class="p" data-group-id="9533612782-3">)</span><span class="w">
+</span><span class="p" data-group-id="9533612782-4">%</span><span class="nc" data-group-id="9533612782-4">Funx.Either.Right</span><span class="p" data-group-id="9533612782-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9533612782-5">%</span><span class="nc" data-group-id="9533612782-5">Examples.Patron</span><span class="p" data-group-id="9533612782-5">{</span><span class="n">...</span><span class="p" data-group-id="9533612782-5">}</span><span class="p" data-group-id="9533612782-4">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="7483485748-6">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="7483485748-6">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="7483485748-7">(</span><span class="s">&quot;Ticketless&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">180</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="7483485748-7">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">check_ticket_availability</span><span class="p" data-group-id="7483485748-8">(</span><span class="n">patron</span><span class="p" data-group-id="7483485748-8">)</span><span class="w">
-</span><span class="p" data-group-id="7483485748-9">%</span><span class="nc" data-group-id="7483485748-9">Monex.Either.Left</span><span class="p" data-group-id="7483485748-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron is out of tickets&quot;</span><span class="p" data-group-id="7483485748-9">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="9533612782-6">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="9533612782-6">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="9533612782-7">(</span><span class="s">&quot;Ticketless&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">180</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="9533612782-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">check_ticket_availability</span><span class="p" data-group-id="9533612782-8">(</span><span class="n">patron</span><span class="p" data-group-id="9533612782-8">)</span><span class="w">
+</span><span class="p" data-group-id="9533612782-9">%</span><span class="nc" data-group-id="9533612782-9">Funx.Either.Left</span><span class="p" data-group-id="9533612782-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron is out of tickets&quot;</span><span class="p" data-group-id="9533612782-9">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="check_valid_height/1">
@@ -347,7 +347,7 @@ If the patron has tickets, returns <code class="inline">Right(patron)</code>, ot
     </a>
     <h1 class="signature" translate="no">check_valid_height(patron)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_example.ex#L57" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_example.ex#L57" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -370,13 +370,13 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="9308664022-1">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="9308664022-1">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="9308664022-2">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9308664022-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">check_valid_height</span><span class="p" data-group-id="9308664022-3">(</span><span class="n">patron</span><span class="p" data-group-id="9308664022-3">)</span><span class="w">
-</span><span class="p" data-group-id="9308664022-4">%</span><span class="nc" data-group-id="9308664022-4">Monex.Either.Right</span><span class="p" data-group-id="9308664022-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9308664022-5">%</span><span class="nc" data-group-id="9308664022-5">Examples.Patron</span><span class="p" data-group-id="9308664022-5">{</span><span class="n">...</span><span class="p" data-group-id="9308664022-5">}</span><span class="p" data-group-id="9308664022-4">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="4040575184-1">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="4040575184-1">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="4040575184-2">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4040575184-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">check_valid_height</span><span class="p" data-group-id="4040575184-3">(</span><span class="n">patron</span><span class="p" data-group-id="4040575184-3">)</span><span class="w">
+</span><span class="p" data-group-id="4040575184-4">%</span><span class="nc" data-group-id="4040575184-4">Funx.Either.Right</span><span class="p" data-group-id="4040575184-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4040575184-5">%</span><span class="nc" data-group-id="4040575184-5">Examples.Patron</span><span class="p" data-group-id="4040575184-5">{</span><span class="n">...</span><span class="p" data-group-id="4040575184-5">}</span><span class="p" data-group-id="4040575184-4">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="9308664022-6">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="9308664022-6">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="9308664022-7">(</span><span class="s">&quot;Shorty&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="9308664022-7">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">check_valid_height</span><span class="p" data-group-id="9308664022-8">(</span><span class="n">patron</span><span class="p" data-group-id="9308664022-8">)</span><span class="w">
-</span><span class="p" data-group-id="9308664022-9">%</span><span class="nc" data-group-id="9308664022-9">Monex.Either.Left</span><span class="p" data-group-id="9308664022-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron&#39;s height is not valid&quot;</span><span class="p" data-group-id="9308664022-9">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="4040575184-6">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="4040575184-6">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="4040575184-7">(</span><span class="s">&quot;Shorty&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="4040575184-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">check_valid_height</span><span class="p" data-group-id="4040575184-8">(</span><span class="n">patron</span><span class="p" data-group-id="4040575184-8">)</span><span class="w">
+</span><span class="p" data-group-id="4040575184-9">%</span><span class="nc" data-group-id="4040575184-9">Funx.Either.Left</span><span class="p" data-group-id="4040575184-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron&#39;s height is not valid&quot;</span><span class="p" data-group-id="4040575184-9">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="register_patron/3">
@@ -388,7 +388,7 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
     </a>
     <h1 class="signature" translate="no">register_patron(name, height, tickets)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_example.ex#L35" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_example.ex#L35" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -410,8 +410,8 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="4393650384-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4393650384-1">)</span><span class="w">
-</span><span class="p" data-group-id="4393650384-2">%</span><span class="nc" data-group-id="4393650384-2">Monex.Either.Right</span><span class="p" data-group-id="4393650384-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4393650384-3">%</span><span class="nc" data-group-id="4393650384-3">Examples.Patron</span><span class="p" data-group-id="4393650384-3">{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">height</span><span class="p">:</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4393650384-3">}</span><span class="p" data-group-id="4393650384-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">patron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="6485181246-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6485181246-1">)</span><span class="w">
+</span><span class="p" data-group-id="6485181246-2">%</span><span class="nc" data-group-id="6485181246-2">Funx.Either.Right</span><span class="p" data-group-id="6485181246-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6485181246-3">%</span><span class="nc" data-group-id="6485181246-3">Examples.Patron</span><span class="p" data-group-id="6485181246-3">{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">height</span><span class="p">:</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6485181246-3">}</span><span class="p" data-group-id="6485181246-2">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="take_ride/1">
@@ -423,7 +423,7 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
     </a>
     <h1 class="signature" translate="no">take_ride(patron)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_example.ex#L100" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_example.ex#L100" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -445,13 +445,13 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="6988494563-1">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="6988494563-1">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="6988494563-2">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6988494563-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">take_ride</span><span class="p" data-group-id="6988494563-3">(</span><span class="n">patron</span><span class="p" data-group-id="6988494563-3">)</span><span class="w">
-</span><span class="p" data-group-id="6988494563-4">%</span><span class="nc" data-group-id="6988494563-4">Monex.Either.Right</span><span class="p" data-group-id="6988494563-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6988494563-5">%</span><span class="nc" data-group-id="6988494563-5">Examples.Patron</span><span class="p" data-group-id="6988494563-5">{</span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="6988494563-5">}</span><span class="p" data-group-id="6988494563-4">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="6090220971-1">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="6090220971-1">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="6090220971-2">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6090220971-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">take_ride</span><span class="p" data-group-id="6090220971-3">(</span><span class="n">patron</span><span class="p" data-group-id="6090220971-3">)</span><span class="w">
+</span><span class="p" data-group-id="6090220971-4">%</span><span class="nc" data-group-id="6090220971-4">Funx.Either.Right</span><span class="p" data-group-id="6090220971-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6090220971-5">%</span><span class="nc" data-group-id="6090220971-5">Examples.Patron</span><span class="p" data-group-id="6090220971-5">{</span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="6090220971-5">}</span><span class="p" data-group-id="6090220971-4">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="6988494563-6">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="6988494563-6">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="6988494563-7">(</span><span class="s">&quot;Shorty&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6988494563-7">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">take_ride</span><span class="p" data-group-id="6988494563-8">(</span><span class="n">patron</span><span class="p" data-group-id="6988494563-8">)</span><span class="w">
-</span><span class="p" data-group-id="6988494563-9">%</span><span class="nc" data-group-id="6988494563-9">Monex.Either.Left</span><span class="p" data-group-id="6988494563-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron&#39;s height is not valid&quot;</span><span class="p" data-group-id="6988494563-9">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="p" data-group-id="6090220971-6">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">patron</span><span class="p" data-group-id="6090220971-6">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="6090220971-7">(</span><span class="s">&quot;Shorty&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6090220971-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Examples.RideMonad</span><span class="o">.</span><span class="n">take_ride</span><span class="p" data-group-id="6090220971-8">(</span><span class="n">patron</span><span class="p" data-group-id="6090220971-8">)</span><span class="w">
+</span><span class="p" data-group-id="6090220971-9">%</span><span class="nc" data-group-id="6090220971-9">Funx.Either.Left</span><span class="p" data-group-id="6090220971-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron&#39;s height is not valid&quot;</span><span class="p" data-group-id="6090220971-9">}</span></code></pre>
   </section>
 </section>
 
@@ -462,9 +462,9 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/monex/0.1.0" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.1.0" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/monex/0.1.0">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.1.0">Hex Preview</a>
 
           </span>
 
@@ -473,7 +473,7 @@ If the height is valid, returns <code class="inline">Right(patron)</code>, other
             Search HexDocs
           </button>
 
-            <a href="monex.epub" title="ePub version">
+            <a href="funx.epub" title="ePub version">
               Download ePub version
             </a>
 

@@ -8,7 +8,7 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Basic.Ord.LengthOrd — funx v0.1.0</title>
+    <title>Funx.Effect.Left — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -112,16 +112,20 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/examples/basic_ord.ex#L9" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Basic.Ord.LengthOrd</span> 
+    <span translate="no">Funx.Effect.Left</span> 
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
+
+    <section id="moduledoc">
+<p>Represents the <code class="inline">Left</code> variant of the <code class="inline">Effect</code> monad, used to model an error or failure in an asynchronous context.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions for monadic operations within an effectful, lazy execution.</li><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>: Provides a <a href="https://hexdocs.pm/elixir/Kernel.html#to_string/1"><code class="inline">to_string/1</code></a> function to represent <code class="inline">Left</code> values as strings.</li></ul><p>The <code class="inline">Left</code> effect propagates the wrapped error or failure without executing further success logic, supporting lazy, asynchronous tasks.</p>
+    </section>
 
 </div>
 
@@ -132,6 +136,20 @@ Pages
       </a>
       <span class="text">Summary</span>
     </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:t/1" data-no-tooltip translate="no">t(left)</a>
+
+      </div>
+
+    </div>
+
+</div>
 <div class="summary-functions summary">
   <h2>
     <a href="#functions">Functions</a>
@@ -139,33 +157,11 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#ge?/2" data-no-tooltip translate="no">ge?(a, b)</a>
+        <a href="#pure/1" data-no-tooltip translate="no">pure(value)</a>
 
       </div>
 
-    </div>
-
-    <div class="summary-row">
-      <div class="summary-signature">
-        <a href="#gt?/2" data-no-tooltip translate="no">gt?(a, b)</a>
-
-      </div>
-
-    </div>
-
-    <div class="summary-row">
-      <div class="summary-signature">
-        <a href="#le?/2" data-no-tooltip translate="no">le?(a, b)</a>
-
-      </div>
-
-    </div>
-
-    <div class="summary-row">
-      <div class="summary-signature">
-        <a href="#lt?/2" data-no-tooltip translate="no">lt?(a, b)</a>
-
-      </div>
+        <div class="summary-synopsis"><p>Creates a new <code class="inline">Left</code> effect.</p></div>
 
     </div>
 
@@ -173,6 +169,46 @@ Pages
 
   </section>
 
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+    <div class="types-list">
+<section class="detail" id="t:t/1">
+
+  <div class="detail-header">
+    <a href="#t:t/1" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">t(left)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L14" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> t(left) :: %Funx.Effect.Left{effect: (-&gt; Task.t(%Funx.Either.Left{left: left}))}</pre>
+
+      </div>
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
 
   <section id="functions" class="details-list">
     <h1 class="section-heading">
@@ -182,16 +218,16 @@ Pages
       <span class="text">Functions</span>
     </h1>
     <div class="functions-list">
-<section class="detail" id="ge?/2">
+<section class="detail" id="pure/1">
 
   <div class="detail-header">
-    <a href="#ge?/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#pure/1" class="detail-link" data-no-tooltip title="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">ge?(a, b)</h1>
+    <h1 class="signature" translate="no">pure(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/examples/basic_ord.ex#L13" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L29" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -201,73 +237,22 @@ Pages
 
   <section class="docstring">
 
+      <div class="specs">
 
-  </section>
-</section>
-<section class="detail" id="gt?/2">
+          <pre translate="no"><span class="attribute">@spec</span> pure(left) :: <a href="#t:t/1">t</a>(left) when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
 
-  <div class="detail-header">
-    <a href="#gt?/2" class="detail-link" data-no-tooltip title="Link to this function">
-      <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
-    </a>
-    <h1 class="signature" translate="no">gt?(a, b)</h1>
+      </div>
 
-      <a href="https://github.com/JKWA/funx/blob/main/examples/basic_ord.ex#L12" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
-
-
-  </div>
-
-  <section class="docstring">
-
-
-  </section>
-</section>
-<section class="detail" id="le?/2">
-
-  <div class="detail-header">
-    <a href="#le?/2" class="detail-link" data-no-tooltip title="Link to this function">
-      <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
-    </a>
-    <h1 class="signature" translate="no">le?(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/main/examples/basic_ord.ex#L11" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
-
-
-  </div>
-
-  <section class="docstring">
-
-
-  </section>
-</section>
-<section class="detail" id="lt?/2">
-
-  <div class="detail-header">
-    <a href="#lt?/2" class="detail-link" data-no-tooltip title="Link to this function">
-      <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
-    </a>
-    <h1 class="signature" translate="no">lt?(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/main/examples/basic_ord.ex#L10" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
-
-
-  </div>
-
-  <section class="docstring">
-
-
+<p>Creates a new <code class="inline">Left</code> effect.</p><p>The <a href="#pure/1"><code class="inline">pure/1</code></a> function wraps a value in the <code class="inline">Left</code> effect monad, representing an asynchronous error or failure.</p><h2 id="pure/1-examples" class="section-heading">
+  <a href="#pure/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3155420043-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="3155420043-1">)</span><span class="w">
+</span><span class="p" data-group-id="3155420043-2">%</span><span class="nc" data-group-id="3155420043-2">Funx.Effect.Left</span><span class="p" data-group-id="3155420043-2">{</span><span class="w">
+  </span><span class="ss">effect</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3155420043-3">#</span><span class="nc" data-group-id="3155420043-3">Function</span><span class="p" data-group-id="3155420043-3">&lt;</span><span class="n">...</span><span class="p" data-group-id="3155420043-3">&gt;</span><span class="w">  </span><span class="c1"># (an asynchronous task returning `Left`)</span><span class="w">
+</span><span class="p" data-group-id="3155420043-2">}</span></code></pre>
   </section>
 </section>
 

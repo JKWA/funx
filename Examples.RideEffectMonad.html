@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="monex v0.1.0">
+    <meta name="project" content="funx v0.1.0">
 
 
-    <title>Examples.RideEffectMonad — monex v0.1.0</title>
+    <title>Examples.RideEffectMonad — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-7F7EFC5D.js"></script>
+    <script src="dist/sidebar_items-23946F80.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -47,7 +47,7 @@
 
       <div>
         <a href="readme.html" class="sidebar-projectName" translate="no">
-monex
+funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
           v0.1.0
@@ -90,7 +90,7 @@ Pages
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
-            <span class="sr-only">Search documentation of monex</span>
+            <span class="sr-only">Search documentation of funx</span>
             <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
           </label>
           <button type="submit" class="search-button" aria-label="Submit Search">
@@ -112,19 +112,19 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_effect_example.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_effect_example.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
     <span translate="no">Examples.RideEffectMonad</span> 
-    <small class="app-vsn" translate="no">(monex v0.1.0)</small>
+    <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>The <a href="Examples.RideEffectMonad.html"><code class="inline">Examples.RideEffectMonad</code></a> module demonstrates how to handle ride management using the <code class="inline">Effect</code> monad from the <code class="inline">Monex</code> library.
+<p>The <a href="Examples.RideEffectMonad.html"><code class="inline">Examples.RideEffectMonad</code></a> module demonstrates how to handle ride management using the <code class="inline">Effect</code> monad from the <code class="inline">Funx</code> library.
 This module allows for handling asynchronous tasks, such as validating a patron's height and checking ticket availability, while maintaining a clear, monadic flow for success and failure.</p><p>The key difference from the <code class="inline">Either</code> monad is that <code class="inline">Effect</code> handles computations that may involve time delays or asynchronous execution, and those computations are deferred until they are explicitly run.</p><h3 id="module-key-functions" class="section-heading">
   <a href="#module-key-functions" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
@@ -234,7 +234,7 @@ This module allows for handling asynchronous tasks, such as validating a patron'
     </a>
     <h1 class="signature" translate="no">effect_t()</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_effect_example.ex#L23" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_effect_example.ex#L23" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -246,7 +246,7 @@ This module allows for handling asynchronous tasks, such as validating a patron'
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> effect_t() :: <a href="Monex.Effect.html#t:t/2">Monex.Effect.t</a>(<a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>(), <a href="Examples.Patron.html#t:t/0">Examples.Patron.t</a>())</pre>
+          <pre translate="no"><span class="attribute">@type</span> effect_t() :: <a href="Funx.Effect.html#t:t/2">Funx.Effect.t</a>(<a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>(), <a href="Examples.Patron.html#t:t/0">Examples.Patron.t</a>())</pre>
 
       </div>
 
@@ -274,7 +274,7 @@ This module allows for handling asynchronous tasks, such as validating a patron'
     </a>
     <h1 class="signature" translate="no">add_ticket(patron)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_effect_example.ex#L140" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_effect_example.ex#L140" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -296,10 +296,10 @@ This module allows for handling asynchronous tasks, such as validating a patron'
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="9161554319-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9161554319-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">add_ticket</span><span class="p" data-group-id="9161554319-2">(</span><span class="n">task</span><span class="p" data-group-id="9161554319-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="9161554319-3">(</span><span class="n">task</span><span class="p" data-group-id="9161554319-3">)</span><span class="w">
-</span><span class="p" data-group-id="9161554319-4">%</span><span class="nc" data-group-id="9161554319-4">Monex.Either.Right</span><span class="p" data-group-id="9161554319-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9161554319-5">%</span><span class="nc" data-group-id="9161554319-5">Examples.Patron</span><span class="p" data-group-id="9161554319-5">{</span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9161554319-5">}</span><span class="p" data-group-id="9161554319-4">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="2483294798-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2483294798-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">add_ticket</span><span class="p" data-group-id="2483294798-2">(</span><span class="n">task</span><span class="p" data-group-id="2483294798-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2483294798-3">(</span><span class="n">task</span><span class="p" data-group-id="2483294798-3">)</span><span class="w">
+</span><span class="p" data-group-id="2483294798-4">%</span><span class="nc" data-group-id="2483294798-4">Funx.Either.Right</span><span class="p" data-group-id="2483294798-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2483294798-5">%</span><span class="nc" data-group-id="2483294798-5">Examples.Patron</span><span class="p" data-group-id="2483294798-5">{</span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2483294798-5">}</span><span class="p" data-group-id="2483294798-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="check_ticket_availability/1">
@@ -311,7 +311,7 @@ This module allows for handling asynchronous tasks, such as validating a patron'
     </a>
     <h1 class="signature" translate="no">check_ticket_availability(patron)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_effect_example.ex#L90" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_effect_example.ex#L90" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -333,15 +333,15 @@ This module allows for handling asynchronous tasks, such as validating a patron'
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="4779477094-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4779477094-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">check_ticket_availability</span><span class="p" data-group-id="4779477094-2">(</span><span class="n">task</span><span class="p" data-group-id="4779477094-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4779477094-3">(</span><span class="n">task</span><span class="p" data-group-id="4779477094-3">)</span><span class="w">
-</span><span class="p" data-group-id="4779477094-4">%</span><span class="nc" data-group-id="4779477094-4">Monex.Either.Right</span><span class="p" data-group-id="4779477094-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4779477094-5">%</span><span class="nc" data-group-id="4779477094-5">Examples.Patron</span><span class="p" data-group-id="4779477094-5">{</span><span class="n">...</span><span class="p" data-group-id="4779477094-5">}</span><span class="p" data-group-id="4779477094-4">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="3777890539-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3777890539-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">check_ticket_availability</span><span class="p" data-group-id="3777890539-2">(</span><span class="n">task</span><span class="p" data-group-id="3777890539-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3777890539-3">(</span><span class="n">task</span><span class="p" data-group-id="3777890539-3">)</span><span class="w">
+</span><span class="p" data-group-id="3777890539-4">%</span><span class="nc" data-group-id="3777890539-4">Funx.Either.Right</span><span class="p" data-group-id="3777890539-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3777890539-5">%</span><span class="nc" data-group-id="3777890539-5">Examples.Patron</span><span class="p" data-group-id="3777890539-5">{</span><span class="n">...</span><span class="p" data-group-id="3777890539-5">}</span><span class="p" data-group-id="3777890539-4">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="4779477094-6">(</span><span class="s">&quot;Ticketless&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">180</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4779477094-6">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">check_ticket_availability</span><span class="p" data-group-id="4779477094-7">(</span><span class="n">task</span><span class="p" data-group-id="4779477094-7">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4779477094-8">(</span><span class="n">task</span><span class="p" data-group-id="4779477094-8">)</span><span class="w">
-</span><span class="p" data-group-id="4779477094-9">%</span><span class="nc" data-group-id="4779477094-9">Monex.Either.Left</span><span class="p" data-group-id="4779477094-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron is out of tickets&quot;</span><span class="p" data-group-id="4779477094-9">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="3777890539-6">(</span><span class="s">&quot;Ticketless&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">180</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3777890539-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">check_ticket_availability</span><span class="p" data-group-id="3777890539-7">(</span><span class="n">task</span><span class="p" data-group-id="3777890539-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3777890539-8">(</span><span class="n">task</span><span class="p" data-group-id="3777890539-8">)</span><span class="w">
+</span><span class="p" data-group-id="3777890539-9">%</span><span class="nc" data-group-id="3777890539-9">Funx.Either.Left</span><span class="p" data-group-id="3777890539-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron is out of tickets&quot;</span><span class="p" data-group-id="3777890539-9">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="check_valid_height/1">
@@ -353,7 +353,7 @@ This module allows for handling asynchronous tasks, such as validating a patron'
     </a>
     <h1 class="signature" translate="no">check_valid_height(patron)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_effect_example.ex#L59" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_effect_example.ex#L59" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -375,15 +375,15 @@ This module allows for handling asynchronous tasks, such as validating a patron'
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="7009076194-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7009076194-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">check_valid_height</span><span class="p" data-group-id="7009076194-2">(</span><span class="n">task</span><span class="p" data-group-id="7009076194-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="7009076194-3">(</span><span class="n">task</span><span class="p" data-group-id="7009076194-3">)</span><span class="w">
-</span><span class="p" data-group-id="7009076194-4">%</span><span class="nc" data-group-id="7009076194-4">Monex.Either.Right</span><span class="p" data-group-id="7009076194-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7009076194-5">%</span><span class="nc" data-group-id="7009076194-5">Examples.Patron</span><span class="p" data-group-id="7009076194-5">{</span><span class="n">...</span><span class="p" data-group-id="7009076194-5">}</span><span class="p" data-group-id="7009076194-4">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="6831014043-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6831014043-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">check_valid_height</span><span class="p" data-group-id="6831014043-2">(</span><span class="n">task</span><span class="p" data-group-id="6831014043-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="6831014043-3">(</span><span class="n">task</span><span class="p" data-group-id="6831014043-3">)</span><span class="w">
+</span><span class="p" data-group-id="6831014043-4">%</span><span class="nc" data-group-id="6831014043-4">Funx.Either.Right</span><span class="p" data-group-id="6831014043-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6831014043-5">%</span><span class="nc" data-group-id="6831014043-5">Examples.Patron</span><span class="p" data-group-id="6831014043-5">{</span><span class="n">...</span><span class="p" data-group-id="6831014043-5">}</span><span class="p" data-group-id="6831014043-4">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="7009076194-6">(</span><span class="s">&quot;Shorty&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7009076194-6">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">check_valid_height</span><span class="p" data-group-id="7009076194-7">(</span><span class="n">task</span><span class="p" data-group-id="7009076194-7">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="7009076194-8">(</span><span class="n">task</span><span class="p" data-group-id="7009076194-8">)</span><span class="w">
-</span><span class="p" data-group-id="7009076194-9">%</span><span class="nc" data-group-id="7009076194-9">Monex.Either.Left</span><span class="p" data-group-id="7009076194-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron&#39;s height is not valid&quot;</span><span class="p" data-group-id="7009076194-9">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="6831014043-6">(</span><span class="s">&quot;Shorty&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="6831014043-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">check_valid_height</span><span class="p" data-group-id="6831014043-7">(</span><span class="n">task</span><span class="p" data-group-id="6831014043-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="6831014043-8">(</span><span class="n">task</span><span class="p" data-group-id="6831014043-8">)</span><span class="w">
+</span><span class="p" data-group-id="6831014043-9">%</span><span class="nc" data-group-id="6831014043-9">Funx.Either.Left</span><span class="p" data-group-id="6831014043-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron&#39;s height is not valid&quot;</span><span class="p" data-group-id="6831014043-9">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="register_patron/3">
@@ -395,7 +395,7 @@ This module allows for handling asynchronous tasks, such as validating a patron'
     </a>
     <h1 class="signature" translate="no">register_patron(name, height, tickets)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_effect_example.ex#L36" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_effect_example.ex#L36" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -417,9 +417,9 @@ This module allows for handling asynchronous tasks, such as validating a patron'
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="8900746663-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8900746663-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="8900746663-2">(</span><span class="n">task</span><span class="p" data-group-id="8900746663-2">)</span><span class="w">
-</span><span class="p" data-group-id="8900746663-3">%</span><span class="nc" data-group-id="8900746663-3">Monex.Either.Right</span><span class="p" data-group-id="8900746663-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8900746663-4">%</span><span class="nc" data-group-id="8900746663-4">Examples.Patron</span><span class="p" data-group-id="8900746663-4">{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">height</span><span class="p">:</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8900746663-4">}</span><span class="p" data-group-id="8900746663-3">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="5597598092-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5597598092-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="5597598092-2">(</span><span class="n">task</span><span class="p" data-group-id="5597598092-2">)</span><span class="w">
+</span><span class="p" data-group-id="5597598092-3">%</span><span class="nc" data-group-id="5597598092-3">Funx.Either.Right</span><span class="p" data-group-id="5597598092-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5597598092-4">%</span><span class="nc" data-group-id="5597598092-4">Examples.Patron</span><span class="p" data-group-id="5597598092-4">{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">height</span><span class="p">:</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5597598092-4">}</span><span class="p" data-group-id="5597598092-3">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="take_ride/1">
@@ -431,7 +431,7 @@ This module allows for handling asynchronous tasks, such as validating a patron'
     </a>
     <h1 class="signature" translate="no">take_ride(patron)</h1>
 
-      <a href="https://github.com/JKWA/monex/blob/main/examples/ride_monad_effect_example.ex#L121" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/examples/ride_monad_effect_example.ex#L121" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -453,15 +453,15 @@ This module allows for handling asynchronous tasks, such as validating a patron'
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="7984617380-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7984617380-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">take_ride</span><span class="p" data-group-id="7984617380-2">(</span><span class="n">task</span><span class="p" data-group-id="7984617380-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="7984617380-3">(</span><span class="n">task</span><span class="p" data-group-id="7984617380-3">)</span><span class="w">
-</span><span class="p" data-group-id="7984617380-4">%</span><span class="nc" data-group-id="7984617380-4">Monex.Either.Right</span><span class="p" data-group-id="7984617380-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7984617380-5">%</span><span class="nc" data-group-id="7984617380-5">Examples.Patron</span><span class="p" data-group-id="7984617380-5">{</span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7984617380-5">}</span><span class="p" data-group-id="7984617380-4">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="2978342300-1">(</span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">170</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2978342300-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">take_ride</span><span class="p" data-group-id="2978342300-2">(</span><span class="n">task</span><span class="p" data-group-id="2978342300-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2978342300-3">(</span><span class="n">task</span><span class="p" data-group-id="2978342300-3">)</span><span class="w">
+</span><span class="p" data-group-id="2978342300-4">%</span><span class="nc" data-group-id="2978342300-4">Funx.Either.Right</span><span class="p" data-group-id="2978342300-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2978342300-5">%</span><span class="nc" data-group-id="2978342300-5">Examples.Patron</span><span class="p" data-group-id="2978342300-5">{</span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="2978342300-5">}</span><span class="p" data-group-id="2978342300-4">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="7984617380-6">(</span><span class="s">&quot;Shorty&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7984617380-6">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">take_ride</span><span class="p" data-group-id="7984617380-7">(</span><span class="n">task</span><span class="p" data-group-id="7984617380-7">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Monex.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="7984617380-8">(</span><span class="n">task</span><span class="p" data-group-id="7984617380-8">)</span><span class="w">
-</span><span class="p" data-group-id="7984617380-9">%</span><span class="nc" data-group-id="7984617380-9">Monex.Either.Left</span><span class="p" data-group-id="7984617380-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron&#39;s height is not valid&quot;</span><span class="p" data-group-id="7984617380-9">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">register_patron</span><span class="p" data-group-id="2978342300-6">(</span><span class="s">&quot;Shorty&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">140</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2978342300-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Examples.RideEffectMonad</span><span class="o">.</span><span class="n">take_ride</span><span class="p" data-group-id="2978342300-7">(</span><span class="n">task</span><span class="p" data-group-id="2978342300-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2978342300-8">(</span><span class="n">task</span><span class="p" data-group-id="2978342300-8">)</span><span class="w">
+</span><span class="p" data-group-id="2978342300-9">%</span><span class="nc" data-group-id="2978342300-9">Funx.Either.Left</span><span class="p" data-group-id="2978342300-9">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Patron&#39;s height is not valid&quot;</span><span class="p" data-group-id="2978342300-9">}</span></code></pre>
   </section>
 </section>
 
@@ -472,9 +472,9 @@ This module allows for handling asynchronous tasks, such as validating a patron'
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/monex/0.1.0" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.1.0" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/monex/0.1.0">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.1.0">Hex Preview</a>
 
           </span>
 
@@ -483,7 +483,7 @@ This module allows for handling asynchronous tasks, such as validating a patron'
             Search HexDocs
           </button>
 
-            <a href="monex.epub" title="ePub version">
+            <a href="funx.epub" title="ePub version">
               Download ePub version
             </a>
 

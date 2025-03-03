@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.0">
+
+
+    <title>Funx.Eq.Utils — funx v0.1.0</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-23946F80.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="modules" class="page-module">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+    <span translate="no">Funx.Eq.Utils</span> 
+    <small class="app-vsn" translate="no">(funx v0.1.0)</small>
+
+  </h1>
+
+
+    <section id="moduledoc">
+<p>Utility functions for working with the <a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a> protocol.
+These functions assume that types passed in either support Elixir's equality operator
+or implement the <a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a> protocol.</p>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:eq_map/0" data-no-tooltip translate="no">eq_map()</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:eq_t/0" data-no-tooltip translate="no">eq_t()</a>
+
+      </div>
+
+    </div>
+
+</div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#append_all/2" data-no-tooltip translate="no">append_all(a, b)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Combines two equality comparators using the <code class="inline">Eq.All</code> monoid.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#append_any/2" data-no-tooltip translate="no">append_any(a, b)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Combines two equality comparators using the <code class="inline">Eq.Any</code> monoid.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#concat_all/1" data-no-tooltip translate="no">concat_all(eq_list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Concatenates a list of equality comparators using the <code class="inline">Eq.All</code> monoid.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#concat_any/1" data-no-tooltip translate="no">concat_any(eq_list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Concatenates a list of equality comparators using the <code class="inline">Eq.Any</code> monoid.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#contramap/2" data-no-tooltip translate="no">contramap(f, eq \\ Eq)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Transforms an equality check by applying a function <code class="inline">f</code> to values before comparison.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#eq?/3" data-no-tooltip translate="no">eq?(a, b, eq \\ Eq)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns true if two values are equal, using a specified or default <code class="inline">Eq</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#eq_by?/4" data-no-tooltip translate="no">eq_by?(f, a, b, eq \\ Eq)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Checks equality of values by applying a projection function, using a specified or default <code class="inline">Eq</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#not_eq?/3" data-no-tooltip translate="no">not_eq?(a, b, eq \\ Eq)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns false if two values are not equal, using a specified or default <code class="inline">Eq</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_eq_map/1" data-no-tooltip translate="no">to_eq_map(eq_map)</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_predicate/2" data-no-tooltip translate="no">to_predicate(target, eq \\ Eq)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts an <code class="inline">Eq</code> comparator into a single-argument predicate function for use in <a href="https://hexdocs.pm/elixir/Enum.html"><code class="inline">Enum</code></a> functions.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+    <div class="types-list">
+<section class="detail" id="t:eq_map/0">
+
+  <div class="detail-header">
+    <a href="#t:eq_map/0" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">eq_map()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L8" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> eq_map() :: %{
+  eq?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()),
+  not_eq?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>())
+}</pre>
+
+      </div>
+
+
+  </section>
+</section>
+<section class="detail" id="t:eq_t/0">
+
+  <div class="detail-header">
+    <a href="#t:eq_t/0" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">eq_t()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L13" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> eq_t() :: <a href="Funx.Eq.html#t:t/0">Funx.Eq.t</a>() | <a href="#t:eq_map/0">eq_map</a>()</pre>
+
+      </div>
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+    <div class="functions-list">
+<section class="detail" id="append_all/2">
+
+  <div class="detail-header">
+    <a href="#append_all/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">append_all(a, b)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L115" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> append_all(<a href="Funx.Monoid.Eq.All.html#t:t/0">Funx.Monoid.Eq.All.t</a>(), <a href="Funx.Monoid.Eq.All.html#t:t/0">Funx.Monoid.Eq.All.t</a>()) ::
+  <a href="Funx.Monoid.Eq.All.html#t:t/0">Funx.Monoid.Eq.All.t</a>()</pre>
+
+      </div>
+
+<p>Combines two equality comparators using the <code class="inline">Eq.All</code> monoid.</p><p>This function merges two equality comparisons, requiring <strong>both</strong> to return <code class="inline">true</code>
+for the final result to be considered equal. This enforces a <strong>strict</strong> equality rule,
+where all comparators must agree.</p><h2 id="append_all/2-examples" class="section-heading">
+  <a href="#append_all/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="2467628008-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="2467628008-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="2467628008-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="2467628008-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">append_all</span><span class="p" data-group-id="2467628008-3">(</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="2467628008-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2467628008-4">(</span><span class="p" data-group-id="2467628008-5">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2467628008-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2467628008-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2467628008-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="2467628008-4">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2467628008-7">(</span><span class="p" data-group-id="2467628008-8">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2467628008-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2467628008-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="2467628008-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="2467628008-7">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="append_any/2">
+
+  <div class="detail-header">
+    <a href="#append_any/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">append_any(a, b)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L136" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> append_any(<a href="Funx.Monoid.Eq.Any.html#t:t/0">Funx.Monoid.Eq.Any.t</a>(), <a href="Funx.Monoid.Eq.Any.html#t:t/0">Funx.Monoid.Eq.Any.t</a>()) ::
+  <a href="Funx.Monoid.Eq.Any.html#t:t/0">Funx.Monoid.Eq.Any.t</a>()</pre>
+
+      </div>
+
+<p>Combines two equality comparators using the <code class="inline">Eq.Any</code> monoid.</p><p>This function merges two equality comparisons, where <strong>at least one</strong>
+must return <code class="inline">true</code> for the final result to be considered equal.</p><h2 id="append_any/2-examples" class="section-heading">
+  <a href="#append_any/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4367402920-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="4367402920-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4367402920-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="4367402920-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">append_any</span><span class="p" data-group-id="4367402920-3">(</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="4367402920-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4367402920-4">(</span><span class="p" data-group-id="4367402920-5">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4367402920-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4367402920-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="4367402920-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="4367402920-4">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4367402920-7">(</span><span class="p" data-group-id="4367402920-8">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4367402920-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4367402920-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="4367402920-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="4367402920-7">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="concat_all/1">
+
+  <div class="detail-header">
+    <a href="#concat_all/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">concat_all(eq_list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L157" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> concat_all([<a href="Funx.Monoid.Eq.All.html#t:t/0">Funx.Monoid.Eq.All.t</a>()]) :: <a href="Funx.Monoid.Eq.All.html#t:t/0">Funx.Monoid.Eq.All.t</a>()</pre>
+
+      </div>
+
+<p>Concatenates a list of equality comparators using the <code class="inline">Eq.All</code> monoid.</p><p>The resulting comparator requires <strong>all</strong> comparators in the list to agree
+that two values are equal.</p><h2 id="concat_all/1-examples" class="section-heading">
+  <a href="#concat_all/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="5515885551-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="5515885551-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="5515885551-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="5515885551-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">concat_all</span><span class="p" data-group-id="5515885551-3">(</span><span class="p" data-group-id="5515885551-4">[</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="5515885551-4">]</span><span class="p" data-group-id="5515885551-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="5515885551-5">(</span><span class="p" data-group-id="5515885551-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5515885551-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5515885551-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5515885551-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="5515885551-5">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="5515885551-8">(</span><span class="p" data-group-id="5515885551-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5515885551-9">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5515885551-10">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="5515885551-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="5515885551-8">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="concat_any/1">
+
+  <div class="detail-header">
+    <a href="#concat_any/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">concat_any(eq_list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L178" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> concat_any([<a href="Funx.Monoid.Eq.Any.html#t:t/0">Funx.Monoid.Eq.Any.t</a>()]) :: <a href="Funx.Monoid.Eq.Any.html#t:t/0">Funx.Monoid.Eq.Any.t</a>()</pre>
+
+      </div>
+
+<p>Concatenates a list of equality comparators using the <code class="inline">Eq.Any</code> monoid.</p><p>The resulting comparator allows <strong>any</strong> comparator in the list to determine
+equality, making it more permissive.</p><h2 id="concat_any/1-examples" class="section-heading">
+  <a href="#concat_any/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="1614430796-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="1614430796-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="1614430796-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="1614430796-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">concat_any</span><span class="p" data-group-id="1614430796-3">(</span><span class="p" data-group-id="1614430796-4">[</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="1614430796-4">]</span><span class="p" data-group-id="1614430796-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1614430796-5">(</span><span class="p" data-group-id="1614430796-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="1614430796-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1614430796-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="1614430796-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="1614430796-5">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1614430796-8">(</span><span class="p" data-group-id="1614430796-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="1614430796-9">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1614430796-10">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="1614430796-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="1614430796-8">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="contramap/2">
+
+    <span id="contramap/1"></span>
+
+  <div class="detail-header">
+    <a href="#contramap/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">contramap(f, eq \\ Eq)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L35" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> contramap((a -&gt; b), <a href="#t:eq_t/0">eq_t</a>()) :: <a href="#t:eq_map/0">eq_map</a>() when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), b: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Transforms an equality check by applying a function <code class="inline">f</code> to values before comparison.</p><p>The <code class="inline">eq</code> parameter can be an <code class="inline">Eq</code> module or a custom comparator map with an <code class="inline">:eq?</code> function.
+If an <code class="inline">Eq</code> module is provided, it wraps the module’s function to apply <code class="inline">f</code> to each value before invoking the equality check.
+If a custom comparator map is provided, it wraps the function in the map to apply <code class="inline">f</code> to each value.</p><h2 id="contramap/2-examples" class="section-heading">
+  <a href="#contramap/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="5607364532-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="5607364532-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="5607364532-2">(</span><span class="p" data-group-id="5607364532-3">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5607364532-3">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5607364532-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5607364532-4">}</span><span class="p" data-group-id="5607364532-2">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="5607364532-5">(</span><span class="p" data-group-id="5607364532-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5607364532-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5607364532-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="5607364532-7">}</span><span class="p" data-group-id="5607364532-5">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="eq?/3">
+
+    <span id="eq?/2"></span>
+
+  <div class="detail-header">
+    <a href="#eq?/3" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">eq?(a, b, eq \\ Eq)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L75" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> eq?(a, a, <a href="#t:eq_t/0">eq_t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>() when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Returns true if two values are equal, using a specified or default <code class="inline">Eq</code>.</p><h2 id="eq?/3-examples" class="section-heading">
+  <a href="#eq?/3-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="0884741730-1">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="0884741730-1">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="0884741730-2">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="0884741730-2">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="eq_by?/4">
+
+    <span id="eq_by?/3"></span>
+
+  <div class="detail-header">
+    <a href="#eq_by?/4" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">eq_by?(f, a, b, eq \\ Eq)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L58" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> eq_by?((a -&gt; b), a, a, <a href="#t:eq_t/0">eq_t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>() when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), b: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Checks equality of values by applying a projection function, using a specified or default <code class="inline">Eq</code>.</p><p>The <code class="inline">eq</code> parameter can be an <code class="inline">Eq</code> module or a custom comparator map with an <code class="inline">:eq?</code> function.</p><h2 id="eq_by?/4-examples" class="section-heading">
+  <a href="#eq_by?/4-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq_by?</span><span class="p" data-group-id="5507888517-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5507888517-2">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5507888517-2">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5507888517-3">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5507888517-3">}</span><span class="p" data-group-id="5507888517-1">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq_by?</span><span class="p" data-group-id="5507888517-4">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5507888517-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5507888517-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5507888517-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="5507888517-6">}</span><span class="p" data-group-id="5507888517-4">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="not_eq?/3">
+
+    <span id="not_eq?/2"></span>
+
+  <div class="detail-header">
+    <a href="#not_eq?/3" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">not_eq?(a, b, eq \\ Eq)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L92" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> not_eq?(a, a, <a href="#t:eq_t/0">eq_t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>() when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Returns false if two values are not equal, using a specified or default <code class="inline">Eq</code>.</p><h2 id="not_eq?/3-examples" class="section-heading">
+  <a href="#not_eq?/3-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8315282309-1">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">99</span><span class="p" data-group-id="8315282309-1">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8315282309-2">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p" data-group-id="8315282309-2">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_eq_map/1">
+
+  <div class="detail-header">
+    <a href="#to_eq_map/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">to_eq_map(eq_map)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L203" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+
+  </section>
+</section>
+<section class="detail" id="to_predicate/2">
+
+    <span id="to_predicate/1"></span>
+
+  <div class="detail-header">
+    <a href="#to_predicate/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">to_predicate(target, eq \\ Eq)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/eq/utils.ex#L197" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_predicate(a, <a href="#t:eq_t/0">eq_t</a>()) :: (a -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()) when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Converts an <code class="inline">Eq</code> comparator into a single-argument predicate function for use in <a href="https://hexdocs.pm/elixir/Enum.html"><code class="inline">Enum</code></a> functions.</p><p>The resulting predicate takes a single element and returns <code class="inline">true</code> if it matches the <code class="inline">target</code>
+based on the specified <code class="inline">Eq</code>. If no custom <code class="inline">Eq</code> is provided, it defaults to <a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>.</p><h2 id="to_predicate/2-examples" class="section-heading">
+  <a href="#to_predicate/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4944843122-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="4944843122-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">predicate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="4944843122-2">(</span><span class="p" data-group-id="4944843122-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="4944843122-3">}</span><span class="p">,</span><span class="w"> </span><span class="n">eq</span><span class="p" data-group-id="4944843122-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p" data-group-id="4944843122-4">(</span><span class="p" data-group-id="4944843122-5">[</span><span class="p" data-group-id="4944843122-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="4944843122-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4944843122-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="4944843122-7">}</span><span class="p" data-group-id="4944843122-5">]</span><span class="p">,</span><span class="w"> </span><span class="n">predicate</span><span class="p" data-group-id="4944843122-4">)</span><span class="w">
+</span><span class="p" data-group-id="4944843122-8">[</span><span class="p" data-group-id="4944843122-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="4944843122-9">}</span><span class="p" data-group-id="4944843122-8">]</span></code></pre>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.0" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.0">Hex Preview</a>
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
