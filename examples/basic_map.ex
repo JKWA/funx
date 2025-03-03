@@ -4,8 +4,8 @@ defmodule Basic.Map do
   for transforming values while preserving their monadic context.
   """
 
-  import Monex.Monad, only: [map: 2]
-  alias Monex.{Identity, Maybe, Either}
+  import Funx.Monad, only: [map: 2]
+  alias Funx.{Identity, Maybe, Either}
 
   @type monad_t(value) :: Identity.t(value) | Maybe.t(value) | Either.t(String.t(), value)
 
@@ -29,7 +29,7 @@ defmodule Basic.Map do
   ## Examples
 
       iex> Basic.Map.add_one(Maybe.just(3))
-      %Monex.Maybe.Just{value: 4}
+      %Funx.Maybe.Just{value: 4}
   """
   @spec add_one(monad_t(integer())) :: monad_t(integer())
   def add_one(value) do
@@ -46,7 +46,7 @@ defmodule Basic.Map do
   ## Examples
 
       iex> Basic.Map.add_two(Identity.pure(3))
-      %Monex.Identity{value: 5}
+      %Funx.Identity{value: 5}
   """
   @spec add_two(monad_t(integer())) :: monad_t(integer())
   def add_two(value) do
@@ -64,7 +64,7 @@ defmodule Basic.Map do
   ## Examples
 
       iex> Basic.Map.add_two_identity(3)
-      %Monex.Identity{value: 5}
+      %Funx.Identity{value: 5}
   """
   @spec add_two_identity(integer()) :: Identity.t(integer())
   def add_two_identity(value) when is_integer(value) do
@@ -82,7 +82,7 @@ defmodule Basic.Map do
   ## Examples
 
       iex> Basic.Map.add_two_maybe(3)
-      %Monex.Maybe.Just{value: 5}
+      %Funx.Maybe.Just{value: 5}
   """
   @spec add_two_maybe(integer()) :: Maybe.t(integer())
   def add_two_maybe(value) when is_integer(value) do
@@ -100,7 +100,7 @@ defmodule Basic.Map do
   ## Examples
 
       iex> Basic.Map.add_two_maybe()
-      %Monex.Maybe.Nothing{}
+      %Funx.Maybe.Nothing{}
   """
   @spec add_two_maybe() :: Maybe.t(integer())
   def add_two_maybe() do
@@ -117,10 +117,10 @@ defmodule Basic.Map do
   ## Examples
 
       iex> Basic.Map.add_two_either(3)
-      %Monex.Either.Right{right: 5}
+      %Funx.Either.Right{right: 5}
 
       iex> Basic.Map.add_two_either("Oops, error")
-      %Monex.Either.Left{left: "Oops, error"}
+      %Funx.Either.Left{left: "Oops, error"}
   """
   @spec add_two_either(integer() | String.t()) :: Either.t(String.t(), integer())
   def add_two_either(value) when is_integer(value) do

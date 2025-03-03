@@ -1,6 +1,6 @@
 # credo:disable-for-this-file
 
-defmodule Monex.Monoid.Eq.All do
+defmodule Funx.Monoid.Eq.All do
   @moduledoc """
   A Monoid implementation for equality checks for All.
   """
@@ -10,17 +10,17 @@ defmodule Monex.Monoid.Eq.All do
           not_eq?: (any(), any() -> boolean())
         }
 
-  defstruct eq?: &Monex.Monoid.Eq.All.default_eq?/2,
-            not_eq?: &Monex.Monoid.Eq.All.default_not_eq?/2
+  defstruct eq?: &Funx.Monoid.Eq.All.default_eq?/2,
+            not_eq?: &Funx.Monoid.Eq.All.default_not_eq?/2
 
   def default_eq?(_, _), do: true
 
   def default_not_eq?(_, _), do: false
 end
 
-defimpl Monex.Monoid, for: Monex.Monoid.Eq.All do
-  alias Monex.Eq.Utils
-  alias Monex.Monoid.Eq.All
+defimpl Funx.Monoid, for: Funx.Monoid.Eq.All do
+  alias Funx.Eq.Utils
+  alias Funx.Monoid.Eq.All
 
   def empty(_), do: %All{}
 

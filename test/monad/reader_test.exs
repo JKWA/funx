@@ -1,9 +1,9 @@
-defmodule Monex.ReaderTest do
+defmodule Funx.ReaderTest do
   @moduledoc false
 
   use ExUnit.Case
-  import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Monex.Reader
+  import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Funx.Reader
 
   describe "pure/1" do
     test "wraps a value in the Reader monad" do
@@ -36,7 +36,7 @@ defmodule Monex.ReaderTest do
 
   def add_one(x), do: x + 1
 
-  describe "Monex.Monad protocol" do
+  describe "Funx.Monad protocol" do
     test "bind/2 chains Reader computations" do
       env = %{}
       func_reader = fn x -> pure(add_one(x)) end

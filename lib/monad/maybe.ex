@@ -1,6 +1,6 @@
-defmodule Monex.Maybe do
+defmodule Funx.Maybe do
   @moduledoc """
-  The `Monex.Maybe` module provides an implementation of the `Maybe` monad, giving you a convenient way to represent optional values in Elixir. By encapsulating values in `Just` or `Nothing`, this module lets you handle the presence or absence of data in a consistent, composable manner.
+  The `Funx.Maybe` module provides an implementation of the `Maybe` monad, giving you a convenient way to represent optional values in Elixir. By encapsulating values in `Just` or `Nothing`, this module lets you handle the presence or absence of data in a consistent, composable manner.
 
   ## Features
 
@@ -57,13 +57,13 @@ defmodule Monex.Maybe do
   - `to_result/1`: Turns a `Maybe` into `{:ok, value}` or `{:error, :nothing}`.
   """
 
-  import Monex.Monad, only: [bind: 2, map: 2]
-  import Monex.Foldable, only: [fold_l: 3]
-  alias Monex.Maybe.{Just, Nothing}
-  alias Monex.Either.{Left, Right}
-  alias Monex.Eq
-  alias Monex.Identity
-  alias Monex.Ord
+  import Funx.Monad, only: [bind: 2, map: 2]
+  import Funx.Foldable, only: [fold_l: 3]
+  alias Funx.Maybe.{Just, Nothing}
+  alias Funx.Either.{Left, Right}
+  alias Funx.Eq
+  alias Funx.Identity
+  alias Funx.Ord
 
   @type t(value) :: Just.t(value) | Nothing.t()
 
@@ -72,8 +72,8 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.pure(5)
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Maybe.pure(5)
+      %Funx.Maybe.Just{value: 5}
   """
   @spec pure(any()) :: Just.t(any())
   def pure(value), do: Just.pure(value)
@@ -89,8 +89,8 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.nothing()
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Maybe.nothing()
+      %Funx.Maybe.Nothing{}
   """
   @spec nothing() :: Nothing.t()
   def nothing, do: Nothing.pure()
@@ -100,10 +100,10 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.just?(Monex.Maybe.just(5))
+      iex> Funx.Maybe.just?(Funx.Maybe.just(5))
       true
 
-      iex> Monex.Maybe.just?(Monex.Maybe.nothing())
+      iex> Funx.Maybe.just?(Funx.Maybe.nothing())
       false
   """
   @spec just?(t(any())) :: boolean()
@@ -115,10 +115,10 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.nothing?(Monex.Maybe.nothing())
+      iex> Funx.Maybe.nothing?(Funx.Maybe.nothing())
       true
 
-      iex> Monex.Maybe.nothing?(Monex.Maybe.just(5))
+      iex> Funx.Maybe.nothing?(Funx.Maybe.just(5))
       false
   """
   @spec nothing?(t(any())) :: boolean()
@@ -130,10 +130,10 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.get_or_else(Monex.Maybe.just(5), 0)
+      iex> Funx.Maybe.get_or_else(Funx.Maybe.just(5), 0)
       5
 
-      iex> Monex.Maybe.get_or_else(Monex.Maybe.nothing(), 0)
+      iex> Funx.Maybe.get_or_else(Funx.Maybe.nothing(), 0)
       0
   """
   @spec get_or_else(t(value), value) :: value when value: var
@@ -146,11 +146,11 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.or_else(Monex.Maybe.nothing(), fn -> Monex.Maybe.just(42) end)
-      %Monex.Maybe.Just{value: 42}
+      iex> Funx.Maybe.or_else(Funx.Maybe.nothing(), fn -> Funx.Maybe.just(42) end)
+      %Funx.Maybe.Just{value: 42}
 
-      iex> Monex.Maybe.or_else(Monex.Maybe.just(10), fn -> Monex.Maybe.just(42) end)
-      %Monex.Maybe.Just{value: 10}
+      iex> Funx.Maybe.or_else(Funx.Maybe.just(10), fn -> Funx.Maybe.just(42) end)
+      %Funx.Maybe.Just{value: 10}
   """
   @spec or_else(t(value), (-> t(value))) :: t(value) when value: var
   def or_else(%Nothing{}, fallback_fun) when is_function(fallback_fun, 0), do: fallback_fun.()
@@ -164,10 +164,10 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> eq = Monex.Maybe.lift_eq(%{eq?: fn x, y -> x == y end})
-      iex> eq.eq?.(Monex.Maybe.just(5), Monex.Maybe.just(5))
+      iex> eq = Funx.Maybe.lift_eq(%{eq?: fn x, y -> x == y end})
+      iex> eq.eq?.(Funx.Maybe.just(5), Funx.Maybe.just(5))
       true
-      iex> eq.eq?.(Monex.Maybe.just(5), Monex.Maybe.just(10))
+      iex> eq.eq?.(Funx.Maybe.just(5), Funx.Maybe.just(10))
       false
   """
   @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
@@ -192,8 +192,8 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> ord = Monex.Maybe.lift_ord(%{lt?: fn x, y -> x < y end})
-      iex> ord.lt?.(Monex.Maybe.just(3), Monex.Maybe.just(5))
+      iex> ord = Funx.Maybe.lift_ord(%{lt?: fn x, y -> x < y end})
+      iex> ord.lt?.(Funx.Maybe.just(3), Funx.Maybe.just(5))
       true
   """
   @spec lift_ord(Ord.Utils.ord_map()) :: Ord.Utils.ord_map()
@@ -216,13 +216,13 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.concat([Monex.Maybe.pure(1), Monex.Maybe.nothing(), Monex.Maybe.pure(2)])
+      iex> Funx.Maybe.concat([Funx.Maybe.pure(1), Funx.Maybe.nothing(), Funx.Maybe.pure(2)])
       [1, 2]
 
-      iex> Monex.Maybe.concat([Monex.Maybe.nothing(), Monex.Maybe.nothing()])
+      iex> Funx.Maybe.concat([Funx.Maybe.nothing(), Funx.Maybe.nothing()])
       []
 
-      iex> Monex.Maybe.concat([Monex.Maybe.pure("a"), Monex.Maybe.pure("b"), Monex.Maybe.pure("c")])
+      iex> Funx.Maybe.concat([Funx.Maybe.pure("a"), Funx.Maybe.pure("b"), Funx.Maybe.pure("c")])
       ["a", "b", "c"]
   """
   @spec concat([t(output)]) :: [output] when output: any()
@@ -240,21 +240,21 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.concat_map([1, 2, 3, 4], fn x ->
-      ...>   if rem(x, 2) == 0, do: Monex.Maybe.pure(x), else: Monex.Maybe.nothing()
+      iex> Funx.Maybe.concat_map([1, 2, 3, 4], fn x ->
+      ...>   if rem(x, 2) == 0, do: Funx.Maybe.pure(x), else: Funx.Maybe.nothing()
       ...> end)
       [2, 4]
 
-      iex> Monex.Maybe.concat_map([1, nil, 3], fn
-      ...>   nil -> Monex.Maybe.nothing()
-      ...>   x -> Monex.Maybe.pure(x * 2)
+      iex> Funx.Maybe.concat_map([1, nil, 3], fn
+      ...>   nil -> Funx.Maybe.nothing()
+      ...>   x -> Funx.Maybe.pure(x * 2)
       ...> end)
       [2, 6]
 
-      iex> Monex.Maybe.concat_map([1, 2, 3], fn x -> Monex.Maybe.pure(x + 1) end)
+      iex> Funx.Maybe.concat_map([1, 2, 3], fn x -> Funx.Maybe.pure(x + 1) end)
       [2, 3, 4]
 
-      iex> Monex.Maybe.concat_map([], fn x -> Monex.Maybe.pure(x) end)
+      iex> Funx.Maybe.concat_map([], fn x -> Funx.Maybe.pure(x) end)
       []
   """
   @spec concat_map([input], (input -> t(output))) :: [output] when input: any(), output: any()
@@ -273,11 +273,11 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.sequence([Monex.Maybe.just(1), Monex.Maybe.just(2)])
-      %Monex.Maybe.Just{value: [1, 2]}
+      iex> Funx.Maybe.sequence([Funx.Maybe.just(1), Funx.Maybe.just(2)])
+      %Funx.Maybe.Just{value: [1, 2]}
 
-      iex> Monex.Maybe.sequence([Monex.Maybe.just(1), Monex.Maybe.nothing()])
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Maybe.sequence([Funx.Maybe.just(1), Funx.Maybe.nothing()])
+      %Funx.Maybe.Nothing{}
   """
   @spec sequence([t(value)]) :: t([value]) when value: any()
   def sequence([]), do: pure([])
@@ -295,14 +295,14 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.traverse([1, 2], fn x -> Monex.Maybe.just(x * 2) end)
-      %Monex.Maybe.Just{value: [2, 4]}
+      iex> Funx.Maybe.traverse([1, 2], fn x -> Funx.Maybe.just(x * 2) end)
+      %Funx.Maybe.Just{value: [2, 4]}
 
-      iex> Monex.Maybe.traverse([1, nil, 3], fn
-      ...>   nil -> Monex.Maybe.nothing()
-      ...>   x -> Monex.Maybe.just(x * 2)
+      iex> Funx.Maybe.traverse([1, nil, 3], fn
+      ...>   nil -> Funx.Maybe.nothing()
+      ...>   x -> Funx.Maybe.just(x * 2)
       ...> end)
-      %Monex.Maybe.Nothing{}
+      %Funx.Maybe.Nothing{}
   """
   @spec traverse([input], (input -> t(output))) :: t([output]) when input: any(), output: any()
   def traverse([], _func), do: pure([])
@@ -323,11 +323,11 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.lift_identity(Monex.Identity.pure(5))
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Maybe.lift_identity(Funx.Identity.pure(5))
+      %Funx.Maybe.Just{value: 5}
 
-      iex> Monex.Maybe.lift_identity(Monex.Identity.pure(nil))
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Maybe.lift_identity(Funx.Identity.pure(nil))
+      %Funx.Maybe.Nothing{}
   """
   def lift_identity(identity) do
     case identity do
@@ -341,11 +341,11 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.lift_either(Monex.Either.right(5))
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Maybe.lift_either(Funx.Either.right(5))
+      %Funx.Maybe.Just{value: 5}
 
-      iex> Monex.Maybe.lift_either(Monex.Either.left("Error"))
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Maybe.lift_either(Funx.Either.left("Error"))
+      %Funx.Maybe.Nothing{}
   """
   def lift_either(either) do
     case either do
@@ -359,11 +359,11 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.lift_predicate(5, fn x -> x > 3 end)
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Maybe.lift_predicate(5, fn x -> x > 3 end)
+      %Funx.Maybe.Just{value: 5}
 
-      iex> Monex.Maybe.lift_predicate(2, fn x -> x > 3 end)
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Maybe.lift_predicate(2, fn x -> x > 3 end)
+      %Funx.Maybe.Nothing{}
   """
   @spec lift_predicate(term(), (term() -> boolean())) :: t(term())
   def lift_predicate(value, predicate) do
@@ -384,11 +384,11 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.from_nil(nil)
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Maybe.from_nil(nil)
+      %Funx.Maybe.Nothing{}
 
-      iex> Monex.Maybe.from_nil(5)
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Maybe.from_nil(5)
+      %Funx.Maybe.Just{value: 5}
   """
   @spec from_nil(nil | value) :: t(value) when value: term()
   def from_nil(nil), do: nothing()
@@ -399,10 +399,10 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.to_nil(Monex.Maybe.just(5))
+      iex> Funx.Maybe.to_nil(Funx.Maybe.just(5))
       5
 
-      iex> Monex.Maybe.to_nil(Monex.Maybe.nothing())
+      iex> Funx.Maybe.to_nil(Funx.Maybe.nothing())
       nil
   """
   @spec to_nil(t(value)) :: nil | value when value: term()
@@ -415,11 +415,11 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.from_try(fn -> 5 end)
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Maybe.from_try(fn -> 5 end)
+      %Funx.Maybe.Just{value: 5}
 
-      iex> Monex.Maybe.from_try(fn -> raise "error" end)
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Maybe.from_try(fn -> raise "error" end)
+      %Funx.Maybe.Nothing{}
   """
   @spec from_try((-> right)) :: t(right) when right: term()
   def from_try(func) do
@@ -437,10 +437,10 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.to_try!(Monex.Maybe.just(5))
+      iex> Funx.Maybe.to_try!(Funx.Maybe.just(5))
       5
 
-      iex> Monex.Maybe.to_try!(Monex.Maybe.nothing(), "No value found")
+      iex> Funx.Maybe.to_try!(Funx.Maybe.nothing(), "No value found")
       ** (RuntimeError) No value found
   """
   @spec to_try!(t(right), String.t()) :: right | no_return when right: term()
@@ -456,11 +456,11 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.from_result({:ok, 5})
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Maybe.from_result({:ok, 5})
+      %Funx.Maybe.Just{value: 5}
 
-      iex> Monex.Maybe.from_result({:error, :something})
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Maybe.from_result({:error, :something})
+      %Funx.Maybe.Nothing{}
   """
   @spec from_result({:ok, right} | {:error, term()}) :: t(right) when right: term()
   def from_result({:ok, value}), do: just(value)
@@ -471,10 +471,10 @@ defmodule Monex.Maybe do
 
   ## Examples
 
-      iex> Monex.Maybe.to_result(Monex.Maybe.just(5))
+      iex> Funx.Maybe.to_result(Funx.Maybe.just(5))
       {:ok, 5}
 
-      iex> Monex.Maybe.to_result(Monex.Maybe.nothing())
+      iex> Funx.Maybe.to_result(Funx.Maybe.nothing())
       {:error, :nothing}
   """
   @spec to_result(t(right)) :: {:ok, right} | {:error, :nothing} when right: term()

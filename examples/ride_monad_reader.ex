@@ -19,22 +19,22 @@ defmodule Examples.RideMonadReader do
       alice_ride = Examples.RideMonadReader.take_ride(alice)
 
       # Running the validation with the child ride configuration
-      alice_ride |> Monex.Reader.run(child_config)
+      alice_ride |> Funx.Reader.run(child_config)
       # Expected Output:
-      # %Monex.Either.Right{
+      # %Funx.Either.Right{
       #   value: %Examples.Patron{name: "Alice", height: 140, tickets: 1}
       # }
 
       # Running the validation with the adult ride configuration
-      alice_ride |> Monex.Reader.run(adult_config)
+      alice_ride |> Funx.Reader.run(adult_config)
       # Expected Output:
-      # %Monex.Either.Left{left: ["Patron's height is not valid for this ride"]}
+      # %Funx.Either.Left{left: ["Patron's height is not valid for this ride"]}
   """
 
-  import Monex.Monad, only: [map: 2]
-  import Monex.Reader
+  import Funx.Monad, only: [map: 2]
+  import Funx.Reader
 
-  alias Monex.Either
+  alias Funx.Either
   alias Examples.Patron
 
   @doc """

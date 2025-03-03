@@ -11,16 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial project structure and setup.
 - Implemented the following modules:
-  - `Monex.Identity`
-  - `Monex.Maybe`
-  - `Monex.Either`
-  - `Monex.Effect`
-  - `Monex.Predicate`
-  - `Monex.Monad`
-  - `Monex.Operators`
-  - `Monex.Foldable`
-  - `Monex.Eq`
-  - `Monex.Ord`
+  - `Funx.Identity`
+  - `Funx.Maybe`
+  - `Funx.Either`
+  - `Funx.Effect`
+  - `Funx.Predicate`
+  - `Funx.Monad`
+  - `Funx.Operators`
+  - `Funx.Foldable`
+  - `Funx.Eq`
+  - `Funx.Ord`
 
 ### Documentation
 

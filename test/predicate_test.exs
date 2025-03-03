@@ -1,11 +1,11 @@
-defmodule Monex.PredicateTest do
+defmodule Funx.PredicateTest do
   @moduledoc false
 
   use ExUnit.Case
-  import Monex.Foldable, only: [fold_l: 3, fold_r: 3]
+  import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
 
-  alias Monex.Predicate
-  alias Monex.Test.Person
+  alias Funx.Predicate
+  alias Funx.Test.Person
 
   describe "p_and/2" do
     test "returns true when both predicates are true" do

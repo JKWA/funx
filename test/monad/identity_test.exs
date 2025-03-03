@@ -1,12 +1,12 @@
-defmodule Monex.IdentityTest do
+defmodule Funx.IdentityTest do
   @moduledoc false
 
-  use Monex.TestCase, async: true
+  use Funx.TestCase, async: true
 
-  import Monex.Identity
-  import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Funx.Identity
+  import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
 
-  alias Monex.{Eq, Identity, Ord}
+  alias Funx.{Eq, Identity, Ord}
 
   defp multiply_by_2(x), do: x * 2
 
@@ -31,7 +31,7 @@ defmodule Monex.IdentityTest do
 
     @tag :telemetry
     test "emits telemetry by default" do
-      capture_telemetry([:monex, :identity, :ap], self())
+      capture_telemetry([:funx, :identity, :ap], self())
 
       result = ap(pure(&multiply_by_2/1), pure(10))
       result_value = result.value
@@ -41,8 +41,8 @@ defmodule Monex.IdentityTest do
 
     @tag :telemetry
     test "does not emit telemetry when disabled" do
-      Application.put_env(:monex, :telemetry_enabled, false)
-      capture_telemetry([:monex, :identity, :ap], self())
+      Application.put_env(:funx, :telemetry_enabled, false)
+      capture_telemetry([:funx, :identity, :ap], self())
 
       ap(pure(&multiply_by_2/1), pure(10))
 
@@ -51,8 +51,8 @@ defmodule Monex.IdentityTest do
 
     @tag :telemetry
     test "uses custom telemetry prefix" do
-      Application.put_env(:monex, :telemetry_prefix, [:custom, :monex])
-      capture_telemetry([:custom, :monex, :identity, :ap], self())
+      Application.put_env(:funx, :telemetry_prefix, [:custom, :funx])
+      capture_telemetry([:custom, :funx, :identity, :ap], self())
 
       result = ap(pure(&multiply_by_2/1), pure(10))
       result_value = result.value
@@ -70,7 +70,7 @@ defmodule Monex.IdentityTest do
 
     @tag :telemetry
     test "emits telemetry by default" do
-      capture_telemetry([:monex, :identity, :bind], self())
+      capture_telemetry([:funx, :identity, :bind], self())
 
       result = bind(pure(10), &pure(multiply_by_2(&1)))
       transformed_value = result.value
@@ -80,8 +80,8 @@ defmodule Monex.IdentityTest do
 
     @tag :telemetry
     test "does not emit telemetry when disabled" do
-      Application.put_env(:monex, :telemetry_enabled, false)
-      capture_telemetry([:monex, :identity, :bind], self())
+      Application.put_env(:funx, :telemetry_enabled, false)
+      capture_telemetry([:funx, :identity, :bind], self())
 
       bind(pure(10), &pure(multiply_by_2(&1)))
 
@@ -90,8 +90,8 @@ defmodule Monex.IdentityTest do
 
     @tag :telemetry
     test "uses custom telemetry prefix" do
-      Application.put_env(:monex, :telemetry_prefix, [:custom, :monex])
-      capture_telemetry([:custom, :monex, :identity, :bind], self())
+      Application.put_env(:funx, :telemetry_prefix, [:custom, :funx])
+      capture_telemetry([:custom, :funx, :identity, :bind], self())
 
       result = bind(pure(10), &pure(multiply_by_2(&1)))
       transformed_value = result.value
@@ -107,7 +107,7 @@ defmodule Monex.IdentityTest do
 
     @tag :telemetry
     test "emits telemetry by default" do
-      capture_telemetry([:monex, :identity, :map], self())
+      capture_telemetry([:funx, :identity, :map], self())
 
       result = map(pure(10), &multiply_by_2/1)
       transformed_value = result.value
@@ -117,8 +117,8 @@ defmodule Monex.IdentityTest do
 
     @tag :telemetry
     test "does not emit telemetry when disabled" do
-      Application.put_env(:monex, :telemetry_enabled, false)
-      capture_telemetry([:monex, :identity, :map], self())
+      Application.put_env(:funx, :telemetry_enabled, false)
+      capture_telemetry([:funx, :identity, :map], self())
 
       map(pure(10), &multiply_by_2/1)
 
@@ -127,8 +127,8 @@ defmodule Monex.IdentityTest do
 
     @tag :telemetry
     test "uses custom telemetry prefix" do
-      Application.put_env(:monex, :telemetry_prefix, [:custom, :monex])
-      capture_telemetry([:custom, :monex, :identity, :map], self())
+      Application.put_env(:funx, :telemetry_prefix, [:custom, :funx])
+      capture_telemetry([:custom, :funx, :identity, :map], self())
 
       result = map(pure(10), &multiply_by_2/1)
       transformed_value = result.value

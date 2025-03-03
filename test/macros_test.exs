@@ -1,10 +1,10 @@
-defmodule Monex.MacrosTest do
+defmodule Funx.MacrosTest do
   @moduledoc false
   use ExUnit.Case, async: true
 
-  alias Monex.Eq
-  alias Monex.Ord
-  alias Monex.Test.Person
+  alias Funx.Eq
+  alias Funx.Ord
+  alias Funx.Test.Person
 
   describe "eq_for/2 macro" do
     test "eq?/2 compares structs based on the specified field" do

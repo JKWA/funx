@@ -1,25 +1,25 @@
-defmodule Monex.Identity do
+defmodule Funx.Identity do
   @moduledoc """
-  The `Monex.Identity` module represents the identity monad, where values are simply wrapped in a structure
+  The `Funx.Identity` module represents the identity monad, where values are simply wrapped in a structure
   and operations are applied directly to those values.
 
   This module implements the following protocols:
-    - `Monex.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
-    - `Monex.Eq`: Defines equality checks for `Identity` values.
-    - `Monex.Ord`: Defines ordering logic for `Identity` values.
+    - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
+    - `Funx.Eq`: Defines equality checks for `Identity` values.
+    - `Funx.Ord`: Defines ordering logic for `Identity` values.
     - `String.Chars`: Converts an `Identity` value into a string representation.
 
   Telemetry Events:
-    - `[:monex, :identity, :ap]`: Emitted when the `ap` operation is called.
-    - `[:monex, :identity, :bind]`: Emitted when the `bind` operation is called.
-    - `[:monex, :identity, :map]`: Emitted when the `map` operation is called.
+    - `[:funx, :identity, :ap]`: Emitted when the `ap` operation is called.
+    - `[:funx, :identity, :bind]`: Emitted when the `bind` operation is called.
+    - `[:funx, :identity, :map]`: Emitted when the `map` operation is called.
 
   Telemetry Configuration:
     - `:telemetry_enabled` (default: `true`): Enable or disable telemetry.
-    - `:telemetry_prefix` (default: `[:monex]`): Set a custom prefix for telemetry events.
+    - `:telemetry_prefix` (default: `[:funx]`): Set a custom prefix for telemetry events.
   """
 
-  alias Monex.TelemetryUtils
+  alias Funx.TelemetryUtils
 
   @enforce_keys [:value]
   defstruct [:value]
@@ -31,8 +31,8 @@ defmodule Monex.Identity do
 
   ## Examples
 
-      iex> Monex.Identity.pure(5)
-      %Monex.Identity{value: 5}
+      iex> Funx.Identity.pure(5)
+      %Funx.Identity{value: 5}
   """
   @spec pure(value) :: t(value) when value: term()
   def pure(value), do: %__MODULE__{value: value}
@@ -42,7 +42,7 @@ defmodule Monex.Identity do
 
   ## Examples
 
-      iex> Monex.Identity.extract(Monex.Identity.pure(5))
+      iex> Funx.Identity.extract(Funx.Identity.pure(5))
       5
   """
   @spec extract(t(value)) :: value when value: term()
@@ -68,16 +68,16 @@ defmodule Monex.Identity do
     }
   end
 
-  defimpl Monex.Monad do
-    alias Monex.Identity
+  defimpl Funx.Monad do
+    alias Funx.Identity
 
     def bind(%Identity{value: value}, func) do
       start_time = System.monotonic_time()
       result = func.(value)
 
-      if Application.get_env(:monex, :telemetry_enabled, true) do
+      if Application.get_env(:funx, :telemetry_enabled, true) do
         :telemetry.execute(
-          Application.get_env(:monex, :telemetry_prefix, [:monex]) ++ [:identity, :bind],
+          Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :bind],
           %{duration: System.monotonic_time() - start_time},
           %{
             initial_value: TelemetryUtils.summarize(value),
@@ -93,9 +93,9 @@ defmodule Monex.Identity do
       start_time = System.monotonic_time()
       result = Identity.pure(func.(value))
 
-      if Application.get_env(:monex, :telemetry_enabled, true) do
+      if Application.get_env(:funx, :telemetry_enabled, true) do
         :telemetry.execute(
-          Application.get_env(:monex, :telemetry_prefix, [:monex]) ++ [:identity, :map],
+          Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :map],
           %{duration: System.monotonic_time() - start_time},
           %{
             initial_value: TelemetryUtils.summarize(value),
@@ -111,9 +111,9 @@ defmodule Monex.Identity do
       start_time = System.monotonic_time()
       result = Identity.pure(func.(value))
 
-      if Application.get_env(:monex, :telemetry_enabled, true) do
+      if Application.get_env(:funx, :telemetry_enabled, true) do
         :telemetry.execute(
-          Application.get_env(:monex, :telemetry_prefix, [:monex]) ++ [:identity, :ap],
+          Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :ap],
           %{duration: System.monotonic_time() - start_time},
           %{
             initial_value: TelemetryUtils.summarize(value),
@@ -127,24 +127,24 @@ defmodule Monex.Identity do
   end
 
   defimpl String.Chars do
-    alias Monex.Identity
+    alias Funx.Identity
 
     def to_string(%Identity{value: value}), do: "Identity(#{value})"
   end
 end
 
-defimpl Monex.Eq, for: Monex.Identity do
-  alias Monex.Identity
-  alias Monex.Eq
+defimpl Funx.Eq, for: Funx.Identity do
+  alias Funx.Identity
+  alias Funx.Eq
 
   def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.eq?(v1, v2)
 
   def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.not_eq?(v1, v2)
 end
 
-defimpl Monex.Ord, for: Monex.Identity do
-  alias Monex.Ord
-  alias Monex.Identity
+defimpl Funx.Ord, for: Funx.Identity do
+  alias Funx.Ord
+  alias Funx.Identity
 
   def lt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.lt?(v1, v2)
   def le?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.le?(v1, v2)

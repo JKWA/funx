@@ -1,6 +1,6 @@
-defprotocol Monex.Monad do
+defprotocol Funx.Monad do
   @moduledoc """
-  The `Monex.Monad` protocol defines the core monadic operations: `ap/2`, `bind/2`, and `map/2`.
+  The `Funx.Monad` protocol defines the core monadic operations: `ap/2`, `bind/2`, and `map/2`.
 
   A monad is an abstraction that represents computations as a series of steps.
   This protocol is designed to be implemented by types that wrap a value and allow chaining of operations while preserving the wrapped context.
@@ -22,13 +22,13 @@ defprotocol Monex.Monad do
 
   ## Examples
 
-      iex> Monex.Monad.ap(Monex.Maybe.just(fn x -> x * 2 end), Monex.Maybe.just(3))
-      %Monex.Maybe.Just{value: 6}
+      iex> Funx.Monad.ap(Funx.Maybe.just(fn x -> x * 2 end), Funx.Maybe.just(3))
+      %Funx.Maybe.Just{value: 6}
 
   In the case of `Nothing`:
 
-      iex> Monex.Monad.ap(Monex.Maybe.nothing(), Monex.Maybe.just(3))
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Monad.ap(Funx.Maybe.nothing(), Funx.Maybe.just(3))
+      %Funx.Maybe.Nothing{}
   """
   @spec ap(t(), t()) :: t()
   def ap(func, m)
@@ -43,13 +43,13 @@ defprotocol Monex.Monad do
 
   ## Examples
 
-      iex> Monex.Monad.bind(Monex.Maybe.just(5), fn x -> Monex.Maybe.just(x * 2) end)
-      %Monex.Maybe.Just{value: 10}
+      iex> Funx.Monad.bind(Funx.Maybe.just(5), fn x -> Funx.Maybe.just(x * 2) end)
+      %Funx.Maybe.Just{value: 10}
 
   In the case of `Nothing`:
 
-      iex> Monex.Monad.bind(Monex.Maybe.nothing(), fn _ -> Monex.Maybe.just(5) end)
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Monad.bind(Funx.Maybe.nothing(), fn _ -> Funx.Maybe.just(5) end)
+      %Funx.Maybe.Nothing{}
   """
   @spec bind(t(), (term() -> t())) :: t()
   def bind(m, func)
@@ -62,19 +62,19 @@ defprotocol Monex.Monad do
 
   ## Examples
 
-      iex> Monex.Monad.map(Monex.Maybe.just(2), fn x -> x + 3 end)
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Monad.map(Funx.Maybe.just(2), fn x -> x + 3 end)
+      %Funx.Maybe.Just{value: 5}
 
   In the case of `Nothing`:
 
-      iex> Monex.Monad.map(Monex.Maybe.nothing(), fn x -> x + 3 end)
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Monad.map(Funx.Maybe.nothing(), fn x -> x + 3 end)
+      %Funx.Maybe.Nothing{}
   """
   @spec map(t(), (term() -> term())) :: t()
   def map(m, func)
 end
 
-defimpl Monex.Monad, for: Any do
+defimpl Funx.Monad, for: Any do
   @spec ap(any(), any()) :: any()
   def ap(func, value) when is_function(func, 1), do: func.(value)
 

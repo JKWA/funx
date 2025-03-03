@@ -1,6 +1,6 @@
 # credo:disable-for-this-file
 
-defmodule Monex.Monoid.Eq.Any do
+defmodule Funx.Monoid.Eq.Any do
   @moduledoc """
   A Monoid implementation for equality checks for Any.
   """
@@ -9,17 +9,17 @@ defmodule Monex.Monoid.Eq.Any do
           not_eq?: (any(), any() -> boolean())
         }
 
-  defstruct eq?: &Monex.Monoid.Eq.Any.default_eq?/2,
-            not_eq?: &Monex.Monoid.Eq.Any.default_not_eq?/2
+  defstruct eq?: &Funx.Monoid.Eq.Any.default_eq?/2,
+            not_eq?: &Funx.Monoid.Eq.Any.default_not_eq?/2
 
   def default_eq?(_, _), do: false
 
   def default_not_eq?(_, _), do: true
 end
 
-defimpl Monex.Monoid, for: Monex.Monoid.Eq.Any do
-  alias Monex.Eq.Utils
-  alias Monex.Monoid.Eq.Any
+defimpl Funx.Monoid, for: Funx.Monoid.Eq.Any do
+  alias Funx.Eq.Utils
+  alias Funx.Monoid.Eq.Any
 
   def empty(_), do: %Any{}
 

@@ -1,4 +1,4 @@
-defmodule Monex.Monoid.ListConcat do
+defmodule Funx.Monoid.ListConcat do
   @moduledoc """
   A Monoid implementation for concatenating lists.
 
@@ -11,8 +11,8 @@ defmodule Monex.Monoid.ListConcat do
   defstruct value: []
 end
 
-defimpl Monex.Monoid, for: Monex.Monoid.ListConcat do
-  alias Monex.Monoid.ListConcat
+defimpl Funx.Monoid, for: Funx.Monoid.ListConcat do
+  alias Funx.Monoid.ListConcat
 
   @spec empty(ListConcat.t()) :: ListConcat.t()
   def empty(_), do: %ListConcat{}

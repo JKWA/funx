@@ -1,10 +1,10 @@
-defmodule Monex.Monoid.MinTest do
+defmodule Funx.Monoid.MinTest do
   use ExUnit.Case, async: true
-  alias Monex.Monoid
+  alias Funx.Monoid
 
   def min_value(numbers) do
     Monoid.Utils.concat(
-      %Monoid.Min{value: nil, ord: Monex.Ord},
+      %Monoid.Min{value: nil, ord: Funx.Ord},
       numbers
     )
   end

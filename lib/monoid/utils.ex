@@ -1,4 +1,4 @@
-defmodule Monex.Monoid.Utils do
+defmodule Funx.Monoid.Utils do
   @moduledoc """
   Utility functions for working with Monoids.
 
@@ -6,7 +6,7 @@ defmodule Monex.Monoid.Utils do
   `concat/2` and `concat/3` functions.
   """
 
-  import Monex.Monoid, only: [empty: 1, append: 2, wrap: 2, unwrap: 1]
+  import Funx.Monoid, only: [empty: 1, append: 2, wrap: 2, unwrap: 1]
 
   @doc """
   Appends two values within a given monoid.

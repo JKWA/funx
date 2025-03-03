@@ -1,4 +1,4 @@
-defmodule Monex.Monoid.Sum do
+defmodule Funx.Monoid.Sum do
   @moduledoc """
   A Monoid implementation for sums.
 
@@ -11,8 +11,8 @@ defmodule Monex.Monoid.Sum do
   defstruct value: 0
 end
 
-defimpl Monex.Monoid, for: Monex.Monoid.Sum do
-  alias Monex.Monoid.Sum
+defimpl Funx.Monoid, for: Funx.Monoid.Sum do
+  alias Funx.Monoid.Sum
 
   @spec empty(Sum.t()) :: Sum.t()
   def empty(_), do: %Sum{}

@@ -1,7 +1,7 @@
 defmodule Examples.Patron do
   @moduledoc """
   The `Examples.Patron` module provides an example of how to represent a patron visiting a venue or amusement park.
-  It shows how to use Monex’s `Predicate` module to combine and work with multiple conditions in an easy-to-understand way.
+  It shows how to use Funx’s `Predicate` module to combine and work with multiple conditions in an easy-to-understand way.
 
   This module covers:
 
@@ -9,10 +9,10 @@ defmodule Examples.Patron do
   - Checking the patron’s height using `too_short?/1`, `too_tall?/1`, and `valid_height?/1`.
   - Checking and adjusting the number of tickets with `has_ticket?/1`, `increment_ticket/1`, and `decrement_ticket/1`.
 
-  You will also learn how to use predicates, a powerful concept in Monex, to validate multiple conditions about a patron.
+  You will also learn how to use predicates, a powerful concept in Funx, to validate multiple conditions about a patron.
   """
 
-  alias Monex.Predicate
+  alias Funx.Predicate
 
   defstruct name: "", height: 0, tickets: 0
 
@@ -76,7 +76,7 @@ defmodule Examples.Patron do
   @doc """
   Checks if the patron's height is valid, meaning they are neither too short nor too tall.
 
-  This combines the `too_short?/1` and `too_tall?/1` predicates using Monex's `Predicate.p_and/2` and `Predicate.p_not/1`.
+  This combines the `too_short?/1` and `too_tall?/1` predicates using Funx's `Predicate.p_and/2` and `Predicate.p_not/1`.
 
   ## Examples
 

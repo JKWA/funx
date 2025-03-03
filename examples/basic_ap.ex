@@ -7,8 +7,8 @@ defmodule Basic.Ap do
   especially when data might be missing or faulty.
   """
 
-  import Monex.Monad, only: [ap: 2, map: 2]
-  alias Monex.{Identity, Maybe, Either}
+  import Funx.Monad, only: [ap: 2, map: 2]
+  alias Funx.{Identity, Maybe, Either}
 
   @doc """
   Calculates adjusted airspeed by subtracting `wind_speed` from `airspeed`.
@@ -29,7 +29,7 @@ defmodule Basic.Ap do
   ## Examples
 
       iex> Basic.Ap.get_wind_adjustment_identity(10)
-      %Monex.Identity{value: #Function<...>}
+      %Funx.Identity{value: #Function<...>}
   """
   @spec get_wind_adjustment_identity(integer()) :: Identity.t((integer() -> integer()))
   def get_wind_adjustment_identity(wind_speed) do
@@ -42,7 +42,7 @@ defmodule Basic.Ap do
   ## Examples
 
       iex> Basic.Ap.get_wind_adjustment_identity(10) |> Basic.Ap.calculate_adjusted_airspeed_identity(100)
-      %Monex.Identity{value: 90}
+      %Funx.Identity{value: 90}
 
   """
   @spec calculate_adjusted_airspeed_identity(Identity.t((integer() -> integer())), integer()) ::
@@ -60,10 +60,10 @@ defmodule Basic.Ap do
   ## Examples
 
       iex> Basic.Ap.get_wind_adjustment_maybe(10)
-      %Monex.Maybe.Just{value: #Function<...>}
+      %Funx.Maybe.Just{value: #Function<...>}
 
       iex> Basic.Ap.get_wind_adjustment_maybe(nil)
-      %Monex.Maybe.Nothing{}
+      %Funx.Maybe.Nothing{}
   """
   @spec get_wind_adjustment_maybe(integer() | nil) :: Maybe.t((integer() -> integer()))
   def get_wind_adjustment_maybe(wind_speed) do
@@ -79,13 +79,13 @@ defmodule Basic.Ap do
   ## Examples
 
       iex> Basic.Ap.get_wind_adjustment_maybe(10) |> Basic.Ap.calculate_adjusted_airspeed_maybe(100)
-      %Monex.Maybe.Just{value: 90}
+      %Funx.Maybe.Just{value: 90}
 
       iex> Basic.Ap.get_wind_adjustment_maybe(nil) |> Basic.Ap.calculate_adjusted_airspeed_maybe(100)
-      %Monex.Maybe.Nothing{}
+      %Funx.Maybe.Nothing{}
 
       iex> Basic.Ap.get_wind_adjustment_maybe(10) |> Basic.Ap.calculate_adjusted_airspeed_maybe(nil)
-      %Monex.Maybe.Nothing{}
+      %Funx.Maybe.Nothing{}
   """
   @spec calculate_adjusted_airspeed_maybe(Maybe.t((integer() -> integer())), integer() | nil) ::
           Maybe.t(integer())
@@ -105,10 +105,10 @@ defmodule Basic.Ap do
   ## Examples
 
       iex> Basic.Ap.get_wind_adjustment_either(10)
-      %Monex.Either.Right{right: #Function<...>}
+      %Funx.Either.Right{right: #Function<...>}
 
       iex> Basic.Ap.get_wind_adjustment_either(nil)
-      %Monex.Either.Left{left: "Wind speed not available"}
+      %Funx.Either.Left{left: "Wind speed not available"}
   """
   @spec get_wind_adjustment_either(integer() | nil) ::
           Either.t(String.t(), (integer() -> integer()))
@@ -124,13 +124,13 @@ defmodule Basic.Ap do
   ## Examples
 
       iex> Basic.Ap.get_wind_adjustment_either(10) |> Basic.Ap.calculate_adjusted_airspeed_either(100)
-      %Monex.Either.Right{right: 90}
+      %Funx.Either.Right{right: 90}
 
       iex> Basic.Ap.get_wind_adjustment_either(nil) |> Basic.Ap.calculate_adjusted_airspeed_either(100)
-      %Monex.Either.Left{left: "Wind speed not available"}
+      %Funx.Either.Left{left: "Wind speed not available"}
 
       iex> Basic.Ap.get_wind_adjustment_either(10) |> Basic.Ap.calculate_adjusted_airspeed_either(nil)
-      %Monex.Either.Left{left: "Air speed not available"}
+      %Funx.Either.Left{left: "Air speed not available"}
   """
   @spec calculate_adjusted_airspeed_either(
           Either.t(String.t(), (integer() -> integer())),

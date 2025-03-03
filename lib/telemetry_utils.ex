@@ -1,6 +1,6 @@
-defmodule Monex.TelemetryUtils do
+defmodule Funx.TelemetryUtils do
   @moduledoc """
-  The `Monex.TelemetryUtils` module provides utility functions for summarizing values in a safe,
+  The `Funx.TelemetryUtils` module provides utility functions for summarizing values in a safe,
   telemetry-friendly manner. It ensures that various data types can be represented concisely
   and safely, making it suitable for telemetry and debugging use cases.
 
@@ -11,19 +11,19 @@ defmodule Monex.TelemetryUtils do
 
   ### Examples
 
-      iex> Monex.TelemetryUtils.summarize(42)
+      iex> Funx.TelemetryUtils.summarize(42)
       {:integer, 42}
 
-      iex> Monex.TelemetryUtils.summarize("hello")
+      iex> Funx.TelemetryUtils.summarize("hello")
       {:binary, 5}
 
-      iex> Monex.TelemetryUtils.summarize([1, 2, 3, 4, 5])
+      iex> Funx.TelemetryUtils.summarize([1, 2, 3, 4, 5])
       {:list, [{:integer, 1}, {:integer, 2}, {:integer, 3}]}
 
-      iex> Monex.TelemetryUtils.summarize(%{a: 1, b: "text", c: :atom})
+      iex> Funx.TelemetryUtils.summarize(%{a: 1, b: "text", c: :atom})
       {:map, [a: {:integer, 1}, b: {:binary, 4}, c: {:atom, :atom}]}
 
-      iex> Monex.TelemetryUtils.summarize({:ok, "data", 123})
+      iex> Funx.TelemetryUtils.summarize({:ok, "data", 123})
       {:tuple, [{:atom, :ok}, {:binary, 4}, {:integer, 123}]}
 
   """
@@ -44,13 +44,13 @@ defmodule Monex.TelemetryUtils do
 
   ### Examples
 
-      iex> Monex.TelemetryUtils.summarize("hello")
+      iex> Funx.TelemetryUtils.summarize("hello")
       {:binary, 5}
 
-      iex> Monex.TelemetryUtils.summarize(%{key: fn -> :ok end})
+      iex> Funx.TelemetryUtils.summarize(%{key: fn -> :ok end})
       {:map, [key: :function]}
 
-      iex> Monex.TelemetryUtils.summarize(nil)
+      iex> Funx.TelemetryUtils.summarize(nil)
       nil
 
   ### Parameters

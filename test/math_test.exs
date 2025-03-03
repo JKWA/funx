@@ -1,6 +1,6 @@
-defmodule Monex.MathTest do
+defmodule Funx.MathTest do
   use ExUnit.Case, async: true
-  alias Monex.Math
+  alias Funx.Math
 
   describe "sum/2" do
     test "combines two numbers correctly" do

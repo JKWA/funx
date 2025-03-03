@@ -1,4 +1,4 @@
-defmodule Monex.Utils do
+defmodule Funx.Utils do
   @moduledoc """
   A collection of higher-order functions for functional programming in Elixir.
 

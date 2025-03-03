@@ -1,6 +1,6 @@
 defmodule Examples.RideMonadOperator do
   @moduledoc """
-  The `Examples.RideMonadOperator` module demonstrates how to use monadic operators from the `Monex` library to manage ride operations.
+  The `Examples.RideMonadOperator` module demonstrates how to use monadic operators from the `Funx` library to manage ride operations.
   These operators provide a more concise syntax for chaining operations, simplifying monadic code.
 
   The key operators used in this module are:
@@ -16,9 +16,9 @@ defmodule Examples.RideMonadOperator do
   - `add_ticket/1`: Adds a ticket to the patron using function application via monadic operators.
   """
 
-  import Monex.Operators, only: [~>: 2, ~>>: 2, <<~: 2]
+  import Funx.Operators, only: [~>: 2, ~>>: 2, <<~: 2]
 
-  alias Monex.Either
+  alias Funx.Either
   alias Examples.Patron
 
   @type either_t :: Either.t(String.t(), Patron.t())
@@ -29,7 +29,7 @@ defmodule Examples.RideMonadOperator do
   ## Examples
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
-      %Monex.Either.Right{right: %Examples.Patron{name: "John", height: 170, tickets: 2}}
+      %Funx.Either.Right{right: %Examples.Patron{name: "John", height: 170, tickets: 2}}
 
   """
   @spec register_patron(String.t(), integer(), integer()) :: either_t()
@@ -45,11 +45,11 @@ defmodule Examples.RideMonadOperator do
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
       iex> Examples.RideMonadOperator.check_valid_height(patron)
-      %Monex.Either.Right{right: %Examples.Patron{...}}
+      %Funx.Either.Right{right: %Examples.Patron{...}}
 
       iex> patron = Examples.RideMonadOperator.register_patron("Shorty", 140, 1)
       iex> Examples.RideMonadOperator.check_valid_height(patron)
-      %Monex.Either.Left{left: "Patron's height is not valid"}
+      %Funx.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec check_valid_height(either_t()) :: either_t()
@@ -66,11 +66,11 @@ defmodule Examples.RideMonadOperator do
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
       iex> Examples.RideMonadOperator.check_ticket_availability(patron)
-      %Monex.Either.Right{right: %Examples.Patron{...}}
+      %Funx.Either.Right{right: %Examples.Patron{...}}
 
       iex> patron = Examples.RideMonadOperator.register_patron("Ticketless", 180, 0)
       iex> Examples.RideMonadOperator.check_ticket_availability(patron)
-      %Monex.Either.Left{left: "Patron is out of tickets"}
+      %Funx.Either.Left{left: "Patron is out of tickets"}
 
   """
   @spec check_ticket_availability(either_t()) :: either_t()
@@ -88,11 +88,11 @@ defmodule Examples.RideMonadOperator do
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
       iex> Examples.RideMonadOperator.take_ride(patron)
-      %Monex.Either.Right{right: %Examples.Patron{tickets: 1}}
+      %Funx.Either.Right{right: %Examples.Patron{tickets: 1}}
 
       iex> patron = Examples.RideMonadOperator.register_patron("Shorty", 140, 2)
       iex> Examples.RideMonadOperator.take_ride(patron)
-      %Monex.Either.Left{left: "Patron's height is not valid"}
+      %Funx.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec take_ride(either_t()) :: either_t()
@@ -110,7 +110,7 @@ defmodule Examples.RideMonadOperator do
 
       iex> patron = Examples.RideMonadOperator.register_patron("John", 170, 2)
       iex> Examples.RideMonadOperator.add_ticket(patron)
-      %Monex.Either.Right{right: %Examples.Patron{tickets: 3}}
+      %Funx.Either.Right{right: %Examples.Patron{tickets: 3}}
 
   """
   @spec add_ticket(either_t()) :: either_t()

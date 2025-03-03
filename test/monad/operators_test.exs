@@ -1,10 +1,10 @@
-defmodule Monex.OperatorsTest do
+defmodule Funx.OperatorsTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
-  import Monex.Operators
+  import Funx.Operators
 
-  import Monex.Maybe
+  import Funx.Maybe
 
   def add_one(x), do: x + 1
 

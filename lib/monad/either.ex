@@ -1,6 +1,6 @@
-defmodule Monex.Either do
+defmodule Funx.Either do
   @moduledoc """
-  The `Monex.Either` module provides an implementation of the `Either` monad, which represents values that can either be `Right` (success) or `Left` (error).
+  The `Funx.Either` module provides an implementation of the `Either` monad, which represents values that can either be `Right` (success) or `Left` (error).
 
   ### Constructors
     - `right/1`: Wraps a value in the `Right` monad.
@@ -38,10 +38,10 @@ defmodule Monex.Either do
     - `to_try!/1`: Converts an `Either` to its value or raises an exception if `Left`.
   """
 
-  import Monex.Monad, only: [bind: 2]
-  import Monex.Foldable, only: [fold_r: 3]
-  alias Monex.Either.{Left, Right}
-  alias Monex.Eq
+  import Funx.Monad, only: [bind: 2]
+  import Funx.Foldable, only: [fold_r: 3]
+  alias Funx.Either.{Left, Right}
+  alias Funx.Eq
 
   @type t(left, right) :: Left.t(left) | Right.t(right)
 
@@ -50,8 +50,8 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.right(5)
-      %Monex.Either.Right{right: 5}
+      iex> Funx.Either.right(5)
+      %Funx.Either.Right{right: 5}
   """
   def right(value), do: Right.pure(value)
 
@@ -65,8 +65,8 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.left("error")
-      %Monex.Either.Left{left: "error"}
+      iex> Funx.Either.left("error")
+      %Funx.Either.Left{left: "error"}
   """
   def left(value), do: Left.pure(value)
 
@@ -75,10 +75,10 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.left?(Monex.Either.left("error"))
+      iex> Funx.Either.left?(Funx.Either.left("error"))
       true
 
-      iex> Monex.Either.left?(Monex.Either.right(5))
+      iex> Funx.Either.left?(Funx.Either.right(5))
       false
   """
   def left?(%Left{}), do: true
@@ -89,10 +89,10 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.right?(Monex.Either.right(5))
+      iex> Funx.Either.right?(Funx.Either.right(5))
       true
 
-      iex> Monex.Either.right?(Monex.Either.left("error"))
+      iex> Funx.Either.right?(Funx.Either.left("error"))
       false
   """
   def right?(%Right{}), do: true
@@ -104,11 +104,11 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.filter_or_else(Monex.Either.right(5), fn x -> x > 3 end, fn -> "error" end)
-      %Monex.Either.Right{right: 5}
+      iex> Funx.Either.filter_or_else(Funx.Either.right(5), fn x -> x > 3 end, fn -> "error" end)
+      %Funx.Either.Right{right: 5}
 
-      iex> Monex.Either.filter_or_else(Monex.Either.right(2), fn x -> x > 3 end, fn -> "error" end)
-      %Monex.Either.Left{left: "error"}
+      iex> Funx.Either.filter_or_else(Funx.Either.right(2), fn x -> x > 3 end, fn -> "error" end)
+      %Funx.Either.Left{left: "error"}
   """
   def filter_or_else(either, predicate, error_func) do
     fold_r(
@@ -129,10 +129,10 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.get_or_else(Monex.Either.right(5), 0)
+      iex> Funx.Either.get_or_else(Funx.Either.right(5), 0)
       5
 
-      iex> Monex.Either.get_or_else(Monex.Either.left("error"), 0)
+      iex> Funx.Either.get_or_else(Funx.Either.left("error"), 0)
       0
   """
   def get_or_else(either, default) do
@@ -146,10 +146,10 @@ defmodule Monex.Either do
   @doc """
   Creates a custom equality function for `Either` values using the provided `custom_eq`.
   ## Examples
-      iex> eq = Monex.Either.lift_eq(%{eq?: fn x, y -> x == y end})
-      iex> eq.eq?.(Monex.Either.right(5), Monex.Either.right(5))
+      iex> eq = Funx.Either.lift_eq(%{eq?: fn x, y -> x == y end})
+      iex> eq.eq?.(Funx.Either.right(5), Funx.Either.right(5))
       true
-      iex> eq.eq?.(Monex.Either.right(5), Monex.Either.left("error"))
+      iex> eq.eq?.(Funx.Either.right(5), Funx.Either.left("error"))
       false
   """
   def lift_eq(custom_eq) do
@@ -168,8 +168,8 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> ord = Monex.Either.lift_ord(%{lt?: fn x, y -> x < y end})
-      iex> ord.lt?.(Monex.Either.right(3), Monex.Either.right(5))
+      iex> ord = Funx.Either.lift_ord(%{lt?: fn x, y -> x < y end})
+      iex> ord.lt?.(Funx.Either.right(3), Funx.Either.right(5))
       true
   """
   def lift_ord(custom_ord) do
@@ -196,11 +196,11 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.sequence([Monex.Either.right(1), Monex.Either.right(2)])
-      %Monex.Either.Right{right: [1, 2]}
+      iex> Funx.Either.sequence([Funx.Either.right(1), Funx.Either.right(2)])
+      %Funx.Either.Right{right: [1, 2]}
 
-      iex> Monex.Either.sequence([Monex.Either.right(1), Monex.Either.left("error")])
-      %Monex.Either.Left{left: "error"}
+      iex> Funx.Either.sequence([Funx.Either.right(1), Funx.Either.left("error")])
+      %Funx.Either.Left{left: "error"}
   """
   @spec sequence([t(error, value)]) :: t(error, [value]) when error: term(), value: term()
   def sequence([]), do: right([])
@@ -218,8 +218,8 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.traverse(&Monex.Either.right/1, [1, 2, 3])
-      %Monex.Either.Right{right: [1, 2, 3]}
+      iex> Funx.Either.traverse(&Funx.Either.right/1, [1, 2, 3])
+      %Funx.Either.Right{right: [1, 2, 3]}
   """
   @spec traverse((a -> t(error, b)), [a]) :: t(error, [b])
         when error: term(), a: term(), b: term()
@@ -234,8 +234,8 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.sequence_a([Monex.Either.right(1), Monex.Either.left("error"), Monex.Either.left("another error")])
-      %Monex.Either.Left{left: ["error", "another error"]}
+      iex> Funx.Either.sequence_a([Funx.Either.right(1), Funx.Either.left("error"), Funx.Either.left("another error")])
+      %Funx.Either.Left{left: ["error", "another error"]}
   """
   @spec sequence_a([t(error, value)]) :: t([error], [value])
         when error: term(), value: term()
@@ -267,20 +267,20 @@ defmodule Monex.Either do
 
     ### Define Validators
 
-        iex> validate_positive = fn x -> Monex.Either.lift_predicate(x, &(&1 > 0), fn -> "Value must be positive" end) end
-        iex> validate_even = fn x -> Monex.Either.lift_predicate(x, &rem(&1, 2) == 0, fn -> "Value must be even" end) end
+        iex> validate_positive = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn -> "Value must be positive" end) end
+        iex> validate_even = fn x -> Funx.Either.lift_predicate(x, &rem(&1, 2) == 0, fn -> "Value must be even" end) end
         iex> validators = [validate_positive, validate_even]
 
     ### Validate
 
-        iex> Monex.Either.validate(4, validators)
-        %Monex.Either.Right{right: 4}
+        iex> Funx.Either.validate(4, validators)
+        %Funx.Either.Right{right: 4}
 
-        iex> Monex.Either.validate(3, validators)
-        %Monex.Either.Left{left: ["Value must be even"]}
+        iex> Funx.Either.validate(3, validators)
+        %Funx.Either.Left{left: ["Value must be even"]}
 
-        iex> Monex.Either.validate(-3, validators)
-        %Monex.Either.Left{left: ["Value must be positive", "Value must be even"]}
+        iex> Funx.Either.validate(-3, validators)
+        %Funx.Either.Left{left: ["Value must be positive", "Value must be even"]}
   """
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
         when error: term(), value: term()
@@ -305,11 +305,11 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.lift_maybe(Monex.Maybe.just(5), fn -> "error" end)
-      %Monex.Either.Right{right: 5}
+      iex> Funx.Either.lift_maybe(Funx.Maybe.just(5), fn -> "error" end)
+      %Funx.Either.Right{right: 5}
 
-      iex> Monex.Either.lift_maybe(Monex.Maybe.nothing(), fn -> "error" end)
-      %Monex.Either.Left{left: "error"}
+      iex> Funx.Either.lift_maybe(Funx.Maybe.nothing(), fn -> "error" end)
+      %Funx.Either.Left{left: "error"}
   """
   def lift_maybe(maybe, on_none) do
     maybe
@@ -324,11 +324,11 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.lift_predicate(5, fn x -> x > 3 end, fn -> "too small" end)
-      %Monex.Either.Right{right: 5}
+      iex> Funx.Either.lift_predicate(5, fn x -> x > 3 end, fn -> "too small" end)
+      %Funx.Either.Right{right: 5}
 
-      iex> Monex.Either.lift_predicate(2, fn x -> x > 3 end, fn -> "too small" end)
-      %Monex.Either.Left{left: "too small"}
+      iex> Funx.Either.lift_predicate(2, fn x -> x > 3 end, fn -> "too small" end)
+      %Funx.Either.Left{left: "too small"}
   """
   def lift_predicate(value, predicate, on_false) do
     fold_r(
@@ -343,11 +343,11 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.from_result({:ok, 5})
-      %Monex.Either.Right{right: 5}
+      iex> Funx.Either.from_result({:ok, 5})
+      %Funx.Either.Right{right: 5}
 
-      iex> Monex.Either.from_result({:error, "error"})
-      %Monex.Either.Left{left: "error"}
+      iex> Funx.Either.from_result({:error, "error"})
+      %Funx.Either.Left{left: "error"}
   """
   @spec from_result({:ok, right} | {:error, left}) :: t(left, right)
         when left: term(), right: term()
@@ -359,10 +359,10 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.to_result(Monex.Either.right(5))
+      iex> Funx.Either.to_result(Funx.Either.right(5))
       {:ok, 5}
 
-      iex> Monex.Either.to_result(Monex.Either.left("error"))
+      iex> Funx.Either.to_result(Funx.Either.left("error"))
       {:error, "error"}
   """
   @spec to_result(t(left, right)) :: {:ok, right} | {:error, left}
@@ -379,11 +379,11 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.from_try(fn -> 5 end)
-      %Monex.Either.Right{right: 5}
+      iex> Funx.Either.from_try(fn -> 5 end)
+      %Funx.Either.Right{right: 5}
 
-      iex> Monex.Either.from_try(fn -> raise "error" end)
-      %Monex.Either.Left{left: %RuntimeError{message: "error"}}
+      iex> Funx.Either.from_try(fn -> raise "error" end)
+      %Funx.Either.Left{left: %RuntimeError{message: "error"}}
   """
   @spec from_try((-> right)) :: t(Exception.t(), right) when right: term()
   def from_try(func) do
@@ -401,10 +401,10 @@ defmodule Monex.Either do
 
   ## Examples
 
-      iex> Monex.Either.to_try!(Monex.Either.right(5))
+      iex> Funx.Either.to_try!(Funx.Either.right(5))
       5
 
-      iex> Monex.Either.to_try!(Monex.Either.left("error"))
+      iex> Funx.Either.to_try!(Funx.Either.left("error"))
       ** (RuntimeError) error
   """
   @spec to_try!(t(left, right)) :: right | no_return

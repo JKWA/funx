@@ -1,6 +1,6 @@
-defmodule Monex.Macros do
+defmodule Funx.Macros do
   @moduledoc """
-  Provides macros for automatically implementing `Monex.Eq` and `Monex.Ord` protocols
+  Provides macros for automatically implementing `Funx.Eq` and `Funx.Ord` protocols
   for a given struct based on a specified field.
 
   These macros simplify the process of defining equality and ordering behaviors
@@ -8,7 +8,7 @@ defmodule Monex.Macros do
   """
 
   @doc """
-  Generates an implementation of the `Monex.Eq` protocol for the given struct,
+  Generates an implementation of the `Funx.Eq` protocol for the given struct,
   using the specified field as the basis for equality comparison.
 
   ## Examples
@@ -17,8 +17,8 @@ defmodule Monex.Macros do
         defstruct [:name, :age]
       end
 
-      require Monex.Macros
-      Monex.Macros.eq_for(Person, :age)
+      require Funx.Macros
+      Funx.Macros.eq_for(Person, :age)
 
       iex> Eq.eq?(%Person{age: 30}, %Person{age: 30})
       true
@@ -28,9 +28,9 @@ defmodule Monex.Macros do
   """
   defmacro eq_for(for_struct, field) do
     quote do
-      alias Monex.Eq
+      alias Funx.Eq
 
-      defimpl Monex.Eq, for: unquote(for_struct) do
+      defimpl Funx.Eq, for: unquote(for_struct) do
         def eq?(%unquote(for_struct){unquote(field) => v1}, %unquote(for_struct){
               unquote(field) => v2
             }),
@@ -45,7 +45,7 @@ defmodule Monex.Macros do
   end
 
   @doc """
-  Generates an implementation of the `Monex.Ord` protocol for the given struct,
+  Generates an implementation of the `Funx.Ord` protocol for the given struct,
   using the specified field as the basis for ordering comparisons.
 
   ## Examples
@@ -54,8 +54,8 @@ defmodule Monex.Macros do
         defstruct [:name, :age]
       end
 
-      require Monex.Macros
-      Monex.Macros.ord_for(Person, :age)
+      require Funx.Macros
+      Funx.Macros.ord_for(Person, :age)
 
       iex> Ord.lt?(%Person{age: 25}, %Person{age: 30})
       true
@@ -65,9 +65,9 @@ defmodule Monex.Macros do
   """
   defmacro ord_for(for_struct, field) do
     quote do
-      alias Monex.Ord
+      alias Funx.Ord
 
-      defimpl Monex.Ord, for: unquote(for_struct) do
+      defimpl Funx.Ord, for: unquote(for_struct) do
         def lt?(%unquote(for_struct){unquote(field) => v1}, %unquote(for_struct){
               unquote(field) => v2
             }),

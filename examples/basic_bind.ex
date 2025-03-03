@@ -7,8 +7,8 @@ defmodule Basic.Bind do
   without additional wrapping layers.
   """
 
-  import Monex.Monad, only: [bind: 2, map: 2]
-  alias Monex.{Identity, Maybe, Either}
+  import Funx.Monad, only: [bind: 2, map: 2]
+  alias Funx.{Identity, Maybe, Either}
 
   @type monad_t(value) :: Identity.t(value) | Maybe.t(value) | Either.t(String.t(), value)
 
@@ -31,7 +31,7 @@ defmodule Basic.Bind do
   ## Examples
 
       iex> Basic.Bind.add_one(Maybe.just(3))
-      %Monex.Maybe.Just{value: 4}
+      %Funx.Maybe.Just{value: 4}
   """
   @spec add_one(monad_t(integer())) :: monad_t(integer())
   def add_one(value) do
@@ -47,7 +47,7 @@ defmodule Basic.Bind do
   ## Examples
 
       iex> Basic.Bind.add_one_identity(3)
-      %Monex.Identity{value: 4}
+      %Funx.Identity{value: 4}
   """
   @spec add_one_identity(integer()) :: Identity.t(integer())
   def add_one_identity(value) when is_integer(value) do
@@ -64,7 +64,7 @@ defmodule Basic.Bind do
   ## Examples
 
       iex> Basic.Bind.add_two_identity(3)
-      %Monex.Identity{value: 5}
+      %Funx.Identity{value: 5}
   """
   @spec add_two_identity(integer()) :: Identity.t(integer())
   def add_two_identity(value) do
@@ -81,10 +81,10 @@ defmodule Basic.Bind do
   ## Examples
 
       iex> Basic.Bind.add_one_maybe(3)
-      %Monex.Maybe.Just{value: 4}
+      %Funx.Maybe.Just{value: 4}
 
       iex> Basic.Bind.add_one_maybe(nil)
-      %Monex.Maybe.Nothing{}
+      %Funx.Maybe.Nothing{}
   """
   def add_one_maybe(value) when is_integer(value) or is_nil(value) do
     value
@@ -100,10 +100,10 @@ defmodule Basic.Bind do
   ## Examples
 
       iex> Basic.Bind.add_two_maybe(3)
-      %Monex.Maybe.Just{value: 5}
+      %Funx.Maybe.Just{value: 5}
 
       iex> Basic.Bind.add_two_maybe(nil)
-      %Monex.Maybe.Nothing{}
+      %Funx.Maybe.Nothing{}
   """
   def add_two_maybe(value) when is_integer(value) or is_nil(value) do
     value
@@ -119,10 +119,10 @@ defmodule Basic.Bind do
   ## Examples
 
       iex> Basic.Bind.add_one_either(3)
-      %Monex.Either.Right{right: 4}
+      %Funx.Either.Right{right: 4}
 
       iex> Basic.Bind.add_one_either(nil)
-      %Monex.Either.Left{left: "Value must not be nil"}
+      %Funx.Either.Left{left: "Value must not be nil"}
   """
   def add_one_either(value) when is_integer(value) or is_nil(value) do
     value
@@ -138,10 +138,10 @@ defmodule Basic.Bind do
   ## Examples
 
       iex> Basic.Bind.add_two_either(3)
-      %Monex.Either.Right{right: 5}
+      %Funx.Either.Right{right: 5}
 
       iex> Basic.Bind.add_two_either(nil)
-      %Monex.Either.Left{left: "Value must not be nil"}
+      %Funx.Either.Left{left: "Value must not be nil"}
   """
   @spec add_two_either(integer() | nil) :: Either.t(String.t(), integer())
   def add_two_either(value) when is_integer(value) or is_nil(value) do

@@ -1,4 +1,4 @@
-defmodule Monex.Monoid.Product do
+defmodule Funx.Monoid.Product do
   @moduledoc """
   A Monoid implementation for products.
 
@@ -11,8 +11,8 @@ defmodule Monex.Monoid.Product do
   defstruct value: 1
 end
 
-defimpl Monex.Monoid, for: Monex.Monoid.Product do
-  alias Monex.Monoid.Product
+defimpl Funx.Monoid, for: Funx.Monoid.Product do
+  alias Funx.Monoid.Product
 
   @spec empty(Product.t()) :: Product.t()
   def empty(_), do: %Product{}

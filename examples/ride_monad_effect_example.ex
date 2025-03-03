@@ -1,6 +1,6 @@
 defmodule Examples.RideEffectMonad do
   @moduledoc """
-  The `Examples.RideEffectMonad` module demonstrates how to handle ride management using the `Effect` monad from the `Monex` library.
+  The `Examples.RideEffectMonad` module demonstrates how to handle ride management using the `Effect` monad from the `Funx` library.
   This module allows for handling asynchronous tasks, such as validating a patron's height and checking ticket availability, while maintaining a clear, monadic flow for success and failure.
 
   The key difference from the `Either` monad is that `Effect` handles computations that may involve time delays or asynchronous execution, and those computations are deferred until they are explicitly run.
@@ -15,9 +15,9 @@ defmodule Examples.RideEffectMonad do
   The use of asynchronous validation introduces a slight delay, represented by `:timer.sleep/1` in the code, to simulate real-world scenarios such as waiting for database lookups or external API calls.
   """
 
-  import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
 
-  alias Monex.Effect
+  alias Funx.Effect
   alias Examples.Patron
 
   @type effect_t :: Effect.t(String.t(), Patron.t())
@@ -28,8 +28,8 @@ defmodule Examples.RideEffectMonad do
   ## Examples
 
       iex> task = Examples.RideEffectMonad.register_patron("John", 170, 2)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{name: "John", height: 170, tickets: 2}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{name: "John", height: 170, tickets: 2}}
 
   """
   @spec register_patron(String.t(), integer(), integer()) :: effect_t()
@@ -46,13 +46,13 @@ defmodule Examples.RideEffectMonad do
 
       iex> task = Examples.RideEffectMonad.register_patron("John", 170, 2)
       iex> task = Examples.RideEffectMonad.check_valid_height(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{...}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{...}}
 
       iex> task = Examples.RideEffectMonad.register_patron("Shorty", 140, 1)
       iex> task = Examples.RideEffectMonad.check_valid_height(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Left{left: "Patron's height is not valid"}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec check_valid_height(effect_t()) :: effect_t()
@@ -77,13 +77,13 @@ defmodule Examples.RideEffectMonad do
 
       iex> task = Examples.RideEffectMonad.register_patron("John", 170, 2)
       iex> task = Examples.RideEffectMonad.check_ticket_availability(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{...}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{...}}
 
       iex> task = Examples.RideEffectMonad.register_patron("Ticketless", 180, 0)
       iex> task = Examples.RideEffectMonad.check_ticket_availability(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Left{left: "Patron is out of tickets"}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Left{left: "Patron is out of tickets"}
 
   """
   @spec check_ticket_availability(effect_t()) :: effect_t()
@@ -108,13 +108,13 @@ defmodule Examples.RideEffectMonad do
 
       iex> task = Examples.RideEffectMonad.register_patron("John", 170, 2)
       iex> task = Examples.RideEffectMonad.take_ride(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{tickets: 1}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{tickets: 1}}
 
       iex> task = Examples.RideEffectMonad.register_patron("Shorty", 140, 2)
       iex> task = Examples.RideEffectMonad.take_ride(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Left{left: "Patron's height is not valid"}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec take_ride(effect_t()) :: effect_t()
@@ -132,8 +132,8 @@ defmodule Examples.RideEffectMonad do
 
       iex> task = Examples.RideEffectMonad.register_patron("John", 170, 2)
       iex> task = Examples.RideEffectMonad.add_ticket(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{tickets: 3}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{tickets: 3}}
 
   """
   @spec add_ticket(effect_t()) :: effect_t()

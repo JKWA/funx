@@ -1,4 +1,4 @@
-defprotocol Monex.Monoid do
+defprotocol Funx.Monoid do
   @moduledoc """
   A protocol defining the Monoid algebraic structure, which consists of
   an identity element and an associative binary operation for combining values.
@@ -21,8 +21,8 @@ defprotocol Monex.Monoid do
 
   ## Examples
 
-      iex> Monex.Monoid.empty(%Monex.Monoid.Sum{})
-      %Monex.Monoid.Sum{value: 0}
+      iex> Funx.Monoid.empty(%Funx.Monoid.Sum{})
+      %Funx.Monoid.Sum{value: 0}
   """
   @spec empty(t()) :: t()
   def empty(monoid_struct)
@@ -36,8 +36,8 @@ defprotocol Monex.Monoid do
 
   ## Examples
 
-      iex> Monex.Monoid.append(%Monex.Monoid.Sum{value: 1}, %Monex.Monoid.Sum{value: 2})
-      %Monex.Monoid.Sum{value: 3}
+      iex> Funx.Monoid.append(%Funx.Monoid.Sum{value: 1}, %Funx.Monoid.Sum{value: 2})
+      %Funx.Monoid.Sum{value: 3}
   """
   @spec append(t(), t()) :: t()
   def append(monoid_struct_a, monoid_struct_b)
@@ -47,8 +47,8 @@ defprotocol Monex.Monoid do
 
   ## Examples
 
-      iex> Monex.Monoid.wrap(%Monex.Monoid.Sum{}, 10)
-      %Monex.Monoid.Sum{value: 10}
+      iex> Funx.Monoid.wrap(%Funx.Monoid.Sum{}, 10)
+      %Funx.Monoid.Sum{value: 10}
   """
   @spec wrap(t(), any()) :: t()
   def wrap(monoid_struct, value)
@@ -58,7 +58,7 @@ defprotocol Monex.Monoid do
 
   ## Examples
 
-      iex> Monex.Monoid.unwrap(%Monex.Monoid.Sum{value: 10})
+      iex> Funx.Monoid.unwrap(%Funx.Monoid.Sum{value: 10})
       10
   """
   @spec unwrap(t()) :: any()

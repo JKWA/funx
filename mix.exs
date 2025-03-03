@@ -1,9 +1,9 @@
-defmodule Monex.MixProject do
+defmodule Funx.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :monex,
+      app: :funx,
       version: "0.1.0",
       elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
@@ -19,8 +19,8 @@ defmodule Monex.MixProject do
         main: "readme",
         extras: ["README.md", "CHANGELOG.md", "LEARNING_RESOURCES.md", "LICENSE"],
         filter_prefix: "Examples",
-        source_url: "https://github.com/JKWA/monex",
-        source_url_pattern: "https://github.com/JKWA/monex/blob/main/%{path}#L%{line}"
+        source_url: "https://github.com/JKWA/funx",
+        source_url_pattern: "https://github.com/JKWA/funx/blob/main/%{path}#L%{line}"
       ],
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
@@ -30,14 +30,14 @@ defmodule Monex.MixProject do
         "coveralls.html": :test
       ],
       package: [
-        name: "monex",
+        name: "funx",
         description:
           "Functional programming abstractions for Elixir, providing monads and related tools.",
         licenses: ["MIT"],
         maintainers: ["Joseph Koski"],
         links: %{
-          "GitHub" => "https://github.com/JKWA/monex",
-          "Docs" => "https://jkwa.github.io/monex/readme.html"
+          "GitHub" => "https://github.com/JKWA/funx",
+          "Docs" => "https://jkwa.github.io/funx/readme.html"
         },
         exclude_patterns: ["examples/**", "test/**", "*.md"]
       ]

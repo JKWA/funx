@@ -1,7 +1,7 @@
-defmodule Monex.ListConcatTest do
+defmodule Funx.ListConcatTest do
   use ExUnit.Case
-  import Monex.Monoid
-  alias Monex.Monoid.ListConcat
+  import Funx.Monoid
+  alias Funx.Monoid.ListConcat
 
   describe "empty/1" do
     test "returns a ListConcat with an empty list" do

@@ -1,6 +1,6 @@
-defmodule Monex.Reader do
+defmodule Funx.Reader do
   @moduledoc """
-  The `Monex.Reader` module provides an implementation of the Reader monad,
+  The `Funx.Reader` module provides an implementation of the Reader monad,
   which allows for dependency injection by passing a shared environment to functions.
 
   The `Reader` monad enables defining computations that read from an environment without
@@ -17,8 +17,8 @@ defmodule Monex.Reader do
 
   ## Examples
 
-      iex> reader = Monex.Reader.pure(42)
-      iex> Monex.Reader.run(reader, %{})
+      iex> reader = Funx.Reader.pure(42)
+      iex> Funx.Reader.run(reader, %{})
       42
   """
   @spec pure(value :: A) :: t(any(), A) when A: var
@@ -29,8 +29,8 @@ defmodule Monex.Reader do
 
   ## Examples
 
-      iex> reader = Monex.Reader.pure(42)
-      iex> Monex.Reader.run(reader, %{})
+      iex> reader = Funx.Reader.pure(42)
+      iex> Funx.Reader.run(reader, %{})
       42
   """
   @spec run(t(Env, A), Env) :: A when Env: var, A: var
@@ -41,8 +41,8 @@ defmodule Monex.Reader do
 
   ## Examples
 
-      iex> reader = Monex.Reader.ask()
-      iex> Monex.Reader.run(reader, %{foo: "bar"})
+      iex> reader = Funx.Reader.ask()
+      iex> Funx.Reader.run(reader, %{foo: "bar"})
       %{foo: "bar"}
   """
   @spec ask() :: t(Env, Env) when Env: var
@@ -53,24 +53,24 @@ defmodule Monex.Reader do
 
   ## Examples
 
-      iex> reader = Monex.Reader.asks(fn env -> Map.get(env, :foo) end)
-      iex> Monex.Reader.run(reader, %{foo: "bar"})
+      iex> reader = Funx.Reader.asks(fn env -> Map.get(env, :foo) end)
+      iex> Funx.Reader.run(reader, %{foo: "bar"})
       "bar"
   """
   @spec asks(func :: (Env -> A)) :: t(Env, A) when Env: var, A: var
   def asks(func), do: %__MODULE__{run: func}
 
-  defimpl Monex.Monad do
-    alias Monex.Reader
+  defimpl Funx.Monad do
+    alias Funx.Reader
 
     @doc """
     Binds a `Reader` to a function, allowing chained computations within the Reader context.
 
     ## Examples
 
-        iex> reader = Monex.Reader.pure(10)
-        iex> bound_reader = Monex.Monad.bind(reader, fn x -> Monex.Reader.pure(x + 5) end)
-        iex> Monex.Reader.run(bound_reader, %{})
+        iex> reader = Funx.Reader.pure(10)
+        iex> bound_reader = Funx.Monad.bind(reader, fn x -> Funx.Reader.pure(x + 5) end)
+        iex> Funx.Reader.run(bound_reader, %{})
         15
     """
     @spec bind(Reader.t(Env, A), (A -> Reader.t(Env, B))) :: Reader.t(Env, B)
@@ -83,10 +83,10 @@ defmodule Monex.Reader do
 
     ## Examples
 
-        iex> func_reader = Monex.Reader.pure(fn x -> x * 2 end)
-        iex> value_reader = Monex.Reader.pure(10)
-        iex> result_reader = Monex.Monad.ap(func_reader, value_reader)
-        iex> Monex.Reader.run(result_reader, %{})
+        iex> func_reader = Funx.Reader.pure(fn x -> x * 2 end)
+        iex> value_reader = Funx.Reader.pure(10)
+        iex> result_reader = Funx.Monad.ap(func_reader, value_reader)
+        iex> Funx.Reader.run(result_reader, %{})
         20
     """
     @spec ap(Reader.t(Env, (A -> B)), Reader.t(Env, A)) :: Reader.t(Env, B)
@@ -99,9 +99,9 @@ defmodule Monex.Reader do
 
     ## Examples
 
-        iex> reader = Monex.Reader.pure(10)
-        iex> mapped_reader = Monex.Monad.map(reader, fn x -> x * 2 end)
-        iex> Monex.Reader.run(mapped_reader, %{})
+        iex> reader = Funx.Reader.pure(10)
+        iex> mapped_reader = Funx.Monad.map(reader, fn x -> x * 2 end)
+        iex> Funx.Reader.run(mapped_reader, %{})
         20
     """
     @spec map(Reader.t(Env, A), (A -> B)) :: Reader.t(Env, B)

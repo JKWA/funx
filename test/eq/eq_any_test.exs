@@ -1,10 +1,10 @@
-defmodule Monex.EqAnyTest do
+defmodule Funx.EqAnyTest do
   @moduledoc false
 
   use ExUnit.Case
-  alias Monex.Eq
+  alias Funx.Eq
 
-  describe "Monex.Eq.eq?/2 with default implementation" do
+  describe "Funx.Eq.eq?/2 with default implementation" do
     test "returns true for integers that are equal" do
       assert Eq.eq?(1, 1) == true
     end
@@ -46,7 +46,7 @@ defmodule Monex.EqAnyTest do
     end
   end
 
-  describe "Monex.Eq.not_eq?/2 with default implementation" do
+  describe "Funx.Eq.not_eq?/2 with default implementation" do
     test "returns false for integers that are equal" do
       assert Eq.not_eq?(1, 1) == false
     end

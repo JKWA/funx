@@ -1,9 +1,9 @@
-defmodule Monex.Effect.Right do
+defmodule Funx.Effect.Right do
   @moduledoc """
   Represents the `Right` variant of the `Effect` monad, used to model a successful computation in an asynchronous context.
 
   This module implements the following protocols:
-    - `Monex.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions to handle monadic operations within an effectful, lazy execution context.
+    - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions to handle monadic operations within an effectful, lazy execution context.
     - `String.Chars`: Provides a `to_string/1` function to represent `Right` values as strings.
 
   The `Right` effect allows the computation to proceed with successful values, supporting lazy, asynchronous tasks.
@@ -11,7 +11,7 @@ defmodule Monex.Effect.Right do
   @enforce_keys [:effect]
   defstruct [:effect]
 
-  @type t(right) :: %__MODULE__{effect: (-> Task.t(%Monex.Either.Right{right: right}))}
+  @type t(right) :: %__MODULE__{effect: (-> Task.t(%Funx.Either.Right{right: right}))}
 
   @doc """
   Creates a new `Right` effect.
@@ -20,23 +20,23 @@ defmodule Monex.Effect.Right do
 
   ## Examples
 
-      iex> Monex.Effect.Right.pure("success")
-      %Monex.Effect.Right{
+      iex> Funx.Effect.Right.pure("success")
+      %Funx.Effect.Right{
         effect: #Function<...>  # (an asynchronous task returning `Right`)
       }
   """
   @spec pure(right) :: t(right) when right: term()
   def pure(value) do
     %__MODULE__{
-      effect: fn -> Task.async(fn -> %Monex.Either.Right{right: value} end) end
+      effect: fn -> Task.async(fn -> %Funx.Either.Right{right: value} end) end
     }
   end
 end
 
-defimpl Monex.Monad, for: Monex.Effect.Right do
-  alias Monex.Effect
+defimpl Funx.Monad, for: Funx.Effect.Right do
+  alias Funx.Effect
   alias Effect.{Left, Right}
-  alias Monex.Either
+  alias Funx.Either
 
   @spec ap(Right.t((right -> result)), Effect.t(left, right)) ::
           Effect.t(left, result)
@@ -63,7 +63,7 @@ defimpl Monex.Monad, for: Monex.Effect.Right do
       effect: fn ->
         Task.async(fn ->
           case Task.await(effect.()) do
-            %Monex.Either.Right{right: value} ->
+            %Funx.Either.Right{right: value} ->
               case binder.(value) do
                 %Right{effect: next_effect} -> Task.await(next_effect.())
                 %Left{effect: next_effect} -> Task.await(next_effect.())

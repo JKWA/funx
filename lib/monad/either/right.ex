@@ -1,12 +1,12 @@
-defmodule Monex.Either.Right do
+defmodule Funx.Either.Right do
   @moduledoc """
   Represents the `Right` variant of the `Either` monad, used to model a success or valid result.
 
   This module implements the following protocols:
-    - `Monex.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
-    - `Monex.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Right` values.
-    - `Monex.Eq`: Defines equality checks between `Right` and other `Either` values.
-    - `Monex.Ord`: Defines ordering logic for `Right` and `Left` values.
+    - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
+    - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Right` values.
+    - `Funx.Eq`: Defines equality checks between `Right` and other `Either` values.
+    - `Funx.Ord`: Defines ordering logic for `Right` and `Left` values.
 
   The `Right` monad represents a valid result, and the contained value is propagated through operations.
   """
@@ -23,21 +23,21 @@ defmodule Monex.Either.Right do
 
   ## Examples
 
-      iex> Monex.Either.Right.pure(5)
-      %Monex.Either.Right{right: 5}
+      iex> Funx.Either.Right.pure(5)
+      %Funx.Either.Right{right: 5}
   """
   @spec pure(value) :: t(value) when value: term()
   def pure(value), do: %__MODULE__{right: value}
 end
 
-defimpl String.Chars, for: Monex.Either.Right do
-  alias Monex.Either.Right
+defimpl String.Chars, for: Funx.Either.Right do
+  alias Funx.Either.Right
 
   def to_string(%Right{right: value}), do: "Right(#{value})"
 end
 
-defimpl Monex.Monad, for: Monex.Either.Right do
-  alias Monex.Either.{Left, Right}
+defimpl Funx.Monad, for: Funx.Either.Right do
+  alias Funx.Either.{Left, Right}
 
   @spec ap(Right.t((value -> result)), Right.t(value)) :: Right.t(result)
         when value: term(), result: term()
@@ -56,8 +56,8 @@ defimpl Monex.Monad, for: Monex.Either.Right do
   def map(%Right{right: value}, func), do: Right.pure(func.(value))
 end
 
-defimpl Monex.Foldable, for: Monex.Either.Right do
-  alias Monex.Either.Right
+defimpl Funx.Foldable, for: Funx.Either.Right do
+  alias Funx.Either.Right
 
   def fold_l(%Right{right: value}, right_func, _left_func) do
     right_func.(value)
@@ -68,9 +68,9 @@ defimpl Monex.Foldable, for: Monex.Either.Right do
   end
 end
 
-defimpl Monex.Eq, for: Monex.Either.Right do
-  alias Monex.Either.{Left, Right}
-  alias Monex.Eq
+defimpl Funx.Eq, for: Funx.Either.Right do
+  alias Funx.Either.{Left, Right}
+  alias Funx.Eq
 
   def eq?(%Right{right: v1}, %Right{right: v2}), do: Eq.eq?(v1, v2)
   def eq?(%Right{}, %Left{}), do: false
@@ -79,13 +79,13 @@ defimpl Monex.Eq, for: Monex.Either.Right do
   def not_eq?(%Right{}, %Left{}), do: true
 end
 
-defimpl Monex.Ord, for: Monex.Either.Right do
-  alias Monex.Either.{Left, Right}
-  alias Monex.Ord
+defimpl Funx.Ord, for: Funx.Either.Right do
+  alias Funx.Either.{Left, Right}
+  alias Funx.Ord
 
   def lt?(%Right{right: v1}, %Right{right: v2}), do: Ord.lt?(v1, v2)
   def lt?(%Right{}, %Left{}), do: false
-  def le?(a, b), do: not Monex.Ord.gt?(a, b)
-  def gt?(a, b), do: Monex.Ord.lt?(b, a)
-  def ge?(a, b), do: not Monex.Ord.lt?(a, b)
+  def le?(a, b), do: not Funx.Ord.gt?(a, b)
+  def gt?(a, b), do: Funx.Ord.lt?(b, a)
+  def ge?(a, b), do: not Funx.Ord.lt?(a, b)
 end

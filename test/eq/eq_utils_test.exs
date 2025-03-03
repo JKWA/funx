@@ -1,13 +1,13 @@
-defmodule Monex.Eq.UtilsTest do
+defmodule Funx.Eq.UtilsTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
 
-  alias Monex.Eq.Utils
-  alias Monex.Maybe
-  alias Monex.Test.Person
+  alias Funx.Eq.Utils
+  alias Funx.Maybe
+  alias Funx.Test.Person
 
-  doctest Monex.Eq.Utils
+  doctest Funx.Eq.Utils
 
   describe "contramap/2" do
     test "applies the function before comparing values using eq?" do
@@ -305,8 +305,8 @@ defmodule Monex.Eq.UtilsTest do
   defp eq_concat_all, do: Utils.concat_all([eq_name(), eq_age()])
   defp eq_concat_any, do: Utils.concat_any([eq_name(), eq_age()])
 
-  defp eq_concat_all_default, do: Utils.concat_all([Monex.Eq])
-  defp eq_concat_any_default, do: Utils.concat_any([Monex.Eq])
+  defp eq_concat_all_default, do: Utils.concat_all([Funx.Eq])
+  defp eq_concat_any_default, do: Utils.concat_any([Funx.Eq])
 
   test "concat with equal persons" do
     alice1 = %Person{name: "Alice", age: 30}

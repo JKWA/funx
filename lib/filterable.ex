@@ -1,6 +1,6 @@
-defprotocol Monex.Filterable do
+defprotocol Funx.Filterable do
   @moduledoc """
-  The `Monex.Filterable` protocol defines functions for conditionally retaining or discarding
+  The `Funx.Filterable` protocol defines functions for conditionally retaining or discarding
   values within a context. It generalizes the concepts of `filter`, `filter_map`, and `guard`
   across different data structures like `Maybe`, `List`, and others.
 
@@ -18,14 +18,14 @@ defprotocol Monex.Filterable do
 
   ## Examples
 
-      iex> Monex.Filterable.guard(Monex.Maybe.just(42), true)
-      %Monex.Maybe.Just{value: 42}
+      iex> Funx.Filterable.guard(Funx.Maybe.just(42), true)
+      %Funx.Maybe.Just{value: 42}
 
-      iex> Monex.Filterable.guard(Monex.Maybe.just(42), false)
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Filterable.guard(Funx.Maybe.just(42), false)
+      %Funx.Maybe.Nothing{}
 
-      iex> Monex.Filterable.guard(Monex.Maybe.nothing(), true)
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Filterable.guard(Funx.Maybe.nothing(), true)
+      %Funx.Maybe.Nothing{}
   """
   def guard(structure, bool)
 
@@ -41,11 +41,11 @@ defprotocol Monex.Filterable do
 
   ## Examples
 
-      iex> Monex.Filterable.filter(Monex.Maybe.just(5), &(&1 > 3))
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Filterable.filter(Funx.Maybe.just(5), &(&1 > 3))
+      %Funx.Maybe.Just{value: 5}
 
-      iex> Monex.Filterable.filter(Monex.Maybe.just(2), &(&1 > 3))
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Filterable.filter(Funx.Maybe.just(2), &(&1 > 3))
+      %Funx.Maybe.Nothing{}
   """
   def filter(structure, predicate)
 
@@ -62,11 +62,11 @@ defprotocol Monex.Filterable do
 
   ## Examples
 
-      iex> Monex.Filterable.filter_map(Monex.Maybe.just(5), fn x -> if x > 3, do: Monex.Maybe.just(x * 2), else: Monex.Maybe.nothing() end)
-      %Monex.Maybe.Just{value: 10}
+      iex> Funx.Filterable.filter_map(Funx.Maybe.just(5), fn x -> if x > 3, do: Funx.Maybe.just(x * 2), else: Funx.Maybe.nothing() end)
+      %Funx.Maybe.Just{value: 10}
 
-      iex> Monex.Filterable.filter_map(Monex.Maybe.just(2), fn x -> if x > 3, do: Monex.Maybe.just(x * 2), else: Monex.Maybe.nothing() end)
-      %Monex.Maybe.Nothing{}
+      iex> Funx.Filterable.filter_map(Funx.Maybe.just(2), fn x -> if x > 3, do: Funx.Maybe.just(x * 2), else: Funx.Maybe.nothing() end)
+      %Funx.Maybe.Nothing{}
   """
   def filter_map(structure, func)
 end

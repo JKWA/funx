@@ -1,6 +1,6 @@
 defmodule Basic.Ord do
   import Kernel, except: [min: 2, max: 2]
-  import Monex.Ord.Utils
+  import Funx.Ord.Utils
 
   def get_max_fruit(fruit_1, fruit_2) do
     max(fruit_1, fruit_2)

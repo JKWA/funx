@@ -1,7 +1,7 @@
-defmodule Monex.TestTelemetryHelper do
+defmodule Funx.TestTelemetryHelper do
   @moduledoc false
 
-  alias Monex.TelemetryUtils
+  alias Funx.TelemetryUtils
 
   def handle_telemetry_event(_event_name, measurements, metadata, test_pid) do
     send(test_pid, {:telemetry_event, measurements, metadata})
@@ -13,7 +13,7 @@ defmodule Monex.TestTelemetryHelper do
     :telemetry.attach(
       handler_id,
       event_name,
-      &Monex.TestTelemetryHelper.handle_telemetry_event/4,
+      &Funx.TestTelemetryHelper.handle_telemetry_event/4,
       test_pid
     )
 

@@ -1,6 +1,6 @@
 defmodule Examples.RideValidationAsyncMonad do
   @moduledoc """
-  The `Examples.RideValidationAsyncMonad` module demonstrates how to manage ride operations using the `Effect` monad from the `Monex` library,
+  The `Examples.RideValidationAsyncMonad` module demonstrates how to manage ride operations using the `Effect` monad from the `Funx` library,
   with a focus on asynchronous validation. This module introduces how to handle deferred computations and validate multiple conditions asynchronously.
 
   This module showcases:
@@ -18,9 +18,9 @@ defmodule Examples.RideValidationAsyncMonad do
   - `add_ticket/1`: Adds a ticket to the patron using function application in the monad.
   """
 
-  import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
 
-  alias Monex.Effect
+  alias Funx.Effect
   alias Examples.Patron
 
   @type effect_t :: Effect.t(String.t(), Patron.t())
@@ -31,8 +31,8 @@ defmodule Examples.RideValidationAsyncMonad do
   ## Examples
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("John", 170, 2)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{name: "John", height: 170, tickets: 2}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{name: "John", height: 170, tickets: 2}}
 
   """
   @spec register_patron(String.t(), integer(), integer()) :: effect_t()
@@ -49,13 +49,13 @@ defmodule Examples.RideValidationAsyncMonad do
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("John", 170, 2)
       iex> task = Examples.RideValidationAsyncMonad.check_valid_height(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{...}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{...}}
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("Shorty", 140, 1)
       iex> task = Examples.RideValidationAsyncMonad.check_valid_height(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Left{left: "Patron's height is not valid"}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec check_valid_height(effect_t()) :: effect_t()
@@ -80,13 +80,13 @@ defmodule Examples.RideValidationAsyncMonad do
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("John", 170, 2)
       iex> task = Examples.RideValidationAsyncMonad.check_ticket_availability(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{...}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{...}}
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("Ticketless", 180, 0)
       iex> task = Examples.RideValidationAsyncMonad.check_ticket_availability(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Left{left: "Patron is out of tickets"}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Left{left: "Patron is out of tickets"}
 
   """
   @spec check_ticket_availability(effect_t()) :: effect_t()
@@ -110,13 +110,13 @@ defmodule Examples.RideValidationAsyncMonad do
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("John", 170, 2)
       iex> task = Examples.RideValidationAsyncMonad.validate_patron(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{...}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{...}}
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("Shorty", 140, 1)
       iex> task = Examples.RideValidationAsyncMonad.validate_patron(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Left{left: "Patron's height is not valid"}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec validate_patron(effect_t()) :: effect_t()
@@ -135,13 +135,13 @@ defmodule Examples.RideValidationAsyncMonad do
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("John", 170, 2)
       iex> task = Examples.RideValidationAsyncMonad.take_ride(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{tickets: 1}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{tickets: 1}}
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("Shorty", 140, 2)
       iex> task = Examples.RideValidationAsyncMonad.take_ride(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Left{left: "Patron's height is not valid"}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Left{left: "Patron's height is not valid"}
 
   """
   @spec take_ride(effect_t()) :: effect_t()
@@ -158,8 +158,8 @@ defmodule Examples.RideValidationAsyncMonad do
 
       iex> task = Examples.RideValidationAsyncMonad.register_patron("John", 170, 2)
       iex> task = Examples.RideValidationAsyncMonad.add_ticket(task)
-      iex> Monex.Effect.run(task)
-      %Monex.Either.Right{right: %Examples.Patron{tickets: 3}}
+      iex> Funx.Effect.run(task)
+      %Funx.Either.Right{right: %Examples.Patron{tickets: 3}}
 
   """
   @spec add_ticket(effect_t()) :: effect_t()

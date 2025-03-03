@@ -1,20 +1,20 @@
-# Monex
+# Funx
 
-[![Continuous Integration](https://github.com/JKWA/monex/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/monex/actions/workflows/ci.yml)
+[![Continuous Integration](https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/funx/actions/workflows/ci.yml)
 
-[View the code on GitHub](https://github.com/JKWA/monex)
+[View the code on GitHub](https://github.com/JKWA/funx)
 
 Elixir is a dynamically typed language and lacks the static type system commonly used in functional languages to enforce monadic patterns. Instead, Elixir uses pattern matching, `defimpl`, and custom structs to create structured abstractions that provide runtime guarantees but lack the compile-time type safety of statically typed languages.
 
-Monex leverages these principles to deliver functional programming abstractions for Elixir.
+Funx leverages these principles to deliver functional programming abstractions for Elixir.
 
 ## Features
 
-Monex provides tools for working with monads, including constructors, refinements, folding, matching, and more.
+Funx provides tools for working with monads, including constructors, refinements, folding, matching, and more.
 
 ### Monads
 
-Monads in Monex support operations like `bind`, `map`, and `ap`, allowing flexible control over computations:
+Monads in Funx support operations like `bind`, `map`, and `ap`, allowing flexible control over computations:
 
 - **Identity**: A base monad that returns its value unchanged.
 - **Maybe**: Encapsulates optional values as `Just` (a value) or `Nothing` (no value).
@@ -23,7 +23,7 @@ Monads in Monex support operations like `bind`, `map`, and `ap`, allowing flexib
 
 ### Operators
 
-Monex includes operators that provide a more concise syntax for working with monads:
+Funx includes operators that provide a more concise syntax for working with monads:
 
 - **`~>/2`**: Functor map. Applies a function to the value in a monad, transforming the value within the monadic context.
 - **`~>>/2`**: Monad bind. Chains computations, passing the result of one monad to a function that returns another monad of the same type.
@@ -33,7 +33,7 @@ Monex includes operators that provide a more concise syntax for working with mon
 
 ### Constructors
 
-Monex provides constructors for each monad, allowing values to be wrapped in the appropriate monadic context:
+Funx provides constructors for each monad, allowing values to be wrapped in the appropriate monadic context:
 
 - **`pure/1`**: Wraps a value in a monad, initializing a computation with a known value.
 - **`just/1`**: Constructs a `Just` for the `Maybe` monad, representing the presence of a value.
@@ -48,14 +48,14 @@ Refinements allow inspection of monadic values and extraction of useful informat
 
 ### Comparison
 
-Monex provides tools for comparing monadic values:
+Funx provides tools for comparing monadic values:
 
 - **Equality**: Monads can be compared for equality using custom functions to determine if they represent the same state or value.
-- **Order**: Monex supports ordering monads based on their contained values, enabling sorting or comparison between monadic values.
+- **Order**: Funx supports ordering monads based on their contained values, enabling sorting or comparison between monadic values.
 
 ### Folding
 
-Folding collapses a monadic structure into a single result by applying functions in a specific order. Monex defines two core folding operations:
+Folding collapses a monadic structure into a single result by applying functions in a specific order. Funx defines two core folding operations:
 
 - **`fold_l/3`**: Folds a structure from the left, applying functions sequentially from left to right.
 - **`fold_r/3`**: Folds a structure from the right, applying functions from right to left.
@@ -78,7 +78,7 @@ Monads allow chaining multiple computations in sequence, passing results from on
 
 ### Validation
 
-Monex supports validation workflows by combining multiple checks into a single monadic operation:
+Funx supports validation workflows by combining multiple checks into a single monadic operation:
 
 - **`sequence_a/1`**: Sequences a list of applicatives without short-circuiting, collecting all successes if all values are valid or accumulating all errors if any failures occur. This ensures that the entire list is processed, even if some elements fail, making it suitable for scenarios where gathering all errors is preferred over stopping at the first failure.
 
@@ -91,7 +91,7 @@ Lifting provides functionality to convert values between monads or wrap non-mona
 
 ### Elixir Interops
 
-Monex integrates with common Elixir idioms and data structures like `{:ok, value}` and `{:error, reason}` tuples:
+Funx integrates with common Elixir idioms and data structures like `{:ok, value}` and `{:error, reason}` tuples:
 
 - **`from_result/1`**: Converts a result tuple (`{:ok, value}` or `{:error, reason}`) into an `Either` monad.
 - **`to_result/1`**: Converts an `Either` monad back into a result tuple.
@@ -100,7 +100,7 @@ Monex integrates with common Elixir idioms and data structures like `{:ok, value
 
 ### Comparison: Equality (`Eq`) and Ordering (`Ord`)
 
-Monex provides `Eq` and `Ord` modules for flexible, domain-specific equality and ordering of monadic values.
+Funx provides `Eq` and `Ord` modules for flexible, domain-specific equality and ordering of monadic values.
 
 #### Equality (`Eq`)
 
@@ -121,12 +121,12 @@ Centralizing `Eq` and `Ord` definitions ensures consistent, maintainable compari
 
 ## Installation
 
-To use Monex, add it to the list of dependencies in `mix.exs`:
+To use Funx, add it to the list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:monex, "~> 0.1.0"}
+    {:funx, "~> 0.1.0"}
   ]
 end
 ```
@@ -139,7 +139,7 @@ mix deps.get
 
 ## Documentation
 
-Full documentation is available on [GitHub Pages](https://jkwa.github.io/monex/readme.html).
+Full documentation is available on [GitHub Pages](https://jkwa.github.io/funx/readme.html).
 
 ## Contributing
 

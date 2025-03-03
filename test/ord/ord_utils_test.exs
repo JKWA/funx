@@ -1,15 +1,15 @@
-defmodule Monex.Ord.UtilsTest do
+defmodule Funx.Ord.UtilsTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
 
   import Kernel, except: [min: 2, max: 2]
-  import Monex.Ord.Utils
+  import Funx.Ord.Utils
 
-  alias Monex.{Either, Identity, Maybe}
-  alias Monex.Ord.Any
-  alias Monex.Test.Person
-  doctest Monex.Ord.Utils
+  alias Funx.{Either, Identity, Maybe}
+  alias Funx.Ord.Any
+  alias Funx.Test.Person
+  doctest Funx.Ord.Utils
 
   describe "clamp/4" do
     test "returns the value if within the range" do
@@ -247,8 +247,8 @@ defmodule Monex.Ord.UtilsTest do
   defp ord_ticket, do: contramap(& &1.ticket)
   defp ord_append, do: append(ord_name(), ord_age())
   defp ord_concat, do: concat([ord_name(), ord_age()])
-  defp ord_concat_age, do: concat([ord_age(), ord_ticket(), Monex.Ord])
-  defp ord_concat_default, do: concat([Monex.Ord])
+  defp ord_concat_age, do: concat([ord_age(), ord_ticket(), Funx.Ord])
+  defp ord_concat_default, do: concat([Funx.Ord])
 
   defp ord_empty, do: concat([])
 

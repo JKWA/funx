@@ -1,8 +1,8 @@
-defmodule Monex.TelemetryUtilsTest do
+defmodule Funx.TelemetryUtilsTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
-  alias Monex.TelemetryUtils
+  alias Funx.TelemetryUtils
 
   describe "summarize/1" do
     test "returns nil as-is" do

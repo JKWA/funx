@@ -1,8 +1,8 @@
-defmodule Monex.Ord.Utils do
+defmodule Funx.Ord.Utils do
   @moduledoc """
-  Utility functions for working with the `Monex.Ord` protocol.
+  Utility functions for working with the `Funx.Ord` protocol.
   These functions assume that types passed in either support Elixir's comparison operators
-  or implement the `Monex.Ord` protocol.
+  or implement the `Funx.Ord` protocol.
   """
 
   @type ord_map() :: %{
@@ -12,10 +12,10 @@ defmodule Monex.Ord.Utils do
           ge?: (any(), any() -> boolean())
         }
 
-  @type ord_t() :: Monex.Ord.t() | ord_map()
+  @type ord_t() :: Funx.Ord.t() | ord_map()
 
-  alias Monex.Monoid
-  alias Monex.Ord
+  alias Funx.Monoid
+  alias Funx.Ord
 
   @doc """
   Transforms an ordering by applying a function `f` to values before comparison.
@@ -26,7 +26,7 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> ord = Monex.Ord.Utils.contramap(&String.length/1, Monex.Ord.Any)
+      iex> ord = Funx.Ord.Utils.contramap(&String.length/1, Funx.Ord.Any)
       iex> ord[:lt?].("cat", "zebra")
       true
   """
@@ -48,11 +48,11 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> Monex.Ord.Utils.max(3, 5)
+      iex> Funx.Ord.Utils.max(3, 5)
       5
 
-      iex> ord = Monex.Ord.Utils.contramap(&String.length/1, Monex.Ord.Any)
-      iex> Monex.Ord.Utils.max("cat", "zebra", ord)
+      iex> ord = Funx.Ord.Utils.contramap(&String.length/1, Funx.Ord.Any)
+      iex> Funx.Ord.Utils.max("cat", "zebra", ord)
       "zebra"
   """
   @spec max(a, a, ord_t()) :: a
@@ -69,11 +69,11 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> Monex.Ord.Utils.min(10, 7)
+      iex> Funx.Ord.Utils.min(10, 7)
       7
 
-      iex> ord = Monex.Ord.Utils.contramap(&String.length/1, Monex.Ord.Any)
-      iex> Monex.Ord.Utils.min("apple", "kiwi", ord)
+      iex> ord = Funx.Ord.Utils.contramap(&String.length/1, Funx.Ord.Any)
+      iex> Funx.Ord.Utils.min("apple", "kiwi", ord)
       "kiwi"
   """
   @spec min(a, a, ord_t()) :: a
@@ -90,13 +90,13 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> Monex.Ord.Utils.clamp(5, 1, 10)
+      iex> Funx.Ord.Utils.clamp(5, 1, 10)
       5
 
-      iex> Monex.Ord.Utils.clamp(0, 1, 10)
+      iex> Funx.Ord.Utils.clamp(0, 1, 10)
       1
 
-      iex> Monex.Ord.Utils.clamp(15, 1, 10)
+      iex> Funx.Ord.Utils.clamp(15, 1, 10)
       10
   """
   @spec clamp(a, a, a, ord_t()) :: a
@@ -112,13 +112,13 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> Monex.Ord.Utils.between(5, 1, 10)
+      iex> Funx.Ord.Utils.between(5, 1, 10)
       true
 
-      iex> Monex.Ord.Utils.between(0, 1, 10)
+      iex> Funx.Ord.Utils.between(0, 1, 10)
       false
 
-      iex> Monex.Ord.Utils.between(11, 1, 10)
+      iex> Funx.Ord.Utils.between(11, 1, 10)
       false
   """
   @spec between(a, a, a, ord_t()) :: boolean()
@@ -132,13 +132,13 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> Monex.Ord.Utils.compare(3, 5)
+      iex> Funx.Ord.Utils.compare(3, 5)
       :lt
 
-      iex> Monex.Ord.Utils.compare(7, 7)
+      iex> Funx.Ord.Utils.compare(7, 7)
       :eq
 
-      iex> Monex.Ord.Utils.compare(9, 4)
+      iex> Funx.Ord.Utils.compare(9, 4)
       :gt
   """
   @spec compare(a, a, ord_t()) :: :lt | :eq | :gt
@@ -158,7 +158,7 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> ord = Monex.Ord.Utils.reverse(Monex.Ord.Any)
+      iex> ord = Funx.Ord.Utils.reverse(Funx.Ord.Any)
       iex> ord[:lt?].(10, 5)
       true
   """
@@ -182,7 +182,7 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> comparator = Monex.Ord.Utils.comparator(Monex.Ord.Any)
+      iex> comparator = Funx.Ord.Utils.comparator(Funx.Ord.Any)
       iex> Enum.sort([3, 1, 2], comparator)
       [1, 2, 3]
   """
@@ -200,11 +200,11 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> eq = Monex.Ord.Utils.to_eq(Monex.Ord.Any)
+      iex> eq = Funx.Ord.Utils.to_eq(Funx.Ord.Any)
       iex> eq[:eq?].(5, 5)
       true
   """
-  @spec to_eq(ord_t()) :: Monex.Eq.Utils.eq_map()
+  @spec to_eq(ord_t()) :: Funx.Eq.Utils.eq_map()
   def to_eq(ord \\ Ord) do
     %{
       eq?: fn a, b -> compare(a, b, ord) == :eq end,
@@ -220,15 +220,15 @@ defmodule Monex.Ord.Utils do
 
   ## Examples
 
-      iex> ord1 = Monex.Ord.Utils.contramap(& &1.age, Monex.Ord.Any)
-      iex> ord2 = Monex.Ord.Utils.contramap(& &1.name, Monex.Ord.Any)
-      iex> combined = Monex.Ord.Utils.append(ord1, ord2)
+      iex> ord1 = Funx.Ord.Utils.contramap(& &1.age, Funx.Ord.Any)
+      iex> ord2 = Funx.Ord.Utils.contramap(& &1.name, Funx.Ord.Any)
+      iex> combined = Funx.Ord.Utils.append(ord1, ord2)
       iex> combined[:lt?].(%{age: 30, name: "Alice"}, %{age: 30, name: "Bob"})
       true
   """
-  @spec append(Monex.Monoid.Ord.t(), Monex.Monoid.Ord.t()) :: Monex.Monoid.Ord.t()
+  @spec append(Funx.Monoid.Ord.t(), Funx.Monoid.Ord.t()) :: Funx.Monoid.Ord.t()
   def append(a, b) do
-    Monoid.Utils.append(%Monex.Monoid.Ord{}, a, b)
+    Monoid.Utils.append(%Funx.Monoid.Ord{}, a, b)
   end
 
   @doc """
@@ -240,16 +240,16 @@ defmodule Monex.Ord.Utils do
   ## Examples
 
       iex> ord_list = [
-      ...>   Monex.Ord.Utils.contramap(& &1.age, Monex.Ord.Any),
-      ...>   Monex.Ord.Utils.contramap(& &1.name, Monex.Ord.Any)
+      ...>   Funx.Ord.Utils.contramap(& &1.age, Funx.Ord.Any),
+      ...>   Funx.Ord.Utils.contramap(& &1.name, Funx.Ord.Any)
       ...> ]
-      iex> combined = Monex.Ord.Utils.concat(ord_list)
+      iex> combined = Funx.Ord.Utils.concat(ord_list)
       iex> combined[:gt?].(%{age: 25, name: "Charlie"}, %{age: 25, name: "Bob"})
       true
   """
-  @spec concat([Monex.Monoid.Ord.t()]) :: Monex.Monoid.Ord.t()
+  @spec concat([Funx.Monoid.Ord.t()]) :: Funx.Monoid.Ord.t()
   def concat(ord_list) when is_list(ord_list) do
-    Monoid.Utils.concat(%Monex.Monoid.Ord{}, ord_list)
+    Monoid.Utils.concat(%Funx.Monoid.Ord{}, ord_list)
   end
 
   def to_ord_map(%{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun} = ord_map)

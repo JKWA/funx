@@ -1,6 +1,6 @@
-defmodule Monex.Ord.AppendTest do
+defmodule Funx.Ord.AppendTest do
   use ExUnit.Case, async: true
-  alias Monex.Monoid
+  alias Funx.Monoid
 
   test "append delegates to ord2 for ge? when ord1 considers a and b equal" do
     ord1 = %Monoid.Ord{

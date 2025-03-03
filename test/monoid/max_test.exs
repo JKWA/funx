@@ -1,18 +1,18 @@
-defmodule Monex.Monoid.MaxTest do
+defmodule Funx.Monoid.MaxTest do
   use ExUnit.Case, async: true
-  import Monex.Ord.Utils
-  alias Monex.Maybe
-  alias Monex.Monoid
-  alias Monex.Test.Person
+  import Funx.Ord.Utils
+  alias Funx.Maybe
+  alias Funx.Monoid
+  alias Funx.Test.Person
 
-  defp ord_ticket, do: Maybe.lift_ord(contramap(& &1.ticket, Monex.Ord))
-  defp ord_age, do: Maybe.lift_ord(contramap(& &1.age, Monex.Ord))
+  defp ord_ticket, do: Maybe.lift_ord(contramap(& &1.ticket, Funx.Ord))
+  defp ord_age, do: Maybe.lift_ord(contramap(& &1.age, Funx.Ord))
 
   def max_age(people) do
     Monoid.Utils.concat(
       %Monoid.Max{
         value: Maybe.nothing(),
-        ord: concat([ord_age(), ord_ticket(), Monex.Ord])
+        ord: concat([ord_age(), ord_ticket(), Funx.Ord])
       },
       people
     )
@@ -22,7 +22,7 @@ defmodule Monex.Monoid.MaxTest do
     Monoid.Utils.concat(
       %Monoid.Max{
         value: Maybe.nothing(),
-        ord: concat([Monex.Ord, ord_age()])
+        ord: concat([Funx.Ord, ord_age()])
       },
       people
     )

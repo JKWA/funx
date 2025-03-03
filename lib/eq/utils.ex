@@ -1,8 +1,8 @@
-defmodule Monex.Eq.Utils do
+defmodule Funx.Eq.Utils do
   @moduledoc """
-  Utility functions for working with the `Monex.Eq` protocol.
+  Utility functions for working with the `Funx.Eq` protocol.
   These functions assume that types passed in either support Elixir's equality operator
-  or implement the `Monex.Eq` protocol.
+  or implement the `Funx.Eq` protocol.
   """
 
   @type eq_map() :: %{
@@ -10,10 +10,10 @@ defmodule Monex.Eq.Utils do
           not_eq?: (any(), any() -> boolean())
         }
 
-  @type eq_t() :: Monex.Eq.t() | eq_map()
+  @type eq_t() :: Funx.Eq.t() | eq_map()
 
-  alias Monex.Eq
-  alias Monex.Monoid
+  alias Funx.Eq
+  alias Funx.Monoid
 
   @doc """
   Transforms an equality check by applying a function `f` to values before comparison.
@@ -24,7 +24,7 @@ defmodule Monex.Eq.Utils do
 
   ## Examples
 
-      iex> eq = Monex.Eq.Utils.contramap(& &1.age)
+      iex> eq = Funx.Eq.Utils.contramap(& &1.age)
       iex> eq.eq?.(%{age: 30}, %{age: 30})
       true
       iex> eq.eq?.(%{age: 30}, %{age: 25})
@@ -48,9 +48,9 @@ defmodule Monex.Eq.Utils do
 
   ## Examples
 
-      iex> Monex.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 30})
+      iex> Funx.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 30})
       true
-      iex> Monex.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 25})
+      iex> Funx.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 25})
       false
   """
   @spec eq_by?((a -> b), a, a, eq_t()) :: boolean()
@@ -65,9 +65,9 @@ defmodule Monex.Eq.Utils do
 
   ## Examples
 
-      iex> Monex.Eq.Utils.eq?(42, 42)
+      iex> Funx.Eq.Utils.eq?(42, 42)
       true
-      iex> Monex.Eq.Utils.eq?("foo", "bar")
+      iex> Funx.Eq.Utils.eq?("foo", "bar")
       false
   """
   @spec eq?(a, a, eq_t()) :: boolean()
@@ -82,9 +82,9 @@ defmodule Monex.Eq.Utils do
 
   ## Examples
 
-      iex> Monex.Eq.Utils.not_eq?(42, 99)
+      iex> Funx.Eq.Utils.not_eq?(42, 99)
       true
-      iex> Monex.Eq.Utils.not_eq?("foo", "foo")
+      iex> Funx.Eq.Utils.not_eq?("foo", "foo")
       false
   """
   @spec not_eq?(a, a, eq_t()) :: boolean()
@@ -103,12 +103,12 @@ defmodule Monex.Eq.Utils do
 
   ## Examples
 
-      iex> eq1 = Monex.Eq.Utils.contramap(& &1.name)
-      iex> eq2 = Monex.Eq.Utils.contramap(& &1.age)
-      iex> combined = Monex.Eq.Utils.append_all(eq1, eq2)
-      iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
+      iex> eq1 = Funx.Eq.Utils.contramap(& &1.name)
+      iex> eq2 = Funx.Eq.Utils.contramap(& &1.age)
+      iex> combined = Funx.Eq.Utils.append_all(eq1, eq2)
+      iex> Funx.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
       true
-      iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+      iex> Funx.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
   @spec append_all(Monoid.Eq.All.t(), Monoid.Eq.All.t()) :: Monoid.Eq.All.t()
@@ -124,12 +124,12 @@ defmodule Monex.Eq.Utils do
 
   ## Examples
 
-      iex> eq1 = Monex.Eq.Utils.contramap(& &1.name)
-      iex> eq2 = Monex.Eq.Utils.contramap(& &1.age)
-      iex> combined = Monex.Eq.Utils.append_any(eq1, eq2)
-      iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+      iex> eq1 = Funx.Eq.Utils.contramap(& &1.name)
+      iex> eq2 = Funx.Eq.Utils.contramap(& &1.age)
+      iex> combined = Funx.Eq.Utils.append_any(eq1, eq2)
+      iex> Funx.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       true
-      iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
+      iex> Funx.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
       false
   """
   @spec append_any(Monoid.Eq.Any.t(), Monoid.Eq.Any.t()) :: Monoid.Eq.Any.t()
@@ -145,12 +145,12 @@ defmodule Monex.Eq.Utils do
 
   ## Examples
 
-      iex> eq1 = Monex.Eq.Utils.contramap(& &1.name)
-      iex> eq2 = Monex.Eq.Utils.contramap(& &1.age)
-      iex> combined = Monex.Eq.Utils.concat_all([eq1, eq2])
-      iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
+      iex> eq1 = Funx.Eq.Utils.contramap(& &1.name)
+      iex> eq2 = Funx.Eq.Utils.contramap(& &1.age)
+      iex> combined = Funx.Eq.Utils.concat_all([eq1, eq2])
+      iex> Funx.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
       true
-      iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+      iex> Funx.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
   @spec concat_all([Monoid.Eq.All.t()]) :: Monoid.Eq.All.t()
@@ -166,12 +166,12 @@ defmodule Monex.Eq.Utils do
 
   ## Examples
 
-      iex> eq1 = Monex.Eq.Utils.contramap(& &1.name)
-      iex> eq2 = Monex.Eq.Utils.contramap(& &1.age)
-      iex> combined = Monex.Eq.Utils.concat_any([eq1, eq2])
-      iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+      iex> eq1 = Funx.Eq.Utils.contramap(& &1.name)
+      iex> eq2 = Funx.Eq.Utils.contramap(& &1.age)
+      iex> combined = Funx.Eq.Utils.concat_any([eq1, eq2])
+      iex> Funx.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       true
-      iex> Monex.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
+      iex> Funx.Eq.Utils.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
       false
   """
   @spec concat_any([Monoid.Eq.Any.t()]) :: Monoid.Eq.Any.t()
@@ -183,12 +183,12 @@ defmodule Monex.Eq.Utils do
   Converts an `Eq` comparator into a single-argument predicate function for use in `Enum` functions.
 
   The resulting predicate takes a single element and returns `true` if it matches the `target`
-  based on the specified `Eq`. If no custom `Eq` is provided, it defaults to `Monex.Eq`.
+  based on the specified `Eq`. If no custom `Eq` is provided, it defaults to `Funx.Eq`.
 
   ## Examples
 
-      iex> eq = Monex.Eq.Utils.contramap(& &1.name)
-      iex> predicate = Monex.Eq.Utils.to_predicate(%{name: "Alice"}, eq)
+      iex> eq = Funx.Eq.Utils.contramap(& &1.name)
+      iex> predicate = Funx.Eq.Utils.to_predicate(%{name: "Alice"}, eq)
       iex> Enum.filter([%{name: "Alice"}, %{name: "Bob"}], predicate)
       [%{name: "Alice"}]
   """

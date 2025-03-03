@@ -1,16 +1,16 @@
 # credo:disable-for-this-file
 
-defmodule Monex.Monoid.Predicate.Any do
+defmodule Funx.Monoid.Predicate.Any do
   @moduledoc """
   A Monoid implementation for combining predicates using logical OR.
   """
-  defstruct value: &Monex.Monoid.Predicate.Any.default_pred?/1
+  defstruct value: &Funx.Monoid.Predicate.Any.default_pred?/1
 
   def default_pred?(_), do: false
 end
 
-defimpl Monex.Monoid, for: Monex.Monoid.Predicate.Any do
-  alias Monex.Monoid.Predicate.Any
+defimpl Funx.Monoid, for: Funx.Monoid.Predicate.Any do
+  alias Funx.Monoid.Predicate.Any
 
   def empty(_), do: %Any{}
 

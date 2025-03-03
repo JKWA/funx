@@ -1,12 +1,12 @@
-defmodule Monex.Maybe.Just do
+defmodule Funx.Maybe.Just do
   @moduledoc """
   Represents the `Just` variant of the `Maybe` monad, used to model the presence of a value.
 
   This module implements the following protocols:
-    - `Monex.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
-    - `Monex.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Just` values.
-    - `Monex.Eq`: Defines equality checks between `Just` and other `Maybe` values.
-    - `Monex.Ord`: Defines ordering logic for `Just` and `Nothing` values.
+    - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
+    - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Just` values.
+    - `Funx.Eq`: Defines equality checks between `Just` and other `Maybe` values.
+    - `Funx.Ord`: Defines ordering logic for `Just` and `Nothing` values.
 
   The `Just` monad provides implementations that propagate the wrapped value through operations.
   """
@@ -23,13 +23,13 @@ defmodule Monex.Maybe.Just do
 
   ## Examples
 
-      iex> Monex.Maybe.Just.pure(5)
-      %Monex.Maybe.Just{value: 5}
+      iex> Funx.Maybe.Just.pure(5)
+      %Funx.Maybe.Just{value: 5}
 
   ### Raises
   - `ArgumentError` if `nil` is provided.
 
-      iex> Monex.Maybe.Just.pure(nil)
+      iex> Funx.Maybe.Just.pure(nil)
       ** (ArgumentError) Cannot wrap nil in a Just
   """
   @spec pure(value) :: t(value) when value: term()
@@ -37,14 +37,14 @@ defmodule Monex.Maybe.Just do
   def pure(value), do: %__MODULE__{value: value}
 end
 
-defimpl String.Chars, for: Monex.Maybe.Just do
-  alias Monex.Maybe.Just
+defimpl String.Chars, for: Funx.Maybe.Just do
+  alias Funx.Maybe.Just
 
   def to_string(%Just{value: value}), do: "Just(#{value})"
 end
 
-defimpl Monex.Monad, for: Monex.Maybe.Just do
-  alias Monex.Maybe.{Just, Nothing}
+defimpl Funx.Monad, for: Funx.Maybe.Just do
+  alias Funx.Maybe.{Just, Nothing}
 
   @spec ap(Just.t((value -> result)) | Nothing.t(), Just.t(value) | Nothing.t()) ::
           Just.t(result) | Nothing.t()
@@ -63,8 +63,8 @@ defimpl Monex.Monad, for: Monex.Maybe.Just do
   def bind(%Just{value: value}, func), do: func.(value)
 end
 
-defimpl Monex.Foldable, for: Monex.Maybe.Just do
-  alias Monex.Maybe.Just
+defimpl Funx.Foldable, for: Funx.Maybe.Just do
+  alias Funx.Maybe.Just
 
   @spec fold_l(Just.t(value), (value -> result), (-> result)) :: result
         when value: term(), result: term()
@@ -79,17 +79,17 @@ defimpl Monex.Foldable, for: Monex.Maybe.Just do
   end
 end
 
-defimpl Monex.Filterable, for: Monex.Maybe.Just do
-  alias Monex.Maybe
-  alias Monex.Maybe.Just
-  alias Monex.Monad
+defimpl Funx.Filterable, for: Funx.Maybe.Just do
+  alias Funx.Maybe
+  alias Funx.Maybe.Just
+  alias Funx.Monad
 
-  @spec guard(Monex.Maybe.Just.t(value), boolean()) :: Monex.Maybe.t(value)
+  @spec guard(Funx.Maybe.Just.t(value), boolean()) :: Funx.Maybe.t(value)
         when value: var
   def guard(%Just{} = maybe, true), do: maybe
   def guard(%Just{}, false), do: Maybe.nothing()
 
-  @spec filter(Monex.Maybe.Just.t(value), (value -> boolean())) :: Monex.Maybe.t(value)
+  @spec filter(Funx.Maybe.Just.t(value), (value -> boolean())) :: Funx.Maybe.t(value)
         when value: var
   def filter(%Just{} = maybe, predicate) do
     Monad.bind(maybe, fn value ->
@@ -101,8 +101,8 @@ defimpl Monex.Filterable, for: Monex.Maybe.Just do
     end)
   end
 
-  @spec filter_map(Monex.Maybe.Just.t(value), (value -> Monex.Maybe.t(result))) ::
-          Monex.Maybe.t(result)
+  @spec filter_map(Funx.Maybe.Just.t(value), (value -> Funx.Maybe.t(result))) ::
+          Funx.Maybe.t(result)
         when value: var, result: var
   def filter_map(%Just{value: value}, func) do
     case func.(value) do
@@ -112,9 +112,9 @@ defimpl Monex.Filterable, for: Monex.Maybe.Just do
   end
 end
 
-defimpl Monex.Eq, for: Monex.Maybe.Just do
-  alias Monex.Maybe.{Just, Nothing}
-  alias Monex.Eq
+defimpl Funx.Eq, for: Funx.Maybe.Just do
+  alias Funx.Maybe.{Just, Nothing}
+  alias Funx.Eq
 
   def eq?(%Just{value: v1}, %Just{value: v2}), do: Eq.eq?(v1, v2)
   def eq?(%Just{}, %Nothing{}), do: false
@@ -123,9 +123,9 @@ defimpl Monex.Eq, for: Monex.Maybe.Just do
   def not_eq?(%Just{}, %Nothing{}), do: true
 end
 
-defimpl Monex.Ord, for: Monex.Maybe.Just do
-  alias Monex.Maybe.{Just, Nothing}
-  alias Monex.Ord
+defimpl Funx.Ord, for: Funx.Maybe.Just do
+  alias Funx.Maybe.{Just, Nothing}
+  alias Funx.Ord
 
   def lt?(%Just{value: v1}, %Just{value: v2}), do: Ord.lt?(v1, v2)
   def lt?(%Just{}, %Nothing{}), do: false

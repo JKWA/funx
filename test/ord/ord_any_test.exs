@@ -1,10 +1,10 @@
-defmodule Monex.OrdAnyTest do
+defmodule Funx.OrdAnyTest do
   @moduledoc false
 
   use ExUnit.Case
-  alias Monex.Ord
+  alias Funx.Ord
 
-  describe "Monex.Ord default (Any) implementation" do
+  describe "Funx.Ord default (Any) implementation" do
     test "lt?/2 returns true for less value" do
       assert Ord.lt?(1, 2) == true
     end

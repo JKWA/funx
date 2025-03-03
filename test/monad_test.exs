@@ -1,9 +1,9 @@
-defmodule Monex.MonadAnyTest do
+defmodule Funx.MonadAnyTest do
   use ExUnit.Case, async: true
-  alias Monex.Monad
-  doctest Monex.Monad
-  doctest Monex.Filterable
-  doctest Monex.Foldable
+  alias Funx.Monad
+  doctest Funx.Monad
+  doctest Funx.Filterable
+  doctest Funx.Foldable
 
   test "bind applies the function to the value" do
     assert Monad.bind(5, fn x -> x * 2 end) == 10

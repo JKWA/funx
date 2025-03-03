@@ -1,4 +1,4 @@
-defmodule Monex.Math do
+defmodule Funx.Math do
   @moduledoc """
   Provides mathematical operations using Monoids.
 
@@ -6,15 +6,15 @@ defmodule Monex.Math do
   such as addition and multiplication over values or lists of values.
   """
 
-  import Monex.Monoid.Utils, only: [append: 3, concat: 2]
-  alias Monex.Monoid.{Max, Product, Sum}
+  import Funx.Monoid.Utils, only: [append: 3, concat: 2]
+  alias Funx.Monoid.{Max, Product, Sum}
 
   @doc """
   Sums two numbers using the `Sum` monoid.
 
   ## Examples
 
-      iex> Monex.Math.sum(1, 2)
+      iex> Funx.Math.sum(1, 2)
       3
   """
   @spec sum(number(), number()) :: number()
@@ -27,10 +27,10 @@ defmodule Monex.Math do
 
   ## Examples
 
-      iex> Monex.Math.sum([1, 2, 3])
+      iex> Funx.Math.sum([1, 2, 3])
       6
 
-      iex> Monex.Math.sum([])
+      iex> Funx.Math.sum([])
       0
   """
   @spec sum([number()]) :: number()
@@ -43,7 +43,7 @@ defmodule Monex.Math do
 
   ## Examples
 
-      iex> Monex.Math.product(3, 4)
+      iex> Funx.Math.product(3, 4)
       12
   """
   @spec product(number(), number()) :: number()
@@ -56,10 +56,10 @@ defmodule Monex.Math do
 
   ## Examples
 
-      iex> Monex.Math.product([2, 3, 4])
+      iex> Funx.Math.product([2, 3, 4])
       24
 
-      iex> Monex.Math.product([])
+      iex> Funx.Math.product([])
       1
   """
   @spec product([number()]) :: number()

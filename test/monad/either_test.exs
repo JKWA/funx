@@ -1,13 +1,13 @@
-defmodule Monex.EitherTest do
+defmodule Funx.EitherTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
-  import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Monex.Foldable, only: [fold_l: 3, fold_r: 3]
-  import Monex.Either
+  import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
+  import Funx.Either
 
-  alias Monex.{Eq, Maybe, Ord}
-  alias Monex.Either.{Left, Right}
+  alias Funx.{Eq, Maybe, Ord}
+  alias Funx.Either.{Left, Right}
 
   describe "pure/1" do
     test "wraps a value in a Right monad" do

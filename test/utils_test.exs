@@ -1,6 +1,6 @@
-defmodule Monex.UtilsTest do
+defmodule Funx.UtilsTest do
   use ExUnit.Case, async: true
-  import Monex.Utils
+  import Funx.Utils
 
   describe "curry/1" do
     test "curries a function with arity 2" do

@@ -1,6 +1,6 @@
-defprotocol Monex.Foldable do
+defprotocol Funx.Foldable do
   @moduledoc """
-  The `Monex.Foldable` protocol defines two core folding operations: `fold_l/3` (fold left) and `fold_r/3` (fold right).
+  The `Funx.Foldable` protocol defines two core folding operations: `fold_l/3` (fold left) and `fold_r/3` (fold right).
 
   These functions allow structures to be collapsed into a single value by applying functions in a specific order.
   Depending on the structure, folding can be done from the left (`fold_l/3`) or from the right (`fold_r/3`).
@@ -18,10 +18,10 @@ defprotocol Monex.Foldable do
 
   ## Examples
 
-      iex> Monex.Foldable.fold_l(Monex.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
+      iex> Funx.Foldable.fold_l(Funx.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
       6
 
-      iex> Monex.Foldable.fold_l(Monex.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
+      iex> Funx.Foldable.fold_l(Funx.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
       0
   """
   def fold_l(structure, func_a, func_b)
@@ -38,18 +38,18 @@ defprotocol Monex.Foldable do
 
   ## Examples
 
-      iex> Monex.Foldable.fold_r(Monex.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
+      iex> Funx.Foldable.fold_r(Funx.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
       6
 
-      iex> Monex.Foldable.fold_r(Monex.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
+      iex> Funx.Foldable.fold_r(Funx.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
       0
   """
   def fold_r(structure, func_a, func_b)
 end
 
-defimpl Monex.Foldable, for: Function do
+defimpl Funx.Foldable, for: Function do
   @moduledoc """
-  Provides an implementation of the `Monex.Foldable` protocol for functions (predicates).
+  Provides an implementation of the `Funx.Foldable` protocol for functions (predicates).
   This implementation evaluates a predicate function and applies either `true_func` or `false_func` based on the result.
 
   Useful for folding over boolean predicates, collapsing them into a single result.
@@ -62,10 +62,10 @@ defimpl Monex.Foldable, for: Function do
 
   ## Examples
 
-      iex> Monex.Foldable.fold_l(fn -> true end, fn -> "True case" end, fn -> "False case" end)
+      iex> Funx.Foldable.fold_l(fn -> true end, fn -> "True case" end, fn -> "False case" end)
       "True case"
 
-      iex> Monex.Foldable.fold_l(fn -> false end, fn -> "True case" end, fn -> "False case" end)
+      iex> Funx.Foldable.fold_l(fn -> false end, fn -> "True case" end, fn -> "False case" end)
       "False case"
   """
   def fold_l(predicate, true_func, false_func) do
@@ -82,10 +82,10 @@ defimpl Monex.Foldable, for: Function do
 
   ## Examples
 
-      iex> Monex.Foldable.fold_r(fn -> true end, fn -> "True case" end, fn -> "False case" end)
+      iex> Funx.Foldable.fold_r(fn -> true end, fn -> "True case" end, fn -> "False case" end)
       "True case"
 
-      iex> Monex.Foldable.fold_r(fn -> false end, fn -> "True case" end, fn -> "False case" end)
+      iex> Funx.Foldable.fold_r(fn -> false end, fn -> "True case" end, fn -> "False case" end)
       "False case"
   """
   def fold_r(predicate, true_func, false_func) do

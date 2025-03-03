@@ -1,14 +1,14 @@
-defmodule Monex.Monoid.Min do
+defmodule Funx.Monoid.Min do
   @moduledoc """
   A Monoid implementation for minimum values.
   """
 
-  defstruct value: nil, ord: Monex.Ord
+  defstruct value: nil, ord: Funx.Ord
 end
 
-defimpl Monex.Monoid, for: Monex.Monoid.Min do
-  alias Monex.Monoid.Min
-  alias Monex.Ord.Utils
+defimpl Funx.Monoid, for: Funx.Monoid.Min do
+  alias Funx.Monoid.Min
+  alias Funx.Ord.Utils
 
   def empty(%Min{value: max_value, ord: ord}) do
     %Min{value: max_value, ord: ord}

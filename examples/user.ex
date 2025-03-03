@@ -8,9 +8,9 @@ defmodule Example.User do
   attributes, such as `age`.
   """
 
-  alias Monex.Maybe
-  alias Monex.Eq
-  alias Monex.Ord
+  alias Funx.Maybe
+  alias Funx.Eq
+  alias Funx.Ord
 
   @enforce_keys [:first_name, :last_name, :role]
   defstruct first_name: nil,
@@ -38,7 +38,7 @@ defmodule Example.User do
       %Example.User{
         first_name: "John",
         last_name: "Doe",
-        age: %Monex.Maybe.Just{value: 30},
+        age: %Funx.Maybe.Just{value: 30},
         role: :user
       }
 
@@ -46,7 +46,7 @@ defmodule Example.User do
       %Example.User{
         first_name: "Jane",
         last_name: "Smith",
-        age: %Monex.Maybe.Nothing{},
+        age: %Funx.Maybe.Nothing{},
         role: :admin
       }
   """
@@ -70,7 +70,7 @@ defmodule Example.User do
       iex> eq_age = Example.User.eq_age()
       iex> user1 = Example.User.create_user("Alice", "Smith", :user, 25)
       iex> user2 = Example.User.create_user("Bob", "Brown", :admin, 25)
-      iex> Monex.Eq.Utils.eq?(user1, user2, eq_age)
+      iex> Funx.Eq.Utils.eq?(user1, user2, eq_age)
       true
   """
   def eq_age do
@@ -87,15 +87,15 @@ defmodule Example.User do
       iex> ord_age = Example.User.ord_age()
       iex> user1 = Example.User.create_user("Alice", "Smith", :user, 20)
       iex> user2 = Example.User.create_user("Bob", "Brown", :admin, 25)
-      iex> Monex.Ord.Utils.min(user1, user2, ord_age)
-      %Example.User{first_name: "Alice", last_name: "Smith", age: %Monex.Maybe.Just{value: 20}, role: :user}
+      iex> Funx.Ord.Utils.min(user1, user2, ord_age)
+      %Example.User{first_name: "Alice", last_name: "Smith", age: %Funx.Maybe.Just{value: 20}, role: :user}
   """
   def ord_age do
     Ord.Utils.contramap(& &1.age)
   end
 end
 
-defimpl Monex.Eq, for: Example.User do
+defimpl Funx.Eq, for: Example.User do
   @moduledoc false
 
   @doc """
@@ -108,7 +108,7 @@ defimpl Monex.Eq, for: Example.User do
 
       iex> user1 = Example.User.create_user("John", "Doe", :user)
       iex> user2 = Example.User.create_user("John", "Doe", :admin)
-      iex> Monex.Eq.Utils.eq?(user1, user2)
+      iex> Funx.Eq.Utils.eq?(user1, user2)
       true
   """
   def eq?(%Example.User{first_name: fn1, last_name: ln1}, %Example.User{
@@ -126,8 +126,8 @@ defimpl Monex.Eq, for: Example.User do
   end
 end
 
-defimpl Monex.Ord, for: Example.User do
-  alias Monex.Ord
+defimpl Funx.Ord, for: Example.User do
+  alias Funx.Ord
   @moduledoc false
 
   @doc """
@@ -140,7 +140,7 @@ defimpl Monex.Ord, for: Example.User do
 
       iex> user1 = Example.User.create_user("Alice", "Smith", :user)
       iex> user2 = Example.User.create_user("Bob", "Brown", :admin)
-      iex> Monex.Ord.Utils.compare(user1, user2)
+      iex> Funx.Ord.Utils.compare(user1, user2)
       :lt
   """
   def lt?(%Example.User{last_name: ln1, first_name: fn1}, %Example.User{

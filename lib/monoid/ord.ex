@@ -1,6 +1,6 @@
 # credo:disable-for-this-file
 
-defmodule Monex.Monoid.Ord do
+defmodule Funx.Monoid.Ord do
   @moduledoc """
   A monoid implementation for ordering logic (Ord).
   Provides default comparison functions and supports combining multiple
@@ -14,17 +14,17 @@ defmodule Monex.Monoid.Ord do
           ge?: (any(), any() -> boolean())
         }
 
-  defstruct lt?: &Monex.Monoid.Ord.default?/2,
-            le?: &Monex.Monoid.Ord.default?/2,
-            gt?: &Monex.Monoid.Ord.default?/2,
-            ge?: &Monex.Monoid.Ord.default?/2
+  defstruct lt?: &Funx.Monoid.Ord.default?/2,
+            le?: &Funx.Monoid.Ord.default?/2,
+            gt?: &Funx.Monoid.Ord.default?/2,
+            ge?: &Funx.Monoid.Ord.default?/2
 
   def default?(_, _), do: false
 end
 
-defimpl Monex.Monoid, for: Monex.Monoid.Ord do
-  alias Monex.Monoid.Ord
-  alias Monex.Ord.Utils
+defimpl Funx.Monoid, for: Funx.Monoid.Ord do
+  alias Funx.Monoid.Ord
+  alias Funx.Ord.Utils
 
   @spec empty(any()) :: Ord.t()
   def empty(_) do

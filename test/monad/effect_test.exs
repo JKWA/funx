@@ -3,11 +3,11 @@ defmodule EffectTest do
 
   use ExUnit.Case
 
-  import Monex.Effect
-  import Monex.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Monex.Foldable, only: [fold_l: 3, fold_r: 3]
+  import Funx.Effect
+  import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
 
-  alias Monex.{Either, Maybe}
+  alias Funx.{Either, Maybe}
 
   describe "right/1" do
     test "wraps a value in a Right struct" do
@@ -145,7 +145,7 @@ defmodule EffectTest do
     end
 
     test "map returns a Left if the effect resolves to a Left error" do
-      error_effect = %Monex.Effect.Right{
+      error_effect = %Funx.Effect.Right{
         effect: fn ->
           Task.async(fn -> %Either.Left{left: "error"} end)
         end
