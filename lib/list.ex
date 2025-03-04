@@ -1,4 +1,4 @@
-defmodule Funx.Enum do
+defmodule Funx.List do
   @moduledoc """
   Utility functions for working with lists while respecting `Eq` and `Ord` instances.
   """
@@ -11,7 +11,7 @@ defmodule Funx.Enum do
 
   ## Examples
 
-      iex> Funx.Enum.uniq([1, 2, 2, 3, 1, 4, 5])
+      iex> Funx.List.uniq([1, 2, 2, 3, 1, 4, 5])
       [1, 2, 3, 4, 5]
   """
   @spec uniq([term()], Eq.Utils.eq_t()) :: [term()]
@@ -28,7 +28,7 @@ defmodule Funx.Enum do
 
   ## Examples
 
-      iex> Funx.Enum.union([1, 2, 3], [3, 4, 5])
+      iex> Funx.List.union([1, 2, 3], [3, 4, 5])
       [1, 2, 3, 4, 5]
   """
   @spec union([term()], [term()], Eq.Utils.eq_t()) :: [term()]
@@ -41,7 +41,7 @@ defmodule Funx.Enum do
 
   ## Examples
 
-      iex> Funx.Enum.intersection([1, 2, 3, 4], [3, 4, 5])
+      iex> Funx.List.intersection([1, 2, 3, 4], [3, 4, 5])
       [3, 4]
   """
   @spec intersection([term()], [term()], Eq.Utils.eq_t()) :: [term()]
@@ -56,7 +56,7 @@ defmodule Funx.Enum do
 
   ## Examples
 
-      iex> Funx.Enum.difference([1, 2, 3, 4], [3, 4, 5])
+      iex> Funx.List.difference([1, 2, 3, 4], [3, 4, 5])
       [1, 2]
   """
   @spec difference([term()], [term()], Eq.Utils.eq_t()) :: [term()]
@@ -71,7 +71,7 @@ defmodule Funx.Enum do
 
   ## Examples
 
-      iex> Funx.Enum.symmetric_difference([1, 2, 3], [3, 4, 5])
+      iex> Funx.List.symmetric_difference([1, 2, 3], [3, 4, 5])
       [1, 2, 4, 5]
   """
   @spec symmetric_difference([term()], [term()], Eq.Utils.eq_t()) :: [term()]
@@ -86,10 +86,10 @@ defmodule Funx.Enum do
 
   ## Examples
 
-      iex> Funx.Enum.subset?([1, 2], [1, 2, 3, 4])
+      iex> Funx.List.subset?([1, 2], [1, 2, 3, 4])
       true
 
-      iex> Funx.Enum.subset?([1, 5], [1, 2, 3, 4])
+      iex> Funx.List.subset?([1, 5], [1, 2, 3, 4])
       false
   """
   @spec subset?([term()], [term()], Eq.Utils.eq_t()) :: boolean()
@@ -102,10 +102,10 @@ defmodule Funx.Enum do
 
   ## Examples
 
-      iex> Funx.Enum.superset?([1, 2, 3, 4], [1, 2])
+      iex> Funx.List.superset?([1, 2, 3, 4], [1, 2])
       true
 
-      iex> Funx.Enum.superset?([1, 2, 3, 4], [1, 5])
+      iex> Funx.List.superset?([1, 2, 3, 4], [1, 5])
       false
   """
   @spec superset?([term()], [term()], Eq.Utils.eq_t()) :: boolean()
@@ -118,7 +118,7 @@ defmodule Funx.Enum do
 
   ## Examples
 
-      iex> Funx.Enum.sort([3, 1, 4, 1, 5])
+      iex> Funx.List.sort([3, 1, 4, 1, 5])
       [1, 1, 3, 4, 5]
   """
   @spec sort([term()], Ord.Utils.ord_t()) :: [term()]
@@ -131,7 +131,7 @@ defmodule Funx.Enum do
 
   ## Examples
 
-      iex> Funx.Enum.strict_sort([3, 1, 4, 1, 5])
+      iex> Funx.List.strict_sort([3, 1, 4, 1, 5])
       [1, 3, 4, 5]
   """
   @spec strict_sort([term()], Ord.Utils.ord_t()) :: [term()]
