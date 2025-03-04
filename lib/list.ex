@@ -1,6 +1,51 @@
 defmodule Funx.List do
   @moduledoc """
-  Utility functions for working with lists while respecting `Eq` and `Ord` instances.
+  The `Funx.List` module provides utility functions for working with lists while respecting `Eq` and `Ord` instances. This allows for set-like operations, uniqueness constraints, and sorted collections that align with functional programming principles.
+
+  ## Features
+
+  - **Equality-based Operations**: Use `Eq` instances to compare elements for uniqueness, intersection, and difference.
+  - **Ordering Functions**: Leverage `Ord` instances to sort and enforce uniqueness in sorted collections.
+  - **Set Operations**: Perform union, intersection, difference, and symmetric difference while preserving custom equality logic.
+  - **Subset & Superset Checks**: Verify relationships between lists in terms of inclusion.
+  - **Functional Constructs**: Implements `Monad` and `Foldable` protocols for lists, supporting mapping, binding, and folding.
+
+  ### Usage Overview
+
+  1. **Deduplicate**: Use `uniq/1` to remove duplicates based on `Eq`.
+  2. **Combine**: Use `union/2` to merge lists without duplicates.
+  3. **Filter**: Use `intersection/2` or `difference/2` for set operations.
+  4. **Sort**: Use `sort/2` or `strict_sort/2` with `Ord` instances.
+  5. **Check Membership**: Use `subset?/2` or `superset?/2` to verify inclusion relationships.
+
+  ### Equality-Based Operations
+
+  - `uniq/1`: Removes duplicates using `Eq`.
+  - `union/2`: Merges lists while preserving uniqueness.
+  - `intersection/2`: Returns elements common to both lists.
+  - `difference/2`: Returns elements from the first list not in the second.
+  - `symmetric_difference/2`: Returns elements unique to each list.
+
+  ### Ordering Functions
+
+  - `sort/2`: Sorts a list using `Ord`.
+  - `strict_sort/2`: Sorts while ensuring uniqueness.
+
+  ### Set Operations
+
+  - `subset?/2`: Checks if one list is a subset of another.
+  - `superset?/2`: Checks if one list is a superset of another.
+
+  ### Monad Implementation
+
+  - `map/2`: Transforms list elements.
+  - `bind/2`: Applies a function returning lists and flattens the result.
+  - `ap/2`: Applies functions in a list to elements in another list.
+
+  ### Foldable Implementation
+
+  - `fold_l/3`: Performs left-associative folding.
+  - `fold_r/3`: Performs right-associative folding.
   """
 
   alias Funx.Eq
@@ -140,4 +185,29 @@ defmodule Funx.List do
     |> uniq(Ord.Utils.to_eq(ord))
     |> sort(ord)
   end
+end
+
+defimpl Funx.Monad, for: List do
+  @spec ap(list((term -> term)), list(term)) :: list(term)
+  def ap(funcs, list) do
+    for f <- funcs, x <- list, do: f.(x)
+  end
+
+  @spec bind(list(term), (term -> list(term))) :: list(term)
+  def bind(list, func) do
+    Enum.flat_map(list, func)
+  end
+
+  @spec map(list(term), (term -> term)) :: list(term)
+  def map(list, func) do
+    Enum.map(list, func)
+  end
+end
+
+defimpl Funx.Foldable, for: List do
+  @spec fold_l(list(term), (term, term -> term), term) :: term
+  def fold_l(list, func, acc), do: :lists.foldl(func, acc, list)
+
+  @spec fold_r(list(term), (term, term -> term), term) :: term
+  def fold_r(list, func, acc), do: :lists.foldr(func, acc, list)
 end

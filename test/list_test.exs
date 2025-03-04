@@ -1,5 +1,8 @@
 defmodule Funx.ListTest do
   use ExUnit.Case, async: true
+  import Funx.Foldable
+  import Funx.Monad
+
   alias Funx.List
   doctest Funx.List
 
@@ -59,6 +62,51 @@ defmodule Funx.ListTest do
   describe "strict_sort/2" do
     test "sorts and removes duplicates" do
       assert List.strict_sort([:banana, :apple, :apple]) == [:apple, :banana]
+    end
+  end
+
+  describe "ap/2" do
+    test "applies a list of functions to a list of values" do
+      funcs = [fn x -> x * 2 end, fn x -> x + 1 end]
+      values = [1, 2, 3]
+
+      assert ap(funcs, values) == [2, 4, 6, 2, 3, 4]
+    end
+  end
+
+  describe "bind/2" do
+    test "chains a monadic operation by applying a function that returns a list" do
+      list = [1, 2, 3]
+      func = fn x -> [x, x * 2] end
+
+      assert bind(list, func) == [1, 2, 2, 4, 3, 6]
+    end
+  end
+
+  describe "map/2" do
+    test "maps a function over a list" do
+      list = [1, 2, 3]
+      func = fn x -> x + 10 end
+
+      assert map(list, func) == [11, 12, 13]
+    end
+  end
+
+  describe "fold_l/3" do
+    test "folds a list from the left" do
+      list = [1, 2, 3, 4]
+      func = fn acc, x -> acc + x end
+
+      assert fold_l(list, func, 0) == 10
+    end
+  end
+
+  describe "fold_r/3" do
+    test "folds a list from the right" do
+      list = [1, 2, 3, 4]
+      func = fn x, acc -> acc - x end
+
+      assert fold_r(list, func, 0) == -10
     end
   end
 end
