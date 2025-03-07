@@ -27,7 +27,7 @@ defmodule Funx.Ord.Utils do
   ## Examples
 
       iex> ord = Funx.Ord.Utils.contramap(&String.length/1, Funx.Ord.Any)
-      iex> ord[:lt?].("cat", "zebra")
+      iex> ord.lt?.("cat", "zebra")
       true
   """
   @spec contramap((a -> b), ord_t()) :: ord_map()
@@ -36,10 +36,10 @@ defmodule Funx.Ord.Utils do
     ord = to_ord_map(ord)
 
     %{
-      lt?: fn a, b -> ord[:lt?].(f.(a), f.(b)) end,
-      le?: fn a, b -> ord[:le?].(f.(a), f.(b)) end,
-      gt?: fn a, b -> ord[:gt?].(f.(a), f.(b)) end,
-      ge?: fn a, b -> ord[:ge?].(f.(a), f.(b)) end
+      lt?: fn a, b -> ord.lt?.(f.(a), f.(b)) end,
+      le?: fn a, b -> ord.le?.(f.(a), f.(b)) end,
+      gt?: fn a, b -> ord.gt?.(f.(a), f.(b)) end,
+      ge?: fn a, b -> ord.ge?.(f.(a), f.(b)) end
     }
   end
 
@@ -147,8 +147,8 @@ defmodule Funx.Ord.Utils do
     ord = to_ord_map(ord)
 
     cond do
-      ord[:lt?].(a, b) -> :lt
-      ord[:gt?].(a, b) -> :gt
+      ord.lt?.(a, b) -> :lt
+      ord.gt?.(a, b) -> :gt
       true -> :eq
     end
   end
@@ -159,7 +159,7 @@ defmodule Funx.Ord.Utils do
   ## Examples
 
       iex> ord = Funx.Ord.Utils.reverse(Funx.Ord.Any)
-      iex> ord[:lt?].(10, 5)
+      iex> ord.lt?.(10, 5)
       true
   """
   @spec reverse(ord_t()) :: ord_map()
@@ -167,10 +167,10 @@ defmodule Funx.Ord.Utils do
     ord = to_ord_map(ord)
 
     %{
-      lt?: ord[:gt?],
-      le?: ord[:ge?],
-      gt?: ord[:lt?],
-      ge?: ord[:le?]
+      lt?: ord.gt?,
+      le?: ord.ge?,
+      gt?: ord.lt?,
+      ge?: ord.le?
     }
   end
 
@@ -201,7 +201,7 @@ defmodule Funx.Ord.Utils do
   ## Examples
 
       iex> eq = Funx.Ord.Utils.to_eq(Funx.Ord.Any)
-      iex> eq[:eq?].(5, 5)
+      iex> eq.eq?.(5, 5)
       true
   """
   @spec to_eq(ord_t()) :: Funx.Eq.Utils.eq_map()
@@ -223,7 +223,7 @@ defmodule Funx.Ord.Utils do
       iex> ord1 = Funx.Ord.Utils.contramap(& &1.age, Funx.Ord.Any)
       iex> ord2 = Funx.Ord.Utils.contramap(& &1.name, Funx.Ord.Any)
       iex> combined = Funx.Ord.Utils.append(ord1, ord2)
-      iex> combined[:lt?].(%{age: 30, name: "Alice"}, %{age: 30, name: "Bob"})
+      iex> combined.lt?.(%{age: 30, name: "Alice"}, %{age: 30, name: "Bob"})
       true
   """
   @spec append(Funx.Monoid.Ord.t(), Funx.Monoid.Ord.t()) :: Funx.Monoid.Ord.t()
@@ -244,7 +244,7 @@ defmodule Funx.Ord.Utils do
       ...>   Funx.Ord.Utils.contramap(& &1.name, Funx.Ord.Any)
       ...> ]
       iex> combined = Funx.Ord.Utils.concat(ord_list)
-      iex> combined[:gt?].(%{age: 25, name: "Charlie"}, %{age: 25, name: "Bob"})
+      iex> combined.gt?.(%{age: 25, name: "Charlie"}, %{age: 25, name: "Bob"})
       true
   """
   @spec concat([Funx.Monoid.Ord.t()]) :: Funx.Monoid.Ord.t()

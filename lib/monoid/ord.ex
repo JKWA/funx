@@ -69,10 +69,10 @@ defimpl Funx.Monoid, for: Funx.Monoid.Ord do
     ord = Utils.to_ord_map(ord)
 
     %Ord{
-      lt?: ord[:lt?],
-      le?: ord[:le?],
-      gt?: ord[:gt?],
-      ge?: ord[:ge?]
+      lt?: ord.lt?,
+      le?: ord.le?,
+      gt?: ord.gt?,
+      ge?: ord.ge?
     }
   end
 

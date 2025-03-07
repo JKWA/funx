@@ -113,8 +113,8 @@ defmodule Funx.Eq.UtilsTest do
       person2 = %{name: "Alice", age: 30}
       person3 = %{name: "Alice", age: 25}
 
-      assert eq_with_custom[:eq?].(person1, person2) == true
-      assert eq_with_custom[:eq?].(person1, person3) == false
+      assert eq_with_custom.eq?.(person1, person2) == true
+      assert eq_with_custom.eq?.(person1, person3) == false
     end
   end
 
@@ -147,7 +147,7 @@ defmodule Funx.Eq.UtilsTest do
   def within_5_eq do
     %{
       eq?: fn a, b -> abs(a - b) <= 5 end,
-      not_eq?: fn a, b -> not within_5_eq()[:eq?].(a, b) end
+      not_eq?: fn a, b -> not within_5_eq().eq?.(a, b) end
     }
   end
 
@@ -186,7 +186,7 @@ defmodule Funx.Eq.UtilsTest do
         %Maybe.Just{value: a}, %Maybe.Just{value: b} -> abs(a - b) <= 5
         _, _ -> false
       end,
-      not_eq?: fn a, b -> not within_5_eq_maybe()[:eq?].(a, b) end
+      not_eq?: fn a, b -> not within_5_eq_maybe().eq?.(a, b) end
     }
   end
 

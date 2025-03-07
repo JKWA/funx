@@ -36,8 +36,8 @@ defmodule Funx.Eq.Utils do
     eq = to_eq_map(eq)
 
     %{
-      eq?: fn a, b -> eq[:eq?].(f.(a), f.(b)) end,
-      not_eq?: fn a, b -> eq[:not_eq?].(f.(a), f.(b)) end
+      eq?: fn a, b -> eq.eq?.(f.(a), f.(b)) end,
+      not_eq?: fn a, b -> eq.not_eq?.(f.(a), f.(b)) end
     }
   end
 
@@ -57,7 +57,7 @@ defmodule Funx.Eq.Utils do
         when a: any, b: any
   def eq_by?(f, a, b, eq \\ Eq) do
     eq = to_eq_map(eq)
-    eq[:eq?].(f.(a), f.(b))
+    eq.eq?.(f.(a), f.(b))
   end
 
   @doc """
@@ -74,7 +74,7 @@ defmodule Funx.Eq.Utils do
         when a: any
   def eq?(a, b, eq \\ Eq) do
     eq = to_eq_map(eq)
-    eq[:eq?].(a, b)
+    eq.eq?.(a, b)
   end
 
   @doc """
@@ -91,7 +91,7 @@ defmodule Funx.Eq.Utils do
         when a: any
   def not_eq?(a, b, eq \\ Eq) do
     eq = to_eq_map(eq)
-    eq[:not_eq?].(a, b)
+    eq.not_eq?.(a, b)
   end
 
   @doc """
@@ -197,7 +197,7 @@ defmodule Funx.Eq.Utils do
   def to_predicate(target, eq \\ Eq) do
     eq = to_eq_map(eq)
 
-    fn elem -> eq[:eq?].(elem, target) end
+    fn elem -> eq.eq?.(elem, target) end
   end
 
   def to_eq_map(%{eq?: eq_fun, not_eq?: not_eq_fun} = eq_map)

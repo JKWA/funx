@@ -51,7 +51,7 @@ defmodule Funx.Identity do
   def lift_eq(eq_for_value) do
     %{
       eq?: fn
-        %__MODULE__{value: a}, %__MODULE__{value: b} -> eq_for_value[:eq?].(a, b)
+        %__MODULE__{value: a}, %__MODULE__{value: b} -> eq_for_value.eq?.(a, b)
         _, _ -> false
       end
     }

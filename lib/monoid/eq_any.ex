@@ -34,7 +34,7 @@ defimpl Funx.Monoid, for: Funx.Monoid.Eq.Any do
     eq = Utils.to_eq_map(eq)
 
     %Any{
-      eq?: eq[:eq?],
+      eq?: eq.eq?,
       not_eq?: eq[:not_eq?]
     }
   end

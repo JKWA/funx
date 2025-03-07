@@ -439,25 +439,25 @@ defmodule Funx.EitherTest do
     end
 
     test "Left is less than any Right", %{ord: ord} do
-      assert ord[:lt?].(left(100), right(1)) == true
-      assert ord[:lt?].(right(1), left(100)) == false
+      assert ord.lt?.(left(100), right(1)) == true
+      assert ord.lt?.(right(1), left(100)) == false
     end
 
     test "Right is greater than Left", %{ord: ord} do
-      assert ord[:gt?].(right(1), left(100)) == true
-      assert ord[:gt?].(left(100), right(1)) == false
+      assert ord.gt?.(right(1), left(100)) == true
+      assert ord.gt?.(left(100), right(1)) == false
     end
 
     test "Orders Right values based on their contained values", %{ord: ord} do
-      assert ord[:lt?].(right(42), right(43)) == true
-      assert ord[:gt?].(right(43), right(42)) == true
-      assert ord[:le?].(right(42), right(42)) == true
-      assert ord[:ge?].(right(42), right(42)) == true
+      assert ord.lt?.(right(42), right(43)) == true
+      assert ord.gt?.(right(43), right(42)) == true
+      assert ord.le?.(right(42), right(42)) == true
+      assert ord.ge?.(right(42), right(42)) == true
     end
 
     test "Left is equal to Left in terms of ordering", %{ord: ord} do
-      assert ord[:le?].(left(1), left(1)) == true
-      assert ord[:ge?].(left(1), left(1)) == true
+      assert ord.le?.(left(1), left(1)) == true
+      assert ord.ge?.(left(1), left(1)) == true
     end
   end
 
