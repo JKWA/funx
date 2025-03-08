@@ -124,7 +124,7 @@ Pages
 
 
     <section id="moduledoc">
-<p>Represents the <code class="inline">Left</code> variant of the <code class="inline">Either</code> monad, used to model an error or failure.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions for monadic operations.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code> to handle folding for <code class="inline">Left</code> values.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Defines equality checks between <code class="inline">Left</code> and other <code class="inline">Either</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering logic for <code class="inline">Left</code> and <code class="inline">Right</code> values.</li></ul><p>The <code class="inline">Left</code> monad propagates the wrapped error through operations without executing the success logic.</p>
+<p>Represents the <code class="inline">Left</code> variant of the <code class="inline">Either</code> monad, used to model an error or failure.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Defines equality checks between <code class="inline">Left</code> and other <code class="inline">Either</code> values.</li><li><a href="Funx.Filterable.html"><code class="inline">Funx.Filterable</code></a>: Provides <code class="inline">guard/2</code>, <code class="inline">filter/2</code>, and <code class="inline">filter_map/2</code> for conditional transformations.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code> to handle folding for <code class="inline">Left</code> values.</li><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions for monadic operations.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering logic for <code class="inline">Left</code> and <code class="inline">Right</code> values.</li></ul><p>The <code class="inline">Left</code> monad propagates the wrapped error through operations without executing the success logic.</p>
     </section>
 
 </div>
@@ -187,7 +187,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">t(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either/left.ex#L16" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either/left.ex#L17" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -227,7 +227,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">pure(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either/left.ex#L29" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either/left.ex#L30" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -249,8 +249,8 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="6803808920-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6803808920-1">)</span><span class="w">
-</span><span class="p" data-group-id="6803808920-2">%</span><span class="nc" data-group-id="6803808920-2">Funx.Either.Left</span><span class="p" data-group-id="6803808920-2">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6803808920-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="5163168955-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5163168955-1">)</span><span class="w">
+</span><span class="p" data-group-id="5163168955-2">%</span><span class="nc" data-group-id="5163168955-2">Funx.Either.Left</span><span class="p" data-group-id="5163168955-2">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5163168955-2">}</span></code></pre>
   </section>
 </section>
 
