@@ -147,6 +147,8 @@ Pages
 
       </div>
 
+        <div class="summary-synopsis"><p>Represents an asynchronous computation that produces a <code class="inline">Left</code> value.</p></div>
+
     </div>
 
 </div>
@@ -187,7 +189,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">t(left)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L14" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L21" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -199,11 +201,13 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t(left) :: %Funx.Effect.Left{effect: (-&gt; Task.t(%Funx.Either.Left{left: left}))}</pre>
+          <pre translate="no"><span class="attribute">@type</span> t(left) :: %Funx.Effect.Left{
+  effect: (-&gt; <a href="https://hexdocs.pm/elixir/Task.html#t:t/0">Task.t</a>()) | (-&gt; <a href="Funx.Either.Left.html#t:t/1">Funx.Either.Left.t</a>(left))
+}</pre>
 
       </div>
 
-
+<p>Represents an asynchronous computation that produces a <code class="inline">Left</code> value.</p><p>This type models an effectful computation that executes asynchronously, returning a <code class="inline">Task.t()</code>, which is expected to resolve to a <code class="inline">Left</code> value.</p><p>Since Elixir does not allow parameterizing <code class="inline">Task.t()</code> with a return type, this type cannot enforce that <code class="inline">Task.t()</code> resolves to <code class="inline">Funx.Either.Left.t(left)</code>. However, all tasks within this structure are expected to eventually return a <code class="inline">Left</code> value.</p>
   </section>
 </section>
 
@@ -227,7 +231,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">pure(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L29" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L38" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -249,10 +253,10 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="6328591655-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6328591655-1">)</span><span class="w">
-</span><span class="p" data-group-id="6328591655-2">%</span><span class="nc" data-group-id="6328591655-2">Funx.Effect.Left</span><span class="p" data-group-id="6328591655-2">{</span><span class="w">
-  </span><span class="ss">effect</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6328591655-3">#</span><span class="nc" data-group-id="6328591655-3">Function</span><span class="p" data-group-id="6328591655-3">&lt;</span><span class="n">...</span><span class="p" data-group-id="6328591655-3">&gt;</span><span class="w">  </span><span class="c1"># (an asynchronous task returning `Left`)</span><span class="w">
-</span><span class="p" data-group-id="6328591655-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9283793967-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9283793967-1">)</span><span class="w">
+</span><span class="p" data-group-id="9283793967-2">%</span><span class="nc" data-group-id="9283793967-2">Funx.Effect.Left</span><span class="p" data-group-id="9283793967-2">{</span><span class="w">
+  </span><span class="ss">effect</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9283793967-3">#</span><span class="nc" data-group-id="9283793967-3">Function</span><span class="p" data-group-id="9283793967-3">&lt;</span><span class="n">...</span><span class="p" data-group-id="9283793967-3">&gt;</span><span class="w">  </span><span class="c1"># (an asynchronous task returning `Left`)</span><span class="w">
+</span><span class="p" data-group-id="9283793967-2">}</span></code></pre>
   </section>
 </section>
 
