@@ -11,7 +11,17 @@ defmodule Funx.Effect.Right do
   @enforce_keys [:effect]
   defstruct [:effect]
 
-  @type t(right) :: %__MODULE__{effect: (-> Task.t(%Funx.Either.Right{right: right}))}
+  @typedoc """
+  Represents an asynchronous computation that produces a `Right` value.
+
+  This type models an effectful computation that executes asynchronously, returning a `Task.t()`, which is expected to resolve to a `Right` value.
+
+  Since Elixir does not allow parameterizing `Task.t()` with a return type, this type cannot enforce that `Task.t()` resolves to `Funx.Either.Right.t(right)`. However, all tasks within this structure are expected to eventually return a `Right` value.
+  """
+
+  @type t(right) :: %__MODULE__{
+          effect: (-> Task.t()) | (-> Funx.Either.Right.t(right))
+        }
 
   @doc """
   Creates a new `Right` effect.

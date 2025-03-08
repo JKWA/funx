@@ -11,7 +11,16 @@ defmodule Funx.Effect.Left do
   @enforce_keys [:effect]
   defstruct [:effect]
 
-  @type t(left) :: %__MODULE__{effect: (-> Task.t(%Funx.Either.Left{left: left}))}
+  @typedoc """
+  Represents an asynchronous computation that produces a `Left` value.
+
+  This type models an effectful computation that executes asynchronously, returning a `Task.t()`, which is expected to resolve to a `Left` value.
+
+  Since Elixir does not allow parameterizing `Task.t()` with a return type, this type cannot enforce that `Task.t()` resolves to `Funx.Either.Left.t(left)`. However, all tasks within this structure are expected to eventually return a `Left` value.
+  """
+  @type t(left) :: %__MODULE__{
+          effect: (-> Task.t()) | (-> Funx.Either.Left.t(left))
+        }
 
   @doc """
   Creates a new `Left` effect.
