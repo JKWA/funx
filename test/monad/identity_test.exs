@@ -8,6 +8,8 @@ defmodule Funx.IdentityTest do
 
   alias Funx.{Eq, Identity, Ord}
 
+  doctest Funx.Identity
+
   defp multiply_by_2(x), do: x * 2
 
   setup [:with_telemetry_config]
@@ -166,20 +168,24 @@ defmodule Funx.IdentityTest do
 
   describe "lift_eq/1" do
     setup do
-      number_eq = %{eq?: &Kernel.==/2}
+      number_eq = %{eq?: &Kernel.==/2, not_eq?: &Kernel.!==/2}
       {:ok, eq: lift_eq(number_eq)}
     end
 
-    test "returns true for equal values", %{eq: eq} do
+    test "eq?/2 returns true for equal values", %{eq: eq} do
       assert eq.eq?.(pure(1), pure(1)) == true
     end
 
-    test "returns false for different values", %{eq: eq} do
+    test "eq?/2 returns false for different values", %{eq: eq} do
       assert eq.eq?.(pure(1), pure(2)) == false
     end
 
-    test "returns false for non identity monads", %{eq: eq} do
-      assert eq.eq?.(pure(2), 2) == false
+    test "not_eq?/2 returns false for equal values", %{eq: eq} do
+      assert eq.not_eq?.(pure(1), pure(1)) == false
+    end
+
+    test "not_eq?/2 returns true for different values", %{eq: eq} do
+      assert eq.not_eq?.(pure(1), pure(2)) == true
     end
   end
 

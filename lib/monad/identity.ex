@@ -54,7 +54,9 @@ defmodule Funx.Identity do
     %{
       eq?: fn
         %__MODULE__{value: a}, %__MODULE__{value: b} -> eq_for_value.eq?.(a, b)
-        _, _ -> false
+      end,
+      not_eq?: fn
+        %__MODULE__{value: a}, %__MODULE__{value: b} -> eq_for_value.not_eq?.(a, b)
       end
     }
   end
