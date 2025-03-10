@@ -19,7 +19,8 @@ defmodule Funx.Identity do
     - `:telemetry_prefix` (default: `[:funx]`): Set a custom prefix for telemetry events.
   """
 
-  alias Funx.TelemetryUtils
+  alias Funx.Eq
+  alias Funx.Ord
 
   @enforce_keys [:value]
   defstruct [:value]
@@ -48,6 +49,7 @@ defmodule Funx.Identity do
   @spec extract(t(value)) :: value when value: term()
   def extract(%__MODULE__{value: value}), do: value
 
+  @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
   def lift_eq(eq_for_value) do
     %{
       eq?: fn
@@ -57,6 +59,7 @@ defmodule Funx.Identity do
     }
   end
 
+  @spec lift_ord(Ord.Utils.ord_map()) :: Ord.Utils.ord_map()
   def lift_ord(custom_ord) do
     %{
       lt?: fn
@@ -67,78 +70,84 @@ defmodule Funx.Identity do
       ge?: fn a, b -> not lift_ord(custom_ord).lt?.(a, b) end
     }
   end
+end
 
-  defimpl Funx.Monad do
-    alias Funx.Identity
+defimpl Funx.Monad, for: Funx.Identity do
+  alias Funx.Identity
+  alias Funx.TelemetryUtils
 
-    def bind(%Identity{value: value}, func) do
-      start_time = System.monotonic_time()
-      result = func.(value)
+  @spec ap(Identity.t((a -> b)), Identity.t(a)) :: Identity.t(b) when a: term(), b: term()
+  def ap(%Identity{value: func}, %Identity{value: value}) do
+    start_time = System.monotonic_time()
+    result = Identity.pure(func.(value))
 
-      if Application.get_env(:funx, :telemetry_enabled, true) do
-        :telemetry.execute(
-          Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :bind],
-          %{duration: System.monotonic_time() - start_time},
-          %{
-            initial_value: TelemetryUtils.summarize(value),
-            transformed_value: TelemetryUtils.summarize(result.value)
-          }
-        )
-      end
-
-      result
+    if Application.get_env(:funx, :telemetry_enabled, true) do
+      :telemetry.execute(
+        Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :ap],
+        %{duration: System.monotonic_time() - start_time},
+        %{
+          initial_value: TelemetryUtils.summarize(value),
+          transformed_value: TelemetryUtils.summarize(result.value)
+        }
+      )
     end
 
-    def map(%Identity{value: value}, func) do
-      start_time = System.monotonic_time()
-      result = Identity.pure(func.(value))
-
-      if Application.get_env(:funx, :telemetry_enabled, true) do
-        :telemetry.execute(
-          Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :map],
-          %{duration: System.monotonic_time() - start_time},
-          %{
-            initial_value: TelemetryUtils.summarize(value),
-            transformed_value: TelemetryUtils.summarize(result.value)
-          }
-        )
-      end
-
-      result
-    end
-
-    def ap(%Identity{value: func}, %Identity{value: value}) do
-      start_time = System.monotonic_time()
-      result = Identity.pure(func.(value))
-
-      if Application.get_env(:funx, :telemetry_enabled, true) do
-        :telemetry.execute(
-          Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :ap],
-          %{duration: System.monotonic_time() - start_time},
-          %{
-            initial_value: TelemetryUtils.summarize(value),
-            transformed_value: TelemetryUtils.summarize(result.value)
-          }
-        )
-      end
-
-      result
-    end
+    result
   end
 
-  defimpl String.Chars do
-    alias Funx.Identity
+  @spec bind(Identity.t(a), (a -> Identity.t(b))) :: Identity.t(b) when a: term(), b: term()
+  def bind(%Identity{value: value}, func) do
+    start_time = System.monotonic_time()
+    result = func.(value)
 
-    def to_string(%Identity{value: value}), do: "Identity(#{value})"
+    if Application.get_env(:funx, :telemetry_enabled, true) do
+      :telemetry.execute(
+        Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :bind],
+        %{duration: System.monotonic_time() - start_time},
+        %{
+          initial_value: TelemetryUtils.summarize(value),
+          transformed_value: TelemetryUtils.summarize(result.value)
+        }
+      )
+    end
+
+    result
   end
+
+  @spec map(Identity.t(a), (a -> b)) :: Identity.t(b) when a: term(), b: term()
+  def map(%Identity{value: value}, func) do
+    start_time = System.monotonic_time()
+    result = Identity.pure(func.(value))
+
+    if Application.get_env(:funx, :telemetry_enabled, true) do
+      :telemetry.execute(
+        Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :map],
+        %{duration: System.monotonic_time() - start_time},
+        %{
+          initial_value: TelemetryUtils.summarize(value),
+          transformed_value: TelemetryUtils.summarize(result.value)
+        }
+      )
+    end
+
+    result
+  end
+end
+
+defimpl String.Chars, for: Funx.Identity do
+  alias Funx.Identity
+
+  def to_string(%Identity{value: value}), do: "Identity(#{value})"
 end
 
 defimpl Funx.Eq, for: Funx.Identity do
   alias Funx.Identity
   alias Funx.Eq
 
+  @spec eq?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
   def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.eq?(v1, v2)
 
+  @spec not_eq?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
   def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.not_eq?(v1, v2)
 end
 
@@ -146,8 +155,15 @@ defimpl Funx.Ord, for: Funx.Identity do
   alias Funx.Ord
   alias Funx.Identity
 
+  @spec lt?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
   def lt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.lt?(v1, v2)
+
+  @spec le?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
   def le?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.le?(v1, v2)
+
+  @spec gt?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
   def gt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.gt?(v1, v2)
+
+  @spec ge?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
   def ge?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.ge?(v1, v2)
 end
