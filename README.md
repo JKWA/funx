@@ -1,125 +1,111 @@
-# Funx
+# Funx  
 
-[![Continuous Integration](https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/funx/actions/workflows/ci.yml)
+[![Continuous Integration](https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/funx/actions/workflows/ci.yml)  
 
-[View the code on GitHub](https://github.com/JKWA/funx)
+[View the code on GitHub](https://github.com/JKWA/funx)  
 
-Elixir is a dynamically typed language and lacks the static type system commonly used in functional languages to enforce monadic patterns. Instead, Elixir uses pattern matching, `defimpl`, and custom structs to create structured abstractions that provide runtime guarantees but lack the compile-time type safety of statically typed languages.
+Elixir is a dynamically typed language and does not have the static type system that many functional languages use to enforce monadic patterns. Instead, it relies on pattern matching, protocols, and structs to define structured abstractions. These mechanisms provide runtime guarantees but do not offer the compile-time type safety of statically typed languages.  
 
-Funx leverages these principles to deliver functional programming abstractions for Elixir.
+Funx leverages these principles to deliver functional programming abstractions for Elixir.  
 
-## Features
+## Equality  
 
-Funx provides tools for working with monads, including constructors, refinements, folding, matching, and more.
+The `Eq` protocol defines how two values should be compared, making equality explicit and adaptable to your domain.  
 
-### Monads
+- Custom comparisons: Define what "equal" means—compare by ID, name, or any derived attribute.  
+- Composable equality: Combine multiple checks—require all to match or just one.  
+- Flexible implementation: Use `Eq` with structs, built-in types, or custom comparators.  
 
-Monads in Funx support operations like `bind`, `map`, and `ap`, allowing flexible control over computations:
+## Ordering  
 
-- **Identity**: A base monad that returns its value unchanged.
-- **Maybe**: Encapsulates optional values as `Just` (a value) or `Nothing` (no value).
-- **Either**: Represents a computation that can result in either `Right` (success) or `Left` (error).
-- **Effect**: Handles asynchronous computations that may result in success or failure, with deferred execution.
+The `Ord` protocol defines how values should be compared, making ordering explicit and adaptable to different contexts. Instead of relying on Elixir’s built-in comparison operators, `Ord` provides a structured approach to defining and composing order relations.  
 
-### Operators
+- Custom ordering: Define comparisons based on any property, such as size, age, or priority.  
+- Composable comparisons: Chain multiple orderings to provide tiebreakers when needed.  
+- Works with any type: Implement `Ord` for structs or use it with built-in types.  
 
-Funx includes operators that provide a more concise syntax for working with monads:
+## Monads  
 
-- **`~>/2`**: Functor map. Applies a function to the value in a monad, transforming the value within the monadic context.
-- **`~>>/2`**: Monad bind. Chains computations, passing the result of one monad to a function that returns another monad of the same type.
-- **`<<~/2`**: Applicative apply. Applies a function wrapped in a monad to a value in another monad of the same type.
+A monad encapsulates computations, allowing operations to be chained while handling concerns like optional values, errors, dependencies, and effects.  
 
-*Operators make code more compact, but they may impact readability compared to Elixir’s standard pipe syntax.*
+- Identity: Wraps a value without additional behavior, serving as a minimal monad useful for structuring transformations.  
+- Maybe: Represents optional values using `Just` for presence and `Nothing` for absence.  
+- Either: Models computations that can fail, with `Left` for errors and `Right` for success.  
+- Effect: Encapsulates deferred computations, combining asynchronous execution and error handling.  
+- Reader: Passes an immutable environment through a computation, useful for dependency injection and contextual data.
 
-### Constructors
+## Monoids  
 
-Funx provides constructors for each monad, allowing values to be wrapped in the appropriate monadic context:
+A monoid combines values using an associative operation with an identity element.  
 
-- **`pure/1`**: Wraps a value in a monad, initializing a computation with a known value.
-- **`just/1`**: Constructs a `Just` for the `Maybe` monad, representing the presence of a value.
-- **`nothing/0`**: Constructs a `Nothing` for the `Maybe` monad, representing the absence of a value.
+- Sum: Adds numbers, identity is `0`.  
+- Product: Multiplies numbers, identity is `1`.  
+- Eq All: Values are equal only if all comparators agree.  
+- Eq Any: Values are equal if at least one comparator agrees.  
+- Predicate All: Returns `true` only if all predicates hold.  
+- Predicate Any: Returns `true` if at least one predicate holds.  
+- Ord: Defines structured comparisons instead of relying on built-in operators.  
+- Max and Min: Select the largest or smallest value based on ordering.  
 
-### Refinements
+Monoids provide a foundation for structuring accumulation and combination in a predictable way.  
 
-Refinements allow inspection of monadic values and extraction of useful information:
+## Predicates  
 
-- **`just?/1`**: Checks if a `Maybe` value is a `Just`.
-- **`nothing?/1`**: Checks if a `Maybe` value is `Nothing`.
+A predicate is a function that returns `true` or `false`. This module provides functions for composing predicates declaratively.  
 
-### Comparison
+- `p_and`: Returns `true` if both predicates are `true`.  
+- `p_or`: Returns `true` if at least one predicate is `true`.  
+- `p_not`: Negates a predicate.  
+- `p_all`: Returns `true` if all predicates in a list are `true`.  
+- `p_any`: Returns `true` if any predicate in a list is `true`.  
+- `p_none`: Returns `true` if none of the predicates in a list are `true`.  
 
-Funx provides tools for comparing monadic values:
+These functions make it easy to express complex conditions without nested logic.  
 
-- **Equality**: Monads can be compared for equality using custom functions to determine if they represent the same state or value.
-- **Order**: Funx supports ordering monads based on their contained values, enabling sorting or comparison between monadic values.
+## Folding  
 
-### Folding
+The `Foldable` protocol allows structures to be collapsed into a single value.  
 
-Folding collapses a monadic structure into a single result by applying functions in a specific order. Funx defines two core folding operations:
+- `fold_l`: Folds a structure from the left, applying transformations sequentially.  
+- `fold_r`: Folds a structure from the right, applying transformations in reverse order.  
 
-- **`fold_l/3`**: Folds a structure from the left, applying functions sequentially from left to right.
-- **`fold_r/3`**: Folds a structure from the right, applying functions from right to left.
+Folding is useful for reducing structures to a single result, such as computing sums, aggregating values, or extracting optional data.  
 
-Folding is used to reduce monadic or predicate-based structures to a single value, such as success or failure.
+## Filtering  
 
-### Matching
+The `Filterable` protocol defines functions for conditionally retaining or discarding values within a context.  
 
-Matching provides a way to handle different cases of a monadic value (`Right`, `Left`, `Just`, `Nothing`) and define behavior for each scenario:
+- `guard`: Keeps a value if a condition is met; otherwise, returns an empty value for the context.  
+- `filter`: Retains values that satisfy a given predicate.  
+- `filter_map`: Combines filtering and mapping in one step, keeping transformed values that satisfy a condition.  
 
-- **`get_or_else/2`**: Retrieves a value from a monad or provides a default value if the monad represents a failure.
-- **`filter_or_else/3`**: Filters the value inside a monad based on a predicate, converting successes to failures if the condition is not met.
+Filtering helps manage conditional logic cleanly, allowing transformation and selection in a single operation.  
 
-### Sequencing
+## Sequencing  
 
-Monads allow chaining multiple computations in sequence, passing results from one computation to the next:
+Funx provides tools for sequencing computations within a monadic context:  
 
-- **`sequence/1`**: Sequences a list of monads, returning a monad with a list of all `Right` or `Just` values, or the first `Left` or `Nothing` encountered.
-- **`traverse/2`**: Applies a function to each element in a list that returns monads, sequencing the results and propagating successes or failures.
+- `sequence`: Converts a list of monads into a monad containing a list, propagating failures if any exist.  
+- `traverse`: Applies a function to each element in a list that returns monads, sequencing the results.  
 
-### Validation
+## Lifting  
 
-Funx supports validation workflows by combining multiple checks into a single monadic operation:
+Lifting functions allow transforming values into monadic contexts:  
 
-- **`sequence_a/1`**: Sequences a list of applicatives without short-circuiting, collecting all successes if all values are valid or accumulating all errors if any failures occur. This ensures that the entire list is processed, even if some elements fail, making it suitable for scenarios where gathering all errors is preferred over stopping at the first failure.
+- `lift_predicate`: Converts a value into a `Maybe`, `Either`, or another monad based on a condition.  
+- `lift_eq`: Lifts an equality function to work within a `Maybe` context.  
+- `lift_ord`: Lifts an ordering function to work with `Maybe`.  
 
-### Lifting
+## Interop  
 
-Lifting provides functionality to convert values between monads or wrap non-monadic values in a monadic context:
+Funx integrates with common Elixir idioms like `{:ok, value}` and `{:error, reason}` tuples:  
 
-- **`lift_predicate/3`**: Lifts a value into a monad based on a predicate. If the predicate holds, the value is wrapped in a success; otherwise, it becomes a failure.
-- **`lift_maybe/2`**: Converts a `Maybe` monad into an `Either` monad. If the `Maybe` is `Nothing`, it returns a `Left` with an error message.
+- `from_result`: Converts a result tuple into an `Either` monad.  
+- `to_result`: Converts an `Either` monad back into a result tuple.  
+- `from_try`: Wraps a function in an `Either`, catching exceptions as `Left`.  
+- `to_try!`: Extracts a value from an `Either` or raises an exception if it is a `Left`.  
 
-### Elixir Interops
-
-Funx integrates with common Elixir idioms and data structures like `{:ok, value}` and `{:error, reason}` tuples:
-
-- **`from_result/1`**: Converts a result tuple (`{:ok, value}` or `{:error, reason}`) into an `Either` monad.
-- **`to_result/1`**: Converts an `Either` monad back into a result tuple.
-- **`from_try/1`**: Wraps a function in an `Either` monad, catching exceptions as `Left`.
-- **`to_try!/1`**: Extracts a value from an `Either` monad or raises an exception if it is a `Left`.
-
-### Comparison: Equality (`Eq`) and Ordering (`Ord`)
-
-Funx provides `Eq` and `Ord` modules for flexible, domain-specific equality and ordering of monadic values.
-
-#### Equality (`Eq`)
-
-The `Eq` module allows defining custom equality rules, centralizing comparisons based on domain-specific criteria.
-
-- **Custom Equality**: Implement `Eq` to define what equality means within your domain. For example, `Maybe.just(5)` is equal to `Maybe.just(5)`, while `Maybe.nothing()` is not equal to `Maybe.just(5)`.
-- **Domain-Aligned Comparisons**: Customize equality checks to suit specific needs, such as comparing users by `first_name` and `last_name` alone, instead of default struct comparison.
-
-#### Ordering (`Ord`)
-
-The `Ord` module enables ordering rules for meaningful comparisons, supporting flexible sorting of monadic values.
-
-- **Custom Order**: Implement `Ord` to define ordering logic, such as sorting users by `last_name`, then by `first_name`.
-- **Built-In Utilities**: Functions like `compare`, `min`, and `max` enforce consistency across comparisons based on custom rules.
-- **Nested Ordering**: For monadic values like `Identity` or `Maybe`, `Ord` can delegate to the contained values, enabling deep comparisons.
-
-Centralizing `Eq` and `Ord` definitions ensures consistent, maintainable comparisons, making it easy to update as domain requirements evolve.
-
-## Installation
+## Installation  
 
 To use Funx, add it to the list of dependencies in `mix.exs`:
 
@@ -137,18 +123,18 @@ Then, run the following command to fetch the dependencies:
 mix deps.get
 ```
 
-## Documentation
+## Documentation  
 
-Full documentation is available on [GitHub Pages](https://jkwa.github.io/funx/readme.html).
+Full documentation is available on [GitHub Pages](https://jkwa.github.io/funx/readme.html).  
 
-## Contributing
+## Contributing  
 
-1. Fork the repository.
-2. Create a new branch for the feature or bugfix (`git checkout -b feature-branch`).
-3. Commit changes (`git commit -am 'Add new feature'`).
-4. Push the branch (`git push origin feature-branch`).
-5. Create a pull request.
+1. Fork the repository.  
+2. Create a new branch for the feature or bugfix (`git checkout -b feature-branch`).  
+3. Commit changes (`git commit -am 'Add new feature'`).  
+4. Push the branch (`git push origin feature-branch`).  
+5. Create a pull request.  
 
-## License
+## License  
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License.  
