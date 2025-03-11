@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-FCF4E252.js"></script>
+    <script src="dist/sidebar_items-925AD2A3.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -121,114 +121,96 @@ Pages
     <span>Funx</span>
   </h1>
 
-<p><a href="https://github.com/JKWA/funx/actions/workflows/ci.yml"><img src="https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration"/></a></p><p><a href="https://github.com/JKWA/funx">View the code on GitHub</a></p><p>Elixir is a dynamically typed language and lacks the static type system commonly used in functional languages to enforce monadic patterns. Instead, Elixir uses pattern matching, <code class="inline">defimpl</code>, and custom structs to create structured abstractions that provide runtime guarantees but lack the compile-time type safety of statically typed languages.</p><p>Funx leverages these principles to deliver functional programming abstractions for Elixir.</p><h2 id="features" class="section-heading">
-  <a href="#features" class="hover-link">
+<p><a href="https://github.com/JKWA/funx/actions/workflows/ci.yml"><img src="https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration"/></a>  </p><p><a href="https://github.com/JKWA/funx">View the code on GitHub</a>  </p><p>Elixir is a dynamically typed language and does not have the static type system that many functional languages use to enforce monadic patterns. Instead, it relies on pattern matching, protocols, and structs to define structured abstractions. These mechanisms provide runtime guarantees but do not offer the compile-time type safety of statically typed languages.  </p><p>Funx leverages these principles to deliver functional programming abstractions for Elixir.  </p><h2 id="equality" class="section-heading">
+  <a href="#equality" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Features</span>
+  <span class="text">Equality</span>
 </h2>
-<p>Funx provides tools for working with monads, including constructors, refinements, folding, matching, and more.</p><h3 id="monads" class="section-heading">
+<p>The <code class="inline">Eq</code> protocol defines how two values should be compared, making equality explicit and adaptable to your domain.  </p><ul><li>Custom comparisons: Define what &quot;equal&quot; means—compare by ID, name, or any derived attribute.  </li><li>Composable equality: Combine multiple checks—require all to match or just one.  </li><li>Flexible implementation: Use <code class="inline">Eq</code> with structs, built-in types, or custom comparators.  </li></ul><h2 id="ordering" class="section-heading">
+  <a href="#ordering" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Ordering</span>
+</h2>
+<p>The <code class="inline">Ord</code> protocol defines how values should be compared, making ordering explicit and adaptable to different contexts. Instead of relying on Elixir’s built-in comparison operators, <code class="inline">Ord</code> provides a structured approach to defining and composing order relations.  </p><ul><li>Custom ordering: Define comparisons based on any property, such as size, age, or priority.  </li><li>Composable comparisons: Chain multiple orderings to provide tiebreakers when needed.  </li><li>Works with any type: Implement <code class="inline">Ord</code> for structs or use it with built-in types.  </li></ul><h2 id="monads" class="section-heading">
   <a href="#monads" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Monads</span>
-</h3>
-<p>Monads in Funx support operations like <code class="inline">bind</code>, <code class="inline">map</code>, and <code class="inline">ap</code>, allowing flexible control over computations:</p><ul><li><strong>Identity</strong>: A base monad that returns its value unchanged.</li><li><strong>Maybe</strong>: Encapsulates optional values as <code class="inline">Just</code> (a value) or <code class="inline">Nothing</code> (no value).</li><li><strong>Either</strong>: Represents a computation that can result in either <code class="inline">Right</code> (success) or <code class="inline">Left</code> (error).</li><li><strong>Effect</strong>: Handles asynchronous computations that may result in success or failure, with deferred execution.</li></ul><h3 id="operators" class="section-heading">
-  <a href="#operators" class="hover-link">
+</h2>
+<p>A monad encapsulates computations, allowing operations to be chained while handling concerns like optional values, errors, dependencies, and effects.  </p><ul><li>Identity: Wraps a value without additional behavior, serving as a minimal monad useful for structuring transformations.  </li><li>Maybe: Represents optional values using <code class="inline">Just</code> for presence and <code class="inline">Nothing</code> for absence.  </li><li>Either: Models computations that can fail, with <code class="inline">Left</code> for errors and <code class="inline">Right</code> for success.  </li><li>Effect: Encapsulates deferred computations, combining asynchronous execution and error handling.  </li><li>Reader: Passes an immutable environment through a computation, useful for dependency injection and contextual data.</li></ul><h2 id="monoids" class="section-heading">
+  <a href="#monoids" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Operators</span>
-</h3>
-<p>Funx includes operators that provide a more concise syntax for working with monads:</p><ul><li><strong><code class="inline">~&gt;/2</code></strong>: Functor map. Applies a function to the value in a monad, transforming the value within the monadic context.</li><li><strong><code class="inline">~&gt;&gt;/2</code></strong>: Monad bind. Chains computations, passing the result of one monad to a function that returns another monad of the same type.</li><li><strong><code class="inline">&lt;&lt;~/2</code></strong>: Applicative apply. Applies a function wrapped in a monad to a value in another monad of the same type.</li></ul><p><em>Operators make code more compact, but they may impact readability compared to Elixir’s standard pipe syntax.</em></p><h3 id="constructors" class="section-heading">
-  <a href="#constructors" class="hover-link">
+  <span class="text">Monoids</span>
+</h2>
+<p>A monoid combines values using an associative operation with an identity element.  </p><ul><li>Sum: Adds numbers, identity is <code class="inline">0</code>.  </li><li>Product: Multiplies numbers, identity is <code class="inline">1</code>.  </li><li>Eq All: Values are equal only if all comparators agree.  </li><li>Eq Any: Values are equal if at least one comparator agrees.  </li><li>Predicate All: Returns <code class="inline">true</code> only if all predicates hold.  </li><li>Predicate Any: Returns <code class="inline">true</code> if at least one predicate holds.  </li><li>Ord: Defines structured comparisons instead of relying on built-in operators.  </li><li>Max and Min: Select the largest or smallest value based on ordering.  </li></ul><p>Monoids provide a foundation for structuring accumulation and combination in a predictable way.  </p><h2 id="predicates" class="section-heading">
+  <a href="#predicates" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Constructors</span>
-</h3>
-<p>Funx provides constructors for each monad, allowing values to be wrapped in the appropriate monadic context:</p><ul><li><strong><code class="inline">pure/1</code></strong>: Wraps a value in a monad, initializing a computation with a known value.</li><li><strong><code class="inline">just/1</code></strong>: Constructs a <code class="inline">Just</code> for the <code class="inline">Maybe</code> monad, representing the presence of a value.</li><li><strong><code class="inline">nothing/0</code></strong>: Constructs a <code class="inline">Nothing</code> for the <code class="inline">Maybe</code> monad, representing the absence of a value.</li></ul><h3 id="refinements" class="section-heading">
-  <a href="#refinements" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Refinements</span>
-</h3>
-<p>Refinements allow inspection of monadic values and extraction of useful information:</p><ul><li><strong><code class="inline">just?/1</code></strong>: Checks if a <code class="inline">Maybe</code> value is a <code class="inline">Just</code>.</li><li><strong><code class="inline">nothing?/1</code></strong>: Checks if a <code class="inline">Maybe</code> value is <code class="inline">Nothing</code>.</li></ul><h3 id="comparison" class="section-heading">
-  <a href="#comparison" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Comparison</span>
-</h3>
-<p>Funx provides tools for comparing monadic values:</p><ul><li><strong>Equality</strong>: Monads can be compared for equality using custom functions to determine if they represent the same state or value.</li><li><strong>Order</strong>: Funx supports ordering monads based on their contained values, enabling sorting or comparison between monadic values.</li></ul><h3 id="folding" class="section-heading">
+  <span class="text">Predicates</span>
+</h2>
+<p>A predicate is a function that returns <code class="inline">true</code> or <code class="inline">false</code>. This module provides functions for composing predicates declaratively.  </p><ul><li><code class="inline">p_and</code>: Returns <code class="inline">true</code> if both predicates are <code class="inline">true</code>.  </li><li><code class="inline">p_or</code>: Returns <code class="inline">true</code> if at least one predicate is <code class="inline">true</code>.  </li><li><code class="inline">p_not</code>: Negates a predicate.  </li><li><code class="inline">p_all</code>: Returns <code class="inline">true</code> if all predicates in a list are <code class="inline">true</code>.  </li><li><code class="inline">p_any</code>: Returns <code class="inline">true</code> if any predicate in a list is <code class="inline">true</code>.  </li><li><code class="inline">p_none</code>: Returns <code class="inline">true</code> if none of the predicates in a list are <code class="inline">true</code>.  </li></ul><p>These functions make it easy to express complex conditions without nested logic.  </p><h2 id="folding" class="section-heading">
   <a href="#folding" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Folding</span>
-</h3>
-<p>Folding collapses a monadic structure into a single result by applying functions in a specific order. Funx defines two core folding operations:</p><ul><li><strong><code class="inline">fold_l/3</code></strong>: Folds a structure from the left, applying functions sequentially from left to right.</li><li><strong><code class="inline">fold_r/3</code></strong>: Folds a structure from the right, applying functions from right to left.</li></ul><p>Folding is used to reduce monadic or predicate-based structures to a single value, such as success or failure.</p><h3 id="matching" class="section-heading">
-  <a href="#matching" class="hover-link">
+</h2>
+<p>The <code class="inline">Foldable</code> protocol allows structures to be collapsed into a single value.  </p><ul><li><code class="inline">fold_l</code>: Folds a structure from the left, applying transformations sequentially.  </li><li><code class="inline">fold_r</code>: Folds a structure from the right, applying transformations in reverse order.  </li></ul><p>Folding is useful for reducing structures to a single result, such as computing sums, aggregating values, or extracting optional data.  </p><h2 id="filtering" class="section-heading">
+  <a href="#filtering" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Matching</span>
-</h3>
-<p>Matching provides a way to handle different cases of a monadic value (<code class="inline">Right</code>, <code class="inline">Left</code>, <code class="inline">Just</code>, <code class="inline">Nothing</code>) and define behavior for each scenario:</p><ul><li><strong><code class="inline">get_or_else/2</code></strong>: Retrieves a value from a monad or provides a default value if the monad represents a failure.</li><li><strong><code class="inline">filter_or_else/3</code></strong>: Filters the value inside a monad based on a predicate, converting successes to failures if the condition is not met.</li></ul><h3 id="sequencing" class="section-heading">
+  <span class="text">Filtering</span>
+</h2>
+<p>The <code class="inline">Filterable</code> protocol defines functions for conditionally retaining or discarding values within a context.  </p><ul><li><code class="inline">guard</code>: Keeps a value if a condition is met; otherwise, returns an empty value for the context.  </li><li><code class="inline">filter</code>: Retains values that satisfy a given predicate.  </li><li><code class="inline">filter_map</code>: Combines filtering and mapping in one step, keeping transformed values that satisfy a condition.  </li></ul><p>Filtering helps manage conditional logic cleanly, allowing transformation and selection in a single operation.  </p><h2 id="sequencing" class="section-heading">
   <a href="#sequencing" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Sequencing</span>
-</h3>
-<p>Monads allow chaining multiple computations in sequence, passing results from one computation to the next:</p><ul><li><strong><code class="inline">sequence/1</code></strong>: Sequences a list of monads, returning a monad with a list of all <code class="inline">Right</code> or <code class="inline">Just</code> values, or the first <code class="inline">Left</code> or <code class="inline">Nothing</code> encountered.</li><li><strong><code class="inline">traverse/2</code></strong>: Applies a function to each element in a list that returns monads, sequencing the results and propagating successes or failures.</li></ul><h3 id="validation" class="section-heading">
-  <a href="#validation" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Validation</span>
-</h3>
-<p>Funx supports validation workflows by combining multiple checks into a single monadic operation:</p><ul><li><strong><code class="inline">sequence_a/1</code></strong>: Sequences a list of applicatives without short-circuiting, collecting all successes if all values are valid or accumulating all errors if any failures occur. This ensures that the entire list is processed, even if some elements fail, making it suitable for scenarios where gathering all errors is preferred over stopping at the first failure.</li></ul><h3 id="lifting" class="section-heading">
+</h2>
+<p>Funx provides tools for sequencing computations within a monadic context:  </p><ul><li><code class="inline">sequence</code>: Converts a list of monads into a monad containing a list, propagating failures if any exist.  </li><li><code class="inline">traverse</code>: Applies a function to each element in a list that returns monads, sequencing the results.  </li></ul><h2 id="lifting" class="section-heading">
   <a href="#lifting" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Lifting</span>
-</h3>
-<p>Lifting provides functionality to convert values between monads or wrap non-monadic values in a monadic context:</p><ul><li><strong><code class="inline">lift_predicate/3</code></strong>: Lifts a value into a monad based on a predicate. If the predicate holds, the value is wrapped in a success; otherwise, it becomes a failure.</li><li><strong><code class="inline">lift_maybe/2</code></strong>: Converts a <code class="inline">Maybe</code> monad into an <code class="inline">Either</code> monad. If the <code class="inline">Maybe</code> is <code class="inline">Nothing</code>, it returns a <code class="inline">Left</code> with an error message.</li></ul><h3 id="elixir-interops" class="section-heading">
-  <a href="#elixir-interops" class="hover-link">
+</h2>
+<p>Lifting functions allow transforming values into monadic contexts:  </p><ul><li><code class="inline">lift_predicate</code>: Converts a value into a <code class="inline">Maybe</code>, <code class="inline">Either</code>, or another monad based on a condition.  </li><li><code class="inline">lift_eq</code>: Lifts an equality function to work within a <code class="inline">Maybe</code> context.  </li><li><code class="inline">lift_ord</code>: Lifts an ordering function to work with <code class="inline">Maybe</code>.  </li></ul><h2 id="interop" class="section-heading">
+  <a href="#interop" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Elixir Interops</span>
-</h3>
-<p>Funx integrates with common Elixir idioms and data structures like <code class="inline">{:ok, value}</code> and <code class="inline">{:error, reason}</code> tuples:</p><ul><li><strong><code class="inline">from_result/1</code></strong>: Converts a result tuple (<code class="inline">{:ok, value}</code> or <code class="inline">{:error, reason}</code>) into an <code class="inline">Either</code> monad.</li><li><strong><code class="inline">to_result/1</code></strong>: Converts an <code class="inline">Either</code> monad back into a result tuple.</li><li><strong><code class="inline">from_try/1</code></strong>: Wraps a function in an <code class="inline">Either</code> monad, catching exceptions as <code class="inline">Left</code>.</li><li><strong><code class="inline">to_try!/1</code></strong>: Extracts a value from an <code class="inline">Either</code> monad or raises an exception if it is a <code class="inline">Left</code>.</li></ul><h3 id="comparison-equality-eq-and-ordering-ord" class="section-heading">
-  <a href="#comparison-equality-eq-and-ordering-ord" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Comparison: Equality (<code class="inline">Eq</code>) and Ordering (<code class="inline">Ord</code>)</span>
-</h3>
-<p>Funx provides <code class="inline">Eq</code> and <code class="inline">Ord</code> modules for flexible, domain-specific equality and ordering of monadic values.</p><h4>Equality (<code class="inline">Eq</code>)</h4><p>The <code class="inline">Eq</code> module allows defining custom equality rules, centralizing comparisons based on domain-specific criteria.</p><ul><li><strong>Custom Equality</strong>: Implement <code class="inline">Eq</code> to define what equality means within your domain. For example, <code class="inline">Maybe.just(5)</code> is equal to <code class="inline">Maybe.just(5)</code>, while <code class="inline">Maybe.nothing()</code> is not equal to <code class="inline">Maybe.just(5)</code>.</li><li><strong>Domain-Aligned Comparisons</strong>: Customize equality checks to suit specific needs, such as comparing users by <code class="inline">first_name</code> and <code class="inline">last_name</code> alone, instead of default struct comparison.</li></ul><h4>Ordering (<code class="inline">Ord</code>)</h4><p>The <code class="inline">Ord</code> module enables ordering rules for meaningful comparisons, supporting flexible sorting of monadic values.</p><ul><li><strong>Custom Order</strong>: Implement <code class="inline">Ord</code> to define ordering logic, such as sorting users by <code class="inline">last_name</code>, then by <code class="inline">first_name</code>.</li><li><strong>Built-In Utilities</strong>: Functions like <code class="inline">compare</code>, <code class="inline">min</code>, and <code class="inline">max</code> enforce consistency across comparisons based on custom rules.</li><li><strong>Nested Ordering</strong>: For monadic values like <code class="inline">Identity</code> or <code class="inline">Maybe</code>, <code class="inline">Ord</code> can delegate to the contained values, enabling deep comparisons.</li></ul><p>Centralizing <code class="inline">Eq</code> and <code class="inline">Ord</code> definitions ensures consistent, maintainable comparisons, making it easy to update as domain requirements evolve.</p><h2 id="installation" class="section-heading">
+  <span class="text">Interop</span>
+</h2>
+<p>Funx integrates with common Elixir idioms like <code class="inline">{:ok, value}</code> and <code class="inline">{:error, reason}</code> tuples:  </p><ul><li><code class="inline">from_result</code>: Converts a result tuple into an <code class="inline">Either</code> monad.  </li><li><code class="inline">to_result</code>: Converts an <code class="inline">Either</code> monad back into a result tuple.  </li><li><code class="inline">from_try</code>: Wraps a function in an <code class="inline">Either</code>, catching exceptions as <code class="inline">Left</code>.  </li><li><code class="inline">to_try!</code>: Extracts a value from an <code class="inline">Either</code> or raises an exception if it is a <code class="inline">Left</code>.  </li></ul><h2 id="installation" class="section-heading">
   <a href="#installation" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Installation</span>
 </h2>
-<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="9420816567-1">do</span><span class="w">
-  </span><span class="p" data-group-id="9420816567-2">[</span><span class="w">
-    </span><span class="p" data-group-id="9420816567-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.0&quot;</span><span class="p" data-group-id="9420816567-3">}</span><span class="w">
-  </span><span class="p" data-group-id="9420816567-2">]</span><span class="w">
-</span><span class="k" data-group-id="9420816567-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
+<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="8441115114-1">do</span><span class="w">
+  </span><span class="p" data-group-id="8441115114-2">[</span><span class="w">
+    </span><span class="p" data-group-id="8441115114-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.0&quot;</span><span class="p" data-group-id="8441115114-3">}</span><span class="w">
+  </span><span class="p" data-group-id="8441115114-2">]</span><span class="w">
+</span><span class="k" data-group-id="8441115114-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
 </span></code></pre><h2 id="documentation" class="section-heading">
   <a href="#documentation" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Documentation</span>
 </h2>
-<p>Full documentation is available on <a href="https://jkwa.github.io/funx/readme.html">GitHub Pages</a>.</p><h2 id="contributing" class="section-heading">
+<p>Full documentation is available on <a href="https://jkwa.github.io/funx/readme.html">GitHub Pages</a>.  </p><h2 id="contributing" class="section-heading">
   <a href="#contributing" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Contributing</span>
 </h2>
-<ol><li>Fork the repository.</li><li>Create a new branch for the feature or bugfix (<code class="inline">git checkout -b feature-branch</code>).</li><li>Commit changes (<code class="inline">git commit -am 'Add new feature'</code>).</li><li>Push the branch (<code class="inline">git push origin feature-branch</code>).</li><li>Create a pull request.</li></ol><h2 id="license" class="section-heading">
+<ol><li>Fork the repository.  </li><li>Create a new branch for the feature or bugfix (<code class="inline">git checkout -b feature-branch</code>).  </li><li>Commit changes (<code class="inline">git commit -am 'Add new feature'</code>).  </li><li>Push the branch (<code class="inline">git push origin feature-branch</code>).  </li><li>Create a pull request.  </li></ol><h2 id="license" class="section-heading">
   <a href="#license" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">License</span>
 </h2>
-<p>This project is licensed under the MIT License.</p>
+<p>This project is licensed under the MIT License.  </p>
 </div>
 
 <div class="bottom-actions" id="bottom-actions">
