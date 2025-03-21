@@ -50,13 +50,13 @@ defmodule Funx.Identity do
   def extract(%__MODULE__{value: value}), do: value
 
   @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
-  def lift_eq(eq_for_value) do
+  def lift_eq(custom_eq) do
     %{
       eq?: fn
-        %__MODULE__{value: a}, %__MODULE__{value: b} -> eq_for_value.eq?.(a, b)
+        %__MODULE__{value: a}, %__MODULE__{value: b} -> custom_eq.eq?.(a, b)
       end,
       not_eq?: fn
-        %__MODULE__{value: a}, %__MODULE__{value: b} -> eq_for_value.not_eq?.(a, b)
+        %__MODULE__{value: a}, %__MODULE__{value: b} -> custom_eq.not_eq?.(a, b)
       end
     }
   end
