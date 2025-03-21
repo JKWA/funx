@@ -72,15 +72,41 @@ defprotocol Funx.Eq do
 end
 
 defimpl Funx.Eq, for: Any do
-  @moduledoc """
-  Provides a default implementation of the `Funx.Eq` protocol for all types that fall back to the `Any` type.
-
-  This implementation uses Elixir's built-in equality operator (`==`) to compare values.
-  """
-
   @spec eq?(any(), any()) :: boolean()
   def eq?(a, b), do: a == b
 
   @spec not_eq?(any(), any()) :: boolean()
   def not_eq?(a, b), do: a != b
+end
+
+defimpl Funx.Eq, for: DateTime do
+  @spec eq?(DateTime.t(), DateTime.t()) :: boolean()
+  def eq?(a, b), do: DateTime.compare(a, b) == :eq
+
+  @spec not_eq?(DateTime.t(), DateTime.t()) :: boolean()
+  def not_eq?(a, b), do: DateTime.compare(a, b) != :eq
+end
+
+defimpl Funx.Eq, for: Date do
+  @spec eq?(Date.t(), Date.t()) :: boolean()
+  def eq?(a, b), do: Date.compare(a, b) == :eq
+
+  @spec not_eq?(Date.t(), Date.t()) :: boolean()
+  def not_eq?(a, b), do: Date.compare(a, b) != :eq
+end
+
+defimpl Funx.Eq, for: Time do
+  @spec eq?(Time.t(), Time.t()) :: boolean()
+  def eq?(a, b), do: Time.compare(a, b) == :eq
+
+  @spec not_eq?(Time.t(), Time.t()) :: boolean()
+  def not_eq?(a, b), do: Time.compare(a, b) != :eq
+end
+
+defimpl Funx.Eq, for: NaiveDateTime do
+  @spec eq?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
+  def eq?(a, b), do: NaiveDateTime.compare(a, b) == :eq
+
+  @spec not_eq?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
+  def not_eq?(a, b), do: NaiveDateTime.compare(a, b) != :eq
 end

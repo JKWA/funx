@@ -79,73 +79,71 @@ defprotocol Funx.Ord do
 end
 
 defimpl Funx.Ord, for: Any do
-  @moduledoc """
-  Provides a default implementation of the `Funx.Ord` protocol for all types that fall back to the `Any` type.
-
-  This implementation uses Elixir's built-in comparison operators to compare values.
-  """
-
-  @doc """
-  Returns `true` if `a` is less than `b`, otherwise returns `false`.
-
-  Uses Elixir's `<` operator for comparison.
-
-  ## Examples
-
-      iex> Funx.Ord.lt?(Funx.Maybe.just(3), Funx.Maybe.just(5))
-      true
-
-      iex> Funx.Ord.lt?(Funx.Maybe.nothing(), Funx.Maybe.just(5))
-      true
-  """
   @spec lt?(any(), any()) :: boolean()
   def lt?(a, b), do: a < b
 
-  @doc """
-  Returns `true` if `a` is less than or equal to `b`, otherwise returns `false`.
-
-  Uses Elixir's `<=` operator for comparison.
-
-  ## Examples
-
-      iex> Funx.Ord.le?(Funx.Maybe.just(3), Funx.Maybe.just(5))
-      true
-
-      iex> Funx.Ord.le?(Funx.Maybe.just(5), Funx.Maybe.just(5))
-      true
-  """
   @spec le?(any(), any()) :: boolean()
   def le?(a, b), do: a <= b
 
-  @doc """
-  Returns `true` if `a` is greater than `b`, otherwise returns `false`.
-
-  Uses Elixir's `>` operator for comparison.
-
-  ## Examples
-
-      iex> Funx.Ord.gt?(Funx.Maybe.just(5), Funx.Maybe.just(3))
-      true
-
-      iex> Funx.Ord.gt?(Funx.Maybe.just(3), Funx.Maybe.nothing())
-      true
-  """
   @spec gt?(any(), any()) :: boolean()
   def gt?(a, b), do: a > b
 
-  @doc """
-  Returns `true` if `a` is greater than or equal to `b`, otherwise returns `false`.
-
-  Uses Elixir's `>=` operator for comparison.
-
-  ## Examples
-
-      iex> Funx.Ord.ge?(Funx.Maybe.just(5), Funx.Maybe.just(5))
-      true
-
-      iex> Funx.Ord.ge?(Funx.Maybe.just(3), Funx.Maybe.just(5))
-      false
-  """
   @spec ge?(any(), any()) :: boolean()
   def ge?(a, b), do: a >= b
+end
+
+defimpl Funx.Ord, for: DateTime do
+  @spec lt?(DateTime.t(), DateTime.t()) :: boolean()
+  def lt?(a, b), do: DateTime.compare(a, b) == :lt
+
+  @spec le?(DateTime.t(), DateTime.t()) :: boolean()
+  def le?(a, b), do: match?(x when x in [:lt, :eq], DateTime.compare(a, b))
+
+  @spec gt?(DateTime.t(), DateTime.t()) :: boolean()
+  def gt?(a, b), do: DateTime.compare(a, b) == :gt
+
+  @spec ge?(DateTime.t(), DateTime.t()) :: boolean()
+  def ge?(a, b), do: match?(x when x in [:gt, :eq], DateTime.compare(a, b))
+end
+
+defimpl Funx.Ord, for: Date do
+  @spec lt?(Date.t(), Date.t()) :: boolean()
+  def lt?(a, b), do: Date.compare(a, b) == :lt
+
+  @spec le?(Date.t(), Date.t()) :: boolean()
+  def le?(a, b), do: match?(x when x in [:lt, :eq], Date.compare(a, b))
+
+  @spec gt?(Date.t(), Date.t()) :: boolean()
+  def gt?(a, b), do: Date.compare(a, b) == :gt
+
+  @spec ge?(Date.t(), Date.t()) :: boolean()
+  def ge?(a, b), do: match?(x when x in [:gt, :eq], Date.compare(a, b))
+end
+
+defimpl Funx.Ord, for: Time do
+  @spec lt?(Time.t(), Time.t()) :: boolean()
+  def lt?(a, b), do: Time.compare(a, b) == :lt
+
+  @spec le?(Time.t(), Time.t()) :: boolean()
+  def le?(a, b), do: match?(x when x in [:lt, :eq], Time.compare(a, b))
+
+  @spec gt?(Time.t(), Time.t()) :: boolean()
+  def gt?(a, b), do: Time.compare(a, b) == :gt
+
+  @spec ge?(Time.t(), Time.t()) :: boolean()
+  def ge?(a, b), do: match?(x when x in [:gt, :eq], Time.compare(a, b))
+end
+
+defimpl Funx.Ord, for: NaiveDateTime do
+  @spec lt?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
+  def lt?(a, b), do: NaiveDateTime.compare(a, b) == :lt
+
+  @spec le?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
+  def le?(a, b), do: match?(x when x in [:lt, :eq], NaiveDateTime.compare(a, b))
+
+  @spec gt?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
+  def gt?(a, b), do: NaiveDateTime.compare(a, b) == :gt
+
+  @spec ge?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
+  def ge?(a, b), do: match?(x when x in [:gt, :eq], NaiveDateTime.compare(a, b))
 end
