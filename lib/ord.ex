@@ -94,16 +94,19 @@ end
 
 defimpl Funx.Ord, for: DateTime do
   @spec lt?(DateTime.t(), DateTime.t()) :: boolean()
-  def lt?(a, b), do: DateTime.compare(a, b) == :lt
+
+  def lt?(%DateTime{} = a, %DateTime{} = b), do: DateTime.compare(a, b) == :lt
 
   @spec le?(DateTime.t(), DateTime.t()) :: boolean()
-  def le?(a, b), do: match?(x when x in [:lt, :eq], DateTime.compare(a, b))
+  def le?(%DateTime{} = a, %DateTime{} = b),
+    do: match?(x when x in [:lt, :eq], DateTime.compare(a, b))
 
   @spec gt?(DateTime.t(), DateTime.t()) :: boolean()
-  def gt?(a, b), do: DateTime.compare(a, b) == :gt
+  def gt?(%DateTime{} = a, %DateTime{} = b), do: DateTime.compare(a, b) == :gt
 
   @spec ge?(DateTime.t(), DateTime.t()) :: boolean()
-  def ge?(a, b), do: match?(x when x in [:gt, :eq], DateTime.compare(a, b))
+  def ge?(%DateTime{} = a, %DateTime{} = b),
+    do: match?(x when x in [:gt, :eq], DateTime.compare(a, b))
 end
 
 defimpl Funx.Ord, for: Date do
@@ -122,28 +125,32 @@ end
 
 defimpl Funx.Ord, for: Time do
   @spec lt?(Time.t(), Time.t()) :: boolean()
-  def lt?(a, b), do: Time.compare(a, b) == :lt
+  def lt?(%Time{} = a, %Time{} = b), do: Time.compare(a, b) == :lt
 
   @spec le?(Time.t(), Time.t()) :: boolean()
-  def le?(a, b), do: match?(x when x in [:lt, :eq], Time.compare(a, b))
+  def le?(%Time{} = a, %Time{} = b),
+    do: match?(x when x in [:lt, :eq], Time.compare(a, b))
 
   @spec gt?(Time.t(), Time.t()) :: boolean()
-  def gt?(a, b), do: Time.compare(a, b) == :gt
+  def gt?(%Time{} = a, %Time{} = b), do: Time.compare(a, b) == :gt
 
   @spec ge?(Time.t(), Time.t()) :: boolean()
-  def ge?(a, b), do: match?(x when x in [:gt, :eq], Time.compare(a, b))
+  def ge?(%Time{} = a, %Time{} = b),
+    do: match?(x when x in [:gt, :eq], Time.compare(a, b))
 end
 
 defimpl Funx.Ord, for: NaiveDateTime do
   @spec lt?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
-  def lt?(a, b), do: NaiveDateTime.compare(a, b) == :lt
+  def lt?(%NaiveDateTime{} = a, %NaiveDateTime{} = b), do: NaiveDateTime.compare(a, b) == :lt
 
   @spec le?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
-  def le?(a, b), do: match?(x when x in [:lt, :eq], NaiveDateTime.compare(a, b))
+  def le?(%NaiveDateTime{} = a, %NaiveDateTime{} = b),
+    do: match?(x when x in [:lt, :eq], NaiveDateTime.compare(a, b))
 
   @spec gt?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
-  def gt?(a, b), do: NaiveDateTime.compare(a, b) == :gt
+  def gt?(%NaiveDateTime{} = a, %NaiveDateTime{} = b), do: NaiveDateTime.compare(a, b) == :gt
 
   @spec ge?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
-  def ge?(a, b), do: match?(x when x in [:gt, :eq], NaiveDateTime.compare(a, b))
+  def ge?(%NaiveDateTime{} = a, %NaiveDateTime{} = b),
+    do: match?(x when x in [:gt, :eq], NaiveDateTime.compare(a, b))
 end

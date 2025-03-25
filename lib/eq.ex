@@ -81,32 +81,32 @@ end
 
 defimpl Funx.Eq, for: DateTime do
   @spec eq?(DateTime.t(), DateTime.t()) :: boolean()
-  def eq?(a, b), do: DateTime.compare(a, b) == :eq
+  def eq?(%DateTime{} = a, %DateTime{} = b), do: DateTime.compare(a, b) == :eq
 
   @spec not_eq?(DateTime.t(), DateTime.t()) :: boolean()
-  def not_eq?(a, b), do: DateTime.compare(a, b) != :eq
+  def not_eq?(%DateTime{} = a, %DateTime{} = b), do: DateTime.compare(a, b) != :eq
 end
 
 defimpl Funx.Eq, for: Date do
   @spec eq?(Date.t(), Date.t()) :: boolean()
-  def eq?(a, b), do: Date.compare(a, b) == :eq
+  def eq?(%Date{} = a, %Date{} = b), do: Date.compare(a, b) == :eq
 
   @spec not_eq?(Date.t(), Date.t()) :: boolean()
-  def not_eq?(a, b), do: Date.compare(a, b) != :eq
+  def not_eq?(%Date{} = a, %Date{} = b), do: Date.compare(a, b) != :eq
 end
 
 defimpl Funx.Eq, for: Time do
   @spec eq?(Time.t(), Time.t()) :: boolean()
-  def eq?(a, b), do: Time.compare(a, b) == :eq
+  def eq?(%Time{} = a, %Time{} = b), do: Time.compare(a, b) == :eq
 
   @spec not_eq?(Time.t(), Time.t()) :: boolean()
-  def not_eq?(a, b), do: Time.compare(a, b) != :eq
+  def not_eq?(%Time{} = a, %Time{} = b), do: Time.compare(a, b) != :eq
 end
 
 defimpl Funx.Eq, for: NaiveDateTime do
   @spec eq?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
-  def eq?(a, b), do: NaiveDateTime.compare(a, b) == :eq
+  def eq?(%NaiveDateTime{} = a, %NaiveDateTime{} = b), do: NaiveDateTime.compare(a, b) == :eq
 
   @spec not_eq?(NaiveDateTime.t(), NaiveDateTime.t()) :: boolean()
-  def not_eq?(a, b), do: NaiveDateTime.compare(a, b) != :eq
+  def not_eq?(%NaiveDateTime{} = a, %NaiveDateTime{} = b), do: NaiveDateTime.compare(a, b) != :eq
 end
