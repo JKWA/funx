@@ -247,15 +247,21 @@ defmodule Funx.IdentityTest do
 
   describe "lift_ord/1" do
     setup do
-      number_ord = %{lt?: &Kernel.</2}
+      number_ord = %{
+        lt?: &Kernel.</2,
+        le?: &Kernel.<=/2,
+        gt?: &Kernel.>/2,
+        ge?: &Kernel.>=/2
+      }
+
       {:ok, ord: lift_ord(number_ord)}
     end
 
     test "Orders Identity values based on their contained values", %{ord: ord} do
-      assert ord.lt?.(pure(42), pure(43)) == true
-      assert ord.gt?.(pure(43), pure(42)) == true
-      assert ord.le?.(pure(42), pure(42)) == true
-      assert ord.ge?.(pure(42), pure(42)) == true
+      assert ord.lt?.(pure(1), pure(2)) == true
+      assert ord.le?.(pure(2), pure(2)) == true
+      assert ord.gt?.(pure(3), pure(2)) == true
+      assert ord.ge?.(pure(2), pure(2)) == true
     end
   end
 end

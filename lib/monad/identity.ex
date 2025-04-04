@@ -65,11 +65,21 @@ defmodule Funx.Identity do
   def lift_ord(custom_ord) do
     %{
       lt?: fn
-        %__MODULE__{value: v1}, %__MODULE__{value: v2} -> custom_ord.lt?.(v1, v2)
+        %__MODULE__{value: v1}, %__MODULE__{value: v2} ->
+          custom_ord.lt?.(v1, v2)
       end,
-      le?: fn a, b -> not lift_ord(custom_ord).gt?.(a, b) end,
-      gt?: fn a, b -> lift_ord(custom_ord).lt?.(b, a) end,
-      ge?: fn a, b -> not lift_ord(custom_ord).lt?.(a, b) end
+      le?: fn
+        %__MODULE__{value: v1}, %__MODULE__{value: v2} ->
+          custom_ord.le?.(v1, v2)
+      end,
+      gt?: fn
+        %__MODULE__{value: v1}, %__MODULE__{value: v2} ->
+          custom_ord.gt?.(v1, v2)
+      end,
+      ge?: fn
+        %__MODULE__{value: v1}, %__MODULE__{value: v2} ->
+          custom_ord.ge?.(v1, v2)
+      end
     }
   end
 end

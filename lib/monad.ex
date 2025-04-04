@@ -31,7 +31,7 @@ defprotocol Funx.Monad do
       %Funx.Maybe.Nothing{}
   """
   @spec ap(t(), t()) :: t()
-  def ap(func, m)
+  def ap(monadic_func, monad_value)
 
   @doc """
   Chains a monadic operation.
@@ -52,7 +52,7 @@ defprotocol Funx.Monad do
       %Funx.Maybe.Nothing{}
   """
   @spec bind(t(), (term() -> t())) :: t()
-  def bind(m, func)
+  def bind(monad_value, func_returning_monad)
 
   @doc """
   Maps a function over the value inside the monad.
@@ -71,7 +71,7 @@ defprotocol Funx.Monad do
       %Funx.Maybe.Nothing{}
   """
   @spec map(t(), (term() -> term())) :: t()
-  def map(m, func)
+  def map(monad_value, func)
 end
 
 defimpl Funx.Monad, for: Any do
