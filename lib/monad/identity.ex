@@ -51,6 +51,8 @@ defmodule Funx.Identity do
 
   @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
   def lift_eq(custom_eq) do
+    custom_eq = Eq.Utils.to_eq_map(custom_eq)
+
     %{
       eq?: fn
         %__MODULE__{value: a}, %__MODULE__{value: b} -> custom_eq.eq?.(a, b)
@@ -63,6 +65,8 @@ defmodule Funx.Identity do
 
   @spec lift_ord(Ord.Utils.ord_map()) :: Ord.Utils.ord_map()
   def lift_ord(custom_ord) do
+    custom_ord = Ord.Utils.to_ord_map(custom_ord)
+
     %{
       lt?: fn
         %__MODULE__{value: v1}, %__MODULE__{value: v2} ->
