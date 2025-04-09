@@ -224,27 +224,27 @@ defmodule Funx.Maybe do
     %{
       lt?: fn
         %Just{value: v1}, %Just{value: v2} -> custom_ord.lt?.(v1, v2)
+        %Nothing{}, %Nothing{} -> false
         %Nothing{}, %Just{} -> true
         %Just{}, %Nothing{} -> false
-        %Nothing{}, %Nothing{} -> false
       end,
       le?: fn
         %Just{value: v1}, %Just{value: v2} -> custom_ord.le?.(v1, v2)
+        %Nothing{}, %Nothing{} -> true
         %Nothing{}, %Just{} -> true
         %Just{}, %Nothing{} -> false
-        %Nothing{}, %Nothing{} -> true
       end,
       gt?: fn
         %Just{value: v1}, %Just{value: v2} -> custom_ord.gt?.(v1, v2)
+        %Nothing{}, %Nothing{} -> false
         %Just{}, %Nothing{} -> true
         %Nothing{}, %Just{} -> false
-        %Nothing{}, %Nothing{} -> false
       end,
       ge?: fn
         %Just{value: v1}, %Just{value: v2} -> custom_ord.ge?.(v1, v2)
+        %Nothing{}, %Nothing{} -> true
         %Just{}, %Nothing{} -> true
         %Nothing{}, %Just{} -> false
-        %Nothing{}, %Nothing{} -> true
       end
     }
   end
