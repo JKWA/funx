@@ -164,24 +164,37 @@ defmodule Funx.Maybe do
 
   ## Examples
 
-      iex> eq = Funx.Maybe.lift_eq(%{eq?: fn x, y -> x == y end})
+      iex> eq = Funx.Maybe.lift_eq(%{
+      ...>   eq?: fn x, y -> x == y end,
+      ...>   not_eq?: fn x, y -> x != y end
+      ...> })
       iex> eq.eq?.(Funx.Maybe.just(5), Funx.Maybe.just(5))
       true
       iex> eq.eq?.(Funx.Maybe.just(5), Funx.Maybe.just(10))
       false
+      iex> eq.eq?.(Funx.Maybe.nothing(), Funx.Maybe.nothing())
+      true
+      iex> eq.eq?.(Funx.Maybe.just(5), Funx.Maybe.nothing())
+      false
   """
-  @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
+
+  @spec lift_eq(Eq.Utils.eq_t()) :: Eq.Utils.eq_map()
   def lift_eq(custom_eq) do
-    eq_fn = fn
-      %Just{value: v1}, %Just{value: v2} -> custom_eq.eq?.(v1, v2)
-      %Nothing{}, %Nothing{} -> true
-      %Nothing{}, %Just{} -> false
-      %Just{}, %Nothing{} -> false
-    end
+    custom_eq = Eq.Utils.to_eq_map(custom_eq)
 
     %{
-      eq?: eq_fn,
-      not_eq?: fn a, b -> not eq_fn.(a, b) end
+      eq?: fn
+        %Just{value: v1}, %Just{value: v2} -> custom_eq.eq?.(v1, v2)
+        %Nothing{}, %Nothing{} -> true
+        %Nothing{}, %Just{} -> false
+        %Just{}, %Nothing{} -> false
+      end,
+      not_eq?: fn
+        %Just{value: v1}, %Just{value: v2} -> custom_eq.not_eq?.(v1, v2)
+        %Nothing{}, %Nothing{} -> false
+        %Nothing{}, %Just{} -> true
+        %Just{}, %Nothing{} -> true
+      end
     }
   end
 
@@ -192,22 +205,47 @@ defmodule Funx.Maybe do
 
   ## Examples
 
-      iex> ord = Funx.Maybe.lift_ord(%{lt?: fn x, y -> x < y end})
+      iex> ord = Funx.Maybe.lift_ord(%{
+      ...>   lt?: &</2,
+      ...>   le?: &<=/2,
+      ...>   gt?: &>/2,
+      ...>   ge?: &>=/2
+      ...> })
       iex> ord.lt?.(Funx.Maybe.just(3), Funx.Maybe.just(5))
       true
+      iex> ord.lt?.(Funx.Maybe.nothing(), Funx.Maybe.just(5))
+      true
   """
-  @spec lift_ord(Ord.Utils.ord_map()) :: Ord.Utils.ord_map()
+
+  @spec lift_ord(Ord.Utils.ord_t()) :: Ord.Utils.ord_map()
   def lift_ord(custom_ord) do
+    custom_ord = Ord.Utils.to_ord_map(custom_ord)
+
     %{
       lt?: fn
+        %Just{value: v1}, %Just{value: v2} -> custom_ord.lt?.(v1, v2)
         %Nothing{}, %Just{} -> true
         %Just{}, %Nothing{} -> false
-        %Just{value: v1}, %Just{value: v2} -> custom_ord.lt?.(v1, v2)
         %Nothing{}, %Nothing{} -> false
       end,
-      le?: fn a, b -> not lift_ord(custom_ord).gt?.(a, b) end,
-      gt?: fn a, b -> lift_ord(custom_ord).lt?.(b, a) end,
-      ge?: fn a, b -> not lift_ord(custom_ord).lt?.(a, b) end
+      le?: fn
+        %Just{value: v1}, %Just{value: v2} -> custom_ord.le?.(v1, v2)
+        %Nothing{}, %Just{} -> true
+        %Just{}, %Nothing{} -> false
+        %Nothing{}, %Nothing{} -> true
+      end,
+      gt?: fn
+        %Just{value: v1}, %Just{value: v2} -> custom_ord.gt?.(v1, v2)
+        %Just{}, %Nothing{} -> true
+        %Nothing{}, %Just{} -> false
+        %Nothing{}, %Nothing{} -> false
+      end,
+      ge?: fn
+        %Just{value: v1}, %Just{value: v2} -> custom_ord.ge?.(v1, v2)
+        %Just{}, %Nothing{} -> true
+        %Nothing{}, %Just{} -> false
+        %Nothing{}, %Nothing{} -> true
+      end
     }
   end
 

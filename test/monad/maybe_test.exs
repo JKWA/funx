@@ -357,7 +357,11 @@ defmodule Funx.MaybeTest do
 
   describe "lift_eq/1" do
     setup do
-      number_eq = %{eq?: &Kernel.==/2}
+      number_eq = %{
+        eq?: &==/2,
+        not_eq?: &!=/2
+      }
+
       {:ok, eq: lift_eq(number_eq)}
     end
 
@@ -484,19 +488,28 @@ defmodule Funx.MaybeTest do
 
   describe "lift_ord/1" do
     setup do
-      number_ord = %{lt?: &Kernel.</2}
+      number_ord = %{
+        lt?: &</2,
+        le?: &<=/2,
+        gt?: &>/2,
+        ge?: &>=/2
+      }
+
       {:ok, ord: lift_ord(number_ord)}
     end
 
-    test "Nothing is less than any Just", %{ord: ord} do
+    test "Nothing is less than any Just, but not less than another Nothing", %{ord: ord} do
       assert ord.lt?.(nothing(), just(42)) == true
+      assert ord.lt?.(nothing(), nothing()) == false
     end
 
-    test "Just is greater than Nothing", %{ord: ord} do
+    test "Just is greater than Nothing, Nothing is not greater than Just or itself", %{ord: ord} do
       assert ord.gt?.(just(42), nothing()) == true
+      assert ord.gt?.(nothing(), just(42)) == false
+      assert ord.gt?.(nothing(), nothing()) == false
     end
 
-    test "A Just value is not less than Nothing", %{ord: ord} do
+    test "Just is not less than Nothing", %{ord: ord} do
       assert ord.lt?.(just(42), nothing()) == false
     end
 
@@ -507,9 +520,13 @@ defmodule Funx.MaybeTest do
       assert ord.ge?.(just(42), just(42)) == true
     end
 
-    test "Nothing is equal to Nothing in terms of ordering", %{ord: ord} do
+    test "le? and ge? for Nothing vs Just and vice versa", %{ord: ord} do
       assert ord.le?.(nothing(), nothing()) == true
       assert ord.ge?.(nothing(), nothing()) == true
+      assert ord.le?.(nothing(), just(1)) == true
+      assert ord.le?.(just(1), nothing()) == false
+      assert ord.ge?.(just(1), nothing()) == true
+      assert ord.ge?.(nothing(), just(1)) == false
     end
   end
 
