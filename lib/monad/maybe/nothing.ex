@@ -36,14 +36,14 @@ end
 defimpl Funx.Monad, for: Funx.Maybe.Nothing do
   alias Funx.Maybe.Nothing
 
+  @spec map(Nothing.t(), (term() -> term())) :: Nothing.t()
+  def map(%Nothing{}, _func), do: %Nothing{}
+
   @spec ap(Nothing.t(), Nothing.t()) :: Nothing.t()
   def ap(%Nothing{}, _val), do: %Nothing{}
 
   @spec bind(Nothing.t(), (term() -> Nothing.t())) :: Nothing.t()
   def bind(%Nothing{}, _func), do: %Nothing{}
-
-  @spec map(Nothing.t(), (term() -> term())) :: Nothing.t()
-  def map(%Nothing{}, _func), do: %Nothing{}
 end
 
 defimpl Funx.Foldable, for: Funx.Maybe.Nothing do

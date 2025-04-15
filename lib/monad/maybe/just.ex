@@ -46,6 +46,10 @@ end
 defimpl Funx.Monad, for: Funx.Maybe.Just do
   alias Funx.Maybe.{Just, Nothing}
 
+  @spec map(Just.t(value), (value -> result)) :: Just.t(result)
+        when value: term(), result: term()
+  def map(%Just{value: value}, func), do: Just.pure(func.(value))
+
   @spec ap(Just.t((value -> result)) | Nothing.t(), Just.t(value) | Nothing.t()) ::
           Just.t(result) | Nothing.t()
         when value: term(), result: term()
@@ -53,10 +57,6 @@ defimpl Funx.Monad, for: Funx.Maybe.Just do
     do: Just.pure(func.(value))
 
   def ap(%Just{}, %Nothing{}), do: %Nothing{}
-
-  @spec map(Just.t(value), (value -> result)) :: Just.t(result)
-        when value: term(), result: term()
-  def map(%Just{value: value}, func), do: Just.pure(func.(value))
 
   @spec bind(Just.t(value), (value -> Just.t(result))) :: Just.t(result)
         when value: term(), result: term()
