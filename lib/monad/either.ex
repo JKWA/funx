@@ -42,6 +42,8 @@ defmodule Funx.Either do
   import Funx.Foldable, only: [fold_r: 3]
   alias Funx.Either.{Left, Right}
   alias Funx.Eq
+  alias Funx.Maybe
+  alias Funx.Ord
 
   @type t(left, right) :: Left.t(left) | Right.t(right)
 
@@ -53,11 +55,13 @@ defmodule Funx.Either do
       iex> Funx.Either.right(5)
       %Funx.Either.Right{right: 5}
   """
+  @spec right(any()) :: Right.t(any())
   def right(value), do: Right.pure(value)
 
   @doc """
   Alias for `right/1`.
   """
+  @spec pure(any()) :: Right.t(any())
   def pure(value), do: Right.pure(value)
 
   @doc """
@@ -68,6 +72,7 @@ defmodule Funx.Either do
       iex> Funx.Either.left("error")
       %Funx.Either.Left{left: "error"}
   """
+  @spec left(any()) :: Left.t(any())
   def left(value), do: Left.pure(value)
 
   @doc """
@@ -81,6 +86,7 @@ defmodule Funx.Either do
       iex> Funx.Either.left?(Funx.Either.right(5))
       false
   """
+  @spec left?(t(any(), any())) :: boolean()
   def left?(%Left{}), do: true
   def left?(_), do: false
 
@@ -95,6 +101,7 @@ defmodule Funx.Either do
       iex> Funx.Either.right?(Funx.Either.left("error"))
       false
   """
+  @spec right?(t(any(), any())) :: boolean()
   def right?(%Right{}), do: true
   def right?(_), do: false
 
@@ -110,6 +117,7 @@ defmodule Funx.Either do
       iex> Funx.Either.filter_or_else(Funx.Either.right(2), fn x -> x > 3 end, fn -> "error" end)
       %Funx.Either.Left{left: "error"}
   """
+  @spec filter_or_else(t(any(), any()), (any() -> boolean()), (-> any())) :: t(any(), any())
   def filter_or_else(either, predicate, left_func) do
     fold_r(
       either,
@@ -135,6 +143,7 @@ defmodule Funx.Either do
       iex> Funx.Either.get_or_else(Funx.Either.left("error"), 0)
       0
   """
+  @spec get_or_else(t(any(), any()), any()) :: any()
   def get_or_else(either, default) do
     fold_r(
       either,
@@ -166,6 +175,7 @@ defmodule Funx.Either do
       iex> eq.eq?.(Funx.Either.right(5), Funx.Either.left(:a))
       false
   """
+  @spec lift_eq(Eq.Utils.eq_t()) :: Eq.Utils.eq_map()
   def lift_eq(custom_eq) do
     custom_eq = Eq.Utils.to_eq_map(custom_eq)
 
@@ -188,28 +198,54 @@ defmodule Funx.Either do
   @doc """
   Creates a custom ordering function for `Either` values using the provided `custom_ord`.
 
+  The `custom_ord` must be a map with `:lt?`, `:le?`, `:gt?`, and `:ge?` functions. These are used to compare the internal `left` or `right` values.
+
   ## Examples
 
-      iex> ord = Funx.Either.lift_ord(%{lt?: fn x, y -> x < y end})
+      iex> ord = Funx.Either.lift_ord(%{
+      ...>   lt?: fn x, y -> x < y end,
+      ...>   le?: fn x, y -> x <= y end,
+      ...>   gt?: fn x, y -> x > y end,
+      ...>   ge?: fn x, y -> x >= y end
+      ...> })
       iex> ord.lt?.(Funx.Either.right(3), Funx.Either.right(5))
       true
+      iex> ord.lt?.(Funx.Either.left(3), Funx.Either.right(5))
+      true
+      iex> ord.lt?.(Funx.Either.right(3), Funx.Either.left(5))
+      false
+      iex> ord.lt?.(Funx.Either.left(3), Funx.Either.left(5))
+      true
   """
+  @spec lift_ord(Ord.Utils.ord_t()) :: Ord.Utils.ord_map()
   def lift_ord(custom_ord) do
+    custom_ord = Ord.Utils.to_ord_map(custom_ord)
+
     %{
       lt?: fn
+        %Right{right: v1}, %Right{right: v2} -> custom_ord.lt?.(v1, v2)
+        %Left{left: v1}, %Left{left: v2} -> custom_ord.lt?.(v1, v2)
         %Left{}, %Right{} -> true
         %Right{}, %Left{} -> false
-        %Right{right: v1}, %Right{right: v2} -> custom_ord.lt?.(v1, v2)
-        %Left{}, %Left{} -> false
       end,
-      le?: fn a, b -> not lift_ord(custom_ord).gt?.(a, b) end,
+      le?: fn
+        %Right{right: v1}, %Right{right: v2} -> custom_ord.le?.(v1, v2)
+        %Left{left: v1}, %Left{left: v2} -> custom_ord.le?.(v1, v2)
+        %Left{}, %Right{} -> true
+        %Right{}, %Left{} -> false
+      end,
       gt?: fn
+        %Right{right: v1}, %Right{right: v2} -> custom_ord.gt?.(v1, v2)
+        %Left{left: v1}, %Left{left: v2} -> custom_ord.gt?.(v1, v2)
         %Right{}, %Left{} -> true
         %Left{}, %Right{} -> false
-        %Right{right: v1}, %Right{right: v2} -> custom_ord.lt?.(v2, v1)
-        %Left{}, %Left{} -> false
       end,
-      ge?: fn a, b -> not lift_ord(custom_ord).lt?.(a, b) end
+      ge?: fn
+        %Right{right: v1}, %Right{right: v2} -> custom_ord.ge?.(v1, v2)
+        %Left{left: v1}, %Left{left: v2} -> custom_ord.ge?.(v1, v2)
+        %Right{}, %Left{} -> true
+        %Left{}, %Right{} -> false
+      end
     }
   end
 
@@ -297,7 +333,6 @@ defmodule Funx.Either do
       iex> Funx.Either.validate(-3, [validate_positive, validate_even])
       %Funx.Either.Left{left: ["Value must be positive", "Value must be even"]}
   """
-
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
         when error: term(), value: term()
   def validate(value, validators) when is_list(validators) do
@@ -327,6 +362,7 @@ defmodule Funx.Either do
       iex> Funx.Either.lift_maybe(Funx.Maybe.nothing(), fn -> "error" end)
       %Funx.Either.Left{left: "error"}
   """
+  @spec lift_maybe(Maybe.t(any()), (-> any())) :: t(any(), any())
   def lift_maybe(maybe, on_none) do
     maybe
     |> fold_r(
@@ -346,6 +382,7 @@ defmodule Funx.Either do
       iex> Funx.Either.lift_predicate(2, fn x -> x > 3 end, fn -> "too small" end)
       %Funx.Either.Left{left: "too small"}
   """
+  @spec lift_predicate(any(), (any() -> boolean()), (-> any())) :: t(any(), any())
   def lift_predicate(value, predicate, on_false) do
     fold_r(
       fn -> predicate.(value) end,

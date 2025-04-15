@@ -565,18 +565,30 @@ defmodule Funx.EitherTest do
 
   describe "lift_ord/1" do
     setup do
-      number_ord = %{lt?: &Kernel.</2}
+      number_ord = %{
+        lt?: &</2,
+        le?: &<=/2,
+        gt?: &>/2,
+        ge?: &>=/2
+      }
+
       {:ok, ord: lift_ord(number_ord)}
     end
 
-    test "Left is less than any Right", %{ord: ord} do
+    test "Left is less than any Right, but not less than another Left by default", %{ord: ord} do
       assert ord.lt?.(left(100), right(1)) == true
       assert ord.lt?.(right(1), left(100)) == false
+      assert ord.lt?.(left(100), left(100)) == false
     end
 
-    test "Right is greater than Left", %{ord: ord} do
+    test "Right is greater than Left, Left is not greater than Right or itself", %{ord: ord} do
       assert ord.gt?.(right(1), left(100)) == true
       assert ord.gt?.(left(100), right(1)) == false
+      assert ord.gt?.(left(1), left(1)) == false
+    end
+
+    test "Right is not less than Left", %{ord: ord} do
+      assert ord.lt?.(right(1), left(1)) == false
     end
 
     test "Orders Right values based on their contained values", %{ord: ord} do
@@ -586,9 +598,20 @@ defmodule Funx.EitherTest do
       assert ord.ge?.(right(42), right(42)) == true
     end
 
-    test "Left is equal to Left in terms of ordering", %{ord: ord} do
+    test "Orders Left values based on their contained values", %{ord: ord} do
+      assert ord.lt?.(left(1), left(2)) == true
+      assert ord.gt?.(left(2), left(1)) == true
+      assert ord.le?.(left(1), left(2)) == true
+      assert ord.ge?.(left(2), left(1)) == true
       assert ord.le?.(left(1), left(1)) == true
       assert ord.ge?.(left(1), left(1)) == true
+    end
+
+    test "le? and ge? for Left vs Right and vice versa", %{ord: ord} do
+      assert ord.le?.(left(1), right(1)) == true
+      assert ord.ge?.(right(1), left(1)) == true
+      assert ord.le?.(right(1), left(1)) == false
+      assert ord.ge?.(left(1), right(1)) == false
     end
   end
 
