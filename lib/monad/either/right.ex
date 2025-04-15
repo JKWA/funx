@@ -113,7 +113,7 @@ defimpl Funx.Eq, for: Funx.Either.Right do
   def eq?(%Right{right: v1}, %Right{right: v2}), do: Eq.eq?(v1, v2)
   def eq?(%Right{}, %Left{}), do: false
 
-  def not_eq?(%Right{right: v1}, %Right{right: v2}), do: not Eq.eq?(v1, v2)
+  def not_eq?(%Right{right: v1}, %Right{right: v2}), do: Eq.not_eq?(v1, v2)
   def not_eq?(%Right{}, %Left{}), do: true
 end
 
@@ -123,7 +123,13 @@ defimpl Funx.Ord, for: Funx.Either.Right do
 
   def lt?(%Right{right: v1}, %Right{right: v2}), do: Ord.lt?(v1, v2)
   def lt?(%Right{}, %Left{}), do: false
-  def le?(a, b), do: not Funx.Ord.gt?(a, b)
-  def gt?(a, b), do: Funx.Ord.lt?(b, a)
-  def ge?(a, b), do: not Funx.Ord.lt?(a, b)
+
+  def le?(%Right{right: v1}, %Right{right: v2}), do: Ord.le?(v1, v2)
+  def le?(%Right{}, %Left{}), do: false
+
+  def gt?(%Right{right: v1}, %Right{right: v2}), do: Ord.gt?(v1, v2)
+  def gt?(%Right{}, %Left{}), do: true
+
+  def ge?(%Right{right: v1}, %Right{right: v2}), do: Ord.ge?(v1, v2)
+  def ge?(%Right{}, %Left{}), do: true
 end

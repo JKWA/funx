@@ -100,7 +100,7 @@ defmodule Funx.Either do
 
   @doc """
   Filters the value inside a `Right` using the given `predicate`. If the predicate returns `false`,
-  a `Left` is returned using the `error_func`.
+  a `Left` is returned using the `left_func`.
 
   ## Examples
 
@@ -110,14 +110,14 @@ defmodule Funx.Either do
       iex> Funx.Either.filter_or_else(Funx.Either.right(2), fn x -> x > 3 end, fn -> "error" end)
       %Funx.Either.Left{left: "error"}
   """
-  def filter_or_else(either, predicate, error_func) do
+  def filter_or_else(either, predicate, left_func) do
     fold_r(
       either,
       fn value ->
         if predicate.(value) do
           either
         else
-          Left.pure(error_func.())
+          Left.pure(left_func.())
         end
       end,
       fn _left_value -> either end
@@ -144,21 +144,43 @@ defmodule Funx.Either do
   end
 
   @doc """
-  Creates a custom equality function for `Either` values using the provided `custom_eq`.
+  Lifts an equality function to compare `Either` values:
+    - `Right` vs `Right`: Uses the custom equality function.
+    - `Left` vs `Left`: Uses the custom equality function.
+    - `Left` vs `Right` or vice versa: Always `false`.
+
   ## Examples
-      iex> eq = Funx.Either.lift_eq(%{eq?: fn x, y -> x == y end})
+
+      iex> eq = Funx.Either.lift_eq(%{
+      ...>   eq?: fn x, y -> x == y end,
+      ...>   not_eq?: fn x, y -> x != y end
+      ...> })
       iex> eq.eq?.(Funx.Either.right(5), Funx.Either.right(5))
       true
-      iex> eq.eq?.(Funx.Either.right(5), Funx.Either.left("error"))
+      iex> eq.eq?.(Funx.Either.right(5), Funx.Either.right(10))
+      false
+      iex> eq.eq?.(Funx.Either.left(:a), Funx.Either.left(:a))
+      true
+      iex> eq.eq?.(Funx.Either.left(:a), Funx.Either.left(:b))
+      false
+      iex> eq.eq?.(Funx.Either.right(5), Funx.Either.left(:a))
       false
   """
   def lift_eq(custom_eq) do
+    custom_eq = Eq.Utils.to_eq_map(custom_eq)
+
     %{
       eq?: fn
         %Right{right: v1}, %Right{right: v2} -> custom_eq.eq?.(v1, v2)
+        %Left{left: v1}, %Left{left: v2} -> custom_eq.eq?.(v1, v2)
         %Left{}, %Right{} -> false
         %Right{}, %Left{} -> false
-        %Left{left: v1}, %Left{left: v2} -> Eq.eq?(v1, v2)
+      end,
+      not_eq?: fn
+        %Right{right: v1}, %Right{right: v2} -> custom_eq.not_eq?.(v1, v2)
+        %Left{left: v1}, %Left{left: v2} -> custom_eq.not_eq?.(v1, v2)
+        %Left{}, %Right{} -> true
+        %Right{}, %Left{} -> true
       end
     }
   end
@@ -260,28 +282,22 @@ defmodule Funx.Either do
   end
 
   @doc """
-  Validates a value using a list of validators. Each validator is a function that returns an `Either` value.
-  If any validator returns a `Left`, the errors are collected, and if all validators return `Right`, the value is returned in a `Right`.
+  Validates a value using a list of validator functions. Each validator returns an `Either`: a `Right` if the check passes, or a `Left` with an error.
+
+  If any validator returns a `Left`, all errors are collected and returned in a `Left`. If all validators succeed, the original value is returned in a `Right`.
 
   ## Examples
 
-    ### Define Validators
-
-        iex> validate_positive = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn -> "Value must be positive" end) end
-        iex> validate_even = fn x -> Funx.Either.lift_predicate(x, &rem(&1, 2) == 0, fn -> "Value must be even" end) end
-        iex> validators = [validate_positive, validate_even]
-
-    ### Validate
-
-        iex> Funx.Either.validate(4, validators)
-        %Funx.Either.Right{right: 4}
-
-        iex> Funx.Either.validate(3, validators)
-        %Funx.Either.Left{left: ["Value must be even"]}
-
-        iex> Funx.Either.validate(-3, validators)
-        %Funx.Either.Left{left: ["Value must be positive", "Value must be even"]}
+      iex> validate_positive = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn -> "Value must be positive" end) end
+      iex> validate_even = fn x -> Funx.Either.lift_predicate(x, &rem(&1, 2) == 0, fn -> "Value must be even" end) end
+      iex> Funx.Either.validate(4, [validate_positive, validate_even])
+      %Funx.Either.Right{right: 4}
+      iex> Funx.Either.validate(3, [validate_positive, validate_even])
+      %Funx.Either.Left{left: ["Value must be even"]}
+      iex> Funx.Either.validate(-3, [validate_positive, validate_even])
+      %Funx.Either.Left{left: ["Value must be positive", "Value must be even"]}
   """
+
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
         when error: term(), value: term()
   def validate(value, validators) when is_list(validators) do

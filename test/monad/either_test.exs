@@ -2,6 +2,11 @@ defmodule Funx.EitherTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
+
+  doctest Funx.Either
+  doctest Funx.Either.Left
+  doctest Funx.Either.Right
+
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Filterable, only: [filter: 2, filter_map: 2, guard: 2]
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
@@ -406,28 +411,71 @@ defmodule Funx.EitherTest do
 
   describe "lift_eq/1" do
     setup do
-      number_eq = %{eq?: &Kernel.==/2}
+      number_eq = %{
+        eq?: &Kernel.==/2,
+        not_eq?: &Kernel.!=/2
+      }
+
       {:ok, eq: lift_eq(number_eq)}
     end
 
     test "returns true for equal Right values", %{eq: eq} do
       assert eq.eq?.(right(1), right(1)) == true
+      assert eq.not_eq?.(right(1), right(1)) == false
     end
 
     test "returns false for different Right values", %{eq: eq} do
       assert eq.eq?.(right(1), right(2)) == false
+      assert eq.not_eq?.(right(1), right(2)) == true
     end
 
     test "returns true for two Left values", %{eq: eq} do
       assert eq.eq?.(left(1), left(1)) == true
+      assert eq.not_eq?.(left(1), left(1)) == false
     end
 
     test "returns false for Right and Left comparison", %{eq: eq} do
       assert eq.eq?.(right(1), left(1)) == false
+      assert eq.not_eq?.(right(1), left(1)) == true
     end
 
     test "returns false for Left and Right comparison", %{eq: eq} do
       assert eq.eq?.(left(1), right(1)) == false
+      assert eq.not_eq?.(left(1), right(1)) == true
+    end
+  end
+
+  describe "Ord.lt?/2" do
+    test "returns true when Right value is less than another Right value" do
+      assert Ord.lt?(right(1), right(2)) == true
+    end
+
+    test "returns false when Right value is greater than another Right value" do
+      assert Ord.lt?(right(2), right(1)) == false
+    end
+
+    test "returns false when Right values are equal" do
+      assert Ord.lt?(right(2), right(2)) == false
+    end
+
+    test "returns true for Left compared to Right" do
+      assert Ord.lt?(left(1), right(1)) == true
+    end
+
+    test "returns true for Left value less than another Left value" do
+      assert Ord.lt?(left(1), left(2)) == true
+    end
+
+    test "returns false for Left value greater than another Left value" do
+      assert Ord.lt?(left(2), left(1)) == false
+    end
+
+    test "returns false for Left values that are equal" do
+      assert Ord.lt?(left(2), left(2)) == false
+    end
+
+    test "returns false for Right compared to Left" do
+      assert Ord.lt?(right(1), left(1)) == false
     end
   end
 
@@ -445,8 +493,13 @@ defmodule Funx.EitherTest do
       assert Ord.le?(left(100), right(1)) == true
     end
 
-    test "returns true for Left compared to Left" do
+    test "returns true when Left value is less than or equal to another Left value" do
       assert Ord.le?(left(1), left(2)) == true
+      assert Ord.le?(left(2), left(2)) == true
+    end
+
+    test "returns false when Left value is greater than another Left value" do
+      assert Ord.le?(left(2), left(1)) == false
     end
 
     test "returns false for Right compared to Left" do
@@ -468,6 +521,15 @@ defmodule Funx.EitherTest do
       assert Ord.gt?(left(100), right(1)) == false
     end
 
+    test "returns true when Left value is greater than another Left value" do
+      assert Ord.gt?(left(2), left(1)) == true
+    end
+
+    test "returns false when Left value is less than or equal to another Left value" do
+      assert Ord.gt?(left(1), left(2)) == false
+      assert Ord.gt?(left(2), left(2)) == false
+    end
+
     test "returns true for Right compared to Left" do
       assert Ord.gt?(right(1), left(100)) == true
     end
@@ -487,8 +549,13 @@ defmodule Funx.EitherTest do
       assert Ord.ge?(right(1), left(1)) == true
     end
 
-    test "returns true for Left compared to Left" do
-      assert Ord.ge?(left(1), left(1)) == true
+    test "returns true when Left value is greater than or equal to another Left value" do
+      assert Ord.ge?(left(2), left(1)) == true
+      assert Ord.ge?(left(2), left(2)) == true
+    end
+
+    test "returns false when Left value is less than another Left value" do
+      assert Ord.ge?(left(1), left(2)) == false
     end
 
     test "returns false for Left compared to Right" do
