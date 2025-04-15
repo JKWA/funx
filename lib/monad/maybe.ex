@@ -57,7 +57,7 @@ defmodule Funx.Maybe do
   - `to_result/1`: Turns a `Maybe` into `{:ok, value}` or `{:error, :nothing}`.
   """
 
-  import Funx.Monad, only: [bind: 2, map: 2]
+  import Funx.Monad, only: [map: 2]
   import Funx.Foldable, only: [fold_l: 3]
   alias Funx.Maybe.{Just, Nothing}
   alias Funx.Either.{Left, Right}
@@ -177,7 +177,6 @@ defmodule Funx.Maybe do
       iex> eq.eq?.(Funx.Maybe.just(5), Funx.Maybe.nothing())
       false
   """
-
   @spec lift_eq(Eq.Utils.eq_t()) :: Eq.Utils.eq_map()
   def lift_eq(custom_eq) do
     custom_eq = Eq.Utils.to_eq_map(custom_eq)
@@ -318,15 +317,17 @@ defmodule Funx.Maybe do
       %Funx.Maybe.Nothing{}
   """
   @spec sequence([t(value)]) :: t([value]) when value: any()
-  def sequence([]), do: pure([])
+  def sequence(list) when is_list(list), do: traverse(list, fn x -> x end)
 
-  def sequence([head | tail]) do
-    bind(head, fn value ->
-      bind(sequence(tail), fn rest ->
-        pure([value | rest])
-      end)
-    end)
-  end
+  # def sequence([]), do: pure([])
+
+  # def sequence([head | tail]) do
+  #   bind(head, fn value ->
+  #     bind(sequence(tail), fn rest ->
+  #       pure([value | rest])
+  #     end)
+  #   end)
+  # end
 
   @doc """
   Applies a function to each element of a list, collecting results into a single `Maybe`. If any call returns `Nothing`, the operation halts and returns `Nothing`.
