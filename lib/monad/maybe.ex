@@ -215,7 +215,6 @@ defmodule Funx.Maybe do
       iex> ord.lt?.(Funx.Maybe.nothing(), Funx.Maybe.just(5))
       true
   """
-
   @spec lift_ord(Ord.Utils.ord_t()) :: Ord.Utils.ord_map()
   def lift_ord(custom_ord) do
     custom_ord = Ord.Utils.to_ord_map(custom_ord)
