@@ -38,7 +38,8 @@ defmodule Funx.Either do
     - `to_try!/1`: Converts an `Either` to its value or raises an exception if `Left`.
   """
 
-  import Funx.Monad, only: [bind: 2]
+  import Funx.Monad, only: [map: 2]
+
   import Funx.Foldable, only: [fold_r: 3]
   alias Funx.Either.{Left, Right}
   alias Funx.Eq
@@ -153,6 +154,24 @@ defmodule Funx.Either do
   end
 
   @doc """
+  Returns the current `Right` value or invokes the `fallback_fun` if `Left`.
+
+  Useful for recovering from a failure by providing an alternate computation.
+
+  ## Examples
+
+      iex> Funx.Either.or_else(Funx.Either.left("error"), fn -> Funx.Either.right(42) end)
+      %Funx.Either.Right{right: 42}
+
+      iex> Funx.Either.or_else(Funx.Either.right(10), fn -> Funx.Either.right(42) end)
+      %Funx.Either.Right{right: 10}
+  """
+  @spec or_else(t(error, value), (-> t(error, value))) :: t(error, value)
+        when error: term(), value: term()
+  def or_else(%Left{}, fallback_fun) when is_function(fallback_fun, 0), do: fallback_fun.()
+  def or_else(%Right{} = right, _fallback_fun), do: right
+
+  @doc """
   Lifts an equality function to compare `Either` values:
     - `Right` vs `Right`: Uses the custom equality function.
     - `Left` vs `Left`: Uses the custom equality function.
@@ -250,6 +269,61 @@ defmodule Funx.Either do
   end
 
   @doc """
+  Removes `Left` values from a list of `Either` and returns a list of unwrapped `Right` values.
+
+  Useful for discarding failed computations while keeping successful results.
+
+  ## Examples
+
+      iex> Funx.Either.concat([Funx.Either.right(1), Funx.Either.left(:error), Funx.Either.right(2)])
+      [1, 2]
+
+      iex> Funx.Either.concat([Funx.Either.left(:a), Funx.Either.left(:b)])
+      []
+
+      iex> Funx.Either.concat([Funx.Either.right("a"), Funx.Either.right("b"), Funx.Either.right("c")])
+      ["a", "b", "c"]
+  """
+  @spec concat([t(error, value)]) :: [value]
+        when error: term(), value: any()
+  def concat(list) when is_list(list) do
+    list
+    |> Enum.reduce([], fn
+      %Right{right: value}, acc -> [value | acc]
+      %Left{}, acc -> acc
+    end)
+    |> :lists.reverse()
+  end
+
+  @doc """
+  Applies the given function to each element in the list and collects the `Right` results, discarding any `Left`.
+
+  This is useful when mapping a function that may fail and you only want the successful results.
+
+  ## Examples
+
+      iex> Funx.Either.concat_map([1, 2, 3], fn x -> if rem(x, 2) == 1, do: Funx.Either.right(x), else: Funx.Either.left(:even) end)
+      [1, 3]
+
+      iex> Funx.Either.concat_map([2, 4], fn x -> if x > 3, do: Funx.Either.right(x), else: Funx.Either.left(:too_small) end)
+      [4]
+
+      iex> Funx.Either.concat_map([], fn _ -> Funx.Either.left(:none) end)
+      []
+  """
+  @spec concat_map([input], (input -> t(error, output))) :: [output]
+        when input: any(), output: any(), error: any()
+  def concat_map(list, func) when is_list(list) and is_function(func, 1) do
+    Enum.reduce(list, [], fn item, acc ->
+      case func.(item) do
+        %Right{right: value} -> [value | acc]
+        %Left{} -> acc
+      end
+    end)
+    |> :lists.reverse()
+  end
+
+  @doc """
   Sequences a list of `Either` values into an `Either` of a list.
 
   ## Examples
@@ -261,30 +335,36 @@ defmodule Funx.Either do
       %Funx.Either.Left{left: "error"}
   """
   @spec sequence([t(error, value)]) :: t(error, [value]) when error: term(), value: term()
-  def sequence([]), do: right([])
-
-  def sequence([head | tail]) do
-    bind(head, fn value ->
-      bind(sequence(tail), fn rest ->
-        right([value | rest])
-      end)
-    end)
-  end
+  def sequence(list) when is_list(list), do: traverse(list, fn x -> x end)
 
   @doc """
-  Applies a function to each element of a list and sequences the result.
+  Traverses a list, applying the given function to each element and collecting the results in a single `Right`, or short-circuiting with the first `Left`.
+
+  This is useful for validating or transforming a list of values where each step may fail.
 
   ## Examples
 
-      iex> Funx.Either.traverse(&Funx.Either.right/1, [1, 2, 3])
+      iex> Funx.Either.traverse([1, 2, 3], &Funx.Either.right/1)
       %Funx.Either.Right{right: [1, 2, 3]}
+
+      iex> Funx.Either.traverse([1, -2, 3], fn x -> if x > 0, do: Funx.Either.right(x), else: Funx.Either.left("error") end)
+      %Funx.Either.Left{left: "error"}
   """
-  @spec traverse((a -> t(error, b)), [a]) :: t(error, [b])
-        when error: term(), a: term(), b: term()
-  def traverse(func, list) do
+
+  @spec traverse([a], (a -> t(error, b))) :: t(error, [b])
+        when a: term(), b: term(), error: term()
+
+  def traverse([], _func), do: pure([])
+
+  def traverse(list, func) when is_list(list) and is_function(func, 1) do
     list
-    |> Enum.map(func)
-    |> sequence()
+    |> Enum.reduce_while(pure([]), fn item, %Right{right: acc} ->
+      case func.(item) do
+        %Right{right: value} -> {:cont, pure([value | acc])}
+        %Left{} = left -> {:halt, left}
+      end
+    end)
+    |> map(&:lists.reverse/1)
   end
 
   @doc """

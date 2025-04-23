@@ -184,6 +184,32 @@ defmodule Funx.EitherTest do
     end
   end
 
+  describe "or_else/2" do
+    test "returns the first Right value without calling the fallback" do
+      assert or_else(right(42), fn -> right(100) end) == right(42)
+    end
+
+    test "calls the fallback function when given Left" do
+      assert or_else(left(:error), fn -> right(100) end) == right(100)
+    end
+
+    test "returns Left if both the original and fallback are Left" do
+      assert or_else(left(:error), fn -> left(:fallback_error) end) == left(:fallback_error)
+    end
+
+    test "fallback function is not called when the first Either is Right" do
+      refute_receive {:fallback_called}
+
+      result =
+        or_else(right(42), fn ->
+          send(self(), {:fallback_called})
+          right(100)
+        end)
+
+      assert result == right(42)
+    end
+  end
+
   describe "guard/2 for Right" do
     test "returns Right value when condition is true" do
       either_value = right(42)
@@ -247,22 +273,71 @@ defmodule Funx.EitherTest do
     end
   end
 
+  describe "concat/1" do
+    test "returns an empty list when given an empty list" do
+      assert concat([]) == []
+    end
+
+    test "filters out Left and unwraps Right values" do
+      assert concat([right(1), left(:error), right(2)]) == [1, 2]
+    end
+
+    test "returns an empty list when all values are Left" do
+      assert concat([left(:a), left(:b)]) == []
+    end
+
+    test "handles a list with only Right values" do
+      assert concat([right("a"), right("b"), right("c")]) == ["a", "b", "c"]
+    end
+  end
+
   describe "traverse/2" do
+    test "empty returns a right empty list" do
+      result = traverse([], &right/1)
+      assert result == right([])
+    end
+
     test "applies a function and sequences the results" do
-      result = traverse(&right/1, [1, 2, 3])
+      result = traverse([1, 2, 3], &right/1)
       assert result == right([1, 2, 3])
     end
 
     test "returns Left if the function returns Left for any element" do
       result =
         traverse(
+          [1, 2, 3],
           fn x ->
             lift_predicate(x, &(&1 <= 1), fn -> "error" end)
-          end,
-          [1, 2, 3]
+          end
         )
 
       assert result == left("error")
+    end
+  end
+
+  describe "concat_map/2" do
+    test "returns an empty list when given an empty list" do
+      assert concat_map([], fn x -> x end) == []
+    end
+
+    test "applies the function and collects Right values" do
+      fun = fn x -> if rem(x, 2) == 0, do: right(x), else: left(:odd) end
+      assert concat_map([1, 2, 3, 4], fun) == [2, 4]
+    end
+
+    test "returns an empty list when the function always returns Left" do
+      fun = fn _ -> left(:fail) end
+      assert concat_map([1, 2, 3], fun) == []
+    end
+
+    test "handles all Right returns from the function" do
+      fun = fn x -> right(x * 2) end
+      assert concat_map([1, 2, 3], fun) == [2, 4, 6]
+    end
+
+    test "handles mixed Right and Left results" do
+      fun = fn x -> if x > 0, do: right(x), else: left(:non_positive) end
+      assert concat_map([-1, 0, 1, 2], fun) == [1, 2]
     end
   end
 
