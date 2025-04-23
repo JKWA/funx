@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-51426F0E.js"></script>
+    <script src="dist/sidebar_items-6B3E7DCE.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -205,6 +205,26 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
+        <a href="#concat/1" data-no-tooltip translate="no">concat(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Removes <code class="inline">Left</code> values from a list of <code class="inline">Either</code> and returns a list of unwrapped <code class="inline">Right</code> values.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#concat_map/2" data-no-tooltip translate="no">concat_map(list, func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Applies the given function to each element in the list and collects the <code class="inline">Right</code> results, discarding any <code class="inline">Left</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
         <a href="#filter_or_else/3" data-no-tooltip translate="no">filter_or_else(either, predicate, left_func)</a>
 
       </div>
@@ -306,6 +326,16 @@ a <code class="inline">Left</code> is returned using the <code class="inline">le
 
     <div class="summary-row">
       <div class="summary-signature">
+        <a href="#or_else/2" data-no-tooltip translate="no">or_else(right, fallback_fun)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns the current <code class="inline">Right</code> value or invokes the <code class="inline">fallback_fun</code> if <code class="inline">Left</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
         <a href="#pure/1" data-no-tooltip translate="no">pure(value)</a>
 
       </div>
@@ -376,11 +406,11 @@ a <code class="inline">Left</code> is returned using the <code class="inline">le
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#traverse/2" data-no-tooltip translate="no">traverse(func, list)</a>
+        <a href="#traverse/2" data-no-tooltip translate="no">traverse(list, func)</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Applies a function to each element of a list and sequences the result.</p></div>
+        <div class="summary-synopsis"><p>Traverses a list, applying the given function to each element and collecting the results in a single <code class="inline">Right</code>, or short-circuiting with the first <code class="inline">Left</code>.</p></div>
 
     </div>
 
@@ -416,7 +446,7 @@ a <code class="inline">Left</code> is returned using the <code class="inline">le
     </a>
     <h1 class="signature" translate="no">t(left, right)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L48" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L49" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -447,6 +477,89 @@ a <code class="inline">Left</code> is returned using the <code class="inline">le
       <span class="text">Functions</span>
     </h1>
     <div class="functions-list">
+<section class="detail" id="concat/1">
+
+  <div class="detail-header">
+    <a href="#concat/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">concat(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L289" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> concat([<a href="#t:t/2">t</a>(error, value)]) :: [value] when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), value: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Removes <code class="inline">Left</code> values from a list of <code class="inline">Either</code> and returns a list of unwrapped <code class="inline">Right</code> values.</p><p>Useful for discarding failed computations while keeping successful results.</p><h2 id="concat/1-examples" class="section-heading">
+  <a href="#concat/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="6921842679-1">(</span><span class="p" data-group-id="6921842679-2">[</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6921842679-3">(</span><span class="mi">1</span><span class="p" data-group-id="6921842679-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="6921842679-4">(</span><span class="ss">:error</span><span class="p" data-group-id="6921842679-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6921842679-5">(</span><span class="mi">2</span><span class="p" data-group-id="6921842679-5">)</span><span class="p" data-group-id="6921842679-2">]</span><span class="p" data-group-id="6921842679-1">)</span><span class="w">
+</span><span class="p" data-group-id="6921842679-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6921842679-6">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="6921842679-7">(</span><span class="p" data-group-id="6921842679-8">[</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="6921842679-9">(</span><span class="ss">:a</span><span class="p" data-group-id="6921842679-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="6921842679-10">(</span><span class="ss">:b</span><span class="p" data-group-id="6921842679-10">)</span><span class="p" data-group-id="6921842679-8">]</span><span class="p" data-group-id="6921842679-7">)</span><span class="w">
+</span><span class="p" data-group-id="6921842679-11">[</span><span class="p" data-group-id="6921842679-11">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="6921842679-12">(</span><span class="p" data-group-id="6921842679-13">[</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6921842679-14">(</span><span class="s">&quot;a&quot;</span><span class="p" data-group-id="6921842679-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6921842679-15">(</span><span class="s">&quot;b&quot;</span><span class="p" data-group-id="6921842679-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6921842679-16">(</span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="6921842679-16">)</span><span class="p" data-group-id="6921842679-13">]</span><span class="p" data-group-id="6921842679-12">)</span><span class="w">
+</span><span class="p" data-group-id="6921842679-17">[</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="6921842679-17">]</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="concat_map/2">
+
+  <div class="detail-header">
+    <a href="#concat_map/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">concat_map(list, func)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L316" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> concat_map([input], (input -&gt; <a href="#t:t/2">t</a>(error, output))) :: [output]
+when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), output: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), error: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Applies the given function to each element in the list and collects the <code class="inline">Right</code> results, discarding any <code class="inline">Left</code>.</p><p>This is useful when mapping a function that may fail and you only want the successful results.</p><h2 id="concat_map/2-examples" class="section-heading">
+  <a href="#concat_map/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="4417267917-1">(</span><span class="p" data-group-id="4417267917-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4417267917-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4417267917-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">rem</span><span class="p" data-group-id="4417267917-4">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4417267917-4">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="4417267917-5">(</span><span class="n">x</span><span class="p" data-group-id="4417267917-5">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="4417267917-6">(</span><span class="ss">:even</span><span class="p" data-group-id="4417267917-6">)</span><span class="w"> </span><span class="k" data-group-id="4417267917-3">end</span><span class="p" data-group-id="4417267917-1">)</span><span class="w">
+</span><span class="p" data-group-id="4417267917-7">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4417267917-7">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="4417267917-8">(</span><span class="p" data-group-id="4417267917-9">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4417267917-9">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4417267917-10">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="4417267917-11">(</span><span class="n">x</span><span class="p" data-group-id="4417267917-11">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="4417267917-12">(</span><span class="ss">:too_small</span><span class="p" data-group-id="4417267917-12">)</span><span class="w"> </span><span class="k" data-group-id="4417267917-10">end</span><span class="p" data-group-id="4417267917-8">)</span><span class="w">
+</span><span class="p" data-group-id="4417267917-13">[</span><span class="mi">4</span><span class="p" data-group-id="4417267917-13">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="4417267917-14">(</span><span class="p" data-group-id="4417267917-15">[</span><span class="p" data-group-id="4417267917-15">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4417267917-16">fn</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="4417267917-17">(</span><span class="ss">:none</span><span class="p" data-group-id="4417267917-17">)</span><span class="w"> </span><span class="k" data-group-id="4417267917-16">end</span><span class="p" data-group-id="4417267917-14">)</span><span class="w">
+</span><span class="p" data-group-id="4417267917-18">[</span><span class="p" data-group-id="4417267917-18">]</span></code></pre>
+  </section>
+</section>
 <section class="detail" id="filter_or_else/3">
 
   <div class="detail-header">
@@ -456,7 +569,7 @@ a <code class="inline">Left</code> is returned using the <code class="inline">le
     </a>
     <h1 class="signature" translate="no">filter_or_else(either, predicate, left_func)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L121" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L122" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -480,11 +593,11 @@ a <code class="inline">Left</code> is returned using the <code class="inline">le
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">filter_or_else</span><span class="p" data-group-id="0471871935-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0471871935-2">(</span><span class="mi">5</span><span class="p" data-group-id="0471871935-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0471871935-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="0471871935-3">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0471871935-4">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="0471871935-4">end</span><span class="p" data-group-id="0471871935-1">)</span><span class="w">
-</span><span class="p" data-group-id="0471871935-5">%</span><span class="nc" data-group-id="0471871935-5">Funx.Either.Right</span><span class="p" data-group-id="0471871935-5">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0471871935-5">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">filter_or_else</span><span class="p" data-group-id="2411812962-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="2411812962-2">(</span><span class="mi">5</span><span class="p" data-group-id="2411812962-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2411812962-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="2411812962-3">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2411812962-4">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="2411812962-4">end</span><span class="p" data-group-id="2411812962-1">)</span><span class="w">
+</span><span class="p" data-group-id="2411812962-5">%</span><span class="nc" data-group-id="2411812962-5">Funx.Either.Right</span><span class="p" data-group-id="2411812962-5">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2411812962-5">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">filter_or_else</span><span class="p" data-group-id="0471871935-6">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0471871935-7">(</span><span class="mi">2</span><span class="p" data-group-id="0471871935-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0471871935-8">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="0471871935-8">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0471871935-9">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="0471871935-9">end</span><span class="p" data-group-id="0471871935-6">)</span><span class="w">
-</span><span class="p" data-group-id="0471871935-10">%</span><span class="nc" data-group-id="0471871935-10">Funx.Either.Left</span><span class="p" data-group-id="0471871935-10">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="0471871935-10">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">filter_or_else</span><span class="p" data-group-id="2411812962-6">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="2411812962-7">(</span><span class="mi">2</span><span class="p" data-group-id="2411812962-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2411812962-8">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="2411812962-8">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2411812962-9">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="2411812962-9">end</span><span class="p" data-group-id="2411812962-6">)</span><span class="w">
+</span><span class="p" data-group-id="2411812962-10">%</span><span class="nc" data-group-id="2411812962-10">Funx.Either.Left</span><span class="p" data-group-id="2411812962-10">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="2411812962-10">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="from_result/1">
@@ -496,7 +609,7 @@ a <code class="inline">Left</code> is returned using the <code class="inline">le
     </a>
     <h1 class="signature" translate="no">from_result(arg)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L407" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L487" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -519,11 +632,11 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="2110137010-1">(</span><span class="p" data-group-id="2110137010-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2110137010-2">}</span><span class="p" data-group-id="2110137010-1">)</span><span class="w">
-</span><span class="p" data-group-id="2110137010-3">%</span><span class="nc" data-group-id="2110137010-3">Funx.Either.Right</span><span class="p" data-group-id="2110137010-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2110137010-3">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="9191196539-1">(</span><span class="p" data-group-id="9191196539-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9191196539-2">}</span><span class="p" data-group-id="9191196539-1">)</span><span class="w">
+</span><span class="p" data-group-id="9191196539-3">%</span><span class="nc" data-group-id="9191196539-3">Funx.Either.Right</span><span class="p" data-group-id="9191196539-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9191196539-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="2110137010-4">(</span><span class="p" data-group-id="2110137010-5">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="2110137010-5">}</span><span class="p" data-group-id="2110137010-4">)</span><span class="w">
-</span><span class="p" data-group-id="2110137010-6">%</span><span class="nc" data-group-id="2110137010-6">Funx.Either.Left</span><span class="p" data-group-id="2110137010-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="2110137010-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="9191196539-4">(</span><span class="p" data-group-id="9191196539-5">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9191196539-5">}</span><span class="p" data-group-id="9191196539-4">)</span><span class="w">
+</span><span class="p" data-group-id="9191196539-6">%</span><span class="nc" data-group-id="9191196539-6">Funx.Either.Left</span><span class="p" data-group-id="9191196539-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9191196539-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="from_try/1">
@@ -535,7 +648,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">from_try(func)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L442" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L522" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -557,11 +670,11 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="1513349780-1">(</span><span class="k" data-group-id="1513349780-2">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="1513349780-2">end</span><span class="p" data-group-id="1513349780-1">)</span><span class="w">
-</span><span class="p" data-group-id="1513349780-3">%</span><span class="nc" data-group-id="1513349780-3">Funx.Either.Right</span><span class="p" data-group-id="1513349780-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1513349780-3">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="8226289112-1">(</span><span class="k" data-group-id="8226289112-2">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="8226289112-2">end</span><span class="p" data-group-id="8226289112-1">)</span><span class="w">
+</span><span class="p" data-group-id="8226289112-3">%</span><span class="nc" data-group-id="8226289112-3">Funx.Either.Right</span><span class="p" data-group-id="8226289112-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8226289112-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="1513349780-4">(</span><span class="k" data-group-id="1513349780-5">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="1513349780-5">end</span><span class="p" data-group-id="1513349780-4">)</span><span class="w">
-</span><span class="p" data-group-id="1513349780-6">%</span><span class="nc" data-group-id="1513349780-6">Funx.Either.Left</span><span class="p" data-group-id="1513349780-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1513349780-7">%</span><span class="nc" data-group-id="1513349780-7">RuntimeError</span><span class="p" data-group-id="1513349780-7">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="1513349780-7">}</span><span class="p" data-group-id="1513349780-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="8226289112-4">(</span><span class="k" data-group-id="8226289112-5">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="8226289112-5">end</span><span class="p" data-group-id="8226289112-4">)</span><span class="w">
+</span><span class="p" data-group-id="8226289112-6">%</span><span class="nc" data-group-id="8226289112-6">Funx.Either.Left</span><span class="p" data-group-id="8226289112-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8226289112-7">%</span><span class="nc" data-group-id="8226289112-7">RuntimeError</span><span class="p" data-group-id="8226289112-7">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="8226289112-7">}</span><span class="p" data-group-id="8226289112-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="get_or_else/2">
@@ -573,7 +686,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">get_or_else(either, default)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L147" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L148" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -595,10 +708,10 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="5514883335-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5514883335-2">(</span><span class="mi">5</span><span class="p" data-group-id="5514883335-2">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="5514883335-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="0324734164-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0324734164-2">(</span><span class="mi">5</span><span class="p" data-group-id="0324734164-2">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="0324734164-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="5514883335-3">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5514883335-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5514883335-4">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="5514883335-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="0324734164-3">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0324734164-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="0324734164-4">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="0324734164-3">)</span><span class="w">
 </span><span class="mi">0</span></code></pre>
   </section>
 </section>
@@ -611,7 +724,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">left(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L76" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L77" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -633,8 +746,8 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5497790021-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5497790021-1">)</span><span class="w">
-</span><span class="p" data-group-id="5497790021-2">%</span><span class="nc" data-group-id="5497790021-2">Funx.Either.Left</span><span class="p" data-group-id="5497790021-2">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5497790021-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="4764000012-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="4764000012-1">)</span><span class="w">
+</span><span class="p" data-group-id="4764000012-2">%</span><span class="nc" data-group-id="4764000012-2">Funx.Either.Left</span><span class="p" data-group-id="4764000012-2">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="4764000012-2">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="left?/1">
@@ -646,7 +759,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">left?(arg1)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L90" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L91" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -668,10 +781,10 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left?</span><span class="p" data-group-id="6536939323-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="6536939323-2">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6536939323-2">)</span><span class="p" data-group-id="6536939323-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left?</span><span class="p" data-group-id="9156644743-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9156644743-2">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9156644743-2">)</span><span class="p" data-group-id="9156644743-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left?</span><span class="p" data-group-id="6536939323-3">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6536939323-4">(</span><span class="mi">5</span><span class="p" data-group-id="6536939323-4">)</span><span class="p" data-group-id="6536939323-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left?</span><span class="p" data-group-id="9156644743-3">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9156644743-4">(</span><span class="mi">5</span><span class="p" data-group-id="9156644743-4">)</span><span class="p" data-group-id="9156644743-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -684,7 +797,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">lift_eq(custom_eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L179" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L198" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -706,19 +819,19 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_eq</span><span class="p" data-group-id="3097482976-1">(</span><span class="p" data-group-id="3097482976-2">%{</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="3097482976-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="3097482976-3">end</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="3097482976-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="3097482976-4">end</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="3097482976-2">}</span><span class="p" data-group-id="3097482976-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3097482976-5">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3097482976-6">(</span><span class="mi">5</span><span class="p" data-group-id="3097482976-6">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3097482976-7">(</span><span class="mi">5</span><span class="p" data-group-id="3097482976-7">)</span><span class="p" data-group-id="3097482976-5">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_eq</span><span class="p" data-group-id="9962563084-1">(</span><span class="p" data-group-id="9962563084-2">%{</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="9962563084-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="9962563084-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="9962563084-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="9962563084-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="9962563084-2">}</span><span class="p" data-group-id="9962563084-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9962563084-5">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9962563084-6">(</span><span class="mi">5</span><span class="p" data-group-id="9962563084-6">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9962563084-7">(</span><span class="mi">5</span><span class="p" data-group-id="9962563084-7">)</span><span class="p" data-group-id="9962563084-5">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3097482976-8">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3097482976-9">(</span><span class="mi">5</span><span class="p" data-group-id="3097482976-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3097482976-10">(</span><span class="mi">10</span><span class="p" data-group-id="3097482976-10">)</span><span class="p" data-group-id="3097482976-8">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9962563084-8">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9962563084-9">(</span><span class="mi">5</span><span class="p" data-group-id="9962563084-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9962563084-10">(</span><span class="mi">10</span><span class="p" data-group-id="9962563084-10">)</span><span class="p" data-group-id="9962563084-8">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3097482976-11">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3097482976-12">(</span><span class="ss">:a</span><span class="p" data-group-id="3097482976-12">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3097482976-13">(</span><span class="ss">:a</span><span class="p" data-group-id="3097482976-13">)</span><span class="p" data-group-id="3097482976-11">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9962563084-11">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9962563084-12">(</span><span class="ss">:a</span><span class="p" data-group-id="9962563084-12">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9962563084-13">(</span><span class="ss">:a</span><span class="p" data-group-id="9962563084-13">)</span><span class="p" data-group-id="9962563084-11">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3097482976-14">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3097482976-15">(</span><span class="ss">:a</span><span class="p" data-group-id="3097482976-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3097482976-16">(</span><span class="ss">:b</span><span class="p" data-group-id="3097482976-16">)</span><span class="p" data-group-id="3097482976-14">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9962563084-14">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9962563084-15">(</span><span class="ss">:a</span><span class="p" data-group-id="9962563084-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9962563084-16">(</span><span class="ss">:b</span><span class="p" data-group-id="9962563084-16">)</span><span class="p" data-group-id="9962563084-14">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3097482976-17">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3097482976-18">(</span><span class="mi">5</span><span class="p" data-group-id="3097482976-18">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3097482976-19">(</span><span class="ss">:a</span><span class="p" data-group-id="3097482976-19">)</span><span class="p" data-group-id="3097482976-17">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9962563084-17">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9962563084-18">(</span><span class="mi">5</span><span class="p" data-group-id="9962563084-18">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9962563084-19">(</span><span class="ss">:a</span><span class="p" data-group-id="9962563084-19">)</span><span class="p" data-group-id="9962563084-17">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -731,7 +844,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">lift_maybe(maybe, on_none)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L366" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L446" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -753,11 +866,11 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_maybe</span><span class="p" data-group-id="2957459339-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2957459339-2">(</span><span class="mi">5</span><span class="p" data-group-id="2957459339-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2957459339-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="2957459339-3">end</span><span class="p" data-group-id="2957459339-1">)</span><span class="w">
-</span><span class="p" data-group-id="2957459339-4">%</span><span class="nc" data-group-id="2957459339-4">Funx.Either.Right</span><span class="p" data-group-id="2957459339-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2957459339-4">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_maybe</span><span class="p" data-group-id="1029159298-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1029159298-2">(</span><span class="mi">5</span><span class="p" data-group-id="1029159298-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1029159298-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="1029159298-3">end</span><span class="p" data-group-id="1029159298-1">)</span><span class="w">
+</span><span class="p" data-group-id="1029159298-4">%</span><span class="nc" data-group-id="1029159298-4">Funx.Either.Right</span><span class="p" data-group-id="1029159298-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1029159298-4">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_maybe</span><span class="p" data-group-id="2957459339-5">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2957459339-6">(</span><span class="p" data-group-id="2957459339-6">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2957459339-7">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="2957459339-7">end</span><span class="p" data-group-id="2957459339-5">)</span><span class="w">
-</span><span class="p" data-group-id="2957459339-8">%</span><span class="nc" data-group-id="2957459339-8">Funx.Either.Left</span><span class="p" data-group-id="2957459339-8">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="2957459339-8">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_maybe</span><span class="p" data-group-id="1029159298-5">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1029159298-6">(</span><span class="p" data-group-id="1029159298-6">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1029159298-7">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="1029159298-7">end</span><span class="p" data-group-id="1029159298-5">)</span><span class="w">
+</span><span class="p" data-group-id="1029159298-8">%</span><span class="nc" data-group-id="1029159298-8">Funx.Either.Left</span><span class="p" data-group-id="1029159298-8">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="1029159298-8">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="lift_ord/1">
@@ -769,7 +882,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">lift_ord(custom_ord)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L221" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L240" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -791,19 +904,19 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_ord</span><span class="p" data-group-id="5907954232-1">(</span><span class="p" data-group-id="5907954232-2">%{</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">lt?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="5907954232-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="5907954232-3">end</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">le?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="5907954232-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="5907954232-4">end</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">gt?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="5907954232-5">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="5907954232-5">end</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">ge?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="5907954232-6">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="5907954232-6">end</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5907954232-2">}</span><span class="p" data-group-id="5907954232-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="5907954232-7">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5907954232-8">(</span><span class="mi">3</span><span class="p" data-group-id="5907954232-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5907954232-9">(</span><span class="mi">5</span><span class="p" data-group-id="5907954232-9">)</span><span class="p" data-group-id="5907954232-7">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_ord</span><span class="p" data-group-id="1690499861-1">(</span><span class="p" data-group-id="1690499861-2">%{</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">lt?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1690499861-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1690499861-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">le?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1690499861-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1690499861-4">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">gt?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1690499861-5">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1690499861-5">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">ge?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1690499861-6">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1690499861-6">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="1690499861-2">}</span><span class="p" data-group-id="1690499861-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1690499861-7">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1690499861-8">(</span><span class="mi">3</span><span class="p" data-group-id="1690499861-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1690499861-9">(</span><span class="mi">5</span><span class="p" data-group-id="1690499861-9">)</span><span class="p" data-group-id="1690499861-7">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="5907954232-10">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5907954232-11">(</span><span class="mi">3</span><span class="p" data-group-id="5907954232-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5907954232-12">(</span><span class="mi">5</span><span class="p" data-group-id="5907954232-12">)</span><span class="p" data-group-id="5907954232-10">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1690499861-10">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1690499861-11">(</span><span class="mi">3</span><span class="p" data-group-id="1690499861-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1690499861-12">(</span><span class="mi">5</span><span class="p" data-group-id="1690499861-12">)</span><span class="p" data-group-id="1690499861-10">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="5907954232-13">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5907954232-14">(</span><span class="mi">3</span><span class="p" data-group-id="5907954232-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5907954232-15">(</span><span class="mi">5</span><span class="p" data-group-id="5907954232-15">)</span><span class="p" data-group-id="5907954232-13">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1690499861-13">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1690499861-14">(</span><span class="mi">3</span><span class="p" data-group-id="1690499861-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1690499861-15">(</span><span class="mi">5</span><span class="p" data-group-id="1690499861-15">)</span><span class="p" data-group-id="1690499861-13">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="5907954232-16">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5907954232-17">(</span><span class="mi">3</span><span class="p" data-group-id="5907954232-17">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5907954232-18">(</span><span class="mi">5</span><span class="p" data-group-id="5907954232-18">)</span><span class="p" data-group-id="5907954232-16">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1690499861-16">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1690499861-17">(</span><span class="mi">3</span><span class="p" data-group-id="1690499861-17">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1690499861-18">(</span><span class="mi">5</span><span class="p" data-group-id="1690499861-18">)</span><span class="p" data-group-id="1690499861-16">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -816,7 +929,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">lift_predicate(value, predicate, on_false)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L386" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L466" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -838,11 +951,50 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="9956699066-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9956699066-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="9956699066-2">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9956699066-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;too small&quot;</span><span class="w"> </span><span class="k" data-group-id="9956699066-3">end</span><span class="p" data-group-id="9956699066-1">)</span><span class="w">
-</span><span class="p" data-group-id="9956699066-4">%</span><span class="nc" data-group-id="9956699066-4">Funx.Either.Right</span><span class="p" data-group-id="9956699066-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9956699066-4">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="9495391770-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9495391770-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="9495391770-2">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9495391770-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;too small&quot;</span><span class="w"> </span><span class="k" data-group-id="9495391770-3">end</span><span class="p" data-group-id="9495391770-1">)</span><span class="w">
+</span><span class="p" data-group-id="9495391770-4">%</span><span class="nc" data-group-id="9495391770-4">Funx.Either.Right</span><span class="p" data-group-id="9495391770-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9495391770-4">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="9956699066-5">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9956699066-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="9956699066-6">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9956699066-7">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;too small&quot;</span><span class="w"> </span><span class="k" data-group-id="9956699066-7">end</span><span class="p" data-group-id="9956699066-5">)</span><span class="w">
-</span><span class="p" data-group-id="9956699066-8">%</span><span class="nc" data-group-id="9956699066-8">Funx.Either.Left</span><span class="p" data-group-id="9956699066-8">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;too small&quot;</span><span class="p" data-group-id="9956699066-8">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="9495391770-5">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9495391770-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="9495391770-6">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9495391770-7">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;too small&quot;</span><span class="w"> </span><span class="k" data-group-id="9495391770-7">end</span><span class="p" data-group-id="9495391770-5">)</span><span class="w">
+</span><span class="p" data-group-id="9495391770-8">%</span><span class="nc" data-group-id="9495391770-8">Funx.Either.Left</span><span class="p" data-group-id="9495391770-8">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;too small&quot;</span><span class="p" data-group-id="9495391770-8">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="or_else/2">
+
+  <div class="detail-header">
+    <a href="#or_else/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">or_else(right, fallback_fun)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L171" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> or_else(<a href="#t:t/2">t</a>(error, value), (-&gt; <a href="#t:t/2">t</a>(error, value))) :: <a href="#t:t/2">t</a>(error, value)
+when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Returns the current <code class="inline">Right</code> value or invokes the <code class="inline">fallback_fun</code> if <code class="inline">Left</code>.</p><p>Useful for recovering from a failure by providing an alternate computation.</p><h2 id="or_else/2-examples" class="section-heading">
+  <a href="#or_else/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="5379528667-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5379528667-2">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5379528667-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5379528667-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5379528667-4">(</span><span class="mi">42</span><span class="p" data-group-id="5379528667-4">)</span><span class="w"> </span><span class="k" data-group-id="5379528667-3">end</span><span class="p" data-group-id="5379528667-1">)</span><span class="w">
+</span><span class="p" data-group-id="5379528667-5">%</span><span class="nc" data-group-id="5379528667-5">Funx.Either.Right</span><span class="p" data-group-id="5379528667-5">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="5379528667-5">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="5379528667-6">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5379528667-7">(</span><span class="mi">10</span><span class="p" data-group-id="5379528667-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5379528667-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5379528667-9">(</span><span class="mi">42</span><span class="p" data-group-id="5379528667-9">)</span><span class="w"> </span><span class="k" data-group-id="5379528667-8">end</span><span class="p" data-group-id="5379528667-6">)</span><span class="w">
+</span><span class="p" data-group-id="5379528667-10">%</span><span class="nc" data-group-id="5379528667-10">Funx.Either.Right</span><span class="p" data-group-id="5379528667-10">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="5379528667-10">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="pure/1">
@@ -854,7 +1006,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">pure(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L65" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L66" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -882,7 +1034,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">right(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L59" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L60" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -904,8 +1056,8 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6950509033-1">(</span><span class="mi">5</span><span class="p" data-group-id="6950509033-1">)</span><span class="w">
-</span><span class="p" data-group-id="6950509033-2">%</span><span class="nc" data-group-id="6950509033-2">Funx.Either.Right</span><span class="p" data-group-id="6950509033-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6950509033-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3241414585-1">(</span><span class="mi">5</span><span class="p" data-group-id="3241414585-1">)</span><span class="w">
+</span><span class="p" data-group-id="3241414585-2">%</span><span class="nc" data-group-id="3241414585-2">Funx.Either.Right</span><span class="p" data-group-id="3241414585-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3241414585-2">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="right?/1">
@@ -917,7 +1069,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">right?(arg1)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L105" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L106" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -939,10 +1091,10 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right?</span><span class="p" data-group-id="6691876971-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6691876971-2">(</span><span class="mi">5</span><span class="p" data-group-id="6691876971-2">)</span><span class="p" data-group-id="6691876971-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right?</span><span class="p" data-group-id="9995929213-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9995929213-2">(</span><span class="mi">5</span><span class="p" data-group-id="9995929213-2">)</span><span class="p" data-group-id="9995929213-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right?</span><span class="p" data-group-id="6691876971-3">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="6691876971-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6691876971-4">)</span><span class="p" data-group-id="6691876971-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right?</span><span class="p" data-group-id="9995929213-3">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9995929213-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9995929213-4">)</span><span class="p" data-group-id="9995929213-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -955,7 +1107,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">sequence(list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L264" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L338" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -978,11 +1130,11 @@ when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="6551509357-1">(</span><span class="p" data-group-id="6551509357-2">[</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6551509357-3">(</span><span class="mi">1</span><span class="p" data-group-id="6551509357-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6551509357-4">(</span><span class="mi">2</span><span class="p" data-group-id="6551509357-4">)</span><span class="p" data-group-id="6551509357-2">]</span><span class="p" data-group-id="6551509357-1">)</span><span class="w">
-</span><span class="p" data-group-id="6551509357-5">%</span><span class="nc" data-group-id="6551509357-5">Funx.Either.Right</span><span class="p" data-group-id="6551509357-5">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6551509357-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6551509357-6">]</span><span class="p" data-group-id="6551509357-5">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="8609240998-1">(</span><span class="p" data-group-id="8609240998-2">[</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8609240998-3">(</span><span class="mi">1</span><span class="p" data-group-id="8609240998-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8609240998-4">(</span><span class="mi">2</span><span class="p" data-group-id="8609240998-4">)</span><span class="p" data-group-id="8609240998-2">]</span><span class="p" data-group-id="8609240998-1">)</span><span class="w">
+</span><span class="p" data-group-id="8609240998-5">%</span><span class="nc" data-group-id="8609240998-5">Funx.Either.Right</span><span class="p" data-group-id="8609240998-5">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8609240998-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8609240998-6">]</span><span class="p" data-group-id="8609240998-5">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="6551509357-7">(</span><span class="p" data-group-id="6551509357-8">[</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6551509357-9">(</span><span class="mi">1</span><span class="p" data-group-id="6551509357-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="6551509357-10">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6551509357-10">)</span><span class="p" data-group-id="6551509357-8">]</span><span class="p" data-group-id="6551509357-7">)</span><span class="w">
-</span><span class="p" data-group-id="6551509357-11">%</span><span class="nc" data-group-id="6551509357-11">Funx.Either.Left</span><span class="p" data-group-id="6551509357-11">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6551509357-11">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="8609240998-7">(</span><span class="p" data-group-id="8609240998-8">[</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8609240998-9">(</span><span class="mi">1</span><span class="p" data-group-id="8609240998-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="8609240998-10">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="8609240998-10">)</span><span class="p" data-group-id="8609240998-8">]</span><span class="p" data-group-id="8609240998-7">)</span><span class="w">
+</span><span class="p" data-group-id="8609240998-11">%</span><span class="nc" data-group-id="8609240998-11">Funx.Either.Left</span><span class="p" data-group-id="8609240998-11">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="8609240998-11">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sequence_a/1">
@@ -994,7 +1146,7 @@ when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
     </a>
     <h1 class="signature" translate="no">sequence_a(list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L300" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L380" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1017,8 +1169,8 @@ when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">sequence_a</span><span class="p" data-group-id="2786464276-1">(</span><span class="p" data-group-id="2786464276-2">[</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="2786464276-3">(</span><span class="mi">1</span><span class="p" data-group-id="2786464276-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="2786464276-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="2786464276-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="2786464276-5">(</span><span class="s">&quot;another error&quot;</span><span class="p" data-group-id="2786464276-5">)</span><span class="p" data-group-id="2786464276-2">]</span><span class="p" data-group-id="2786464276-1">)</span><span class="w">
-</span><span class="p" data-group-id="2786464276-6">%</span><span class="nc" data-group-id="2786464276-6">Funx.Either.Left</span><span class="p" data-group-id="2786464276-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2786464276-7">[</span><span class="s">&quot;error&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;another error&quot;</span><span class="p" data-group-id="2786464276-7">]</span><span class="p" data-group-id="2786464276-6">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">sequence_a</span><span class="p" data-group-id="1097510559-1">(</span><span class="p" data-group-id="1097510559-2">[</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1097510559-3">(</span><span class="mi">1</span><span class="p" data-group-id="1097510559-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1097510559-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="1097510559-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1097510559-5">(</span><span class="s">&quot;another error&quot;</span><span class="p" data-group-id="1097510559-5">)</span><span class="p" data-group-id="1097510559-2">]</span><span class="p" data-group-id="1097510559-1">)</span><span class="w">
+</span><span class="p" data-group-id="1097510559-6">%</span><span class="nc" data-group-id="1097510559-6">Funx.Either.Left</span><span class="p" data-group-id="1097510559-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1097510559-7">[</span><span class="s">&quot;error&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;another error&quot;</span><span class="p" data-group-id="1097510559-7">]</span><span class="p" data-group-id="1097510559-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="to_result/1">
@@ -1030,7 +1182,7 @@ when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
     </a>
     <h1 class="signature" translate="no">to_result(either)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L423" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L503" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1053,11 +1205,11 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="3341626110-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3341626110-2">(</span><span class="mi">5</span><span class="p" data-group-id="3341626110-2">)</span><span class="p" data-group-id="3341626110-1">)</span><span class="w">
-</span><span class="p" data-group-id="3341626110-3">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3341626110-3">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="3892509920-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3892509920-2">(</span><span class="mi">5</span><span class="p" data-group-id="3892509920-2">)</span><span class="p" data-group-id="3892509920-1">)</span><span class="w">
+</span><span class="p" data-group-id="3892509920-3">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3892509920-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="3341626110-4">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3341626110-5">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="3341626110-5">)</span><span class="p" data-group-id="3341626110-4">)</span><span class="w">
-</span><span class="p" data-group-id="3341626110-6">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="3341626110-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="3892509920-4">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3892509920-5">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="3892509920-5">)</span><span class="p" data-group-id="3892509920-4">)</span><span class="w">
+</span><span class="p" data-group-id="3892509920-6">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="3892509920-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="to_try!/1">
@@ -1069,7 +1221,7 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
     </a>
     <h1 class="signature" translate="no">to_try!(either)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L465" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L545" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1091,10 +1243,10 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="3789329666-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3789329666-2">(</span><span class="mi">5</span><span class="p" data-group-id="3789329666-2">)</span><span class="p" data-group-id="3789329666-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="8377452537-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8377452537-2">(</span><span class="mi">5</span><span class="p" data-group-id="8377452537-2">)</span><span class="p" data-group-id="8377452537-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="3789329666-3">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3789329666-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="3789329666-4">)</span><span class="p" data-group-id="3789329666-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="8377452537-3">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="8377452537-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="8377452537-4">)</span><span class="p" data-group-id="8377452537-3">)</span><span class="w">
 </span><span class="gt">** (RuntimeError) error</span></code></pre>
   </section>
 </section>
@@ -1105,9 +1257,9 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">traverse(func, list)</h1>
+    <h1 class="signature" translate="no">traverse(list, func)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L284" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L357" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1119,19 +1271,22 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> traverse((a -&gt; <a href="#t:t/2">t</a>(error, b)), [a]) :: <a href="#t:t/2">t</a>(error, [b])
-when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), b: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+          <pre translate="no"><span class="attribute">@spec</span> traverse([a], (a -&gt; <a href="#t:t/2">t</a>(error, b))) :: <a href="#t:t/2">t</a>(error, [b])
+when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), b: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
 
       </div>
 
-<p>Applies a function to each element of a list and sequences the result.</p><h2 id="traverse/2-examples" class="section-heading">
+<p>Traverses a list, applying the given function to each element and collecting the results in a single <code class="inline">Right</code>, or short-circuiting with the first <code class="inline">Left</code>.</p><p>This is useful for validating or transforming a list of values where each step may fail.</p><h2 id="traverse/2-examples" class="section-heading">
   <a href="#traverse/2-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="1809204668-1">(</span><span class="o">&amp;</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1809204668-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="1809204668-2">]</span><span class="p" data-group-id="1809204668-1">)</span><span class="w">
-</span><span class="p" data-group-id="1809204668-3">%</span><span class="nc" data-group-id="1809204668-3">Funx.Either.Right</span><span class="p" data-group-id="1809204668-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1809204668-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="1809204668-4">]</span><span class="p" data-group-id="1809204668-3">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="9752343488-1">(</span><span class="p" data-group-id="9752343488-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9752343488-2">]</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="9752343488-1">)</span><span class="w">
+</span><span class="p" data-group-id="9752343488-3">%</span><span class="nc" data-group-id="9752343488-3">Funx.Either.Right</span><span class="p" data-group-id="9752343488-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9752343488-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9752343488-4">]</span><span class="p" data-group-id="9752343488-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="9752343488-5">(</span><span class="p" data-group-id="9752343488-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9752343488-6">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9752343488-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9752343488-8">(</span><span class="n">x</span><span class="p" data-group-id="9752343488-8">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9752343488-9">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9752343488-9">)</span><span class="w"> </span><span class="k" data-group-id="9752343488-7">end</span><span class="p" data-group-id="9752343488-5">)</span><span class="w">
+</span><span class="p" data-group-id="9752343488-10">%</span><span class="nc" data-group-id="9752343488-10">Funx.Either.Left</span><span class="p" data-group-id="9752343488-10">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9752343488-10">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="validate/2">
@@ -1143,7 +1298,7 @@ when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
     </a>
     <h1 class="signature" translate="no">validate(value, validators)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L338" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L418" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1166,14 +1321,14 @@ when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7217678851-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7217678851-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="7217678851-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="7217678851-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7217678851-4">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive&quot;</span><span class="w"> </span><span class="k" data-group-id="7217678851-4">end</span><span class="p" data-group-id="7217678851-2">)</span><span class="w"> </span><span class="k" data-group-id="7217678851-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7217678851-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7217678851-6">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rem</span><span class="p" data-group-id="7217678851-7">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7217678851-7">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7217678851-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even&quot;</span><span class="w"> </span><span class="k" data-group-id="7217678851-8">end</span><span class="p" data-group-id="7217678851-6">)</span><span class="w"> </span><span class="k" data-group-id="7217678851-5">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="7217678851-9">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7217678851-10">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="7217678851-10">]</span><span class="p" data-group-id="7217678851-9">)</span><span class="w">
-</span><span class="p" data-group-id="7217678851-11">%</span><span class="nc" data-group-id="7217678851-11">Funx.Either.Right</span><span class="p" data-group-id="7217678851-11">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7217678851-11">}</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="7217678851-12">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7217678851-13">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="7217678851-13">]</span><span class="p" data-group-id="7217678851-12">)</span><span class="w">
-</span><span class="p" data-group-id="7217678851-14">%</span><span class="nc" data-group-id="7217678851-14">Funx.Either.Left</span><span class="p" data-group-id="7217678851-14">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7217678851-15">[</span><span class="s">&quot;Value must be even&quot;</span><span class="p" data-group-id="7217678851-15">]</span><span class="p" data-group-id="7217678851-14">}</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="7217678851-16">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7217678851-17">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="7217678851-17">]</span><span class="p" data-group-id="7217678851-16">)</span><span class="w">
-</span><span class="p" data-group-id="7217678851-18">%</span><span class="nc" data-group-id="7217678851-18">Funx.Either.Left</span><span class="p" data-group-id="7217678851-18">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7217678851-19">[</span><span class="s">&quot;Value must be positive&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Value must be even&quot;</span><span class="p" data-group-id="7217678851-19">]</span><span class="p" data-group-id="7217678851-18">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4088265807-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="4088265807-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="4088265807-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4088265807-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4088265807-4">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive&quot;</span><span class="w"> </span><span class="k" data-group-id="4088265807-4">end</span><span class="p" data-group-id="4088265807-2">)</span><span class="w"> </span><span class="k" data-group-id="4088265807-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4088265807-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="4088265807-6">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">rem</span><span class="p" data-group-id="4088265807-7">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4088265807-7">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4088265807-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even&quot;</span><span class="w"> </span><span class="k" data-group-id="4088265807-8">end</span><span class="p" data-group-id="4088265807-6">)</span><span class="w"> </span><span class="k" data-group-id="4088265807-5">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="4088265807-9">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4088265807-10">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="4088265807-10">]</span><span class="p" data-group-id="4088265807-9">)</span><span class="w">
+</span><span class="p" data-group-id="4088265807-11">%</span><span class="nc" data-group-id="4088265807-11">Funx.Either.Right</span><span class="p" data-group-id="4088265807-11">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4088265807-11">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="4088265807-12">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4088265807-13">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="4088265807-13">]</span><span class="p" data-group-id="4088265807-12">)</span><span class="w">
+</span><span class="p" data-group-id="4088265807-14">%</span><span class="nc" data-group-id="4088265807-14">Funx.Either.Left</span><span class="p" data-group-id="4088265807-14">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4088265807-15">[</span><span class="s">&quot;Value must be even&quot;</span><span class="p" data-group-id="4088265807-15">]</span><span class="p" data-group-id="4088265807-14">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="4088265807-16">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4088265807-17">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="4088265807-17">]</span><span class="p" data-group-id="4088265807-16">)</span><span class="w">
+</span><span class="p" data-group-id="4088265807-18">%</span><span class="nc" data-group-id="4088265807-18">Funx.Either.Left</span><span class="p" data-group-id="4088265807-18">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4088265807-19">[</span><span class="s">&quot;Value must be positive&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Value must be even&quot;</span><span class="p" data-group-id="4088265807-19">]</span><span class="p" data-group-id="4088265807-18">}</span></code></pre>
   </section>
 </section>
 
