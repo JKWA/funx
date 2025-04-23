@@ -17,7 +17,7 @@ defmodule Funx.MixProject do
       ],
       docs: [
         main: "readme",
-        extras: ["README.md", "CHANGELOG.md", "LEARNING_RESOURCES.md", "LICENSE"],
+        extras: ["README.md", "CHANGELOG.md", "LICENSE"],
         filter_prefix: "Examples",
         source_url: "https://github.com/JKWA/funx",
         source_url_pattern: "https://github.com/JKWA/funx/blob/main/%{path}#L%{line}"
