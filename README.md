@@ -4,9 +4,11 @@
 
 [View the code on GitHub](https://github.com/JKWA/funx)  
 
-Elixir is a dynamically typed language, which lacks the static type system that many functional languages use to enforce monadic patterns through the type checker. Instead, it relies on pattern matching, protocols, and structs to define and compose abstractions at runtime. These provide structure and behavioral guarantees, but not compile-time type safety.
+**Funx** is a functional programming library for Elixir providing protocols and combinators for equality, ordering, monoids, monads, and other core abstractions.
 
-Funx leverages these mechanisms to bring functional programming abstractions to Elixir.
+Elixir doesn’t have a static type system, so it can’t enforce functional patterns through the compiler. Instead, it uses pattern matching, protocols, and structs to model abstractions at runtime.
+
+Funx brings functional programming patterns into Elixir using the language’s own tools—without sacrificing its dynamic nature.
 
 ## Equality
 
@@ -26,7 +28,7 @@ The `Ord` protocol defines ordering relationships in a structured way, without r
 
 ## Monads
 
-Monads encapsulate computations, allowing operations to be chained while handling concerns like absence, failure, dependency, or deferred effects.
+Monads encapsulate computations, allowing operations to be chained while handling concerns like optional values, failures, dependencies, or deferred effects.
 
 - `Identity`: Wraps a value with no additional behavior—useful for organizing transformations.
 - `Maybe`: Represents optional data using `Just` for presence and `Nothing` for absence.
@@ -73,33 +75,33 @@ The `Filterable` protocol defines how to conditionally retain values within a co
 
 - `guard`: Keeps a value if a condition is met; otherwise returns an empty context.
 - `filter`: Retains values that satisfy a predicate.
-- `filter_map`: Maps and filters in one pass, keeping transformed values that match a condition.
+- `filter_map`: Applies a transformation and keeps results only when the transformed value is present.
 
 ## Sequencing
 
 Sequencing runs a series of monadic operations in order, combining the results.
 
-- `concat/1`: Extracts `Just` values from a list of `Maybe`.
-- `concat_map/2`: Maps a function over a list and collects the `Just` results.
-- `sequence/1`: Converts a list of `Maybe` into a single `Maybe` containing a list, short-circuiting on `Nothing`.
-- `traverse/2`: Applies a function that returns a `Maybe` to each element and sequences the results.
+- `concat/1`: Removes empty values and unwraps the present results from a list.
+- `concat_map/2`: Applies a function to each element and collects only the present results.
+- `sequence/1`: Converts a list of monadic values into a single monadic value containing a list. Short-circuits on the first failure or absence.
+- `traverse/2`: Applies a function to each element and sequences the resulting monadic values.
 
 ## Lifting
 
-Lifting functions promote ordinary logic into a monadic context.
+Lifting functions promote ordinary logic into a monadic or contextual form.
 
-- `lift_predicate`: Wraps a value in a monad if a condition holds.
-- `lift_eq`: Lifts an `Eq` comparator to work with `Maybe`.
-- `lift_ord`: Lifts an `Ord` comparator to work with `Maybe`.
+- `lift_predicate/3`: Wraps a value in a monad if a condition holds; returns an empty or failed context otherwise.
+- `lift_eq/1`: Adapts an `Eq` comparator to work within a monadic context.
+- `lift_ord/1`: Adapts an `Ord` comparator to work within a monadic context.
 
 ## Interop
 
 Funx integrates with common Elixir patterns like `{:ok, value}` and `{:error, reason}`.
 
-- `from_result`: Converts a result tuple into an `Either`.
-- `to_result`: Converts an `Either` back into a result tuple.
-- `from_try`: Wraps a function in an `Either`, catching exceptions as `Left`.
-- `to_try!`: Extracts a value from an `Either`, or raises if it’s a `Left`.  
+- `from_result/1`: Converts a result tuple into a monadic context that distinguishes success from failure.
+- `to_result/1`: Converts a monadic value back into a result tuple.
+- `from_try/1`: Wraps a function call in a monad, capturing exceptions as failures.
+- `to_try!/1`: Extracts the value from a monad or raises if it represents a failure.
 
 ## Installation  
 
