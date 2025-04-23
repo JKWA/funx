@@ -121,7 +121,7 @@ Pages
     <span>Funx</span>
   </h1>
 
-<p><a href="https://github.com/JKWA/funx/actions/workflows/ci.yml"><img src="https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration"/></a>  </p><p><a href="https://github.com/JKWA/funx">View the code on GitHub</a>  </p><p>Elixir is a dynamically typed language, which lacks the static type system that many functional languages use to enforce monadic patterns through the type checker. Instead, it relies on pattern matching, protocols, and structs to define and compose abstractions at runtime. These provide structure and behavioral guarantees, but not compile-time type safety.</p><p>Funx leverages these mechanisms to bring functional programming abstractions to Elixir.</p><h2 id="equality" class="section-heading">
+<p><a href="https://github.com/JKWA/funx/actions/workflows/ci.yml"><img src="https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration"/></a>  </p><p><a href="https://github.com/JKWA/funx">View the code on GitHub</a>  </p><p><strong>Funx</strong> is a functional programming library for Elixir providing protocols and combinators for equality, ordering, monoids, monads, and other core abstractions.</p><p>Elixir doesn’t have a static type system, so it can’t enforce functional patterns through the compiler. Instead, it uses pattern matching, protocols, and structs to model abstractions at runtime.</p><p>Funx brings functional programming patterns into Elixir using the language’s own tools—without sacrificing its dynamic nature.</p><h2 id="equality" class="section-heading">
   <a href="#equality" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -139,7 +139,7 @@ Pages
   </a>
   <span class="text">Monads</span>
 </h2>
-<p>Monads encapsulate computations, allowing operations to be chained while handling concerns like absence, failure, dependency, or deferred effects.</p><ul><li><code class="inline">Identity</code>: Wraps a value with no additional behavior—useful for organizing transformations.</li><li><code class="inline">Maybe</code>: Represents optional data using <code class="inline">Just</code> for presence and <code class="inline">Nothing</code> for absence.</li><li><code class="inline">Either</code>: Models computations with two possibilities—<code class="inline">Left</code> and <code class="inline">Right</code>.</li><li><code class="inline">Effect</code>: Encapsulates deferred execution with error handling, similar to <a href="https://hexdocs.pm/elixir/Task.html"><code class="inline">Task</code></a>.</li><li><code class="inline">Reader</code>: Passes an immutable environment through a computation for dependency injection or configuration.</li></ul><h2 id="monoids" class="section-heading">
+<p>Monads encapsulate computations, allowing operations to be chained while handling concerns like optional values, failures, dependencies, or deferred effects.</p><ul><li><code class="inline">Identity</code>: Wraps a value with no additional behavior—useful for organizing transformations.</li><li><code class="inline">Maybe</code>: Represents optional data using <code class="inline">Just</code> for presence and <code class="inline">Nothing</code> for absence.</li><li><code class="inline">Either</code>: Models computations with two possibilities—<code class="inline">Left</code> and <code class="inline">Right</code>.</li><li><code class="inline">Effect</code>: Encapsulates deferred execution with error handling, similar to <a href="https://hexdocs.pm/elixir/Task.html"><code class="inline">Task</code></a>.</li><li><code class="inline">Reader</code>: Passes an immutable environment through a computation for dependency injection or configuration.</li></ul><h2 id="monoids" class="section-heading">
   <a href="#monoids" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -163,35 +163,35 @@ Pages
   </a>
   <span class="text">Filtering</span>
 </h2>
-<p>The <code class="inline">Filterable</code> protocol defines how to conditionally retain values within a context.</p><ul><li><code class="inline">guard</code>: Keeps a value if a condition is met; otherwise returns an empty context.</li><li><code class="inline">filter</code>: Retains values that satisfy a predicate.</li><li><code class="inline">filter_map</code>: Maps and filters in one pass, keeping transformed values that match a condition.</li></ul><h2 id="sequencing" class="section-heading">
+<p>The <code class="inline">Filterable</code> protocol defines how to conditionally retain values within a context.</p><ul><li><code class="inline">guard</code>: Keeps a value if a condition is met; otherwise returns an empty context.</li><li><code class="inline">filter</code>: Retains values that satisfy a predicate.</li><li><code class="inline">filter_map</code>: Applies a transformation and keeps results only when the transformed value is present.</li></ul><h2 id="sequencing" class="section-heading">
   <a href="#sequencing" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Sequencing</span>
 </h2>
-<p>Sequencing runs a series of monadic operations in order, combining the results.</p><ul><li><code class="inline">concat/1</code>: Extracts <code class="inline">Just</code> values from a list of <code class="inline">Maybe</code>.</li><li><code class="inline">concat_map/2</code>: Maps a function over a list and collects the <code class="inline">Just</code> results.</li><li><code class="inline">sequence/1</code>: Converts a list of <code class="inline">Maybe</code> into a single <code class="inline">Maybe</code> containing a list, short-circuiting on <code class="inline">Nothing</code>.</li><li><code class="inline">traverse/2</code>: Applies a function that returns a <code class="inline">Maybe</code> to each element and sequences the results.</li></ul><h2 id="lifting" class="section-heading">
+<p>Sequencing runs a series of monadic operations in order, combining the results.</p><ul><li><code class="inline">concat/1</code>: Removes empty values and unwraps the present results from a list.</li><li><code class="inline">concat_map/2</code>: Applies a function to each element and collects only the present results.</li><li><code class="inline">sequence/1</code>: Converts a list of monadic values into a single monadic value containing a list. Short-circuits on the first failure or absence.</li><li><code class="inline">traverse/2</code>: Applies a function to each element and sequences the resulting monadic values.</li></ul><h2 id="lifting" class="section-heading">
   <a href="#lifting" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Lifting</span>
 </h2>
-<p>Lifting functions promote ordinary logic into a monadic context.</p><ul><li><code class="inline">lift_predicate</code>: Wraps a value in a monad if a condition holds.</li><li><code class="inline">lift_eq</code>: Lifts an <code class="inline">Eq</code> comparator to work with <code class="inline">Maybe</code>.</li><li><code class="inline">lift_ord</code>: Lifts an <code class="inline">Ord</code> comparator to work with <code class="inline">Maybe</code>.</li></ul><h2 id="interop" class="section-heading">
+<p>Lifting functions promote ordinary logic into a monadic or contextual form.</p><ul><li><code class="inline">lift_predicate/3</code>: Wraps a value in a monad if a condition holds; returns an empty or failed context otherwise.</li><li><code class="inline">lift_eq/1</code>: Adapts an <code class="inline">Eq</code> comparator to work within a monadic context.</li><li><code class="inline">lift_ord/1</code>: Adapts an <code class="inline">Ord</code> comparator to work within a monadic context.</li></ul><h2 id="interop" class="section-heading">
   <a href="#interop" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Interop</span>
 </h2>
-<p>Funx integrates with common Elixir patterns like <code class="inline">{:ok, value}</code> and <code class="inline">{:error, reason}</code>.</p><ul><li><code class="inline">from_result</code>: Converts a result tuple into an <code class="inline">Either</code>.</li><li><code class="inline">to_result</code>: Converts an <code class="inline">Either</code> back into a result tuple.</li><li><code class="inline">from_try</code>: Wraps a function in an <code class="inline">Either</code>, catching exceptions as <code class="inline">Left</code>.</li><li><code class="inline">to_try!</code>: Extracts a value from an <code class="inline">Either</code>, or raises if it’s a <code class="inline">Left</code>.  </li></ul><h2 id="installation" class="section-heading">
+<p>Funx integrates with common Elixir patterns like <code class="inline">{:ok, value}</code> and <code class="inline">{:error, reason}</code>.</p><ul><li><code class="inline">from_result/1</code>: Converts a result tuple into a monadic context that distinguishes success from failure.</li><li><code class="inline">to_result/1</code>: Converts a monadic value back into a result tuple.</li><li><code class="inline">from_try/1</code>: Wraps a function call in a monad, capturing exceptions as failures.</li><li><code class="inline">to_try!/1</code>: Extracts the value from a monad or raises if it represents a failure.</li></ul><h2 id="installation" class="section-heading">
   <a href="#installation" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Installation</span>
 </h2>
-<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="0188637176-1">do</span><span class="w">
-  </span><span class="p" data-group-id="0188637176-2">[</span><span class="w">
-    </span><span class="p" data-group-id="0188637176-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.0&quot;</span><span class="p" data-group-id="0188637176-3">}</span><span class="w">
-  </span><span class="p" data-group-id="0188637176-2">]</span><span class="w">
-</span><span class="k" data-group-id="0188637176-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
+<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="0519346768-1">do</span><span class="w">
+  </span><span class="p" data-group-id="0519346768-2">[</span><span class="w">
+    </span><span class="p" data-group-id="0519346768-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.0&quot;</span><span class="p" data-group-id="0519346768-3">}</span><span class="w">
+  </span><span class="p" data-group-id="0519346768-2">]</span><span class="w">
+</span><span class="k" data-group-id="0519346768-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
 </span></code></pre><h2 id="documentation" class="section-heading">
   <a href="#documentation" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
