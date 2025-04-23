@@ -344,6 +344,56 @@ defmodule Funx.EitherTest do
     end
   end
 
+  describe "traverse_a/2" do
+    test "empty returns a right empty list" do
+      result = traverse_a([], &right/1)
+      assert result == right([])
+    end
+
+    test "applies a function and accumulates Right results" do
+      result = traverse_a([1, 2, 3], &right/1)
+      assert result == right([1, 2, 3])
+    end
+
+    test "returns Left with all errors if function fails on multiple elements" do
+      result =
+        traverse_a(
+          [1, 2, 3],
+          fn x ->
+            lift_predicate(x, &(&1 <= 1), fn -> "bad: #{x}" end)
+          end
+        )
+
+      assert result == left(["bad: 2", "bad: 3"])
+    end
+
+    test "returns Left with one error if only one element fails" do
+      result =
+        traverse_a(
+          [1, 2, 3],
+          fn x ->
+            lift_predicate(x, &(&1 <= 2), fn -> "bad: #{x}" end)
+          end
+        )
+
+      assert result == left(["bad: 3"])
+    end
+
+    test "preserves earlier Left even if later elements are Right" do
+      result =
+        traverse_a(
+          [1, 2, 3],
+          fn
+            1 -> left("fail 1")
+            2 -> right("ok 2")
+            3 -> right("ok 3")
+          end
+        )
+
+      assert result == left(["fail 1"])
+    end
+  end
+
   describe "concat_map/2" do
     test "returns an empty list when given an empty list" do
       assert concat_map([], fn x -> x end) == []

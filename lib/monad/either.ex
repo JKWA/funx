@@ -28,6 +28,7 @@ defmodule Funx.Either do
   - `sequence/1`: Converts a list of `Either` values into a single `Either` of list.
   - `traverse/2`: Applies a function to each element in a list and sequences the results.
   - `sequence_a/1`: Like `sequence/1`, but accumulates all errors from `Left` values.
+  - `traverse_a/2`: Like `traverse/2`, but accumulates all `Left` values instead of short-circuiting.
 
   ### Validation
   - `validate/2`: Applies multiple validators to a single input, collecting any errors.
@@ -403,24 +404,44 @@ defmodule Funx.Either do
   """
   @spec sequence_a([t(error, value)]) :: t([error], [value])
         when error: term(), value: term()
-  def sequence_a([]), do: right([])
 
-  def sequence_a([head | tail]) do
-    case head do
-      %Right{right: value} ->
-        sequence_a(tail)
-        |> case do
-          %Right{right: values} -> right([value | values])
-          %Left{left: errors} -> left(errors)
-        end
+  def sequence_a(list) when is_list(list), do: traverse_a(list, fn x -> x end)
 
-      %Left{left: error} ->
-        sequence_a(tail)
-        |> case do
-          %Right{right: _values} -> left([error])
-          %Left{left: errors} -> left([error | errors])
-        end
-    end
+  @doc """
+  Traverses a list, applying the given function to each element and collecting the results in a single `Right`.
+
+  Unlike `traverse/2`, this version accumulates all `Left` values rather than stopping at the first failure. It is useful for validations where you want to gather all errors at once.
+
+  ## Examples
+
+      iex> validate = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn -> "must be positive: " <> Integer.to_string(x) end) end
+      iex> Funx.Either.traverse_a([1, 2, 3], validate)
+      %Funx.Either.Right{right: [1, 2, 3]}
+      iex> Funx.Either.traverse_a([1, -2, -3], validate)
+      %Funx.Either.Left{left: ["must be positive: -2", "must be positive: -3"]}
+  """
+
+  @spec traverse_a([a], (a -> t([e], b))) :: t([e], [b])
+        when a: term(), b: term(), e: term()
+  def traverse_a([], _func), do: right([])
+
+  def traverse_a(list, func) when is_list(list) and is_function(func, 1) do
+    Enum.reduce(list, right([]), fn item, acc_result ->
+      case {func.(item), acc_result} do
+        {%Right{right: value}, %Right{right: acc}} ->
+          right([value | acc])
+
+        {%Left{left: new_errors}, %Right{}} ->
+          left(List.wrap(new_errors))
+
+        {%Left{left: new_errors}, %Left{left: existing_errors}} ->
+          left(List.wrap(existing_errors) ++ List.wrap(new_errors))
+
+        {%Right{}, %Left{} = acc_left} ->
+          acc_left
+      end
+    end)
+    |> map(&:lists.reverse/1)
   end
 
   @doc """
@@ -441,19 +462,16 @@ defmodule Funx.Either do
   """
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
         when error: term(), value: term()
-  def validate(value, validators) when is_list(validators) do
-    results = Enum.map(validators, fn validator -> validator.(value) end)
 
-    case sequence_a(results) do
-      %Right{} -> right(value)
-      %Left{left: errors} -> left(errors)
-    end
+  def validate(value, validators) when is_list(validators) do
+    traverse_a(validators, fn validator -> validator.(value) end)
+    |> map(fn _ -> value end)
   end
 
   def validate(value, validator) when is_function(validator, 1) do
     case validator.(value) do
       %Right{} -> right(value)
-      %Left{left: error} -> left([error])
+      %Left{left: error} -> left(List.wrap(error))
     end
   end
 
