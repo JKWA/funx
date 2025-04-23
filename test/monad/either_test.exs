@@ -153,6 +153,35 @@ defmodule Funx.EitherTest do
     end
   end
 
+  describe "map_left/2" do
+    test "transforms a Left value" do
+      result = map_left(left("error"), fn e -> "wrapped: " <> e end)
+      assert result == left("wrapped: error")
+    end
+
+    test "leaves a Right value unchanged" do
+      result = map_left(right(42), fn _ -> "should not be called" end)
+      assert result == right(42)
+    end
+
+    test "can transform complex Left values" do
+      result = map_left(left(%{code: 400}), fn err -> Map.put(err, :handled, true) end)
+      assert result == left(%{code: 400, handled: true})
+    end
+
+    test "does not call the function for Right" do
+      refute_receive {:called}
+
+      result =
+        map_left(right(:ok), fn _ ->
+          send(self(), {:called})
+          :fail
+        end)
+
+      assert result == right(:ok)
+    end
+  end
+
   describe "filter_or_else/3" do
     test "returns Right value when predicate is true" do
       either_value = right(1)

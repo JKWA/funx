@@ -1,41 +1,50 @@
 defmodule Funx.Either do
   @moduledoc """
-  The `Funx.Either` module provides an implementation of the `Either` monad, which represents values that can either be `Right` (success) or `Left` (error).
+  The `Funx.Either` module provides an implementation of the `Either` monad, a functional abstraction used to model computations that may fail.
+
+  A value of type `Either` can be:
+  - `Right(value)`: representing a successful result.
+  - `Left(error)`: representing a failure or error.
+
+  This is commonly used in place of exceptions to handle errors explicitly and safely in a functional pipeline.
 
   ### Constructors
-    - `right/1`: Wraps a value in the `Right` monad.
-    - `left/1`: Wraps a value in the `Left` monad.
-    - `pure/1`: Alias for `right/1`.
+  - `right/1`: Wraps a value in the `Right` branch.
+  - `left/1`: Wraps a value in the `Left` branch.
+  - `pure/1`: Alias for `right/1`.
 
-  ### Refinements
-    - `right?/1`: Checks if an `Either` value is `Right`.
-    - `left?/1`: Checks if an `Either` value is `Left`.
+  ### Refinement
+  - `right?/1`: Returns true if the value is `Right`.
+  - `left?/1`: Returns true if the value is `Left`.
 
-  ### Matching & Filtering
-    - `filter_or_else/3`: Filters the value inside a `Right` and returns a `Left` on failure.
-    - `get_or_else/2`: Retrieves the value from a `Right`, returning a default if `Left`.
+  ### Fallback and Extraction
+  - `get_or_else/2`: Returns the value from a `Right`, or a default if `Left`.
+  - `or_else/2`: Returns the original `Right`, or the result of a fallback function if `Left`.
+  - `map_left/2`: Transforms the `Left` value using a function, leaving `Right` values unchanged.
 
-  ### Comparison
-    - `lift_eq/1`: Returns a custom equality function for `Either` values.
-    - `lift_ord/1`: Returns a custom ordering function for `Either` values.
-
-  ### Sequencing
-    - `sequence/1`: Sequences a list of `Either` values.
-    - `traverse/2`: Applies a function to a list and sequences the result.
-    - `sequence_a/1`: Sequences a list of `Either` values, collecting errors from `Left` values.
+  ### List Operations
+  - `concat/1`: Removes `Left` values and unwraps all `Right` values from a list.
+  - `concat_map/2`: Applies a function and collects only `Right` results.
+  - `sequence/1`: Converts a list of `Either` values into a single `Either` of list.
+  - `traverse/2`: Applies a function to each element in a list and sequences the results.
+  - `sequence_a/1`: Like `sequence/1`, but accumulates all errors from `Left` values.
 
   ### Validation
-    - `validate/2`: Validates a value using a list of validators, collecting errors from `Left` values.
+  - `validate/2`: Applies multiple validators to a single input, collecting any errors.
 
-  ### Lifts
-    - `lift_maybe/2`: Lifts a `Maybe` value to an `Either` monad.
-    - `lift_predicate/3`: Lifts a value into an `Either` based on a predicate.
+  ### Lifting
+  - `lift_predicate/3`: Turns a predicate into an `Either` by returning `Right` on true or `Left` on false.
+  - `lift_maybe/2`: Converts a `Maybe` to an `Either` using a fallback value.
+  - `lift_eq/1`: Lifts an equality function into the `Either` context.
+  - `lift_ord/1`: Lifts an ordering function into the `Either` context.
 
-  ### Elixir Interops
-    - `from_result/1`: Converts a result (`{:ok, _}` or `{:error, _}`) to an `Either`.
-    - `to_result/1`: Converts an `Either` to a result (`{:ok, value}` or `{:error, reason}`).
-    - `from_try/1`: Wraps a value in an `Either`, catching exceptions.
-    - `to_try!/1`: Converts an `Either` to its value or raises an exception if `Left`.
+  ### Elixir Interoperability
+  - `from_result/1`: Converts `{:ok, val}` or `{:error, err}` into an `Either`.
+  - `to_result/1`: Converts an `Either` to a result tuple.
+  - `from_try/1`: Runs a function and wraps the result in `Right` or catches exceptions as `Left`.
+  - `to_try!/1`: Unwraps a `Right` or raises an error from a `Left`.
+
+  This module allows you to model failure explicitly, compose error-aware computations, and integrate cleanly with Elixir idioms.
   """
 
   import Funx.Monad, only: [map: 2]
@@ -267,6 +276,23 @@ defmodule Funx.Either do
       end
     }
   end
+
+  @doc """
+  Transforms the `Left` value using the given function if the `Either` is a `Left`.
+  If the value is `Right`, it is returned unchanged.
+
+  ## Examples
+
+      iex> Funx.Either.map_left(Funx.Either.left("error"), fn e -> "wrapped: " <> e end)
+      %Funx.Either.Left{left: "wrapped: error"}
+
+      iex> Funx.Either.map_left(Funx.Either.right(42), fn _ -> "ignored" end)
+      %Funx.Either.Right{right: 42}
+  """
+  @spec map_left(t(error, value), (error -> new_error)) :: t(new_error, value)
+        when error: term(), new_error: term(), value: term()
+  def map_left(%Left{left: error}, func) when is_function(func, 1), do: Left.pure(func.(error))
+  def map_left(%Right{} = right, _func), do: right
 
   @doc """
   Removes `Left` values from a list of `Either` and returns a list of unwrapped `Right` values.
