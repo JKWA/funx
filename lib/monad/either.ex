@@ -410,17 +410,17 @@ defmodule Funx.Either do
   @doc """
   Traverses a list, applying the given function to each element and collecting the results in a single `Right`.
 
-  Unlike `traverse/2`, this version accumulates all `Left` values rather than stopping at the first failure. It is useful for validations where you want to gather all errors at once.
+  Unlike `traverse/2`, this version accumulates all `Left` values rather than stopping at the first failure.
+  It is useful for validations where you want to gather all errors at once.
 
   ## Examples
 
-      iex> validate = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn -> "must be positive: " <> Integer.to_string(x) end) end
+      iex> validate = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn v -> "must be positive: \#{v}" end) end
       iex> Funx.Either.traverse_a([1, 2, 3], validate)
       %Funx.Either.Right{right: [1, 2, 3]}
       iex> Funx.Either.traverse_a([1, -2, -3], validate)
       %Funx.Either.Left{left: ["must be positive: -2", "must be positive: -3"]}
   """
-
   @spec traverse_a([a], (a -> t([e], b))) :: t([e], [b])
         when a: term(), b: term(), e: term()
   def traverse_a([], _func), do: right([])
@@ -451,14 +451,14 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> validate_positive = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn -> "Value must be positive" end) end
-      iex> validate_even = fn x -> Funx.Either.lift_predicate(x, &rem(&1, 2) == 0, fn -> "Value must be even" end) end
+      iex> validate_positive = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: \#{v}" end) end
+      iex> validate_even = fn x -> Funx.Either.lift_predicate(x, &rem(&1, 2) == 0, fn v -> "Value must be even: \#{v}" end) end
       iex> Funx.Either.validate(4, [validate_positive, validate_even])
       %Funx.Either.Right{right: 4}
       iex> Funx.Either.validate(3, [validate_positive, validate_even])
-      %Funx.Either.Left{left: ["Value must be even"]}
+      %Funx.Either.Left{left: ["Value must be even: 3"]}
       iex> Funx.Either.validate(-3, [validate_positive, validate_even])
-      %Funx.Either.Left{left: ["Value must be positive", "Value must be even"]}
+      %Funx.Either.Left{left: ["Value must be positive: -3", "Value must be even: -3"]}
   """
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
         when error: term(), value: term()
@@ -498,20 +498,26 @@ defmodule Funx.Either do
   @doc """
   Lifts a value into an `Either` based on the result of a predicate.
 
+  Returns `Right(value)` if the predicate returns `true`, or `Left(on_false.(value))` if it returns `false`.
+
+  This allows you to wrap a conditional check in a functional context with a custom error message.
+
   ## Examples
 
-      iex> Funx.Either.lift_predicate(5, fn x -> x > 3 end, fn -> "too small" end)
+      iex> Funx.Either.lift_predicate(5, fn x -> x > 3 end, fn x -> "\#{x} is too small" end)
       %Funx.Either.Right{right: 5}
 
-      iex> Funx.Either.lift_predicate(2, fn x -> x > 3 end, fn -> "too small" end)
-      %Funx.Either.Left{left: "too small"}
+      iex> Funx.Either.lift_predicate(2, fn x -> x > 3 end, fn x -> "\#{x} is too small" end)
+      %Funx.Either.Left{left: "2 is too small"}
   """
-  @spec lift_predicate(any(), (any() -> boolean()), (-> any())) :: t(any(), any())
+
+  @spec lift_predicate(value, (value -> boolean), (value -> error)) :: t(error, value)
+        when value: term(), error: term()
   def lift_predicate(value, predicate, on_false) do
     fold_r(
       fn -> predicate.(value) end,
       fn -> Right.pure(value) end,
-      fn -> Left.pure(on_false.()) end
+      fn -> Left.pure(on_false.(value)) end
     )
   end
 

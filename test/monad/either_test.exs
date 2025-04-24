@@ -336,11 +336,11 @@ defmodule Funx.EitherTest do
         traverse(
           [1, 2, 3],
           fn x ->
-            lift_predicate(x, &(&1 <= 1), fn -> "error" end)
+            lift_predicate(x, &(&1 <= 1), fn v -> "#{v} is not valid" end)
           end
         )
 
-      assert result == left("error")
+      assert result == left("2 is not valid")
     end
   end
 
@@ -360,7 +360,7 @@ defmodule Funx.EitherTest do
         traverse_a(
           [1, 2, 3],
           fn x ->
-            lift_predicate(x, &(&1 <= 1), fn -> "bad: #{x}" end)
+            lift_predicate(x, &(&1 <= 1), fn v -> "bad: #{v}" end)
           end
         )
 
@@ -372,7 +372,7 @@ defmodule Funx.EitherTest do
         traverse_a(
           [1, 2, 3],
           fn x ->
-            lift_predicate(x, &(&1 <= 2), fn -> "bad: #{x}" end)
+            lift_predicate(x, &(&1 <= 2), fn v -> "bad: #{v}" end)
           end
         )
 
@@ -468,11 +468,11 @@ defmodule Funx.EitherTest do
     def even?(x), do: rem(x, 2) == 0
 
     def validate_positive(x) do
-      x |> lift_predicate(&positive?/1, fn -> "Value must be positive" end)
+      lift_predicate(x, &positive?/1, fn v -> "Value must be positive: #{v}" end)
     end
 
     def validate_even(x) do
-      x |> lift_predicate(&even?/1, fn -> "Value must be even" end)
+      lift_predicate(x, &even?/1, fn v -> "Value must be even: #{v}" end)
     end
 
     test "returns Right for a single validation when it passes" do
@@ -480,11 +480,11 @@ defmodule Funx.EitherTest do
     end
 
     test "returns Left for a single validation when it fails" do
-      assert validate(-5, &validate_positive/1) == left(["Value must be positive"])
+      assert validate(-5, &validate_positive/1) == left(["Value must be positive: -5"])
     end
 
     test "returns Left for a single validation with a different condition" do
-      assert validate(3, &validate_even/1) == left(["Value must be even"])
+      assert validate(3, &validate_even/1) == left(["Value must be even: 3"])
     end
 
     test "returns Right for a single validation with a different condition" do
@@ -498,14 +498,14 @@ defmodule Funx.EitherTest do
 
     test "returns Left with a single error when one validator fails" do
       validators = [&validate_positive/1, &validate_even/1]
-      assert validate(3, validators) == left(["Value must be even"])
+      assert validate(3, validators) == left(["Value must be even: 3"])
     end
 
     test "returns Left with multiple errors when multiple validators fail" do
       validators = [&validate_positive/1, &validate_even/1]
 
       assert validate(-3, validators) ==
-               left(["Value must be positive", "Value must be even"])
+               left(["Value must be positive: -3", "Value must be even: -3"])
     end
 
     test "returns Right when all validators pass with different value" do
@@ -515,7 +515,7 @@ defmodule Funx.EitherTest do
 
     test "returns Left when all validators fail" do
       validators = [&validate_positive/1, &validate_even/1]
-      assert validate(-2, validators) == left(["Value must be positive"])
+      assert validate(-2, validators) == left(["Value must be positive: -2"])
     end
   end
 
@@ -790,7 +790,7 @@ defmodule Funx.EitherTest do
   describe "lift_predicate/3" do
     test "returns Right when the predicate is true" do
       pred = fn x -> x > 0 end
-      false_func = fn -> "Predicate failed" end
+      false_func = fn _x -> "Predicate failed" end
 
       result =
         5
@@ -801,13 +801,13 @@ defmodule Funx.EitherTest do
 
     test "returns Left when the predicate is false" do
       pred = fn x -> x > 0 end
-      false_func = fn -> "Predicate failed" end
+      false_func = fn x -> "#{x} failed the check" end
 
       result =
         0
         |> lift_predicate(pred, false_func)
 
-      assert result == left("Predicate failed")
+      assert result == left("0 failed the check")
     end
   end
 
