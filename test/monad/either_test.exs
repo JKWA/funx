@@ -392,6 +392,16 @@ defmodule Funx.EitherTest do
 
       assert result == left(["fail 1"])
     end
+
+    test "does not nest error lists inside Left" do
+      result =
+        traverse_a(
+          [2, 3],
+          fn x -> left(["bad: #{x}"]) end
+        )
+
+      assert result == left(["bad: 2", "bad: 3"])
+    end
   end
 
   describe "concat_map/2" do
@@ -856,10 +866,35 @@ defmodule Funx.EitherTest do
       assert to_try!(right_result) == 42
     end
 
-    test "raises RuntimeError for Left" do
+    test "raises RuntimeError for Left with string reason" do
       left_result = %Left{left: "something went wrong"}
 
       assert_raise RuntimeError, "something went wrong", fn ->
+        to_try!(left_result)
+      end
+    end
+
+    test "raises RuntimeError for Left with list of errors" do
+      left_result = %Left{left: ["error 1", "error 2"]}
+
+      assert_raise RuntimeError, "error 1, error 2", fn ->
+        to_try!(left_result)
+      end
+    end
+
+    test "raises original exception if reason is an exception struct" do
+      exception = %ArgumentError{message: "invalid argument"}
+      left_result = %Left{left: exception}
+
+      assert_raise ArgumentError, "invalid argument", fn ->
+        to_try!(left_result)
+      end
+    end
+
+    test "raises RuntimeError with inspected value for unexpected reason type" do
+      left_result = %Left{left: {:unexpected, 123}}
+
+      assert_raise RuntimeError, "Unexpected error: {:unexpected, 123}", fn ->
         to_try!(left_result)
       end
     end

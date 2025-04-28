@@ -431,18 +431,22 @@ defmodule Funx.Either do
         {%Right{right: value}, %Right{right: acc}} ->
           right([value | acc])
 
-        {%Left{left: new_errors}, %Right{}} ->
-          left(List.wrap(new_errors))
-
         {%Left{left: new_errors}, %Left{left: existing_errors}} ->
-          left(List.wrap(existing_errors) ++ List.wrap(new_errors))
+          left(as_list(new_errors) ++ existing_errors)
 
-        {%Right{}, %Left{} = acc_left} ->
-          acc_left
+        {%Right{}, %Left{left: existing_errors}} ->
+          left(existing_errors)
+
+        {%Left{left: errors}, %Right{}} ->
+          left(as_list(errors))
       end
     end)
     |> map(&:lists.reverse/1)
+    |> map_left(&:lists.reverse/1)
   end
+
+  defp as_list(value) when is_list(value), do: value
+  defp as_list(value), do: [value]
 
   @doc """
   Validates a value using a list of validator functions. Each validator returns an `Either`: a `Right` if the check passes, or a `Left` with an error.
@@ -580,7 +584,9 @@ defmodule Funx.Either do
   end
 
   @doc """
-  Converts an `Either` to its wrapped value, raising an exception if it is `Left`.
+  Converts an `Either` to its inner value, raising an exception if it is `Left`.
+
+  If the `Left` holds an exception struct, it is raised directly. If it holds a string or list of errors, they are converted into a `RuntimeError`. Unexpected types are inspected and raised as a `RuntimeError`.
 
   ## Examples
 
@@ -589,16 +595,24 @@ defmodule Funx.Either do
 
       iex> Funx.Either.to_try!(Funx.Either.left("error"))
       ** (RuntimeError) error
+
+      iex> Funx.Either.to_try!(Funx.Either.left(["error 1", "error 2"]))
+      ** (RuntimeError) error 1, error 2
+
+      iex> Funx.Either.to_try!(Funx.Either.left(%ArgumentError{message: "bad argument"}))
+      ** (ArgumentError) bad argument
   """
+
   @spec to_try!(t(left, right)) :: right | no_return
         when left: term(), right: term()
-  def to_try!(either) do
-    case either do
-      %Right{right: value} ->
-        value
+  def to_try!(%Right{right: value}), do: value
 
-      %Left{left: reason} ->
-        raise reason
-    end
+  def to_try!(%Left{left: reason}) do
+    raise normalize_reason(reason)
   end
+
+  defp normalize_reason(%_{} = exception), do: exception
+  defp normalize_reason(reason) when is_binary(reason), do: reason
+  defp normalize_reason(reason) when is_list(reason), do: Enum.join(reason, ", ")
+  defp normalize_reason(reason), do: "Unexpected error: #{inspect(reason)}"
 end
