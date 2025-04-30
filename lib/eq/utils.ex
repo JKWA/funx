@@ -189,7 +189,7 @@ defmodule Funx.Eq.Utils do
 
       iex> eq = Funx.Eq.Utils.contramap(& &1.name)
       iex> predicate = Funx.Eq.Utils.to_predicate(%{name: "Alice"}, eq)
-      iex> Enum.filter([%{name: "Alice"}, %{name: "Bob"}], predicate)
+      iex> Funx.Filterable.filter([%{name: "Alice"}, %{name: "Bob"}], predicate)
       [%{name: "Alice"}]
   """
   @spec to_predicate(a, eq_t()) :: (a -> boolean())

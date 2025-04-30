@@ -587,10 +587,10 @@ defmodule Funx.MaybeTest do
       assert to_predicate(nothing()) == false
     end
 
-    test "works in Enum.filter/2 to keep Just values" do
+    test "works in filter/2 to keep Just values" do
       list = [just(1), nothing(), just(3), nothing(), just(5)]
 
-      result = Enum.filter(list, &to_predicate/1)
+      result = filter(list, &to_predicate/1)
 
       assert result == [just(1), just(3), just(5)]
     end
@@ -598,8 +598,8 @@ defmodule Funx.MaybeTest do
     test "filters out Nothing values when used in a pipeline" do
       result =
         [just("a"), nothing(), just("b")]
-        |> Enum.filter(&to_predicate/1)
-        |> Enum.map(fn %Just{value: v} -> v end)
+        |> filter(&to_predicate/1)
+        |> map(fn %Just{value: v} -> v end)
 
       assert result == ["a", "b"]
     end

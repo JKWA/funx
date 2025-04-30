@@ -2,7 +2,7 @@ defmodule Funx.Eq.UtilsTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
-
+  import Funx.Filterable, only: [filter: 2]
   alias Funx.Eq.Utils
   alias Funx.Maybe
   alias Funx.Test.Person
@@ -156,7 +156,7 @@ defmodule Funx.Eq.UtilsTest do
       list = [1, 2, 3, 8, 10, 15, 20]
       target_number = 10
 
-      result = Enum.filter(list, Utils.to_predicate(target_number, within_5_eq()))
+      result = filter(list, Utils.to_predicate(target_number, within_5_eq()))
 
       assert result == [8, 10, 15]
     end
@@ -165,7 +165,7 @@ defmodule Funx.Eq.UtilsTest do
       list = [1, 2, 3, 20, 25]
       target_number = 10
 
-      result = Enum.filter(list, Utils.to_predicate(target_number, within_5_eq()))
+      result = filter(list, Utils.to_predicate(target_number, within_5_eq()))
 
       assert result == []
     end
@@ -174,7 +174,7 @@ defmodule Funx.Eq.UtilsTest do
       list = [7, 8, 10, 12, 14]
       target_number = 10
 
-      result = Enum.filter(list, Utils.to_predicate(target_number, within_5_eq()))
+      result = filter(list, Utils.to_predicate(target_number, within_5_eq()))
 
       assert result == [7, 8, 10, 12, 14]
     end
@@ -202,7 +202,7 @@ defmodule Funx.Eq.UtilsTest do
 
       target = Maybe.just(10)
 
-      result = Enum.filter(list, Utils.to_predicate(target, within_5_eq_maybe()))
+      result = filter(list, Utils.to_predicate(target, within_5_eq_maybe()))
       assert result == [Maybe.just(8), Maybe.just(10), Maybe.just(15)]
     end
 
@@ -210,7 +210,7 @@ defmodule Funx.Eq.UtilsTest do
       list = [Maybe.just(1), Maybe.just(3), Maybe.just(20), Maybe.nothing()]
       target = Maybe.just(10)
 
-      result = Enum.filter(list, Utils.to_predicate(target, within_5_eq_maybe()))
+      result = filter(list, Utils.to_predicate(target, within_5_eq_maybe()))
 
       assert result == []
     end
@@ -225,7 +225,7 @@ defmodule Funx.Eq.UtilsTest do
       ]
 
       target = Maybe.just(10)
-      result = Enum.filter(list, Utils.to_predicate(target, within_5_eq_maybe()))
+      result = filter(list, Utils.to_predicate(target, within_5_eq_maybe()))
 
       assert result == [Maybe.just(10), Maybe.just(12), Maybe.just(15)]
     end
@@ -241,7 +241,7 @@ defmodule Funx.Eq.UtilsTest do
       list = [1, 2, 3, 8, 10, 15, 20]
       target_number = 10
 
-      result = Enum.filter(list, Utils.to_predicate(target_number, Within5Eq))
+      result = filter(list, Utils.to_predicate(target_number, Within5Eq))
 
       assert result == [8, 10, 15]
     end
@@ -250,7 +250,7 @@ defmodule Funx.Eq.UtilsTest do
       list = [1, 2, 3, 20, 25]
       target_number = 10
 
-      result = Enum.filter(list, Utils.to_predicate(target_number, Within5Eq))
+      result = filter(list, Utils.to_predicate(target_number, Within5Eq))
 
       assert result == []
     end
@@ -259,7 +259,7 @@ defmodule Funx.Eq.UtilsTest do
       list = [7, 8, 10, 12, 14]
       target_number = 10
 
-      result = Enum.filter(list, Utils.to_predicate(target_number, Within5Eq))
+      result = filter(list, Utils.to_predicate(target_number, Within5Eq))
 
       assert result == [7, 8, 10, 12, 14]
     end

@@ -48,6 +48,8 @@ defmodule Funx.List do
   - `fold_r/3`: Performs right-associative folding.
   """
   import Funx.Foldable, only: [fold_l: 3]
+  import Funx.Filterable, only: [filter: 2]
+
   alias Funx.Eq
   alias Funx.Ord
 
@@ -92,7 +94,7 @@ defmodule Funx.List do
   @spec intersection([term()], [term()], Eq.Utils.eq_t()) :: [term()]
   def intersection(list1, list2, eq \\ Funx.Eq) when is_list(list1) and is_list(list2) do
     list1
-    |> Enum.filter(fn item -> Enum.any?(list2, &Eq.Utils.eq?(item, &1, eq)) end)
+    |> filter(fn item -> Enum.any?(list2, &Eq.Utils.eq?(item, &1, eq)) end)
     |> uniq(eq)
   end
 
@@ -190,17 +192,21 @@ end
 defimpl Funx.Monad, for: List do
   @spec ap(list((term -> term)), list(term)) :: list(term)
   def ap(funcs, list) do
-    for f <- funcs, x <- list, do: f.(x)
+    :lists.flatten(
+      for f <- funcs do
+        :lists.map(f, list)
+      end
+    )
   end
 
-  @spec bind(list(term), (term -> list(term))) :: list(term)
+  @spec bind([term], (term -> [term])) :: [term]
   def bind(list, func) do
-    Enum.flat_map(list, func)
+    :lists.flatmap(func, list)
   end
 
-  @spec map(list(term), (term -> term)) :: list(term)
+  @spec map([term], (term -> term)) :: [term]
   def map(list, func) do
-    Enum.map(list, func)
+    :lists.map(func, list)
   end
 end
 

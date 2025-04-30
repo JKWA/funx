@@ -7,7 +7,7 @@ defmodule Funx.Math do
   """
 
   import Funx.Monoid.Utils, only: [append: 3, concat: 2]
-  import Funx.Monad, only: [bind: 2]
+  import Funx.Monad, only: [bind: 2, map: 2]
   alias Funx.Maybe
   alias Funx.Monoid.{Max, Min, Product, Sum}
 
@@ -190,7 +190,7 @@ defmodule Funx.Math do
   """
   @spec square(number()) :: number()
   @spec square([number()]) :: [number()]
-  def square(list) when is_list(list), do: Enum.map(list, &square/1)
+  def square(list) when is_list(list), do: map(list, &square/1)
 
   def square(x) when is_number(x), do: product(x, x)
 
@@ -238,7 +238,7 @@ defmodule Funx.Math do
     list
     |> mean()
     |> bind(fn mean ->
-      Maybe.pure(Enum.map(list, &(&1 - mean)))
+      Maybe.pure(map(list, &(&1 - mean)))
     end)
   end
 
