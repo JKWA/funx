@@ -211,3 +211,26 @@ defimpl Funx.Foldable, for: List do
   @spec fold_r(list(term), (term, term -> term), term) :: term
   def fold_r(list, func, acc), do: :lists.foldr(func, acc, list)
 end
+
+defimpl Funx.Filterable, for: List do
+  def guard(list, true), do: list
+  def guard(_list, false), do: []
+
+  def filter(list, predicate) do
+    :lists.filter(predicate, list)
+  end
+
+  def filter_map(list, func) do
+    :lists.foldl(
+      fn x, acc ->
+        case func.(x) do
+          nil -> acc
+          result -> [result | acc]
+        end
+      end,
+      [],
+      list
+    )
+    |> :lists.reverse()
+  end
+end

@@ -1,5 +1,6 @@
 defmodule Funx.ListTest do
   use ExUnit.Case, async: true
+  import Funx.Filterable
   import Funx.Foldable
   import Funx.Monad
 
@@ -107,6 +108,55 @@ defmodule Funx.ListTest do
       func = fn x, acc -> acc - x end
 
       assert fold_r(list, func, 0) == -10
+    end
+  end
+
+  describe "guard/2" do
+    test "returns the list when condition is true" do
+      assert guard([1, 2, 3], true) == [1, 2, 3]
+    end
+
+    test "returns an empty list when condition is false" do
+      assert guard([1, 2, 3], false) == []
+    end
+  end
+
+  describe "filter/2" do
+    test "filters out values that do not match the predicate" do
+      assert filter([1, 2, 3, 4], fn x -> rem(x, 2) == 0 end) == [2, 4]
+    end
+
+    test "returns an empty list when no values match" do
+      assert filter([1, 3, 5], fn x -> rem(x, 2) == 0 end) == []
+    end
+  end
+
+  describe "filter_map/2" do
+    test "filters and transforms values" do
+      result =
+        filter_map([1, 2, 3, 4], fn x ->
+          if rem(x, 2) == 0, do: x * 10, else: nil
+        end)
+
+      assert result == [20, 40]
+    end
+
+    test "returns an empty list if all results are nil" do
+      result =
+        filter_map([1, 3, 5], fn x ->
+          if rem(x, 2) == 0, do: x * 10, else: nil
+        end)
+
+      assert result == []
+    end
+
+    test "preserves order" do
+      result =
+        filter_map([5, 3, 2, 4], fn x ->
+          if rem(x, 2) == 0, do: x * 10, else: nil
+        end)
+
+      assert result == [20, 40]
     end
   end
 end
