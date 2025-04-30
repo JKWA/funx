@@ -98,7 +98,7 @@ defmodule Funx.ListTest do
       list = [1, 2, 3, 4]
       func = fn acc, x -> acc + x end
 
-      assert fold_l(list, func, 0) == 10
+      assert fold_l(list, 0, func) == 10
     end
   end
 
@@ -107,7 +107,7 @@ defmodule Funx.ListTest do
       list = [1, 2, 3, 4]
       func = fn x, acc -> acc - x end
 
-      assert fold_r(list, func, 0) == -10
+      assert fold_r(list, 0, func) == -10
     end
   end
 

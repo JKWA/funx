@@ -264,7 +264,7 @@ defmodule Funx.Maybe do
   @spec concat([t(output)]) :: [output] when output: any()
   def concat(list) when is_list(list) do
     list
-    |> Enum.reduce([], fn
+    |> fold_l([], fn
       %Just{value: value}, acc -> [value | acc]
       %Nothing{}, acc -> acc
     end)
@@ -295,7 +295,7 @@ defmodule Funx.Maybe do
   """
   @spec concat_map([input], (input -> t(output))) :: [output] when input: any(), output: any()
   def concat_map(list, func) when is_list(list) and is_function(func, 1) do
-    Enum.reduce(list, [], fn item, acc ->
+    fold_l(list, [], fn item, acc ->
       case func.(item) do
         %Just{value: value} -> [value | acc]
         %Nothing{} -> acc

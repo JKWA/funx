@@ -47,7 +47,7 @@ defmodule Funx.List do
   - `fold_l/3`: Performs left-associative folding.
   - `fold_r/3`: Performs right-associative folding.
   """
-
+  import Funx.Foldable, only: [fold_l: 3]
   alias Funx.Eq
   alias Funx.Ord
 
@@ -62,7 +62,7 @@ defmodule Funx.List do
   @spec uniq([term()], Eq.Utils.eq_t()) :: [term()]
   def uniq(list, eq \\ Funx.Eq) when is_list(list) do
     list
-    |> Enum.reduce([], fn item, acc ->
+    |> fold_l([], fn item, acc ->
       if Enum.any?(acc, &Eq.Utils.eq?(item, &1, eq)), do: acc, else: [item | acc]
     end)
     |> :lists.reverse()
@@ -205,11 +205,11 @@ defimpl Funx.Monad, for: List do
 end
 
 defimpl Funx.Foldable, for: List do
-  @spec fold_l(list(term), (term, term -> term), term) :: term
-  def fold_l(list, func, acc), do: :lists.foldl(func, acc, list)
+  @spec fold_l(list(term), term, (term, term -> term)) :: term
+  def fold_l(list, acc, func), do: :lists.foldl(func, acc, list)
 
-  @spec fold_r(list(term), (term, term -> term), term) :: term
-  def fold_r(list, func, acc), do: :lists.foldr(func, acc, list)
+  @spec fold_r(list(term), term, (term, term -> term)) :: term
+  def fold_r(list, acc, func), do: :lists.foldr(func, acc, list)
 end
 
 defimpl Funx.Filterable, for: List do

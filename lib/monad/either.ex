@@ -50,7 +50,7 @@ defmodule Funx.Either do
 
   import Funx.Monad, only: [map: 2]
 
-  import Funx.Foldable, only: [fold_r: 3]
+  import Funx.Foldable, only: [fold_l: 3]
   alias Funx.Either.{Left, Right}
   alias Funx.Eq
   alias Funx.Maybe
@@ -130,7 +130,7 @@ defmodule Funx.Either do
   """
   @spec filter_or_else(t(any(), any()), (any() -> boolean()), (-> any())) :: t(any(), any())
   def filter_or_else(either, predicate, left_func) do
-    fold_r(
+    fold_l(
       either,
       fn value ->
         if predicate.(value) do
@@ -156,7 +156,7 @@ defmodule Funx.Either do
   """
   @spec get_or_else(t(any(), any()), any()) :: any()
   def get_or_else(either, default) do
-    fold_r(
+    fold_l(
       either,
       fn value -> value end,
       fn _left_value -> default end
@@ -315,7 +315,7 @@ defmodule Funx.Either do
         when error: term(), value: any()
   def concat(list) when is_list(list) do
     list
-    |> Enum.reduce([], fn
+    |> fold_l([], fn
       %Right{right: value}, acc -> [value | acc]
       %Left{}, acc -> acc
     end)
@@ -341,7 +341,7 @@ defmodule Funx.Either do
   @spec concat_map([input], (input -> t(error, output))) :: [output]
         when input: any(), output: any(), error: any()
   def concat_map(list, func) when is_list(list) and is_function(func, 1) do
-    Enum.reduce(list, [], fn item, acc ->
+    fold_l(list, [], fn item, acc ->
       case func.(item) do
         %Right{right: value} -> [value | acc]
         %Left{} -> acc
@@ -426,7 +426,7 @@ defmodule Funx.Either do
   def traverse_a([], _func), do: right([])
 
   def traverse_a(list, func) when is_list(list) and is_function(func, 1) do
-    Enum.reduce(list, right([]), fn item, acc_result ->
+    fold_l(list, right([]), fn item, acc_result ->
       case {func.(item), acc_result} do
         {%Right{right: value}, %Right{right: acc}} ->
           right([value | acc])
@@ -493,7 +493,7 @@ defmodule Funx.Either do
   @spec lift_maybe(Maybe.t(any()), (-> any())) :: t(any(), any())
   def lift_maybe(maybe, on_none) do
     maybe
-    |> fold_r(
+    |> fold_l(
       fn value -> Right.pure(value) end,
       fn -> Left.pure(on_none.()) end
     )
@@ -518,7 +518,7 @@ defmodule Funx.Either do
   @spec lift_predicate(value, (value -> boolean), (value -> error)) :: t(error, value)
         when value: term(), error: term()
   def lift_predicate(value, predicate, on_false) do
-    fold_r(
+    fold_l(
       fn -> predicate.(value) end,
       fn -> Right.pure(value) end,
       fn -> Left.pure(on_false.(value)) end

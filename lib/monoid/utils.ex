@@ -7,6 +7,7 @@ defmodule Funx.Monoid.Utils do
   """
 
   import Funx.Monoid, only: [empty: 1, append: 2, wrap: 2, unwrap: 1]
+  import Funx.Foldable, only: [fold_l: 3]
 
   @doc """
   Appends two values within a given monoid.
@@ -54,7 +55,7 @@ defmodule Funx.Monoid.Utils do
 
   """
   def concat(monoid, values) when is_struct(monoid) and is_list(values) do
-    Enum.reduce(values, empty(monoid), fn value, acc ->
+    fold_l(values, empty(monoid), fn value, acc ->
       append(acc, wrap(monoid, value))
     end)
     |> unwrap()
