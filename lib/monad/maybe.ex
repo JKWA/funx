@@ -25,11 +25,6 @@ defmodule Funx.Maybe do
     - `get_or_else/2`: Returns the value from a `Just`, or a default if `Nothing`.
     - `or_else/2`: Returns the original `Just`, or invokes a fallback function if `Nothing`.
 
-  ### Checks and Filtering
-
-    - `filter/2`: Keeps the value if it matches a predicate, otherwise returns `Nothing`.
-    - `guard/2`: Retains the `Maybe` if the boolean is `true`, otherwise returns `Nothing`.
-
   ### List Operations
 
     - `concat/1`: Removes all `Nothing` values and unwraps the `Just` values from a list.
