@@ -158,7 +158,7 @@ defmodule Funx.Either do
         if predicate.(value) do
           either
         else
-          Left.pure(left_func.())
+          left(left_func.())
         end
       end,
       fn _left_value -> either end
@@ -314,7 +314,7 @@ defmodule Funx.Either do
   """
   @spec map_left(t(error, value), (error -> new_error)) :: t(new_error, value)
         when error: term(), new_error: term(), value: term()
-  def map_left(%Left{left: error}, func) when is_function(func, 1), do: Left.pure(func.(error))
+  def map_left(%Left{left: error}, func) when is_function(func, 1), do: left(func.(error))
   def map_left(%Right{} = right, _func), do: right
 
   @doc """
@@ -563,8 +563,8 @@ defmodule Funx.Either do
   def lift_maybe(maybe, on_none) do
     maybe
     |> fold_l(
-      fn value -> Right.pure(value) end,
-      fn -> Left.pure(on_none.()) end
+      fn value -> right(value) end,
+      fn -> left(on_none.()) end
     )
   end
 
@@ -589,8 +589,8 @@ defmodule Funx.Either do
   def lift_predicate(value, predicate, on_false) do
     fold_l(
       fn -> predicate.(value) end,
-      fn -> Right.pure(value) end,
-      fn -> Left.pure(on_false.(value)) end
+      fn -> right(value) end,
+      fn -> left(on_false.(value)) end
     )
   end
 
@@ -607,8 +607,8 @@ defmodule Funx.Either do
   """
   @spec from_result({:ok, right} | {:error, left}) :: t(left, right)
         when left: term(), right: term()
-  def from_result({:ok, value}), do: Right.pure(value)
-  def from_result({:error, reason}), do: Left.pure(reason)
+  def from_result({:ok, value}), do: right(value)
+  def from_result({:error, reason}), do: left(reason)
 
   @doc """
   Converts an `Either` to a result (`{:ok, value}` or `{:error, reason}`).
@@ -645,10 +645,10 @@ defmodule Funx.Either do
   def from_try(func) do
     try do
       result = func.()
-      Right.pure(result)
+      right(result)
     rescue
       exception ->
-        Left.pure(exception)
+        left(exception)
     end
   end
 
