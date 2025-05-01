@@ -2,13 +2,17 @@ defmodule Funx.Maybe.Just do
   @moduledoc """
   Represents the `Just` variant of the `Maybe` monad, used to model the presence of a value.
 
-  This module implements the following protocols:
-    - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
-    - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Just` values.
-    - `Funx.Eq`: Defines equality checks between `Just` and other `Maybe` values.
-    - `Funx.Ord`: Defines ordering logic for `Just` and `Nothing` values.
+  A `Just` wraps a single value and participates in functional composition by propagating the contained value through monadic operations.
 
-  The `Just` monad provides implementations that propagate the wrapped value through operations.
+  This module implements the following protocols:
+
+    - `Funx.Monad`: Implements `bind/2`, `map/2`, and `ap/2` for monadic composition.
+    - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to fold over the wrapped value.
+    - `Funx.Filterable`: Supports filtering with `filter/2`, `filter_map/2`, and `guard/2`.
+    - `Funx.Eq`: Enables equality checks between `Just` and other `Maybe` values.
+    - `Funx.Ord`: Defines ordering behavior between `Just` and `Nothing`.
+
+  These protocol implementations allow `Just` to participate in structured computation, validation, filtering, and comparison within the `Maybe` context.
   """
 
   @enforce_keys [:value]

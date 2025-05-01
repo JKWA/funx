@@ -2,13 +2,17 @@ defmodule Funx.Maybe.Nothing do
   @moduledoc """
   Represents the `Nothing` variant of the `Maybe` monad, used to model the absence of a value.
 
-  This module implements the following protocols:
-    - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
-    - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding with default behavior for `Nothing`.
-    - `Funx.Eq`: Defines equality checks between `Nothing` and other `Maybe` values.
-    - `Funx.Ord`: Defines ordering logic for `Nothing` and `Just` values.
+  A `Nothing` indicates that no value is present. All operations in the monad context simply propagate the absence, making `Nothing` an identity for failure or emptiness.
 
-  The `Nothing` monad provides default implementations where the absence of a value is propagated through operations.
+  This module implements the following protocols:
+
+    - `Funx.Monad`: Implements `bind/2`, `map/2`, and `ap/2`, all of which return `Nothing`.
+    - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3`, invoking the fallback function when folding.
+    - `Funx.Filterable`: Supports filtering operations, which always return `Nothing`.
+    - `Funx.Eq`: Enables equality checks between `Nothing` and other `Maybe` values.
+    - `Funx.Ord`: Defines ordering behavior between `Nothing` and `Just`.
+
+  These implementations ensure that `Nothing` behaves consistently in functional composition, filtering, and comparison, treating absence as a stable and composable case.
   """
 
   defstruct []

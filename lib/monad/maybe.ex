@@ -1,60 +1,72 @@
 defmodule Funx.Maybe do
   @moduledoc """
-  The `Funx.Maybe` module provides an implementation of the `Maybe` monad, giving you a convenient way to represent optional values in Elixir. By encapsulating values in `Just` or `Nothing`, this module lets you handle the presence or absence of data in a consistent, composable manner.
+  The `Funx.Maybe` module provides an implementation of the `Maybe` monad, a functional abstraction used to represent optional values in Elixir.
 
-  ## Features
+  A `Maybe` represents one of two possibilities:
 
-  - **Constructors**: Easily create `Maybe` values.
-  - **Lifting Functions**: Convert standard or custom types into `Maybe` values.
-  - **Checks & Filters**: Determine whether a `Maybe` is `Just` or `Nothing` and filter data accordingly.
-  - **List Operations**: Efficiently transform and collect `Maybe` values in lists.
-  - **Interop**: Translate between `Maybe` and native Elixir constructs like `nil`, tuples, or exceptions.
+    - `Just(value)`: the presence of a value
+    - `Nothing`: the absence of a value
 
-  ### Usage Overview
-
-  1. **Construct**: Use `just/1` or `nothing/0` to build `Maybe` values.
-  2. **Check**: Use `just?/1` or `nothing?/1` to see if you have a `Just` or `Nothing`.
-  3. **Filter & Transform**: Apply `filter/2`, `map`, or `bind` for transformations.
-  4. **Extract**: Use `get_or_else/2`, `to_nil/1`, or `to_try!/2` to retrieve the raw data.
+  This pattern is useful for eliminating `nil` checks and handling missing data explicitly and safely in functional pipelines.
 
   ### Constructors
 
-  - `pure/1`: Wraps a value in `Just`.
-  - `just/1`: Alias for `pure/1`.
-  - `nothing/0`: Returns a `Nothing` value.
+    - `just/1`: Wraps a value in the `Just` variant.
+    - `nothing/0`: Returns a `Nothing` value.
+    - `pure/1`: Alias for `just/1`.
 
-  ### Lifting Functions
+  ### Refinement
 
-  - `lift_predicate/2`: Converts a value to `Just` if it meets a predicate, otherwise `Nothing`.
-  - `lift_identity/1`: Converts an `Identity` to a `Maybe`.
-  - `lift_either/1`: Converts an `Either` to a `Maybe`.
-  - `lift_eq/1`: Lifts an equality function for `Maybe` values.
-  - `lift_ord/1`: Lifts an ordering function for `Maybe` values.
+    - `just?/1`: Returns `true` if the value is a `Just`.
+    - `nothing?/1`: Returns `true` if the value is a `Nothing`.
 
-  ### Checks & Filters
+  ### Fallback and Extraction
 
-  - `just?/1`: Checks if a `Maybe` is `Just`.
-  - `nothing?/1`: Checks if a `Maybe` is `Nothing`.
-  - `filter/2`: Keeps the value if it matches a predicate, otherwise returns `Nothing`.
-  - `guard/2`: Retains the `Maybe` if the boolean is `true`, otherwise returns `Nothing`.
-  - `get_or_else/2`: Returns the value or a default.
-  - `or_else/2`: Returns the `Just` value or calls a fallback function if `Nothing`.
+    - `get_or_else/2`: Returns the value from a `Just`, or a default if `Nothing`.
+    - `or_else/2`: Returns the original `Just`, or invokes a fallback function if `Nothing`.
 
-  ### Working with Lists
+  ### Checks and Filtering
 
-  - `concat/1`: Extracts present values (`Just`) from a list of `Maybe`.
-  - `concat_map/2`: Maps and extracts `Just` values in one pass.
-  - `sequence/1`: Converts a list of `Maybe` into a single `Maybe` containing a list.
-  - `traverse/2`: Applies a function to each element and sequences the results, returning one `Maybe`.
+    - `filter/2`: Keeps the value if it matches a predicate, otherwise returns `Nothing`.
+    - `guard/2`: Retains the `Maybe` if the boolean is `true`, otherwise returns `Nothing`.
 
-  ### Elixir Interop
+  ### List Operations
 
-  - `from_nil/1`: Converts `nil` to `Nothing`, otherwise `Just`.
-  - `to_nil/1`: Returns the underlying value or `nil`.
-  - `from_try/1`: Executes a function and wraps its result in `Maybe` or returns `Nothing` on exception.
-  - `to_try!/2`: Extracts the value or raises an error if `Nothing`.
-  - `from_result/1`: Converts `{:ok, _}` or `{:error, _}` tuples to `Maybe`.
-  - `to_result/1`: Turns a `Maybe` into `{:ok, value}` or `{:error, :nothing}`.
+    - `concat/1`: Removes all `Nothing` values and unwraps the `Just` values from a list.
+    - `concat_map/2`: Applies a function and collects only `Just` results.
+    - `sequence/1`: Converts a list of `Maybe` values into a single `Maybe` of list.
+    - `traverse/2`: Applies a function to each element in a list and sequences the results.
+
+  ### Lifting
+
+    - `lift_predicate/2`: Converts a value to `Just` if it meets a predicate, otherwise `Nothing`.
+    - `lift_identity/1`: Converts an `Identity` to a `Maybe`.
+    - `lift_either/1`: Converts an `Either` to a `Maybe`.
+    - `lift_eq/1`: Lifts an equality function for use in the `Maybe` context.
+    - `lift_ord/1`: Lifts an ordering function for use in the `Maybe` context.
+
+  ### Elixir Interoperability
+
+    - `from_nil/1`: Converts `nil` to `Nothing`, otherwise wraps the value in `Just`.
+    - `to_nil/1`: Returns the underlying value or `nil`.
+    - `from_result/1`: Converts `{:ok, val}` or `{:error, _}` into a `Maybe`.
+    - `to_result/1`: Converts a `Maybe` to a result tuple.
+    - `from_try/1`: Runs a function and returns `Just` on success, or `Nothing` if an exception is raised.
+    - `to_try!/2`: Unwraps a `Just`, or raises an error if `Nothing`.
+
+  ## Protocols
+
+  The `Just` and `Nothing` structs implement the following protocols, making the `Maybe` abstraction composable and extensible:
+
+    - `Funx.Eq`: Enables equality comparisons between `Maybe` values.
+    - `Funx.Foldable`: Implements `fold_l/3` and `fold_r/3` for reducing over the value or fallback.
+    - `Funx.Filterable`: Supports conditional retention with `filter/2`, `guard/2`, and `filter_map/2`.
+    - `Funx.Monad`: Provides `map/2`, `ap/2`, and `bind/2` for monadic composition.
+    - `Funx.Ord`: Defines ordering behavior between `Just` and `Nothing` values.
+
+  Although these implementations are defined per constructor (`Just` and `Nothing`), the behavior is consistent across the `Maybe` abstraction.
+
+  This module helps you represent optional data explicitly, structure conditional logic safely, and eliminate reliance on `nil` in functional pipelines.
   """
 
   import Funx.Monad, only: [map: 2]
