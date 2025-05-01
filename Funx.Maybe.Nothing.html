@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-63C11335.js"></script>
+    <script src="dist/sidebar_items-60A220FD.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -124,7 +124,7 @@ Pages
 
 
     <section id="moduledoc">
-<p>Represents the <code class="inline">Nothing</code> variant of the <code class="inline">Maybe</code> monad, used to model the absence of a value.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions for monadic operations.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code> to handle folding with default behavior for <code class="inline">Nothing</code>.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Defines equality checks between <code class="inline">Nothing</code> and other <code class="inline">Maybe</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering logic for <code class="inline">Nothing</code> and <code class="inline">Just</code> values.</li></ul><p>The <code class="inline">Nothing</code> monad provides default implementations where the absence of a value is propagated through operations.</p>
+<p>Represents the <code class="inline">Nothing</code> variant of the <code class="inline">Maybe</code> monad, used to model the absence of a value.</p><p>A <code class="inline">Nothing</code> indicates that no value is present. All operations in the monad context simply propagate the absence, making <code class="inline">Nothing</code> an identity for failure or emptiness.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code>, all of which return <code class="inline">Nothing</code>.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code>, invoking the fallback function when folding.</li><li><a href="Funx.Filterable.html"><code class="inline">Funx.Filterable</code></a>: Supports filtering operations, which always return <code class="inline">Nothing</code>.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Enables equality checks between <code class="inline">Nothing</code> and other <code class="inline">Maybe</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering behavior between <code class="inline">Nothing</code> and <code class="inline">Just</code>.</li></ul><p>These implementations ensure that <code class="inline">Nothing</code> behaves consistently in functional composition, filtering, and comparison, treating absence as a stable and composable case.</p>
     </section>
 
 </div>
@@ -187,7 +187,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">t()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L16" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L20" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -227,7 +227,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">pure()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L27" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L31" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -249,8 +249,8 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe.Nothing</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1430987140-1">(</span><span class="p" data-group-id="1430987140-1">)</span><span class="w">
-</span><span class="p" data-group-id="1430987140-2">%</span><span class="nc" data-group-id="1430987140-2">Funx.Maybe.Nothing</span><span class="p" data-group-id="1430987140-2">{</span><span class="p" data-group-id="1430987140-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe.Nothing</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="6620566414-1">(</span><span class="p" data-group-id="6620566414-1">)</span><span class="w">
+</span><span class="p" data-group-id="6620566414-2">%</span><span class="nc" data-group-id="6620566414-2">Funx.Maybe.Nothing</span><span class="p" data-group-id="6620566414-2">{</span><span class="p" data-group-id="6620566414-2">}</span></code></pre>
   </section>
 </section>
 
