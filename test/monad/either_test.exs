@@ -7,9 +7,10 @@ defmodule Funx.EitherTest do
   doctest Funx.Either.Left
   doctest Funx.Either.Right
 
-  import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
   import Funx.Either
+  import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
+  import Funx.Maybe, only: [just: 1, nothing: 0]
+  import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
 
   alias Funx.{Eq, Maybe, Ord}
   alias Funx.Either.{Left, Right}
@@ -332,6 +333,72 @@ defmodule Funx.EitherTest do
     test "does not nest error lists inside Left" do
       result =
         traverse_a(
+          [2, 3],
+          fn x -> left(["bad: #{x}"]) end
+        )
+
+      assert result == left(["bad: 2", "bad: 3"])
+    end
+  end
+
+  describe "wither_a/2" do
+    test "empty returns a right empty list" do
+      result = wither_a([], fn _ -> right(just(:ok)) end)
+      assert result == right([])
+    end
+
+    test "filters out Nothing and keeps Just values" do
+      result =
+        wither_a(
+          [1, 2, 3],
+          fn
+            2 -> right(nothing())
+            x -> right(just(x * 10))
+          end
+        )
+
+      assert result == right([10, 30])
+    end
+
+    test "returns Left if function returns Left for any element" do
+      result =
+        wither_a(
+          [1, 2, 3],
+          fn
+            2 -> left("bad 2")
+            x -> right(just(x * 10))
+          end
+        )
+
+      assert result == left(["bad 2"])
+    end
+
+    test "accumulates multiple Left errors" do
+      result =
+        wither_a(
+          [1, 2, 3],
+          fn
+            x when x < 3 -> left(["fail #{x}"])
+            x -> right(just(x))
+          end
+        )
+
+      assert result == left(["fail 1", "fail 2"])
+    end
+
+    test "returns Right([]) if all results are Right(Nothing)" do
+      result =
+        wither_a(
+          [1, 2, 3],
+          fn _ -> right(nothing()) end
+        )
+
+      assert result == right([])
+    end
+
+    test "does not nest error lists inside Left" do
+      result =
+        wither_a(
           [2, 3],
           fn x -> left(["bad: #{x}"]) end
         )

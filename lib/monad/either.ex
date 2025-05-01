@@ -54,6 +54,8 @@ defmodule Funx.Either do
   alias Funx.Either.{Left, Right}
   alias Funx.Eq
   alias Funx.Maybe
+  alias Funx.Maybe.{Just, Nothing}
+
   alias Funx.Ord
 
   @type t(left, right) :: Left.t(left) | Right.t(right)
@@ -430,6 +432,53 @@ defmodule Funx.Either do
       case {func.(item), acc_result} do
         {%Right{right: value}, %Right{right: acc}} ->
           right([value | acc])
+
+        {%Left{left: new_errors}, %Left{left: existing_errors}} ->
+          left(as_list(new_errors) ++ existing_errors)
+
+        {%Right{}, %Left{left: existing_errors}} ->
+          left(existing_errors)
+
+        {%Left{left: errors}, %Right{}} ->
+          left(as_list(errors))
+      end
+    end)
+    |> map(&:lists.reverse/1)
+    |> map_left(&:lists.reverse/1)
+  end
+
+  @doc """
+  Traverses a list, applying the given function to each element, and collects the successful `Just` results into a single `Right`.
+
+  The given function must return an `Either` of `Maybe`. `Right(Just x)` values are kept; `Right(Nothing)` values are filtered out.
+  If any application returns `Left`, all `Left` values are accumulated.
+
+  This is useful for effectful filtering, where you want to validate or transform elements and conditionally keep them, while still reporting all errors.
+
+  ## Examples
+
+      iex> filter_positive = fn x ->
+      ...>   Funx.Either.lift_predicate(x, &is_integer/1, fn v -> "not an integer: \#{inspect(v)}" end)
+      ...>   |> Funx.Monad.map(fn x -> if x > 0, do: Funx.Maybe.just(x), else: Funx.Maybe.nothing() end)
+      ...> end
+      iex> Funx.Either.wither_a([1, -2, 3], filter_positive)
+      %Funx.Either.Right{right: [1, 3]}
+      iex> Funx.Either.wither_a(["oops", -2], filter_positive)
+      %Funx.Either.Left{left: ["not an integer: \\"oops\\""]}
+  """
+
+  @spec wither_a([a], (a -> t([e], Maybe.t(b)))) :: t([e], [b])
+        when a: term(), b: term(), e: term()
+  def wither_a([], _func), do: right([])
+
+  def wither_a(list, func) when is_list(list) and is_function(func, 1) do
+    fold_l(list, right([]), fn item, acc_result ->
+      case {func.(item), acc_result} do
+        {%Right{right: %Just{value: value}}, %Right{right: acc}} ->
+          right([value | acc])
+
+        {%Right{right: %Nothing{}}, %Right{right: acc}} ->
+          right(acc)
 
         {%Left{left: new_errors}, %Left{left: existing_errors}} ->
           left(as_list(new_errors) ++ existing_errors)
