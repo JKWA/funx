@@ -4,7 +4,6 @@ defmodule Funx.Either.Left do
 
   This module implements the following protocols:
     - `Funx.Eq`: Defines equality checks between `Left` and other `Either` values.
-    - `Funx.Filterable`: Provides `guard/2`, `filter/2`, and `filter_map/2` for conditional transformations.
     - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Left` values.
     - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
     - `Funx.Ord`: Defines ordering logic for `Left` and `Right` values.
@@ -62,21 +61,6 @@ defimpl Funx.Foldable, for: Funx.Either.Left do
   def fold_r(%Left{left: left}, _right_func, left_func) do
     left_func.(left)
   end
-end
-
-defimpl Funx.Filterable, for: Funx.Either.Left do
-  alias Funx.Either.Left
-
-  @spec guard(Left.t(left), boolean()) :: Left.t(left) when left: term()
-  def guard(%Left{} = left, _), do: left
-
-  @spec filter(Left.t(left), (right -> boolean())) :: Left.t(left)
-        when left: term(), right: term()
-  def filter(%Left{} = left, _), do: left
-
-  @spec filter_map(Left.t(left), (right -> Funx.Either.t(left, result))) :: Left.t(left)
-        when left: term(), right: term(), result: term()
-  def filter_map(%Left{} = left, _), do: left
 end
 
 defimpl Funx.Eq, for: Funx.Either.Left do

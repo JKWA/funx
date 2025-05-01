@@ -4,16 +4,11 @@ defmodule Funx.Either.Right do
 
   This module implements the following protocols:
     - `Funx.Eq`: Defines equality checks between `Right` and other `Either` values.
-    - `Funx.Filterable`: Provides `guard/2`, `filter/2`, and `filter_map/2` for conditional transformations.
     - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Right` values.
     - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
     - `Funx.Ord`: Defines ordering logic for `Right` and `Left` values.
 
   The `Right` monad represents a valid result, and the contained value is propagated through operations.
-
-  ### `Funx.Filterable` Implementation
-
-  This module implements `Funx.Filterable`, allowing `Right` values to be conditionally transformed or filtered.
   """
 
   @enforce_keys [:right]
@@ -70,39 +65,6 @@ defimpl Funx.Foldable, for: Funx.Either.Right do
 
   def fold_r(%Right{right: value}, right_func, _left_func) do
     right_func.(value)
-  end
-end
-
-defimpl Funx.Filterable, for: Funx.Either.Right do
-  alias Funx.Either
-  alias Funx.Either.Right
-  alias Funx.Monad
-
-  @spec guard(Right.t(value), boolean()) :: Either.t(any(), value)
-        when value: term()
-  def guard(%Right{} = right, true), do: right
-  def guard(%Right{}, false), do: Either.left(:filtered_out)
-
-  @spec filter(Right.t(value), (value -> boolean())) :: Either.t(any(), value)
-        when value: term()
-  def filter(%Right{} = right, predicate) do
-    Monad.bind(right, fn value ->
-      if predicate.(value) do
-        Either.pure(value)
-      else
-        Either.left(:filtered_out)
-      end
-    end)
-  end
-
-  @spec filter_map(Right.t(value), (value -> Either.t(left, result))) :: Either.t(left, result)
-        when value: term(), left: term(), result: term()
-  def filter_map(%Right{right: value}, func) do
-    case func.(value) do
-      %Right{} = right -> right
-      %Either.Left{} = left -> left
-      _ -> Either.left(:filtered_out)
-    end
   end
 end
 

@@ -8,7 +8,6 @@ defmodule Funx.EitherTest do
   doctest Funx.Either.Right
 
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Funx.Filterable, only: [filter: 2, filter_map: 2, guard: 2]
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
   import Funx.Either
 
@@ -236,69 +235,6 @@ defmodule Funx.EitherTest do
         end)
 
       assert result == right(42)
-    end
-  end
-
-  describe "guard/2 for Right" do
-    test "returns Right value when condition is true" do
-      either_value = right(42)
-      assert guard(either_value, true) == either_value
-    end
-
-    test "returns Left(:filtered_out) when condition is false" do
-      either_value = right(42)
-      assert guard(either_value, false) == left(:filtered_out)
-    end
-  end
-
-  describe "guard/2 for Left" do
-    test "returns original Left value unchanged" do
-      either_value = left(:error)
-      assert guard(either_value, true) == either_value
-      assert guard(either_value, false) == either_value
-    end
-  end
-
-  describe "filter/2 for Right" do
-    test "returns Right value when predicate is true" do
-      either_value = right(42)
-      assert filter(either_value, &(&1 > 40)) == either_value
-    end
-
-    test "returns Left(:filtered_out) when predicate is false" do
-      either_value = right(42)
-      assert filter(either_value, &(&1 > 50)) == left(:filtered_out)
-    end
-  end
-
-  describe "filter/2 for Left" do
-    test "returns original Left value unchanged" do
-      either_value = left(:error)
-      assert filter(either_value, fn _ -> true end) == either_value
-    end
-  end
-
-  describe "filter_map/2 for Right" do
-    test "returns transformed Right value when function returns Right" do
-      either_value = right(42)
-      assert filter_map(either_value, fn x -> right(x * 2) end) == right(84)
-    end
-
-    test "returns Left when function returns Left" do
-      either_value = right(42)
-      assert filter_map(either_value, fn _ -> left(:some_error) end) == left(:some_error)
-    end
-
-    test "returns Left(:filtered_out) when function returns neither Right nor Left" do
-      either_value = right(42)
-      assert filter_map(either_value, fn _ -> nil end) == left(:filtered_out)
-    end
-  end
-
-  describe "filter_map/2 for Left" do
-    test "returns original Left value unchanged" do
-      either_value = left(:error)
-      assert filter_map(either_value, fn x -> right(x * 2) end) == either_value
     end
   end
 
