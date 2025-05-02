@@ -374,7 +374,7 @@ defmodule Funx.Maybe do
       iex> Funx.Maybe.lift_identity(Funx.Identity.pure(nil))
       %Funx.Maybe.Nothing{}
   """
-  def lift_identity(identity) do
+  def lift_identity(%Identity{} = identity) do
     case identity do
       %Identity{value: nil} -> nothing()
       %Identity{value: value} -> just(value)
@@ -411,7 +411,7 @@ defmodule Funx.Maybe do
       %Funx.Maybe.Nothing{}
   """
   @spec lift_predicate(term(), (term() -> boolean())) :: t(term())
-  def lift_predicate(value, predicate) do
+  def lift_predicate(value, predicate) when is_function(predicate, 1) do
     fold_l(
       fn -> predicate.(value) end,
       fn -> just(value) end,
@@ -419,8 +419,23 @@ defmodule Funx.Maybe do
     )
   end
 
+  @doc """
+  Returns `true` if the given `Maybe` is a `Just`, or `false` if it is `Nothing`.
+
+  This provides a simple way to treat a `Maybe` as a boolean condition, useful when filtering or making branching decisions based on presence.
+
+  ## Examples
+
+      iex> Funx.Maybe.to_predicate(Funx.Maybe.just(42))
+      true
+
+      iex> Funx.Maybe.to_predicate(Funx.Maybe.nothing())
+      false
+
+  Raises an error if the input is not a `Just` or `Nothing`.
+  """
   @spec to_predicate(t(any())) :: boolean()
-  def to_predicate(maybe) do
+  def to_predicate(maybe) when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
     fold_l(maybe, fn _value -> true end, fn -> false end)
   end
 
@@ -451,7 +466,7 @@ defmodule Funx.Maybe do
       nil
   """
   @spec to_nil(t(value)) :: nil | value when value: term()
-  def to_nil(maybe) do
+  def to_nil(maybe) when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
     fold_l(maybe, fn value -> value end, fn -> nil end)
   end
 
@@ -489,7 +504,8 @@ defmodule Funx.Maybe do
       ** (RuntimeError) No value found
   """
   @spec to_try!(t(right), String.t()) :: right | no_return when right: term()
-  def to_try!(maybe, message \\ "Nothing value encountered") do
+  def to_try!(maybe, message \\ "Nothing value encountered")
+      when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
     case maybe do
       %Just{value: value} -> value
       %Nothing{} -> raise message
@@ -523,7 +539,7 @@ defmodule Funx.Maybe do
       {:error, :nothing}
   """
   @spec to_result(t(right)) :: {:ok, right} | {:error, :nothing} when right: term()
-  def to_result(maybe) do
+  def to_result(maybe) when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
     case maybe do
       %Just{value: value} -> {:ok, value}
       %Nothing{} -> {:error, :nothing}

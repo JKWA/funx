@@ -560,7 +560,7 @@ defmodule Funx.Either do
       %Funx.Either.Left{left: "error"}
   """
   @spec lift_maybe(Maybe.t(any()), (-> any())) :: t(any(), any())
-  def lift_maybe(maybe, on_none) do
+  def lift_maybe(maybe, on_none) when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
     maybe
     |> fold_l(
       fn value -> right(value) end,
@@ -586,7 +586,8 @@ defmodule Funx.Either do
 
   @spec lift_predicate(value, (value -> boolean), (value -> error)) :: t(error, value)
         when value: term(), error: term()
-  def lift_predicate(value, predicate, on_false) do
+  def lift_predicate(value, predicate, on_false)
+      when is_function(predicate, 1) and is_function(on_false, 1) do
     fold_l(
       fn -> predicate.(value) end,
       fn -> right(value) end,
@@ -623,7 +624,7 @@ defmodule Funx.Either do
   """
   @spec to_result(t(left, right)) :: {:ok, right} | {:error, left}
         when left: term(), right: term()
-  def to_result(either) do
+  def to_result(either) when is_struct(either, Right) or is_struct(either, Left) do
     case either do
       %Right{right: value} -> {:ok, value}
       %Left{left: reason} -> {:error, reason}
