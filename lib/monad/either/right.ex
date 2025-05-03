@@ -39,21 +39,21 @@ end
 defimpl Funx.Monad, for: Funx.Either.Right do
   alias Funx.Either.{Left, Right}
 
+  @spec map(Right.t(value), (value -> result)) :: Right.t(result)
+        when value: term(), result: term()
+  def map(%Right{right: value}, func), do: Right.pure(func.(value))
+
   @spec ap(Right.t((value -> result)), Right.t(value)) :: Right.t(result)
         when value: term(), result: term()
   def ap(%Right{right: func}, %Right{right: value}), do: Right.pure(func.(value))
 
   @spec ap(term(), Left.t(value)) :: Left.t(value)
         when value: term()
-  def ap(_, %Left{} = left), do: left
+  def ap(%Right{right: _func}, %Left{} = left), do: left
 
   @spec bind(Right.t(value), (value -> Right.t(result))) :: Right.t(result)
         when value: term(), result: term()
   def bind(%Right{right: value}, func), do: func.(value)
-
-  @spec map(Right.t(value), (value -> result)) :: Right.t(result)
-        when value: term(), result: term()
-  def map(%Right{right: value}, func), do: Right.pure(func.(value))
 end
 
 defimpl Funx.Foldable, for: Funx.Either.Right do

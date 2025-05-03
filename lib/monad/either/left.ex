@@ -36,19 +36,20 @@ defimpl String.Chars, for: Funx.Either.Left do
 end
 
 defimpl Funx.Monad, for: Funx.Either.Left do
-  alias Funx.Either.Left
-
-  @spec ap(Left.t(value), Left.t(value)) :: Left.t(value)
-        when value: term()
-  def ap(%Left{} = left, _), do: left
-
-  @spec bind(Left.t(value), (term() -> Left.t(result))) :: Left.t(value)
-        when value: term(), result: term()
-  def bind(%Left{} = left, _func), do: left
+  alias Funx.Either.{Left, Right}
 
   @spec map(Left.t(value), (term() -> term())) :: Left.t(value)
         when value: term()
   def map(%Left{} = left, _func), do: left
+
+  @spec ap(Left.t(value), Left.t(value)) :: Left.t(value)
+        when value: term()
+  def ap(%Left{} = left, %Left{}), do: left
+  def ap(%Left{} = left, %Right{}), do: left
+
+  @spec bind(Left.t(value), (term() -> Left.t(result))) :: Left.t(value)
+        when value: term(), result: term()
+  def bind(%Left{} = left, _func), do: left
 end
 
 defimpl Funx.Foldable, for: Funx.Either.Left do
