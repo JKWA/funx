@@ -9,11 +9,6 @@ defmodule Funx.Identity do
     - `Funx.Ord`: Defines ordering logic for `Identity` values.
     - `String.Chars`: Converts an `Identity` value into a string representation.
 
-  Telemetry Events:
-    - `[:funx, :identity, :ap]`: Emitted when the `ap` operation is called.
-    - `[:funx, :identity, :bind]`: Emitted when the `bind` operation is called.
-    - `[:funx, :identity, :map]`: Emitted when the `map` operation is called.
-
   Telemetry Configuration:
     - `:telemetry_enabled` (default: `true`): Enable or disable telemetry.
     - `:telemetry_prefix` (default: `[:funx]`): Set a custom prefix for telemetry events.
@@ -139,4 +134,8 @@ defimpl Funx.Ord, for: Funx.Identity do
 
   @spec ge?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
   def ge?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.ge?(v1, v2)
+end
+
+defimpl Funx.Summarizable, for: Funx.Identity do
+  def summarize(%{value: value}), do: Funx.Summarizable.summarize(value)
 end

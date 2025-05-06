@@ -101,3 +101,7 @@ defimpl Funx.Ord, for: Funx.Maybe.Nothing do
   def ge?(%Nothing{}, %Just{}), do: false
   def ge?(%Nothing{}, %Nothing{}), do: true
 end
+
+defimpl Funx.Summarizable, for: Funx.Maybe.Nothing do
+  def summarize(_), do: Funx.Summarizable.summarize(nil)
+end

@@ -11,6 +11,7 @@ defmodule Funx.EitherTest do
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
   import Funx.Maybe, only: [just: 1, nothing: 0]
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Funx.Summarizable, only: [summarize: 1]
 
   alias Funx.{Eq, Maybe, Ord}
   alias Funx.Either.{Left, Right}
@@ -30,6 +31,42 @@ defmodule Funx.EitherTest do
   describe "left/1" do
     test "wraps an error value in a Left monad" do
       assert %Left{left: "error"} = left("error")
+    end
+  end
+
+  describe "summarize/1" do
+    test "summarizes a string inside Left" do
+      assert summarize(left("error")) == {:binary, 5}
+    end
+
+    test "summarizes a list inside Left" do
+      assert summarize(left([1, 2, 3])) ==
+               {:list, [{:integer, 1}, {:integer, 2}, {:integer, 3}]}
+    end
+
+    test "summarizes a nested Left" do
+      inner = left(:oops)
+      outer = left(inner)
+      assert summarize(outer) == {:atom, :oops}
+    end
+
+    test "summarizes an integer inside Right" do
+      assert summarize(right(42)) == {:integer, 42}
+    end
+
+    test "summarizes a string inside Right" do
+      assert summarize(right("hello")) == {:binary, 5}
+    end
+
+    test "summarizes a list inside Right" do
+      assert summarize(right([1, 2, 3])) ==
+               {:list, [{:integer, 1}, {:integer, 2}, {:integer, 3}]}
+    end
+
+    test "summarizes a nested Right" do
+      inner = right(:ok)
+      outer = right(inner)
+      assert summarize(outer) == {:atom, :ok}
     end
   end
 

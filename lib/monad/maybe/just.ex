@@ -143,3 +143,7 @@ defimpl Funx.Ord, for: Funx.Maybe.Just do
   def ge?(%Just{value: v1}, %Just{value: v2}), do: Ord.ge?(v1, v2)
   def ge?(%Just{}, %Nothing{}), do: true
 end
+
+defimpl Funx.Summarizable, for: Funx.Maybe.Just do
+  def summarize(%{value: value}), do: Funx.Summarizable.summarize(value)
+end

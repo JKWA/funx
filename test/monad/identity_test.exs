@@ -5,6 +5,7 @@ defmodule Funx.IdentityTest do
 
   import Funx.Identity
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Funx.Summarizable, only: [summarize: 1]
 
   alias Funx.{Eq, Identity, Ord}
 
@@ -23,6 +24,22 @@ defmodule Funx.IdentityTest do
   describe "Identity.extract/1" do
     test "extracts the value from the Identity monad" do
       assert 42 == pure(42) |> extract()
+    end
+  end
+
+  describe "summarize/1" do
+    test "summarizes a Identity with integer" do
+      assert summarize(pure(42)) == {:integer, 42}
+    end
+
+    test "summarizes a Identity with string" do
+      assert summarize(pure("hello")) == {:binary, 5}
+    end
+
+    test "summarizes a Identity with nested Just" do
+      inner = pure(:ok)
+      outer = pure(inner)
+      assert summarize(outer) == {:atom, :ok}
     end
   end
 

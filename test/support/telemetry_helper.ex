@@ -1,7 +1,7 @@
 defmodule Funx.TestTelemetryHelper do
   @moduledoc false
 
-  alias Funx.TelemetryUtils
+  import Funx.Summarizable, only: [summarize: 1]
 
   def handle_telemetry_event(event_name, measurements, metadata, test_pid) do
     send(test_pid, {:telemetry_event, event_name, measurements, metadata})
@@ -25,9 +25,9 @@ defmodule Funx.TestTelemetryHelper do
       {:telemetry_event, _event_name, %{duration: duration},
        %{initial_value: received_initial, transformed_value: received_transformed}} ->
         (initial_value == received_initial or
-           TelemetryUtils.summarize(initial_value) == received_initial) and
+           summarize(initial_value) == received_initial) and
           (transformed_value == received_transformed or
-             TelemetryUtils.summarize(transformed_value) == received_transformed) and
+             summarize(transformed_value) == received_transformed) and
           is_integer(duration) and duration > 0
     after
       1000 -> false

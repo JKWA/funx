@@ -11,6 +11,7 @@ defmodule Funx.MaybeTest do
   import Funx.Maybe
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Filterable, only: [filter: 2, filter_map: 2, guard: 2]
+  import Funx.Summarizable, only: [summarize: 1]
 
   alias Funx.{Either, Eq, Ord}
   alias Funx.Identity
@@ -43,6 +44,26 @@ defmodule Funx.MaybeTest do
   describe "Nothing.pure/0" do
     test "returns the Nothing struct" do
       assert %Nothing{} = nothing()
+    end
+  end
+
+  describe "summarize/1" do
+    test "summarizes a Just with integer" do
+      assert summarize(pure(42)) == {:integer, 42}
+    end
+
+    test "summarizes a Just with string" do
+      assert summarize(pure("hello")) == {:binary, 5}
+    end
+
+    test "summarizes a Just with nested Just" do
+      inner = pure(:ok)
+      outer = pure(inner)
+      assert summarize(outer) == {:atom, :ok}
+    end
+
+    test "summarizes a Nothing as nil" do
+      assert summarize(nothing()) == nil
     end
   end
 

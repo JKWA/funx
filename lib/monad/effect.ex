@@ -35,10 +35,10 @@ defmodule Funx.Effect do
 
   import Funx.Monad, only: [map: 2]
   import Funx.Foldable, only: [fold_l: 3]
+  import Funx.Summarizable, only: [summarize: 1]
 
   alias Funx.{Effect, Either, Maybe}
   alias Effect.{Left, Right}
-  alias Funx.TelemetryUtils
 
   @type t(left, right) :: Left.t(left) | Right.t(right)
 
@@ -105,7 +105,7 @@ defmodule Funx.Effect do
         Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:effect, :run],
         %{duration: System.monotonic_time() - start_time},
         %{
-          result: TelemetryUtils.summarize(result)
+          result: summarize(result)
         }
       )
     end

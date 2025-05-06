@@ -95,3 +95,7 @@ defimpl Funx.Ord, for: Funx.Either.Right do
   def ge?(%Right{right: v1}, %Right{right: v2}), do: Ord.ge?(v1, v2)
   def ge?(%Right{}, %Left{}), do: true
 end
+
+defimpl Funx.Summarizable, for: Funx.Either.Right do
+  def summarize(%{right: value}), do: Funx.Summarizable.summarize(value)
+end
