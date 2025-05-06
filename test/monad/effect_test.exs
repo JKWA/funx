@@ -1,7 +1,8 @@
 defmodule EffectTest do
   @moduledoc false
 
-  use ExUnit.Case
+  # use ExUnit.Case
+  use Funx.TestCase, async: true
 
   doctest Funx.Effect
   doctest Funx.Effect.Left
@@ -13,6 +14,8 @@ defmodule EffectTest do
 
   alias Funx.Effect.{Left, Right}
   alias Funx.{Either, Maybe}
+
+  setup [:with_telemetry_config]
 
   describe "right/1" do
     test "wraps a value in a Right struct" do
@@ -70,6 +73,40 @@ defmodule EffectTest do
       result = run(effect)
 
       assert result == %Either.Left{left: {:invalid_result, :not_an_either}}
+    end
+  end
+
+  describe "run/2 telemetry" do
+    @tag :telemetry
+    test "emits telemetry on Right effect" do
+      capture_telemetry([:funx, :effect, :run], self())
+
+      result = Funx.Effect.right(42) |> run()
+
+      assert result == Either.right(42)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run], %{duration: duration},
+                      %{result: summarized}},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert summarized == {:integer, 42}
+    end
+
+    @tag :telemetry
+    test "emits telemetry on Left effect" do
+      capture_telemetry([:funx, :effect, :run], self())
+
+      result = Funx.Effect.left("error") |> run()
+
+      assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run], %{duration: duration},
+                      %{result: summarized}},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert summarized == {:binary, 5}
     end
   end
 

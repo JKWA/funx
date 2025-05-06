@@ -3,8 +3,8 @@ defmodule Funx.TestTelemetryHelper do
 
   alias Funx.TelemetryUtils
 
-  def handle_telemetry_event(_event_name, measurements, metadata, test_pid) do
-    send(test_pid, {:telemetry_event, measurements, metadata})
+  def handle_telemetry_event(event_name, measurements, metadata, test_pid) do
+    send(test_pid, {:telemetry_event, event_name, measurements, metadata})
   end
 
   def capture_telemetry(event_name, test_pid) do
@@ -13,7 +13,7 @@ defmodule Funx.TestTelemetryHelper do
     :telemetry.attach(
       handler_id,
       event_name,
-      &Funx.TestTelemetryHelper.handle_telemetry_event/4,
+      &__MODULE__.handle_telemetry_event/4,
       test_pid
     )
 
@@ -22,7 +22,7 @@ defmodule Funx.TestTelemetryHelper do
 
   def telemetry_event(initial_value, transformed_value) do
     receive do
-      {:telemetry_event, %{duration: duration},
+      {:telemetry_event, _event_name, %{duration: duration},
        %{initial_value: received_initial, transformed_value: received_transformed}} ->
         (initial_value == received_initial or
            TelemetryUtils.summarize(initial_value) == received_initial) and

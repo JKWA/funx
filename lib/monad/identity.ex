@@ -90,63 +90,20 @@ end
 
 defimpl Funx.Monad, for: Funx.Identity do
   alias Funx.Identity
-  alias Funx.TelemetryUtils
+
+  @spec map(Identity.t(a), (a -> b)) :: Identity.t(b) when a: term(), b: term()
+  def map(%Identity{value: value}, func) do
+    Identity.pure(func.(value))
+  end
 
   @spec ap(Identity.t((a -> b)), Identity.t(a)) :: Identity.t(b) when a: term(), b: term()
   def ap(%Identity{value: func}, %Identity{value: value}) do
-    start_time = System.monotonic_time()
-    result = Identity.pure(func.(value))
-
-    if Application.get_env(:funx, :telemetry_enabled, true) do
-      :telemetry.execute(
-        Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :ap],
-        %{duration: System.monotonic_time() - start_time},
-        %{
-          initial_value: TelemetryUtils.summarize(value),
-          transformed_value: TelemetryUtils.summarize(result.value)
-        }
-      )
-    end
-
-    result
+    Identity.pure(func.(value))
   end
 
   @spec bind(Identity.t(a), (a -> Identity.t(b))) :: Identity.t(b) when a: term(), b: term()
   def bind(%Identity{value: value}, func) do
-    start_time = System.monotonic_time()
-    result = func.(value)
-
-    if Application.get_env(:funx, :telemetry_enabled, true) do
-      :telemetry.execute(
-        Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :bind],
-        %{duration: System.monotonic_time() - start_time},
-        %{
-          initial_value: TelemetryUtils.summarize(value),
-          transformed_value: TelemetryUtils.summarize(result.value)
-        }
-      )
-    end
-
-    result
-  end
-
-  @spec map(Identity.t(a), (a -> b)) :: Identity.t(b) when a: term(), b: term()
-  def map(%Identity{value: value}, func) do
-    start_time = System.monotonic_time()
-    result = Identity.pure(func.(value))
-
-    if Application.get_env(:funx, :telemetry_enabled, true) do
-      :telemetry.execute(
-        Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:identity, :map],
-        %{duration: System.monotonic_time() - start_time},
-        %{
-          initial_value: TelemetryUtils.summarize(value),
-          transformed_value: TelemetryUtils.summarize(result.value)
-        }
-      )
-    end
-
-    result
+    func.(value)
   end
 end
 

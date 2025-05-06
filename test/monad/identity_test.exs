@@ -30,37 +30,6 @@ defmodule Funx.IdentityTest do
     test "applies a function in an Identity monad to a value in another Identity monad" do
       assert ap(pure(&(&1 + 1)), pure(42)) == pure(43)
     end
-
-    @tag :telemetry
-    test "emits telemetry by default" do
-      capture_telemetry([:funx, :identity, :ap], self())
-
-      result = ap(pure(&multiply_by_2/1), pure(10))
-      result_value = result.value
-
-      assert telemetry_event(10, result_value)
-    end
-
-    @tag :telemetry
-    test "does not emit telemetry when disabled" do
-      Application.put_env(:funx, :telemetry_enabled, false)
-      capture_telemetry([:funx, :identity, :ap], self())
-
-      ap(pure(&multiply_by_2/1), pure(10))
-
-      refute_receive {:telemetry_event, _, _}
-    end
-
-    @tag :telemetry
-    test "uses custom telemetry prefix" do
-      Application.put_env(:funx, :telemetry_prefix, [:custom, :funx])
-      capture_telemetry([:custom, :funx, :identity, :ap], self())
-
-      result = ap(pure(&multiply_by_2/1), pure(10))
-      result_value = result.value
-
-      assert telemetry_event(10, result_value)
-    end
   end
 
   describe "bind/2" do
@@ -69,73 +38,11 @@ defmodule Funx.IdentityTest do
                pure(42)
                |> bind(fn x -> pure(div(x, 2)) end)
     end
-
-    @tag :telemetry
-    test "emits telemetry by default" do
-      capture_telemetry([:funx, :identity, :bind], self())
-
-      result = bind(pure(10), &pure(multiply_by_2(&1)))
-      transformed_value = result.value
-
-      assert telemetry_event(10, transformed_value)
-    end
-
-    @tag :telemetry
-    test "does not emit telemetry when disabled" do
-      Application.put_env(:funx, :telemetry_enabled, false)
-      capture_telemetry([:funx, :identity, :bind], self())
-
-      bind(pure(10), &pure(multiply_by_2(&1)))
-
-      refute_receive {:telemetry_event, _, _}
-    end
-
-    @tag :telemetry
-    test "uses custom telemetry prefix" do
-      Application.put_env(:funx, :telemetry_prefix, [:custom, :funx])
-      capture_telemetry([:custom, :funx, :identity, :bind], self())
-
-      result = bind(pure(10), &pure(multiply_by_2(&1)))
-      transformed_value = result.value
-
-      assert telemetry_event(10, transformed_value)
-    end
   end
 
   describe "map/2" do
     test "applies a function to the value inside the Identity monad" do
       assert %Identity{value: 20} = pure(10) |> map(&multiply_by_2/1)
-    end
-
-    @tag :telemetry
-    test "emits telemetry by default" do
-      capture_telemetry([:funx, :identity, :map], self())
-
-      result = map(pure(10), &multiply_by_2/1)
-      transformed_value = result.value
-
-      assert telemetry_event(10, transformed_value)
-    end
-
-    @tag :telemetry
-    test "does not emit telemetry when disabled" do
-      Application.put_env(:funx, :telemetry_enabled, false)
-      capture_telemetry([:funx, :identity, :map], self())
-
-      map(pure(10), &multiply_by_2/1)
-
-      refute_receive {:telemetry_event, _, _}
-    end
-
-    @tag :telemetry
-    test "uses custom telemetry prefix" do
-      Application.put_env(:funx, :telemetry_prefix, [:custom, :funx])
-      capture_telemetry([:custom, :funx, :identity, :map], self())
-
-      result = map(pure(10), &multiply_by_2/1)
-      transformed_value = result.value
-
-      assert telemetry_event(10, transformed_value)
     end
   end
 

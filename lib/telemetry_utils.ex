@@ -91,6 +91,14 @@ defmodule Funx.TelemetryUtils do
   # Non-byte-aligned bitstrings
   def summarize(value) when is_bitstring(value), do: {:bitstring, bit_size(value)}
 
+  def summarize(%Funx.Either.Left{left: value}), do: summarize(value)
+  def summarize(%Funx.Either.Right{right: value}), do: summarize(value)
+
+  def summarize(%RuntimeError{message: msg}), do: {:exception, {:runtime, msg}}
+
+  def summarize(%FunctionClauseError{} = error),
+    do: {:exception, {FunctionClauseError, Exception.message(error)}}
+
   # Lists with controlled sampling and recursive summarization
   def summarize([]), do: {:list, :empty}
 

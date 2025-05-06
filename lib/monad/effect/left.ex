@@ -8,6 +8,8 @@ defmodule Funx.Effect.Left do
 
   The `Left` effect propagates the wrapped error or failure without executing further success logic, supporting lazy, asynchronous tasks.
   """
+  alias Funx.Either.Left
+
   @enforce_keys [:effect]
   defstruct [:effect]
 
@@ -19,7 +21,7 @@ defmodule Funx.Effect.Left do
   Since Elixir does not allow parameterizing `Task.t()` with a return type, this type cannot enforce that `Task.t()` resolves to `Funx.Either.Left.t(left)`. However, all tasks within this structure are expected to eventually return a `Left` value.
   """
   @type t(left) :: %__MODULE__{
-          effect: (-> Task.t()) | (-> Funx.Either.Left.t(left))
+          effect: (-> Task.t()) | (-> Left.t(left))
         }
 
   @doc """
@@ -36,7 +38,7 @@ defmodule Funx.Effect.Left do
   @spec pure(left) :: t(left) when left: term()
   def pure(value) do
     %__MODULE__{
-      effect: fn -> Task.async(fn -> %Funx.Either.Left{left: value} end) end
+      effect: fn -> Task.async(fn -> %Left{left: value} end) end
     }
   end
 end

@@ -38,6 +38,7 @@ defmodule Funx.Effect do
 
   alias Funx.{Effect, Either, Maybe}
   alias Effect.{Left, Right}
+  alias Funx.TelemetryUtils
 
   @type t(left, right) :: Left.t(left) | Right.t(right)
 
@@ -88,13 +89,29 @@ defmodule Funx.Effect do
   """
   @spec run(t(left, right), timeout()) :: Either.t(left, right)
         when left: term(), right: term()
-  def run(effect, timeout \\ 5000)
+  # def run(effect, timeout \\ 5000)
 
-  def run(%Right{effect: effect}, timeout),
-    do: safe_await(effect.(), timeout)
+  def run(effect, timeout \\ 5000) do
+    start_time = System.monotonic_time()
 
-  def run(%Left{effect: effect}, timeout),
-    do: safe_await(effect.(), timeout)
+    result =
+      case effect do
+        %Right{effect: eff} -> safe_await(eff.(), timeout)
+        %Left{effect: eff} -> safe_await(eff.(), timeout)
+      end
+
+    if Application.get_env(:funx, :telemetry_enabled, true) do
+      :telemetry.execute(
+        Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:effect, :run],
+        %{duration: System.monotonic_time() - start_time},
+        %{
+          result: TelemetryUtils.summarize(result)
+        }
+      )
+    end
+
+    result
+  end
 
   def safe_await(task, timeout \\ 5000) do
     try do
