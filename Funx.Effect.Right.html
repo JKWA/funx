@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-E93A78DE.js"></script>
+    <script src="dist/sidebar_items-4A2342E7.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -189,7 +189,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">t(right)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L22" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L24" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -231,7 +231,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">pure(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L39" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L40" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -253,10 +253,9 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect.Right</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1495355983-1">(</span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="1495355983-1">)</span><span class="w">
-</span><span class="p" data-group-id="1495355983-2">%</span><span class="nc" data-group-id="1495355983-2">Funx.Effect.Right</span><span class="p" data-group-id="1495355983-2">{</span><span class="w">
-  </span><span class="ss">effect</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1495355983-3">#</span><span class="nc" data-group-id="1495355983-3">Function</span><span class="p" data-group-id="1495355983-3">&lt;</span><span class="n">...</span><span class="p" data-group-id="1495355983-3">&gt;</span><span class="w">  </span><span class="c1"># (an asynchronous task returning `Right`)</span><span class="w">
-</span><span class="p" data-group-id="1495355983-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Right</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9528423648-1">(</span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="9528423648-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="9528423648-2">(</span><span class="n">effect</span><span class="p" data-group-id="9528423648-2">)</span><span class="w">
+</span><span class="p" data-group-id="9528423648-3">%</span><span class="nc" data-group-id="9528423648-3">Funx.Either.Right</span><span class="p" data-group-id="9528423648-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="9528423648-3">}</span></code></pre>
   </section>
 </section>
 
