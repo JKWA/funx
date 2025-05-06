@@ -8,6 +8,8 @@ defmodule Funx.Effect.Right do
 
   The `Right` effect allows the computation to proceed with successful values, supporting lazy, asynchronous tasks.
   """
+  alias Funx.Either
+
   @enforce_keys [:effect]
   defstruct [:effect]
 
@@ -20,7 +22,7 @@ defmodule Funx.Effect.Right do
   """
 
   @type t(right) :: %__MODULE__{
-          effect: (-> Task.t()) | (-> Funx.Either.Right.t(right))
+          effect: (-> Task.t()) | (-> Either.Right.t(right))
         }
 
   @doc """
@@ -30,15 +32,14 @@ defmodule Funx.Effect.Right do
 
   ## Examples
 
-      iex> Funx.Effect.Right.pure("success")
-      %Funx.Effect.Right{
-        effect: #Function<...>  # (an asynchronous task returning `Right`)
-      }
+      iex> effect = Funx.Effect.Right.pure("success")
+      iex> Funx.Effect.run(effect)
+      %Funx.Either.Right{right: "success"}
   """
   @spec pure(right) :: t(right) when right: term()
   def pure(value) do
     %__MODULE__{
-      effect: fn -> Task.async(fn -> %Funx.Either.Right{right: value} end) end
+      effect: fn -> Task.async(fn -> %Either.Right{right: value} end) end
     }
   end
 end
@@ -48,6 +49,28 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
   alias Effect.{Left, Right}
   alias Funx.Either
 
+  @spec map(Right.t(right), (right -> result)) :: Right.t(result)
+        when right: term(), result: term()
+  def map(%Right{effect: effect}, mapper) do
+    %Right{
+      effect: fn ->
+        Task.async(fn ->
+          case Effect.run(%Right{effect: effect}) do
+            %Either.Right{right: value} ->
+              try do
+                %Either.Right{right: mapper.(value)}
+              rescue
+                e -> %Either.Left{left: {:map_exception, e}}
+              end
+
+            %Either.Left{} = left ->
+              left
+          end
+        end)
+      end
+    }
+  end
+
   @spec ap(Right.t((right -> result)), Effect.t(left, right)) ::
           Effect.t(left, result)
         when left: term(), right: term(), result: term()
@@ -55,15 +78,22 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
     %Right{
       effect: fn ->
         Task.async(fn ->
-          %Either.Right{right: func} = Task.await(effect_func.())
-          %Either.Right{right: value} = Task.await(effect_value.())
-          %Either.Right{right: func.(value)}
+          with %Either.Right{right: func} <- Effect.run(%Right{effect: effect_func}),
+               %Either.Right{right: value} <- Effect.run(%Right{effect: effect_value}) do
+            try do
+              %Either.Right{right: func.(value)}
+            rescue
+              e -> %Either.Left{left: {:ap_exception, e}}
+            end
+          else
+            %Either.Left{} = left -> left
+          end
         end)
       end
     }
   end
 
-  def ap(_, %Left{} = left), do: left
+  def ap(%Right{}, %Left{} = left), do: left
 
   @spec bind(Right.t(right), (right -> Effect.t(left, result))) ::
           Effect.t(left, result)
@@ -72,33 +102,12 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
     %Right{
       effect: fn ->
         Task.async(fn ->
-          case Task.await(effect.()) do
-            %Funx.Either.Right{right: value} ->
-              case binder.(value) do
-                %Right{effect: next_effect} -> Task.await(next_effect.())
-                %Left{effect: next_effect} -> Task.await(next_effect.())
-              end
-
-            %Either.Left{left: left_value} ->
-              %Either.Left{left: left_value}
-          end
-        end)
-      end
-    }
-  end
-
-  @spec map(Right.t(right), (right -> result)) :: Right.t(result)
-        when right: term(), result: term()
-  def map(%Right{effect: effect}, mapper) do
-    %Right{
-      effect: fn ->
-        Task.async(fn ->
-          case Task.await(effect.()) do
+          case Effect.run(%Right{effect: effect}) do
             %Either.Right{right: value} ->
-              %Either.Right{right: mapper.(value)}
+              binder.(value) |> Effect.run()
 
-            %Either.Left{left: error} ->
-              %Either.Left{left: error}
+            %Either.Left{} = left ->
+              left
           end
         end)
       end

@@ -29,10 +29,9 @@ defmodule Funx.Effect.Left do
 
   ## Examples
 
-      iex> Funx.Effect.Left.pure("error")
-      %Funx.Effect.Left{
-        effect: #Function<...>  # (an asynchronous task returning `Left`)
-      }
+      iex> effect = Funx.Effect.Left.pure("error")
+      iex> Funx.Effect.run(effect)
+      %Funx.Either.Left{left: "error"}
   """
   @spec pure(left) :: t(left) when left: term()
   def pure(value) do

@@ -85,13 +85,27 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: 42}
   """
-  @spec run(t(left, right)) :: left | right when left: term(), right: term()
-  def run(%Right{effect: effect}) do
-    Task.await(effect.())
-  end
+  @spec run(t(left, right), timeout()) :: Either.t(left, right)
+        when left: term(), right: term()
+  def run(effect, timeout \\ 5000)
 
-  def run(%Left{effect: effect}) do
-    Task.await(effect.())
+  def run(%Right{effect: effect}, timeout),
+    do: safe_await(effect.(), timeout)
+
+  def run(%Left{effect: effect}, timeout),
+    do: safe_await(effect.(), timeout)
+
+  def safe_await(task, timeout \\ 5000) do
+    try do
+      case Task.yield(task, timeout) || Task.shutdown(task) do
+        {:ok, %Either.Right{} = right} -> right
+        {:ok, %Either.Left{} = left} -> left
+        {:ok, other} -> %Either.Left{left: {:invalid_result, other}}
+        nil -> %Either.Left{left: :timeout}
+      end
+    rescue
+      error -> %Either.Left{left: {:exception, error}}
+    end
   end
 
   @doc """
@@ -208,7 +222,6 @@ defmodule Funx.Effect do
       iex> result = Funx.Effect.traverse([1, 2, 3], fn num -> is_positive.(num) end)
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: [1, 2, 3]}
-
       iex> result = Funx.Effect.traverse([1, -2, 3], fn num -> is_positive.(num) end)
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "-2 is not positive"}
@@ -285,17 +298,12 @@ defmodule Funx.Effect do
         iex> validate_positive = fn value -> Funx.Effect.lift_predicate(value, &(&1 > 0), fn -> "Value must be positive" end) end
         iex> validate_even = fn value -> Funx.Effect.lift_predicate(value, &rem(&1, 2) == 0, fn -> "Value must be even" end) end
         iex> validators = [validate_positive, validate_even]
-
-    ### Validate
-
         iex> result = Funx.Effect.validate(4, validators)
         iex> Funx.Effect.run(result)
         %Funx.Either.Right{right: 4}
-
         iex> result = Funx.Effect.validate(3, validators)
         iex> Funx.Effect.run(result)
         %Funx.Either.Left{left: ["Value must be even"]}
-
         iex> result = Funx.Effect.validate(-3, validators)
         iex> Funx.Effect.run(result)
         %Funx.Either.Left{left: ["Value must be positive", "Value must be even"]}

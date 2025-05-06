@@ -3,6 +3,10 @@ defmodule EffectTest do
 
   use ExUnit.Case
 
+  doctest Funx.Effect
+  doctest Funx.Effect.Left
+  doctest Funx.Effect.Right
+
   import Funx.Effect
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
@@ -24,6 +28,47 @@ defmodule EffectTest do
 
     test "pure is an alias for right" do
       assert pure(42) |> run() == right(42) |> run()
+    end
+
+    test "run returns a Left with :timeout if the task takes too long" do
+      effect = %Funx.Effect.Right{
+        effect: fn ->
+          Task.async(fn ->
+            Process.sleep(10_000)
+            Funx.Either.right(:late)
+          end)
+        end
+      }
+
+      result = run(effect, 50)
+      assert result == Either.left(:timeout)
+    end
+
+    test "run returns a Left with {:exception, error} if task is invalid" do
+      effect = %Funx.Effect.Right{
+        effect: fn -> :not_a_task end
+      }
+
+      result = run(effect)
+
+      assert match?(
+               %Either.Left{
+                 left: {:exception, %FunctionClauseError{function: :yield, module: Task}}
+               },
+               result
+             )
+    end
+
+    test "run returns a Left with {:invalid_result, value} if task returns non-Either" do
+      effect = %Funx.Effect.Right{
+        effect: fn ->
+          Task.async(fn -> :not_an_either end)
+        end
+      }
+
+      result = run(effect)
+
+      assert result == %Either.Left{left: {:invalid_result, :not_an_either}}
     end
   end
 
@@ -62,6 +107,32 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.left("error")
+    end
+
+    test "ap wraps exceptions raised by the function in a Left" do
+      func = right(fn _ -> raise "boom" end)
+      value = right(42)
+
+      result =
+        func
+        |> ap(value)
+        |> run()
+
+      assert %Either.Left{left: {:ap_exception, %RuntimeError{message: "boom"}}} = result
+    end
+
+    test "ap returns Left if the function effect resolves to a Left" do
+      func = %Funx.Effect.Right{
+        effect: fn -> Task.async(fn -> Either.left("bad function") end) end
+      }
+
+      value = right(42)
+
+      result =
+        ap(func, value)
+        |> run()
+
+      assert result == Either.left("bad function")
     end
   end
 
@@ -157,6 +228,15 @@ defmodule EffectTest do
         |> run()
 
       assert result == %Either.Left{left: "error"}
+    end
+
+    test "map wraps exceptions raised by the function in a Left" do
+      result =
+        right(42)
+        |> map(fn _ -> raise "boom" end)
+        |> run()
+
+      assert match?(%Either.Left{left: {:map_exception, %RuntimeError{message: "boom"}}}, result)
     end
   end
 
