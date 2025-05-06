@@ -159,4 +159,15 @@ defmodule Funx.ListTest do
       assert result == [20, 40]
     end
   end
+
+  describe "concat/1" do
+    test "concatenates a list of lists in order using ListConcat" do
+      input = [[1], [2, 3], [4]]
+      assert List.concat(input) == [1, 2, 3, 4]
+    end
+
+    test "returns an empty list when given an empty list" do
+      assert List.concat([]) == []
+    end
+  end
 end

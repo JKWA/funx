@@ -49,8 +49,10 @@ defmodule Funx.List do
   """
   import Funx.Foldable, only: [fold_l: 3]
   import Funx.Filterable, only: [filter: 2]
+  import Funx.Monoid.Utils, only: [concat: 2]
 
   alias Funx.Eq
+  alias Funx.Monoid.ListConcat
   alias Funx.Ord
 
   @doc """
@@ -187,9 +189,29 @@ defmodule Funx.List do
     |> uniq(Ord.Utils.to_eq(ord))
     |> sort(ord)
   end
+
+  @doc """
+  Concatenates a list of lists from left to right.
+
+  This uses the `ListConcat` monoid, preserving the original order of elements.
+
+  ## Examples
+
+      iex> Funx.List.concat([[1], [2, 3], [4]])
+      [1, 2, 3, 4]
+  """
+  @spec concat([[term()]]) :: [term()]
+  def concat(list) when is_list(list) do
+    concat(%ListConcat{}, list)
+  end
 end
 
 defimpl Funx.Monad, for: List do
+  @spec map([term], (term -> term)) :: [term]
+  def map(list, func) do
+    :lists.map(func, list)
+  end
+
   @spec ap(list((term -> term)), list(term)) :: list(term)
   def ap(funcs, list) do
     :lists.flatten(
@@ -202,11 +224,6 @@ defimpl Funx.Monad, for: List do
   @spec bind([term], (term -> [term])) :: [term]
   def bind(list, func) do
     :lists.flatmap(func, list)
-  end
-
-  @spec map([term], (term -> term)) :: [term]
-  def map(list, func) do
-    :lists.map(func, list)
   end
 end
 
