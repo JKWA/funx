@@ -11,6 +11,7 @@ defmodule EffectTest do
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
 
+  alias Funx.Effect.{Left, Right}
   alias Funx.{Either, Maybe}
 
   describe "right/1" do
@@ -240,10 +241,68 @@ defmodule EffectTest do
     end
   end
 
+  describe "map_left/2 for Effect" do
+    test "transforms a Left value" do
+      result =
+        Left.pure("error")
+        |> map_left(fn e -> "wrapped: " <> e end)
+        |> run()
+
+      assert result == Either.left("wrapped: error")
+    end
+
+    test "leaves a Right value unchanged" do
+      result =
+        Right.pure(42)
+        |> map_left(fn _ -> "should not be called" end)
+        |> run()
+
+      assert result == Either.right(42)
+    end
+
+    test "can transform complex Left values" do
+      result =
+        Left.pure(%{code: 400})
+        |> map_left(fn err -> Map.put(err, :handled, true) end)
+        |> run()
+
+      assert result == Either.left(%{code: 400, handled: true})
+    end
+
+    test "does not call the function for Right" do
+      refute_receive {:called}
+
+      result =
+        Right.pure(:ok)
+        |> map_left(fn _ ->
+          send(self(), {:called})
+          :fail
+        end)
+        |> run()
+
+      assert result == Either.right(:ok)
+    end
+
+    test "map_left returns Right if effect unexpectedly resolves to Right" do
+      effect = %Funx.Effect.Left{
+        effect: fn ->
+          Task.async(fn -> %Funx.Either.Right{right: :recovered} end)
+        end
+      }
+
+      result =
+        effect
+        |> map_left(fn _ -> :should_not_be_called end)
+        |> run()
+
+      assert result == Either.right(:recovered)
+    end
+  end
+
   describe "lift_predicate/3" do
     test "returns Right when predicate returns true" do
       result =
-        lift_predicate(10, fn x -> x > 5 end, fn -> "Value is too small" end)
+        lift_predicate(10, fn x -> x > 5 end, fn x -> "Value #{x} is too small" end)
         |> run()
 
       assert result == Either.right(10)
@@ -251,10 +310,10 @@ defmodule EffectTest do
 
     test "returns Left when predicate returns false" do
       result =
-        lift_predicate(3, fn x -> x > 5 end, fn -> "Value is too small" end)
+        lift_predicate(3, fn x -> x > 5 end, fn x -> "Value #{x} is too small" end)
         |> run()
 
-      assert result == Either.left("Value is too small")
+      assert result == Either.left("Value 3 is too small")
     end
   end
 
@@ -420,7 +479,7 @@ defmodule EffectTest do
   describe "traverse/2" do
     test "traverse with a list of valid values returns a Right with a list" do
       is_positive = fn num ->
-        lift_predicate(num, &(&1 > 0), fn -> "#{num} is not positive" end)
+        lift_predicate(num, &(&1 > 0), fn x -> "#{x} is not positive" end)
       end
 
       result =
@@ -432,7 +491,7 @@ defmodule EffectTest do
 
     test "traverse with a list containing an invalid value returns a Left" do
       is_positive = fn num ->
-        lift_predicate(num, &(&1 > 0), fn -> "#{num} is not positive" end)
+        lift_predicate(num, &(&1 > 0), fn x -> "#{x} is not positive" end)
       end
 
       result =
@@ -444,7 +503,7 @@ defmodule EffectTest do
 
     test "traverse with an empty list returns a Right with an empty list" do
       is_positive = fn num ->
-        lift_predicate(num, &(&1 > 0), fn -> "#{num} is not positive" end)
+        lift_predicate(num, &(&1 > 0), fn x -> "#{x} is not positive" end)
       end
 
       result =
@@ -452,6 +511,46 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.right([])
+    end
+
+    test "traverse triggers `else` when accumulator resolves to Left inside with" do
+      # Function returns a valid Right effect
+      is_valid = fn n -> right(n) end
+
+      # We'll inject this as the initial accumulator, resolving to Left
+      broken_acc = %Funx.Effect.Right{
+        effect: fn ->
+          Task.async(fn -> Either.left(:broken_accumulator) end)
+        end
+      }
+
+      # Now run a single-item traverse where acc = broken_acc and func returns Right
+      result =
+        Enum.reduce_while([:ok], broken_acc, fn item, %Right{} = acc ->
+          case {is_valid.(item), acc} do
+            {%Right{effect: eff1}, %Right{effect: eff2}} ->
+              {:cont,
+               %Right{
+                 effect: fn ->
+                   Task.async(fn ->
+                     with %Either.Right{right: val} <- run(%Right{effect: eff1}),
+                          %Either.Right{right: acc_vals} <- run(%Right{effect: eff2}) do
+                       %Either.Right{right: [val | acc_vals]}
+                     else
+                       %Either.Left{} = left -> left
+                     end
+                   end)
+                 end
+               }}
+
+            {%Left{} = left, _} ->
+              {:halt, left}
+          end
+        end)
+        |> map(&Enum.reverse/1)
+        |> run()
+
+      assert result == Either.left(:broken_accumulator)
     end
   end
 
@@ -507,6 +606,70 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.right([])
+    end
+  end
+
+  describe "traverse_a/2" do
+    test "empty returns a Right with empty list" do
+      result = traverse_a([], &right/1) |> run()
+      assert result == Either.right([])
+    end
+
+    test "applies a function and accumulates Right results" do
+      result = traverse_a([1, 2, 3], &right/1) |> run()
+      assert result == Either.right([1, 2, 3])
+    end
+
+    test "returns Left with all errors if function fails on multiple elements" do
+      result =
+        traverse_a(
+          [1, 2, 3],
+          fn x ->
+            lift_predicate(x, &(&1 <= 1), fn v -> ["bad: #{v}"] end)
+          end
+        )
+        |> run()
+
+      assert result == Either.left(["bad: 2", "bad: 3"])
+    end
+
+    test "returns Left with one error if only one element fails" do
+      result =
+        traverse_a(
+          [1, 2, 3],
+          fn x ->
+            lift_predicate(x, &(&1 <= 2), fn v -> ["bad: #{v}"] end)
+          end
+        )
+        |> run()
+
+      assert result == Either.left(["bad: 3"])
+    end
+
+    test "preserves earlier Left even if later elements are Right" do
+      result =
+        traverse_a(
+          [1, 2, 3],
+          fn
+            1 -> left(["fail 1"])
+            2 -> right("ok 2")
+            3 -> right("ok 3")
+          end
+        )
+        |> run()
+
+      assert result == Either.left(["fail 1"])
+    end
+
+    test "does not nest error lists inside Left" do
+      result =
+        traverse_a(
+          [2, 3],
+          fn x -> left(["bad: #{x}"]) end
+        )
+        |> run()
+
+      assert result == Either.left(["bad: 2", "bad: 3"])
     end
   end
 

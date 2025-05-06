@@ -2,7 +2,7 @@ defmodule Funx.Effect do
   @moduledoc """
   The `Funx.Effect` module provides an implementation of the `Effect` monad, which represents asynchronous computations that can either be `Right` (success) or `Left` (failure).
 
-  `Effect` defers the execution of a effect until it is explicitly awaited, making it useful for handling asynchronous effects that may succeed or fail.
+  `Effect` defers the execution of an effect until it is explicitly awaited, making it useful for handling asynchronous effects that may succeed or fail.
 
   ### Constructors
     - `right/1`: Wraps a value in the `Right` monad.
@@ -16,6 +16,7 @@ defmodule Funx.Effect do
     - `sequence/1`: Sequences a list of `Effect` values, returning a list of `Right` values or the first `Left`.
     - `traverse/2`: Traverses a list with a function that returns `Effect` values, collecting the results into a single `Effect`.
     - `sequence_a/1`: Sequences a list of `Effect` values, collecting all `Left` errors.
+    - `traverse_a/2`: Traverses a list with a function that returns `Effect` values, accumulating all `Left` errors instead of stopping at the first.
 
   ### Validation
     - `validate/2`: Validates a value using a list of validators, collecting errors from `Left` values.
@@ -32,8 +33,8 @@ defmodule Funx.Effect do
     - `to_try!/1`: Converts a `Effect` to its value or raises an exception if `Left`.
   """
 
-  import Funx.Monad, only: [ap: 2, map: 2]
-  import Funx.Foldable, only: [fold_r: 3]
+  import Funx.Monad, only: [map: 2]
+  import Funx.Foldable, only: [fold_l: 3]
 
   alias Funx.{Effect, Either, Maybe}
   alias Effect.{Left, Right}
@@ -111,25 +112,26 @@ defmodule Funx.Effect do
   @doc """
   Lifts a value into the `Effect` monad based on a predicate.
   If the predicate returns true, the value is wrapped in `Right`.
-  Otherwise, the value from `on_false` is wrapped in `Left`.
+  Otherwise, the result of calling `on_false` with the value is wrapped in `Left`.
 
   ## Examples
 
-      iex> result = Funx.Effect.lift_predicate(10, &(&1 > 5), fn -> "too small" end)
+      iex> result = Funx.Effect.lift_predicate(10, &(&1 > 5), fn x -> "\#{x} is too small" end)
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: 10}
 
-      iex> result = Funx.Effect.lift_predicate(3, &(&1 > 5), fn -> "too small" end)
+      iex> result = Funx.Effect.lift_predicate(3, &(&1 > 5), fn x -> "\#{x} is too small" end)
       iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: "too small"}
+      %Funx.Either.Left{left: "3 is too small"}
   """
-  @spec lift_predicate(term(), (term() -> boolean()), (-> left)) :: t(left, term())
+  @spec lift_predicate(term(), (term() -> boolean()), (term() -> left)) :: t(left, term())
         when left: term()
-  def lift_predicate(value, predicate, on_false) do
+  def lift_predicate(value, predicate, on_false)
+      when is_function(predicate, 1) and is_function(on_false, 1) do
     if predicate.(value) do
       Right.pure(value)
     else
-      Left.pure(on_false.())
+      Left.pure(on_false.(value))
     end
   end
 
@@ -178,10 +180,47 @@ defmodule Funx.Effect do
         when left: term(), right: term()
   def lift_maybe(maybe, on_none) do
     maybe
-    |> fold_r(
+    |> fold_l(
       fn value -> Right.pure(value) end,
       fn -> Left.pure(on_none.()) end
     )
+  end
+
+  @doc """
+  Transforms the `Left` branch of an `Effect`.
+
+  If the `Effect` resolves to a `Left`, the provided function is applied to the error.
+  If the `Effect` resolves to a `Right`, the value is returned unchanged.
+
+  This function is useful when you want to rewrite or wrap errors without affecting successful computations.
+
+  ## Examples
+
+      iex> effect = Funx.Effect.left("error")
+      iex> transformed = Funx.Effect.map_left(effect, fn e -> "wrapped: " <> e end)
+      iex> Funx.Effect.run(transformed)
+      %Funx.Either.Left{left: "wrapped: error"}
+
+      iex> effect = Funx.Effect.pure(42)
+      iex> transformed = Funx.Effect.map_left(effect, fn _ -> "should not be called" end)
+      iex> Funx.Effect.run(transformed)
+      %Funx.Either.Right{right: 42}
+  """
+  @spec map_left(t(error, value), (error -> new_error)) :: t(new_error, value)
+        when error: term(), new_error: term(), value: term()
+  def map_left(%Right{} = right, _func), do: right
+
+  def map_left(%Left{effect: eff}, func) when is_function(func, 1) do
+    %Left{
+      effect: fn ->
+        Task.async(fn ->
+          case run(%Left{effect: eff}) do
+            %Either.Left{left: error} -> %Either.Left{left: func.(error)}
+            %Either.Right{} = right -> right
+          end
+        end)
+      end
+    }
   end
 
   @doc """
@@ -201,16 +240,7 @@ defmodule Funx.Effect do
       %Funx.Either.Left{left: "error"}
   """
   @spec sequence([t(left, right)]) :: t(left, [right]) when left: term(), right: term()
-  def sequence(list) do
-    Enum.reduce_while(list, Right.pure([]), fn
-      %Left{} = left, _acc ->
-        {:halt, left}
-
-      %Right{} = right, acc ->
-        {:cont, ap(map(acc, fn acc_value -> fn value -> [value | acc_value] end end), right)}
-    end)
-    |> map(&Enum.reverse/1)
-  end
+  def sequence(list) when is_list(list), do: traverse(list, fn x -> x end)
 
   @doc """
   Traverses a list with a function that returns `Effect` values,
@@ -218,7 +248,9 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> is_positive = fn num -> Funx.Effect.lift_predicate(num, fn x -> x > 0 end, fn -> Integer.to_string(num) <> " is not positive" end) end
+      iex> is_positive = fn num ->
+      ...>   Funx.Effect.lift_predicate(num, fn x -> x > 0 end, fn x -> Integer.to_string(x) <> " is not positive" end)
+      ...> end
       iex> result = Funx.Effect.traverse([1, 2, 3], fn num -> is_positive.(num) end)
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: [1, 2, 3]}
@@ -229,10 +261,29 @@ defmodule Funx.Effect do
 
   @spec traverse([input], (input -> t(left, right))) :: t(left, [right])
         when input: term(), left: term(), right: term()
-  def traverse(list, func) do
-    list
-    |> Enum.map(func)
-    |> sequence()
+  def traverse([], _func), do: pure([])
+
+  def traverse(list, func) when is_list(list) and is_function(func, 1) do
+    Enum.reduce_while(list, pure([]), fn item, %Right{} = acc ->
+      case {func.(item), acc} do
+        {%Right{effect: eff1}, %Right{effect: eff2}} ->
+          {:cont,
+           %Right{
+             effect: fn ->
+               Task.async(fn ->
+                 with %Either.Right{right: val} <- run(%Right{effect: eff1}),
+                      %Either.Right{right: acc_vals} <- run(%Right{effect: eff2}) do
+                   %Either.Right{right: [val | acc_vals]}
+                 end
+               end)
+             end
+           }}
+
+        {%Left{} = left, _} ->
+          {:halt, left}
+      end
+    end)
+    |> map(&:lists.reverse/1)
   end
 
   @doc """
@@ -247,109 +298,101 @@ defmodule Funx.Effect do
   """
   @spec sequence_a([t(error, value)]) :: t([error], [value])
         when error: term(), value: term()
-  def sequence_a([]), do: right([])
+  def sequence_a(list) when is_list(list), do: traverse_a(list, fn x -> x end)
 
-  def sequence_a([head | tail]) do
-    case Task.await(head.effect.()) do
-      %Either.Right{right: value} ->
-        sequence_a(tail)
-        |> case do
-          %Right{effect: effect} ->
-            %Right{
-              effect: fn ->
-                Task.async(fn ->
-                  %Either.Right{right: [value | Task.await(effect.()).right]}
-                end)
-              end
-            }
+  @spec traverse_a([input], (input -> t(error, value))) :: t([error], [value])
+        when input: term(), error: term(), value: term()
+  def traverse_a([], _func), do: right([])
 
-          %Left{effect: effect} ->
-            %Left{effect: effect}
-        end
+  def traverse_a(list, func) when is_list(list) and is_function(func, 1) do
+    fold_l(list, right([]), fn item, acc_result ->
+      case {func.(item), acc_result} do
+        {%Right{effect: eff1}, %Right{effect: eff2}} ->
+          %Right{
+            effect: fn ->
+              Task.async(fn ->
+                with %Either.Right{right: val} <- run(%Right{effect: eff1}),
+                     %Either.Right{right: acc} <- run(%Right{effect: eff2}) do
+                  %Either.Right{right: [val | acc]}
+                end
+              end)
+            end
+          }
 
-      %Either.Left{left: error} ->
-        sequence_a(tail)
-        |> case do
-          %Right{} ->
-            %Left{
-              effect: fn ->
-                Task.async(fn -> %Either.Left{left: [error]} end)
-              end
-            }
+        {%Left{effect: eff1}, %Left{effect: eff2}} ->
+          %Left{
+            effect: fn ->
+              Task.async(fn ->
+                %Either.Left{
+                  left:
+                    as_list(run(%Left{effect: eff1}).left) ++
+                      as_list(run(%Left{effect: eff2}).left)
+                }
+              end)
+            end
+          }
 
-          %Left{effect: effect} ->
-            %Left{
-              effect: fn ->
-                Task.async(fn -> %Either.Left{left: [error | Task.await(effect.()).left]} end)
-              end
-            }
-        end
-    end
+        {%Right{}, %Left{effect: eff2}} ->
+          %Left{
+            effect: fn ->
+              Task.async(fn -> run(%Left{effect: eff2}) end)
+            end
+          }
+
+        {%Left{effect: eff1}, %Right{}} ->
+          %Left{
+            effect: fn ->
+              Task.async(fn ->
+                %Either.Left{left: as_list(run(%Left{effect: eff1}).left)}
+              end)
+            end
+          }
+      end
+    end)
+    |> map(&:lists.reverse/1)
+    |> map_left(&:lists.reverse/1)
   end
 
+  defp as_list(val) when is_list(val), do: val
+  defp as_list(val), do: [val]
+
   @doc """
-  Validates a value using a list of validators. Each validator is a function that returns a `Effect` value.
-  If any validator returns a `Left`, the errors are collected, and if all validators return `Right`, the value is returned in a `Right`.
+  Validates a value using a list of validators. Each validator is a function that returns an `Effect` value.
+  If any validator returns a `Left`, the errors are collected. If all validators return `Right`, the value is returned in a `Right`.
 
   ## Examples
 
-    ### Define Validators
-
-        iex> validate_positive = fn value -> Funx.Effect.lift_predicate(value, &(&1 > 0), fn -> "Value must be positive" end) end
-        iex> validate_even = fn value -> Funx.Effect.lift_predicate(value, &rem(&1, 2) == 0, fn -> "Value must be even" end) end
-        iex> validators = [validate_positive, validate_even]
-        iex> result = Funx.Effect.validate(4, validators)
-        iex> Funx.Effect.run(result)
-        %Funx.Either.Right{right: 4}
-        iex> result = Funx.Effect.validate(3, validators)
-        iex> Funx.Effect.run(result)
-        %Funx.Either.Left{left: ["Value must be even"]}
-        iex> result = Funx.Effect.validate(-3, validators)
-        iex> Funx.Effect.run(result)
-        %Funx.Either.Left{left: ["Value must be positive", "Value must be even"]}
+      iex> validate_positive = fn value ->
+      ...>   Funx.Effect.lift_predicate(value, fn x -> x > 0 end, fn x -> "Value " <> Integer.to_string(x) <> " must be positive" end)
+      ...> end
+      iex> validate_even = fn value ->
+      ...>   Funx.Effect.lift_predicate(value, fn x -> rem(x, 2) == 0 end, fn x -> "Value " <> Integer.to_string(x) <> " must be even" end)
+      ...> end
+      iex> validators = [validate_positive, validate_even]
+      iex> result = Funx.Effect.validate(4, validators)
+      iex> Funx.Effect.run(result)
+      %Funx.Either.Right{right: 4}
+      iex> result = Funx.Effect.validate(3, validators)
+      iex> Funx.Effect.run(result)
+      %Funx.Either.Left{left: ["Value 3 must be even"]}
+      iex> result = Funx.Effect.validate(-3, validators)
+      iex> Funx.Effect.run(result)
+      %Funx.Either.Left{left: ["Value -3 must be positive", "Value -3 must be even"]}
   """
-
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
         when error: term(), value: term()
   def validate(value, validators) when is_list(validators) do
-    results = Enum.map(validators, fn validator -> validator.(value) end)
-
-    case sequence_a(results) do
-      %Right{effect: _effect} ->
-        %Right{
-          effect: fn ->
-            Task.async(fn ->
-              %Either.Right{right: value}
-            end)
-          end
-        }
-
-      %Left{effect: effect} ->
-        %Left{
-          effect: fn ->
-            Task.async(fn ->
-              %Either.Left{left: Task.await(effect.()).left}
-            end)
-          end
-        }
-    end
+    traverse_a(validators, fn validator -> validator.(value) end)
+    |> map(fn _ -> value end)
   end
 
   def validate(value, validator) when is_function(validator, 1) do
     case validator.(value) do
-      %Right{effect: _effect} ->
-        %Right{
-          effect: fn ->
-            Task.async(fn -> %Either.Right{right: value} end)
-          end
-        }
+      %Right{} = right_effect ->
+        map(right_effect, fn _ -> value end)
 
-      %Left{effect: effect} ->
-        %Left{
-          effect: fn ->
-            Task.async(fn -> %Either.Left{left: [Task.await(effect.()).left]} end)
-          end
-        }
+      %Left{} = left_effect ->
+        map_left(left_effect, &List.wrap/1)
     end
   end
 
