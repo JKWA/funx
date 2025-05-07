@@ -94,6 +94,7 @@ defmodule Funx.Utils do
     fn a, b -> fun.(b, a) end
   end
 
+  @spec summarize_string(binary()) :: binary()
   def summarize_string(value, max_len \\ 50) when is_binary(value) do
     if String.length(value) > max_len do
       String.slice(value, 0, max_len) <> "..."
