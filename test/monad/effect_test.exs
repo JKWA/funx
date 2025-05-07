@@ -90,7 +90,7 @@ defmodule EffectTest do
                      100
 
       assert is_integer(duration) and duration > 0
-      assert summarized == {:integer, 42}
+      assert summarized == {:either_right, {:integer, 42}}
     end
 
     @tag :telemetry
@@ -106,7 +106,7 @@ defmodule EffectTest do
                      100
 
       assert is_integer(duration) and duration > 0
-      assert summarized == {:binary, 5}
+      assert summarized == {:either_left, {:string, "error"}}
     end
   end
 

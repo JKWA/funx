@@ -49,21 +49,21 @@ defmodule Funx.MaybeTest do
 
   describe "summarize/1" do
     test "summarizes a Just with integer" do
-      assert summarize(pure(42)) == {:integer, 42}
+      assert summarize(pure(42)) == {:maybe_just, {:integer, 42}}
     end
 
     test "summarizes a Just with string" do
-      assert summarize(pure("hello")) == {:binary, 5}
+      assert summarize(pure("hello")) == {:maybe_just, {:string, "hello"}}
     end
 
     test "summarizes a Just with nested Just" do
       inner = pure(:ok)
       outer = pure(inner)
-      assert summarize(outer) == {:atom, :ok}
+      assert summarize(outer) == {:maybe_just, {:maybe_just, {:atom, :ok}}}
     end
 
     test "summarizes a Nothing as nil" do
-      assert summarize(nothing()) == nil
+      assert summarize(nothing()) == {:maybe_nothing, nil}
     end
   end
 

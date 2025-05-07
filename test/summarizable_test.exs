@@ -22,8 +22,8 @@ defmodule Funx.SummarizableTest do
       assert summarize(3.14) == {:float, 3.14}
     end
 
-    test "summarizes binaries with byte size" do
-      assert summarize("hello") == {:binary, 5}
+    test "summarizes strings" do
+      assert summarize("hello") == {:string, "hello"}
     end
 
     test "summarizes empty lists" do
@@ -35,7 +35,7 @@ defmodule Funx.SummarizableTest do
                {:list, [{:integer, 1}, {:integer, 2}, {:integer, 3}]}
 
       assert summarize([1, "two", :three]) ==
-               {:list, [{:integer, 1}, {:binary, 3}, {:atom, :three}]}
+               {:list, [{:integer, 1}, {:string, "two"}, {:atom, :three}]}
     end
 
     test "summarizes empty maps" do
@@ -44,7 +44,7 @@ defmodule Funx.SummarizableTest do
 
     test "summarizes non-empty maps with up to 3 key-value pairs" do
       result = summarize(%{a: 1, b: "two", c: :three, d: 4})
-      expected = {:map, [a: {:integer, 1}, b: {:binary, 3}, c: {:atom, :three}]}
+      expected = {:map, [a: {:integer, 1}, b: {:string, "two"}, c: {:atom, :three}]}
       assert result == expected
     end
 
@@ -54,7 +54,7 @@ defmodule Funx.SummarizableTest do
 
     test "summarizes tuples with up to 3 elements" do
       result = summarize({1, "two", :three, 4.0})
-      expected = {:tuple, [{:integer, 1}, {:binary, 3}, {:atom, :three}]}
+      expected = {:tuple, [{:integer, 1}, {:string, "two"}, {:atom, :three}]}
       assert result == expected
     end
 
@@ -76,15 +76,21 @@ defmodule Funx.SummarizableTest do
       assert summarize(make_ref()) == :reference
     end
 
-    test "summarizes bitstrings with bit size" do
+    test "summarizes non-binary bitstring" do
       bitstring = <<1::3>>
-      assert summarize(bitstring) == {:bitstring, 3}
+      assert summarize(bitstring) == {:bitstring, "<<3 bits>>"}
     end
 
     test "summarizes unknown structs" do
       p1 = %Person{name: "Alice", age: 30}
 
-      assert summarize(p1) == :unknown
+      assert summarize(p1) ==
+               {:map,
+                [
+                  __module__: {:atom, Funx.Test.Person},
+                  age: {:integer, 30},
+                  name: {:string, "Alice"}
+                ]}
     end
   end
 end

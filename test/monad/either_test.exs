@@ -36,37 +36,37 @@ defmodule Funx.EitherTest do
 
   describe "summarize/1" do
     test "summarizes a string inside Left" do
-      assert summarize(left("error")) == {:binary, 5}
+      assert summarize(left("error")) == {:either_left, {:string, "error"}}
     end
 
     test "summarizes a list inside Left" do
       assert summarize(left([1, 2, 3])) ==
-               {:list, [{:integer, 1}, {:integer, 2}, {:integer, 3}]}
+               {:either_left, {:list, [integer: 1, integer: 2, integer: 3]}}
     end
 
     test "summarizes a nested Left" do
       inner = left(:oops)
       outer = left(inner)
-      assert summarize(outer) == {:atom, :oops}
+      assert summarize(outer) == {:either_left, {:either_left, {:atom, :oops}}}
     end
 
     test "summarizes an integer inside Right" do
-      assert summarize(right(42)) == {:integer, 42}
+      assert summarize(right(42)) == {:either_right, {:integer, 42}}
     end
 
     test "summarizes a string inside Right" do
-      assert summarize(right("hello")) == {:binary, 5}
+      assert summarize(right("hello")) == {:either_right, {:string, "hello"}}
     end
 
     test "summarizes a list inside Right" do
       assert summarize(right([1, 2, 3])) ==
-               {:list, [{:integer, 1}, {:integer, 2}, {:integer, 3}]}
+               {:either_right, {:list, [integer: 1, integer: 2, integer: 3]}}
     end
 
     test "summarizes a nested Right" do
       inner = right(:ok)
       outer = right(inner)
-      assert summarize(outer) == {:atom, :ok}
+      assert summarize(outer) == {:either_right, {:either_right, {:atom, :ok}}}
     end
   end
 

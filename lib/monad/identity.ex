@@ -137,5 +137,5 @@ defimpl Funx.Ord, for: Funx.Identity do
 end
 
 defimpl Funx.Summarizable, for: Funx.Identity do
-  def summarize(%{value: value}), do: Funx.Summarizable.summarize(value)
+  def summarize(%{value: value}), do: {:identity, Funx.Summarizable.summarize(value)}
 end

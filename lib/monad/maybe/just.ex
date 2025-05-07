@@ -145,5 +145,5 @@ defimpl Funx.Ord, for: Funx.Maybe.Just do
 end
 
 defimpl Funx.Summarizable, for: Funx.Maybe.Just do
-  def summarize(%{value: value}), do: Funx.Summarizable.summarize(value)
+  def summarize(%{value: value}), do: {:maybe_just, Funx.Summarizable.summarize(value)}
 end

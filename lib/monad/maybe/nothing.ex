@@ -103,5 +103,5 @@ defimpl Funx.Ord, for: Funx.Maybe.Nothing do
 end
 
 defimpl Funx.Summarizable, for: Funx.Maybe.Nothing do
-  def summarize(_), do: Funx.Summarizable.summarize(nil)
+  def summarize(_), do: {:maybe_nothing, Funx.Summarizable.summarize(nil)}
 end

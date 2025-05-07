@@ -8,6 +8,14 @@ defprotocol Funx.Summarizable do
 end
 
 defimpl Funx.Summarizable, for: Any do
+  def summarize(%mod{} = value) when is_struct(value) do
+    value
+    |> Map.from_struct()
+    |> Map.put(:__module__, mod)
+    |> Funx.Summarizable.summarize()
+  end
+
+  # coveralls-ignore-next-line
   def summarize(_), do: :unknown
 end
 
@@ -25,8 +33,17 @@ defimpl Funx.Summarizable, for: Float do
 end
 
 defimpl Funx.Summarizable, for: BitString do
-  def summarize(value) when is_binary(value), do: {:binary, byte_size(value)}
-  def summarize(value), do: {:bitstring, bit_size(value)}
+  def summarize(value) when is_binary(value) do
+    if String.valid?(value) do
+      {:string, Funx.Utils.summarize_string(value, 50)}
+    else
+      {:binary, byte_size(value)}
+    end
+  end
+
+  def summarize(value) do
+    {:bitstring, "<<#{:erlang.bit_size(value)} bits>>"}
+  end
 end
 
 defimpl Funx.Summarizable, for: List do

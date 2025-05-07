@@ -89,7 +89,6 @@ defmodule Funx.Effect do
   """
   @spec run(t(left, right), timeout()) :: Either.t(left, right)
         when left: term(), right: term()
-  # def run(effect, timeout \\ 5000)
 
   def run(effect, timeout \\ 5000) do
     start_time = System.monotonic_time()

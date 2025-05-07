@@ -93,5 +93,5 @@ defimpl Funx.Ord, for: Funx.Either.Left do
 end
 
 defimpl Funx.Summarizable, for: Funx.Either.Left do
-  def summarize(%{left: value}), do: Funx.Summarizable.summarize(value)
+  def summarize(%{left: value}), do: {:either_left, Funx.Summarizable.summarize(value)}
 end

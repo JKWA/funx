@@ -93,4 +93,12 @@ defmodule Funx.Utils do
   def flip(fun) when is_function(fun, 2) do
     fn a, b -> fun.(b, a) end
   end
+
+  def summarize_string(value, max_len \\ 50) when is_binary(value) do
+    if String.length(value) > max_len do
+      String.slice(value, 0, max_len) <> "..."
+    else
+      value
+    end
+  end
 end

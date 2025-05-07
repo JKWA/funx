@@ -29,17 +29,17 @@ defmodule Funx.IdentityTest do
 
   describe "summarize/1" do
     test "summarizes a Identity with integer" do
-      assert summarize(pure(42)) == {:integer, 42}
+      assert summarize(pure(42)) == {:identity, {:integer, 42}}
     end
 
     test "summarizes a Identity with string" do
-      assert summarize(pure("hello")) == {:binary, 5}
+      assert summarize(pure("hello")) == {:identity, {:string, "hello"}}
     end
 
     test "summarizes a Identity with nested Just" do
       inner = pure(:ok)
       outer = pure(inner)
-      assert summarize(outer) == {:atom, :ok}
+      assert summarize(outer) == {:identity, {:identity, {:atom, :ok}}}
     end
   end
 

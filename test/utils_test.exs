@@ -112,4 +112,29 @@ defmodule Funx.UtilsTest do
       assert flipped_tuple_fun.(:first, :second) == {:second, :first}
     end
   end
+
+  describe "summarize_string/2" do
+    test "returns full string if under max length" do
+      value = "short string"
+      assert summarize_string(value, 50) == "short string"
+    end
+
+    test "returns full string if exactly at max length" do
+      value = String.duplicate("a", 50)
+      assert summarize_string(value, 50) == value
+    end
+
+    test "truncates and adds ellipsis if over max length" do
+      value = String.duplicate("x", 60)
+      assert summarize_string(value, 50) == String.duplicate("x", 50) <> "..."
+    end
+
+    test "truncates correctly with multibyte characters" do
+      value = String.duplicate("🤖", 30)
+      summary = summarize_string(value, 10)
+      assert String.length(summary) > 10
+      assert String.starts_with?(summary, String.slice(value, 0, 10))
+      assert String.ends_with?(summary, "...")
+    end
+  end
 end
