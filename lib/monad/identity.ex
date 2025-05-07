@@ -8,10 +8,6 @@ defmodule Funx.Identity do
     - `Funx.Eq`: Defines equality checks for `Identity` values.
     - `Funx.Ord`: Defines ordering logic for `Identity` values.
     - `String.Chars`: Converts an `Identity` value into a string representation.
-
-  Telemetry Configuration:
-    - `:telemetry_enabled` (default: `true`): Enable or disable telemetry.
-    - `:telemetry_prefix` (default: `[:funx]`): Set a custom prefix for telemetry events.
   """
 
   alias Funx.Eq

@@ -79,7 +79,6 @@ defmodule Funx.Effect do
 
   import Funx.Monad, only: [map: 2]
   import Funx.Foldable, only: [fold_l: 3]
-  import Funx.Summarizable, only: [summarize: 1]
 
   alias Funx.{Effect, Either, Maybe}
   alias Effect.{Left, Right}
@@ -134,31 +133,36 @@ defmodule Funx.Effect do
   @spec run(t(left, right), keyword()) :: Either.t(left, right)
         when left: term(), right: term()
   def run(effect, opts \\ []) do
-    timeout = Keyword.get(opts, :timeout, 5000)
+    timeout = Keyword.get(opts, :timeout, Funx.Config.timeout())
     trace_id = Keyword.get(opts, :trace_id)
-    span_name = Keyword.get(opts, :span_name, "funx.effect.run")
+    span_name = Keyword.get(opts, :span_name, Funx.Config.default_span_name())
 
-    prefix = Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:effect, :run]
+    prefix = Funx.Config.telemetry_prefix() ++ [:effect, :run]
 
-    :telemetry.span(prefix, %{timeout: timeout, span_name: span_name}, fn ->
-      result =
-        case effect do
-          %Right{effect: eff} -> safe_await(eff.(), timeout)
-          %Left{effect: eff} -> safe_await(eff.(), timeout)
-        end
-
-      metadata = %{
-        result: summarize(result),
-        effect_type: if(match?(%Right{}, effect), do: :right, else: :left),
-        status: if(match?(%Either.Right{}, result), do: :ok, else: :error)
-      }
-
-      metadata =
-        if trace_id, do: Map.put(metadata, :trace_id, trace_id), else: metadata
-
-      {result, metadata}
-    end)
+    if Funx.Config.telemetry_enabled?() do
+      :telemetry.span(prefix, %{timeout: timeout, span_name: span_name}, fn ->
+        result = execute_effect(effect, timeout)
+        {result, build_metadata(effect, result, trace_id)}
+      end)
+    else
+      execute_effect(effect, timeout)
+    end
   end
+
+  defp execute_effect(%Right{effect: eff}, timeout), do: safe_await(eff.(), timeout)
+  defp execute_effect(%Left{effect: eff}, timeout), do: safe_await(eff.(), timeout)
+
+  defp build_metadata(effect, result, trace_id) do
+    %{
+      result: Funx.Config.summarizer().(result),
+      effect_type: if(match?(%Right{}, effect), do: :right, else: :left),
+      status: if(match?(%Either.Right{}, result), do: :ok, else: :error)
+    }
+    |> maybe_put_trace_id(trace_id)
+  end
+
+  defp maybe_put_trace_id(meta, nil), do: meta
+  defp maybe_put_trace_id(meta, trace_id), do: Map.put(meta, :trace_id, trace_id)
 
   def safe_await(task, timeout \\ 5000) do
     try do

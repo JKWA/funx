@@ -94,6 +94,27 @@ defmodule EffectTest do
     end
 
     @tag :telemetry
+    test "emits telemetry span with trace id" do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+
+      result = Funx.Effect.right(42) |> run(trace_id: "trace_id")
+
+      assert result == Either.right(42)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: summarized,
+                        effect_type: :right,
+                        status: :ok,
+                        trace_id: "trace_id"
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert summarized == {:either_right, {:integer, 42}}
+    end
+
+    @tag :telemetry
     test "emits telemetry span on Left effect" do
       capture_telemetry([:funx, :effect, :run, :stop], self())
 
@@ -107,6 +128,18 @@ defmodule EffectTest do
 
       assert is_integer(duration) and duration > 0
       assert summarized == {:either_left, {:string, "error"}}
+    end
+  end
+
+  describe "check telemetry disabled" do
+    setup do
+      Application.put_env(:funx, :telemetry_enabled, false, persistent: true)
+      on_exit(fn -> Application.delete_env(:funx, :telemetry_enabled) end)
+    end
+
+    test "still returns the Right result" do
+      result = right(42) |> run()
+      assert result == %Either.Right{right: 42}
     end
   end
 
