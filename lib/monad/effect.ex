@@ -127,10 +127,11 @@ defmodule Funx.Effect do
   def run(effect, opts \\ []) do
     timeout = Keyword.get(opts, :timeout, 5000)
     trace_id = Keyword.get(opts, :trace_id)
+    span_name = Keyword.get(opts, :span_name, "funx.effect.run")
 
     prefix = Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:effect, :run]
 
-    :telemetry.span(prefix, %{timeout: timeout}, fn ->
+    :telemetry.span(prefix, %{timeout: timeout, span_name: span_name}, fn ->
       result =
         case effect do
           %Right{effect: eff} -> safe_await(eff.(), timeout)
