@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-CB57A5A3.js"></script>
+    <script src="dist/sidebar_items-7D4F3572.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -125,7 +125,7 @@ Pages
 
     <section id="moduledoc">
 <p>The <a href="Funx.Identity.html"><code class="inline">Funx.Identity</code></a> module represents the identity monad, where values are simply wrapped in a structure
-and operations are applied directly to those values.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions for monadic operations.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Defines equality checks for <code class="inline">Identity</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering logic for <code class="inline">Identity</code> values.</li><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>: Converts an <code class="inline">Identity</code> value into a string representation.</li></ul><p>Telemetry Configuration:</p><ul><li><code class="inline">:telemetry_enabled</code> (default: <code class="inline">true</code>): Enable or disable telemetry.</li><li><code class="inline">:telemetry_prefix</code> (default: <code class="inline">[:funx]</code>): Set a custom prefix for telemetry events.</li></ul>
+and operations are applied directly to those values.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions for monadic operations.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Defines equality checks for <code class="inline">Identity</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering logic for <code class="inline">Identity</code> values.</li><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>: Converts an <code class="inline">Identity</code> value into a string representation.</li></ul>
     </section>
 
 </div>
@@ -214,7 +214,7 @@ and operations are applied directly to those values.</p><p>This module implement
     </a>
     <h1 class="signature" translate="no">t(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L23" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L19" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -254,7 +254,7 @@ and operations are applied directly to those values.</p><p>This module implement
     </a>
     <h1 class="signature" translate="no">extract(identity)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L45" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L41" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -276,7 +276,7 @@ and operations are applied directly to those values.</p><p>This module implement
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Identity</span><span class="o">.</span><span class="n">extract</span><span class="p" data-group-id="7472456875-1">(</span><span class="nc">Funx.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7472456875-2">(</span><span class="mi">5</span><span class="p" data-group-id="7472456875-2">)</span><span class="p" data-group-id="7472456875-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Identity</span><span class="o">.</span><span class="n">extract</span><span class="p" data-group-id="2400498707-1">(</span><span class="nc">Funx.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2400498707-2">(</span><span class="mi">5</span><span class="p" data-group-id="2400498707-2">)</span><span class="p" data-group-id="2400498707-1">)</span><span class="w">
 </span><span class="mi">5</span></code></pre>
   </section>
 </section>
@@ -289,7 +289,7 @@ and operations are applied directly to those values.</p><p>This module implement
     </a>
     <h1 class="signature" translate="no">lift_eq(custom_eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L48" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L44" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -317,7 +317,7 @@ and operations are applied directly to those values.</p><p>This module implement
     </a>
     <h1 class="signature" translate="no">lift_ord(custom_ord)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L62" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L58" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -345,7 +345,7 @@ and operations are applied directly to those values.</p><p>This module implement
     </a>
     <h1 class="signature" translate="no">pure(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L34" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/identity.ex#L30" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -367,8 +367,8 @@ and operations are applied directly to those values.</p><p>This module implement
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4059692409-1">(</span><span class="mi">5</span><span class="p" data-group-id="4059692409-1">)</span><span class="w">
-</span><span class="p" data-group-id="4059692409-2">%</span><span class="nc" data-group-id="4059692409-2">Funx.Identity</span><span class="p" data-group-id="4059692409-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4059692409-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3635064018-1">(</span><span class="mi">5</span><span class="p" data-group-id="3635064018-1">)</span><span class="w">
+</span><span class="p" data-group-id="3635064018-2">%</span><span class="nc" data-group-id="3635064018-2">Funx.Identity</span><span class="p" data-group-id="3635064018-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3635064018-2">}</span></code></pre>
   </section>
 </section>
 
