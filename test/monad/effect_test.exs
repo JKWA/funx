@@ -44,7 +44,7 @@ defmodule EffectTest do
         end
       }
 
-      result = run(effect, 50)
+      result = run(effect, timeout: 50)
       assert result == Either.left(:timeout)
     end
 
@@ -78,15 +78,15 @@ defmodule EffectTest do
 
   describe "run/2 telemetry" do
     @tag :telemetry
-    test "emits telemetry on Right effect" do
-      capture_telemetry([:funx, :effect, :run], self())
+    test "emits telemetry span on Right effect" do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
 
       result = Funx.Effect.right(42) |> run()
 
       assert result == Either.right(42)
 
-      assert_receive {:telemetry_event, [:funx, :effect, :run], %{duration: duration},
-                      %{result: summarized}},
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{result: summarized, effect_type: :right, status: :ok}},
                      100
 
       assert is_integer(duration) and duration > 0
@@ -94,15 +94,15 @@ defmodule EffectTest do
     end
 
     @tag :telemetry
-    test "emits telemetry on Left effect" do
-      capture_telemetry([:funx, :effect, :run], self())
+    test "emits telemetry span on Left effect" do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
 
       result = Funx.Effect.left("error") |> run()
 
       assert result == Either.left("error")
 
-      assert_receive {:telemetry_event, [:funx, :effect, :run], %{duration: duration},
-                      %{result: summarized}},
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{result: summarized, effect_type: :left, status: :error}},
                      100
 
       assert is_integer(duration) and duration > 0

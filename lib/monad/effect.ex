@@ -1,36 +1,71 @@
 defmodule Funx.Effect do
   @moduledoc """
-  The `Funx.Effect` module provides an implementation of the `Effect` monad, which represents asynchronous computations that can either be `Right` (success) or `Left` (failure).
+    The `Funx.Effect` module provides an implementation of the `Effect` monad, which represents asynchronous computations that can either be `Right` (success) or `Left` (failure).
 
-  `Effect` defers the execution of an effect until it is explicitly awaited, making it useful for handling asynchronous effects that may succeed or fail.
+    `Effect` defers the execution of an effect until it is explicitly awaited, making it useful for handling asynchronous effects that may succeed or fail.
 
-  ### Constructors
+    ### Constructors
     - `right/1`: Wraps a value in the `Right` monad.
     - `left/1`: Wraps a value in the `Left` monad.
     - `pure/1`: Alias for `right/1`.
 
-  ### Execution
+    ### Execution
     - `run/1`: Executes the deferred effect inside the `Effect` monad and returns its result (`Right` or `Left`).
 
-  ### Sequencing
+    ### Sequencing
     - `sequence/1`: Sequences a list of `Effect` values, returning a list of `Right` values or the first `Left`.
     - `traverse/2`: Traverses a list with a function that returns `Effect` values, collecting the results into a single `Effect`.
     - `sequence_a/1`: Sequences a list of `Effect` values, collecting all `Left` errors.
     - `traverse_a/2`: Traverses a list with a function that returns `Effect` values, accumulating all `Left` errors instead of stopping at the first.
 
-  ### Validation
+    ### Validation
     - `validate/2`: Validates a value using a list of validators, collecting errors from `Left` values.
 
-  ### Lifts
+    ### Lifts
     - `lift_either/1`: Lifts an `Either` value to a `Effect` monad.
     - `lift_maybe/2`: Lifts a `Maybe` value to a `Effect` monad.
     - `lift_predicate/3`: Lifts a value into a `Effect` based on a predicate.
 
-  ### Elixir Interops
+    ### Elixir Interops
     - `from_result/1`: Converts a result (`{:ok, _}` or `{:error, _}`) to a `Effect`.
     - `to_result/1`: Converts a `Effect` to a result (`{:ok, value}` or `{:error, reason}`).
     - `from_try/1`: Wraps a function in a `Effect`, catching exceptions.
     - `to_try!/1`: Converts a `Effect` to its value or raises an exception if `Left`.
+
+    ### Telemetry
+
+    The `run/2` function emits telemetry using the `:telemetry.span/3` API.
+
+    #### Events
+
+    - `[:funx, :effect, :run, :start]`
+    - `[:funx, :effect, :run, :stop]`
+
+    #### Measurements
+
+    - `:monotonic_time` – emitted at `:start` and `:stop`
+    - `:system_time` – emitted at `:start`
+    - `:duration` – emitted at `:stop`
+
+    #### Metadata
+
+    - `:timeout` – the timeout passed to `run/2`
+    - `:result` – summarized result using `Funx.Summarizable`
+    - `:effect_type` – `:right` or `:left`
+    - `:status` – `:ok` for successful effects, `:error` for failures
+    - `:telemetry_span_context` – used to correlate start and stop events
+
+    #### Example
+
+    ```elixir
+    :telemetry.attach(
+    "effect-run-handler",
+    [:funx, :effect, :run, :stop],
+    fn event, measurements, metadata, _config ->
+      IO.inspect({event, measurements, metadata}, label: "Effect telemetry")
+    end,
+    nil
+    )
   """
 
   import Funx.Monad, only: [map: 2]
@@ -87,29 +122,32 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: 42}
   """
-  @spec run(t(left, right), timeout()) :: Either.t(left, right)
+  @spec run(t(left, right), keyword()) :: Either.t(left, right)
         when left: term(), right: term()
+  def run(effect, opts \\ []) do
+    timeout = Keyword.get(opts, :timeout, 5000)
+    trace_id = Keyword.get(opts, :trace_id)
 
-  def run(effect, timeout \\ 5000) do
-    start_time = System.monotonic_time()
+    prefix = Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:effect, :run]
 
-    result =
-      case effect do
-        %Right{effect: eff} -> safe_await(eff.(), timeout)
-        %Left{effect: eff} -> safe_await(eff.(), timeout)
-      end
+    :telemetry.span(prefix, %{timeout: timeout}, fn ->
+      result =
+        case effect do
+          %Right{effect: eff} -> safe_await(eff.(), timeout)
+          %Left{effect: eff} -> safe_await(eff.(), timeout)
+        end
 
-    if Application.get_env(:funx, :telemetry_enabled, true) do
-      :telemetry.execute(
-        Application.get_env(:funx, :telemetry_prefix, [:funx]) ++ [:effect, :run],
-        %{duration: System.monotonic_time() - start_time},
-        %{
-          result: summarize(result)
-        }
-      )
-    end
+      metadata = %{
+        result: summarize(result),
+        effect_type: if(match?(%Right{}, effect), do: :right, else: :left),
+        status: if(match?(%Either.Right{}, result), do: :ok, else: :error)
+      }
 
-    result
+      metadata =
+        if trace_id, do: Map.put(metadata, :trace_id, trace_id), else: metadata
+
+      {result, metadata}
+    end)
   end
 
   def safe_await(task, timeout \\ 5000) do
