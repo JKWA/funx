@@ -1,71 +1,80 @@
 defmodule Funx.Effect do
   @moduledoc """
-    The `Funx.Effect` module provides an implementation of the `Effect` monad, which represents asynchronous computations that can either be `Right` (success) or `Left` (failure).
+  The `Funx.Effect` module defines the `Effect` monad, which represents asynchronous computations
+  that may succeed (`Right`) or fail (`Left`). Execution is deferred until explicitly run, making
+  `Effect` useful for structuring lazy, asynchronous workflows.
 
-    `Effect` defers the execution of an effect until it is explicitly awaited, making it useful for handling asynchronous effects that may succeed or fail.
+  ## Constructors
 
-    ### Constructors
-    - `right/1`: Wraps a value in the `Right` monad.
-    - `left/1`: Wraps a value in the `Left` monad.
-    - `pure/1`: Alias for `right/1`.
+    * `right/1` – Wraps a value in a successful `Right` effect.
+    * `left/1` – Wraps a value in a failing `Left` effect.
+    * `pure/1` – Alias for `right/1`.
 
-    ### Execution
-    - `run/1`: Executes the deferred effect inside the `Effect` monad and returns its result (`Right` or `Left`).
+  ## Execution
 
-    ### Sequencing
-    - `sequence/1`: Sequences a list of `Effect` values, returning a list of `Right` values or the first `Left`.
-    - `traverse/2`: Traverses a list with a function that returns `Effect` values, collecting the results into a single `Effect`.
-    - `sequence_a/1`: Sequences a list of `Effect` values, collecting all `Left` errors.
-    - `traverse_a/2`: Traverses a list with a function that returns `Effect` values, accumulating all `Left` errors instead of stopping at the first.
+    * `run/2` – Executes the deferred effect and returns an `Either` result (`Right` or `Left`).
 
-    ### Validation
-    - `validate/2`: Validates a value using a list of validators, collecting errors from `Left` values.
+  ## Sequencing
 
-    ### Lifts
-    - `lift_either/1`: Lifts an `Either` value to a `Effect` monad.
-    - `lift_maybe/2`: Lifts a `Maybe` value to a `Effect` monad.
-    - `lift_predicate/3`: Lifts a value into a `Effect` based on a predicate.
+    * `sequence/1` – Runs a list of effects, stopping at the first `Left`.
+    * `traverse/2` – Applies a function returning an `Effect` to each element of a list, sequencing results.
+    * `sequence_a/1` – Runs a list of effects, collecting all `Left` errors instead of short-circuiting.
+    * `traverse_a/2` – Like `traverse/2`, but accumulates errors across the list.
 
-    ### Elixir Interops
-    - `from_result/1`: Converts a result (`{:ok, _}` or `{:error, _}`) to a `Effect`.
-    - `to_result/1`: Converts a `Effect` to a result (`{:ok, value}` or `{:error, reason}`).
-    - `from_try/1`: Wraps a function in a `Effect`, catching exceptions.
-    - `to_try!/1`: Converts a `Effect` to its value or raises an exception if `Left`.
+  ## Validation
 
-    ### Telemetry
+    * `validate/2` – Validates a value using one or more effectful validators.
 
-    The `run/2` function emits telemetry using the `:telemetry.span/3` API.
+  ## Lifting
 
-    #### Events
+    * `lift_either/1` – Lifts an `Either` value into an `Effect`.
+    * `lift_maybe/2` – Lifts a `Maybe` into an `Effect`, using a fallback error for `Nothing`.
+    * `lift_predicate/3` – Lifts a predicate into an `Effect`, using a provided fallback on failure.
 
-    - `[:funx, :effect, :run, :start]`
-    - `[:funx, :effect, :run, :stop]`
+  ## Elixir Interop
 
-    #### Measurements
+    * `from_result/1` – Converts a `{:ok, _}` or `{:error, _}` tuple into an `Effect`.
+    * `to_result/1` – Converts an `Effect` to `{:ok, _}` or `{:error, _}`.
+    * `from_try/1` – Executes a function, catching exceptions into a `Left`.
+    * `to_try!/1` – Extracts the value from a `Right`, or raises an exception if `Left`.
 
-    - `:monotonic_time` – emitted at `:start` and `:stop`
-    - `:system_time` – emitted at `:start`
-    - `:duration` – emitted at `:stop`
+  ## Telemetry
 
-    #### Metadata
+  The `run/2` function emits telemetry using `:telemetry.span/3`.
 
-    - `:timeout` – the timeout passed to `run/2`
-    - `:result` – summarized result using `Funx.Summarizable`
-    - `:effect_type` – `:right` or `:left`
-    - `:status` – `:ok` for successful effects, `:error` for failures
-    - `:telemetry_span_context` – used to correlate start and stop events
+  ### Events
 
-    #### Example
+    * `[:funx, :effect, :run, :start]`
+    * `[:funx, :effect, :run, :stop]`
 
-    ```elixir
-    :telemetry.attach(
+  ### Measurements
+
+    * `:monotonic_time` – included in both `:start` and `:stop` events.
+    * `:system_time` – included only in the `:start` event.
+    * `:duration` – included only in the `:stop` event.
+
+  ### Metadata
+
+    * `:timeout` – the timeout in milliseconds passed to `run/2`.
+    * `:result` – a summarized version of the result using `Funx.Summarizable`.
+    * `:effect_type` – `:right` or `:left`, depending on the effect being run.
+    * `:status` – `:ok` if the result is a `Right`, or `:error` if it's a `Left`.
+    * `:trace_id` – optional value used to correlate traces across boundaries.
+    * `:span_name` – optional name for the span (defaults to `"funx.effect.run"`).
+    * `:telemetry_span_context` – reference to correlate `:start` and `:stop` events.
+
+  ### Example
+
+  ```elixir
+  :telemetry.attach(
     "effect-run-handler",
     [:funx, :effect, :run, :stop],
     fn event, measurements, metadata, _config ->
       IO.inspect({event, measurements, metadata}, label: "Effect telemetry")
     end,
     nil
-    )
+  )
+  ```
   """
 
   import Funx.Monad, only: [map: 2]
