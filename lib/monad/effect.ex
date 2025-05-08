@@ -82,6 +82,7 @@ defmodule Funx.Effect do
 
   alias Funx.{Effect, Either, Maybe}
   alias Effect.{Left, Right}
+  alias Maybe.{Just, Nothing}
 
   @type t(left, right) :: Left.t(left) | Right.t(right)
 
@@ -246,7 +247,8 @@ defmodule Funx.Effect do
   """
   @spec lift_maybe(Maybe.t(right), (-> left)) :: t(left, right)
         when left: term(), right: term()
-  def lift_maybe(maybe, on_none) do
+  def lift_maybe(maybe, on_none)
+      when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
     maybe
     |> fold_l(
       fn value -> Right.pure(value) end,
