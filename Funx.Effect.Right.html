@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-7D4F3572.js"></script>
+    <script src="dist/sidebar_items-9A4F5CF9.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -159,7 +159,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#pure/1" data-no-tooltip translate="no">pure(value)</a>
+        <a href="#pure/2" data-no-tooltip translate="no">pure(value, opts_or_trace \\ [])</a>
 
       </div>
 
@@ -189,7 +189,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">t(right)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L24" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L22" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -202,12 +202,13 @@ Pages
       <div class="specs">
 
           <pre translate="no"><span class="attribute">@type</span> t(right) :: %Funx.Effect.Right{
-  effect: (-&gt; <a href="https://hexdocs.pm/elixir/Task.html#t:t/0">Task.t</a>()) | (-&gt; <a href="Funx.Either.Right.html#t:t/1">Funx.Either.Right.t</a>(right))
+  effect: (-&gt; <a href="https://hexdocs.pm/elixir/Task.html#t:t/0">Task.t</a>()) | (-&gt; <a href="Funx.Either.Right.html#t:t/1">Funx.Either.Right.t</a>(right)),
+  trace: <a href="Funx.TraceContext.html#t:t/0">Funx.TraceContext.t</a>()
 }</pre>
 
       </div>
 
-<p>Represents an asynchronous computation that produces a <code class="inline">Right</code> value.</p><p>This type models an effectful computation that executes asynchronously, returning a <code class="inline">Task.t()</code>, which is expected to resolve to a <code class="inline">Right</code> value.</p><p>Since Elixir does not allow parameterizing <code class="inline">Task.t()</code> with a return type, this type cannot enforce that <code class="inline">Task.t()</code> resolves to <code class="inline">Funx.Either.Right.t(right)</code>. However, all tasks within this structure are expected to eventually return a <code class="inline">Right</code> value.</p>
+<p>Represents an asynchronous computation that produces a <code class="inline">Right</code> value.</p><p>This type models an effectful computation that executes asynchronously, returning a <code class="inline">Task.t()</code>, which is expected to resolve to a <code class="inline">Right</code> value.</p>
   </section>
 </section>
 
@@ -222,16 +223,18 @@ Pages
       <span class="text">Functions</span>
     </h1>
     <div class="functions-list">
-<section class="detail" id="pure/1">
+<section class="detail" id="pure/2">
+
+    <span id="pure/1"></span>
 
   <div class="detail-header">
-    <a href="#pure/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#pure/2" class="detail-link" data-no-tooltip title="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">pure(value)</h1>
+    <h1 class="signature" translate="no">pure(value, opts_or_trace \\ [])</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L40" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L39" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -243,19 +246,23 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> pure(right) :: <a href="#t:t/1">t</a>(right) when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+          <pre translate="no"><span class="attribute">@spec</span> pure(
+  right,
+  <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">keyword</a>()
+) :: <a href="#t:t/1">t</a>(right)
+when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
 
       </div>
 
-<p>Creates a new <code class="inline">Right</code> effect.</p><p>The <a href="#pure/1"><code class="inline">pure/1</code></a> function wraps a value in the <code class="inline">Right</code> effect monad, representing an asynchronous success.</p><h2 id="pure/1-examples" class="section-heading">
-  <a href="#pure/1-examples" class="hover-link">
+<p>Creates a new <code class="inline">Right</code> effect.</p><p>The <a href="#pure/2"><code class="inline">pure/2</code></a> function wraps a value in the <code class="inline">Right</code> effect monad, representing an asynchronous success.</p><h2 id="pure/2-examples" class="section-heading">
+  <a href="#pure/2-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Right</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2253742735-1">(</span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="2253742735-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2253742735-2">(</span><span class="n">effect</span><span class="p" data-group-id="2253742735-2">)</span><span class="w">
-</span><span class="p" data-group-id="2253742735-3">%</span><span class="nc" data-group-id="2253742735-3">Funx.Either.Right</span><span class="p" data-group-id="2253742735-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="2253742735-3">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Right</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1313117605-1">(</span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="1313117605-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1313117605-2">(</span><span class="n">effect</span><span class="p" data-group-id="1313117605-2">)</span><span class="w">
+</span><span class="p" data-group-id="1313117605-3">%</span><span class="nc" data-group-id="1313117605-3">Funx.Either.Right</span><span class="p" data-group-id="1313117605-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="1313117605-3">}</span></code></pre>
   </section>
 </section>
 
