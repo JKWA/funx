@@ -8,27 +8,26 @@ defmodule Funx.Effect.Right do
 
   The `Right` effect allows the computation to proceed with successful values, supporting lazy, asynchronous tasks.
   """
-  alias Funx.Either
 
-  @enforce_keys [:effect]
-  defstruct [:effect]
+  alias Funx.{Either, TraceContext}
+
+  @enforce_keys [:effect, :trace]
+  defstruct [:effect, :trace]
 
   @typedoc """
   Represents an asynchronous computation that produces a `Right` value.
 
   This type models an effectful computation that executes asynchronously, returning a `Task.t()`, which is expected to resolve to a `Right` value.
-
-  Since Elixir does not allow parameterizing `Task.t()` with a return type, this type cannot enforce that `Task.t()` resolves to `Funx.Either.Right.t(right)`. However, all tasks within this structure are expected to eventually return a `Right` value.
   """
-
   @type t(right) :: %__MODULE__{
-          effect: (-> Task.t()) | (-> Either.Right.t(right))
+          effect: (-> Task.t()) | (-> Either.Right.t(right)),
+          trace: TraceContext.t()
         }
 
   @doc """
   Creates a new `Right` effect.
 
-  The `pure/1` function wraps a value in the `Right` effect monad, representing an asynchronous success.
+  The `pure/2` function wraps a value in the `Right` effect monad, representing an asynchronous success.
 
   ## Examples
 
@@ -36,26 +35,39 @@ defmodule Funx.Effect.Right do
       iex> Funx.Effect.run(effect)
       %Funx.Either.Right{right: "success"}
   """
-  @spec pure(right) :: t(right) when right: term()
-  def pure(value) do
+  @spec pure(right, keyword()) :: t(right) when right: term()
+  def pure(value, opts_or_trace \\ []) do
+    trace =
+      case opts_or_trace do
+        %TraceContext{} = trace ->
+          TraceContext.new(trace)
+
+        opts when is_list(opts) ->
+          trace = Keyword.get(opts, :trace, opts)
+          TraceContext.new(trace)
+      end
+
     %__MODULE__{
-      effect: fn -> Task.async(fn -> %Either.Right{right: value} end) end
+      effect: fn -> Task.async(fn -> %Either.Right{right: value} end) end,
+      trace: trace
     }
   end
 end
 
 defimpl Funx.Monad, for: Funx.Effect.Right do
-  alias Funx.Effect
+  alias Funx.{Effect, Either, TraceContext}
   alias Effect.{Left, Right}
-  alias Funx.Either
 
   @spec map(Right.t(right), (right -> result)) :: Right.t(result)
         when right: term(), result: term()
-  def map(%Right{effect: effect}, mapper) do
+  def map(%Right{effect: effect, trace: trace}, mapper) do
+    updated_trace = TraceContext.promote(trace, "map")
+
     %Right{
+      trace: updated_trace,
       effect: fn ->
         Task.async(fn ->
-          case Effect.run(%Right{effect: effect}) do
+          case Effect.run(%Right{effect: effect, trace: trace}, trace) do
             %Either.Right{right: value} ->
               try do
                 %Either.Right{right: mapper.(value)}
@@ -74,12 +86,21 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
   @spec ap(Right.t((right -> result)), Effect.t(left, right)) ::
           Effect.t(left, result)
         when left: term(), right: term(), result: term()
-  def ap(%Right{effect: effect_func}, %Right{effect: effect_value}) do
+  def ap(%Right{effect: effect_func, trace: trace_func}, %Right{
+        effect: effect_value,
+        trace: trace_val
+      }) do
+    merged_trace = TraceContext.merge(trace_func, trace_val)
+    promoted_trace = TraceContext.promote(merged_trace, "ap")
+
     %Right{
+      trace: promoted_trace,
       effect: fn ->
         Task.async(fn ->
-          with %Either.Right{right: func} <- Effect.run(%Right{effect: effect_func}),
-               %Either.Right{right: value} <- Effect.run(%Right{effect: effect_value}) do
+          with %Either.Right{right: func} <-
+                 Effect.run(%Right{effect: effect_func, trace: trace_func}, trace_func),
+               %Either.Right{right: value} <-
+                 Effect.run(%Right{effect: effect_value, trace: trace_val}, trace_val) do
             try do
               %Either.Right{right: func.(value)}
             rescue
@@ -98,13 +119,17 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
   @spec bind(Right.t(right), (right -> Effect.t(left, result))) ::
           Effect.t(left, result)
         when left: term(), right: term(), result: term()
-  def bind(%Right{effect: effect}, binder) do
+  def bind(%Right{effect: effect, trace: trace}, binder) do
+    promoted_trace = TraceContext.promote(trace, "bind")
+
     %Right{
+      trace: promoted_trace,
       effect: fn ->
         Task.async(fn ->
-          case Effect.run(%Right{effect: effect}) do
+          case Effect.run(%Right{effect: effect, trace: trace}, trace) do
             %Either.Right{right: value} ->
-              binder.(value) |> Effect.run()
+              next = binder.(value)
+              Effect.run(next, next.trace)
 
             %Either.Left{} = left ->
               left
