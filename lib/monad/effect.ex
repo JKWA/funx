@@ -157,7 +157,8 @@ defmodule Funx.Effect do
   """
   @spec run(t(left, right), TraceContext.t() | nil) :: Either.t(left, right)
         when left: term(), right: term()
-  def run(%{trace: %TraceContext{} = internal_trace} = effect, external_trace \\ nil) do
+  def run(%{trace: %TraceContext{} = internal_trace} = effect, external_trace \\ nil)
+      when is_struct(effect, Effect.Right) or is_struct(effect, Effect.Left) do
     trace = external_trace || internal_trace
 
     timeout = trace.timeout || Funx.Config.timeout()
@@ -181,7 +182,7 @@ defmodule Funx.Effect do
   defp build_metadata(effect, result, %TraceContext{} = trace) do
     %{
       result: Funx.Config.summarizer().(result),
-      effect_type: if(match?(%Right{}, effect), do: :right, else: :left),
+      effect_type: if(match?(%Either.Right{}, result), do: :right, else: :left),
       status: if(match?(%Either.Right{}, result), do: :ok, else: :error),
       span_name: trace.span_name,
       trace_id: trace.trace_id
@@ -316,8 +317,10 @@ defmodule Funx.Effect do
   def map_left(%Right{} = right, _func), do: right
 
   def map_left(%Left{effect: eff, trace: trace}, func) when is_function(func, 1) do
+    promoted_trace = TraceContext.promote(trace, "map_left")
+
     %Left{
-      trace: trace,
+      trace: promoted_trace,
       effect: fn ->
         Task.async(fn ->
           case run(%Left{effect: eff, trace: trace}, trace) do
@@ -349,8 +352,8 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "error"}
   """
-  @spec sequence([t(left, right)]) :: t(left, [right]) when left: term(), right: term()
-  def sequence(list) when is_list(list), do: traverse(list, fn x -> x end)
+  @spec sequence([t(left, right)], keyword()) :: t(left, [right]) when left: term(), right: term()
+  def sequence(list, opts \\ []), do: traverse(list, fn x -> x end, opts)
 
   @doc """
   Traverses a list with a function that returns `Effect` computations,
@@ -373,16 +376,28 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "-2 is not positive"}
   """
-  @spec traverse([input], (input -> t(left, right))) :: t(left, [right])
+  @spec traverse([input], (input -> t(left, right)), keyword()) :: t(left, [right])
         when input: term(), left: term(), right: term()
-  def traverse([], _func), do: pure([])
 
-  def traverse(list, func) when is_list(list) and is_function(func, 1) do
-    Enum.reduce_while(list, pure([]), fn item, %Right{trace: acc_trace} = acc ->
+  def traverse(list, func), do: traverse(list, func, [])
+
+  def traverse([], _func, opts), do: pure([], opts)
+
+  def traverse(list, func, opts) when is_list(list) and is_function(func, 1) do
+    traverse_trace = TraceContext.new(opts)
+
+    list
+    |> Enum.with_index()
+    |> Enum.reduce_while(pure([], opts), fn {item, idx}, %Right{trace: acc_trace} = acc ->
       case {func.(item), acc} do
         {%Right{effect: eff1, trace: item_trace}, %Right{effect: eff2}} ->
-          merged_trace = TraceContext.merge(acc_trace, item_trace)
-          updated_trace = TraceContext.promote(merged_trace, "traverse")
+          trace_with_name =
+            TraceContext.default_span_name_if_empty(
+              item_trace,
+              "#{traverse_trace.span_name}[#{idx}]"
+            )
+
+          updated_trace = TraceContext.promote(trace_with_name, "traverse")
 
           {:cont,
            %Right{
@@ -390,7 +405,7 @@ defmodule Funx.Effect do
              effect: fn ->
                Task.async(fn ->
                  with %Either.Right{right: val} <-
-                        run(%Right{effect: eff1, trace: item_trace}, item_trace),
+                        run(%Right{effect: eff1, trace: trace_with_name}, trace_with_name),
                       %Either.Right{right: acc_vals} <-
                         run(%Right{effect: eff2, trace: acc_trace}, acc_trace) do
                    %Either.Right{right: [val | acc_vals]}
@@ -400,7 +415,13 @@ defmodule Funx.Effect do
            }}
 
         {%Left{} = left, _} ->
-          {:halt, left}
+          trace_with_name =
+            TraceContext.default_span_name_if_empty(
+              left.trace,
+              "#{traverse_trace.span_name}[#{idx}]"
+            )
+
+          {:halt, %Left{left | trace: trace_with_name}}
       end
     end)
     |> map(&:lists.reverse/1)

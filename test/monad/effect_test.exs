@@ -11,6 +11,7 @@ defmodule EffectTest do
   import Funx.Effect
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
+  import Funx.Summarizable, only: [summarize: 1]
 
   alias Funx.Effect.{Left, Right}
   alias Funx.{Either, Maybe}
@@ -54,8 +55,17 @@ defmodule EffectTest do
   end
 
   describe "pure/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
+    @tag :telemetry
     test "accepts a trace struct and preserves it" do
-      trace = TraceContext.new(trace_id: "custom-id", span_name: "custom span")
+      trace_id = "trace_id"
+      span_name = "test span"
+
+      trace = TraceContext.new(trace_id: trace_id, span_name: span_name)
       effect = pure(123, trace)
 
       assert %Funx.Effect.Right{trace: ^trace} = effect
@@ -64,20 +74,29 @@ defmodule EffectTest do
 
       assert result == Either.right(123)
 
-      # assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
-      #                 %{trace_id: "custom-id", span_name: "custom span"}}
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
+                      %{result: telemetry_result, trace_id: ^trace_id, span_name: ^span_name}}
+
+      assert telemetry_result == summarize(result)
     end
 
+    @tag :telemetry
     test "accepts a keyword list and builds a trace from it" do
-      effect = pure(456, span_name: "from opts", trace_id: "opts-trace-id")
+      trace_id = "trace_id"
+      span_name = "test span"
+
+      effect = pure(456, span_name: span_name, trace_id: trace_id)
       result = run(effect)
 
       assert result == Either.right(456)
 
-      # assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
-      #                 %{trace_id: "opts-trace-id", span_name: "from opts"}}
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
+                      %{result: telemetry_result, trace_id: ^trace_id, span_name: ^span_name}}
+
+      assert telemetry_result == summarize(result)
     end
 
+    @tag :telemetry
     test "run returns a Left with {:exception, error} if task is invalid" do
       trace = TraceContext.new(span_name: "invalid task")
 
@@ -96,6 +115,7 @@ defmodule EffectTest do
              )
     end
 
+    @tag :telemetry
     test "run returns a Left with {:invalid_result, value} if task returns non-Either" do
       trace = TraceContext.new(span_name: "invalid result")
 
@@ -111,23 +131,26 @@ defmodule EffectTest do
       assert result == %Either.Left{left: {:invalid_result, :not_an_either}}
     end
 
+    @tag :telemetry
     test "Left.pure/2 wraps a value and emits telemetry" do
-      capture_telemetry([:funx, :effect, :run, :stop], self())
+      trace_id = "trace_id"
+      span_name = "test span"
 
       effect =
-        Funx.Effect.Left.pure("error", span_name: "left test", trace_id: "left-trace-id")
+        Funx.Effect.Left.pure("error", span_name: span_name, trace_id: trace_id)
 
       result = Funx.Effect.run(effect)
 
       assert result == %Funx.Either.Left{left: "error"}
 
-      # assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
-      #                 %{trace_id: "left-trace-id", span_name: "left test", status: :error}}
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
+                      %{result: telemetry_result, trace_id: ^trace_id, span_name: ^span_name}}
+
+      assert telemetry_result == summarize(result)
     end
 
+    @tag :telemetry
     test "Left.pure/2 accepts a TraceContext and preserves it" do
-      capture_telemetry([:funx, :effect, :run, :stop], self())
-
       trace = TraceContext.new(trace_id: "left-direct-id", span_name: "left span")
       effect = Funx.Effect.Left.pure("fail", trace)
 
@@ -136,31 +159,39 @@ defmodule EffectTest do
       assert result == %Funx.Either.Left{left: "fail"}
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
-                      %{trace_id: "left-direct-id", span_name: "left span", status: :error}}
+                      %{
+                        result: telemetry_result,
+                        trace_id: "left-direct-id",
+                        span_name: "left span",
+                        status: :error
+                      }}
+
+      assert telemetry_result == summarize(result)
     end
   end
 
   describe "run/2 telemetry" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     @tag :telemetry
     test "emits telemetry span on Right effect" do
-      capture_telemetry([:funx, :effect, :run, :stop], self())
-
       result = Funx.Effect.right(42) |> run()
 
       assert result == Either.right(42)
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
-                      %{result: summarized, effect_type: :right, status: :ok}},
+                      %{result: telemetry_result, effect_type: :right, status: :ok}},
                      100
 
       assert is_integer(duration) and duration > 0
-      assert summarized == {:either_right, {:integer, 42}}
+      assert telemetry_result == summarize(result)
     end
 
     @tag :telemetry
     test "emits telemetry span with trace id" do
-      capture_telemetry([:funx, :effect, :run, :stop], self())
-
       trace = TraceContext.new(trace_id: "trace_id", span_name: "test span")
 
       effect = Funx.Effect.right(42, trace: trace)
@@ -170,31 +201,73 @@ defmodule EffectTest do
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
                       %{
-                        result: summarized,
+                        result: telemetry_result,
                         effect_type: :right,
+                        span_name: "test span",
                         status: :ok,
                         trace_id: "trace_id"
                       }},
                      100
 
       assert is_integer(duration) and duration > 0
-      assert summarized == {:either_right, {:integer, 42}}
+      assert telemetry_result == summarize(result)
+    end
+
+    @tag :telemetry
+    test "emits telemetry with span_name and telemetry_id inputs" do
+      trace_id = "trace_id"
+      span_name = "test span"
+
+      effect = Funx.Effect.right(42, trace_id: trace_id, span_name: span_name)
+      result = run(effect)
+
+      assert result == Either.right(42)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        effect_type: :right,
+                        status: :ok,
+                        trace_id: ^trace_id,
+                        span_name: ^span_name
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
+    end
+
+    @tag :telemetry
+    test "emits telemetry with defaults" do
+      effect = Funx.Effect.right(42)
+      result = run(effect)
+
+      assert result == Either.right(42)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      meta},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert meta.effect_type == :right
+      assert meta.status == :ok
+      assert meta.result == {:either_right, {:integer, 42}}
+      assert is_binary(meta.trace_id)
+      assert meta.span_name == Funx.Config.default_span_name()
     end
 
     @tag :telemetry
     test "emits telemetry span on Left effect" do
-      capture_telemetry([:funx, :effect, :run, :stop], self())
-
       result = Funx.Effect.left("error") |> run()
 
       assert result == Either.left("error")
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
-                      %{result: summarized, effect_type: :left, status: :error}},
+                      %{result: telemetry_result, effect_type: :left, status: :error}},
                      100
 
       assert is_integer(duration) and duration > 0
-      assert summarized == {:either_left, {:string, "error"}}
+      assert telemetry_result == summarize(result)
     end
   end
 
@@ -211,9 +284,15 @@ defmodule EffectTest do
   end
 
   describe "ap/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
+    @tag :telemetry
     test "ap applies a function inside a Right monad to a value inside another Right monad" do
-      func = right(fn x -> x * 2 end)
-      value = right(10)
+      func = right(fn x -> x * 2 end, span_name: "multiply")
+      value = right(10, span_name: "value")
 
       result =
         func
@@ -221,11 +300,41 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.right(20)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "multiply",
+                        trace_id: parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "ap -> multiply",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "value",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
+    @tag :telemetry
     test "ap returns Left if the function is inside a Left monad" do
-      func = left("error")
-      value = right(10)
+      func = left("error", span_name: "error")
+      value = right(10, span_name: "value")
 
       result =
         func
@@ -233,11 +342,24 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "ap -> error",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
+    @tag :telemetry
     test "ap returns Left if the value is inside a Left monad" do
-      func = right(fn x -> x * 2 end)
-      value = left("error")
+      func = right(fn x -> x * 2 end, span_name: "multiply")
+      value = left("error", span_name: "value")
 
       result =
         func
@@ -245,11 +367,24 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "ap -> value",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
+    @tag :telemetry
     test "ap wraps exceptions raised by the function in a Left" do
-      func = right(fn _ -> raise "boom" end)
-      value = right(42)
+      func = right(fn _ -> raise "boom" end, span_name: "boom")
+      value = right(42, span_name: "value")
 
       result =
         func
@@ -257,10 +392,40 @@ defmodule EffectTest do
         |> run()
 
       assert %Either.Left{left: {:ap_exception, %RuntimeError{message: "boom"}}} = result
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "value",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "boom",
+                        trace_id: parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "ap -> boom",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
+    @tag :telemetry
     test "ap returns Left if the function effect resolves to a Left" do
-      trace = TraceContext.new(span_name: "ap-failure")
+      trace = TraceContext.new(span_name: "failure")
 
       func = %Funx.Effect.Right{
         trace: trace,
@@ -271,9 +436,30 @@ defmodule EffectTest do
 
       result =
         ap(func, value)
-        |> run(trace)
+        |> run()
 
       assert result == Either.left("bad function")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "failure",
+                        trace_id: parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "ap -> failure",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
   end
 
@@ -338,26 +524,63 @@ defmodule EffectTest do
   end
 
   describe "map/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "map applies a function to the value inside a Right monad" do
       result =
-        right(10)
+        right(10, span_name: "value")
         |> map(fn value -> value * 2 end)
         |> run()
 
       assert result == Either.right(20)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "value",
+                        trace_id: parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "map -> value",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "map does not apply the function for a Left monad" do
       result =
-        left("error")
+        left("error", span_name: "value")
         |> map(fn _value -> raise "Should not be called" end)
         |> run()
 
       assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "value",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "map returns a Left if the effect resolves to a Left error" do
-      trace = TraceContext.new(span_name: "map-left")
+      trace = TraceContext.new(span_name: "bomb")
 
       error_effect = %Funx.Effect.Right{
         trace: trace,
@@ -369,54 +592,155 @@ defmodule EffectTest do
       result =
         error_effect
         |> map(fn _value -> raise "Should not be called" end)
-        |> run(trace)
+        |> run()
 
       assert result == %Either.Left{left: "error"}
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "bomb",
+                        trace_id: parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "map -> bomb",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "map wraps exceptions raised by the function in a Left" do
       result =
-        right(42)
+        right(42, span_name: "value")
         |> map(fn _ -> raise "boom" end)
         |> run()
 
       assert match?(%Either.Left{left: {:map_exception, %RuntimeError{message: "boom"}}}, result)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "value",
+                        trace_id: parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "map -> value",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
   end
 
   describe "map_left/2 for Effect" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "transforms a Left value" do
       result =
-        Left.pure("error")
+        Left.pure("error", span_name: "value")
         |> map_left(fn e -> "wrapped: " <> e end)
         |> run()
 
       assert result == Either.left("wrapped: error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "value",
+                        trace_id: parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "map_left -> value",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "leaves a Right value unchanged" do
       result =
-        Right.pure(42)
+        Right.pure(42, span_name: "value")
         |> map_left(fn _ -> "should not be called" end)
         |> run()
 
       assert result == Either.right(42)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "value",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "can transform complex Left values" do
       result =
-        Left.pure(%{code: 400})
+        Left.pure(%{code: 400}, span_name: "value")
         |> map_left(fn err -> Map.put(err, :handled, true) end)
         |> run()
 
       assert result == Either.left(%{code: 400, handled: true})
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "value",
+                        trace_id: parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "map_left -> value",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "does not call the function for Right" do
       refute_receive {:called}
 
       result =
-        Right.pure(:ok)
+        Right.pure(:ok, span_name: "value")
         |> map_left(fn _ ->
           send(self(), {:called})
           :fail
@@ -424,10 +748,22 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.right(:ok)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "value",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "map_left returns Right if effect unexpectedly resolves to Right" do
-      trace = TraceContext.new(span_name: "map-left-recovery")
+      trace = TraceContext.new(span_name: "recovery")
 
       effect = %Funx.Effect.Left{
         trace: trace,
@@ -442,74 +778,188 @@ defmodule EffectTest do
         |> run(trace)
 
       assert result == Either.right(:recovered)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "recovery",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
   end
 
   describe "lift_predicate/3" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "returns Right when predicate returns true" do
       result =
-        lift_predicate(10, fn x -> x > 5 end, fn x -> "Value #{x} is too small" end)
+        lift_predicate(
+          10,
+          fn x -> x > 5 end,
+          fn x -> "Value #{x} is too small" end,
+          span_name: "predicate"
+        )
         |> run()
 
       assert result == Either.right(10)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "predicate",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "returns Left when predicate returns false" do
       result =
-        lift_predicate(3, fn x -> x > 5 end, fn x -> "Value #{x} is too small" end)
+        lift_predicate(
+          3,
+          fn x -> x > 5 end,
+          fn x -> "Value #{x} is too small" end,
+          span_name: "predicate"
+        )
         |> run()
 
       assert result == Either.left("Value 3 is too small")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "predicate",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
   end
 
   describe "lift_either/1" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "wraps an Either.Right into a Effect.Right" do
       either = %Either.Right{right: 42}
 
       result =
-        lift_either(either)
+        lift_either(either, span_name: "lift")
         |> run()
 
       assert result == Either.right(42)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "lift",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "wraps an Either.Left into a Effect.Left" do
       either = %Either.Left{left: "error"}
 
       result =
-        lift_either(either)
+        lift_either(either, span_name: "lift")
         |> run()
 
       assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "lift",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
   end
 
   describe "lift_maybe/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "wraps a Just value into a Effect.Right" do
       maybe = Maybe.just(42)
 
       result =
-        lift_maybe(maybe, fn -> "No value" end)
+        lift_maybe(maybe, fn -> "No value" end, span_name: "lift")
         |> run()
 
       assert result == Either.right(42)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "lift",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "wraps a Nothing value into a Effect.Left" do
       maybe = Maybe.nothing()
 
       result =
-        lift_maybe(maybe, fn -> "No value" end)
+        lift_maybe(maybe, fn -> "No value" end, span_name: "lift")
         |> run()
 
       assert result == Either.left("No value")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "lift",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
   end
 
   describe "fold_r/3 with results of Effect" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "applies right function for a Right value returned by a task" do
-      right_value = right(42)
+      right_value = right(42, span_name: "fold")
 
       result =
         right_value
@@ -520,10 +970,22 @@ defmodule EffectTest do
         )
 
       assert result == "Right value is: 42"
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "fold",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == {:either_right, {:integer, 42}}
     end
 
     test "applies left function for a Left value returned by a task" do
-      left_value = left("Something went wrong")
+      left_value = left("Something went wrong", span_name: "fold")
 
       result =
         left_value
@@ -534,12 +996,29 @@ defmodule EffectTest do
         )
 
       assert result == "Error: Something went wrong"
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "fold",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == {:either_left, {:string, "Something went wrong"}}
     end
   end
 
   describe "fold_l/3 with results of Effect" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "applies right function for a Right value returned by a task" do
-      right_value = right(42)
+      right_value = right(42, span_name: "fold")
 
       result =
         right_value
@@ -550,10 +1029,22 @@ defmodule EffectTest do
         )
 
       assert result == "Right value is: 42"
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "fold",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == {:either_right, {:integer, 42}}
     end
 
     test "applies left function for a Left value returned by a task" do
-      left_value = left("Something went wrong")
+      left_value = left("Something went wrong", span_name: "fold")
 
       result =
         left_value
@@ -564,22 +1055,114 @@ defmodule EffectTest do
         )
 
       assert result == "Error: Something went wrong"
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "fold",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == {:either_left, {:string, "Something went wrong"}}
     end
   end
 
   describe "sequence/1" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "sequence with all Right values returns a Right with a list" do
       tasks = [
-        right(1),
-        right(2),
-        right(3)
+        right(1, span_name: "first"),
+        right(2, span_name: "second"),
+        right(3, span_name: "third")
       ]
 
       result =
-        sequence(tasks)
+        sequence(tasks, span_name: "sequence")
         |> run()
 
       assert result == Either.right([1, 2, 3])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "sequence",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "first",
+                        trace_id: first_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "second",
+                        trace_id: second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "third",
+                        trace_id: third_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse -> first",
+                        parent_trace_id: ^first_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse -> second",
+                        parent_trace_id: ^second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse -> third",
+                        parent_trace_id: ^third_id,
+                        trace_id: traverse_third_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map -> traverse -> third",
+                        parent_trace_id: ^traverse_third_id,
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "sequence with a Left value returns the first encountered Left" do
@@ -591,17 +1174,29 @@ defmodule EffectTest do
       ]
 
       result =
-        sequence(tasks)
-        |> run(TraceContext.new(span_name: "sequence test"))
+        sequence(tasks, TraceContext.new(span_name: "sequence"))
+        |> run()
 
       assert result == Either.left("Error occurred")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        span_name: "second",
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "sequence with multiple Left values returns the first encountered Left" do
       tasks = [
-        left("First error"),
-        left("Second error"),
-        right(3)
+        left("First error", span_name: "first"),
+        left("Second error", span_name: "second"),
+        right(3, span_name: "third")
       ]
 
       result =
@@ -609,30 +1204,134 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.left("First error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        span_name: "first",
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "sequence with an empty list returns a Right with an empty list" do
       tasks = []
 
       result =
-        sequence(tasks)
+        sequence(tasks, span_name: "sequence")
         |> run()
 
       assert result == Either.right([])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        span_name: "sequence",
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
   end
 
   describe "traverse/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "traverse with a list of valid values returns a Right with a list" do
       is_positive = fn num ->
         lift_predicate(num, &(&1 > 0), fn x -> "#{x} is not positive" end)
       end
 
       result =
-        traverse([1, 2, 3], is_positive)
+        traverse([1, 2, 3], is_positive, span_name: "traverse")
         |> run()
 
       assert result == Either.right([1, 2, 3])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse[0]",
+                        trace_id: first_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse[1]",
+                        trace_id: second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse[2]",
+                        trace_id: third_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse -> traverse[0]",
+                        parent_trace_id: ^first_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse -> traverse[1]",
+                        parent_trace_id: ^second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse -> traverse[2]",
+                        parent_trace_id: ^third_id,
+                        trace_id: traverse_third_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map -> traverse -> traverse[2]",
+                        parent_trace_id: ^traverse_third_id,
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "traverse with a list containing an invalid value returns a Left" do
@@ -641,10 +1340,22 @@ defmodule EffectTest do
       end
 
       result =
-        traverse([1, -2, 3], is_positive)
+        traverse([1, -2, 3], is_positive, span_name: "traverse_a")
         |> run()
 
       assert result == Either.left("-2 is not positive")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        span_name: "traverse_a[1]",
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "traverse with an empty list returns a Right with an empty list" do
@@ -653,10 +1364,22 @@ defmodule EffectTest do
       end
 
       result =
-        traverse([], is_positive)
+        traverse([], is_positive, span_name: "traverse")
         |> run()
 
       assert result == Either.right([])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        span_name: "traverse",
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "traverse triggers `else` when accumulator resolves to Left inside with" do
@@ -705,6 +1428,18 @@ defmodule EffectTest do
         |> run(trace)
 
       assert result == Either.left(:broken_accumulator)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        span_name: "traverse-early-left",
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
   end
 

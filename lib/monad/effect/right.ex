@@ -114,7 +114,10 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
     }
   end
 
-  def ap(%Right{}, %Left{} = left), do: left
+  def ap(%Right{}, %Left{effect: eff, trace: trace}) do
+    promoted_trace = TraceContext.promote(trace, "ap")
+    %Left{effect: eff, trace: promoted_trace}
+  end
 
   @spec bind(Right.t(right), (right -> Effect.t(left, result))) ::
           Effect.t(left, result)

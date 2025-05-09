@@ -4,6 +4,9 @@ defmodule Funx.TraceContext do
   Used for telemetry, span linking, and cross-process trace propagation.
   """
 
+  import Funx.Foldable, only: [fold_l: 3]
+  alias Funx.Predicate
+
   @enforce_keys [:trace_id]
   defstruct [
     :trace_id,
@@ -127,5 +130,26 @@ defmodule Funx.TraceContext do
   @spec generate_trace_id() :: String.t()
   def generate_trace_id do
     :crypto.strong_rand_bytes(16) |> Base.encode16(case: :lower)
+  end
+
+  def span_name?(%__MODULE__{span_name: nil}), do: false
+  def span_name?(%__MODULE__{}), do: true
+
+  def default_span_name?(%__MODULE__{span_name: name}),
+    do: name == Funx.Config.default_span_name()
+
+  def empty_or_default_span_name?(%__MODULE__{} = ctx) do
+    Predicate.p_any([
+      Predicate.p_not(&span_name?/1),
+      &default_span_name?/1
+    ]).(ctx)
+  end
+
+  def default_span_name_if_empty(%__MODULE__{} = ctx, default_name) do
+    fold_l(
+      fn -> Predicate.p_not(&empty_or_default_span_name?/1).(ctx) end,
+      fn -> ctx end,
+      fn -> %__MODULE__{ctx | span_name: default_name} end
+    )
   end
 end

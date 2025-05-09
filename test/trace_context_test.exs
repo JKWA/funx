@@ -58,4 +58,66 @@ defmodule Funx.TraceContextTest do
       assert trace_id =~ ~r/^[a-f0-9]{32}$/
     end
   end
+
+  describe "span_name?/1" do
+    test "returns true when span_name is present" do
+      ctx = %TraceContext{trace_id: "abc", span_name: "some-span"}
+      assert TraceContext.span_name?(ctx)
+    end
+
+    test "returns false when span_name is nil" do
+      ctx = %TraceContext{trace_id: "abc", span_name: nil}
+      refute TraceContext.span_name?(ctx)
+    end
+  end
+
+  describe "default_span_name?/1" do
+    test "returns true when span_name is the configured default" do
+      default = Funx.Config.default_span_name()
+      ctx = %TraceContext{trace_id: "abc", span_name: default}
+      assert TraceContext.default_span_name?(ctx)
+    end
+
+    test "returns false when span_name is custom" do
+      ctx = %TraceContext{trace_id: "abc", span_name: "custom"}
+      refute TraceContext.default_span_name?(ctx)
+    end
+  end
+
+  describe "empty_or_default_span_name?/1" do
+    test "returns true when span_name is nil" do
+      ctx = %TraceContext{trace_id: "abc", span_name: nil}
+      assert TraceContext.empty_or_default_span_name?(ctx)
+    end
+
+    test "returns true when span_name is default" do
+      ctx = %TraceContext{trace_id: "abc", span_name: Funx.Config.default_span_name()}
+      assert TraceContext.empty_or_default_span_name?(ctx)
+    end
+
+    test "returns false when span_name is custom" do
+      ctx = %TraceContext{trace_id: "abc", span_name: "custom"}
+      refute TraceContext.empty_or_default_span_name?(ctx)
+    end
+  end
+
+  describe "default_span_name_if_empty/2" do
+    test "replaces nil span_name with provided default" do
+      ctx = %TraceContext{trace_id: "abc", span_name: nil}
+      updated = TraceContext.default_span_name_if_empty(ctx, "fallback")
+      assert updated.span_name == "fallback"
+    end
+
+    test "replaces default span_name with provided value" do
+      ctx = %TraceContext{trace_id: "abc", span_name: Funx.Config.default_span_name()}
+      updated = TraceContext.default_span_name_if_empty(ctx, "fallback")
+      assert updated.span_name == "fallback"
+    end
+
+    test "preserves custom span_name" do
+      ctx = %TraceContext{trace_id: "abc", span_name: "preserve"}
+      updated = TraceContext.default_span_name_if_empty(ctx, "fallback")
+      assert updated.span_name == "preserve"
+    end
+  end
 end

@@ -76,10 +76,7 @@ defimpl Funx.Monad, for: Funx.Effect.Left do
 
   @spec map(Left.t(left), (right -> result)) :: Left.t(left)
         when left: term(), right: term(), result: term()
-  def map(%Left{effect: effect, trace: trace}, _mapper) do
-    promoted_trace = TraceContext.promote(trace, "map")
-    %Left{effect: effect, trace: promoted_trace}
-  end
+  def map(%Left{} = left, _mapper), do: left
 
   @spec ap(Left.t(left), Effect.t(left, right)) :: Left.t(left)
         when left: term(), right: term()
