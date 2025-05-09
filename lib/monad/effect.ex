@@ -448,9 +448,9 @@ defmodule Funx.Effect do
       %Funx.Either.Left{left: ["Error 1", "Error 2"]}
   """
 
-  @spec sequence_a([t(error, value)]) :: t([error], [value])
+  @spec sequence_a([t(error, value)], keyword()) :: t([error], [value])
         when error: term(), value: term()
-  def sequence_a(list) when is_list(list), do: traverse_a(list, fn x -> x end)
+  def sequence_a(list, opts \\ []), do: traverse_a(list, fn x -> x end, opts)
 
   @doc """
   Traverses a list with a function that returns `Effect` values, combining results
@@ -475,23 +475,37 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: [1, 2, 3]}
   """
-  @spec traverse_a([input], (input -> t(error, value))) :: t([error], [value])
+  @spec traverse_a([input], (input -> t(error, value)), keyword()) :: t([error], [value])
         when input: term(), error: term(), value: term()
-  def traverse_a([], _func), do: right([])
+  def traverse_a(list, func), do: traverse_a(list, func, [])
 
-  def traverse_a(list, func) when is_list(list) and is_function(func, 1) do
-    fold_l(list, right([]), fn item, acc_result ->
+  def traverse_a([], _func, opts), do: right([], opts)
+
+  def traverse_a(list, func, opts) when is_list(list) and is_function(func, 1) do
+    traverse_trace = TraceContext.new(opts)
+
+    list
+    |> Enum.with_index()
+    |> fold_l(right([], trace: traverse_trace), fn {item, idx}, acc_result ->
       case {func.(item), acc_result} do
         {%Right{effect: eff1, trace: trace1}, %Right{effect: eff2, trace: trace2}} ->
-          trace = TraceContext.promote(TraceContext.merge(trace1, trace2), "traverse_a")
+          item_trace =
+            TraceContext.default_span_name_if_empty(trace1, "#{traverse_trace.span_name}[#{idx}]")
+
+          acc_trace =
+            TraceContext.default_span_name_if_empty(trace2, "#{traverse_trace.span_name}[acc]")
+
+          merged_trace =
+            TraceContext.promote(TraceContext.merge(item_trace, acc_trace), "traverse_a")
 
           %Right{
-            trace: trace,
+            trace: merged_trace,
             effect: fn ->
               Task.async(fn ->
                 with %Either.Right{right: val} <-
-                       run(%Right{effect: eff1, trace: trace1}, trace1),
-                     %Either.Right{right: acc} <- run(%Right{effect: eff2, trace: trace2}, trace2) do
+                       run(%Right{effect: eff1, trace: item_trace}, item_trace),
+                     %Either.Right{right: acc} <-
+                       run(%Right{effect: eff2, trace: acc_trace}, acc_trace) do
                   %Either.Right{right: [val | acc]}
                 end
               end)
@@ -499,16 +513,23 @@ defmodule Funx.Effect do
           }
 
         {%Left{effect: eff1, trace: trace1}, %Left{effect: eff2, trace: trace2}} ->
-          trace = TraceContext.promote(TraceContext.merge(trace1, trace2), "traverse_a")
+          item_trace =
+            TraceContext.default_span_name_if_empty(trace1, "#{traverse_trace.span_name}[#{idx}]")
+
+          acc_trace =
+            TraceContext.default_span_name_if_empty(trace2, "#{traverse_trace.span_name}[acc]")
+
+          merged_trace =
+            TraceContext.promote(TraceContext.merge(item_trace, acc_trace), "traverse_a")
 
           %Left{
-            trace: trace,
+            trace: merged_trace,
             effect: fn ->
               Task.async(fn ->
                 %Either.Left{
                   left:
-                    as_list(run(%Left{effect: eff1, trace: trace1}, trace1).left) ++
-                      as_list(run(%Left{effect: eff2, trace: trace2}, trace2).left)
+                    as_list(run(%Left{effect: eff1, trace: item_trace}, item_trace).left) ++
+                      as_list(run(%Left{effect: eff2, trace: acc_trace}, acc_trace).left)
                 }
               end)
             end
@@ -523,11 +544,16 @@ defmodule Funx.Effect do
           }
 
         {%Left{effect: eff1, trace: trace1}, %Right{}} ->
+          item_trace =
+            TraceContext.default_span_name_if_empty(trace1, "#{traverse_trace.span_name}[#{idx}]")
+
           %Left{
-            trace: trace1,
+            trace: item_trace,
             effect: fn ->
               Task.async(fn ->
-                %Either.Left{left: as_list(run(%Left{effect: eff1, trace: trace1}, trace1).left)}
+                %Either.Left{
+                  left: as_list(run(%Left{effect: eff1, trace: item_trace}, item_trace).left)
+                }
               end)
             end
           }

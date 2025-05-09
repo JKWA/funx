@@ -346,7 +346,7 @@ defmodule EffectTest do
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
                       %{
                         result: telemetry_result,
-                        span_name: "ap -> error",
+                        span_name: "error",
                         effect_type: :left,
                         status: :error
                       }},
@@ -464,62 +464,251 @@ defmodule EffectTest do
   end
 
   describe "bind/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "bind applies a function returning a Right monad to the value inside a Right monad" do
       result =
-        right(10)
-        |> bind(fn value -> right(value + 5) end)
+        right(10, span_name: "value")
+        |> bind(fn value -> right(value + 5, span_name: "add_5") end)
         |> run()
 
       assert result == Either.right(15)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "add_5",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "value",
+                        trace_id: parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "bind -> value",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "bind returns Left when the function returns Left" do
       result =
-        right(10)
-        |> bind(fn _value -> left("error") end)
+        right(10, span_name: "value")
+        |> bind(fn _value -> left("error", span_name: "left_error") end)
         |> run()
 
       assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "left_error",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "value",
+                        trace_id: parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "bind -> value",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "bind does not apply the function for a Left monad" do
       result =
-        left("error")
-        |> bind(fn _value -> right(42) end)
+        left("error", span_name: "left_error")
+        |> bind(fn _value -> right(42, span_name: "value") end)
         |> run()
 
       assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "left_error",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "bind chains multiple Right monads together" do
       result =
-        right(10)
-        |> bind(fn value -> right(value + 5) end)
-        |> bind(fn value -> right(value * 2) end)
+        right(10, span_name: "first")
+        |> bind(fn value -> right(value + 5, span_name: "second") end)
+        |> bind(fn value -> right(value * 2, span_name: "third") end)
         |> run()
 
       assert result == Either.right(30)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "first",
+                        effect_type: :right,
+                        status: :ok,
+                        trace_id: first_id
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "second",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "third",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "bind -> first",
+                        parent_trace_id: ^first_id,
+                        trace_id: second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "bind -> bind -> first",
+                        parent_trace_id: ^second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "bind short-circuits when encountering a Left after a Right" do
       result =
-        right(10)
-        |> bind(fn value -> right(value + 5) end)
-        |> bind(fn _value -> left("error occurred") end)
-        |> bind(fn _value -> right(42) end)
+        right(10, span_name: "first")
+        |> bind(fn value -> right(value + 5, span_name: "second") end)
+        |> bind(fn _value -> left("error occurred", span_name: "error_value") end)
+        |> bind(fn _value -> right(42, span_name: "third") end)
         |> run()
 
       assert result == Either.left("error occurred")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "first",
+                        effect_type: :right,
+                        status: :ok,
+                        trace_id: first_id
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "second",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "error_value",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "bind -> first",
+                        parent_trace_id: ^first_id,
+                        trace_id: second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "bind -> bind -> first",
+                        parent_trace_id: ^second_id,
+                        trace_id: third_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "bind -> bind -> bind -> first",
+                        parent_trace_id: ^third_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "bind preserves the first Left encountered in a chain of Lefts" do
       result =
-        left("first error")
-        |> bind(fn _value -> left("second error") end)
-        |> bind(fn _value -> left("third error") end)
+        left("first error", span_name: "first")
+        |> bind(fn _value -> left("second error", span_name: "second") end)
+        |> bind(fn _value -> left("third error", span_name: "third") end)
         |> run()
 
       assert result == Either.left("first error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "first",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
   end
 
@@ -1499,14 +1688,106 @@ defmodule EffectTest do
   end
 
   describe "traverse_a/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "empty returns a Right with empty list" do
-      result = traverse_a([], &right/1) |> run()
+      result = traverse_a([], &right/1, span_name: "traverse") |> run()
       assert result == Either.right([])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        span_name: "traverse",
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
     end
 
     test "applies a function and accumulates Right results" do
-      result = traverse_a([1, 2, 3], &right/1) |> run()
+      result = traverse_a([1, 2, 3], &right/1, span_name: "traverse") |> run()
       assert result == Either.right([1, 2, 3])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse[0]",
+                        trace_id: first_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse[1]",
+                        trace_id: second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse[2]",
+                        trace_id: third_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> traverse[0]",
+                        parent_trace_id: ^first_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> traverse[1]",
+                        parent_trace_id: ^second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> traverse[2]",
+                        parent_trace_id: ^third_id,
+                        trace_id: traverse_third_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map -> traverse_a -> traverse[2]",
+                        parent_trace_id: ^traverse_third_id,
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "returns Left with all errors if function fails on multiple elements" do
@@ -1515,11 +1796,51 @@ defmodule EffectTest do
           [1, 2, 3],
           fn x ->
             lift_predicate(x, &(&1 <= 1), fn v -> ["bad: #{v}"] end)
-          end
+          end,
+          span_name: "traverse"
         )
         |> run()
 
       assert result == Either.left(["bad: 2", "bad: 3"])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse[1]",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse[2]",
+                        trace_id: trace_2,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> traverse[2]",
+                        parent_trace_id: ^trace_2,
+                        trace_id: trace_3,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map_left -> traverse_a -> traverse[2]",
+                        parent_trace_id: ^trace_3,
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "returns Left with one error if only one element fails" do

@@ -55,17 +55,14 @@ defmodule Funx.Effect.Left do
 end
 
 defimpl Funx.Monad, for: Funx.Effect.Left do
-  alias Funx.TraceContext
   alias Funx.Effect
   alias Funx.Effect.Left
 
   @spec bind(Left.t(left), (any() -> Effect.t(left, result))) :: Left.t(left)
         when left: term(), result: term()
   def bind(%Left{effect: effect, trace: trace}, _binder) do
-    promoted_trace = TraceContext.promote(trace, "bind")
-
     %Left{
-      trace: promoted_trace,
+      trace: trace,
       effect: fn ->
         Task.async(fn ->
           Task.await(effect.())
@@ -80,8 +77,5 @@ defimpl Funx.Monad, for: Funx.Effect.Left do
 
   @spec ap(Left.t(left), Effect.t(left, right)) :: Left.t(left)
         when left: term(), right: term()
-  def ap(%Left{effect: effect, trace: trace}, _other) do
-    promoted_trace = TraceContext.promote(trace, "ap")
-    %Left{effect: effect, trace: promoted_trace}
-  end
+  def ap(%Left{} = left, _other), do: left
 end
