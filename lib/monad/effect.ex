@@ -567,13 +567,15 @@ defmodule Funx.Effect do
   defp as_list(val), do: [val]
 
   @doc """
-  Validates a value using a list of validator functions, each returning an `Effect`.
+  Validates a value using one or more validator functions, each returning an `Effect`.
 
   If all validators succeed (`Right`), the original value is returned in a `Right`.
-  If any validator fails (`Left`), all errors are collected and returned in a `Left`.
+  If any validator fails (`Left`), all errors are accumulated and returned as a single `Left`.
 
-  This is useful when you want to apply multiple validations and report all failures at once,
-  rather than short-circuiting on the first error.
+  This function also manages telemetry trace context across all nested validations,
+  ensuring that span relationships and trace IDs are preserved throughout.
+
+  Supports optional `opts` for span metadata (e.g. `:span_name`).
 
   ## Examples
 
@@ -594,21 +596,20 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: ["Value -3 must be positive", "Value -3 must be even"]}
   """
-  @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
+
+  @spec validate(value, (value -> t(error, any)) | [(value -> t(error, any))], keyword()) ::
+          t([error], value)
         when error: term(), value: term()
-  def validate(value, validators) when is_list(validators) do
-    traverse_a(validators, fn validator -> validator.(value) end)
+
+  def validate(value, validator, opts \\ [])
+
+  def validate(value, validators, opts) when is_list(validators) do
+    traverse_a(validators, fn v -> v.(value) end, opts)
     |> map(fn _ -> value end)
   end
 
-  def validate(value, validator) when is_function(validator, 1) do
-    case validator.(value) do
-      %Right{} = right_effect ->
-        map(right_effect, fn _ -> value end)
-
-      %Left{} = left_effect ->
-        map_left(left_effect, &List.wrap/1)
-    end
+  def validate(value, validator, opts) when is_function(validator, 1) do
+    validate(value, [validator], opts)
   end
 
   @doc """

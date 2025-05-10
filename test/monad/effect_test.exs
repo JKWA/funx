@@ -2003,6 +2003,11 @@ defmodule EffectTest do
   end
 
   describe "validate/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "all validators pass, returns Right with the original value" do
       validator_1 = fn value -> if value > 0, do: right(value), else: left("too small") end
 
@@ -2011,10 +2016,77 @@ defmodule EffectTest do
       end
 
       result =
-        validate(4, [validator_1, validator_2])
+        validate(4, [validator_1, validator_2], span_name: "validate")
         |> run()
 
       assert result == Either.right(4)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "validate",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "validate[0]",
+                        trace_id: trace_0,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "validate[1]",
+                        trace_id: trace_1,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> validate[0]",
+                        parent_trace_id: ^trace_0,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> validate[1]",
+                        parent_trace_id: ^trace_1,
+                        trace_id: trace_3,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map -> traverse_a -> validate[1]",
+                        parent_trace_id: ^trace_3,
+                        trace_id: trace_4,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map -> map -> traverse_a -> validate[1]",
+                        parent_trace_id: ^trace_4,
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "one validator fails, returns Left with the error" do
@@ -2025,10 +2097,31 @@ defmodule EffectTest do
       end
 
       result =
-        validate(3, [validator_1, validator_2])
+        validate(3, [validator_1, validator_2], span_name: "validate")
         |> run()
 
       assert result == Either.left(["not even"])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "validate[1]",
+                        trace_id: trace_0,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map_left -> validate[1]",
+                        parent_trace_id: ^trace_0,
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "multiple validators fail, returns Left with all errors" do
@@ -2039,10 +2132,49 @@ defmodule EffectTest do
       end
 
       result =
-        validate(3, [validator_1, validator_2])
+        validate(3, [validator_1, validator_2], span_name: "validate")
         |> run()
 
       assert result == Either.left(["too small", "not even"])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "validate[0]",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "validate[1]",
+                        trace_id: trace_0,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> validate[1]",
+                        parent_trace_id: ^trace_0,
+                        trace_id: trace_1,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map_left -> traverse_a -> validate[1]",
+                        parent_trace_id: ^trace_1,
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "single validator passes, returns Right with the original value" do
@@ -2067,21 +2199,48 @@ defmodule EffectTest do
   end
 
   describe "from_result/1" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "converts {:ok, value} to Effect.Right" do
-      result = from_result({:ok, 42})
-      assert run(result) == Either.right(42)
+      result = from_result({:ok, 42}, span_name: "result") |> run()
+      assert result == Either.right(42)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "result",
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "converts {:error, reason} to Effect.Left" do
-      result = from_result({:error, "error"})
-      assert run(result) == Either.left("error")
+      result = from_result({:error, "error"}, span_name: "result") |> run()
+      assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "result",
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
   end
 
   describe "to_result/1" do
     test "converts Effect.Right to {:ok, value}" do
-      effect_result = right(42)
-      assert to_result(effect_result) == {:ok, 42}
+      result = to_result(right(42))
+      assert result == {:ok, 42}
     end
 
     test "converts Effect.Left to {:error, reason}" do
