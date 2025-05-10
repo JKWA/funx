@@ -57,7 +57,7 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
       trace: updated_trace,
       effect: fn ->
         Task.async(fn ->
-          case Effect.run(%Right{effect: effect, trace: trace}, trace) do
+          case Effect.run(%Right{effect: effect, trace: trace}) do
             %Either.Right{right: value} ->
               try do
                 %Either.Right{right: mapper.(value)}
@@ -88,9 +88,9 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
       effect: fn ->
         Task.async(fn ->
           with %Either.Right{right: func} <-
-                 Effect.run(%Right{effect: effect_func, trace: trace_func}, trace_func),
+                 Effect.run(%Right{effect: effect_func, trace: trace_func}),
                %Either.Right{right: value} <-
-                 Effect.run(%Right{effect: effect_value, trace: trace_val}, trace_val) do
+                 Effect.run(%Right{effect: effect_value, trace: trace_val}) do
             try do
               %Either.Right{right: func.(value)}
             rescue
@@ -119,10 +119,10 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
       trace: promoted_trace,
       effect: fn ->
         Task.async(fn ->
-          case Effect.run(%Right{effect: effect, trace: trace}, trace) do
+          case Effect.run(%Right{effect: effect, trace: trace}) do
             %Either.Right{right: value} ->
               next = binder.(value)
-              Effect.run(next, next.trace)
+              Effect.run(next)
 
             %Either.Left{} = left ->
               left

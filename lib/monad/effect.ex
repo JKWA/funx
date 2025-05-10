@@ -155,12 +155,10 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: 42}
   """
-  @spec run(t(left, right), TraceContext.t() | nil) :: Either.t(left, right)
+  @spec run(t(left, right)) :: Either.t(left, right)
         when left: term(), right: term()
-  def run(%{trace: %TraceContext{} = internal_trace} = effect, external_trace \\ nil)
+  def run(%{trace: %TraceContext{} = trace} = effect)
       when is_struct(effect, Effect.Right) or is_struct(effect, Effect.Left) do
-    trace = external_trace || internal_trace
-
     timeout = trace.timeout || Funx.Config.timeout()
     span_name = trace.span_name || Funx.Config.default_span_name()
 
@@ -651,24 +649,21 @@ defmodule Funx.Effect do
   @doc """
   Converts an `Effect` monad into an Elixir result tuple by executing the effect.
 
-  You can optionally provide a `TraceContext` to control span naming, timeouts, or parent trace linking.
-
   ## Examples
 
       iex> effect = Funx.Effect.right(42)
       iex> Funx.Effect.to_result(effect)
       {:ok, 42}
-      iex> trace = Funx.TraceContext.new(span_name: "custom span")
-      iex> Funx.Effect.to_result(effect, trace)
+      iex> Funx.Effect.to_result(effect)
       {:ok, 42}
       iex> error = Funx.Effect.left("fail")
       iex> Funx.Effect.to_result(error)
       {:error, "fail"}
   """
-  @spec to_result(t(left, right), TraceContext.t() | nil) :: {:ok, right} | {:error, left}
+  @spec to_result(t(left, right)) :: {:ok, right} | {:error, left}
         when left: term(), right: term()
-  def to_result(effect, trace \\ nil) do
-    case run(effect, trace) do
+  def to_result(effect) do
+    case run(effect) do
       %Either.Right{right: value} -> {:ok, value}
       %Either.Left{left: reason} -> {:error, reason}
     end

@@ -1,7 +1,6 @@
 defmodule EffectTest do
   @moduledoc false
 
-  # use ExUnit.Case
   use Funx.TestCase, async: true
 
   doctest Funx.Effect
@@ -49,7 +48,7 @@ defmodule EffectTest do
         end
       }
 
-      result = run(effect, trace)
+      result = effect |> run()
       assert result == Either.left(:timeout)
     end
   end
@@ -70,7 +69,7 @@ defmodule EffectTest do
 
       assert %Funx.Effect.Right{trace: ^trace} = effect
 
-      result = run(effect, trace)
+      result = effect |> run()
 
       assert result == Either.right(123)
 
@@ -86,7 +85,7 @@ defmodule EffectTest do
       span_name = "test span"
 
       effect = pure(456, span_name: span_name, trace_id: trace_id)
-      result = run(effect)
+      result = effect |> run()
 
       assert result == Either.right(456)
 
@@ -105,7 +104,7 @@ defmodule EffectTest do
         effect: fn -> :not_a_task end
       }
 
-      result = run(effect, trace)
+      result = effect |> run()
 
       assert match?(
                %Either.Left{
@@ -126,7 +125,7 @@ defmodule EffectTest do
         end
       }
 
-      result = run(effect, trace)
+      result = effect |> run()
 
       assert result == %Either.Left{left: {:invalid_result, :not_an_either}}
     end
@@ -139,7 +138,7 @@ defmodule EffectTest do
       effect =
         Funx.Effect.Left.pure("error", span_name: span_name, trace_id: trace_id)
 
-      result = Funx.Effect.run(effect)
+      result = effect |> run()
 
       assert result == %Funx.Either.Left{left: "error"}
 
@@ -154,7 +153,7 @@ defmodule EffectTest do
       trace = TraceContext.new(trace_id: "left-direct-id", span_name: "left span")
       effect = Funx.Effect.Left.pure("fail", trace)
 
-      result = Funx.Effect.run(effect)
+      result = effect |> run()
 
       assert result == %Funx.Either.Left{left: "fail"}
 
@@ -194,8 +193,8 @@ defmodule EffectTest do
     test "emits telemetry span with trace id" do
       trace = TraceContext.new(trace_id: "trace_id", span_name: "test span")
 
-      effect = Funx.Effect.right(42, trace: trace)
-      result = run(effect, trace)
+      effect = Funx.Effect.right(42, trace)
+      result = effect |> run()
 
       assert result == Either.right(42)
 
@@ -219,7 +218,7 @@ defmodule EffectTest do
       span_name = "test span"
 
       effect = Funx.Effect.right(42, trace_id: trace_id, span_name: span_name)
-      result = run(effect)
+      result = effect |> run()
 
       assert result == Either.right(42)
 
@@ -240,7 +239,7 @@ defmodule EffectTest do
     @tag :telemetry
     test "emits telemetry with defaults" do
       effect = Funx.Effect.right(42)
-      result = run(effect)
+      result = effect |> run()
 
       assert result == Either.right(42)
 
@@ -964,7 +963,7 @@ defmodule EffectTest do
       result =
         effect
         |> map_left(fn _ -> :should_not_be_called end)
-        |> run(trace)
+        |> run()
 
       assert result == Either.right(:recovered)
 
@@ -1598,9 +1597,9 @@ defmodule EffectTest do
                  effect: fn ->
                    Task.async(fn ->
                      with %Either.Right{right: val} <-
-                            run(%Right{effect: eff1, trace: trace1}, trace1),
+                            run(%Right{effect: eff1, trace: trace1}),
                           %Either.Right{right: acc_vals} <-
-                            run(%Right{effect: eff2, trace: acc_trace}, acc_trace) do
+                            run(%Right{effect: eff2, trace: acc_trace}) do
                        %Either.Right{right: [val | acc_vals]}
                      else
                        %Either.Left{} = left -> left
@@ -1614,7 +1613,7 @@ defmodule EffectTest do
           end
         end)
         |> map(&Enum.reverse/1)
-        |> run(trace)
+        |> run()
 
       assert result == Either.left(:broken_accumulator)
 
@@ -2253,13 +2252,13 @@ defmodule EffectTest do
     test "converts a successful function into Effect.Right" do
       result = from_try(fn -> 42 end)
 
-      assert run(result) == %Either.Right{right: 42}
+      assert result |> run() == %Either.Right{right: 42}
     end
 
     test "converts a raised exception into Effect.Left" do
       result = from_try(fn -> raise "error" end)
 
-      assert run(result) == %Either.Left{left: %RuntimeError{message: "error"}}
+      assert result |> run() == %Either.Left{left: %RuntimeError{message: "error"}}
     end
 
     test "uses provided trace context" do
@@ -2267,8 +2266,8 @@ defmodule EffectTest do
 
       capture_telemetry([:funx, :effect, :run, :stop], self())
 
-      effect = from_try(fn -> 99 end)
-      result = run(effect, trace)
+      effect = from_try(fn -> 99 end, trace)
+      result = effect |> run()
 
       assert result == %Either.Right{right: 99}
 
@@ -2290,7 +2289,7 @@ defmodule EffectTest do
       trace = TraceContext.new(trace_id: "trace-from-try", span_name: "try block")
 
       result = from_try(fn -> 99 end, trace)
-      assert run(result) == Either.right(99)
+      assert result |> run() == Either.right(99)
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
                       %{trace_id: "trace-from-try", span_name: "try block"}}
