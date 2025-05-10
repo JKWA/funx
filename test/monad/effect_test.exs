@@ -1633,33 +1633,152 @@ defmodule EffectTest do
   end
 
   describe "sequence_a/1" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "all Right values return a Right with all values" do
       tasks = [
-        right(1),
-        right(2),
-        right(3)
+        right(1, span_name: "first"),
+        right(2, span_name: "second"),
+        right(3, span_name: "third")
       ]
 
       result =
-        sequence_a(tasks)
+        sequence_a(tasks, span_name: "sequence")
         |> run()
 
       assert result == Either.right([1, 2, 3])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "sequence",
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "first",
+                        trace_id: first_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "second",
+                        trace_id: second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "third",
+                        trace_id: third_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> first",
+                        parent_trace_id: ^first_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> second",
+                        parent_trace_id: ^second_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> third",
+                        parent_trace_id: ^third_id,
+                        trace_id: traverse_third_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map -> traverse_a -> third",
+                        parent_trace_id: ^traverse_third_id,
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "multiple Left values accumulate and return a Left with all errors" do
       tasks = [
-        right(1),
-        left("Error 1"),
-        left("Error 2"),
-        right(3)
+        right(1, span_name: "first"),
+        left("Error 1", span_name: "second"),
+        left("Error 2", span_name: "third"),
+        right(3, span_name: "fourth")
       ]
 
       result =
-        sequence_a(tasks)
+        sequence_a(tasks, span_name: "sequence")
         |> run()
 
       assert result == Either.left(["Error 1", "Error 2"])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "second",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "third",
+                        trace_id: third_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "traverse_a -> third",
+                        parent_trace_id: ^third_id,
+                        trace_id: fourth_id,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "map_left -> traverse_a -> third",
+                        parent_trace_id: ^fourth_id,
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
     end
 
     test "Right and Left values accumulate errors and return Left with all errors" do
