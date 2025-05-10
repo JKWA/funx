@@ -35,21 +35,11 @@ defmodule Funx.Effect.Left do
       iex> Funx.Effect.run(effect)
       %Funx.Either.Left{left: "error"}
   """
-  @spec pure(left, keyword() | TraceContext.t()) :: t(left) when left: term()
+  @spec pure(left, TraceContext.opts_or_trace()) :: t(left) when left: term()
   def pure(value, opts_or_trace \\ []) do
-    trace =
-      case opts_or_trace do
-        %TraceContext{} = trace ->
-          TraceContext.new(trace)
-
-        opts when is_list(opts) ->
-          trace = Keyword.get(opts, :trace, opts)
-          TraceContext.new(trace)
-      end
-
     %__MODULE__{
       effect: fn -> Task.async(fn -> %Either.Left{left: value} end) end,
-      trace: trace
+      trace: TraceContext.new(opts_or_trace)
     }
   end
 end

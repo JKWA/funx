@@ -103,7 +103,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: 42}
   """
-  @spec right(right, keyword() | TraceContext.t()) :: t(term(), right) when right: term()
+  @spec right(right, TraceContext.opts_or_trace()) :: t(term(), right) when right: term()
   def right(value, opts_or_trace \\ []), do: pure(value, opts_or_trace)
 
   @doc """
@@ -124,7 +124,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: 42}
   """
-  @spec pure(right, keyword() | TraceContext.t()) :: t(term(), right) when right: term()
+  @spec pure(right, TraceContext.opts_or_trace()) :: t(term(), right) when right: term()
   def pure(value, opts_or_trace \\ []), do: Right.pure(value, opts_or_trace)
 
   @doc """
@@ -143,7 +143,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "error"}
   """
-  @spec left(left, keyword() | TraceContext.t()) :: t(left, term()) when left: term()
+  @spec left(left, TraceContext.opts_or_trace()) :: t(left, term()) when left: term()
   def left(value, opts_or_trace \\ []), do: Left.pure(value, opts_or_trace)
 
   @doc """
@@ -226,7 +226,12 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "3 is too small"}
   """
-  @spec lift_predicate(term(), (term() -> boolean()), (term() -> left), keyword()) ::
+  @spec lift_predicate(
+          term(),
+          (term() -> boolean()),
+          (term() -> left),
+          TraceContext.opts_or_trace()
+        ) ::
           t(left, term())
         when left: term()
   def lift_predicate(value, predicate, on_false, opts \\ []) do
@@ -254,7 +259,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "error"}
   """
-  @spec lift_either(Either.t(left, right), keyword()) :: t(left, right)
+  @spec lift_either(Either.t(left, right), TraceContext.opts_or_trace()) :: t(left, right)
         when left: term(), right: term()
   def lift_either(either, opts \\ [])
 
@@ -285,7 +290,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "No value"}
   """
-  @spec lift_maybe(Maybe.t(right), (-> left), keyword()) :: t(left, right)
+  @spec lift_maybe(Maybe.t(right), (-> left), TraceContext.opts_or_trace()) :: t(left, right)
         when left: term(), right: term()
   def lift_maybe(maybe, on_none, opts \\ [])
 
@@ -323,7 +328,7 @@ defmodule Funx.Effect do
       trace: promoted_trace,
       effect: fn ->
         Task.async(fn ->
-          case run(%Left{effect: eff, trace: trace}, trace) do
+          case run(%Left{effect: eff, trace: trace}) do
             %Either.Left{left: error} -> %Either.Left{left: func.(error)}
             %Either.Right{} = right -> right
           end
@@ -352,7 +357,8 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "error"}
   """
-  @spec sequence([t(left, right)], keyword()) :: t(left, [right]) when left: term(), right: term()
+  @spec sequence([t(left, right)], TraceContext.opts_or_trace()) :: t(left, [right])
+        when left: term(), right: term()
   def sequence(list, opts \\ []), do: traverse(list, fn x -> x end, opts)
 
   @doc """
@@ -376,7 +382,8 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "-2 is not positive"}
   """
-  @spec traverse([input], (input -> t(left, right)), keyword()) :: t(left, [right])
+  @spec traverse([input], (input -> t(left, right)), TraceContext.opts_or_trace()) ::
+          t(left, [right])
         when input: term(), left: term(), right: term()
 
   def traverse(list, func), do: traverse(list, func, [])
@@ -405,9 +412,9 @@ defmodule Funx.Effect do
              effect: fn ->
                Task.async(fn ->
                  with %Either.Right{right: val} <-
-                        run(%Right{effect: eff1, trace: trace_with_name}, trace_with_name),
+                        run(%Right{effect: eff1, trace: trace_with_name}),
                       %Either.Right{right: acc_vals} <-
-                        run(%Right{effect: eff2, trace: acc_trace}, acc_trace) do
+                        run(%Right{effect: eff2, trace: acc_trace}) do
                    %Either.Right{right: [val | acc_vals]}
                  end
                end)
@@ -448,7 +455,7 @@ defmodule Funx.Effect do
       %Funx.Either.Left{left: ["Error 1", "Error 2"]}
   """
 
-  @spec sequence_a([t(error, value)], keyword()) :: t([error], [value])
+  @spec sequence_a([t(error, value)], TraceContext.opts_or_trace()) :: t([error], [value])
         when error: term(), value: term()
   def sequence_a(list, opts \\ []), do: traverse_a(list, fn x -> x end, opts)
 
@@ -475,7 +482,8 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: [1, 2, 3]}
   """
-  @spec traverse_a([input], (input -> t(error, value)), keyword()) :: t([error], [value])
+  @spec traverse_a([input], (input -> t(error, value)), TraceContext.opts_or_trace()) ::
+          t([error], [value])
         when input: term(), error: term(), value: term()
   def traverse_a(list, func), do: traverse_a(list, func, [])
 
@@ -486,7 +494,7 @@ defmodule Funx.Effect do
 
     list
     |> Enum.with_index()
-    |> fold_l(right([], trace: traverse_trace), fn {item, idx}, acc_result ->
+    |> fold_l(right([], traverse_trace), fn {item, idx}, acc_result ->
       case {func.(item), acc_result} do
         {%Right{effect: eff1, trace: trace1}, %Right{effect: eff2, trace: trace2}} ->
           item_trace =
@@ -503,9 +511,9 @@ defmodule Funx.Effect do
             effect: fn ->
               Task.async(fn ->
                 with %Either.Right{right: val} <-
-                       run(%Right{effect: eff1, trace: item_trace}, item_trace),
+                       run(%Right{effect: eff1, trace: item_trace}),
                      %Either.Right{right: acc} <-
-                       run(%Right{effect: eff2, trace: acc_trace}, acc_trace) do
+                       run(%Right{effect: eff2, trace: acc_trace}) do
                   %Either.Right{right: [val | acc]}
                 end
               end)
@@ -528,8 +536,8 @@ defmodule Funx.Effect do
               Task.async(fn ->
                 %Either.Left{
                   left:
-                    as_list(run(%Left{effect: eff1, trace: item_trace}, item_trace).left) ++
-                      as_list(run(%Left{effect: eff2, trace: acc_trace}, acc_trace).left)
+                    as_list(run(%Left{effect: eff1, trace: item_trace}).left) ++
+                      as_list(run(%Left{effect: eff2, trace: acc_trace}).left)
                 }
               end)
             end
@@ -539,7 +547,7 @@ defmodule Funx.Effect do
           %Left{
             trace: trace2,
             effect: fn ->
-              Task.async(fn -> run(%Left{effect: eff2, trace: trace2}, trace2) end)
+              Task.async(fn -> run(%Left{effect: eff2, trace: trace2}) end)
             end
           }
 
@@ -552,7 +560,7 @@ defmodule Funx.Effect do
             effect: fn ->
               Task.async(fn ->
                 %Either.Left{
-                  left: as_list(run(%Left{effect: eff1, trace: item_trace}, item_trace).left)
+                  left: as_list(run(%Left{effect: eff1, trace: item_trace}).left)
                 }
               end)
             end
@@ -597,7 +605,11 @@ defmodule Funx.Effect do
       %Funx.Either.Left{left: ["Value -3 must be positive", "Value -3 must be even"]}
   """
 
-  @spec validate(value, (value -> t(error, any)) | [(value -> t(error, any))], keyword()) ::
+  @spec validate(
+          value,
+          (value -> t(error, any)) | [(value -> t(error, any))],
+          TraceContext.opts_or_trace()
+        ) ::
           t([error], value)
         when error: term(), value: term()
 
@@ -627,7 +639,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "error"}
   """
-  @spec from_result({:ok, right} | {:error, left}, keyword()) :: t(left, right)
+  @spec from_result({:ok, right} | {:error, left}, TraceContext.opts_or_trace()) :: t(left, right)
         when left: term(), right: term()
   def from_result(result, opts \\ []) do
     case result do
@@ -677,7 +689,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: %RuntimeError{message: "error"}}
   """
-  @spec from_try((-> right), keyword() | TraceContext.t()) :: t(Exception.t(), right)
+  @spec from_try((-> right), TraceContext.opts_or_trace()) :: t(Exception.t(), right)
         when right: term()
   def from_try(func, opts_or_trace \\ []) do
     trace =
@@ -688,9 +700,9 @@ defmodule Funx.Effect do
 
     try do
       result = func.()
-      Right.pure(result, trace: trace)
+      Right.pure(result, trace)
     rescue
-      exception -> Left.pure(exception, trace: trace)
+      exception -> Left.pure(exception, trace)
     end
   end
 

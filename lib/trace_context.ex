@@ -24,6 +24,8 @@ defmodule Funx.TraceContext do
           baggage: map() | nil
         }
 
+  @type opts_or_trace :: keyword() | t()
+
   @doc """
   Creates a new `TraceContext` struct for use with effectful computations.
 
