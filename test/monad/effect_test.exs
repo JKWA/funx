@@ -74,7 +74,34 @@ defmodule EffectTest do
       assert result == Either.right(123)
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
-                      %{result: telemetry_result, trace_id: ^trace_id, span_name: ^span_name}}
+                      %{
+                        result: telemetry_result,
+                        trace_id: ^trace_id,
+                        span_name: ^span_name
+                      }}
+
+      assert telemetry_result == summarize(result)
+    end
+
+    test "promotes a trace" do
+      trace_id = "trace_id"
+      span_name = "test span"
+
+      trace = TraceContext.new(trace_id: trace_id, span_name: span_name)
+      effect = pure(123, trace)
+
+      assert %Funx.Effect.Right{trace: ^trace} = effect
+
+      result = effect |> run(span_name: "promoted")
+
+      assert result == Either.right(123)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
+                      %{
+                        result: telemetry_result,
+                        parent_trace_id: ^trace_id,
+                        span_name: "promoted -> test span"
+                      }}
 
       assert telemetry_result == summarize(result)
     end

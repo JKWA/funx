@@ -18,12 +18,12 @@ defmodule Funx.Effect do
 
     * `sequence/1` – Runs a list of effects, stopping at the first `Left`.
     * `traverse/2` – Applies a function returning an `Effect` to each element of a list, sequencing results.
-    * `sequence_a/1` – Runs a list of effects, collecting all `Left` errors instead of short-circuiting.
-    * `traverse_a/2` – Like `traverse/2`, but accumulates errors across the list.
+    * `sequence_a/2` – Runs a list of effects, collecting all `Left` errors instead of short-circuiting.
+    * `traverse_a/3` – Like `traverse/2`, but accumulates errors across the list.
 
   ## Validation
 
-    * `validate/2` – Validates a value using one or more effectful validators.
+  * `validate/2` – Validates a value using one or more effectful validators.
 
   ## Lifting
 
@@ -33,9 +33,9 @@ defmodule Funx.Effect do
 
   ## Elixir Interop
 
-    * `from_result/1` – Converts a `{:ok, _}` or `{:error, _}` tuple into an `Effect`.
+    * `from_result/2` – Converts a `{:ok, _}` or `{:error, _}` tuple into an `Effect`.
     * `to_result/1` – Converts an `Effect` to `{:ok, _}` or `{:error, _}`.
-    * `from_try/1` – Executes a function, catching exceptions into a `Left`.
+    * `from_try/2` – Executes a function, catching exceptions into a `Left`.
     * `to_try!/1` – Extracts the value from a `Right`, or raises an exception if `Left`.
 
   ## Telemetry
@@ -65,16 +65,14 @@ defmodule Funx.Effect do
 
   ### Example
 
-  ```elixir
-  :telemetry.attach(
-    "effect-run-handler",
-    [:funx, :effect, :run, :stop],
-    fn event, measurements, metadata, _config ->
-      IO.inspect({event, measurements, metadata}, label: "Effect telemetry")
-    end,
-    nil
-  )
-  ```
+      :telemetry.attach(
+        "effect-run-handler",
+        [:funx, :effect, :run, :stop],
+        fn event, measurements, metadata, _config ->
+          IO.inspect({event, measurements, metadata}, label: "Effect telemetry")
+        end,
+        nil
+      )
   """
 
   import Funx.Monad, only: [map: 2]
@@ -147,21 +145,38 @@ defmodule Funx.Effect do
   def left(value, opts_or_trace \\ []), do: Left.pure(value, opts_or_trace)
 
   @doc """
-  Runs the `Effect` effect and returns the result, awaiting the effect if necessary.
+  Runs the `Effect` and returns the result, awaiting the task if necessary.
+
+  You may provide optional telemetry metadata using `opts`, such as `:span_name`
+  to promote the current trace with a new label.
+
+  ## Options
+
+    * `:span_name` – (optional) promotes the trace to a new span with the given name.
 
   ## Examples
 
       iex> result = Funx.Effect.right(42)
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: 42}
+
+      iex> result = Funx.Effect.right(42, span_name: "initial")
+      iex> Funx.Effect.run(result, span_name: "promoted")
+      %Funx.Either.Right{right: 42}
   """
-  @spec run(t(left, right)) :: Either.t(left, right)
+
+  @spec run(t(left, right), keyword()) :: Either.t(left, right)
         when left: term(), right: term()
-  def run(%{trace: %TraceContext{} = trace} = effect)
+  def run(%{trace: %TraceContext{} = trace} = effect, opts \\ [])
       when is_struct(effect, Effect.Right) or is_struct(effect, Effect.Left) do
+    trace =
+      case Keyword.get(opts, :span_name) do
+        nil -> trace
+        span_name -> TraceContext.promote(trace, span_name)
+      end
+
     timeout = trace.timeout || Funx.Config.timeout()
     span_name = trace.span_name || Funx.Config.default_span_name()
-
     prefix = Funx.Config.telemetry_prefix() ++ [:effect, :run]
 
     if Funx.Config.telemetry_enabled?() do
