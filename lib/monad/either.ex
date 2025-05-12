@@ -47,6 +47,10 @@ defmodule Funx.Either do
     - `lift_eq/1`: Lifts an equality function into the `Either` context.
     - `lift_ord/1`: Lifts an ordering function into the `Either` context.
 
+    ## Transformation
+
+    - `map_left/2` – Transforms the error inside a `Left`, leaving `Right` values untouched.
+
   ### Elixir Interoperability
 
     - `from_result/1`: Converts `{:ok, val}` or `{:error, err}` into an `Either`.

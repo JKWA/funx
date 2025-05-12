@@ -2264,9 +2264,25 @@ defmodule EffectTest do
   end
 
   describe "to_result/1" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "converts Effect.Right to {:ok, value}" do
-      result = to_result(right(42))
+      result = to_result(right(42, span_name: "value"), span_name: "result")
       assert result == {:ok, 42}
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "result -> value",
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == {:either_right, {:integer, 42}}
     end
 
     test "converts Effect.Left to {:error, reason}" do
@@ -2324,9 +2340,25 @@ defmodule EffectTest do
   end
 
   describe "to_try!/1" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "returns value from Effect.Right" do
-      effect_result = right(42)
-      assert to_try!(effect_result) == 42
+      effect_result = right(42, span_name: "value")
+      assert to_try!(effect_result, span_name: "result") == 42
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "result -> value",
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == {:either_right, {:integer, 42}}
     end
 
     test "raises the reason from Effect.Left" do

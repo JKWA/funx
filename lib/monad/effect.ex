@@ -4,6 +4,10 @@ defmodule Funx.Effect do
   that may succeed (`Right`) or fail (`Left`). Execution is deferred until explicitly run, making
   `Effect` useful for structuring lazy, asynchronous workflows.
 
+  This module integrates tracing and telemetry, making it suitable for observability in concurrent
+  Elixir systems. All effects carry a `TraceContext`, which links operations and records spans
+  when `run/2` is called.
+
   ## Constructors
 
     * `right/1` – Wraps a value in a successful `Right` effect.
@@ -37,6 +41,18 @@ defmodule Funx.Effect do
     * `to_result/1` – Converts an `Effect` to `{:ok, _}` or `{:error, _}`.
     * `from_try/2` – Executes a function, catching exceptions into a `Left`.
     * `to_try!/1` – Extracts the value from a `Right`, or raises an exception if `Left`.
+
+  ## Protocols
+    The Left and Right structs implement the following protocols:
+
+     * Funx.Monad – Provides map/2, ap/2, and bind/2 for compositional workflows.
+
+    Although protocol implementations are defined on Left and Right individually, the behavior
+    is unified under the Effect abstraction.
+
+    This module enables structured concurrency, error handling, and observability in
+    asynchronous workflows.
+
 
   ## Telemetry
 
@@ -662,23 +678,35 @@ defmodule Funx.Effect do
   end
 
   @doc """
-  Converts an `Effect` monad into an Elixir result tuple by executing the effect.
+  Converts an `Effect` into an Elixir `{:ok, _}` or `{:error, _}` tuple by running the effect.
+
+  If the effect completes successfully (`Right`), the result is wrapped in `{:ok, value}`.
+  If the effect fails (`Left`), the error is returned as `{:error, reason}`.
+
+  This function also emits telemetry via `run/2` and supports optional trace metadata through keyword options.
+
+  ## Options
+
+    * `:span_name` – sets a custom span name for tracing and telemetry.
 
   ## Examples
 
-      iex> effect = Funx.Effect.right(42)
-      iex> Funx.Effect.to_result(effect)
+      iex> effect = Funx.Effect.right(42, span_name: "convert-ok")
+      iex> Funx.Effect.to_result(effect, span_name: "to_result")
       {:ok, 42}
-      iex> Funx.Effect.to_result(effect)
-      {:ok, 42}
-      iex> error = Funx.Effect.left("fail")
-      iex> Funx.Effect.to_result(error)
+
+      iex> error = Funx.Effect.left("fail", span_name: "convert-error")
+      iex> Funx.Effect.to_result(error, span_name: "to_result")
       {:error, "fail"}
+
+  Telemetry will include the promoted span name (`"to_result -> convert-ok"`) and trace metadata.
+
   """
-  @spec to_result(t(left, right)) :: {:ok, right} | {:error, left}
+
+  @spec to_result(t(left, right), keyword()) :: {:ok, right} | {:error, left}
         when left: term(), right: term()
-  def to_result(effect) do
-    case run(effect) do
+  def to_result(effect, opts \\ []) do
+    case run(effect, opts) do
       %Either.Right{right: value} -> {:ok, value}
       %Either.Left{left: reason} -> {:error, reason}
     end
@@ -717,22 +745,31 @@ defmodule Funx.Effect do
   end
 
   @doc """
-  Unwraps a `Effect`, returning the value if it is a `Right`, or raising the exception if it is a `Left`.
+  Executes an `Effect` and returns the result if it is a `Right`. If the result is a `Left`,
+  this function raises the contained error.
+
+  This is useful when you want to interoperate with code that expects regular exceptions,
+  such as within test assertions or imperative pipelines.
+
+  Runs the effect with full telemetry tracing.
 
   ## Examples
 
-      iex> effect_result = Funx.Effect.right(42)
-      iex> Funx.Effect.to_try!(effect_result)
+      iex> effect = Funx.Effect.right(42, span_name: "return")
+      iex> Funx.Effect.to_try!(effect)
       42
 
-      iex> effect_error = Funx.Effect.left(%RuntimeError{message: "error"})
-      iex> Funx.Effect.to_try!(effect_error)
-      ** (RuntimeError) error
+      iex> error = Funx.Effect.left(%RuntimeError{message: "failure"}, span_name: "error")
+      iex> Funx.Effect.to_try!(error)
+      ** (RuntimeError) failure
+
+  Telemetry will emit a `:stop` event with `:status` set to `:ok` or `:error`, depending on the outcome.
   """
-  @spec to_try!(t(left, right)) :: right | no_return
+
+  @spec to_try!(t(left, right), keyword()) :: right | no_return
         when left: term(), right: term()
-  def to_try!(effect) do
-    case run(effect) do
+  def to_try!(effect, opts \\ []) do
+    case run(effect, opts) do
       %Either.Right{right: value} -> value
       %Either.Left{left: reason} -> raise reason
     end
