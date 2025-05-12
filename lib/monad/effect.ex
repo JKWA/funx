@@ -92,7 +92,6 @@ defmodule Funx.Effect do
   """
 
   import Funx.Monad, only: [map: 2]
-  import Funx.Foldable, only: [fold_l: 3]
 
   alias Funx.{Effect, Either, Maybe}
   alias Effect.{Left, Right}
@@ -523,78 +522,78 @@ defmodule Funx.Effect do
 
     list
     |> Enum.with_index()
-    |> fold_l(right([], traverse_trace), fn {item, idx}, acc_result ->
-      case {func.(item), acc_result} do
-        {%Right{effect: eff1, trace: trace1}, %Right{effect: eff2, trace: trace2}} ->
-          item_trace =
-            TraceContext.default_span_name_if_empty(trace1, "#{traverse_trace.span_name}[#{idx}]")
+    |> Enum.map(fn {item, idx} ->
+      case func.(item) do
+        %Right{effect: eff, trace: trace} ->
+          span_trace =
+            TraceContext.default_span_name_if_empty(trace, "#{traverse_trace.span_name}[#{idx}]")
 
-          acc_trace =
-            TraceContext.default_span_name_if_empty(trace2, "#{traverse_trace.span_name}[acc]")
+          %Right{trace: span_trace, effect: eff}
 
-          merged_trace =
-            TraceContext.promote(TraceContext.merge(item_trace, acc_trace), "traverse_a")
+        %Left{effect: eff, trace: trace} ->
+          span_trace =
+            TraceContext.default_span_name_if_empty(trace, "#{traverse_trace.span_name}[#{idx}]")
 
-          %Right{
-            trace: merged_trace,
-            effect: fn ->
-              Task.async(fn ->
-                with %Either.Right{right: val} <-
-                       run(%Right{effect: eff1, trace: item_trace}),
-                     %Either.Right{right: acc} <-
-                       run(%Right{effect: eff2, trace: acc_trace}) do
-                  %Either.Right{right: [val | acc]}
-                end
-              end)
-            end
-          }
-
-        {%Left{effect: eff1, trace: trace1}, %Left{effect: eff2, trace: trace2}} ->
-          item_trace =
-            TraceContext.default_span_name_if_empty(trace1, "#{traverse_trace.span_name}[#{idx}]")
-
-          acc_trace =
-            TraceContext.default_span_name_if_empty(trace2, "#{traverse_trace.span_name}[acc]")
-
-          merged_trace =
-            TraceContext.promote(TraceContext.merge(item_trace, acc_trace), "traverse_a")
-
-          %Left{
-            trace: merged_trace,
-            effect: fn ->
-              Task.async(fn ->
-                %Either.Left{
-                  left:
-                    as_list(run(%Left{effect: eff1, trace: item_trace}).left) ++
-                      as_list(run(%Left{effect: eff2, trace: acc_trace}).left)
-                }
-              end)
-            end
-          }
-
-        {%Right{}, %Left{effect: eff2, trace: trace2}} ->
-          %Left{
-            trace: trace2,
-            effect: fn ->
-              Task.async(fn -> run(%Left{effect: eff2, trace: trace2}) end)
-            end
-          }
-
-        {%Left{effect: eff1, trace: trace1}, %Right{}} ->
-          item_trace =
-            TraceContext.default_span_name_if_empty(trace1, "#{traverse_trace.span_name}[#{idx}]")
-
-          %Left{
-            trace: item_trace,
-            effect: fn ->
-              Task.async(fn ->
-                %Either.Left{
-                  left: as_list(run(%Left{effect: eff1, trace: item_trace}).left)
-                }
-              end)
-            end
-          }
+          %Left{trace: span_trace, effect: eff}
       end
+    end)
+    |> Enum.reduce(right([], traverse_trace), fn
+      %Right{effect: eff1, trace: trace1}, %Right{effect: eff2, trace: trace2} ->
+        merged_trace =
+          TraceContext.promote(
+            TraceContext.merge(trace1, trace2),
+            "traverse_a"
+          )
+
+        %Right{
+          trace: merged_trace,
+          effect: fn ->
+            Task.async(fn ->
+              with %Either.Right{right: val} <- run(%Right{effect: eff1, trace: trace1}),
+                   %Either.Right{right: acc} <- run(%Right{effect: eff2, trace: trace2}) do
+                %Either.Right{right: [val | acc]}
+              end
+            end)
+          end
+        }
+
+      %Left{effect: eff1, trace: trace1}, %Left{effect: eff2, trace: trace2} ->
+        merged_trace =
+          TraceContext.promote(
+            TraceContext.merge(trace1, trace2),
+            "traverse_a"
+          )
+
+        %Left{
+          trace: merged_trace,
+          effect: fn ->
+            Task.async(fn ->
+              %Either.Left{
+                left:
+                  as_list(run(%Left{effect: eff1, trace: trace1}).left) ++
+                    as_list(run(%Left{effect: eff2, trace: trace2}).left)
+              }
+            end)
+          end
+        }
+
+      %Right{}, %Left{effect: eff2, trace: trace2} ->
+        %Left{
+          trace: trace2,
+          effect: fn ->
+            Task.async(fn -> run(%Left{effect: eff2, trace: trace2}) end)
+          end
+        }
+
+      %Left{effect: eff1, trace: trace1}, %Right{} ->
+        %Left{
+          trace: trace1,
+          effect: fn ->
+            Task.async(fn ->
+              %Either.Left{left: as_list(run(%Left{effect: eff1, trace: trace1}).left)}
+            end)
+          end
+        }
     end)
     |> map(&:lists.reverse/1)
     |> map_left(&:lists.reverse/1)
