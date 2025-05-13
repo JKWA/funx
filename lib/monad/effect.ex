@@ -520,83 +520,98 @@ defmodule Funx.Effect do
   def traverse_a(list, func, opts) when is_list(list) and is_function(func, 1) do
     traverse_trace = TraceContext.new(opts)
 
-    list
-    |> Enum.with_index()
-    |> Enum.map(fn {item, idx} ->
-      case func.(item) do
-        %Right{effect: eff, trace: trace} ->
-          span_trace =
-            TraceContext.default_span_name_if_empty(trace, "#{traverse_trace.span_name}[#{idx}]")
+    effects =
+      list
+      |> Enum.with_index()
+      |> Enum.map(fn {item, idx} ->
+        case func.(item) do
+          %Right{effect: eff, trace: trace} ->
+            span_trace =
+              TraceContext.default_span_name_if_empty(
+                trace,
+                "#{traverse_trace.span_name}[#{idx}]"
+              )
 
-          %Right{trace: span_trace, effect: eff}
+            %Right{trace: span_trace, effect: eff}
 
-        %Left{effect: eff, trace: trace} ->
-          span_trace =
-            TraceContext.default_span_name_if_empty(trace, "#{traverse_trace.span_name}[#{idx}]")
+          %Left{effect: eff, trace: trace} ->
+            span_trace =
+              TraceContext.default_span_name_if_empty(
+                trace,
+                "#{traverse_trace.span_name}[#{idx}]"
+              )
 
-          %Left{trace: span_trace, effect: eff}
+            %Left{trace: span_trace, effect: eff}
+        end
+      end)
+
+    %Right{
+      trace: traverse_trace,
+      effect: fn ->
+        Task.async(fn ->
+          tasks = Enum.map(effects, &spawn_effect/1)
+          results = Enum.map(tasks, &collect_result/1)
+
+          {oks, errs} =
+            Enum.split_with(results, fn
+              {:ok, _, _} -> true
+              {:error, _, _} -> false
+            end)
+
+          case errs do
+            [] ->
+              merged_trace =
+                merge_trace(traverse_trace, Enum.map(oks, &elem(&1, 1)), "traverse_a")
+
+              values =
+                oks
+                |> Enum.map(fn {:ok, _, val} -> val end)
+                |> Enum.filter(& &1)
+
+              %Either.Right{right: values}
+              |> then(&%Right{effect: fn -> Task.async(fn -> &1 end) end, trace: merged_trace})
+              |> run()
+
+            _ ->
+              merged_trace =
+                merge_trace(traverse_trace, Enum.map(errs, &elem(&1, 1)), "traverse_a")
+
+              errors =
+                errs
+                |> Enum.flat_map(fn {:error, _, list} -> list end)
+
+              %Either.Left{left: errors}
+              |> then(&%Left{effect: fn -> Task.async(fn -> &1 end) end, trace: merged_trace})
+              |> run()
+          end
+        end)
       end
-    end)
-    |> Enum.reduce(right([], traverse_trace), fn
-      %Right{effect: eff1, trace: trace1}, %Right{effect: eff2, trace: trace2} ->
-        merged_trace =
-          TraceContext.promote(
-            TraceContext.merge(trace1, trace2),
-            "traverse_a"
-          )
+    }
+  end
 
-        %Right{
-          trace: merged_trace,
-          effect: fn ->
-            Task.async(fn ->
-              with %Either.Right{right: val} <- run(%Right{effect: eff1, trace: trace1}),
-                   %Either.Right{right: acc} <- run(%Right{effect: eff2, trace: trace2}) do
-                %Either.Right{right: [val | acc]}
-              end
-            end)
-          end
-        }
+  defp spawn_effect(%Right{trace: t, effect: e}),
+    do: {:right, t, Task.async(fn -> run(%Right{trace: t, effect: e}) end)}
 
-      %Left{effect: eff1, trace: trace1}, %Left{effect: eff2, trace: trace2} ->
-        merged_trace =
-          TraceContext.promote(
-            TraceContext.merge(trace1, trace2),
-            "traverse_a"
-          )
+  defp spawn_effect(%Left{trace: t, effect: e}),
+    do: {:left, t, Task.async(fn -> run(%Left{trace: t, effect: e}) end)}
 
-        %Left{
-          trace: merged_trace,
-          effect: fn ->
-            Task.async(fn ->
-              %Either.Left{
-                left:
-                  as_list(run(%Left{effect: eff1, trace: trace1}).left) ++
-                    as_list(run(%Left{effect: eff2, trace: trace2}).left)
-              }
-            end)
-          end
-        }
+  defp collect_result({:right, trace, task}) do
+    case safe_await(task) do
+      %Either.Right{right: val} -> {:ok, trace, val}
+      %Either.Left{left: err} -> {:error, trace, as_list(err)}
+    end
+  end
 
-      %Right{}, %Left{effect: eff2, trace: trace2} ->
-        %Left{
-          trace: trace2,
-          effect: fn ->
-            Task.async(fn -> run(%Left{effect: eff2, trace: trace2}) end)
-          end
-        }
+  defp collect_result({:left, trace, task}) do
+    case safe_await(task) do
+      %Either.Left{left: err} -> {:error, trace, as_list(err)}
+    end
+  end
 
-      %Left{effect: eff1, trace: trace1}, %Right{} ->
-        %Left{
-          trace: trace1,
-          effect: fn ->
-            Task.async(fn ->
-              %Either.Left{left: as_list(run(%Left{effect: eff1, trace: trace1}).left)}
-            end)
-          end
-        }
-    end)
-    |> map(&:lists.reverse/1)
-    |> map_left(&:lists.reverse/1)
+  defp merge_trace(base, traces, label) do
+    traces
+    |> Enum.reduce(base, &TraceContext.merge/2)
+    |> TraceContext.promote(label)
   end
 
   defp as_list(val) when is_list(val), do: val

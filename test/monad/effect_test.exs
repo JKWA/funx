@@ -1688,7 +1688,6 @@ defmodule EffectTest do
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
                         span_name: "first",
-                        trace_id: first_id,
                         effect_type: :right,
                         status: :ok
                       }},
@@ -1697,7 +1696,6 @@ defmodule EffectTest do
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
                         span_name: "second",
-                        trace_id: second_id,
                         effect_type: :right,
                         status: :ok
                       }},
@@ -1714,36 +1712,8 @@ defmodule EffectTest do
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
-                        span_name: "traverse_a -> first",
-                        parent_trace_id: ^first_id,
-                        effect_type: :right,
-                        status: :ok
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
-                        span_name: "traverse_a -> second",
-                        parent_trace_id: ^second_id,
-                        effect_type: :right,
-                        status: :ok
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
                         span_name: "traverse_a -> third",
                         parent_trace_id: ^third_id,
-                        trace_id: traverse_third_id,
-                        effect_type: :right,
-                        status: :ok
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
-                        span_name: "map -> traverse_a -> third",
-                        parent_trace_id: ^traverse_third_id,
                         effect_type: :right,
                         status: :ok,
                         result: telemetry_result
@@ -1788,16 +1758,7 @@ defmodule EffectTest do
                       %{
                         span_name: "traverse_a -> third",
                         parent_trace_id: ^third_id,
-                        trace_id: fourth_id,
-                        effect_type: :left,
-                        status: :error
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
-                        span_name: "map_left -> traverse_a -> third",
-                        parent_trace_id: ^fourth_id,
+                        # trace_id: fourth_id,
                         effect_type: :left,
                         status: :error,
                         result: telemetry_result
@@ -1870,7 +1831,6 @@ defmodule EffectTest do
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
                         span_name: "traverse[0]",
-                        trace_id: first_id,
                         effect_type: :right,
                         status: :ok
                       }},
@@ -1879,7 +1839,6 @@ defmodule EffectTest do
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
                         span_name: "traverse[1]",
-                        trace_id: second_id,
                         effect_type: :right,
                         status: :ok
                       }},
@@ -1896,36 +1855,8 @@ defmodule EffectTest do
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
-                        span_name: "traverse_a -> traverse[0]",
-                        parent_trace_id: ^first_id,
-                        effect_type: :right,
-                        status: :ok
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
-                        span_name: "traverse_a -> traverse[1]",
-                        parent_trace_id: ^second_id,
-                        effect_type: :right,
-                        status: :ok
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
                         span_name: "traverse_a -> traverse[2]",
                         parent_trace_id: ^third_id,
-                        trace_id: traverse_third_id,
-                        effect_type: :right,
-                        status: :ok
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
-                        span_name: "map -> traverse_a -> traverse[2]",
-                        parent_trace_id: ^traverse_third_id,
                         effect_type: :right,
                         status: :ok,
                         result: telemetry_result
@@ -1969,16 +1900,6 @@ defmodule EffectTest do
                       %{
                         span_name: "traverse_a -> traverse[2]",
                         parent_trace_id: ^trace_2,
-                        trace_id: trace_3,
-                        effect_type: :left,
-                        status: :error
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
-                        span_name: "map_left -> traverse_a -> traverse[2]",
-                        parent_trace_id: ^trace_3,
                         effect_type: :left,
                         status: :error,
                         result: telemetry_result
@@ -2026,6 +1947,25 @@ defmodule EffectTest do
 
       assert result == Either.left(["bad: 2", "bad: 3"])
     end
+
+    test "Right-tagged effect returns Left result" do
+      validator = fn _ ->
+        %Right{
+          trace: TraceContext.new(span_name: "test"),
+          effect: fn -> Task.async(fn -> Either.left("forced failure") end) end
+        }
+      end
+
+      result =
+        validate(:any_value, [validator], span_name: "validate")
+        |> run()
+
+      assert result == Either.left(["forced failure"])
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], _,
+                      %{span_name: "test", effect_type: :left, status: :error}},
+                     100
+    end
   end
 
   describe "validate/2" do
@@ -2051,6 +1991,7 @@ defmodule EffectTest do
                       %{
                         span_name: "validate",
                         effect_type: :right,
+                        trace_id: trace_0,
                         status: :ok
                       }},
                      100
@@ -2058,7 +1999,6 @@ defmodule EffectTest do
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
                         span_name: "validate[0]",
-                        trace_id: trace_0,
                         effect_type: :right,
                         status: :ok
                       }},
@@ -2075,18 +2015,8 @@ defmodule EffectTest do
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
-                        span_name: "traverse_a -> validate[0]",
-                        parent_trace_id: ^trace_0,
-                        effect_type: :right,
-                        status: :ok
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
                         span_name: "traverse_a -> validate[1]",
                         parent_trace_id: ^trace_1,
-                        trace_id: trace_3,
                         effect_type: :right,
                         status: :ok
                       }},
@@ -2094,18 +2024,8 @@ defmodule EffectTest do
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
-                        span_name: "map -> traverse_a -> validate[1]",
-                        parent_trace_id: ^trace_3,
-                        trace_id: trace_4,
-                        effect_type: :right,
-                        status: :ok
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
-                        span_name: "map -> map -> traverse_a -> validate[1]",
-                        parent_trace_id: ^trace_4,
+                        span_name: "map -> validate",
+                        parent_trace_id: ^trace_0,
                         effect_type: :right,
                         status: :ok,
                         result: telemetry_result
@@ -2130,7 +2050,7 @@ defmodule EffectTest do
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
-                        span_name: "validate[1]",
+                        span_name: "validate",
                         trace_id: trace_0,
                         effect_type: :left,
                         status: :error
@@ -2139,7 +2059,7 @@ defmodule EffectTest do
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
-                        span_name: "map_left -> validate[1]",
+                        span_name: "map -> validate",
                         parent_trace_id: ^trace_0,
                         effect_type: :left,
                         status: :error,
@@ -2165,6 +2085,15 @@ defmodule EffectTest do
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
+                        span_name: "validate",
+                        trace_id: trace_0,
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
                         span_name: "validate[0]",
                         effect_type: :left,
                         status: :error
@@ -2174,7 +2103,6 @@ defmodule EffectTest do
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
                         span_name: "validate[1]",
-                        trace_id: trace_0,
                         effect_type: :left,
                         status: :error
                       }},
@@ -2182,18 +2110,8 @@ defmodule EffectTest do
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
-                        span_name: "traverse_a -> validate[1]",
+                        span_name: "map -> validate",
                         parent_trace_id: ^trace_0,
-                        trace_id: trace_1,
-                        effect_type: :left,
-                        status: :error
-                      }},
-                     100
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
-                      %{
-                        span_name: "map_left -> traverse_a -> validate[1]",
-                        parent_trace_id: ^trace_1,
                         effect_type: :left,
                         status: :error,
                         result: telemetry_result
