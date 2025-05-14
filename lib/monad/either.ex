@@ -25,6 +25,8 @@ defmodule Funx.Either do
     - `get_or_else/2`: Returns the value from a `Right`, or a default if `Left`.
     - `or_else/2`: Returns the original `Right`, or invokes a fallback function if `Left`.
     - `map_left/2`: Transforms a `Left` using a function, leaving `Right` values unchanged.
+    - `flip/1`: Swaps `Left` and `Right`, turning errors into successes and vice versa.
+    - `filter_or_else/3`: Applies a predicate to the `Right` value; if false, returns a fallback `Left`.
 
   ### List Operations
 

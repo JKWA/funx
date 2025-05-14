@@ -27,7 +27,12 @@ defmodule Funx.Effect do
 
   ## Validation
 
-  * `validate/2` – Validates a value using one or more effectful validators.
+    * `validate/2` – Validates a value using one or more effectful validators.
+
+  ## Error Handling
+
+    * `map_left/2` – Transforms a `Left` using a function, leaving `Right` values unchanged.
+    * `flip/1` – Swaps `Left` and `Right`, inverting success and failure.
 
   ## Lifting
 
