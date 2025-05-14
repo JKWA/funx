@@ -276,6 +276,21 @@ defmodule Funx.EitherTest do
     end
   end
 
+  describe "flip/1" do
+    test "converts Left to Right" do
+      assert flip(left(:error)) == right(:error)
+    end
+
+    test "converts Right to Left" do
+      assert flip(right(42)) == left(42)
+    end
+
+    test "flip twice returns original" do
+      assert flip(flip(left(:error))) == left(:error)
+      assert flip(flip(right(42))) == right(42)
+    end
+  end
+
   describe "concat/1" do
     test "returns an empty list when given an empty list" do
       assert concat([]) == []

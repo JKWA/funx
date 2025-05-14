@@ -1008,6 +1008,51 @@ defmodule EffectTest do
     end
   end
 
+  describe "flip/1" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
+    test "flips Right to Left" do
+      result = flip(right("oops", span_name: "value")) |> run()
+      assert result == Either.left("oops")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "flip -> value",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
+    end
+
+    test "flips Left to Right" do
+      result = flip(left("recovered")) |> run()
+      assert result == Either.right("recovered")
+    end
+
+    test "double flip returns original" do
+      input = right("stay")
+      result = input |> flip() |> flip() |> run()
+      assert result == run(input)
+    end
+
+    test "flips structured data from Right to Left" do
+      result = flip(right(%{status: :fail})) |> run()
+      assert result == Either.left(%{status: :fail})
+    end
+
+    test "flips structured data from Left to Right" do
+      result = flip(left(%{status: :hold})) |> run()
+      assert result == Either.right(%{status: :hold})
+    end
+  end
+
   describe "lift_predicate/3" do
     setup do
       capture_telemetry([:funx, :effect, :run, :stop], self())

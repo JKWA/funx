@@ -366,6 +366,61 @@ defmodule Funx.Effect do
   end
 
   @doc """
+  Swaps the success and failure branches of an `Effect`.
+
+  If the `Effect` resolves to a `Right`, it becomes a `Left` with the same value.
+  If it resolves to a `Left`, it becomes a `Right` with the same error.
+
+  This can be useful for inverting success and failure semantics—for example,
+  when you want to treat an expected error as a successful outcome.
+
+  ## Examples
+
+      iex> effect = Funx.Effect.pure(42)
+      iex> flipped = Funx.Effect.flip(effect)
+      iex> Funx.Effect.run(flipped)
+      %Funx.Either.Left{left: 42}
+
+      iex> effect = Funx.Effect.left("fail")
+      iex> flipped = Funx.Effect.flip(effect)
+      iex> Funx.Effect.run(flipped)
+      %Funx.Either.Right{right: "fail"}
+  """
+  @spec flip(t(error, value)) :: t(value, error)
+        when error: term(), value: term()
+  def flip(%Right{effect: eff, trace: trace}) do
+    promoted_trace = TraceContext.promote(trace, "flip")
+
+    %Left{
+      trace: promoted_trace,
+      effect: fn ->
+        Task.async(fn ->
+          case run(%Right{effect: eff, trace: trace}) do
+            %Either.Right{right: val} ->
+              %Either.Left{left: val}
+          end
+        end)
+      end
+    }
+  end
+
+  def flip(%Left{effect: eff, trace: trace}) do
+    promoted_trace = TraceContext.promote(trace, "flip")
+
+    %Right{
+      trace: promoted_trace,
+      effect: fn ->
+        Task.async(fn ->
+          case run(%Left{effect: eff, trace: trace}) do
+            %Either.Left{left: err} ->
+              %Either.Right{right: err}
+          end
+        end)
+      end
+    }
+  end
+
+  @doc """
   Sequences a list of `Effect` computations, running each in order.
 
   If all effects resolve to `Right`, the result is a `Right` containing a list of values.

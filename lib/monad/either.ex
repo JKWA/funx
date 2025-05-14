@@ -208,6 +208,24 @@ defmodule Funx.Either do
   def or_else(%Right{} = right, _fallback_fun), do: right
 
   @doc """
+  Swaps the `Left` and `Right` branches of the `Either`.
+
+  Turns a `Left` into a `Right` and vice versa, preserving the contained term.
+
+  ## Examples
+
+      iex> Funx.Either.flip(Funx.Either.left(:error))
+      %Funx.Either.Right{right: :error}
+
+      iex> Funx.Either.flip(Funx.Either.right(42))
+      %Funx.Either.Left{left: 42}
+  """
+  @spec flip(t(left, right)) :: t(right, left)
+        when left: term(), right: term()
+  def flip(%Left{left: l}), do: %Right{right: l}
+  def flip(%Right{right: r}), do: %Left{left: r}
+
+  @doc """
   Lifts an equality function to compare `Either` values:
     - `Right` vs `Right`: Uses the custom equality function.
     - `Left` vs `Left`: Uses the custom equality function.
