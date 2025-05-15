@@ -189,10 +189,9 @@ defmodule Funx.Effect do
   def run(%{env: %Effect.Env{} = env} = effect, opts \\ [])
       when is_struct(effect, Effect.Right) or is_struct(effect, Effect.Left) do
     env =
-      case Keyword.get(opts, :span_name) do
-        nil -> env
-        span_name -> Effect.Env.promote(env, span_name)
-      end
+      opts
+      |> maybe_promote_trace(env)
+      |> Effect.Env.override(Keyword.delete(opts, :span_name))
 
     timeout = env.timeout || Funx.Config.timeout()
     span_name = env.span_name || Funx.Config.default_span_name()
@@ -205,6 +204,13 @@ defmodule Funx.Effect do
       end)
     else
       execute_effect(effect, timeout)
+    end
+  end
+
+  defp maybe_promote_trace(opts, env) do
+    case Keyword.get(opts, :span_name) do
+      nil -> env
+      span_name -> Effect.Env.promote_trace(env, span_name)
     end
   end
 
@@ -354,7 +360,7 @@ defmodule Funx.Effect do
   def map_left(%Right{} = right, _func), do: right
 
   def map_left(%Left{effect: eff, env: env}, func) when is_function(func, 1) do
-    promoted_trace = Effect.Env.promote(env, "map_left")
+    promoted_trace = Effect.Env.promote_trace(env, "map_left")
 
     %Left{
       env: promoted_trace,
@@ -393,7 +399,7 @@ defmodule Funx.Effect do
   @spec flip(t(error, value)) :: t(value, error)
         when error: term(), value: term()
   def flip(%Right{effect: eff, env: env}) do
-    promoted_trace = Effect.Env.promote(env, "flip")
+    promoted_trace = Effect.Env.promote_trace(env, "flip")
 
     %Left{
       env: promoted_trace,
@@ -409,7 +415,7 @@ defmodule Funx.Effect do
   end
 
   def flip(%Left{effect: eff, env: env}) do
-    promoted_trace = Effect.Env.promote(env, "flip")
+    promoted_trace = Effect.Env.promote_trace(env, "flip")
 
     %Right{
       env: promoted_trace,
@@ -491,7 +497,7 @@ defmodule Funx.Effect do
               "#{traverse_trace.span_name}[#{idx}]"
             )
 
-          updated_trace = Effect.Env.promote(trace_with_name, "traverse")
+          updated_trace = Effect.Env.promote_trace(trace_with_name, "traverse")
 
           {:cont,
            %Right{
@@ -670,7 +676,7 @@ defmodule Funx.Effect do
   defp merge_trace(base, traces, label) do
     traces
     |> Enum.reduce(base, &Effect.Env.merge/2)
-    |> Effect.Env.promote(label)
+    |> Effect.Env.promote_trace(label)
   end
 
   defp as_list(val) when is_list(val), do: val

@@ -19,9 +19,25 @@ defmodule EffectTest do
   setup [:with_telemetry_config]
 
   describe "right/1" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
     test "wraps a value in a Right struct" do
-      result = right(42) |> run()
+      result =
+        right(42, span_name: "right")
+        |> run()
+
       assert result == %Either.Right{right: 42}
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
+                      %{
+                        result: telemetry_result,
+                        span_name: "right"
+                      }}
+
+      assert telemetry_result == summarize(result)
     end
   end
 
@@ -83,7 +99,7 @@ defmodule EffectTest do
       assert telemetry_result == summarize(result)
     end
 
-    test "promotes a env" do
+    test "promotes an env" do
       trace_id = "trace_id"
       span_name = "test span"
 
@@ -92,7 +108,7 @@ defmodule EffectTest do
 
       assert %Funx.Effect.Right{env: ^env} = effect
 
-      result = effect |> run(span_name: "promoted")
+      result = run(effect, span_name: "promoted")
 
       assert result == Either.right(123)
 
@@ -1661,7 +1677,7 @@ defmodule EffectTest do
           case {is_valid.(item), acc} do
             {%Right{effect: eff1, env: trace1}, %Right{effect: eff2}} ->
               combined_trace =
-                Effect.Env.promote(Effect.Env.merge(trace1, acc_trace), "reduce")
+                Effect.Env.promote_trace(Effect.Env.merge(trace1, acc_trace), "reduce")
 
               {:cont,
                %Right{

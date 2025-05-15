@@ -1,5 +1,18 @@
 defmodule Funx.Config do
-  @moduledoc false
+  @moduledoc """
+  Internal access to `:funx` application configuration.
+
+  These functions read from `Application.get_env/3` with sane defaults.
+  Used by effect modules for settings like timeouts, telemetry, and summarization.
+
+  ## Supported config keys
+
+  - `:timeout` — default timeout for running effects (default: `5_000` ms)
+  - `:telemetry_prefix` — base prefix for telemetry events (default: `[:funx]`)
+  - `:telemetry_enabled` — whether telemetry spans are emitted (default: `true`)
+  - `:summarizer` — function used to summarize effect results for telemetry
+  - `:default_span_name` — fallback span name for telemetry traces
+  """
 
   def timeout, do: Application.get_env(:funx, :timeout, 5_000)
   def telemetry_prefix, do: Application.get_env(:funx, :telemetry_prefix, [:funx])

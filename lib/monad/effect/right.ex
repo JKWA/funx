@@ -51,7 +51,7 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
   @spec map(Right.t(right), (right -> result)) :: Right.t(result)
         when right: term(), result: term()
   def map(%Right{effect: effect, env: env}, mapper) do
-    updated_env = Effect.Env.promote(env, "map")
+    updated_env = Effect.Env.promote_trace(env, "map")
 
     %Right{
       env: updated_env,
@@ -81,7 +81,7 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
         env: env_val
       }) do
     merged_env = Effect.Env.merge(env_func, env_val)
-    promoted_env = Effect.Env.promote(merged_env, "ap")
+    promoted_env = Effect.Env.promote_trace(merged_env, "ap")
 
     %Right{
       env: promoted_env,
@@ -105,7 +105,7 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
   end
 
   def ap(%Right{}, %Left{effect: eff, env: env}) do
-    promoted_env = Effect.Env.promote(env, "ap")
+    promoted_env = Effect.Env.promote_trace(env, "ap")
     %Left{effect: eff, env: promoted_env}
   end
 
@@ -113,7 +113,7 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
           Effect.t(left, result)
         when left: term(), right: term(), result: term()
   def bind(%Right{effect: effect, env: env}, binder) do
-    promoted_env = Effect.Env.promote(env, "bind")
+    promoted_env = Effect.Env.promote_trace(env, "bind")
 
     %Right{
       env: promoted_env,
