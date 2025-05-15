@@ -8,7 +8,7 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Funx.Effect.Right — funx v0.1.0</title>
+    <title>Funx.Config — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -112,19 +112,26 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/config.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Effect.Right</span> 
+    <span translate="no">Funx.Config</span> 
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>Represents the <code class="inline">Right</code> variant of the <code class="inline">Effect</code> monad, used to model a successful computation in an asynchronous context.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions to handle monadic operations within an effectful, lazy execution context.</li><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>: Provides a <a href="https://hexdocs.pm/elixir/Kernel.html#to_string/1"><code class="inline">to_string/1</code></a> function to represent <code class="inline">Right</code> values as strings.</li></ul><p>The <code class="inline">Right</code> effect allows the computation to proceed with successful values, supporting lazy, asynchronous tasks.</p>
+<p>Internal access to <code class="inline">:funx</code> application configuration.</p><p>These functions read from <a href="https://hexdocs.pm/elixir/Application.html#get_env/3"><code class="inline">Application.get_env/3</code></a> with sane defaults.
+Used by effect modules for settings like timeouts, telemetry, and summarization.</p><h2 id="module-supported-config-keys" class="section-heading">
+  <a href="#module-supported-config-keys" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Supported config keys</span>
+</h2>
+<ul><li><code class="inline">:timeout</code> — default timeout for running effects (default: <code class="inline">5_000</code> ms)</li><li><code class="inline">:telemetry_prefix</code> — base prefix for telemetry events (default: <code class="inline">[:funx]</code>)</li><li><code class="inline">:telemetry_enabled</code> — whether telemetry spans are emitted (default: <code class="inline">true</code>)</li><li><code class="inline">:summarizer</code> — function used to summarize effect results for telemetry</li><li><code class="inline">:default_span_name</code> — fallback span name for telemetry traces</li></ul>
     </section>
 
 </div>
@@ -136,22 +143,6 @@ Pages
       </a>
       <span class="text">Summary</span>
     </h1>
-<div class="summary-types summary">
-  <h2>
-    <a href="#types">Types</a>
-  </h2>
-
-    <div class="summary-row">
-      <div class="summary-signature">
-        <a href="#t:t/1" data-no-tooltip translate="no">t(right)</a>
-
-      </div>
-
-        <div class="summary-synopsis"><p>Represents an asynchronous computation that produces a <code class="inline">Right</code> value.</p></div>
-
-    </div>
-
-</div>
 <div class="summary-functions summary">
   <h2>
     <a href="#functions">Functions</a>
@@ -159,11 +150,41 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#pure/2" data-no-tooltip translate="no">pure(value, opts_or_env \\ [])</a>
+        <a href="#default_span_name/0" data-no-tooltip translate="no">default_span_name()</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Creates a new <code class="inline">Right</code> effect.</p></div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#summarizer/0" data-no-tooltip translate="no">summarizer()</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#telemetry_enabled?/0" data-no-tooltip translate="no">telemetry_enabled?()</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#telemetry_prefix/0" data-no-tooltip translate="no">telemetry_prefix()</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#timeout/0" data-no-tooltip translate="no">timeout()</a>
+
+      </div>
 
     </div>
 
@@ -171,49 +192,6 @@ Pages
 
   </section>
 
-
-  <section id="types" class="details-list">
-    <h1 class="section-heading">
-      <a class="hover-link" href="#types">
-        <i class="ri-link-m" aria-hidden="true"></i>
-      </a>
-      <span class="text">Types</span>
-    </h1>
-    <div class="types-list">
-<section class="detail" id="t:t/1">
-
-  <div class="detail-header">
-    <a href="#t:t/1" class="detail-link" data-no-tooltip title="Link to this type">
-      <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
-    </a>
-    <h1 class="signature" translate="no">t(right)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L22" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
-
-
-  </div>
-
-  <section class="docstring">
-
-      <div class="specs">
-
-          <pre translate="no"><span class="attribute">@type</span> t(right) :: %Funx.Effect.Right{
-  effect: (-&gt; <a href="https://hexdocs.pm/elixir/Task.html#t:t/0">Task.t</a>()) | (-&gt; <a href="Funx.Either.Right.html#t:t/1">Funx.Either.Right.t</a>(right)),
-  env: <a href="Funx.Effect.Env.html#t:t/0">Funx.Effect.Env.t</a>()
-}</pre>
-
-      </div>
-
-<p>Represents an asynchronous computation that produces a <code class="inline">Right</code> value.</p><p>This type models an effectful computation that executes asynchronously, returning a <code class="inline">Task.t()</code>, which is expected to resolve to a <code class="inline">Right</code> value.</p>
-  </section>
-</section>
-
-    </div>
-  </section>
 
   <section id="functions" class="details-list">
     <h1 class="section-heading">
@@ -223,18 +201,16 @@ Pages
       <span class="text">Functions</span>
     </h1>
     <div class="functions-list">
-<section class="detail" id="pure/2">
-
-    <span id="pure/1"></span>
+<section class="detail" id="default_span_name/0">
 
   <div class="detail-header">
-    <a href="#pure/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#default_span_name/0" class="detail-link" data-no-tooltip title="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">pure(value, opts_or_env \\ [])</h1>
+    <h1 class="signature" translate="no">default_span_name()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/right.ex#L39" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/config.ex#L21" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -244,21 +220,95 @@ Pages
 
   <section class="docstring">
 
-      <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> pure(right, <a href="Funx.Effect.Env.html#t:opts_or_env/0">Funx.Effect.Env.opts_or_env</a>()) :: <a href="#t:t/1">t</a>(right) when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+  </section>
+</section>
+<section class="detail" id="summarizer/0">
 
-      </div>
+  <div class="detail-header">
+    <a href="#summarizer/0" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">summarizer()</h1>
 
-<p>Creates a new <code class="inline">Right</code> effect.</p><p>The <a href="#pure/2"><code class="inline">pure/2</code></a> function wraps a value in the <code class="inline">Right</code> effect monad, representing an asynchronous success.</p><h2 id="pure/2-examples" class="section-heading">
-  <a href="#pure/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Right</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4815574441-1">(</span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="4815574441-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4815574441-2">(</span><span class="n">effect</span><span class="p" data-group-id="4815574441-2">)</span><span class="w">
-</span><span class="p" data-group-id="4815574441-3">%</span><span class="nc" data-group-id="4815574441-3">Funx.Either.Right</span><span class="p" data-group-id="4815574441-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="4815574441-3">}</span></code></pre>
+      <a href="https://github.com/JKWA/funx/blob/main/lib/config.ex#L20" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+
+  </section>
+</section>
+<section class="detail" id="telemetry_enabled?/0">
+
+  <div class="detail-header">
+    <a href="#telemetry_enabled?/0" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">telemetry_enabled?()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/config.ex#L19" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+
+  </section>
+</section>
+<section class="detail" id="telemetry_prefix/0">
+
+  <div class="detail-header">
+    <a href="#telemetry_prefix/0" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">telemetry_prefix()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/config.ex#L18" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+
+  </section>
+</section>
+<section class="detail" id="timeout/0">
+
+  <div class="detail-header">
+    <a href="#timeout/0" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">timeout()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/config.ex#L17" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+
   </section>
 </section>
 
