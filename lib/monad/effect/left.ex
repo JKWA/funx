@@ -9,10 +9,10 @@ defmodule Funx.Effect.Left do
   The `Left` effect propagates the wrapped error or failure without executing further success logic, supporting lazy, asynchronous tasks.
   """
 
-  alias Funx.{Either, TraceContext}
+  alias Funx.{Effect, Either}
 
-  @enforce_keys [:effect, :trace]
-  defstruct [:effect, :trace]
+  @enforce_keys [:effect, :env]
+  defstruct [:effect, :env]
 
   @typedoc """
   Represents an asynchronous computation that produces a `Left` value.
@@ -21,7 +21,7 @@ defmodule Funx.Effect.Left do
   """
   @type t(left) :: %__MODULE__{
           effect: (-> Task.t()) | (-> Either.Left.t(left)),
-          trace: TraceContext.t()
+          env: Effect.Env.t()
         }
 
   @doc """
@@ -35,11 +35,11 @@ defmodule Funx.Effect.Left do
       iex> Funx.Effect.run(effect)
       %Funx.Either.Left{left: "error"}
   """
-  @spec pure(left, TraceContext.opts_or_trace()) :: t(left) when left: term()
-  def pure(value, opts_or_trace \\ []) do
+  @spec pure(left, Effect.Env.opts_or_env()) :: t(left) when left: term()
+  def pure(value, opts_or_env \\ []) do
     %__MODULE__{
       effect: fn -> Task.async(fn -> %Either.Left{left: value} end) end,
-      trace: TraceContext.new(opts_or_trace)
+      env: Effect.Env.new(opts_or_env)
     }
   end
 end
@@ -50,9 +50,9 @@ defimpl Funx.Monad, for: Funx.Effect.Left do
 
   @spec bind(Left.t(left), (any() -> Effect.t(left, result))) :: Left.t(left)
         when left: term(), result: term()
-  def bind(%Left{effect: effect, trace: trace}, _binder) do
+  def bind(%Left{effect: effect, env: env}, _binder) do
     %Left{
-      trace: trace,
+      env: env,
       effect: fn ->
         Task.async(fn ->
           Task.await(effect.())

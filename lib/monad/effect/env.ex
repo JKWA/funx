@@ -1,4 +1,4 @@
-defmodule Funx.TraceContext do
+defmodule Funx.Effect.Env do
   @moduledoc """
   Represents trace-related context for effectful operations.
   Used for telemetry, span linking, and cross-process trace propagation.
@@ -24,21 +24,21 @@ defmodule Funx.TraceContext do
           baggage: map() | nil
         }
 
-  @type opts_or_trace :: keyword() | t()
+  @type opts_or_env :: keyword() | t()
 
   @doc """
-  Creates a new `TraceContext` struct for use with effectful computations.
+  Creates a new `Effect.Env` struct for use with effectful computations.
 
   If no `:trace_id` is provided, a new one is generated automatically.
   Additional fields like `:span_name`, `:timeout`, and `:baggage` can also be set.
 
   ## Examples
 
-      iex> ctx = Funx.TraceContext.new(span_name: "load-data", timeout: 2000)
+      iex> ctx = Funx.Effect.Env.new(span_name: "load-data", timeout: 2000)
       iex> ctx.span_name
       "load-data"
 
-      iex> ctx = Funx.TraceContext.new(trace_id: "abc123")
+      iex> ctx = Funx.Effect.Env.new(trace_id: "abc123")
       iex> ctx.trace_id
       "abc123"
   """
@@ -75,9 +75,9 @@ defmodule Funx.TraceContext do
 
   ## Examples
 
-      iex> c1 = Funx.TraceContext.new(trace_id: "a", baggage: %{user: 1})
-      iex> c2 = Funx.TraceContext.new(trace_id: "b", baggage: %{region: "us-west"})
-      iex> Funx.TraceContext.merge(c1, c2).baggage
+      iex> c1 = Funx.Effect.Env.new(trace_id: "a", baggage: %{user: 1})
+      iex> c2 = Funx.Effect.Env.new(trace_id: "b", baggage: %{region: "us-west"})
+      iex> Funx.Effect.Env.merge(c1, c2).baggage
       %{user: 1, region: "us-west"}
   """
   @spec merge(t(), t()) :: t()
@@ -98,8 +98,8 @@ defmodule Funx.TraceContext do
 
   ## Examples
 
-      iex> parent = Funx.TraceContext.new(trace_id: "abc123", span_name: "load")
-      iex> child = Funx.TraceContext.promote(parent, "decode")
+      iex> parent = Funx.Effect.Env.new(trace_id: "abc123", span_name: "load")
+      iex> child = Funx.Effect.Env.promote(parent, "decode")
       iex> child.parent_trace_id
       "abc123"
       iex> String.starts_with?(child.span_name, "decode -> ")
@@ -123,7 +123,7 @@ defmodule Funx.TraceContext do
 
   ## Examples
 
-      iex> id = Funx.TraceContext.generate_trace_id()
+      iex> id = Funx.Effect.Env.generate_trace_id()
       iex> String.length(id)
       32
       iex> id =~ ~r/^[a-f0-9]+$/
