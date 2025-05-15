@@ -49,7 +49,7 @@ defmodule Funx.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :observer, :wx, :runtime_tools]
     ]
   end
 
