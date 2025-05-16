@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-3548EAFF.js"></script>
+    <script src="dist/sidebar_items-7F3114C7.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -159,7 +159,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#pure/2" data-no-tooltip translate="no">pure(value, opts_or_env \\ [])</a>
+        <a href="#pure/2" data-no-tooltip translate="no">pure(value, opts_or_trace \\ [])</a>
 
       </div>
 
@@ -202,8 +202,8 @@ Pages
       <div class="specs">
 
           <pre translate="no"><span class="attribute">@type</span> t(left) :: %Funx.Effect.Left{
-  effect: (-&gt; <a href="https://hexdocs.pm/elixir/Task.html#t:t/0">Task.t</a>()) | (-&gt; <a href="Funx.Either.Left.html#t:t/1">Funx.Either.Left.t</a>(left)),
-  env: <a href="Funx.Effect.Env.html#t:t/0">Funx.Effect.Env.t</a>()
+  context: <a href="Funx.Effect.Context.html#t:t/0">Funx.Effect.Context.t</a>(),
+  effect: (-&gt; <a href="https://hexdocs.pm/elixir/Task.html#t:t/0">Task.t</a>()) | (-&gt; <a href="Funx.Either.Left.html#t:t/1">Funx.Either.Left.t</a>(left))
 }</pre>
 
       </div>
@@ -232,7 +232,7 @@ Pages
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">pure(value, opts_or_env \\ [])</h1>
+    <h1 class="signature" translate="no">pure(value, opts_or_trace \\ [])</h1>
 
       <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L39" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
@@ -246,7 +246,7 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> pure(left, <a href="Funx.Effect.Env.html#t:opts_or_env/0">Funx.Effect.Env.opts_or_env</a>()) :: <a href="#t:t/1">t</a>(left) when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+          <pre translate="no"><span class="attribute">@spec</span> pure(left, <a href="Funx.Effect.Context.html#t:opts_or_trace/0">Funx.Effect.Context.opts_or_trace</a>()) :: <a href="#t:t/1">t</a>(left) when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
 
       </div>
 
@@ -256,9 +256,9 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="0956011922-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="0956011922-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="0956011922-2">(</span><span class="n">effect</span><span class="p" data-group-id="0956011922-2">)</span><span class="w">
-</span><span class="p" data-group-id="0956011922-3">%</span><span class="nc" data-group-id="0956011922-3">Funx.Either.Left</span><span class="p" data-group-id="0956011922-3">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="0956011922-3">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4120329838-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="4120329838-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4120329838-2">(</span><span class="n">effect</span><span class="p" data-group-id="4120329838-2">)</span><span class="w">
+</span><span class="p" data-group-id="4120329838-3">%</span><span class="nc" data-group-id="4120329838-3">Funx.Either.Left</span><span class="p" data-group-id="4120329838-3">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="4120329838-3">}</span></code></pre>
   </section>
 </section>
 

@@ -8,13 +8,13 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Funx.Effect.Env — funx v0.1.0</title>
+    <title>Funx.Effect.Context — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-3548EAFF.js"></script>
+    <script src="dist/sidebar_items-7F3114C7.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -112,22 +112,25 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Effect.Env</span> 
+    <span translate="no">Funx.Effect.Context</span> 
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>Represents the environment passed to effectful computations.</p><p>This struct carries contextual information such as <code class="inline">trace_id</code>, <code class="inline">span_name</code>,
-timeouts, and arbitrary metadata (<code class="inline">baggage</code>). It supports telemetry, span
-linking, and execution control in a composable and extensible way.</p><p>The environment can be constructed from a keyword list or another <code class="inline">%Effect.Env{}</code> struct,
-and merged or promoted to represent nested operations within an effect chain.</p>
+<p>Represents the execution context attached to an effect.</p><p>This struct carries contextual information such as <code class="inline">trace_id</code>, <code class="inline">span_name</code>,
+timeouts, and arbitrary metadata (<code class="inline">baggage</code> and <code class="inline">metadata</code>). It supports
+telemetry integration, span linking, and timeout control, and is propagated
+automatically across composed effects.</p><p>Developers can set fields like <code class="inline">timeout</code>, <code class="inline">trace_id</code>, or <code class="inline">span_name</code> when
+constructing <code class="inline">Left</code> and <code class="inline">Right</code> effects. The context is merged or promoted
+as needed when chaining effects to preserve trace continuity and execution scope.</p><p>This context is not injected at runtime via <code class="inline">run/2</code>—it is bound to the effect
+when created.</p>
     </section>
 
 </div>
@@ -146,7 +149,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:opts_or_env/0" data-no-tooltip translate="no">opts_or_env()</a>
+        <a href="#t:opts_or_trace/0" data-no-tooltip translate="no">opts_or_trace()</a>
 
       </div>
 
@@ -168,7 +171,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#default_span_name?/1" data-no-tooltip translate="no">default_span_name?(env)</a>
+        <a href="#default_span_name?/1" data-no-tooltip translate="no">default_span_name?(context)</a>
 
       </div>
 
@@ -176,7 +179,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#default_span_name_if_empty/2" data-no-tooltip translate="no">default_span_name_if_empty(env, default_name)</a>
+        <a href="#default_span_name_if_empty/2" data-no-tooltip translate="no">default_span_name_if_empty(context, default_name)</a>
 
       </div>
 
@@ -184,7 +187,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#empty_or_default_span_name?/1" data-no-tooltip translate="no">empty_or_default_span_name?(env)</a>
+        <a href="#empty_or_default_span_name?/1" data-no-tooltip translate="no">empty_or_default_span_name?(context)</a>
 
       </div>
 
@@ -202,11 +205,11 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#merge/2" data-no-tooltip translate="no">merge(env1, env2)</a>
+        <a href="#merge/2" data-no-tooltip translate="no">merge(context1, context2)</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Merges two trace contexts into one, preferring non-nil values from the first context.</p></div>
+        <div class="summary-synopsis"><p>Merges two <code class="inline">%Funx.Effect.Context{}</code> structs into one, preferring non-nil values from the first context.</p></div>
 
     </div>
 
@@ -216,7 +219,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
       </div>
 
-        <div class="summary-synopsis"><p>Creates a new <code class="inline">Effect.Env</code> struct for use with effectful computations.</p></div>
+        <div class="summary-synopsis"><p>Creates a new <a href="Funx.Effect.Context.html"><code class="inline">Funx.Effect.Context</code></a> struct for use with effectful computations.</p></div>
 
     </div>
 
@@ -230,27 +233,27 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#override/2" data-no-tooltip translate="no">override(env, opts)</a>
+        <a href="#override/2" data-no-tooltip translate="no">override(context, opts)</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Returns a new environment with values from the given keyword list overriding the existing ones.</p></div>
+        <div class="summary-synopsis"><p>Returns a new <code class="inline">%Funx.Effect.Context{}</code> with fields overridden by values from the given keyword list.</p></div>
 
     </div>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#promote_trace/2" data-no-tooltip translate="no">promote_trace(env, label)</a>
+        <a href="#promote_trace/2" data-no-tooltip translate="no">promote_trace(context, label)</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Creates a new trace context by promoting the current environment into a child trace.</p></div>
+        <div class="summary-synopsis"><p>Promotes the current context into a child trace by generating a new <code class="inline">trace_id</code> and linking to the original.</p></div>
 
     </div>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#span_name?/1" data-no-tooltip translate="no">span_name?(env)</a>
+        <a href="#span_name?/1" data-no-tooltip translate="no">span_name?(context)</a>
 
       </div>
 
@@ -269,16 +272,16 @@ and merged or promoted to represent nested operations within an effect chain.</p
       <span class="text">Types</span>
     </h1>
     <div class="types-list">
-<section class="detail" id="t:opts_or_env/0">
+<section class="detail" id="t:opts_or_trace/0">
 
   <div class="detail-header">
-    <a href="#t:opts_or_env/0" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:opts_or_trace/0" class="detail-link" data-no-tooltip title="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">opts_or_env()</h1>
+    <h1 class="signature" translate="no">opts_or_trace()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L35" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L40" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -290,7 +293,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> opts_or_env() :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">keyword</a>() | <a href="#t:t/0">t</a>()</pre>
+          <pre translate="no"><span class="attribute">@type</span> opts_or_trace() :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">keyword</a>() | <a href="#t:t/0">t</a>()</pre>
 
       </div>
 
@@ -306,7 +309,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
     </a>
     <h1 class="signature" translate="no">t()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L26" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L31" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -318,7 +321,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Effect.Env{
+          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Effect.Context{
   baggage: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>() | nil,
   metadata: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>() | nil,
   parent_trace_id: <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>() | nil,
@@ -351,9 +354,9 @@ and merged or promoted to represent nested operations within an effect chain.</p
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">default_span_name?(env)</h1>
+    <h1 class="signature" translate="no">default_span_name?(context)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L184" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L201" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -373,9 +376,9 @@ and merged or promoted to represent nested operations within an effect chain.</p
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">default_span_name_if_empty(env, default_name)</h1>
+    <h1 class="signature" translate="no">default_span_name_if_empty(context, default_name)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L194" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L211" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -395,9 +398,9 @@ and merged or promoted to represent nested operations within an effect chain.</p
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">empty_or_default_span_name?(env)</h1>
+    <h1 class="signature" translate="no">empty_or_default_span_name?(context)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L187" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L204" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -419,7 +422,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
     </a>
     <h1 class="signature" translate="no">generate_trace_id()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L177" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L194" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -441,8 +444,8 @@ and merged or promoted to represent nested operations within an effect chain.</p
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">generate_trace_id</span><span class="p" data-group-id="4379215759-1">(</span><span class="p" data-group-id="4379215759-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="p" data-group-id="4379215759-2">(</span><span class="n">id</span><span class="p" data-group-id="4379215759-2">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">generate_trace_id</span><span class="p" data-group-id="0095535866-1">(</span><span class="p" data-group-id="0095535866-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="p" data-group-id="0095535866-2">(</span><span class="n">id</span><span class="p" data-group-id="0095535866-2">)</span><span class="w">
 </span><span class="mi">32</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">id</span><span class="w"> </span><span class="o">=~</span><span class="w"> </span><span class="sr">~r/^[a-f0-9]+$/</span><span class="w">
 </span><span class="no">true</span></code></pre>
@@ -455,9 +458,9 @@ and merged or promoted to represent nested operations within an effect chain.</p
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">merge(env1, env2)</h1>
+    <h1 class="signature" translate="no">merge(context1, context2)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L93" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L105" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -473,16 +476,16 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
       </div>
 
-<p>Merges two trace contexts into one, preferring non-nil values from the first context.</p><p>Baggage maps are merged together. This is useful when combining multiple effect traces.</p><h2 id="merge/2-examples" class="section-heading">
+<p>Merges two <code class="inline">%Funx.Effect.Context{}</code> structs into one, preferring non-nil values from the first context.</p><p>This is used to preserve trace continuity and propagate context across composed effects.</p><ul><li>Non-nil fields from the first context take precedence.</li><li><code class="inline">baggage</code> and <code class="inline">metadata</code> maps are deeply merged.</li><li>This operation is idempotent and safe for reuse across nested effect chains.</li></ul><h2 id="merge/2-examples" class="section-heading">
   <a href="#merge/2-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">c1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="1399362822-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1399362822-2">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="1399362822-2">}</span><span class="p" data-group-id="1399362822-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">c2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="1399362822-3">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1399362822-4">%{</span><span class="ss">region</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;us-west&quot;</span><span class="p" data-group-id="1399362822-4">}</span><span class="p" data-group-id="1399362822-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">merge</span><span class="p" data-group-id="1399362822-5">(</span><span class="n">c1</span><span class="p">,</span><span class="w"> </span><span class="n">c2</span><span class="p" data-group-id="1399362822-5">)</span><span class="o">.</span><span class="n">baggage</span><span class="w">
-</span><span class="p" data-group-id="1399362822-6">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="ss">region</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;us-west&quot;</span><span class="p" data-group-id="1399362822-6">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">c1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="3295804325-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3295804325-2">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="3295804325-2">}</span><span class="p" data-group-id="3295804325-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">c2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="3295804325-3">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3295804325-4">%{</span><span class="ss">region</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;us-west&quot;</span><span class="p" data-group-id="3295804325-4">}</span><span class="p" data-group-id="3295804325-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">merge</span><span class="p" data-group-id="3295804325-5">(</span><span class="n">c1</span><span class="p">,</span><span class="w"> </span><span class="n">c2</span><span class="p" data-group-id="3295804325-5">)</span><span class="o">.</span><span class="n">baggage</span><span class="w">
+</span><span class="p" data-group-id="3295804325-6">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="ss">region</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;us-west&quot;</span><span class="p" data-group-id="3295804325-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="new/0">
@@ -494,7 +497,7 @@ and merged or promoted to represent nested operations within an effect chain.</p
     </a>
     <h1 class="signature" translate="no">new()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L54" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L62" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -504,19 +507,20 @@ and merged or promoted to represent nested operations within an effect chain.</p
 
   <section class="docstring">
 
-<p>Creates a new <code class="inline">Effect.Env</code> struct for use with effectful computations.</p><p>If no <code class="inline">:trace_id</code> is provided, a new one is generated automatically.
-Additional fields like <code class="inline">:span_name</code>, <code class="inline">:timeout</code>, and <code class="inline">:baggage</code> can also be set.</p><h2 id="new/0-examples" class="section-heading">
+<p>Creates a new <a href="Funx.Effect.Context.html"><code class="inline">Funx.Effect.Context</code></a> struct for use with effectful computations.</p><p>If no <code class="inline">:trace_id</code> is provided, a unique one is generated automatically.
+You may also set optional fields such as <code class="inline">:span_name</code>, <code class="inline">:timeout</code>, <code class="inline">:baggage</code>, and <code class="inline">:metadata</code>.</p><p>The returned context is intended to be passed into <code class="inline">Left</code> and <code class="inline">Right</code> effects,
+where it will be propagated and updated across chained computations.</p><h2 id="new/0-examples" class="section-heading">
   <a href="#new/0-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="5555962517-1">(</span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;load-data&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="mi">2000</span><span class="p" data-group-id="5555962517-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">span_name</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="8422859379-1">(</span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;load-data&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="mi">2000</span><span class="p" data-group-id="8422859379-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="o">.</span><span class="n">span_name</span><span class="w">
 </span><span class="s">&quot;load-data&quot;</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="5555962517-2">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="p" data-group-id="5555962517-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">env</span><span class="o">.</span><span class="n">trace_id</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="8422859379-2">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="p" data-group-id="8422859379-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="o">.</span><span class="n">trace_id</span><span class="w">
 </span><span class="s">&quot;abc123&quot;</span></code></pre>
   </section>
 </section>
@@ -529,7 +533,7 @@ Additional fields like <code class="inline">:span_name</code>, <code class="inli
     </a>
     <h1 class="signature" translate="no">new(trace)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L56" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L64" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -555,9 +559,9 @@ Additional fields like <code class="inline">:span_name</code>, <code class="inli
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">override(env, opts)</h1>
+    <h1 class="signature" translate="no">override(context, opts)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L122" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L136" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -576,21 +580,20 @@ Additional fields like <code class="inline">:span_name</code>, <code class="inli
 
       </div>
 
-<p>Returns a new environment with values from the given keyword list overriding the existing ones.</p><p>Fields like <code class="inline">:trace_id</code>, <code class="inline">:parent_trace_id</code>, <code class="inline">:span_name</code>, and <code class="inline">:timeout</code> are directly replaced if present.
-For <code class="inline">:baggage</code> and <code class="inline">:metadata</code>, maps are deep-merged with the keyword list taking precedence.</p><h2 id="override/2-examples" class="section-heading">
+<p>Returns a new <code class="inline">%Funx.Effect.Context{}</code> with fields overridden by values from the given keyword list.</p><ul><li>Direct fields like <code class="inline">:trace_id</code>, <code class="inline">:parent_trace_id</code>, <code class="inline">:span_name</code>, and <code class="inline">:timeout</code> are replaced if present.</li><li>Nested maps <code class="inline">:baggage</code> and <code class="inline">:metadata</code> are deeply merged, with the keyword list taking precedence.</li></ul><p>This is useful for refining or extending an existing context in a specific part of an effect chain.</p><h2 id="override/2-examples" class="section-heading">
   <a href="#override/2-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="9192106245-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9192106245-2">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="9192106245-2">}</span><span class="p">,</span><span class="w"> </span><span class="ss">metadata</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9192106245-3">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="9192106245-3">}</span><span class="p" data-group-id="9192106245-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">override</span><span class="p" data-group-id="9192106245-4">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;child&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9192106245-5">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9192106245-5">}</span><span class="p">,</span><span class="w"> </span><span class="ss">metadata</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9192106245-6">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="9192106245-6">}</span><span class="p" data-group-id="9192106245-4">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="4341336286-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4341336286-2">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="4341336286-2">}</span><span class="p">,</span><span class="w"> </span><span class="ss">metadata</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4341336286-3">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="4341336286-3">}</span><span class="p" data-group-id="4341336286-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">override</span><span class="p" data-group-id="4341336286-4">(</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;child&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4341336286-5">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4341336286-5">}</span><span class="p">,</span><span class="w"> </span><span class="ss">metadata</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4341336286-6">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="4341336286-6">}</span><span class="p" data-group-id="4341336286-4">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="o">.</span><span class="n">span_name</span><span class="w">
 </span><span class="s">&quot;child&quot;</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="o">.</span><span class="n">baggage</span><span class="w">
-</span><span class="p" data-group-id="9192106245-7">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9192106245-7">}</span><span class="w">
+</span><span class="p" data-group-id="4341336286-7">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4341336286-7">}</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="o">.</span><span class="n">metadata</span><span class="w">
-</span><span class="p" data-group-id="9192106245-8">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="9192106245-8">}</span></code></pre>
+</span><span class="p" data-group-id="4341336286-8">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="4341336286-8">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="promote_trace/2">
@@ -600,9 +603,9 @@ For <code class="inline">:baggage</code> and <code class="inline">:metadata</cod
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">promote_trace(env, label)</h1>
+    <h1 class="signature" translate="no">promote_trace(context, label)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L152" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L169" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -618,16 +621,15 @@ For <code class="inline">:baggage</code> and <code class="inline">:metadata</cod
 
       </div>
 
-<p>Creates a new trace context by promoting the current environment into a child trace.</p><p>Generates a fresh <code class="inline">trace_id</code>, assigns the original as <code class="inline">parent_trace_id</code>, and prepends the given <code class="inline">label</code>
-to the existing <code class="inline">span_name</code>. This is typically used to represent a nested operation or span
-within a larger effectful computation.</p><h2 id="promote_trace/2-examples" class="section-heading">
+<p>Promotes the current context into a child trace by generating a new <code class="inline">trace_id</code> and linking to the original.</p><ul><li>The current <code class="inline">trace_id</code> is moved to <code class="inline">parent_trace_id</code>.</li><li>A new <code class="inline">trace_id</code> is generated for the child context.</li><li>The given <code class="inline">label</code> is prepended to the existing <code class="inline">span_name</code> as <code class="inline">&quot;label -&gt; span&quot;</code>.</li></ul><p>This is typically used to represent a nested span or sub-operation within a larger effect chain,
+preserving trace lineage across composed effects.</p><h2 id="promote_trace/2-examples" class="section-heading">
   <a href="#promote_trace/2-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="2085136909-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;load&quot;</span><span class="p" data-group-id="2085136909-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Env</span><span class="o">.</span><span class="n">promote_trace</span><span class="p" data-group-id="2085136909-2">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;decode&quot;</span><span class="p" data-group-id="2085136909-2">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="2588636497-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;load&quot;</span><span class="p" data-group-id="2588636497-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">promote_trace</span><span class="p" data-group-id="2588636497-2">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;decode&quot;</span><span class="p" data-group-id="2588636497-2">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">child</span><span class="o">.</span><span class="n">parent_trace_id</span><span class="w">
 </span><span class="s">&quot;abc123&quot;</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">child</span><span class="o">.</span><span class="n">trace_id</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="w">
@@ -643,9 +645,9 @@ within a larger effectful computation.</p><h2 id="promote_trace/2-examples" clas
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">span_name?(env)</h1>
+    <h1 class="signature" translate="no">span_name?(context)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/env.ex#L181" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/context.ex#L198" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
