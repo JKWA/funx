@@ -1,21 +1,21 @@
-defmodule Funx.Effect.EnvTest do
+defmodule Funx.Effect.ContextTest do
   use ExUnit.Case, async: true
-  doctest Funx.Effect.Env
+  doctest Funx.Effect.Context
 
   alias Funx.Effect
 
   describe "new/1" do
     test "generates a trace_id when none is provided" do
-      env = Effect.Env.new()
-      assert is_binary(env.trace_id)
-      assert byte_size(env.trace_id) == 32
-      assert env.baggage == %{}
-      assert env.metadata == %{}
+      context = Effect.Context.new()
+      assert is_binary(context.trace_id)
+      assert byte_size(context.trace_id) == 32
+      assert context.baggage == %{}
+      assert context.metadata == %{}
     end
 
     test "accepts provided values for all supported fields" do
-      env =
-        Effect.Env.new(
+      context =
+        Effect.Context.new(
           trace_id: "abc123",
           span_name: "my span",
           timeout: 500,
@@ -23,18 +23,18 @@ defmodule Funx.Effect.EnvTest do
           metadata: %{debug: true}
         )
 
-      assert env.trace_id == "abc123"
-      assert env.span_name == "my span"
-      assert env.timeout == 500
-      assert env.baggage == %{foo: 1}
-      assert env.metadata == %{debug: true}
+      assert context.trace_id == "abc123"
+      assert context.span_name == "my span"
+      assert context.timeout == 500
+      assert context.baggage == %{foo: 1}
+      assert context.metadata == %{debug: true}
     end
   end
 
   describe "merge/2" do
-    test "prefers fields from the first environment and merges maps" do
-      env1 =
-        Effect.Env.new(
+    test "prefers fields from the first context and merges maps" do
+      context1 =
+        Effect.Context.new(
           trace_id: "1",
           span_name: "first",
           timeout: 100,
@@ -42,8 +42,8 @@ defmodule Funx.Effect.EnvTest do
           metadata: %{x: 1}
         )
 
-      env2 =
-        Effect.Env.new(
+      context2 =
+        Effect.Context.new(
           trace_id: "2",
           span_name: "second",
           timeout: 200,
@@ -51,7 +51,7 @@ defmodule Funx.Effect.EnvTest do
           metadata: %{y: 2, x: 0}
         )
 
-      merged = Effect.Env.merge(env1, env2)
+      merged = Effect.Context.merge(context1, context2)
 
       assert merged.trace_id == "1"
       assert merged.span_name == "first"
@@ -64,7 +64,7 @@ defmodule Funx.Effect.EnvTest do
   describe "override/2" do
     test "overrides fields with keyword values and merges maps" do
       original =
-        Effect.Env.new(
+        Effect.Context.new(
           trace_id: "original",
           parent_trace_id: "parent",
           span_name: "original-span",
@@ -81,7 +81,7 @@ defmodule Funx.Effect.EnvTest do
         metadata: %{y: false, shared: "override"}
       ]
 
-      updated = Effect.Env.override(original, overrides)
+      updated = Effect.Context.override(original, overrides)
 
       assert updated.trace_id == "new-id"
       assert updated.span_name == "new-span"
@@ -94,9 +94,9 @@ defmodule Funx.Effect.EnvTest do
   end
 
   describe "promote_trace/2" do
-    test "creates a new trace with updated span and preserved env data" do
-      env =
-        Effect.Env.new(
+    test "creates a new trace with updated span and preserved context data" do
+      context =
+        Effect.Context.new(
           trace_id: "abc123",
           span_name: "start",
           timeout: 500,
@@ -104,7 +104,7 @@ defmodule Funx.Effect.EnvTest do
           metadata: %{m: 2}
         )
 
-      promoted = Effect.Env.promote_trace(env, "step")
+      promoted = Effect.Context.promote_trace(context, "step")
 
       assert promoted.trace_id != "abc123"
       assert promoted.parent_trace_id == "abc123"
@@ -115,8 +115,8 @@ defmodule Funx.Effect.EnvTest do
     end
 
     test "uses default span name if original is nil" do
-      env = Effect.Env.new(trace_id: "abc123", span_name: nil)
-      promoted = Effect.Env.promote_trace(env, "task")
+      context = Effect.Context.new(trace_id: "abc123", span_name: nil)
+      promoted = Effect.Context.promote_trace(context, "task")
 
       assert promoted.span_name == "task -> funx.effect.run"
     end
@@ -124,7 +124,7 @@ defmodule Funx.Effect.EnvTest do
 
   describe "generate_trace_id/0" do
     test "produces a 32-character lowercase hex string" do
-      trace_id = Effect.Env.generate_trace_id()
+      trace_id = Effect.Context.generate_trace_id()
       assert is_binary(trace_id)
       assert trace_id =~ ~r/^[a-f0-9]{32}$/
     end
@@ -132,62 +132,62 @@ defmodule Funx.Effect.EnvTest do
 
   describe "span_name?/1" do
     test "returns true when span_name is present" do
-      env = %Effect.Env{trace_id: "abc", span_name: "some-span"}
-      assert Effect.Env.span_name?(env)
+      context = %Effect.Context{trace_id: "abc", span_name: "some-span"}
+      assert Effect.Context.span_name?(context)
     end
 
     test "returns false when span_name is nil" do
-      env = %Effect.Env{trace_id: "abc", span_name: nil}
-      refute Effect.Env.span_name?(env)
+      context = %Effect.Context{trace_id: "abc", span_name: nil}
+      refute Effect.Context.span_name?(context)
     end
   end
 
   describe "default_span_name?/1" do
     test "returns true when span_name is the configured default" do
       default = Funx.Config.default_span_name()
-      env = %Effect.Env{trace_id: "abc", span_name: default}
-      assert Effect.Env.default_span_name?(env)
+      context = %Effect.Context{trace_id: "abc", span_name: default}
+      assert Effect.Context.default_span_name?(context)
     end
 
     test "returns false when span_name is custom" do
-      env = %Effect.Env{trace_id: "abc", span_name: "custom"}
-      refute Effect.Env.default_span_name?(env)
+      context = %Effect.Context{trace_id: "abc", span_name: "custom"}
+      refute Effect.Context.default_span_name?(context)
     end
   end
 
   describe "empty_or_default_span_name?/1" do
     test "returns true when span_name is nil" do
-      env = %Effect.Env{trace_id: "abc", span_name: nil}
-      assert Effect.Env.empty_or_default_span_name?(env)
+      context = %Effect.Context{trace_id: "abc", span_name: nil}
+      assert Effect.Context.empty_or_default_span_name?(context)
     end
 
     test "returns true when span_name is default" do
-      env = %Effect.Env{trace_id: "abc", span_name: Funx.Config.default_span_name()}
-      assert Effect.Env.empty_or_default_span_name?(env)
+      context = %Effect.Context{trace_id: "abc", span_name: Funx.Config.default_span_name()}
+      assert Effect.Context.empty_or_default_span_name?(context)
     end
 
     test "returns false when span_name is custom" do
-      env = %Effect.Env{trace_id: "abc", span_name: "custom"}
-      refute Effect.Env.empty_or_default_span_name?(env)
+      context = %Effect.Context{trace_id: "abc", span_name: "custom"}
+      refute Effect.Context.empty_or_default_span_name?(context)
     end
   end
 
   describe "default_span_name_if_empty/2" do
     test "replaces nil span_name with provided default" do
-      env = %Effect.Env{trace_id: "abc", span_name: nil}
-      updated = Effect.Env.default_span_name_if_empty(env, "fallback")
+      context = %Effect.Context{trace_id: "abc", span_name: nil}
+      updated = Effect.Context.default_span_name_if_empty(context, "fallback")
       assert updated.span_name == "fallback"
     end
 
     test "replaces default span_name with provided value" do
-      env = %Effect.Env{trace_id: "abc", span_name: Funx.Config.default_span_name()}
-      updated = Effect.Env.default_span_name_if_empty(env, "fallback")
+      context = %Effect.Context{trace_id: "abc", span_name: Funx.Config.default_span_name()}
+      updated = Effect.Context.default_span_name_if_empty(context, "fallback")
       assert updated.span_name == "fallback"
     end
 
     test "preserves custom span_name" do
-      env = %Effect.Env{trace_id: "abc", span_name: "preserve"}
-      updated = Effect.Env.default_span_name_if_empty(env, "fallback")
+      context = %Effect.Context{trace_id: "abc", span_name: "preserve"}
+      updated = Effect.Context.default_span_name_if_empty(context, "fallback")
       assert updated.span_name == "preserve"
     end
   end

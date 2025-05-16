@@ -11,8 +11,8 @@ defmodule Funx.Effect.Left do
 
   alias Funx.{Effect, Either}
 
-  @enforce_keys [:effect, :env]
-  defstruct [:effect, :env]
+  @enforce_keys [:effect, :context]
+  defstruct [:effect, :context]
 
   @typedoc """
   Represents an asynchronous computation that produces a `Left` value.
@@ -21,7 +21,7 @@ defmodule Funx.Effect.Left do
   """
   @type t(left) :: %__MODULE__{
           effect: (-> Task.t()) | (-> Either.Left.t(left)),
-          env: Effect.Env.t()
+          context: Effect.Context.t()
         }
 
   @doc """
@@ -35,11 +35,11 @@ defmodule Funx.Effect.Left do
       iex> Funx.Effect.run(effect)
       %Funx.Either.Left{left: "error"}
   """
-  @spec pure(left, Effect.Env.opts_or_env()) :: t(left) when left: term()
-  def pure(value, opts_or_env \\ []) do
+  @spec pure(left, Effect.Context.opts_or_trace()) :: t(left) when left: term()
+  def pure(value, opts_or_trace \\ []) do
     %__MODULE__{
       effect: fn -> Task.async(fn -> %Either.Left{left: value} end) end,
-      env: Effect.Env.new(opts_or_env)
+      context: Effect.Context.new(opts_or_trace)
     }
   end
 end
@@ -50,9 +50,9 @@ defimpl Funx.Monad, for: Funx.Effect.Left do
 
   @spec bind(Left.t(left), (any() -> Effect.t(left, result))) :: Left.t(left)
         when left: term(), result: term()
-  def bind(%Left{effect: effect, env: env}, _binder) do
+  def bind(%Left{effect: effect, context: context}, _binder) do
     %Left{
-      env: env,
+      context: context,
       effect: fn ->
         Task.async(fn ->
           Task.await(effect.())
