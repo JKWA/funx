@@ -40,6 +40,13 @@ defmodule Funx.Effect do
     * `lift_maybe/2` – Lifts a `Maybe` into an `Effect`, using a fallback error for `Nothing`.
     * `lift_predicate/3` – Lifts a predicate into an `Effect`, using a provided fallback on failure.
 
+  ## Reader Operations
+
+    * `ask/0` – Returns the environment passed to `run/2` as a `Right`.
+    * `asks/1` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Right`.
+    * `fail/0` – Returns the environment passed to `run/2` as a `Left`.
+    * `fails/1` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Left`.
+
   ## Elixir Interop
 
     * `from_result/2` – Converts a `{:ok, _}` or `{:error, _}` tuple into an `Effect`.
@@ -57,7 +64,6 @@ defmodule Funx.Effect do
 
     This module enables structured concurrency, error handling, and observability in
     asynchronous workflows.
-
 
   ## Telemetry
 
@@ -102,7 +108,15 @@ defmodule Funx.Effect do
   alias Effect.{Left, Right}
   alias Maybe.{Just, Nothing}
 
-  @type t(left, right) :: Left.t(left) | Right.t(right)
+  @typedoc """
+  Represents a deferred computation in the `Effect` monad that may either succeed (`Right`) or fail (`Left`).
+
+  This type unifies `Effect.Right.t/1` and `Effect.Left.t/1` under a common interface, allowing code to
+  operate over asynchronous effects regardless of success or failure outcome.
+
+  Each variant carries a `context` for telemetry and a deferred `effect` function that takes an environment.
+  """
+  @type t(left, right) :: Effect.Left.t(left) | Effect.Right.t(right)
 
   @doc """
   Wraps a value in the `Right` variant of the `Effect` monad, representing a successful asynchronous computation.
@@ -121,8 +135,8 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: 42}
   """
-  @spec right(right, Effect.Context.opts_or_trace()) :: t(term(), right) when right: term()
-  def right(value, opts_or_trace \\ []), do: pure(value, opts_or_trace)
+  @spec right(right, Effect.Context.opts_or_context()) :: t(term(), right) when right: term()
+  def right(value, opts_or_context \\ []), do: pure(value, opts_or_context)
 
   @doc """
   Alias for `right/2`.
@@ -142,8 +156,8 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: 42}
   """
-  @spec pure(right, Effect.Context.opts_or_trace()) :: t(term(), right) when right: term()
-  def pure(value, opts_or_trace \\ []), do: Right.pure(value, opts_or_trace)
+  @spec pure(right, Effect.Context.opts_or_context()) :: t(term(), right) when right: term()
+  def pure(value, opts_or_context \\ []), do: Right.pure(value, opts_or_context)
 
   @doc """
   Wraps a value in the `Left` variant of the `Effect` monad, representing a failed asynchronous computation.
@@ -161,8 +175,69 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "error"}
   """
-  @spec left(left, Effect.Context.opts_or_trace()) :: t(left, term()) when left: term()
-  def left(value, opts_or_trace \\ []), do: Left.pure(value, opts_or_trace)
+  @spec left(left, Effect.Context.opts_or_context()) :: t(left, term()) when left: term()
+  def left(value, opts_or_context \\ []), do: Left.pure(value, opts_or_context)
+
+  @doc """
+  Returns a `Funx.Effect.Right` that yields the environment passed to `Funx.Effect.run/2`.
+
+  This is the Reader-style `ask`, used to access the full environment inside an effectful computation.
+
+  ## Example
+
+      iex> Funx.Effect.ask()
+      ...> |> Funx.Monad.map(& &1[:region])
+      ...> |> Funx.Effect.run(%{region: "us-west"})
+      %Funx.Either.Right{right: "us-west"}
+  """
+  @spec ask :: Funx.Effect.Right.t()
+  def ask, do: Right.ask()
+
+  @doc """
+  Returns a `Funx.Effect.Left` that fails with the entire environment passed to `Funx.Effect.run/2`.
+
+  This is the Reader-style equivalent of `ask/0`, but marks the environment as a failure.
+  Useful when the presence of certain runtime data should short-circuit execution.
+
+  ## Example
+
+      iex> Funx.Effect.fail()
+      ...> |> Funx.Effect.run(%{error: :invalid_token})
+      %Funx.Either.Left{left: %{error: :invalid_token}}
+  """
+
+  @spec fail :: Left.t()
+  def fail, do: Left.ask()
+
+  @doc """
+  Returns a `Funx.Effect.Right` that applies the given function to the environment passed to `Funx.Effect.run/2`.
+
+  This allows extracting a value from the environment and using it in an effectful computation,
+  following the Reader pattern.
+
+  ## Example
+
+      iex> Funx.Effect.asks(fn env -> env[:user] end)
+      ...> |> Funx.Monad.bind(fn user -> Funx.Effect.right(user) end)
+      ...> |> Funx.Effect.run(%{user: "alice"})
+      %Funx.Either.Right{right: "alice"}
+  """
+  @spec asks((term() -> term())) :: Right.t()
+  def asks(f), do: Right.asks(f)
+
+  @doc """
+  Returns a `Funx.Effect.Left` that applies the given function to the environment passed to `Funx.Effect.run/2`.
+
+  This is the failure-side equivalent of `asks/1`, used to produce an error effect based on runtime context.
+
+  ## Example
+
+      iex> Funx.Effect.fails(fn env -> {:missing_key, env} end)
+      ...> |> Funx.Effect.run(%{input: nil})
+      %Funx.Either.Left{left: {:missing_key, %{input: nil}}}
+  """
+  @spec fails((term() -> term())) :: Left.t()
+  def fails(f), do: Left.asks(f)
 
   @doc """
   Runs the `Effect` and returns the result, awaiting the task if necessary.
@@ -185,10 +260,38 @@ defmodule Funx.Effect do
       %Funx.Either.Right{right: 42}
   """
 
+  @spec run(t(left, right)) :: Either.t(left, right)
+        when left: term(), right: term()
+
+  @spec run(t(left, right), map()) :: Either.t(left, right)
+        when left: term(), right: term()
+
   @spec run(t(left, right), keyword()) :: Either.t(left, right)
         when left: term(), right: term()
-  def run(%{context: %Effect.Context{} = context} = effect, opts \\ [])
-      when is_struct(effect, Effect.Right) or is_struct(effect, Effect.Left) do
+
+  @spec run(t(left, right), map(), keyword()) :: Either.t(left, right)
+        when left: term(), right: term()
+
+  def run(effect) when is_struct(effect, Effect.Right) or is_struct(effect, Effect.Left),
+    do: run(effect, %{}, [])
+
+  def run(effect, env)
+      when (is_struct(effect, Effect.Right) or is_struct(effect, Effect.Left)) and is_map(env),
+      do: run(effect, env, [])
+
+  def run(effect, opts)
+      when (is_struct(effect, Funx.Effect.Right) or is_struct(effect, Funx.Effect.Left)) and
+             is_list(opts) do
+    env = Keyword.get(opts, :env, %{})
+    run(effect, env, opts)
+  end
+
+  # NOTE: Coveralls is confused by the guard clause in the function head
+  # coveralls-ignore-next-line
+  def run(%{context: %Effect.Context{} = context} = effect, env, opts \\ [])
+      when (is_struct(effect, Funx.Effect.Right) or is_struct(effect, Funx.Effect.Left)) and
+             is_map(env) and
+             is_list(opts) do
     context =
       opts
       |> maybe_promote_trace(context)
@@ -200,11 +303,11 @@ defmodule Funx.Effect do
 
     if Funx.Config.telemetry_enabled?() do
       :telemetry.span(prefix, %{timeout: timeout, span_name: span_name}, fn ->
-        result = execute_effect(effect, timeout)
+        result = execute_effect(effect, timeout, env)
         {result, build_metadata(%{effect | context: context}, result, context)}
       end)
     else
-      execute_effect(effect, timeout)
+      execute_effect(effect, timeout, env)
     end
   end
 
@@ -215,8 +318,8 @@ defmodule Funx.Effect do
     end
   end
 
-  defp execute_effect(%Right{effect: eff}, timeout), do: safe_await(eff.(), timeout)
-  defp execute_effect(%Left{effect: eff}, timeout), do: safe_await(eff.(), timeout)
+  defp execute_effect(%Right{effect: eff}, timeout, env), do: safe_await(eff.(env), timeout)
+  defp execute_effect(%Left{effect: eff}, timeout, env), do: safe_await(eff.(env), timeout)
 
   defp build_metadata(effect, result, %Effect.Context{} = context) do
     %{
@@ -270,7 +373,7 @@ defmodule Funx.Effect do
           term(),
           (term() -> boolean()),
           (term() -> left),
-          Effect.Context.opts_or_trace()
+          Effect.Context.opts_or_context()
         ) ::
           t(left, term())
         when left: term()
@@ -299,7 +402,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "error"}
   """
-  @spec lift_either(Either.t(left, right), Effect.Context.opts_or_trace()) :: t(left, right)
+  @spec lift_either(Either.t(left, right), Effect.Context.opts_or_context()) :: t(left, right)
         when left: term(), right: term()
   def lift_either(either, opts \\ [])
 
@@ -330,7 +433,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "No value"}
   """
-  @spec lift_maybe(Maybe.t(right), (-> left), Effect.Context.opts_or_trace()) :: t(left, right)
+  @spec lift_maybe(Maybe.t(right), (-> left), Effect.Context.opts_or_context()) :: t(left, right)
         when left: term(), right: term()
   def lift_maybe(maybe, on_none, opts \\ [])
 
@@ -362,15 +465,18 @@ defmodule Funx.Effect do
   def map_left(%Right{} = right, _func), do: right
 
   def map_left(%Left{effect: eff, context: context}, func) when is_function(func, 1) do
-    promoted_trace = Effect.Context.promote_trace(context, "map_left")
+    promoted_context = Effect.Context.promote_trace(context, "map_left")
 
     %Left{
-      context: promoted_trace,
-      effect: fn ->
+      context: promoted_context,
+      effect: fn env ->
         Task.async(fn ->
-          case run(%Left{effect: eff, context: context}) do
-            %Either.Left{left: error} -> %Either.Left{left: func.(error)}
-            %Either.Right{} = right -> right
+          case Effect.run(%Left{effect: eff, context: context}, env) do
+            %Either.Left{left: error} ->
+              %Either.Left{left: func.(error)}
+
+            %Either.Right{} = right ->
+              right
           end
         end)
       end
@@ -405,9 +511,9 @@ defmodule Funx.Effect do
 
     %Left{
       context: promoted_trace,
-      effect: fn ->
+      effect: fn env ->
         Task.async(fn ->
-          case run(%Right{effect: eff, context: context}) do
+          case run(%Right{effect: eff, context: context}, env) do
             %Either.Right{right: val} ->
               %Either.Left{left: val}
           end
@@ -421,9 +527,9 @@ defmodule Funx.Effect do
 
     %Right{
       context: promoted_trace,
-      effect: fn ->
+      effect: fn env ->
         Task.async(fn ->
-          case run(%Left{effect: eff, context: context}) do
+          case run(%Left{effect: eff, context: context}, env) do
             %Either.Left{left: err} ->
               %Either.Right{right: err}
           end
@@ -452,7 +558,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "error"}
   """
-  @spec sequence([t(left, right)], Effect.Context.opts_or_trace()) :: t(left, [right])
+  @spec sequence([t(left, right)], Effect.Context.opts_or_context()) :: t(left, [right])
         when left: term(), right: term()
   def sequence(list, opts \\ []), do: traverse(list, fn x -> x end, opts)
 
@@ -477,7 +583,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "-2 is not positive"}
   """
-  @spec traverse([input], (input -> t(left, right)), Effect.Context.opts_or_trace()) ::
+  @spec traverse([input], (input -> t(left, right)), Effect.Context.opts_or_context()) ::
           t(left, [right])
         when input: term(), left: term(), right: term()
 
@@ -504,12 +610,12 @@ defmodule Funx.Effect do
           {:cont,
            %Right{
              context: updated_trace,
-             effect: fn ->
+             effect: fn env ->
                Task.async(fn ->
                  with %Either.Right{right: val} <-
-                        run(%Right{effect: eff1, context: trace_with_name}),
+                        run(%Right{effect: eff1, context: trace_with_name}, env),
                       %Either.Right{right: acc_vals} <-
-                        run(%Right{effect: eff2, context: acc_trace}) do
+                        run(%Right{effect: eff2, context: acc_trace}, env) do
                    %Either.Right{right: [val | acc_vals]}
                  end
                end)
@@ -550,7 +656,7 @@ defmodule Funx.Effect do
       %Funx.Either.Left{left: ["Error 1", "Error 2"]}
   """
 
-  @spec sequence_a([t(error, value)], Effect.Context.opts_or_trace()) :: t([error], [value])
+  @spec sequence_a([t(error, value)], Effect.Context.opts_or_context()) :: t([error], [value])
         when error: term(), value: term()
   def sequence_a(list, opts \\ []), do: traverse_a(list, fn x -> x end, opts)
 
@@ -577,7 +683,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Right{right: [1, 2, 3]}
   """
-  @spec traverse_a([input], (input -> t(error, value)), Effect.Context.opts_or_trace()) ::
+  @spec traverse_a([input], (input -> t(error, value)), Effect.Context.opts_or_context()) ::
           t([error], [value])
         when input: term(), error: term(), value: term()
   def traverse_a(list, func), do: traverse_a(list, func, [])
@@ -614,7 +720,7 @@ defmodule Funx.Effect do
 
     %Right{
       context: traverse_trace,
-      effect: fn ->
+      effect: fn env ->
         Task.async(fn ->
           tasks = Enum.map(effects, &spawn_effect/1)
           results = Enum.map(tasks, &collect_result/1)
@@ -636,8 +742,13 @@ defmodule Funx.Effect do
                 |> Enum.filter(& &1)
 
               %Either.Right{right: values}
-              |> then(&%Right{effect: fn -> Task.async(fn -> &1 end) end, context: merged_trace})
-              |> run()
+              |> then(fn res ->
+                %Right{
+                  context: merged_trace,
+                  effect: fn _env -> Task.async(fn -> res end) end
+                }
+              end)
+              |> run(env)
 
             _ ->
               merged_trace =
@@ -648,8 +759,13 @@ defmodule Funx.Effect do
                 |> Enum.flat_map(fn {:error, _, list} -> list end)
 
               %Either.Left{left: errors}
-              |> then(&%Left{effect: fn -> Task.async(fn -> &1 end) end, context: merged_trace})
-              |> run()
+              |> then(fn res ->
+                %Left{
+                  context: merged_trace,
+                  effect: fn _env -> Task.async(fn -> res end) end
+                }
+              end)
+              |> run(env)
           end
         end)
       end
@@ -657,10 +773,10 @@ defmodule Funx.Effect do
   end
 
   defp spawn_effect(%Right{context: t, effect: e}),
-    do: {:right, t, Task.async(fn -> run(%Right{context: t, effect: e}) end)}
+    do: {:right, t, Task.async(fn -> run(%Right{context: t, effect: e}, %{}) end)}
 
   defp spawn_effect(%Left{context: t, effect: e}),
-    do: {:left, t, Task.async(fn -> run(%Left{context: t, effect: e}) end)}
+    do: {:left, t, Task.async(fn -> run(%Left{context: t, effect: e}, %{}) end)}
 
   defp collect_result({:right, context, task}) do
     case safe_await(task) do
@@ -718,7 +834,7 @@ defmodule Funx.Effect do
   @spec validate(
           value,
           (value -> t(error, any)) | [(value -> t(error, any))],
-          Effect.Context.opts_or_trace()
+          Effect.Context.opts_or_context()
         ) ::
           t([error], value)
         when error: term(), value: term()
@@ -749,7 +865,7 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: "error"}
   """
-  @spec from_result({:ok, right} | {:error, left}, Effect.Context.opts_or_trace()) ::
+  @spec from_result({:ok, right} | {:error, left}, Effect.Context.opts_or_context()) ::
           t(left, right)
         when left: term(), right: term()
   def from_result(result, opts \\ []) do
@@ -809,11 +925,11 @@ defmodule Funx.Effect do
       iex> Funx.Effect.run(result)
       %Funx.Either.Left{left: %RuntimeError{message: "error"}}
   """
-  @spec from_try((-> right), Effect.Context.opts_or_trace()) :: t(Exception.t(), right)
+  @spec from_try((-> right), Effect.Context.opts_or_context()) :: t(Exception.t(), right)
         when right: term()
-  def from_try(func, opts_or_trace \\ []) do
+  def from_try(func, opts_or_context \\ []) do
     context =
-      case opts_or_trace do
+      case opts_or_context do
         %Effect.Context{} = context -> context
         opts when is_list(opts) -> Effect.Context.new(opts)
       end

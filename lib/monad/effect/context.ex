@@ -28,6 +28,13 @@ defmodule Funx.Effect.Context do
     metadata: %{}
   ]
 
+  @typedoc """
+  Represents the contextual metadata associated with an `Effect`.
+
+  The context carries telemetry and tracing information such as `trace_id`, `span_name`, and `timeout`,
+  as well as arbitrary metadata and user-defined `baggage`. It is passed through all effectful computations
+  and can be promoted to represent nested spans.
+  """
   @type t :: %__MODULE__{
           trace_id: String.t(),
           parent_trace_id: String.t() | nil,
@@ -37,7 +44,13 @@ defmodule Funx.Effect.Context do
           metadata: map() | nil
         }
 
-  @type opts_or_trace :: keyword() | t()
+  @typedoc """
+  Represents input for constructing an `Effect.Context`.
+
+  Accepts either a keyword list of options (`trace_id`, `span_name`, etc.) or an existing `Context` struct.
+  Used throughout the `Effect` system for flexible context propagation.
+  """
+  @type opts_or_context :: keyword() | t()
 
   @doc """
   Creates a new `Funx.Effect.Context` struct for use with effectful computations.

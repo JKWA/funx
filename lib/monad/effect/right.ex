@@ -6,7 +6,13 @@ defmodule Funx.Effect.Right do
     - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions to handle monadic operations within an effectful, lazy execution context.
     - `String.Chars`: Provides a `to_string/1` function to represent `Right` values as strings.
 
-  The `Right` effect allows the computation to proceed with successful values, supporting lazy, asynchronous tasks.
+  The `Right` effect allows the computation to proceed with successful values, supporting lazy, asynchronous tasks
+  and capturing execution context through the `Effect.Context` struct.
+
+  ## Reader Operations
+
+    * `ask/1` – Returns the environment passed to `run/2` as a `Right`.
+    * `asks/2` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Right`.
   """
 
   alias Funx.{Effect, Either}
@@ -17,12 +23,18 @@ defmodule Funx.Effect.Right do
   @typedoc """
   Represents an asynchronous computation that produces a `Right` value.
 
-  This type models an effectful computation that executes asynchronously, returning a `Task.t()`, which is expected to resolve to a `Right` value.
+  The `effect` function is typically a deferred task that takes an environment and returns a `Task`.
+  Since Elixir does not support parameterized `Task.t()` types, the return type is described as a union:
+  either a `Task.t()` or a plain `Either.Right.t(right)` for testability and flexibility.
+
+  The `context` carries telemetry and trace information used during execution.
   """
   @type t(right) :: %__MODULE__{
-          effect: (-> Task.t()) | (-> Either.Right.t(right)),
+          effect: (term() -> Task.t()) | (term() -> Either.Right.t(right)),
           context: Effect.Context.t()
         }
+
+  @type t :: t(term())
 
   @doc """
   Creates a new `Right` effect.
@@ -35,11 +47,65 @@ defmodule Funx.Effect.Right do
       iex> Funx.Effect.run(effect)
       %Funx.Either.Right{right: "success"}
   """
-  @spec pure(right, Effect.Context.opts_or_trace()) :: t(right) when right: term()
-  def pure(value, opts_or_trace \\ []) do
+  @spec pure(right, Effect.Context.opts_or_context()) :: t(right)
+        when right: term()
+  def pure(value, opts_or_context \\ []) do
     %__MODULE__{
-      effect: fn -> Task.async(fn -> %Either.Right{right: value} end) end,
-      context: Effect.Context.new(opts_or_trace)
+      context: Effect.Context.new(opts_or_context),
+      effect: fn _env -> Task.async(fn -> %Either.Right{right: value} end) end
+    }
+  end
+
+  @doc """
+  Returns a `Funx.Effect.Right` that yields the environment passed to `Funx.Effect.run/2`.
+
+  This is the Reader monad's equivalent of `ask`, giving access to the entire injected environment
+  for further computation.
+
+  ## Example
+
+      iex> Funx.Effect.Right.ask()
+      ...> |> Funx.Monad.map(& &1[:user])
+      ...> |> Funx.Effect.run(%{user: "alice"})
+      %Funx.Either.Right{right: "alice"}
+  """
+  @spec ask(Effect.Context.opts_or_context()) :: t(env)
+        when env: term()
+  def ask(opts_or_context \\ []) do
+    context = Effect.Context.new(opts_or_context)
+
+    %__MODULE__{
+      context: context,
+      effect: fn env ->
+        Task.async(fn -> %Either.Right{right: env} end)
+      end
+    }
+  end
+
+  @doc """
+  Returns a `Funx.Effect.Right` that applies the given function to the environment passed to `Funx.Effect.run/2`.
+
+  This allows extracting a value from the environment and using it in an effectful computation,
+  following the Reader pattern.
+
+  ## Example
+
+      iex> Funx.Effect.Right.asks(fn env -> env[:user] end)
+      ...> |> Funx.Monad.bind(fn user -> Funx.Effect.right(user) end)
+      ...> |> Funx.Effect.run(%{user: "alice"})
+      %Funx.Either.Right{right: "alice"}
+  """
+
+  @spec asks((Effect.Context.t() -> result), Effect.Context.opts_or_context()) :: t(result)
+        when result: term()
+  def asks(f, opts_or_context \\ []) do
+    context = Effect.Context.new(opts_or_context)
+
+    %__MODULE__{
+      context: context,
+      effect: fn env ->
+        Task.async(fn -> %Either.Right{right: f.(env)} end)
+      end
     }
   end
 end
@@ -48,16 +114,16 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
   alias Funx.{Effect, Either}
   alias Effect.{Left, Right}
 
-  @spec map(Right.t(right), (right -> result)) :: Right.t(result)
-        when right: term(), result: term()
+  @spec map(Right.t(input), (input -> output)) :: Right.t(output)
+        when input: term(), output: term()
   def map(%Right{effect: effect, context: context}, mapper) do
     updated_context = Effect.Context.promote_trace(context, "map")
 
     %Right{
       context: updated_context,
-      effect: fn ->
+      effect: fn env ->
         Task.async(fn ->
-          case Effect.run(%Right{effect: effect, context: context}) do
+          case Effect.run(%Right{effect: effect, context: context}, env) do
             %Either.Right{right: value} ->
               try do
                 %Either.Right{right: mapper.(value)}
@@ -73,9 +139,11 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
     }
   end
 
-  @spec ap(Right.t((right -> result)), Effect.t(left, right)) ::
-          Effect.t(left, result)
-        when left: term(), right: term(), result: term()
+  @spec ap(Right.t((input -> output)), Right.t(input)) :: Right.t(output)
+        when input: term(), output: term()
+
+  @spec ap(Right.t(), Left.t(left)) :: Left.t(left)
+        when left: term()
   def ap(%Right{effect: effect_func, context: context_func}, %Right{
         effect: effect_value,
         context: context_val
@@ -85,12 +153,12 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
 
     %Right{
       context: promoted_context,
-      effect: fn ->
+      effect: fn env ->
         Task.async(fn ->
           with %Either.Right{right: func} <-
-                 Effect.run(%Right{effect: effect_func, context: context_func}),
+                 Effect.run(%Right{effect: effect_func, context: context_func}, env),
                %Either.Right{right: value} <-
-                 Effect.run(%Right{effect: effect_value, context: context_val}) do
+                 Effect.run(%Right{effect: effect_value, context: context_val}, env) do
             try do
               %Either.Right{right: func.(value)}
             rescue
@@ -106,23 +174,26 @@ defimpl Funx.Monad, for: Funx.Effect.Right do
 
   def ap(%Right{}, %Left{effect: eff, context: context}) do
     promoted_context = Effect.Context.promote_trace(context, "ap")
-    %Left{effect: eff, context: promoted_context}
+
+    %Left{
+      context: promoted_context,
+      effect: fn env -> eff.(env) end
+    }
   end
 
-  @spec bind(Right.t(right), (right -> Effect.t(left, result))) ::
-          Effect.t(left, result)
-        when left: term(), right: term(), result: term()
+  @spec bind(Right.t(input), (input -> Effect.t(left, output))) :: Effect.t(left, output)
+        when input: term(), output: term(), left: term()
   def bind(%Right{effect: effect, context: context}, binder) do
     promoted_context = Effect.Context.promote_trace(context, "bind")
 
     %Right{
       context: promoted_context,
-      effect: fn ->
+      effect: fn env ->
         Task.async(fn ->
-          case Effect.run(%Right{effect: effect, context: context}) do
+          case Effect.run(%Right{effect: effect, context: context}, env) do
             %Either.Right{right: value} ->
               next = binder.(value)
-              Effect.run(next)
+              Effect.run(next, env)
 
             %Either.Left{} = left ->
               left

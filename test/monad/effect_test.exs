@@ -56,7 +56,7 @@ defmodule EffectTest do
 
       effect = %Funx.Effect.Right{
         context: context,
-        effect: fn ->
+        effect: fn _env ->
           Task.async(fn ->
             Process.sleep(10_000)
             Funx.Either.right(:late)
@@ -144,7 +144,7 @@ defmodule EffectTest do
 
       effect = %Funx.Effect.Right{
         context: context,
-        effect: fn -> :not_a_task end
+        effect: fn _env -> :not_a_task end
       }
 
       result = effect |> run()
@@ -163,7 +163,7 @@ defmodule EffectTest do
 
       effect = %Funx.Effect.Right{
         context: context,
-        effect: fn ->
+        effect: fn _env ->
           Task.async(fn -> :not_an_either end)
         end
       }
@@ -209,6 +209,104 @@ defmodule EffectTest do
                       }}
 
       assert telemetry_result == summarize(result)
+    end
+  end
+
+  describe "Funx.Effect.Right.asks/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
+    test "reads a value from the environment" do
+      effect =
+        Funx.Effect.Right.asks(fn env -> env[:user_id] end)
+        |> Funx.Effect.run(%{user_id: 42})
+
+      assert effect == Funx.Either.right(42)
+    end
+
+    test "returns a Right-tagged effect regardless of env content" do
+      effect =
+        Funx.Effect.Right.asks(fn env -> Map.get(env, :missing_key, :default) end)
+        |> Funx.Effect.run()
+
+      assert effect == Funx.Either.right(:default)
+    end
+
+    test "allows chaining with bind to perform a dependent effect" do
+      result =
+        Funx.Effect.Right.asks(fn env -> env[:config] end)
+        |> Funx.Monad.bind(fn config ->
+          Funx.Effect.right("Configured for #{config}")
+        end)
+        |> Funx.Effect.run(%{config: "production"})
+
+      assert result == Funx.Either.right("Configured for production")
+    end
+
+    test "does not raise if env is empty but function handles it" do
+      effect =
+        Funx.Effect.Right.asks(fn _env -> :ok end)
+        |> Funx.Effect.run(%{})
+
+      assert effect == Funx.Either.right(:ok)
+    end
+
+    test "propagates telemetry with span name when context is passed" do
+      span = "reads-key"
+      ctx = Funx.Effect.Context.new(span_name: span)
+
+      Funx.Effect.Right.asks(fn env -> env[:x] end, ctx)
+      |> Funx.Effect.run(%{x: 1})
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], _,
+                      %{span_name: ^span, effect_type: :right, status: :ok}},
+                     100
+    end
+  end
+
+  describe "Funx.Effect.fails/1" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
+    test "constructs a Left from the runtime environment" do
+      result =
+        Funx.Effect.fails(fn env -> {:missing, env[:key]} end)
+        |> Funx.Effect.run(%{key: :user_id})
+
+      assert result == Funx.Either.left({:missing, :user_id})
+    end
+
+    test "returns a Left even when no env values are accessed" do
+      result =
+        Funx.Effect.fails(fn _ -> :static_failure end)
+        |> Funx.Effect.run(%{})
+
+      assert result == Funx.Either.left(:static_failure)
+    end
+
+    test "supports dynamic error construction from nested maps" do
+      env = %{input: %{field: "bad"}}
+
+      result =
+        Funx.Effect.fails(fn env -> {:invalid_field, env.input.field} end)
+        |> Funx.Effect.run(env)
+
+      assert result == Funx.Either.left({:invalid_field, "bad"})
+    end
+
+    test "propagates telemetry with custom span name" do
+      ctx = Funx.Effect.Context.new(span_name: "fail-example")
+
+      Funx.Effect.Left.asks(fn env -> {:error, env} end, ctx)
+      |> Funx.Effect.run(%{reason: :bad_data})
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], _,
+                      %{span_name: "fail-example", effect_type: :left, status: :error}},
+                     100
     end
   end
 
@@ -471,7 +569,7 @@ defmodule EffectTest do
 
       func = %Funx.Effect.Right{
         context: context,
-        effect: fn -> Task.async(fn -> Either.left("bad function") end) end
+        effect: fn _env -> Task.async(fn -> Either.left("bad function") end) end
       }
 
       value = right(42)
@@ -815,7 +913,7 @@ defmodule EffectTest do
 
       error_effect = %Funx.Effect.Right{
         context: context,
-        effect: fn ->
+        effect: fn _env ->
           Task.async(fn -> %Either.Left{left: "error"} end)
         end
       }
@@ -998,7 +1096,7 @@ defmodule EffectTest do
 
       effect = %Funx.Effect.Left{
         context: context,
-        effect: fn ->
+        effect: fn _env ->
           Task.async(fn -> %Funx.Either.Right{right: :recovered} end)
         end
       }
@@ -1667,7 +1765,7 @@ defmodule EffectTest do
       # Initial accumulator resolving to Left
       broken_acc = %Funx.Effect.Right{
         context: context,
-        effect: fn ->
+        effect: fn _env ->
           Task.async(fn -> Either.left(:broken_accumulator) end)
         end
       }
@@ -1682,12 +1780,12 @@ defmodule EffectTest do
               {:cont,
                %Right{
                  context: combined_trace,
-                 effect: fn ->
+                 effect: fn env ->
                    Task.async(fn ->
                      with %Either.Right{right: val} <-
-                            run(%Right{effect: eff1, context: trace1}),
+                            run(%Right{effect: eff1, context: trace1}, env),
                           %Either.Right{right: acc_vals} <-
-                            run(%Right{effect: eff2, context: acc_trace}) do
+                            run(%Right{effect: eff2, context: acc_trace}, env) do
                        %Either.Right{right: [val | acc_vals]}
                      else
                        %Either.Left{} = left -> left
@@ -2013,7 +2111,7 @@ defmodule EffectTest do
       validator = fn _ ->
         %Right{
           context: Effect.Context.new(span_name: "test"),
-          effect: fn -> Task.async(fn -> Either.left("forced failure") end) end
+          effect: fn _env -> Task.async(fn -> Either.left("forced failure") end) end
         }
       end
 
