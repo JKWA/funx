@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-7F3114C7.js"></script>
+    <script src="dist/sidebar_items-12828005.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -124,7 +124,13 @@ Pages
 
 
     <section id="moduledoc">
-<p>Represents the <code class="inline">Left</code> variant of the <code class="inline">Effect</code> monad, used to model an error or failure in an asynchronous context.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions for monadic operations within an effectful, lazy execution.</li><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>: Provides a <a href="https://hexdocs.pm/elixir/Kernel.html#to_string/1"><code class="inline">to_string/1</code></a> function to represent <code class="inline">Left</code> values as strings.</li></ul><p>The <code class="inline">Left</code> effect propagates the wrapped error or failure without executing further success logic, supporting lazy, asynchronous tasks.</p>
+<p>Represents the <code class="inline">Left</code> variant of the <code class="inline">Effect</code> monad, used to model a failure or error in an asynchronous context.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> for monadic sequencing in a lazy, effectful context.</li><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>: Provides a string representation of the effect for debugging and inspection.</li></ul><p>A <code class="inline">Left</code> effect propagates its failure value without invoking further computations, preserving short-circuit behavior.</p><h2 id="module-reader-operations" class="section-heading">
+  <a href="#module-reader-operations" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Reader Operations</span>
+</h2>
+<ul><li><a href="#ask/1"><code class="inline">ask/1</code></a> – Returns the environment passed to <code class="inline">run/2</code> as a <code class="inline">Left</code>.</li><li><a href="#asks/2"><code class="inline">asks/2</code></a> – Applies a function to the environment passed to <code class="inline">run/2</code>, wrapping the result in a <code class="inline">Left</code>.</li></ul>
     </section>
 
 </div>
@@ -140,6 +146,14 @@ Pages
   <h2>
     <a href="#types">Types</a>
   </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+
+      </div>
+
+    </div>
 
     <div class="summary-row">
       <div class="summary-signature">
@@ -159,7 +173,27 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#pure/2" data-no-tooltip translate="no">pure(value, opts_or_trace \\ [])</a>
+        <a href="#ask/1" data-no-tooltip translate="no">ask(opts_or_context \\ [])</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns a <a href="Funx.Effect.Left.html"><code class="inline">Funx.Effect.Left</code></a> that yields the environment passed to <a href="Funx.Effect.html#run/2"><code class="inline">Funx.Effect.run/2</code></a>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#asks/2" data-no-tooltip translate="no">asks(f, opts_or_context \\ [])</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns a <a href="Funx.Effect.Left.html"><code class="inline">Funx.Effect.Left</code></a> that applies the given function to the environment passed to <a href="Funx.Effect.html#run/2"><code class="inline">Funx.Effect.run/2</code></a>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#pure/2" data-no-tooltip translate="no">pure(value, opts_or_context \\ [])</a>
 
       </div>
 
@@ -180,6 +214,34 @@ Pages
       <span class="text">Types</span>
     </h1>
     <div class="types-list">
+<section class="detail" id="t:t/0">
+
+  <div class="detail-header">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">t()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L36" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> t() :: <a href="#t:t/1">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>())</pre>
+
+      </div>
+
+
+  </section>
+</section>
 <section class="detail" id="t:t/1">
 
   <div class="detail-header">
@@ -189,7 +251,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">t(left)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L22" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L31" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -203,12 +265,14 @@ Pages
 
           <pre translate="no"><span class="attribute">@type</span> t(left) :: %Funx.Effect.Left{
   context: <a href="Funx.Effect.Context.html#t:t/0">Funx.Effect.Context.t</a>(),
-  effect: (-&gt; <a href="https://hexdocs.pm/elixir/Task.html#t:t/0">Task.t</a>()) | (-&gt; <a href="Funx.Either.Left.html#t:t/1">Funx.Either.Left.t</a>(left))
+  effect: (<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>() -&gt; <a href="https://hexdocs.pm/elixir/Task.html#t:t/0">Task.t</a>()) | (<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>() -&gt; <a href="Funx.Either.Left.html#t:t/1">Funx.Either.Left.t</a>(left))
 }</pre>
 
       </div>
 
-<p>Represents an asynchronous computation that produces a <code class="inline">Left</code> value.</p><p>This type models an effectful computation that executes asynchronously, returning a <code class="inline">Task.t()</code>, which is expected to resolve to a <code class="inline">Left</code> value.</p>
+<p>Represents an asynchronous computation that produces a <code class="inline">Left</code> value.</p><p>The <code class="inline">effect</code> function is typically a deferred task that takes an environment and returns a <a href="https://hexdocs.pm/elixir/Task.html"><code class="inline">Task</code></a>.
+Since Elixir does not support parameterized <code class="inline">Task.t()</code> types, the return type is written as a union:
+either a <code class="inline">Task.t()</code> or a plain <code class="inline">Either.Left.t(left)</code> to support testing and internal optimizations.</p><p>The <code class="inline">context</code> carries telemetry, trace metadata, and environment configuration for error flows.</p>
   </section>
 </section>
 
@@ -223,18 +287,18 @@ Pages
       <span class="text">Functions</span>
     </h1>
     <div class="functions-list">
-<section class="detail" id="pure/2">
+<section class="detail" id="ask/1">
 
-    <span id="pure/1"></span>
+    <span id="ask/0"></span>
 
   <div class="detail-header">
-    <a href="#pure/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#ask/1" class="detail-link" data-no-tooltip title="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">pure(value, opts_or_trace \\ [])</h1>
+    <h1 class="signature" translate="no">ask(opts_or_context \\ [])</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L39" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L75" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -246,19 +310,99 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> pure(left, <a href="Funx.Effect.Context.html#t:opts_or_trace/0">Funx.Effect.Context.opts_or_trace</a>()) :: <a href="#t:t/1">t</a>(left) when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+          <pre translate="no"><span class="attribute">@spec</span> ask(<a href="Funx.Effect.Context.html#t:opts_or_context/0">Funx.Effect.Context.opts_or_context</a>()) :: <a href="#t:t/1">t</a>(env) when env: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
 
       </div>
 
-<p>Creates a new <code class="inline">Left</code> effect.</p><p>The <a href="#pure/2"><code class="inline">pure/2</code></a> function wraps a value in the <code class="inline">Left</code> effect monad, representing an asynchronous error or failure.</p><h2 id="pure/2-examples" class="section-heading">
+<p>Returns a <a href="Funx.Effect.Left.html"><code class="inline">Funx.Effect.Left</code></a> that yields the environment passed to <a href="Funx.Effect.html#run/2"><code class="inline">Funx.Effect.run/2</code></a>.</p><p>This is the Reader-style <code class="inline">ask</code>, used to construct a failure from the full injected environment.
+It can be useful for debugging, instrumentation, or propagating request-scoped failure information.</p><h2 id="ask/1-example" class="section-heading">
+  <a href="#ask/1-example" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Example</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect.Left</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="6193843425-1">(</span><span class="p" data-group-id="6193843425-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="6193843425-2">(</span><span class="p" data-group-id="6193843425-3">%{</span><span class="ss">error</span><span class="p">:</span><span class="w"> </span><span class="ss">:unauthorized</span><span class="p" data-group-id="6193843425-3">}</span><span class="p" data-group-id="6193843425-2">)</span><span class="w">
+</span><span class="p" data-group-id="6193843425-4">%</span><span class="nc" data-group-id="6193843425-4">Funx.Either.Left</span><span class="p" data-group-id="6193843425-4">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6193843425-5">%{</span><span class="ss">error</span><span class="p">:</span><span class="w"> </span><span class="ss">:unauthorized</span><span class="p" data-group-id="6193843425-5">}</span><span class="p" data-group-id="6193843425-4">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="asks/2">
+
+    <span id="asks/1"></span>
+
+  <div class="detail-header">
+    <a href="#asks/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">asks(f, opts_or_context \\ [])</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L100" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> asks((env -&gt; left), <a href="Funx.Effect.Context.html#t:opts_or_context/0">Funx.Effect.Context.opts_or_context</a>()) :: <a href="#t:t/1">t</a>(left)
+when env: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Returns a <a href="Funx.Effect.Left.html"><code class="inline">Funx.Effect.Left</code></a> that applies the given function to the environment passed to <a href="Funx.Effect.html#run/2"><code class="inline">Funx.Effect.run/2</code></a>.</p><p>This allows constructing a failure (<code class="inline">Left</code>) based on runtime input. It complements <code class="inline">Right.asks/2</code>,
+but marks the result as a failure rather than a success.</p><h2 id="asks/2-example" class="section-heading">
+  <a href="#asks/2-example" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Example</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect.Left</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="0421726780-1">(</span><span class="k" data-group-id="0421726780-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="0421726780-3">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="0421726780-4">[</span><span class="ss">:reason</span><span class="p" data-group-id="0421726780-4">]</span><span class="p" data-group-id="0421726780-3">}</span><span class="w"> </span><span class="k" data-group-id="0421726780-2">end</span><span class="p" data-group-id="0421726780-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="0421726780-5">(</span><span class="p" data-group-id="0421726780-6">%{</span><span class="ss">reason</span><span class="p">:</span><span class="w"> </span><span class="ss">:invalid</span><span class="p" data-group-id="0421726780-6">}</span><span class="p" data-group-id="0421726780-5">)</span><span class="w">
+</span><span class="p" data-group-id="0421726780-7">%</span><span class="nc" data-group-id="0421726780-7">Funx.Either.Left</span><span class="p" data-group-id="0421726780-7">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="0421726780-8">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:invalid</span><span class="p" data-group-id="0421726780-8">}</span><span class="p" data-group-id="0421726780-7">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="pure/2">
+
+    <span id="pure/1"></span>
+
+  <div class="detail-header">
+    <a href="#pure/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">pure(value, opts_or_context \\ [])</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/effect/left.ex#L52" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> pure(left, <a href="Funx.Effect.Context.html#t:opts_or_context/0">Funx.Effect.Context.opts_or_context</a>()) :: <a href="#t:t/1">t</a>(left) when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Creates a new <code class="inline">Left</code> effect.</p><p>Wraps a failure value in an asynchronous effect. You may provide context either as a keyword list or
+an <code class="inline">Effect.Context</code> struct.</p><h2 id="pure/2-examples" class="section-heading">
   <a href="#pure/2-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4120329838-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="4120329838-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4120329838-2">(</span><span class="n">effect</span><span class="p" data-group-id="4120329838-2">)</span><span class="w">
-</span><span class="p" data-group-id="4120329838-3">%</span><span class="nc" data-group-id="4120329838-3">Funx.Either.Left</span><span class="p" data-group-id="4120329838-3">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="4120329838-3">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9784104204-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9784104204-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="9784104204-2">(</span><span class="n">effect</span><span class="p" data-group-id="9784104204-2">)</span><span class="w">
+</span><span class="p" data-group-id="9784104204-3">%</span><span class="nc" data-group-id="9784104204-3">Funx.Either.Left</span><span class="p" data-group-id="9784104204-3">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9784104204-3">}</span></code></pre>
   </section>
 </section>
 
