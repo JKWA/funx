@@ -1,19 +1,30 @@
 defmodule Funx.Reader do
   @moduledoc """
-  The `Funx.Reader` module provides an implementation of the Reader monad,
-  which allows for dependency injection by passing a shared environment to functions.
+  The `Funx.Reader` module represents the Reader monad, which allows computations to access
+  shared, read-only environment values.
 
-  The `Reader` monad enables defining computations that read from an environment without
-  explicitly passing the environment around, supporting mapping, binding, and function application.
+  This module defines core Reader functions:
+
+    * `pure/1` – Lifts a value into the Reader context.
+    * `run/2` – Executes the Reader with a given environment.
+    * `asks/1` – Extracts and transforms a value from the environment.
+    * `ask/0` – Extracts the full environment.
+
+  This module implements the following protocol:
+
+    * `Funx.Monad`: Implements `bind/2`, `map/2`, and `ap/2` for monadic composition.
+
+  Note: The Reader monad does not implement `Eq` or `Ord`, since Readers are lazy— they do not actually contain a value until they are run. We only can compare the results of a Reader, not the Reader itself.
+
   """
 
   @type t(env, value) :: %__MODULE__{run: (env -> value)}
 
+  @enforce_keys [:run]
   defstruct [:run]
 
   @doc """
-  Wraps a value in a `Reader`, producing a function that ignores the environment
-  and always returns the given value.
+  Lifts a value into the `Reader` context.
 
   ## Examples
 
@@ -37,7 +48,20 @@ defmodule Funx.Reader do
   def run(%__MODULE__{run: f}, env), do: f.(env)
 
   @doc """
-  Creates a `Reader` that retrieves the current environment.
+  Extracts and transforms the value contained in the environment, making it available within the Reader context.
+
+  ## Examples
+
+      iex> reader = Funx.Reader.asks(fn env -> Map.get(env, :foo) end)
+      iex> Funx.Reader.run(reader, %{foo: "bar"})
+      "bar"
+  """
+
+  @spec asks(func :: (Env -> A)) :: t(Env, A) when Env: var, A: var
+  def asks(func), do: %__MODULE__{run: func}
+
+  @doc """
+  Extracts the value contained in the environment, making it available within the Reader context.
 
   ## Examples
 
@@ -46,66 +70,23 @@ defmodule Funx.Reader do
       %{foo: "bar"}
   """
   @spec ask() :: t(Env, Env) when Env: var
-  def ask, do: %__MODULE__{run: fn env -> env end}
+  def ask, do: asks(fn env -> env end)
+end
 
-  @doc """
-  Creates a `Reader` that applies a function to the environment, returning the result.
+defimpl Funx.Monad, for: Funx.Reader do
+  alias Funx.Reader
 
-  ## Examples
+  @spec map(Reader.t(Env, A), (A -> B)) :: Reader.t(Env, B)
+        when Env: var, A: var, B: var
+  def map(%Reader{run: f}, func), do: %Reader{run: fn env -> func.(f.(env)) end}
 
-      iex> reader = Funx.Reader.asks(fn env -> Map.get(env, :foo) end)
-      iex> Funx.Reader.run(reader, %{foo: "bar"})
-      "bar"
-  """
-  @spec asks(func :: (Env -> A)) :: t(Env, A) when Env: var, A: var
-  def asks(func), do: %__MODULE__{run: func}
+  @spec bind(Reader.t(Env, A), (A -> Reader.t(Env, B))) :: Reader.t(Env, B)
+        when Env: var, A: var, B: var
+  def bind(%Reader{run: f}, func),
+    do: %Reader{run: fn env -> func.(f.(env)).run.(env) end}
 
-  defimpl Funx.Monad do
-    alias Funx.Reader
-
-    @doc """
-    Binds a `Reader` to a function, allowing chained computations within the Reader context.
-
-    ## Examples
-
-        iex> reader = Funx.Reader.pure(10)
-        iex> bound_reader = Funx.Monad.bind(reader, fn x -> Funx.Reader.pure(x + 5) end)
-        iex> Funx.Reader.run(bound_reader, %{})
-        15
-    """
-    @spec bind(Reader.t(Env, A), (A -> Reader.t(Env, B))) :: Reader.t(Env, B)
-          when Env: var, A: var, B: var
-    def bind(%Reader{run: f}, func),
-      do: %Reader{run: fn env -> func.(f.(env)).run.(env) end}
-
-    @doc """
-    Applies a function contained within one `Reader` to the value within another `Reader`.
-
-    ## Examples
-
-        iex> func_reader = Funx.Reader.pure(fn x -> x * 2 end)
-        iex> value_reader = Funx.Reader.pure(10)
-        iex> result_reader = Funx.Monad.ap(func_reader, value_reader)
-        iex> Funx.Reader.run(result_reader, %{})
-        20
-    """
-    @spec ap(Reader.t(Env, (A -> B)), Reader.t(Env, A)) :: Reader.t(Env, B)
-          when Env: var, A: var, B: var
-    def ap(%Reader{run: f_func}, %Reader{run: f_value}),
-      do: %Reader{run: fn env -> f_func.(env).(f_value.(env)) end}
-
-    @doc """
-    Maps a function over the result of a `Reader`, producing a new `Reader` with the transformed value.
-
-    ## Examples
-
-        iex> reader = Funx.Reader.pure(10)
-        iex> mapped_reader = Funx.Monad.map(reader, fn x -> x * 2 end)
-        iex> Funx.Reader.run(mapped_reader, %{})
-        20
-    """
-    @spec map(Reader.t(Env, A), (A -> B)) :: Reader.t(Env, B)
-          when Env: var, A: var, B: var
-    def map(%Reader{run: f}, func), do: %Reader{run: fn env -> func.(f.(env)) end}
-  end
+  @spec ap(Reader.t(Env, (A -> B)), Reader.t(Env, A)) :: Reader.t(Env, B)
+        when Env: var, A: var, B: var
+  def ap(%Reader{run: f_func}, %Reader{run: f_value}),
+    do: %Reader{run: fn env -> f_func.(env).(f_value.(env)) end}
 end
