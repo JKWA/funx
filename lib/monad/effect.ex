@@ -303,11 +303,11 @@ defmodule Funx.Effect do
 
     if Funx.Config.telemetry_enabled?() do
       :telemetry.span(prefix, %{timeout: timeout, span_name: span_name}, fn ->
-        result = execute_effect(effect, timeout, env)
+        result = execute_effect(effect, timeout, env, opts)
         {result, build_metadata(%{effect | context: context}, result, context)}
       end)
     else
-      execute_effect(effect, timeout, env)
+      execute_effect(effect, timeout, env, opts)
     end
   end
 
@@ -318,8 +318,33 @@ defmodule Funx.Effect do
     end
   end
 
-  defp execute_effect(%Right{effect: eff}, timeout, env), do: safe_await(eff.(env), timeout)
-  defp execute_effect(%Left{effect: eff}, timeout, env), do: safe_await(eff.(env), timeout)
+  defp execute_effect(%Right{effect: eff}, timeout, env, opts) do
+    case Keyword.fetch(opts, :task_supervisor) do
+      {:ok, sup} ->
+        Task.Supervisor.async_nolink(sup, fn ->
+          task = eff.(env)
+          Task.await(task, timeout)
+        end)
+        |> await(timeout)
+
+      :error ->
+        await(eff.(env), timeout)
+    end
+  end
+
+  defp execute_effect(%Left{effect: eff}, timeout, env, opts) do
+    case Keyword.fetch(opts, :task_supervisor) do
+      {:ok, sup} ->
+        Task.Supervisor.async_nolink(sup, fn ->
+          task = eff.(env)
+          Task.await(task, timeout)
+        end)
+        |> await(timeout)
+
+      :error ->
+        await(eff.(env), timeout)
+    end
+  end
 
   defp build_metadata(effect, result, %Effect.Context{} = context) do
     %{
@@ -338,8 +363,8 @@ defmodule Funx.Effect do
   defp maybe_put_parent_trace_id(meta, %{context: %Effect.Context{parent_trace_id: pid}}),
     do: Map.put(meta, :parent_trace_id, pid)
 
-  @spec safe_await(Task.t(), timeout()) :: Either.t(any(), any())
-  def safe_await(task, timeout \\ 5000) do
+  @spec await(Task.t(), timeout()) :: Either.t(any(), any())
+  def await(task, timeout \\ 5000) do
     try do
       case Task.yield(task, timeout) || Task.shutdown(task) do
         {:ok, %Either.Right{} = right} -> right
@@ -779,14 +804,14 @@ defmodule Funx.Effect do
     do: {:left, t, Task.async(fn -> run(%Left{context: t, effect: e}, %{}) end)}
 
   defp collect_result({:right, context, task}) do
-    case safe_await(task) do
+    case await(task) do
       %Either.Right{right: val} -> {:ok, context, val}
       %Either.Left{left: err} -> {:error, context, as_list(err)}
     end
   end
 
   defp collect_result({:left, context, task}) do
-    case safe_await(task) do
+    case await(task) do
       %Either.Left{left: err} -> {:error, context, as_list(err)}
     end
   end

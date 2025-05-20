@@ -13,7 +13,6 @@ defmodule EffectTest do
   import Funx.Summarizable, only: [summarize: 1]
 
   alias Funx.Effect
-  alias Funx.Effect.{Left, Right}
   alias Funx.{Either, Maybe}
 
   setup [:with_telemetry_config]
@@ -39,6 +38,24 @@ defmodule EffectTest do
 
       assert telemetry_result == summarize(result)
     end
+
+    test "runs effect using provided Task.Supervisor" do
+      {:ok, sup} = Task.Supervisor.start_link()
+
+      result =
+        right(42, span_name: "supervised")
+        |> run(%{}, task_supervisor: sup)
+
+      assert result == %Either.Right{right: 42}
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
+                      %{
+                        result: telemetry_result,
+                        span_name: "supervised"
+                      }}
+
+      assert telemetry_result == summarize(result)
+    end
   end
 
   describe "pure/1" do
@@ -54,7 +71,7 @@ defmodule EffectTest do
     test "run returns a Left with :timeout if the task takes too long" do
       context = Effect.Context.new(span_name: "timeout test", timeout: 50)
 
-      effect = %Funx.Effect.Right{
+      effect = %Effect.Right{
         context: context,
         effect: fn _env ->
           Task.async(fn ->
@@ -83,7 +100,7 @@ defmodule EffectTest do
       context = Effect.Context.new(trace_id: trace_id, span_name: span_name)
       effect = pure(123, context)
 
-      assert %Funx.Effect.Right{context: ^context} = effect
+      assert %Effect.Right{context: ^context} = effect
 
       result = effect |> run()
 
@@ -106,7 +123,7 @@ defmodule EffectTest do
       context = Effect.Context.new(trace_id: trace_id, span_name: span_name)
       effect = pure(123, context)
 
-      assert %Funx.Effect.Right{context: ^context} = effect
+      assert %Effect.Right{context: ^context} = effect
 
       result = run(effect, span_name: "promoted")
 
@@ -142,7 +159,7 @@ defmodule EffectTest do
     test "run returns a Left with {:exception, error} if task is invalid" do
       context = Effect.Context.new(span_name: "invalid task")
 
-      effect = %Funx.Effect.Right{
+      effect = %Effect.Right{
         context: context,
         effect: fn _env -> :not_a_task end
       }
@@ -161,7 +178,7 @@ defmodule EffectTest do
     test "run returns a Left with {:invalid_result, value} if task returns non-Either" do
       context = Effect.Context.new(span_name: "invalid result")
 
-      effect = %Funx.Effect.Right{
+      effect = %Effect.Right{
         context: context,
         effect: fn _env ->
           Task.async(fn -> :not_an_either end)
@@ -174,16 +191,35 @@ defmodule EffectTest do
     end
 
     @tag :telemetry
-    test "Left.pure/2 wraps a value and emits telemetry" do
+    test "left/2 wraps a value and emits telemetry" do
       trace_id = "trace_id"
       span_name = "test span"
 
       effect =
-        Funx.Effect.Left.pure("error", span_name: span_name, trace_id: trace_id)
+        left("error", span_name: span_name, trace_id: trace_id)
 
       result = effect |> run()
 
-      assert result == %Funx.Either.Left{left: "error"}
+      assert result == %Either.Left{left: "error"}
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
+                      %{result: telemetry_result, trace_id: ^trace_id, span_name: ^span_name}}
+
+      assert telemetry_result == summarize(result)
+    end
+
+    test "left/2 runs with Task.Supervisor and emits telemetry" do
+      {:ok, sup} = Task.Supervisor.start_link()
+
+      trace_id = "trace_id"
+      span_name = "supervised left"
+
+      effect =
+        left("error", span_name: span_name, trace_id: trace_id)
+
+      result = run(effect, %{}, task_supervisor: sup)
+
+      assert result == %Either.Left{left: "error"}
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
                       %{result: telemetry_result, trace_id: ^trace_id, span_name: ^span_name}}
@@ -192,13 +228,13 @@ defmodule EffectTest do
     end
 
     @tag :telemetry
-    test "Left.pure/2 accepts a Effect.Context and preserves it" do
+    test "left/2 accepts a Effect.Context and preserves it" do
       context = Effect.Context.new(trace_id: "left-direct-id", span_name: "left span")
-      effect = Funx.Effect.Left.pure("fail", context)
+      effect = left("fail", context)
 
       result = effect |> run()
 
-      assert result == %Funx.Either.Left{left: "fail"}
+      assert result == %Either.Left{left: "fail"}
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
                       %{
@@ -212,7 +248,7 @@ defmodule EffectTest do
     end
   end
 
-  describe "Funx.Effect.Right.asks/2" do
+  describe "Effect.Right.asks/2" do
     setup do
       capture_telemetry([:funx, :effect, :run, :stop], self())
       :ok
@@ -220,7 +256,7 @@ defmodule EffectTest do
 
     test "reads a value from the environment" do
       effect =
-        Funx.Effect.Right.asks(fn env -> env[:user_id] end)
+        Effect.Right.asks(fn env -> env[:user_id] end)
         |> Funx.Effect.run(%{user_id: 42})
 
       assert effect == Funx.Either.right(42)
@@ -228,7 +264,7 @@ defmodule EffectTest do
 
     test "returns a Right-tagged effect regardless of env content" do
       effect =
-        Funx.Effect.Right.asks(fn env -> Map.get(env, :missing_key, :default) end)
+        Effect.Right.asks(fn env -> Map.get(env, :missing_key, :default) end)
         |> Funx.Effect.run()
 
       assert effect == Funx.Either.right(:default)
@@ -236,9 +272,9 @@ defmodule EffectTest do
 
     test "allows chaining with bind to perform a dependent effect" do
       result =
-        Funx.Effect.Right.asks(fn env -> env[:config] end)
+        Effect.Right.asks(fn env -> env[:config] end)
         |> Funx.Monad.bind(fn config ->
-          Funx.Effect.right("Configured for #{config}")
+          Effect.right("Configured for #{config}")
         end)
         |> Funx.Effect.run(%{config: "production"})
 
@@ -247,7 +283,7 @@ defmodule EffectTest do
 
     test "does not raise if env is empty but function handles it" do
       effect =
-        Funx.Effect.Right.asks(fn _env -> :ok end)
+        Effect.Right.asks(fn _env -> :ok end)
         |> Funx.Effect.run(%{})
 
       assert effect == Funx.Either.right(:ok)
@@ -257,7 +293,7 @@ defmodule EffectTest do
       span = "reads-key"
       ctx = Funx.Effect.Context.new(span_name: span)
 
-      Funx.Effect.Right.asks(fn env -> env[:x] end, ctx)
+      Effect.Right.asks(fn env -> env[:x] end, ctx)
       |> Funx.Effect.run(%{x: 1})
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], _,
@@ -301,7 +337,7 @@ defmodule EffectTest do
     test "propagates telemetry with custom span name" do
       ctx = Funx.Effect.Context.new(span_name: "fail-example")
 
-      Funx.Effect.Left.asks(fn env -> {:error, env} end, ctx)
+      Effect.Left.asks(fn env -> {:error, env} end, ctx)
       |> Funx.Effect.run(%{reason: :bad_data})
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], _,
@@ -318,7 +354,7 @@ defmodule EffectTest do
 
     @tag :telemetry
     test "emits telemetry span on Right effect" do
-      result = Funx.Effect.right(42) |> run()
+      result = Effect.right(42) |> run()
 
       assert result == Either.right(42)
 
@@ -334,7 +370,7 @@ defmodule EffectTest do
     test "emits telemetry span with context id" do
       context = Effect.Context.new(trace_id: "trace_id", span_name: "test span")
 
-      effect = Funx.Effect.right(42, context)
+      effect = Effect.right(42, context)
       result = effect |> run()
 
       assert result == Either.right(42)
@@ -358,7 +394,7 @@ defmodule EffectTest do
       trace_id = "trace_id"
       span_name = "test span"
 
-      effect = Funx.Effect.right(42, trace_id: trace_id, span_name: span_name)
+      effect = Effect.right(42, trace_id: trace_id, span_name: span_name)
       result = effect |> run()
 
       assert result == Either.right(42)
@@ -379,7 +415,7 @@ defmodule EffectTest do
 
     @tag :telemetry
     test "emits telemetry with defaults" do
-      effect = Funx.Effect.right(42)
+      effect = Effect.right(42)
       result = effect |> run()
 
       assert result == Either.right(42)
@@ -398,7 +434,7 @@ defmodule EffectTest do
 
     @tag :telemetry
     test "emits telemetry span on Left effect" do
-      result = Funx.Effect.left("error") |> run()
+      result = left("error") |> run()
 
       assert result == Either.left("error")
 
@@ -567,7 +603,7 @@ defmodule EffectTest do
     test "ap returns Left if the function effect resolves to a Left" do
       context = Effect.Context.new(span_name: "failure")
 
-      func = %Funx.Effect.Right{
+      func = %Effect.Right{
         context: context,
         effect: fn _env -> Task.async(fn -> Either.left("bad function") end) end
       }
@@ -911,7 +947,7 @@ defmodule EffectTest do
     test "map returns a Left if the effect resolves to a Left error" do
       context = Effect.Context.new(span_name: "bomb")
 
-      error_effect = %Funx.Effect.Right{
+      error_effect = %Effect.Right{
         context: context,
         effect: fn _env ->
           Task.async(fn -> %Either.Left{left: "error"} end)
@@ -986,7 +1022,7 @@ defmodule EffectTest do
 
     test "transforms a Left value" do
       result =
-        Left.pure("error", span_name: "value")
+        left("error", span_name: "value")
         |> map_left(fn e -> "wrapped: " <> e end)
         |> run()
 
@@ -1016,7 +1052,7 @@ defmodule EffectTest do
 
     test "leaves a Right value unchanged" do
       result =
-        Right.pure(42, span_name: "value")
+        right(42, span_name: "value")
         |> map_left(fn _ -> "should not be called" end)
         |> run()
 
@@ -1037,7 +1073,7 @@ defmodule EffectTest do
 
     test "can transform complex Left values" do
       result =
-        Left.pure(%{code: 400}, span_name: "value")
+        left(%{code: 400}, span_name: "value")
         |> map_left(fn err -> Map.put(err, :handled, true) end)
         |> run()
 
@@ -1069,7 +1105,7 @@ defmodule EffectTest do
       refute_receive {:called}
 
       result =
-        Right.pure(:ok, span_name: "value")
+        right(:ok, span_name: "value")
         |> map_left(fn _ ->
           send(self(), {:called})
           :fail
@@ -1094,7 +1130,7 @@ defmodule EffectTest do
     test "map_left returns Right if effect unexpectedly resolves to Right" do
       context = Effect.Context.new(span_name: "recovery")
 
-      effect = %Funx.Effect.Left{
+      effect = %Effect.Left{
         context: context,
         effect: fn _env ->
           Task.async(fn -> %Funx.Either.Right{right: :recovered} end)
@@ -1763,7 +1799,7 @@ defmodule EffectTest do
       is_valid = fn n -> right(n) end
 
       # Initial accumulator resolving to Left
-      broken_acc = %Funx.Effect.Right{
+      broken_acc = %Effect.Right{
         context: context,
         effect: fn _env ->
           Task.async(fn -> Either.left(:broken_accumulator) end)
@@ -1771,21 +1807,21 @@ defmodule EffectTest do
       }
 
       result =
-        Enum.reduce_while([:ok], broken_acc, fn item, %Right{context: acc_trace} = acc ->
+        Enum.reduce_while([:ok], broken_acc, fn item, %Effect.Right{context: acc_trace} = acc ->
           case {is_valid.(item), acc} do
-            {%Right{effect: eff1, context: trace1}, %Right{effect: eff2}} ->
+            {%Effect.Right{effect: eff1, context: trace1}, %Effect.Right{effect: eff2}} ->
               combined_trace =
                 Effect.Context.promote_trace(Effect.Context.merge(trace1, acc_trace), "reduce")
 
               {:cont,
-               %Right{
+               %Effect.Right{
                  context: combined_trace,
                  effect: fn env ->
                    Task.async(fn ->
                      with %Either.Right{right: val} <-
-                            run(%Right{effect: eff1, context: trace1}, env),
+                            run(%Effect.Right{effect: eff1, context: trace1}, env),
                           %Either.Right{right: acc_vals} <-
-                            run(%Right{effect: eff2, context: acc_trace}, env) do
+                            run(%Effect.Right{effect: eff2, context: acc_trace}, env) do
                        %Either.Right{right: [val | acc_vals]}
                      else
                        %Either.Left{} = left -> left
@@ -1794,7 +1830,7 @@ defmodule EffectTest do
                  end
                }}
 
-            {%Left{} = left, _} ->
+            {%Effect.Left{} = left, _} ->
               {:halt, left}
           end
         end)
@@ -2109,7 +2145,7 @@ defmodule EffectTest do
 
     test "Right-tagged effect returns Left result" do
       validator = fn _ ->
-        %Right{
+        %Effect.Right{
           context: Effect.Context.new(span_name: "test"),
           effect: fn _env -> Task.async(fn -> Either.left("forced failure") end) end
         }
