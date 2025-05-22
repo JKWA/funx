@@ -79,6 +79,7 @@ defmodule Funx.Either do
   import Funx.Foldable, only: [fold_l: 3]
   alias Funx.Either.{Left, Right}
   alias Funx.Eq
+  alias Funx.Errors.ValidationError
   alias Funx.Maybe
   alias Funx.Maybe.{Just, Nothing}
 
@@ -542,9 +543,11 @@ defmodule Funx.Either do
   defp as_list(value), do: [value]
 
   @doc """
-  Validates a value using a list of validator functions. Each validator returns an `Either`: a `Right` if the check passes, or a `Left` with an error.
+  Validates a value using one or more validator functions. Each validator should return an `Either`: a `Right` if the check passes, or a `Left` with an error message.
 
-  If any validator returns a `Left`, all errors are collected and returned in a `Left`. If all validators succeed, the original value is returned in a `Right`.
+  If any validator returns a `Left`, all errors are collected and wrapped in a `ValidationError`, returned as a `Left`. If all validators succeed, the original value is returned in a `Right`.
+
+  Accepts either a single validator function or a list of validator functions.
 
   ## Examples
 
@@ -553,23 +556,26 @@ defmodule Funx.Either do
       iex> Funx.Either.validate(4, [validate_positive, validate_even])
       %Funx.Either.Right{right: 4}
       iex> Funx.Either.validate(3, [validate_positive, validate_even])
-      %Funx.Either.Left{left: ["Value must be even: 3"]}
+      %Funx.Either.Left{
+        left: %Funx.Errors.ValidationError{errors: ["Value must be even: 3"]}
+      }
       iex> Funx.Either.validate(-3, [validate_positive, validate_even])
-      %Funx.Either.Left{left: ["Value must be positive: -3", "Value must be even: -3"]}
+      %Funx.Either.Left{
+        left: %Funx.Errors.ValidationError{errors: ["Value must be positive: -3", "Value must be even: -3"]}
+      }
   """
+
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
         when error: term(), value: term()
 
   def validate(value, validators) when is_list(validators) do
     traverse_a(validators, fn validator -> validator.(value) end)
     |> map(fn _ -> value end)
+    |> map_left(&ValidationError.new/1)
   end
 
   def validate(value, validator) when is_function(validator, 1) do
-    case validator.(value) do
-      %Right{} -> right(value)
-      %Left{left: error} -> left(List.wrap(error))
-    end
+    validate(value, [validator])
   end
 
   @doc """

@@ -15,6 +15,7 @@ defmodule Funx.EitherTest do
 
   alias Funx.{Eq, Maybe, Ord}
   alias Funx.Either.{Left, Right}
+  alias Funx.Errors.ValidationError
 
   describe "pure/1" do
     test "wraps a value in a Right monad" do
@@ -545,11 +546,13 @@ defmodule Funx.EitherTest do
     end
 
     test "returns Left for a single validation when it fails" do
-      assert validate(-5, &validate_positive/1) == left(["Value must be positive: -5"])
+      assert validate(-5, &validate_positive/1) ==
+               left(ValidationError.new(["Value must be positive: -5"]))
     end
 
     test "returns Left for a single validation with a different condition" do
-      assert validate(3, &validate_even/1) == left(["Value must be even: 3"])
+      assert validate(3, &validate_even/1) ==
+               left(ValidationError.new(["Value must be even: 3"]))
     end
 
     test "returns Right for a single validation with a different condition" do
@@ -563,14 +566,14 @@ defmodule Funx.EitherTest do
 
     test "returns Left with a single error when one validator fails" do
       validators = [&validate_positive/1, &validate_even/1]
-      assert validate(3, validators) == left(["Value must be even: 3"])
+      assert validate(3, validators) == left(ValidationError.new(["Value must be even: 3"]))
     end
 
     test "returns Left with multiple errors when multiple validators fail" do
       validators = [&validate_positive/1, &validate_even/1]
 
       assert validate(-3, validators) ==
-               left(["Value must be positive: -3", "Value must be even: -3"])
+               left(ValidationError.new(["Value must be positive: -3", "Value must be even: -3"]))
     end
 
     test "returns Right when all validators pass with different value" do
@@ -580,7 +583,7 @@ defmodule Funx.EitherTest do
 
     test "returns Left when all validators fail" do
       validators = [&validate_positive/1, &validate_even/1]
-      assert validate(-2, validators) == left(["Value must be positive: -2"])
+      assert validate(-2, validators) == left(ValidationError.new(["Value must be positive: -2"]))
     end
   end
 
