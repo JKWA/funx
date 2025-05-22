@@ -16,7 +16,10 @@ defmodule Funx.Effect do
 
   ## Execution
 
-    * `run/2` – Executes the deferred effect and returns an `Either` result (`Right` or `Left`).
+  * `run/2` – Executes the deferred effect and returns an `Either` result (`Right` or `Left`).
+
+  You may pass `:task_supervisor` in the `opts` to run the effect under a specific `Task.Supervisor`. This supervises the top-level task, any internal tasks spawned within the effect function are not supervised.
+
 
   ## Sequencing
 
@@ -136,7 +139,7 @@ defmodule Funx.Effect do
       %Funx.Either.Right{right: 42}
   """
   @spec right(right, Effect.Context.opts_or_context()) :: t(term(), right) when right: term()
-  def right(value, opts_or_context \\ []), do: pure(value, opts_or_context)
+  def right(value, opts_or_context \\ []), do: Right.pure(value, opts_or_context)
 
   @doc """
   Alias for `right/2`.
@@ -157,7 +160,7 @@ defmodule Funx.Effect do
       %Funx.Either.Right{right: 42}
   """
   @spec pure(right, Effect.Context.opts_or_context()) :: t(term(), right) when right: term()
-  def pure(value, opts_or_context \\ []), do: Right.pure(value, opts_or_context)
+  def pure(value, opts_or_context \\ []), do: right(value, opts_or_context)
 
   @doc """
   Wraps a value in the `Left` variant of the `Effect` monad, representing a failed asynchronous computation.
@@ -404,9 +407,9 @@ defmodule Funx.Effect do
         when left: term()
   def lift_predicate(value, predicate, on_false, opts \\ []) do
     if predicate.(value) do
-      Right.pure(value, opts)
+      right(value, opts)
     else
-      Left.pure(on_false.(value), opts)
+      left(on_false.(value), opts)
     end
   end
 
@@ -432,11 +435,11 @@ defmodule Funx.Effect do
   def lift_either(either, opts \\ [])
 
   def lift_either(%Either.Right{right: right_value}, opts) do
-    Right.pure(right_value, opts)
+    right(right_value, opts)
   end
 
   def lift_either(%Either.Left{left: left_value}, opts) do
-    Left.pure(left_value, opts)
+    left(left_value, opts)
   end
 
   @doc """
@@ -462,8 +465,8 @@ defmodule Funx.Effect do
         when left: term(), right: term()
   def lift_maybe(maybe, on_none, opts \\ [])
 
-  def lift_maybe(%Just{value: value}, _on_none, opts), do: Right.pure(value, opts)
-  def lift_maybe(%Nothing{}, on_none, opts), do: Left.pure(on_none.(), opts)
+  def lift_maybe(%Just{value: value}, _on_none, opts), do: right(value, opts)
+  def lift_maybe(%Nothing{}, on_none, opts), do: left(on_none.(), opts)
 
   @doc """
   Transforms the `Left` branch of an `Effect`.
@@ -895,8 +898,8 @@ defmodule Funx.Effect do
         when left: term(), right: term()
   def from_result(result, opts \\ []) do
     case result do
-      {:ok, value} -> Right.pure(value, opts)
-      {:error, reason} -> Left.pure(reason, opts)
+      {:ok, value} -> right(value, opts)
+      {:error, reason} -> left(reason, opts)
     end
   end
 
@@ -961,9 +964,9 @@ defmodule Funx.Effect do
 
     try do
       result = func.()
-      Right.pure(result, context)
+      right(result, context)
     rescue
-      exception -> Left.pure(exception, context)
+      exception -> left(exception, context)
     end
   end
 
