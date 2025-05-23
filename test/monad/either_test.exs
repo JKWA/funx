@@ -15,7 +15,6 @@ defmodule Funx.EitherTest do
 
   alias Funx.{Eq, Maybe, Ord}
   alias Funx.Either.{Left, Right}
-  alias Funx.Errors.ValidationError
 
   describe "pure/1" do
     test "wraps a value in a Right monad" do
@@ -394,6 +393,71 @@ defmodule Funx.EitherTest do
     end
   end
 
+  describe "traverse_a/2 with ValidationError aggregation" do
+    alias Funx.Either
+    alias Funx.Errors.ValidationError
+
+    defp fail_if_odd(x) do
+      if rem(x, 2) == 0 do
+        Either.right(x)
+      else
+        Either.left(ValidationError.new("not even: #{x}"))
+      end
+    end
+
+    test "returns Right when all elements pass" do
+      result = traverse_a([2, 4, 6], &fail_if_odd/1)
+      assert result == Either.right([2, 4, 6])
+    end
+
+    test "returns a ValidationError when one element fails" do
+      result = traverse_a([2, 3, 4], &fail_if_odd/1)
+
+      assert result ==
+               Either.left(%ValidationError{
+                 errors: ["not even: 3"]
+               })
+    end
+
+    test "returns a merged ValidationError when multiple elements fail" do
+      result = traverse_a([1, 2, 3, 4, 5], &fail_if_odd/1)
+
+      assert result ==
+               Either.left(%ValidationError{
+                 errors: ["not even: 1", "not even: 3", "not even: 5"]
+               })
+    end
+
+    test "does not wrap ValidationError again if already wrapped" do
+      result =
+        traverse_a(
+          [1, 2],
+          fn
+            1 -> Either.left(ValidationError.new(["pre_wrapped 1"]))
+            2 -> Either.left(ValidationError.new("from 2"))
+          end
+        )
+
+      assert result ==
+               Either.left(%ValidationError{
+                 errors: ["pre_wrapped 1", "from 2"]
+               })
+    end
+
+    test "preserves error order from left to right" do
+      result =
+        traverse_a(
+          [1, 2, 3],
+          fn x -> Either.left(ValidationError.new("fail: #{x}")) end
+        )
+
+      assert result ==
+               Either.left(%ValidationError{
+                 errors: ["fail: 1", "fail: 2", "fail: 3"]
+               })
+    end
+  end
+
   describe "wither_a/2" do
     test "empty returns a right empty list" do
       result = wither_a([], fn _ -> right(just(:ok)) end)
@@ -547,12 +611,12 @@ defmodule Funx.EitherTest do
 
     test "returns Left for a single validation when it fails" do
       assert validate(-5, &validate_positive/1) ==
-               left(ValidationError.new(["Value must be positive: -5"]))
+               left(["Value must be positive: -5"])
     end
 
     test "returns Left for a single validation with a different condition" do
       assert validate(3, &validate_even/1) ==
-               left(ValidationError.new(["Value must be even: 3"]))
+               left(["Value must be even: 3"])
     end
 
     test "returns Right for a single validation with a different condition" do
@@ -566,14 +630,14 @@ defmodule Funx.EitherTest do
 
     test "returns Left with a single error when one validator fails" do
       validators = [&validate_positive/1, &validate_even/1]
-      assert validate(3, validators) == left(ValidationError.new(["Value must be even: 3"]))
+      assert validate(3, validators) == left(["Value must be even: 3"])
     end
 
     test "returns Left with multiple errors when multiple validators fail" do
       validators = [&validate_positive/1, &validate_even/1]
 
       assert validate(-3, validators) ==
-               left(ValidationError.new(["Value must be positive: -3", "Value must be even: -3"]))
+               left(["Value must be positive: -3", "Value must be even: -3"])
     end
 
     test "returns Right when all validators pass with different value" do
@@ -583,7 +647,7 @@ defmodule Funx.EitherTest do
 
     test "returns Left when all validators fail" do
       validators = [&validate_positive/1, &validate_even/1]
-      assert validate(-2, validators) == left(ValidationError.new(["Value must be positive: -2"]))
+      assert validate(-2, validators) == left(["Value must be positive: -2"])
     end
   end
 

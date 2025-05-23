@@ -74,12 +74,12 @@ defmodule Funx.Either do
   This module helps you model failure explicitly, compose error-aware logic, and integrate cleanly with Elixir's functional idioms.
   """
 
+  import Funx.Aggregatable, only: [combine: 2, wrap: 1]
   import Funx.Monad, only: [map: 2]
-
   import Funx.Foldable, only: [fold_l: 3]
+
   alias Funx.Either.{Left, Right}
   alias Funx.Eq
-  alias Funx.Errors.ValidationError
   alias Funx.Maybe
   alias Funx.Maybe.{Just, Nothing}
 
@@ -478,18 +478,17 @@ defmodule Funx.Either do
         {%Right{right: value}, %Right{right: acc}} ->
           right([value | acc])
 
-        {%Left{left: new_errors}, %Left{left: existing_errors}} ->
-          left(as_list(new_errors) ++ existing_errors)
+        {%Left{left: new}, %Left{left: existing}} ->
+          left(combine(wrap(new), existing))
 
-        {%Right{}, %Left{left: existing_errors}} ->
-          left(existing_errors)
+        {%Right{}, %Left{left: existing}} ->
+          left(existing)
 
-        {%Left{left: errors}, %Right{}} ->
-          left(as_list(errors))
+        {%Left{left: err}, %Right{}} ->
+          left(wrap(err))
       end
     end)
     |> map(&:lists.reverse/1)
-    |> map_left(&:lists.reverse/1)
   end
 
   @doc """
@@ -525,44 +524,72 @@ defmodule Funx.Either do
         {%Right{right: %Nothing{}}, %Right{right: acc}} ->
           right(acc)
 
-        {%Left{left: new_errors}, %Left{left: existing_errors}} ->
-          left(as_list(new_errors) ++ existing_errors)
+        {%Left{left: new}, %Left{left: existing}} ->
+          left(combine(wrap(new), existing))
 
-        {%Right{}, %Left{left: existing_errors}} ->
-          left(existing_errors)
+        {%Right{}, %Left{left: existing}} ->
+          left(existing)
 
-        {%Left{left: errors}, %Right{}} ->
-          left(as_list(errors))
+        {%Left{left: err}, %Right{}} ->
+          left(wrap(err))
       end
     end)
     |> map(&:lists.reverse/1)
-    |> map_left(&:lists.reverse/1)
   end
 
-  defp as_list(value) when is_list(value), do: value
-  defp as_list(value), do: [value]
-
   @doc """
-  Validates a value using one or more validator functions. Each validator should return an `Either`: a `Right` if the check passes, or a `Left` with an error message.
+  Validates a value using a list of validator functions. Each validator returns an `Either.Right` if
+  the check passes, or an `Either.Left` with an error message if it fails. If any validation fails,
+  all errors are aggregated and returned in a single `Left`.
 
-  If any validator returns a `Left`, all errors are collected and wrapped in a `ValidationError`, returned as a `Left`. If all validators succeed, the original value is returned in a `Right`.
+  ### Flat list aggregation
 
-  Accepts either a single validator function or a list of validator functions.
+  When using the default aggregation strategy, errors are collected in a plain list:
 
-  ## Examples
+  ```elixir
+  validate_positive = fn x ->
+    Funx.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
+  end
 
-      iex> validate_positive = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: \#{v}" end) end
-      iex> validate_even = fn x -> Funx.Either.lift_predicate(x, &rem(&1, 2) == 0, fn v -> "Value must be even: \#{v}" end) end
-      iex> Funx.Either.validate(4, [validate_positive, validate_even])
-      %Funx.Either.Right{right: 4}
-      iex> Funx.Either.validate(3, [validate_positive, validate_even])
-      %Funx.Either.Left{
-        left: %Funx.Errors.ValidationError{errors: ["Value must be even: 3"]}
-      }
-      iex> Funx.Either.validate(-3, [validate_positive, validate_even])
-      %Funx.Either.Left{
-        left: %Funx.Errors.ValidationError{errors: ["Value must be positive: -3", "Value must be even: -3"]}
-      }
+  validate_even = fn x ->
+    Funx.Either.lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
+  end
+
+  Funx.Either.validate(4, [validate_positive, validate_even])
+  #=> %Funx.Either.Right{right: 4}
+
+  Funx.Either.validate(3, [validate_positive, validate_even])
+  #=> %Funx.Either.Left{left: ["Value must be even: 3"]}
+
+  Funx.Either.validate(-3, [validate_positive, validate_even])
+  #=> %Funx.Either.Left{left: ["Value must be positive: -3", "Value must be even: -3"]}
+  ```
+
+  ### Structured aggregation with `ValidationError`
+
+  You can also use a custom struct to hold errors. This example uses `ValidationError` and a corresponding
+  `Funx.Aggregatable` implementation to accumulate errors into a single structure:
+
+  ```elixir
+  alias Funx.Errors.ValidationError
+
+  validate_positive = fn x ->
+    Funx.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
+    |> Funx.Either.map_left(&ValidationError.new/1)
+  end
+
+  validate_even = fn x ->
+    Funx.Either.lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
+    |> Funx.Either.map_left(&ValidationError.new/1)
+  end
+
+  Funx.Either.validate(-3, [validate_positive, validate_even])
+  #=> %Funx.Either.Left{
+  #     left: %ValidationError{
+  #       errors: ["Value must be positive: -3", "Value must be even: -3"]
+  #     }
+  #   }
+  ```
   """
 
   @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
@@ -571,7 +598,6 @@ defmodule Funx.Either do
   def validate(value, validators) when is_list(validators) do
     traverse_a(validators, fn validator -> validator.(value) end)
     |> map(fn _ -> value end)
-    |> map_left(&ValidationError.new/1)
   end
 
   def validate(value, validator) when is_function(validator, 1) do
@@ -712,7 +738,11 @@ defmodule Funx.Either do
   end
 
   defp normalize_reason(%_{} = exception), do: exception
+
+  defp normalize_reason(reason) when is_list(reason),
+    do: Enum.map_join(reason, ", ", &to_string/1)
+
   defp normalize_reason(reason) when is_binary(reason), do: reason
-  defp normalize_reason(reason) when is_list(reason), do: Enum.join(reason, ", ")
+
   defp normalize_reason(reason), do: "Unexpected error: #{inspect(reason)}"
 end
