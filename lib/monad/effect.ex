@@ -105,6 +105,7 @@ defmodule Funx.Effect do
       )
   """
 
+  import Funx.Aggregatable, only: [combine: 2, wrap: 1]
   import Funx.Monad, only: [map: 2]
 
   alias Funx.{Effect, Either, Maybe}
@@ -784,7 +785,8 @@ defmodule Funx.Effect do
 
               errors =
                 errs
-                |> Enum.flat_map(fn {:error, _, list} -> list end)
+                |> Enum.map(fn {:error, _, val} -> wrap(val) end)
+                |> Enum.reduce(&combine(&1, &2))
 
               %Either.Left{left: errors}
               |> then(fn res ->
@@ -809,13 +811,13 @@ defmodule Funx.Effect do
   defp collect_result({:right, context, task}) do
     case await(task) do
       %Either.Right{right: val} -> {:ok, context, val}
-      %Either.Left{left: err} -> {:error, context, as_list(err)}
+      %Either.Left{left: err} -> {:error, context, err}
     end
   end
 
   defp collect_result({:left, context, task}) do
     case await(task) do
-      %Either.Left{left: err} -> {:error, context, as_list(err)}
+      %Either.Left{left: err} -> {:error, context, err}
     end
   end
 
@@ -824,9 +826,6 @@ defmodule Funx.Effect do
     |> Enum.reduce(base, &Effect.Context.merge/2)
     |> Effect.Context.promote_trace(label)
   end
-
-  defp as_list(val) when is_list(val), do: val
-  defp as_list(val), do: [val]
 
   @doc """
   Validates a value using one or more validator functions, each returning an `Effect`.

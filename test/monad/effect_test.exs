@@ -14,6 +14,7 @@ defmodule EffectTest do
 
   alias Funx.Effect
   alias Funx.{Either, Maybe}
+  alias Funx.Errors.ValidationError
 
   setup [:with_telemetry_config]
 
@@ -2160,6 +2161,72 @@ defmodule EffectTest do
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], _,
                       %{span_name: "test", effect_type: :left, status: :error}},
                      100
+    end
+  end
+
+  describe "traverse_a/2 with ValidationError" do
+    defp fail_if_odd_effect(x) do
+      if rem(x, 2) == 0 do
+        right(x)
+      else
+        left(ValidationError.new("not even: #{x}"))
+      end
+    end
+
+    test "returns Right when all elements pass" do
+      result = traverse_a([2, 4, 6], &fail_if_odd_effect/1, span_name: "traverse") |> run()
+      assert result == Either.right([2, 4, 6])
+    end
+
+    test "returns a ValidationError when one element fails" do
+      result = traverse_a([2, 3, 4], &fail_if_odd_effect/1, span_name: "traverse") |> run()
+
+      assert result ==
+               Either.left(%ValidationError{
+                 errors: ["not even: 3"]
+               })
+    end
+
+    test "returns a merged ValidationError when multiple elements fail" do
+      result = traverse_a([1, 2, 3, 4, 5], &fail_if_odd_effect/1, span_name: "traverse") |> run()
+
+      assert result ==
+               Either.left(%ValidationError{
+                 errors: ["not even: 1", "not even: 3", "not even: 5"]
+               })
+    end
+
+    test "does not wrap ValidationError again if already wrapped" do
+      result =
+        traverse_a(
+          [1, 2],
+          fn
+            1 -> left(ValidationError.new(["pre_wrapped 1"]))
+            2 -> left(ValidationError.new("from 2"))
+          end,
+          span_name: "traverse"
+        )
+        |> run()
+
+      assert result ==
+               Either.left(%ValidationError{
+                 errors: ["pre_wrapped 1", "from 2"]
+               })
+    end
+
+    test "preserves error order from left to right" do
+      result =
+        traverse_a(
+          [1, 2, 3],
+          fn x -> left(ValidationError.new("fail: #{x}")) end,
+          span_name: "traverse"
+        )
+        |> run()
+
+      assert result ==
+               Either.left(%ValidationError{
+                 errors: ["fail: 1", "fail: 2", "fail: 3"]
+               })
     end
   end
 
