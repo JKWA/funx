@@ -76,22 +76,25 @@ defprotocol Funx.Aggregatable do
   @doc """
   Combines a wrapped value with an existing accumulator of the same aggregation type.
   """
-  def combine(wrapped, accumulator)
+  def combine(accumulator, wrapped)
 end
 
-defimpl Funx.Aggregatable, for: List do
-  @spec wrap(list()) :: list()
-  def wrap(value), do: value
+# defimpl Funx.Aggregatable, for: List do
+#   @spec wrap(list()) :: list()
+#   def wrap(value) when is_list(value), do: value
+#   def wrap(value), do: [value]
 
-  @spec combine(list(), list()) :: list()
-  def combine(wrapped, acc), do: acc ++ wrapped
-end
+#   @spec combine(list(), list()) :: list()
+#   def combine(acc, wrapped), do: wrap(acc) ++ wrap(wrapped)
+# end
 
 defimpl Funx.Aggregatable, for: Any do
+  alias Funx.List
+
   @spec wrap(term()) :: list()
   def wrap(value) when is_list(value), do: value
   def wrap(value), do: [value]
 
   @spec combine(term(), term()) :: list()
-  def combine(wrapped, acc), do: wrap(acc) ++ wrap(wrapped)
+  def combine(acc, wrapped), do: List.concat([wrap(acc), wrap(wrapped)])
 end

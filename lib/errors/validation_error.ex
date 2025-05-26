@@ -132,7 +132,7 @@ defimpl Funx.Aggregatable, for: Funx.Errors.ValidationError do
   def wrap(%ValidationError{} = ve), do: ve
 
   def combine(%ValidationError{} = acc, %ValidationError{} = other) do
-    ValidationError.merge(wrap(other), acc)
+    ValidationError.merge(acc, wrap(other))
   end
 end
 

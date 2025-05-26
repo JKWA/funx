@@ -13,7 +13,7 @@ defmodule Funx.AggregatableTest do
     test "combine/2 concatenates lists in order" do
       acc = ["x"]
       new = ["y", "z"]
-      assert Aggregatable.combine(new, acc) == ["x", "y", "z"]
+      assert Aggregatable.combine(acc, new) == ["x", "y", "z"]
     end
   end
 
@@ -25,9 +25,10 @@ defmodule Funx.AggregatableTest do
     end
 
     test "combine/2 merges wrapped and accumulator values in order" do
-      assert Aggregatable.combine("new", "old") == ["old", "new"]
-      assert Aggregatable.combine("b", ["a"]) == ["a", "b"]
-      assert Aggregatable.combine(["b"], ["a"]) == ["a", "b"]
+      assert Aggregatable.combine("old", "new") == ["old", "new"]
+      assert Aggregatable.combine(["a"], "b") == ["a", "b"]
+      assert Aggregatable.combine("a", ["b"]) == ["a", "b"]
+      assert Aggregatable.combine(["a"], ["b"]) == ["a", "b"]
     end
   end
 end

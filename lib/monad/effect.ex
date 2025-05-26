@@ -786,7 +786,7 @@ defmodule Funx.Effect do
               errors =
                 errs
                 |> Enum.map(fn {:error, _, val} -> wrap(val) end)
-                |> Enum.reduce(&combine(&1, &2))
+                |> Enum.reduce(&combine(&2, &1))
 
               %Either.Left{left: errors}
               |> then(fn res ->

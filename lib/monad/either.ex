@@ -479,7 +479,7 @@ defmodule Funx.Either do
           right([value | acc])
 
         {%Left{left: new}, %Left{left: existing}} ->
-          left(combine(wrap(new), existing))
+          left(combine(existing, wrap(new)))
 
         {%Right{}, %Left{left: existing}} ->
           left(existing)
@@ -525,7 +525,7 @@ defmodule Funx.Either do
           right(acc)
 
         {%Left{left: new}, %Left{left: existing}} ->
-          left(combine(wrap(new), existing))
+          left(combine(existing, wrap(new)))
 
         {%Right{}, %Left{left: existing}} ->
           left(existing)
