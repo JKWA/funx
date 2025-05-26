@@ -74,7 +74,7 @@ defmodule Funx.Either do
   This module helps you model failure explicitly, compose error-aware logic, and integrate cleanly with Elixir's functional idioms.
   """
 
-  import Funx.Aggregatable, only: [combine: 2, wrap: 1]
+  import Funx.Semigroup, only: [append: 2, wrap: 1]
   import Funx.Monad, only: [map: 2]
   import Funx.Foldable, only: [fold_l: 3]
 
@@ -479,7 +479,7 @@ defmodule Funx.Either do
           right([value | acc])
 
         {%Left{left: new}, %Left{left: existing}} ->
-          left(combine(existing, wrap(new)))
+          left(append(existing, wrap(new)))
 
         {%Right{}, %Left{left: existing}} ->
           left(existing)
@@ -525,7 +525,7 @@ defmodule Funx.Either do
           right(acc)
 
         {%Left{left: new}, %Left{left: existing}} ->
-          left(combine(existing, wrap(new)))
+          left(append(existing, wrap(new)))
 
         {%Right{}, %Left{left: existing}} ->
           left(existing)
@@ -568,7 +568,7 @@ defmodule Funx.Either do
   ### Structured aggregation with `ValidationError`
 
   You can also use a custom struct to hold errors. This example uses `ValidationError` and a corresponding
-  `Funx.Aggregatable` implementation to accumulate errors into a single structure:
+  `Funx.Semigroup` implementation to accumulate errors into a single structure:
 
   ```elixir
   alias Funx.Errors.ValidationError

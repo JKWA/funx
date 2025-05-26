@@ -126,12 +126,14 @@ defmodule Funx.Errors.ValidationError do
   end
 end
 
-defimpl Funx.Aggregatable, for: Funx.Errors.ValidationError do
+defimpl Funx.Semigroup, for: Funx.Errors.ValidationError do
   alias Funx.Errors.ValidationError
 
   def wrap(%ValidationError{} = ve), do: ve
 
-  def combine(%ValidationError{} = acc, %ValidationError{} = other) do
+  def unwrap(%ValidationError{errors: errors}), do: errors
+
+  def append(%ValidationError{} = acc, %ValidationError{} = other) do
     ValidationError.merge(acc, wrap(other))
   end
 end

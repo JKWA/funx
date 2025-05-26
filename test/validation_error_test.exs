@@ -1,11 +1,11 @@
 defmodule Funx.Errors.ValidationErrorTest do
   use ExUnit.Case, async: true
 
-  doctest Funx.Aggregatable
+  doctest Funx.Semigroup
   doctest Funx.Errors.ValidationError
 
   import Funx.Errors.ValidationError
-  import Funx.Aggregatable
+  import Funx.Semigroup
 
   alias Funx.Eq
   alias Funx.Ord
@@ -33,7 +33,7 @@ defmodule Funx.Errors.ValidationErrorTest do
   end
 
   describe "merge/2" do
-    test "combines errors from two ValidationError structs" do
+    test "appends errors from two ValidationError structs" do
       ve1 = new(["error 1"])
       ve2 = new(["error 2"])
 
@@ -84,10 +84,15 @@ defmodule Funx.Errors.ValidationErrorTest do
     end
   end
 
-  describe "Funx.Aggregatable implementation for ValidationError" do
+  describe "Funx.Semigroup implementation for ValidationError" do
     test "wrap/1 returns existing ValidationError unchanged" do
       original = new("already wrapped")
       assert wrap(original) == original
+    end
+
+    test "unwrap/1 returns list of errors" do
+      original = new("error")
+      assert unwrap(original) == ["error"]
     end
   end
 

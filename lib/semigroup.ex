@@ -1,23 +1,21 @@
-defprotocol Funx.Aggregatable do
+defprotocol Funx.Semigroup do
   @moduledoc """
-  A protocol for normalizing and combining values in a generic, extensible way.
+  A protocol for combining values in a generic, extensible way.
 
-  Within Funx, the Aggregatable protocol is used in `traverse_a/2` and `wither_a/2`.
+  Within Funx, the `Semigroup` protocol is used in functions like `traverse_a/2` and `wither_a/2`
+  to aggregate intermediate results. But its use is broader—any function that needs to combine
+  values into a single result can rely on `Semigroup` to remain flexible over the shape and structure
+  of those values.
 
   ## Required functions
 
-    * `wrap/1` – Normalizes a single error value into the expected aggregation type.
-    * `combine/2` – Merges a new value into an existing accumulator.
+  * `wrap/1` – Normalizes a raw value into the expected aggregation type.
+  * `unwrap/1` – Extracts the raw representation from the aggregation type.
+  * `append/2` – Merges two wrapped values into one.
 
-  ## Examples
+  ### Default - Flat list aggregation
 
-  Validates a value using a list of validator functions. Each validator returns an `Either.Right` if
-  the check passes, or an `Either.Left` with an error message if it fails. If any validation fails,
-  all errors are aggregated and returned in a single `Left`.
-
-  ### Flat list aggregation
-
-  When using the default aggregation strategy, errors are collected in a plain list:
+  When using the default aggregation strategy, values are collected in a plain list:
 
   ```elixir
   validate_positive = fn x ->
@@ -40,8 +38,7 @@ defprotocol Funx.Aggregatable do
 
   ### Structured aggregation with `ValidationError`
 
-  You can also use a custom struct to hold errors. This example uses `ValidationError` and a corresponding
-  `Funx.Aggregatable` implementation to accumulate errors into a single structure:
+  You can also use a custom struct to hold errors. This example uses `ValidationError`:
 
   ```elixir
   alias Funx.Errors.ValidationError
@@ -69,32 +66,34 @@ defprotocol Funx.Aggregatable do
   @fallback_to_any true
 
   @doc """
-  Wraps a single raw error into the expected aggregation structure.
+  Wraps a single value into the expected semigroup structure.
   """
   def wrap(term)
 
   @doc """
-  Combines a wrapped value with an existing accumulator of the same aggregation type.
+  Unwraps a single raw error into the expected semigroup structure.
   """
-  def combine(accumulator, wrapped)
+  def unwrap(term)
+
+  @doc """
+  Appends a value to an existing accumulator, combining both into a single result.
+
+  This function defines how two semigroup elements are merged—whether by concatenating lists,
+  merging structs, or another associative operation defined by the implementing type.
+  """
+  def append(accumulator, wrapped)
 end
 
-# defimpl Funx.Aggregatable, for: List do
-#   @spec wrap(list()) :: list()
-#   def wrap(value) when is_list(value), do: value
-#   def wrap(value), do: [value]
-
-#   @spec combine(list(), list()) :: list()
-#   def combine(acc, wrapped), do: wrap(acc) ++ wrap(wrapped)
-# end
-
-defimpl Funx.Aggregatable, for: Any do
+defimpl Funx.Semigroup, for: Any do
   alias Funx.List
 
   @spec wrap(term()) :: list()
   def wrap(value) when is_list(value), do: value
   def wrap(value), do: [value]
 
-  @spec combine(term(), term()) :: list()
-  def combine(acc, wrapped), do: List.concat([wrap(acc), wrap(wrapped)])
+  @spec unwrap(term()) :: term()
+  def unwrap(value), do: value
+
+  @spec append(term(), term()) :: list()
+  def append(acc, wrapped), do: List.concat([wrap(acc), wrap(wrapped)])
 end
