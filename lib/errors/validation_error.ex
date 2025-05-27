@@ -134,7 +134,7 @@ defimpl Funx.Semigroup, for: Funx.Errors.ValidationError do
   def unwrap(%ValidationError{errors: errors}), do: errors
 
   def append(%ValidationError{} = acc, %ValidationError{} = other) do
-    ValidationError.merge(acc, wrap(other))
+    ValidationError.merge(acc, other)
   end
 end
 

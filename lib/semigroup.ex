@@ -2,10 +2,17 @@ defprotocol Funx.Semigroup do
   @moduledoc """
   A protocol for combining values in a generic, extensible way.
 
-  Within Funx, the `Semigroup` protocol is used in functions like `traverse_a/2` and `wither_a/2`
-  to aggregate intermediate results. But its use is broader—any function that needs to combine
-  values into a single result can rely on `Semigroup` to remain flexible over the shape and structure
-  of those values.
+  The `Semigroup` protocol defines how two values of the same type can be combined.
+  It is used throughout Funx in functions like `traverse_a/2` and `wither_a/2` to
+  accumulate intermediate results in a context-aware way.
+
+  This protocol is best suited for types with a single, canonical way to combine values,
+  such as lists, maps, or strings. For types with multiple valid combination strategies
+  (such as numbers), use the `Monoid` protocol instead—where tagged wrappers like `Sum`
+  or `Product` disambiguate the intended behavior.
+
+  Any function that needs to reduce, accumulate, or aggregate values without assuming
+  a specific structure can use `Semigroup` to remain flexible and composable.
 
   ## Required functions
 
@@ -85,8 +92,6 @@ defprotocol Funx.Semigroup do
 end
 
 defimpl Funx.Semigroup, for: Any do
-  alias Funx.List
-
   @spec wrap(term()) :: list()
   def wrap(value) when is_list(value), do: value
   def wrap(value), do: [value]
@@ -95,5 +100,5 @@ defimpl Funx.Semigroup, for: Any do
   def unwrap(value), do: value
 
   @spec append(term(), term()) :: list()
-  def append(acc, wrapped), do: List.concat([wrap(acc), wrap(wrapped)])
+  def append(acc, wrapped), do: wrap(acc) ++ wrap(wrapped)
 end
