@@ -105,7 +105,7 @@ defmodule Funx.Effect do
       )
   """
 
-  import Funx.Semigroup, only: [append: 2, wrap: 1]
+  import Funx.Semigroup, only: [append: 2, coerce: 1]
   import Funx.Monad, only: [map: 2]
 
   alias Funx.{Effect, Either, Maybe}
@@ -785,7 +785,7 @@ defmodule Funx.Effect do
 
               errors =
                 errs
-                |> Enum.map(fn {:error, _, val} -> wrap(val) end)
+                |> Enum.map(fn {:error, _, val} -> coerce(val) end)
                 |> Enum.reduce(&append(&2, &1))
 
               %Either.Left{left: errors}

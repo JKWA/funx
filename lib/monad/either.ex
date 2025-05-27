@@ -74,7 +74,7 @@ defmodule Funx.Either do
   This module helps you model failure explicitly, compose error-aware logic, and integrate cleanly with Elixir's functional idioms.
   """
 
-  import Funx.Semigroup, only: [append: 2, wrap: 1]
+  import Funx.Semigroup, only: [append: 2, coerce: 1]
   import Funx.Monad, only: [map: 2]
   import Funx.Foldable, only: [fold_l: 3]
 
@@ -479,13 +479,13 @@ defmodule Funx.Either do
           right([value | acc])
 
         {%Left{left: new}, %Left{left: existing}} ->
-          left(append(existing, wrap(new)))
+          left(append(existing, coerce(new)))
 
         {%Right{}, %Left{left: existing}} ->
           left(existing)
 
         {%Left{left: err}, %Right{}} ->
-          left(wrap(err))
+          left(coerce(err))
       end
     end)
     |> map(&:lists.reverse/1)
@@ -525,13 +525,13 @@ defmodule Funx.Either do
           right(acc)
 
         {%Left{left: new}, %Left{left: existing}} ->
-          left(append(existing, wrap(new)))
+          left(append(existing, coerce(new)))
 
         {%Right{}, %Left{left: existing}} ->
           left(existing)
 
         {%Left{left: err}, %Right{}} ->
-          left(wrap(err))
+          left(coerce(err))
       end
     end)
     |> map(&:lists.reverse/1)

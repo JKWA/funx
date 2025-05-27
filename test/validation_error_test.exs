@@ -85,14 +85,9 @@ defmodule Funx.Errors.ValidationErrorTest do
   end
 
   describe "Funx.Semigroup implementation for ValidationError" do
-    test "wrap/1 returns existing ValidationError unchanged" do
+    test "coerce/1 returns existing ValidationError unchanged" do
       original = new("already wrapped")
-      assert wrap(original) == original
-    end
-
-    test "unwrap/1 returns list of errors" do
-      original = new("error")
-      assert unwrap(original) == ["error"]
+      assert coerce(original) == original
     end
   end
 

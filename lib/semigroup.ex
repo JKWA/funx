@@ -2,23 +2,17 @@ defprotocol Funx.Semigroup do
   @moduledoc """
   A protocol for combining values in a generic, extensible way.
 
-  The `Semigroup` protocol defines how two values of the same type can be combined.
-  It is used throughout Funx in functions like `traverse_a/2` and `wither_a/2` to
-  accumulate intermediate results in a context-aware way.
+  The `Semigroup` protocol defines how two values of the same type can be combined. It is
+  used throughout Funx in functions like `traverse_a/2` and `wither_a/2` to accumulate
+  intermediate results without coupling logic to a specific type.
 
-  This protocol is best suited for types with a single, canonical way to combine values,
-  such as lists, maps, or strings. For types with multiple valid combination strategies
-  (such as numbers), use the `Monoid` protocol instead—where tagged wrappers like `Sum`
-  or `Product` disambiguate the intended behavior.
-
-  Any function that needs to reduce, accumulate, or aggregate values without assuming
-  a specific structure can use `Semigroup` to remain flexible and composable.
+  This protocol enables functions to remain flexible and composable when reducing,
+  aggregating, or accumulating values across a wide variety of domains.
 
   ## Required functions
 
-  * `wrap/1` – Normalizes a raw value into the expected aggregation type.
-  * `unwrap/1` – Extracts the raw representation from the aggregation type.
-  * `append/2` – Merges two wrapped values into one.
+  * `coerce/1` – Normalizes an input value into a form suitable for aggregation.
+  * `append/2` – Combines two values of the same type into one.
 
   ### Default - Flat list aggregation
 
@@ -75,12 +69,7 @@ defprotocol Funx.Semigroup do
   @doc """
   Wraps a single value into the expected semigroup structure.
   """
-  def wrap(term)
-
-  @doc """
-  Unwraps a single raw error into the expected semigroup structure.
-  """
-  def unwrap(term)
+  def coerce(term)
 
   @doc """
   Appends a value to an existing accumulator, combining both into a single result.
@@ -88,17 +77,14 @@ defprotocol Funx.Semigroup do
   This function defines how two semigroup elements are merged—whether by concatenating lists,
   merging structs, or another associative operation defined by the implementing type.
   """
-  def append(accumulator, wrapped)
+  def append(accumulator, coerced)
 end
 
 defimpl Funx.Semigroup, for: Any do
-  @spec wrap(term()) :: list()
-  def wrap(value) when is_list(value), do: value
-  def wrap(value), do: [value]
-
-  @spec unwrap(term()) :: term()
-  def unwrap(value), do: value
+  @spec coerce(term()) :: list()
+  def coerce(value) when is_list(value), do: value
+  def coerce(value), do: [value]
 
   @spec append(term(), term()) :: list()
-  def append(acc, wrapped), do: wrap(acc) ++ wrap(wrapped)
+  def append(acc, coerced), do: coerce(acc) ++ coerce(coerced)
 end
