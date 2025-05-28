@@ -129,7 +129,7 @@ end
 defimpl Funx.Semigroup, for: Funx.Errors.ValidationError do
   alias Funx.Errors.ValidationError
 
-  def coerce(%ValidationError{} = ve), do: ve
+  def coerce(%ValidationError{errors: e}), do: ValidationError.new(e)
 
   def append(%ValidationError{} = acc, %ValidationError{} = other) do
     ValidationError.merge(acc, other)
