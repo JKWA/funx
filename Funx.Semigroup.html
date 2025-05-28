@@ -14,7 +14,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-72A32872.js"></script>
+    <script src="dist/sidebar_items-69ECB3CF.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -124,39 +124,36 @@ Pages
 
 
     <section id="moduledoc">
-<p>A protocol for combining values in a generic, extensible way.</p><p>The <code class="inline">Semigroup</code> protocol defines how two values of the same type can be combined.
-It is used throughout Funx in functions like <code class="inline">traverse_a/2</code> and <code class="inline">wither_a/2</code> to
-accumulate intermediate results in a context-aware way.</p><p>This protocol is best suited for types with a single, canonical way to combine values,
-such as lists, maps, or strings. For types with multiple valid combination strategies
-(such as numbers), use the <code class="inline">Monoid</code> protocol instead—where tagged wrappers like <code class="inline">Sum</code>
-or <code class="inline">Product</code> disambiguate the intended behavior.</p><p>Any function that needs to reduce, accumulate, or aggregate values without assuming
-a specific structure can use <code class="inline">Semigroup</code> to remain flexible and composable.</p><h2 id="module-required-functions" class="section-heading">
+<p>A protocol for combining values in a generic, extensible way.</p><p>The <code class="inline">Semigroup</code> protocol defines how two values of the same type can be combined. It is
+used throughout Funx in functions like <code class="inline">traverse_a/2</code> and <code class="inline">wither_a/2</code> to accumulate
+intermediate results without coupling logic to a specific type.</p><p>This protocol enables functions to remain flexible and composable when reducing,
+aggregating, or accumulating values across a wide variety of domains.</p><h2 id="module-required-functions" class="section-heading">
   <a href="#module-required-functions" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Required functions</span>
 </h2>
-<ul><li><a href="#wrap/1"><code class="inline">wrap/1</code></a> – Normalizes a raw value into the expected aggregation type.</li><li><a href="#unwrap/1"><code class="inline">unwrap/1</code></a> – Extracts the raw representation from the aggregation type.</li><li><a href="#append/2"><code class="inline">append/2</code></a> – Merges two wrapped values into one.</li></ul><h3 id="module-default-flat-list-aggregation" class="section-heading">
+<ul><li><a href="#coerce/1"><code class="inline">coerce/1</code></a> – Normalizes an input value into a form suitable for aggregation.</li><li><a href="#append/2"><code class="inline">append/2</code></a> – Combines two values of the same type into one.</li></ul><h3 id="module-default-flat-list-aggregation" class="section-heading">
   <a href="#module-default-flat-list-aggregation" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Default - Flat list aggregation</span>
 </h3>
-<p>When using the default aggregation strategy, values are collected in a plain list:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4089706741-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="4089706741-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="4089706741-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4089706741-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4089706741-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="4089706741-5">(</span><span class="n">v</span><span class="p" data-group-id="4089706741-5">)</span><span class="w"> </span><span class="k" data-group-id="4089706741-4">end</span><span class="p" data-group-id="4089706741-2">)</span><span class="w">
-</span><span class="k" data-group-id="4089706741-1">end</span><span class="w">
+<p>When using the default aggregation strategy, values are collected in a plain list:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3055264556-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3055264556-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="3055264556-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3055264556-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3055264556-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="3055264556-5">(</span><span class="n">v</span><span class="p" data-group-id="3055264556-5">)</span><span class="w"> </span><span class="k" data-group-id="3055264556-4">end</span><span class="p" data-group-id="3055264556-2">)</span><span class="w">
+</span><span class="k" data-group-id="3055264556-1">end</span><span class="w">
 
-</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4089706741-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="4089706741-7">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="4089706741-8">(</span><span class="n">rem</span><span class="p" data-group-id="4089706741-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4089706741-9">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4089706741-8">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4089706741-10">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="4089706741-11">(</span><span class="n">v</span><span class="p" data-group-id="4089706741-11">)</span><span class="w"> </span><span class="k" data-group-id="4089706741-10">end</span><span class="p" data-group-id="4089706741-7">)</span><span class="w">
-</span><span class="k" data-group-id="4089706741-6">end</span><span class="w">
+</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3055264556-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3055264556-7">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="3055264556-8">(</span><span class="n">rem</span><span class="p" data-group-id="3055264556-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3055264556-9">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3055264556-8">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3055264556-10">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="3055264556-11">(</span><span class="n">v</span><span class="p" data-group-id="3055264556-11">)</span><span class="w"> </span><span class="k" data-group-id="3055264556-10">end</span><span class="p" data-group-id="3055264556-7">)</span><span class="w">
+</span><span class="k" data-group-id="3055264556-6">end</span><span class="w">
 
-</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="4089706741-12">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4089706741-13">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="4089706741-13">]</span><span class="p" data-group-id="4089706741-12">)</span><span class="w">
+</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3055264556-12">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3055264556-13">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="3055264556-13">]</span><span class="p" data-group-id="3055264556-12">)</span><span class="w">
 </span><span class="c1">#=&gt; %Funx.Either.Right{right: 4}</span><span class="w">
 
-</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="4089706741-14">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4089706741-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="4089706741-15">]</span><span class="p" data-group-id="4089706741-14">)</span><span class="w">
+</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3055264556-14">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3055264556-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="3055264556-15">]</span><span class="p" data-group-id="3055264556-14">)</span><span class="w">
 </span><span class="c1">#=&gt; %Funx.Either.Left{left: [&quot;Value must be even: 3&quot;]}</span><span class="w">
 
-</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="4089706741-16">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4089706741-17">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="4089706741-17">]</span><span class="p" data-group-id="4089706741-16">)</span><span class="w">
+</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3055264556-16">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3055264556-17">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="3055264556-17">]</span><span class="p" data-group-id="3055264556-16">)</span><span class="w">
 </span><span class="c1">#=&gt; %Funx.Either.Left{left: [&quot;Value must be positive: -3&quot;, &quot;Value must be even: -3&quot;]}</span></code></pre><h3 id="module-structured-aggregation-with-validationerror" class="section-heading">
   <a href="#module-structured-aggregation-with-validationerror" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
@@ -165,17 +162,17 @@ a specific structure can use <code class="inline">Semigroup</code> to remain fle
 </h3>
 <p>You can also use a custom struct to hold errors. This example uses <code class="inline">ValidationError</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="w">
 
-</span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="2196410460-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="2196410460-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="2196410460-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="2196410460-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2196410460-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="2196410460-5">(</span><span class="n">v</span><span class="p" data-group-id="2196410460-5">)</span><span class="w"> </span><span class="k" data-group-id="2196410460-4">end</span><span class="p" data-group-id="2196410460-2">)</span><span class="w">
-  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="2196410460-6">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="2196410460-6">)</span><span class="w">
-</span><span class="k" data-group-id="2196410460-1">end</span><span class="w">
+</span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="8339538065-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="8339538065-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="8339538065-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="8339538065-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8339538065-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="8339538065-5">(</span><span class="n">v</span><span class="p" data-group-id="8339538065-5">)</span><span class="w"> </span><span class="k" data-group-id="8339538065-4">end</span><span class="p" data-group-id="8339538065-2">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="8339538065-6">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="8339538065-6">)</span><span class="w">
+</span><span class="k" data-group-id="8339538065-1">end</span><span class="w">
 
-</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="2196410460-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="2196410460-8">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="2196410460-9">(</span><span class="n">rem</span><span class="p" data-group-id="2196410460-10">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2196410460-10">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="2196410460-9">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2196410460-11">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="2196410460-12">(</span><span class="n">v</span><span class="p" data-group-id="2196410460-12">)</span><span class="w"> </span><span class="k" data-group-id="2196410460-11">end</span><span class="p" data-group-id="2196410460-8">)</span><span class="w">
-  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="2196410460-13">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="2196410460-13">)</span><span class="w">
-</span><span class="k" data-group-id="2196410460-7">end</span><span class="w">
+</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="8339538065-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="8339538065-8">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="8339538065-9">(</span><span class="n">rem</span><span class="p" data-group-id="8339538065-10">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8339538065-10">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="8339538065-9">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8339538065-11">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="8339538065-12">(</span><span class="n">v</span><span class="p" data-group-id="8339538065-12">)</span><span class="w"> </span><span class="k" data-group-id="8339538065-11">end</span><span class="p" data-group-id="8339538065-8">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="8339538065-13">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="8339538065-13">)</span><span class="w">
+</span><span class="k" data-group-id="8339538065-7">end</span><span class="w">
 
-</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="2196410460-14">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2196410460-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="2196410460-15">]</span><span class="p" data-group-id="2196410460-14">)</span><span class="w">
+</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="8339538065-14">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8339538065-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="8339538065-15">]</span><span class="p" data-group-id="8339538065-14">)</span><span class="w">
 </span><span class="c1">#=&gt; %Funx.Either.Left{</span><span class="w">
 </span><span class="c1">#     left: %ValidationError{</span><span class="w">
 </span><span class="c1">#       errors: [&quot;Value must be positive: -3&quot;, &quot;Value must be even: -3&quot;]</span><span class="w">
@@ -215,7 +212,7 @@ a specific structure can use <code class="inline">Semigroup</code> to remain fle
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#append/2" data-no-tooltip translate="no">append(accumulator, wrapped)</a>
+        <a href="#append/2" data-no-tooltip translate="no">append(accumulator, coerced)</a>
 
       </div>
 
@@ -225,17 +222,7 @@ a specific structure can use <code class="inline">Semigroup</code> to remain fle
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#unwrap/1" data-no-tooltip translate="no">unwrap(term)</a>
-
-      </div>
-
-        <div class="summary-synopsis"><p>Unwraps a single raw error into the expected semigroup structure.</p></div>
-
-    </div>
-
-    <div class="summary-row">
-      <div class="summary-signature">
-        <a href="#wrap/1" data-no-tooltip translate="no">wrap(term)</a>
+        <a href="#coerce/1" data-no-tooltip translate="no">coerce(term)</a>
 
       </div>
 
@@ -303,9 +290,9 @@ a specific structure can use <code class="inline">Semigroup</code> to remain fle
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">append(accumulator, wrapped)</h1>
+    <h1 class="signature" translate="no">append(accumulator, coerced)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/semigroup.ex#L91" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/semigroup.ex#L80" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -319,38 +306,16 @@ a specific structure can use <code class="inline">Semigroup</code> to remain fle
 merging structs, or another associative operation defined by the implementing type.</p>
   </section>
 </section>
-<section class="detail" id="unwrap/1">
+<section class="detail" id="coerce/1">
 
   <div class="detail-header">
-    <a href="#unwrap/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#coerce/1" class="detail-link" data-no-tooltip title="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">unwrap(term)</h1>
+    <h1 class="signature" translate="no">coerce(term)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/semigroup.ex#L83" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
-
-
-  </div>
-
-  <section class="docstring">
-
-<p>Unwraps a single raw error into the expected semigroup structure.</p>
-  </section>
-</section>
-<section class="detail" id="wrap/1">
-
-  <div class="detail-header">
-    <a href="#wrap/1" class="detail-link" data-no-tooltip title="Link to this function">
-      <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
-    </a>
-    <h1 class="signature" translate="no">wrap(term)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/main/lib/semigroup.ex#L78" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/semigroup.ex#L72" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
