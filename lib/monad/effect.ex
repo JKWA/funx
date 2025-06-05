@@ -105,7 +105,7 @@ defmodule Funx.Effect do
       )
   """
 
-  import Funx.Semigroup, only: [append: 2, coerce: 1]
+  import Funx.Appendable, only: [append: 2, coerce: 1]
   import Funx.Monad, only: [map: 2]
 
   alias Funx.{Effect, Either, Maybe}

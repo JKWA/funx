@@ -1,11 +1,11 @@
-defmodule Funx.SemigroupTest do
+defmodule Funx.AppendableTest do
   use ExUnit.Case, async: true
 
-  doctest Funx.Semigroup
+  doctest Funx.Appendable
 
-  import Funx.Semigroup
+  import Funx.Appendable
 
-  describe "Semigroup for Any" do
+  describe "Appendable for Any" do
     test "coerce/1 wraps a non-list value in a list" do
       assert coerce("error") == ["error"]
       assert coerce(123) == [123]

@@ -74,7 +74,7 @@ defmodule Funx.Either do
   This module helps you model failure explicitly, compose error-aware logic, and integrate cleanly with Elixir's functional idioms.
   """
 
-  import Funx.Semigroup, only: [append: 2, coerce: 1]
+  import Funx.Appendable, only: [append: 2, coerce: 1]
   import Funx.Monad, only: [map: 2]
   import Funx.Foldable, only: [fold_l: 3]
 

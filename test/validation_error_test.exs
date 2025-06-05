@@ -1,11 +1,11 @@
 defmodule Funx.Errors.ValidationErrorTest do
   use ExUnit.Case, async: true
 
-  doctest Funx.Semigroup
+  doctest Funx.Appendable
   doctest Funx.Errors.ValidationError
 
   import Funx.Errors.ValidationError
-  import Funx.Semigroup
+  import Funx.Appendable
 
   alias Funx.Eq
   alias Funx.Ord
@@ -84,7 +84,7 @@ defmodule Funx.Errors.ValidationErrorTest do
     end
   end
 
-  describe "Funx.Semigroup implementation for ValidationError" do
+  describe "Appendable implementation for ValidationError" do
     test "coerce/1 returns existing ValidationError unchanged" do
       original = new("already wrapped")
       assert coerce(original) == original

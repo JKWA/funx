@@ -1,8 +1,8 @@
-defprotocol Funx.Semigroup do
+defprotocol Funx.Appendable do
   @moduledoc """
   A protocol for combining values in a generic, extensible way.
 
-  The `Semigroup` protocol defines how two values of the same type can be combined. It is
+  The `Appendable` protocol defines how two values of the same type can be combined. It is
   used throughout Funx in functions like `traverse_a/2` and `wither_a/2` to accumulate
   intermediate results without coupling logic to a specific type.
 
@@ -14,7 +14,11 @@ defprotocol Funx.Semigroup do
   * `coerce/1` – Normalizes an input value into a form suitable for aggregation.
   * `append/2` – Combines two values of the same type into one.
 
-  ### Default - Flat list aggregation
+  ### Default – Flat list aggregation
+
+  A fallback implementation is provided for all types that do not define a specific
+  `Appendable` instance. This default uses list concatenation as a universal aggregation
+  strategy: all inputs are coerced into lists (if not already), and combined using `++`.
 
   When using the default aggregation strategy, values are collected in a plain list:
 
@@ -67,20 +71,20 @@ defprotocol Funx.Semigroup do
   @fallback_to_any true
 
   @doc """
-  Wraps a single value into the expected semigroup structure.
+  Normalizes a single input value into a form suitable for accumulation.
   """
   def coerce(term)
 
   @doc """
-  Appends a value to an existing accumulator, combining both into a single result.
+  Combines two values into a single result.
 
-  This function defines how two semigroup elements are merged—whether by concatenating lists,
-  merging structs, or another associative operation defined by the implementing type.
+  Implementations must ensure the operation is associative within their type. For types
+  that require disambiguation or structural control, define a custom implementation.
   """
   def append(accumulator, coerced)
 end
 
-defimpl Funx.Semigroup, for: Any do
+defimpl Funx.Appendable, for: Any do
   @spec coerce(term()) :: list()
   def coerce(value) when is_list(value), do: value
   def coerce(value), do: [value]

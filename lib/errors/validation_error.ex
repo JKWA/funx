@@ -126,7 +126,7 @@ defmodule Funx.Errors.ValidationError do
   end
 end
 
-defimpl Funx.Semigroup, for: Funx.Errors.ValidationError do
+defimpl Funx.Appendable, for: Funx.Errors.ValidationError do
   alias Funx.Errors.ValidationError
 
   def coerce(%ValidationError{errors: e}), do: ValidationError.new(e)
