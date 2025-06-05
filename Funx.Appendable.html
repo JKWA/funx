@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.0">
+
+
+    <title>Funx.Appendable — funx v0.1.0</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-402B03F0.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="modules" class="page-protocol">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/appendable.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+    <span translate="no">Funx.Appendable</span> <small>protocol</small>
+    <small class="app-vsn" translate="no">(funx v0.1.0)</small>
+
+  </h1>
+
+
+    <section id="moduledoc">
+<p>A protocol for combining values in a generic, extensible way.</p><p>The <code class="inline">Appendable</code> protocol defines how two values of the same type can be combined. It is
+used throughout Funx in functions like <code class="inline">traverse_a/2</code> and <code class="inline">wither_a/2</code> to accumulate
+intermediate results without coupling logic to a specific type.</p><p>This protocol enables functions to remain flexible and composable when reducing,
+aggregating, or accumulating values across a wide variety of domains.</p><h2 id="module-required-functions" class="section-heading">
+  <a href="#module-required-functions" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Required functions</span>
+</h2>
+<ul><li><a href="#coerce/1"><code class="inline">coerce/1</code></a> – Normalizes an input value into a form suitable for aggregation.</li><li><a href="#append/2"><code class="inline">append/2</code></a> – Combines two values of the same type into one.</li></ul><h3 id="module-default-flat-list-aggregation" class="section-heading">
+  <a href="#module-default-flat-list-aggregation" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Default – Flat list aggregation</span>
+</h3>
+<p>A fallback implementation is provided for all types that do not define a specific
+<code class="inline">Appendable</code> instance. This default uses list concatenation as a universal aggregation
+strategy: all inputs are coerced into lists (if not already), and combined using <code class="inline">++</code>.</p><p>When using the default aggregation strategy, values are collected in a plain list:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3393898575-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3393898575-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="3393898575-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3393898575-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3393898575-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="3393898575-5">(</span><span class="n">v</span><span class="p" data-group-id="3393898575-5">)</span><span class="w"> </span><span class="k" data-group-id="3393898575-4">end</span><span class="p" data-group-id="3393898575-2">)</span><span class="w">
+</span><span class="k" data-group-id="3393898575-1">end</span><span class="w">
+
+</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3393898575-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3393898575-7">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="3393898575-8">(</span><span class="n">rem</span><span class="p" data-group-id="3393898575-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3393898575-9">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3393898575-8">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3393898575-10">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="3393898575-11">(</span><span class="n">v</span><span class="p" data-group-id="3393898575-11">)</span><span class="w"> </span><span class="k" data-group-id="3393898575-10">end</span><span class="p" data-group-id="3393898575-7">)</span><span class="w">
+</span><span class="k" data-group-id="3393898575-6">end</span><span class="w">
+
+</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3393898575-12">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3393898575-13">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="3393898575-13">]</span><span class="p" data-group-id="3393898575-12">)</span><span class="w">
+</span><span class="c1">#=&gt; %Funx.Either.Right{right: 4}</span><span class="w">
+
+</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3393898575-14">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3393898575-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="3393898575-15">]</span><span class="p" data-group-id="3393898575-14">)</span><span class="w">
+</span><span class="c1">#=&gt; %Funx.Either.Left{left: [&quot;Value must be even: 3&quot;]}</span><span class="w">
+
+</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3393898575-16">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3393898575-17">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="3393898575-17">]</span><span class="p" data-group-id="3393898575-16">)</span><span class="w">
+</span><span class="c1">#=&gt; %Funx.Either.Left{left: [&quot;Value must be positive: -3&quot;, &quot;Value must be even: -3&quot;]}</span></code></pre><h3 id="module-structured-aggregation-with-validationerror" class="section-heading">
+  <a href="#module-structured-aggregation-with-validationerror" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Structured aggregation with <code class="inline">ValidationError</code></span>
+</h3>
+<p>You can also use a custom struct to hold errors. This example uses <code class="inline">ValidationError</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="w">
+
+</span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5138501055-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="5138501055-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="5138501055-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="5138501055-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5138501055-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="5138501055-5">(</span><span class="n">v</span><span class="p" data-group-id="5138501055-5">)</span><span class="w"> </span><span class="k" data-group-id="5138501055-4">end</span><span class="p" data-group-id="5138501055-2">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="5138501055-6">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="5138501055-6">)</span><span class="w">
+</span><span class="k" data-group-id="5138501055-1">end</span><span class="w">
+
+</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5138501055-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="5138501055-8">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="5138501055-9">(</span><span class="n">rem</span><span class="p" data-group-id="5138501055-10">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5138501055-10">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="5138501055-9">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5138501055-11">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="5138501055-12">(</span><span class="n">v</span><span class="p" data-group-id="5138501055-12">)</span><span class="w"> </span><span class="k" data-group-id="5138501055-11">end</span><span class="p" data-group-id="5138501055-8">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="5138501055-13">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="5138501055-13">)</span><span class="w">
+</span><span class="k" data-group-id="5138501055-7">end</span><span class="w">
+
+</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="5138501055-14">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5138501055-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="5138501055-15">]</span><span class="p" data-group-id="5138501055-14">)</span><span class="w">
+</span><span class="c1">#=&gt; %Funx.Either.Left{</span><span class="w">
+</span><span class="c1">#     left: %ValidationError{</span><span class="w">
+</span><span class="c1">#       errors: [&quot;Value must be positive: -3&quot;, &quot;Value must be even: -3&quot;]</span><span class="w">
+</span><span class="c1">#     }</span><span class="w">
+</span><span class="c1">#   }</span></code></pre>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>All the types that implement this protocol.</p></div>
+
+    </div>
+
+</div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#append/2" data-no-tooltip translate="no">append(accumulator, coerced)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Combines two values into a single result.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#coerce/1" data-no-tooltip translate="no">coerce(term)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Normalizes a single input value into a form suitable for accumulation.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+    <div class="types-list">
+<section class="detail" id="t:t/0">
+
+  <div class="detail-header">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">t()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/appendable.ex#L1" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> t() :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>All the types that implement this protocol.</p>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+    <div class="functions-list">
+<section class="detail" id="append/2">
+
+  <div class="detail-header">
+    <a href="#append/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">append(accumulator, coerced)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/appendable.ex#L84" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+<p>Combines two values into a single result.</p><p>Implementations must ensure the operation is associative within their type. For types
+that require disambiguation or structural control, define a custom implementation.</p>
+  </section>
+</section>
+<section class="detail" id="coerce/1">
+
+  <div class="detail-header">
+    <a href="#coerce/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">coerce(term)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/appendable.ex#L76" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+<p>Normalizes a single input value into a form suitable for accumulation.</p>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.0" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.0">Hex Preview</a>
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
