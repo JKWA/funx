@@ -72,7 +72,7 @@ defmodule Funx.Predicate do
       iex> cannot_enter.(%{age: 16, ticket: :basic})
       true
   """
-  import Funx.Monoid.Utils, only: [append: 3, concat: 2]
+  import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
   alias Funx.Monoid.Predicate.{All, Any}
 
   @type t() :: (term() -> boolean())
@@ -94,7 +94,7 @@ defmodule Funx.Predicate do
   """
   @spec p_and(t(), t()) :: t()
   def p_and(pred1, pred2) when is_function(pred1) and is_function(pred2) do
-    append(%All{}, pred1, pred2)
+    m_append(%All{}, pred1, pred2)
   end
 
   @doc """
@@ -114,7 +114,7 @@ defmodule Funx.Predicate do
   """
   @spec p_or(t(), t()) :: t()
   def p_or(pred1, pred2) when is_function(pred1) and is_function(pred2) do
-    append(%Any{}, pred1, pred2)
+    m_append(%Any{}, pred1, pred2)
   end
 
   @doc """
@@ -151,7 +151,7 @@ defmodule Funx.Predicate do
   """
   @spec p_all([t()]) :: t()
   def p_all(p_list) when is_list(p_list) do
-    concat(%All{}, p_list)
+    m_concat(%All{}, p_list)
   end
 
   @doc """
@@ -169,7 +169,7 @@ defmodule Funx.Predicate do
   """
   @spec p_any([t()]) :: t()
   def p_any(p_list) when is_list(p_list) do
-    concat(%Any{}, p_list)
+    m_concat(%Any{}, p_list)
   end
 
   @doc """

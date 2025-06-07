@@ -1,4 +1,4 @@
-defmodule Funx.Ord.AppendTest do
+defmodule Funx.Monoid.OrdTest do
   use ExUnit.Case, async: true
   alias Funx.Monoid
 

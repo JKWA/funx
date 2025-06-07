@@ -6,7 +6,7 @@ defmodule Funx.Math do
   such as addition and multiplication over values or lists of values.
   """
 
-  import Funx.Monoid.Utils, only: [append: 3, concat: 2]
+  import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
   import Funx.Monad, only: [bind: 2, map: 2]
   alias Funx.Maybe
   alias Funx.Monoid.{Max, Min, Product, Sum}
@@ -21,7 +21,7 @@ defmodule Funx.Math do
   """
   @spec sum(number(), number()) :: number()
   def sum(a, b) do
-    append(%Sum{}, a, b)
+    m_append(%Sum{}, a, b)
   end
 
   @doc """
@@ -37,7 +37,7 @@ defmodule Funx.Math do
   """
   @spec sum([number()]) :: number()
   def sum(list) when is_list(list) do
-    concat(%Sum{}, list)
+    m_concat(%Sum{}, list)
   end
 
   @doc """
@@ -50,7 +50,7 @@ defmodule Funx.Math do
   """
   @spec product(number(), number()) :: number()
   def product(a, b) do
-    append(%Product{}, a, b)
+    m_append(%Product{}, a, b)
   end
 
   @doc """
@@ -66,7 +66,7 @@ defmodule Funx.Math do
   """
   @spec product([number()]) :: number()
   def product(list) when is_list(list) do
-    concat(%Product{}, list)
+    m_concat(%Product{}, list)
   end
 
   @doc """
@@ -82,7 +82,7 @@ defmodule Funx.Math do
   """
   @spec max(number(), number()) :: number()
   def max(a, b) do
-    append(%Max{value: Float.min_finite()}, a, b)
+    m_append(%Max{value: Float.min_finite()}, a, b)
   end
 
   @doc """
@@ -100,7 +100,7 @@ defmodule Funx.Math do
   """
   @spec max([number()]) :: number()
   def max(list) when is_list(list) do
-    concat(%Max{value: Float.min_finite()}, list)
+    m_concat(%Max{value: Float.min_finite()}, list)
   end
 
   @doc """
@@ -116,7 +116,7 @@ defmodule Funx.Math do
   """
   @spec min(number(), number()) :: number()
   def min(a, b) do
-    append(%Min{value: Float.max_finite()}, a, b)
+    m_append(%Min{value: Float.max_finite()}, a, b)
   end
 
   @doc """
@@ -134,7 +134,7 @@ defmodule Funx.Math do
   """
   @spec min([number()]) :: number()
   def min(list) when is_list(list) do
-    concat(%Min{value: Float.max_finite()}, list)
+    m_concat(%Min{value: Float.max_finite()}, list)
   end
 
   @doc """

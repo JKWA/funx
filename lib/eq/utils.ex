@@ -12,6 +12,7 @@ defmodule Funx.Eq.Utils do
 
   @type eq_t() :: Funx.Eq.t() | eq_map()
 
+  import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
   alias Funx.Eq
   alias Funx.Monoid
 
@@ -113,7 +114,7 @@ defmodule Funx.Eq.Utils do
   """
   @spec append_all(Monoid.Eq.All.t(), Monoid.Eq.All.t()) :: Monoid.Eq.All.t()
   def append_all(a, b) do
-    Monoid.Utils.append(%Monoid.Eq.All{}, a, b)
+    m_append(%Monoid.Eq.All{}, a, b)
   end
 
   @doc """
@@ -134,7 +135,7 @@ defmodule Funx.Eq.Utils do
   """
   @spec append_any(Monoid.Eq.Any.t(), Monoid.Eq.Any.t()) :: Monoid.Eq.Any.t()
   def append_any(a, b) do
-    Monoid.Utils.append(%Monoid.Eq.Any{}, a, b)
+    m_append(%Monoid.Eq.Any{}, a, b)
   end
 
   @doc """
@@ -155,7 +156,7 @@ defmodule Funx.Eq.Utils do
   """
   @spec concat_all([Monoid.Eq.All.t()]) :: Monoid.Eq.All.t()
   def concat_all(eq_list) when is_list(eq_list) do
-    Monoid.Utils.concat(%Monoid.Eq.All{}, eq_list)
+    m_concat(%Monoid.Eq.All{}, eq_list)
   end
 
   @doc """
@@ -176,7 +177,7 @@ defmodule Funx.Eq.Utils do
   """
   @spec concat_any([Monoid.Eq.Any.t()]) :: Monoid.Eq.Any.t()
   def concat_any(eq_list) when is_list(eq_list) do
-    Monoid.Utils.concat(%Monoid.Eq.Any{}, eq_list)
+    m_concat(%Monoid.Eq.Any{}, eq_list)
   end
 
   @doc """

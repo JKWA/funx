@@ -14,7 +14,8 @@ defmodule Funx.Ord.Utils do
 
   @type ord_t() :: Funx.Ord.t() | ord_map()
 
-  alias Funx.Monoid
+  import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
+
   alias Funx.Ord
 
   @doc """
@@ -228,7 +229,7 @@ defmodule Funx.Ord.Utils do
   """
   @spec append(Funx.Monoid.Ord.t(), Funx.Monoid.Ord.t()) :: Funx.Monoid.Ord.t()
   def append(a, b) do
-    Monoid.Utils.append(%Funx.Monoid.Ord{}, a, b)
+    m_append(%Funx.Monoid.Ord{}, a, b)
   end
 
   @doc """
@@ -249,7 +250,7 @@ defmodule Funx.Ord.Utils do
   """
   @spec concat([Funx.Monoid.Ord.t()]) :: Funx.Monoid.Ord.t()
   def concat(ord_list) when is_list(ord_list) do
-    Monoid.Utils.concat(%Funx.Monoid.Ord{}, ord_list)
+    m_concat(%Funx.Monoid.Ord{}, ord_list)
   end
 
   def to_ord_map(%{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun} = ord_map)

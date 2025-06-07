@@ -1,9 +1,11 @@
 defmodule Funx.Monoid.MinTest do
   use ExUnit.Case, async: true
+  import Funx.Monoid.Utils, only: [m_concat: 2]
+
   alias Funx.Monoid
 
   def min_value(numbers) do
-    Monoid.Utils.concat(
+    m_concat(
       %Monoid.Min{value: nil, ord: Funx.Ord},
       numbers
     )

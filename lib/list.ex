@@ -49,7 +49,7 @@ defmodule Funx.List do
   """
   import Funx.Foldable, only: [fold_l: 3]
   import Funx.Filterable, only: [filter: 2]
-  import Funx.Monoid.Utils, only: [concat: 2]
+  import Funx.Monoid.Utils, only: [m_concat: 2]
 
   alias Funx.Eq
   alias Funx.Monoid.ListConcat
@@ -202,7 +202,7 @@ defmodule Funx.List do
   """
   @spec concat([[term()]]) :: [term()]
   def concat(list) when is_list(list) do
-    concat(%ListConcat{}, list)
+    m_concat(%ListConcat{}, list)
   end
 end
 
