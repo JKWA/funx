@@ -8,13 +8,13 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Funx.Maybe — funx v0.1.0</title>
+    <title>Funx.Monad.Maybe — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-6E0D8FD9.js"></script>
+    <script src="dist/sidebar_items-72D56BC3.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -117,14 +117,14 @@ Pages
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Maybe</span> 
+    <span translate="no">Funx.Monad.Maybe</span> 
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>The <a href="Funx.Maybe.html"><code class="inline">Funx.Maybe</code></a> module provides an implementation of the <code class="inline">Maybe</code> monad, a functional abstraction used to represent optional values in Elixir.</p><p>A <code class="inline">Maybe</code> represents one of two possibilities:</p><ul><li><code class="inline">Just(value)</code>: the presence of a value</li><li><code class="inline">Nothing</code>: the absence of a value</li></ul><p>This pattern is useful for eliminating <code class="inline">nil</code> checks and handling missing data explicitly and safely in functional pipelines.</p><h3 id="module-constructors" class="section-heading">
+<p>The <a href="Funx.Monad.Maybe.html"><code class="inline">Funx.Monad.Maybe</code></a> module provides an implementation of the <code class="inline">Maybe</code> monad, a functional abstraction used to represent optional values in Elixir.</p><p>A <code class="inline">Maybe</code> represents one of two possibilities:</p><ul><li><code class="inline">Just(value)</code>: the presence of a value</li><li><code class="inline">Nothing</code>: the absence of a value</li></ul><p>This pattern is useful for eliminating <code class="inline">nil</code> checks and handling missing data explicitly and safely in functional pipelines.</p><h3 id="module-constructors" class="section-heading">
   <a href="#module-constructors" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -449,7 +449,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">t(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L75" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L76" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -461,7 +461,7 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t(value) :: <a href="Funx.Maybe.Just.html#t:t/1">Funx.Maybe.Just.t</a>(value) | <a href="Funx.Maybe.Nothing.html#t:t/0">Funx.Maybe.Nothing.t</a>()</pre>
+          <pre translate="no"><span class="attribute">@type</span> t(value) :: <a href="Funx.Monad.Maybe.Just.html#t:t/1">Funx.Monad.Maybe.Just.t</a>(value) | <a href="Funx.Monad.Maybe.Nothing.html#t:t/0">Funx.Monad.Maybe.Nothing.t</a>()</pre>
 
       </div>
 
@@ -489,7 +489,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">concat(list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L272" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L273" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -511,14 +511,14 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="9729709658-1">(</span><span class="p" data-group-id="9729709658-2">[</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9729709658-3">(</span><span class="mi">1</span><span class="p" data-group-id="9729709658-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9729709658-4">(</span><span class="p" data-group-id="9729709658-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9729709658-5">(</span><span class="mi">2</span><span class="p" data-group-id="9729709658-5">)</span><span class="p" data-group-id="9729709658-2">]</span><span class="p" data-group-id="9729709658-1">)</span><span class="w">
-</span><span class="p" data-group-id="9729709658-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9729709658-6">]</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="9756919279-1">(</span><span class="p" data-group-id="9756919279-2">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9756919279-3">(</span><span class="mi">1</span><span class="p" data-group-id="9756919279-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9756919279-4">(</span><span class="p" data-group-id="9756919279-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9756919279-5">(</span><span class="mi">2</span><span class="p" data-group-id="9756919279-5">)</span><span class="p" data-group-id="9756919279-2">]</span><span class="p" data-group-id="9756919279-1">)</span><span class="w">
+</span><span class="p" data-group-id="9756919279-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9756919279-6">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="9729709658-7">(</span><span class="p" data-group-id="9729709658-8">[</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9729709658-9">(</span><span class="p" data-group-id="9729709658-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9729709658-10">(</span><span class="p" data-group-id="9729709658-10">)</span><span class="p" data-group-id="9729709658-8">]</span><span class="p" data-group-id="9729709658-7">)</span><span class="w">
-</span><span class="p" data-group-id="9729709658-11">[</span><span class="p" data-group-id="9729709658-11">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="9756919279-7">(</span><span class="p" data-group-id="9756919279-8">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9756919279-9">(</span><span class="p" data-group-id="9756919279-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9756919279-10">(</span><span class="p" data-group-id="9756919279-10">)</span><span class="p" data-group-id="9756919279-8">]</span><span class="p" data-group-id="9756919279-7">)</span><span class="w">
+</span><span class="p" data-group-id="9756919279-11">[</span><span class="p" data-group-id="9756919279-11">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="9729709658-12">(</span><span class="p" data-group-id="9729709658-13">[</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9729709658-14">(</span><span class="s">&quot;a&quot;</span><span class="p" data-group-id="9729709658-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9729709658-15">(</span><span class="s">&quot;b&quot;</span><span class="p" data-group-id="9729709658-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9729709658-16">(</span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="9729709658-16">)</span><span class="p" data-group-id="9729709658-13">]</span><span class="p" data-group-id="9729709658-12">)</span><span class="w">
-</span><span class="p" data-group-id="9729709658-17">[</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="9729709658-17">]</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="9756919279-12">(</span><span class="p" data-group-id="9756919279-13">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9756919279-14">(</span><span class="s">&quot;a&quot;</span><span class="p" data-group-id="9756919279-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9756919279-15">(</span><span class="s">&quot;b&quot;</span><span class="p" data-group-id="9756919279-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9756919279-16">(</span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="9756919279-16">)</span><span class="p" data-group-id="9756919279-13">]</span><span class="p" data-group-id="9756919279-12">)</span><span class="w">
+</span><span class="p" data-group-id="9756919279-17">[</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="9756919279-17">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="concat_map/2">
@@ -530,7 +530,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">concat_map(list, func)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L304" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L305" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -553,22 +553,22 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="2503542724-1">(</span><span class="p" data-group-id="2503542724-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2503542724-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2503542724-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">rem</span><span class="p" data-group-id="2503542724-4">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2503542724-4">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2503542724-5">(</span><span class="n">x</span><span class="p" data-group-id="2503542724-5">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2503542724-6">(</span><span class="p" data-group-id="2503542724-6">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="2503542724-3">end</span><span class="p" data-group-id="2503542724-1">)</span><span class="w">
-</span><span class="p" data-group-id="2503542724-7">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2503542724-7">]</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="1547635785-1">(</span><span class="p" data-group-id="1547635785-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1547635785-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1547635785-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">rem</span><span class="p" data-group-id="1547635785-4">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1547635785-4">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1547635785-5">(</span><span class="n">x</span><span class="p" data-group-id="1547635785-5">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1547635785-6">(</span><span class="p" data-group-id="1547635785-6">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="1547635785-3">end</span><span class="p" data-group-id="1547635785-1">)</span><span class="w">
+</span><span class="p" data-group-id="1547635785-7">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1547635785-7">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="2503542724-8">(</span><span class="p" data-group-id="2503542724-9">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2503542724-9">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2503542724-10">fn</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2503542724-11">(</span><span class="p" data-group-id="2503542724-11">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2503542724-12">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2503542724-12">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="2503542724-10">end</span><span class="p" data-group-id="2503542724-8">)</span><span class="w">
-</span><span class="p" data-group-id="2503542724-13">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p" data-group-id="2503542724-13">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="1547635785-8">(</span><span class="p" data-group-id="1547635785-9">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="1547635785-9">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1547635785-10">fn</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1547635785-11">(</span><span class="p" data-group-id="1547635785-11">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1547635785-12">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1547635785-12">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="1547635785-10">end</span><span class="p" data-group-id="1547635785-8">)</span><span class="w">
+</span><span class="p" data-group-id="1547635785-13">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p" data-group-id="1547635785-13">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="2503542724-14">(</span><span class="p" data-group-id="2503542724-15">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2503542724-15">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2503542724-16">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2503542724-17">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="2503542724-17">)</span><span class="w"> </span><span class="k" data-group-id="2503542724-16">end</span><span class="p" data-group-id="2503542724-14">)</span><span class="w">
-</span><span class="p" data-group-id="2503542724-18">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2503542724-18">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="1547635785-14">(</span><span class="p" data-group-id="1547635785-15">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="1547635785-15">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1547635785-16">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1547635785-17">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="1547635785-17">)</span><span class="w"> </span><span class="k" data-group-id="1547635785-16">end</span><span class="p" data-group-id="1547635785-14">)</span><span class="w">
+</span><span class="p" data-group-id="1547635785-18">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1547635785-18">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="2503542724-19">(</span><span class="p" data-group-id="2503542724-20">[</span><span class="p" data-group-id="2503542724-20">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2503542724-21">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2503542724-22">(</span><span class="n">x</span><span class="p" data-group-id="2503542724-22">)</span><span class="w"> </span><span class="k" data-group-id="2503542724-21">end</span><span class="p" data-group-id="2503542724-19">)</span><span class="w">
-</span><span class="p" data-group-id="2503542724-23">[</span><span class="p" data-group-id="2503542724-23">]</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="1547635785-19">(</span><span class="p" data-group-id="1547635785-20">[</span><span class="p" data-group-id="1547635785-20">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1547635785-21">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1547635785-22">(</span><span class="n">x</span><span class="p" data-group-id="1547635785-22">)</span><span class="w"> </span><span class="k" data-group-id="1547635785-21">end</span><span class="p" data-group-id="1547635785-19">)</span><span class="w">
+</span><span class="p" data-group-id="1547635785-23">[</span><span class="p" data-group-id="1547635785-23">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="from_nil/1">
@@ -580,7 +580,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">from_nil(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L454" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L455" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -602,11 +602,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="6938749706-1">(</span><span class="no">nil</span><span class="p" data-group-id="6938749706-1">)</span><span class="w">
-</span><span class="p" data-group-id="6938749706-2">%</span><span class="nc" data-group-id="6938749706-2">Funx.Maybe.Nothing</span><span class="p" data-group-id="6938749706-2">{</span><span class="p" data-group-id="6938749706-2">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="0678216385-1">(</span><span class="no">nil</span><span class="p" data-group-id="0678216385-1">)</span><span class="w">
+</span><span class="p" data-group-id="0678216385-2">%</span><span class="nc" data-group-id="0678216385-2">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="0678216385-2">{</span><span class="p" data-group-id="0678216385-2">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="6938749706-3">(</span><span class="mi">5</span><span class="p" data-group-id="6938749706-3">)</span><span class="w">
-</span><span class="p" data-group-id="6938749706-4">%</span><span class="nc" data-group-id="6938749706-4">Funx.Maybe.Just</span><span class="p" data-group-id="6938749706-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6938749706-4">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="0678216385-3">(</span><span class="mi">5</span><span class="p" data-group-id="0678216385-3">)</span><span class="w">
+</span><span class="p" data-group-id="0678216385-4">%</span><span class="nc" data-group-id="0678216385-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="0678216385-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0678216385-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="from_result/1">
@@ -618,7 +618,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">from_result(arg)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L527" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L528" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -640,11 +640,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="5375677865-1">(</span><span class="p" data-group-id="5375677865-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5375677865-2">}</span><span class="p" data-group-id="5375677865-1">)</span><span class="w">
-</span><span class="p" data-group-id="5375677865-3">%</span><span class="nc" data-group-id="5375677865-3">Funx.Maybe.Just</span><span class="p" data-group-id="5375677865-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5375677865-3">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="7484932220-1">(</span><span class="p" data-group-id="7484932220-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7484932220-2">}</span><span class="p" data-group-id="7484932220-1">)</span><span class="w">
+</span><span class="p" data-group-id="7484932220-3">%</span><span class="nc" data-group-id="7484932220-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7484932220-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7484932220-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="5375677865-4">(</span><span class="p" data-group-id="5375677865-5">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:something</span><span class="p" data-group-id="5375677865-5">}</span><span class="p" data-group-id="5375677865-4">)</span><span class="w">
-</span><span class="p" data-group-id="5375677865-6">%</span><span class="nc" data-group-id="5375677865-6">Funx.Maybe.Nothing</span><span class="p" data-group-id="5375677865-6">{</span><span class="p" data-group-id="5375677865-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="7484932220-4">(</span><span class="p" data-group-id="7484932220-5">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:something</span><span class="p" data-group-id="7484932220-5">}</span><span class="p" data-group-id="7484932220-4">)</span><span class="w">
+</span><span class="p" data-group-id="7484932220-6">%</span><span class="nc" data-group-id="7484932220-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7484932220-6">{</span><span class="p" data-group-id="7484932220-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="from_try/1">
@@ -656,7 +656,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">from_try(func)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L485" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L486" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -678,11 +678,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="9531844933-1">(</span><span class="k" data-group-id="9531844933-2">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="9531844933-2">end</span><span class="p" data-group-id="9531844933-1">)</span><span class="w">
-</span><span class="p" data-group-id="9531844933-3">%</span><span class="nc" data-group-id="9531844933-3">Funx.Maybe.Just</span><span class="p" data-group-id="9531844933-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9531844933-3">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="6831981505-1">(</span><span class="k" data-group-id="6831981505-2">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="6831981505-2">end</span><span class="p" data-group-id="6831981505-1">)</span><span class="w">
+</span><span class="p" data-group-id="6831981505-3">%</span><span class="nc" data-group-id="6831981505-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="6831981505-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6831981505-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="9531844933-4">(</span><span class="k" data-group-id="9531844933-5">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="9531844933-5">end</span><span class="p" data-group-id="9531844933-4">)</span><span class="w">
-</span><span class="p" data-group-id="9531844933-6">%</span><span class="nc" data-group-id="9531844933-6">Funx.Maybe.Nothing</span><span class="p" data-group-id="9531844933-6">{</span><span class="p" data-group-id="9531844933-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="6831981505-4">(</span><span class="k" data-group-id="6831981505-5">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="6831981505-5">end</span><span class="p" data-group-id="6831981505-4">)</span><span class="w">
+</span><span class="p" data-group-id="6831981505-6">%</span><span class="nc" data-group-id="6831981505-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="6831981505-6">{</span><span class="p" data-group-id="6831981505-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="get_or_else/2">
@@ -694,7 +694,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">get_or_else(maybe, default)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L147" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L148" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -716,10 +716,10 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="9122040980-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9122040980-2">(</span><span class="mi">5</span><span class="p" data-group-id="9122040980-2">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="9122040980-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="4854791412-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4854791412-2">(</span><span class="mi">5</span><span class="p" data-group-id="4854791412-2">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4854791412-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="9122040980-3">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9122040980-4">(</span><span class="p" data-group-id="9122040980-4">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="9122040980-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="4854791412-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4854791412-4">(</span><span class="p" data-group-id="4854791412-4">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4854791412-3">)</span><span class="w">
 </span><span class="mi">0</span></code></pre>
   </section>
 </section>
@@ -732,7 +732,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">just(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L92" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L93" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -744,7 +744,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> just(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="Funx.Maybe.Just.html#t:t/1">Funx.Maybe.Just.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+          <pre translate="no"><span class="attribute">@spec</span> just(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="Funx.Monad.Maybe.Just.html#t:t/1">Funx.Monad.Maybe.Just.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
 
       </div>
 
@@ -760,7 +760,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">just?(arg1)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L117" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L118" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -782,10 +782,10 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="6101765926-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6101765926-2">(</span><span class="mi">5</span><span class="p" data-group-id="6101765926-2">)</span><span class="p" data-group-id="6101765926-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="8155226135-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8155226135-2">(</span><span class="mi">5</span><span class="p" data-group-id="8155226135-2">)</span><span class="p" data-group-id="8155226135-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="6101765926-3">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6101765926-4">(</span><span class="p" data-group-id="6101765926-4">)</span><span class="p" data-group-id="6101765926-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="8155226135-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8155226135-4">(</span><span class="p" data-group-id="8155226135-4">)</span><span class="p" data-group-id="8155226135-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -798,7 +798,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">lift_either(either)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L395" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L396" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -814,11 +814,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="5168548515-1">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5168548515-2">(</span><span class="mi">5</span><span class="p" data-group-id="5168548515-2">)</span><span class="p" data-group-id="5168548515-1">)</span><span class="w">
-</span><span class="p" data-group-id="5168548515-3">%</span><span class="nc" data-group-id="5168548515-3">Funx.Maybe.Just</span><span class="p" data-group-id="5168548515-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5168548515-3">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="8537609467-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8537609467-2">(</span><span class="mi">5</span><span class="p" data-group-id="8537609467-2">)</span><span class="p" data-group-id="8537609467-1">)</span><span class="w">
+</span><span class="p" data-group-id="8537609467-3">%</span><span class="nc" data-group-id="8537609467-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="8537609467-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8537609467-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="5168548515-4">(</span><span class="nc">Funx.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5168548515-5">(</span><span class="s">&quot;Error&quot;</span><span class="p" data-group-id="5168548515-5">)</span><span class="p" data-group-id="5168548515-4">)</span><span class="w">
-</span><span class="p" data-group-id="5168548515-6">%</span><span class="nc" data-group-id="5168548515-6">Funx.Maybe.Nothing</span><span class="p" data-group-id="5168548515-6">{</span><span class="p" data-group-id="5168548515-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="8537609467-4">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="8537609467-5">(</span><span class="s">&quot;Error&quot;</span><span class="p" data-group-id="8537609467-5">)</span><span class="p" data-group-id="8537609467-4">)</span><span class="w">
+</span><span class="p" data-group-id="8537609467-6">%</span><span class="nc" data-group-id="8537609467-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="8537609467-6">{</span><span class="p" data-group-id="8537609467-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="lift_eq/1">
@@ -830,7 +830,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">lift_eq(custom_eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L188" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L189" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -852,17 +852,17 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">lift_eq</span><span class="p" data-group-id="2481320953-1">(</span><span class="p" data-group-id="2481320953-2">%{</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="2481320953-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="2481320953-3">end</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="2481320953-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="2481320953-4">end</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="2481320953-2">}</span><span class="p" data-group-id="2481320953-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="2481320953-5">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2481320953-6">(</span><span class="mi">5</span><span class="p" data-group-id="2481320953-6">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2481320953-7">(</span><span class="mi">5</span><span class="p" data-group-id="2481320953-7">)</span><span class="p" data-group-id="2481320953-5">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_eq</span><span class="p" data-group-id="9690784267-1">(</span><span class="p" data-group-id="9690784267-2">%{</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="9690784267-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="9690784267-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="9690784267-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="9690784267-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="9690784267-2">}</span><span class="p" data-group-id="9690784267-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9690784267-5">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9690784267-6">(</span><span class="mi">5</span><span class="p" data-group-id="9690784267-6">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9690784267-7">(</span><span class="mi">5</span><span class="p" data-group-id="9690784267-7">)</span><span class="p" data-group-id="9690784267-5">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="2481320953-8">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2481320953-9">(</span><span class="mi">5</span><span class="p" data-group-id="2481320953-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2481320953-10">(</span><span class="mi">10</span><span class="p" data-group-id="2481320953-10">)</span><span class="p" data-group-id="2481320953-8">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9690784267-8">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9690784267-9">(</span><span class="mi">5</span><span class="p" data-group-id="9690784267-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9690784267-10">(</span><span class="mi">10</span><span class="p" data-group-id="9690784267-10">)</span><span class="p" data-group-id="9690784267-8">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="2481320953-11">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2481320953-12">(</span><span class="p" data-group-id="2481320953-12">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2481320953-13">(</span><span class="p" data-group-id="2481320953-13">)</span><span class="p" data-group-id="2481320953-11">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9690784267-11">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9690784267-12">(</span><span class="p" data-group-id="9690784267-12">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9690784267-13">(</span><span class="p" data-group-id="9690784267-13">)</span><span class="p" data-group-id="9690784267-11">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="2481320953-14">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2481320953-15">(</span><span class="mi">5</span><span class="p" data-group-id="2481320953-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2481320953-16">(</span><span class="p" data-group-id="2481320953-16">)</span><span class="p" data-group-id="2481320953-14">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9690784267-14">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9690784267-15">(</span><span class="mi">5</span><span class="p" data-group-id="9690784267-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9690784267-16">(</span><span class="p" data-group-id="9690784267-16">)</span><span class="p" data-group-id="9690784267-14">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -875,7 +875,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">lift_identity(identity)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L377" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L378" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -891,11 +891,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="2217521795-1">(</span><span class="nc">Funx.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2217521795-2">(</span><span class="mi">5</span><span class="p" data-group-id="2217521795-2">)</span><span class="p" data-group-id="2217521795-1">)</span><span class="w">
-</span><span class="p" data-group-id="2217521795-3">%</span><span class="nc" data-group-id="2217521795-3">Funx.Maybe.Just</span><span class="p" data-group-id="2217521795-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2217521795-3">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="8066581512-1">(</span><span class="nc">Funx.Monad.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8066581512-2">(</span><span class="mi">5</span><span class="p" data-group-id="8066581512-2">)</span><span class="p" data-group-id="8066581512-1">)</span><span class="w">
+</span><span class="p" data-group-id="8066581512-3">%</span><span class="nc" data-group-id="8066581512-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="8066581512-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8066581512-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="2217521795-4">(</span><span class="nc">Funx.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2217521795-5">(</span><span class="no">nil</span><span class="p" data-group-id="2217521795-5">)</span><span class="p" data-group-id="2217521795-4">)</span><span class="w">
-</span><span class="p" data-group-id="2217521795-6">%</span><span class="nc" data-group-id="2217521795-6">Funx.Maybe.Nothing</span><span class="p" data-group-id="2217521795-6">{</span><span class="p" data-group-id="2217521795-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="8066581512-4">(</span><span class="nc">Funx.Monad.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8066581512-5">(</span><span class="no">nil</span><span class="p" data-group-id="8066581512-5">)</span><span class="p" data-group-id="8066581512-4">)</span><span class="w">
+</span><span class="p" data-group-id="8066581512-6">%</span><span class="nc" data-group-id="8066581512-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="8066581512-6">{</span><span class="p" data-group-id="8066581512-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="lift_ord/1">
@@ -907,7 +907,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">lift_ord(custom_ord)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L226" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L227" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -929,15 +929,15 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">lift_ord</span><span class="p" data-group-id="3620949011-1">(</span><span class="p" data-group-id="3620949011-2">%{</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_ord</span><span class="p" data-group-id="1662139891-1">(</span><span class="p" data-group-id="1662139891-2">%{</span><span class="w">
 </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">lt?</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="o">&lt;</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="w">
 </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">le?</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="o">&lt;=</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="w">
 </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">gt?</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="o">&gt;</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="w">
 </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">ge?</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="o">&gt;=</span><span class="o">/</span><span class="mi">2</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="3620949011-2">}</span><span class="p" data-group-id="3620949011-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="3620949011-3">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3620949011-4">(</span><span class="mi">3</span><span class="p" data-group-id="3620949011-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3620949011-5">(</span><span class="mi">5</span><span class="p" data-group-id="3620949011-5">)</span><span class="p" data-group-id="3620949011-3">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="1662139891-2">}</span><span class="p" data-group-id="1662139891-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1662139891-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1662139891-4">(</span><span class="mi">3</span><span class="p" data-group-id="1662139891-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1662139891-5">(</span><span class="mi">5</span><span class="p" data-group-id="1662139891-5">)</span><span class="p" data-group-id="1662139891-3">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="3620949011-6">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3620949011-7">(</span><span class="p" data-group-id="3620949011-7">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3620949011-8">(</span><span class="mi">5</span><span class="p" data-group-id="3620949011-8">)</span><span class="p" data-group-id="3620949011-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1662139891-6">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1662139891-7">(</span><span class="p" data-group-id="1662139891-7">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1662139891-8">(</span><span class="mi">5</span><span class="p" data-group-id="1662139891-8">)</span><span class="p" data-group-id="1662139891-6">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -950,7 +950,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">lift_predicate(value, predicate)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L414" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L415" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -972,11 +972,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="2761550958-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2761550958-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="2761550958-2">end</span><span class="p" data-group-id="2761550958-1">)</span><span class="w">
-</span><span class="p" data-group-id="2761550958-3">%</span><span class="nc" data-group-id="2761550958-3">Funx.Maybe.Just</span><span class="p" data-group-id="2761550958-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2761550958-3">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="2324329221-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2324329221-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="2324329221-2">end</span><span class="p" data-group-id="2324329221-1">)</span><span class="w">
+</span><span class="p" data-group-id="2324329221-3">%</span><span class="nc" data-group-id="2324329221-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="2324329221-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2324329221-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="2761550958-4">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2761550958-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="2761550958-5">end</span><span class="p" data-group-id="2761550958-4">)</span><span class="w">
-</span><span class="p" data-group-id="2761550958-6">%</span><span class="nc" data-group-id="2761550958-6">Funx.Maybe.Nothing</span><span class="p" data-group-id="2761550958-6">{</span><span class="p" data-group-id="2761550958-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="2324329221-4">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2324329221-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="2324329221-5">end</span><span class="p" data-group-id="2324329221-4">)</span><span class="w">
+</span><span class="p" data-group-id="2324329221-6">%</span><span class="nc" data-group-id="2324329221-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="2324329221-6">{</span><span class="p" data-group-id="2324329221-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="nothing/0">
@@ -988,7 +988,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">nothing()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L103" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L104" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1000,7 +1000,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> nothing() :: <a href="Funx.Maybe.Nothing.html#t:t/0">Funx.Maybe.Nothing.t</a>()</pre>
+          <pre translate="no"><span class="attribute">@spec</span> nothing() :: <a href="Funx.Monad.Maybe.Nothing.html#t:t/0">Funx.Monad.Maybe.Nothing.t</a>()</pre>
 
       </div>
 
@@ -1010,8 +1010,8 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6229912423-1">(</span><span class="p" data-group-id="6229912423-1">)</span><span class="w">
-</span><span class="p" data-group-id="6229912423-2">%</span><span class="nc" data-group-id="6229912423-2">Funx.Maybe.Nothing</span><span class="p" data-group-id="6229912423-2">{</span><span class="p" data-group-id="6229912423-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1777337057-1">(</span><span class="p" data-group-id="1777337057-1">)</span><span class="w">
+</span><span class="p" data-group-id="1777337057-2">%</span><span class="nc" data-group-id="1777337057-2">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="1777337057-2">{</span><span class="p" data-group-id="1777337057-2">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="nothing?/1">
@@ -1023,7 +1023,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">nothing?(arg1)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L132" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L133" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1045,10 +1045,10 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="6557116820-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6557116820-2">(</span><span class="p" data-group-id="6557116820-2">)</span><span class="p" data-group-id="6557116820-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="7736032350-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7736032350-2">(</span><span class="p" data-group-id="7736032350-2">)</span><span class="p" data-group-id="7736032350-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="6557116820-3">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6557116820-4">(</span><span class="mi">5</span><span class="p" data-group-id="6557116820-4">)</span><span class="p" data-group-id="6557116820-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="7736032350-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7736032350-4">(</span><span class="mi">5</span><span class="p" data-group-id="7736032350-4">)</span><span class="p" data-group-id="7736032350-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -1061,7 +1061,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">or_else(just, fallback_fun)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L163" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L164" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1083,11 +1083,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="7278442292-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7278442292-2">(</span><span class="p" data-group-id="7278442292-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7278442292-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7278442292-4">(</span><span class="mi">42</span><span class="p" data-group-id="7278442292-4">)</span><span class="w"> </span><span class="k" data-group-id="7278442292-3">end</span><span class="p" data-group-id="7278442292-1">)</span><span class="w">
-</span><span class="p" data-group-id="7278442292-5">%</span><span class="nc" data-group-id="7278442292-5">Funx.Maybe.Just</span><span class="p" data-group-id="7278442292-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="7278442292-5">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="7090822450-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7090822450-2">(</span><span class="p" data-group-id="7090822450-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7090822450-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7090822450-4">(</span><span class="mi">42</span><span class="p" data-group-id="7090822450-4">)</span><span class="w"> </span><span class="k" data-group-id="7090822450-3">end</span><span class="p" data-group-id="7090822450-1">)</span><span class="w">
+</span><span class="p" data-group-id="7090822450-5">%</span><span class="nc" data-group-id="7090822450-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7090822450-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="7090822450-5">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="7278442292-6">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7278442292-7">(</span><span class="mi">10</span><span class="p" data-group-id="7278442292-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7278442292-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7278442292-9">(</span><span class="mi">42</span><span class="p" data-group-id="7278442292-9">)</span><span class="w"> </span><span class="k" data-group-id="7278442292-8">end</span><span class="p" data-group-id="7278442292-6">)</span><span class="w">
-</span><span class="p" data-group-id="7278442292-10">%</span><span class="nc" data-group-id="7278442292-10">Funx.Maybe.Just</span><span class="p" data-group-id="7278442292-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7278442292-10">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="7090822450-6">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7090822450-7">(</span><span class="mi">10</span><span class="p" data-group-id="7090822450-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7090822450-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7090822450-9">(</span><span class="mi">42</span><span class="p" data-group-id="7090822450-9">)</span><span class="w"> </span><span class="k" data-group-id="7090822450-8">end</span><span class="p" data-group-id="7090822450-6">)</span><span class="w">
+</span><span class="p" data-group-id="7090822450-10">%</span><span class="nc" data-group-id="7090822450-10">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7090822450-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7090822450-10">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="pure/1">
@@ -1099,7 +1099,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">pure(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L86" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L87" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1111,7 +1111,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> pure(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="Funx.Maybe.Just.html#t:t/1">Funx.Maybe.Just.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+          <pre translate="no"><span class="attribute">@spec</span> pure(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="Funx.Monad.Maybe.Just.html#t:t/1">Funx.Monad.Maybe.Just.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
 
       </div>
 
@@ -1121,8 +1121,8 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1418712113-1">(</span><span class="mi">5</span><span class="p" data-group-id="1418712113-1">)</span><span class="w">
-</span><span class="p" data-group-id="1418712113-2">%</span><span class="nc" data-group-id="1418712113-2">Funx.Maybe.Just</span><span class="p" data-group-id="1418712113-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1418712113-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7740901739-1">(</span><span class="mi">5</span><span class="p" data-group-id="7740901739-1">)</span><span class="w">
+</span><span class="p" data-group-id="7740901739-2">%</span><span class="nc" data-group-id="7740901739-2">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7740901739-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7740901739-2">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sequence/1">
@@ -1134,7 +1134,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">sequence(list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L326" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L327" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1156,11 +1156,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="4161609338-1">(</span><span class="p" data-group-id="4161609338-2">[</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4161609338-3">(</span><span class="mi">1</span><span class="p" data-group-id="4161609338-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4161609338-4">(</span><span class="mi">2</span><span class="p" data-group-id="4161609338-4">)</span><span class="p" data-group-id="4161609338-2">]</span><span class="p" data-group-id="4161609338-1">)</span><span class="w">
-</span><span class="p" data-group-id="4161609338-5">%</span><span class="nc" data-group-id="4161609338-5">Funx.Maybe.Just</span><span class="p" data-group-id="4161609338-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4161609338-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4161609338-6">]</span><span class="p" data-group-id="4161609338-5">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="9265923780-1">(</span><span class="p" data-group-id="9265923780-2">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9265923780-3">(</span><span class="mi">1</span><span class="p" data-group-id="9265923780-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9265923780-4">(</span><span class="mi">2</span><span class="p" data-group-id="9265923780-4">)</span><span class="p" data-group-id="9265923780-2">]</span><span class="p" data-group-id="9265923780-1">)</span><span class="w">
+</span><span class="p" data-group-id="9265923780-5">%</span><span class="nc" data-group-id="9265923780-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="9265923780-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9265923780-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9265923780-6">]</span><span class="p" data-group-id="9265923780-5">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="4161609338-7">(</span><span class="p" data-group-id="4161609338-8">[</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4161609338-9">(</span><span class="mi">1</span><span class="p" data-group-id="4161609338-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4161609338-10">(</span><span class="p" data-group-id="4161609338-10">)</span><span class="p" data-group-id="4161609338-8">]</span><span class="p" data-group-id="4161609338-7">)</span><span class="w">
-</span><span class="p" data-group-id="4161609338-11">%</span><span class="nc" data-group-id="4161609338-11">Funx.Maybe.Nothing</span><span class="p" data-group-id="4161609338-11">{</span><span class="p" data-group-id="4161609338-11">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="9265923780-7">(</span><span class="p" data-group-id="9265923780-8">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9265923780-9">(</span><span class="mi">1</span><span class="p" data-group-id="9265923780-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9265923780-10">(</span><span class="p" data-group-id="9265923780-10">)</span><span class="p" data-group-id="9265923780-8">]</span><span class="p" data-group-id="9265923780-7">)</span><span class="w">
+</span><span class="p" data-group-id="9265923780-11">%</span><span class="nc" data-group-id="9265923780-11">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="9265923780-11">{</span><span class="p" data-group-id="9265923780-11">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="to_nil/1">
@@ -1172,7 +1172,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">to_nil(maybe)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L469" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L470" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1194,10 +1194,10 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="9808319147-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9808319147-2">(</span><span class="mi">5</span><span class="p" data-group-id="9808319147-2">)</span><span class="p" data-group-id="9808319147-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="5867519451-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5867519451-2">(</span><span class="mi">5</span><span class="p" data-group-id="5867519451-2">)</span><span class="p" data-group-id="5867519451-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="9808319147-3">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9808319147-4">(</span><span class="p" data-group-id="9808319147-4">)</span><span class="p" data-group-id="9808319147-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="5867519451-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="5867519451-4">(</span><span class="p" data-group-id="5867519451-4">)</span><span class="p" data-group-id="5867519451-3">)</span><span class="w">
 </span><span class="no">nil</span></code></pre>
   </section>
 </section>
@@ -1210,7 +1210,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">to_predicate(maybe)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L438" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L439" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1232,10 +1232,10 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="7755412506-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7755412506-2">(</span><span class="mi">42</span><span class="p" data-group-id="7755412506-2">)</span><span class="p" data-group-id="7755412506-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="2640172329-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2640172329-2">(</span><span class="mi">42</span><span class="p" data-group-id="2640172329-2">)</span><span class="p" data-group-id="2640172329-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="7755412506-3">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7755412506-4">(</span><span class="p" data-group-id="7755412506-4">)</span><span class="p" data-group-id="7755412506-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="2640172329-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2640172329-4">(</span><span class="p" data-group-id="2640172329-4">)</span><span class="p" data-group-id="2640172329-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre><p>Raises an error if the input is not a <code class="inline">Just</code> or <code class="inline">Nothing</code>.</p>
   </section>
 </section>
@@ -1248,7 +1248,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">to_result(maybe)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L542" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L543" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1270,11 +1270,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="4145981754-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4145981754-2">(</span><span class="mi">5</span><span class="p" data-group-id="4145981754-2">)</span><span class="p" data-group-id="4145981754-1">)</span><span class="w">
-</span><span class="p" data-group-id="4145981754-3">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4145981754-3">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="5866910177-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5866910177-2">(</span><span class="mi">5</span><span class="p" data-group-id="5866910177-2">)</span><span class="p" data-group-id="5866910177-1">)</span><span class="w">
+</span><span class="p" data-group-id="5866910177-3">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5866910177-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="4145981754-4">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4145981754-5">(</span><span class="p" data-group-id="4145981754-5">)</span><span class="p" data-group-id="4145981754-4">)</span><span class="w">
-</span><span class="p" data-group-id="4145981754-6">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:nothing</span><span class="p" data-group-id="4145981754-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="5866910177-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="5866910177-5">(</span><span class="p" data-group-id="5866910177-5">)</span><span class="p" data-group-id="5866910177-4">)</span><span class="w">
+</span><span class="p" data-group-id="5866910177-6">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:nothing</span><span class="p" data-group-id="5866910177-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="to_try!/2">
@@ -1288,7 +1288,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">to_try!(maybe, message \\ &quot;Nothing value encountered&quot;)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L507" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L508" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1310,10 +1310,10 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="6178878648-1">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6178878648-2">(</span><span class="mi">5</span><span class="p" data-group-id="6178878648-2">)</span><span class="p" data-group-id="6178878648-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="4736432420-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4736432420-2">(</span><span class="mi">5</span><span class="p" data-group-id="4736432420-2">)</span><span class="p" data-group-id="4736432420-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="6178878648-3">(</span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6178878648-4">(</span><span class="p" data-group-id="6178878648-4">)</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;No value found&quot;</span><span class="p" data-group-id="6178878648-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="4736432420-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4736432420-4">(</span><span class="p" data-group-id="4736432420-4">)</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;No value found&quot;</span><span class="p" data-group-id="4736432420-3">)</span><span class="w">
 </span><span class="gt">** (RuntimeError) No value found</span></code></pre>
   </section>
 </section>
@@ -1326,7 +1326,7 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     </a>
     <h1 class="signature" translate="no">traverse(list, func)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L353" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe.ex#L354" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -1349,14 +1349,14 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="2482106208-1">(</span><span class="p" data-group-id="2482106208-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2482106208-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2482106208-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2482106208-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2482106208-4">)</span><span class="w"> </span><span class="k" data-group-id="2482106208-3">end</span><span class="p" data-group-id="2482106208-1">)</span><span class="w">
-</span><span class="p" data-group-id="2482106208-5">%</span><span class="nc" data-group-id="2482106208-5">Funx.Maybe.Just</span><span class="p" data-group-id="2482106208-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2482106208-6">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2482106208-6">]</span><span class="p" data-group-id="2482106208-5">}</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="2597550248-1">(</span><span class="p" data-group-id="2597550248-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2597550248-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2597550248-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2597550248-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2597550248-4">)</span><span class="w"> </span><span class="k" data-group-id="2597550248-3">end</span><span class="p" data-group-id="2597550248-1">)</span><span class="w">
+</span><span class="p" data-group-id="2597550248-5">%</span><span class="nc" data-group-id="2597550248-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="2597550248-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2597550248-6">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2597550248-6">]</span><span class="p" data-group-id="2597550248-5">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="2482106208-7">(</span><span class="p" data-group-id="2482106208-8">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2482106208-8">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2482106208-9">fn</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2482106208-10">(</span><span class="p" data-group-id="2482106208-10">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2482106208-11">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2482106208-11">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="2482106208-9">end</span><span class="p" data-group-id="2482106208-7">)</span><span class="w">
-</span><span class="p" data-group-id="2482106208-12">%</span><span class="nc" data-group-id="2482106208-12">Funx.Maybe.Nothing</span><span class="p" data-group-id="2482106208-12">{</span><span class="p" data-group-id="2482106208-12">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="2597550248-7">(</span><span class="p" data-group-id="2597550248-8">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2597550248-8">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2597550248-9">fn</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2597550248-10">(</span><span class="p" data-group-id="2597550248-10">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2597550248-11">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2597550248-11">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="2597550248-9">end</span><span class="p" data-group-id="2597550248-7">)</span><span class="w">
+</span><span class="p" data-group-id="2597550248-12">%</span><span class="nc" data-group-id="2597550248-12">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="2597550248-12">{</span><span class="p" data-group-id="2597550248-12">}</span></code></pre>
   </section>
 </section>
 

@@ -8,13 +8,13 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Funx.Effect.Context — funx v0.1.0</title>
+    <title>Funx.Monad.Effect.Context — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-6E0D8FD9.js"></script>
+    <script src="dist/sidebar_items-72D56BC3.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -117,7 +117,7 @@ Pages
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Effect.Context</span> 
+    <span translate="no">Funx.Monad.Effect.Context</span> 
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
@@ -213,7 +213,7 @@ when created.</p>
 
       </div>
 
-        <div class="summary-synopsis"><p>Merges two <code class="inline">%Funx.Effect.Context{}</code> structs into one, preferring non-nil values from the first context.</p></div>
+        <div class="summary-synopsis"><p>Merges two <code class="inline">%Funx.Monad.Effect.Context{}</code> structs into one, preferring non-nil values from the first context.</p></div>
 
     </div>
 
@@ -223,7 +223,7 @@ when created.</p>
 
       </div>
 
-        <div class="summary-synopsis"><p>Creates a new <a href="Funx.Effect.Context.html"><code class="inline">Funx.Effect.Context</code></a> struct for use with effectful computations.</p></div>
+        <div class="summary-synopsis"><p>Creates a new <a href="Funx.Monad.Effect.Context.html"><code class="inline">Funx.Monad.Effect.Context</code></a> struct for use with effectful computations.</p></div>
 
     </div>
 
@@ -241,7 +241,7 @@ when created.</p>
 
       </div>
 
-        <div class="summary-synopsis"><p>Returns a new <code class="inline">%Funx.Effect.Context{}</code> with fields overridden by values from the given keyword list.</p></div>
+        <div class="summary-synopsis"><p>Returns a new <code class="inline">%Funx.Monad.Effect.Context{}</code> with fields overridden by values from the given keyword list.</p></div>
 
     </div>
 
@@ -326,7 +326,7 @@ Used throughout the <code class="inline">Effect</code> system for flexible conte
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Effect.Context{
+          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Monad.Effect.Context{
   baggage: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>() | nil,
   metadata: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>() | nil,
   parent_trace_id: <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>() | nil,
@@ -451,8 +451,8 @@ and can be promoted to represent nested spans.</p>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">generate_trace_id</span><span class="p" data-group-id="9793365662-1">(</span><span class="p" data-group-id="9793365662-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="p" data-group-id="9793365662-2">(</span><span class="n">id</span><span class="p" data-group-id="9793365662-2">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">generate_trace_id</span><span class="p" data-group-id="5800086431-1">(</span><span class="p" data-group-id="5800086431-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="p" data-group-id="5800086431-2">(</span><span class="n">id</span><span class="p" data-group-id="5800086431-2">)</span><span class="w">
 </span><span class="mi">32</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">id</span><span class="w"> </span><span class="o">=~</span><span class="w"> </span><span class="sr">~r/^[a-f0-9]+$/</span><span class="w">
 </span><span class="no">true</span></code></pre>
@@ -483,16 +483,16 @@ and can be promoted to represent nested spans.</p>
 
       </div>
 
-<p>Merges two <code class="inline">%Funx.Effect.Context{}</code> structs into one, preferring non-nil values from the first context.</p><p>This is used to preserve trace continuity and propagate context across composed effects.</p><ul><li>Non-nil fields from the first context take precedence.</li><li><code class="inline">baggage</code> and <code class="inline">metadata</code> maps are deeply merged.</li><li>This operation is idempotent and safe for reuse across nested effect chains.</li></ul><h2 id="merge/2-examples" class="section-heading">
+<p>Merges two <code class="inline">%Funx.Monad.Effect.Context{}</code> structs into one, preferring non-nil values from the first context.</p><p>This is used to preserve trace continuity and propagate context across composed effects.</p><ul><li>Non-nil fields from the first context take precedence.</li><li><code class="inline">baggage</code> and <code class="inline">metadata</code> maps are deeply merged.</li><li>This operation is idempotent and safe for reuse across nested effect chains.</li></ul><h2 id="merge/2-examples" class="section-heading">
   <a href="#merge/2-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">c1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="9595182041-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9595182041-2">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="9595182041-2">}</span><span class="p" data-group-id="9595182041-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">c2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="9595182041-3">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9595182041-4">%{</span><span class="ss">region</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;us-west&quot;</span><span class="p" data-group-id="9595182041-4">}</span><span class="p" data-group-id="9595182041-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">merge</span><span class="p" data-group-id="9595182041-5">(</span><span class="n">c1</span><span class="p">,</span><span class="w"> </span><span class="n">c2</span><span class="p" data-group-id="9595182041-5">)</span><span class="o">.</span><span class="n">baggage</span><span class="w">
-</span><span class="p" data-group-id="9595182041-6">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="ss">region</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;us-west&quot;</span><span class="p" data-group-id="9595182041-6">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">c1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="0441203153-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="0441203153-2">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0441203153-2">}</span><span class="p" data-group-id="0441203153-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">c2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="0441203153-3">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="0441203153-4">%{</span><span class="ss">region</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;us-west&quot;</span><span class="p" data-group-id="0441203153-4">}</span><span class="p" data-group-id="0441203153-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">merge</span><span class="p" data-group-id="0441203153-5">(</span><span class="n">c1</span><span class="p">,</span><span class="w"> </span><span class="n">c2</span><span class="p" data-group-id="0441203153-5">)</span><span class="o">.</span><span class="n">baggage</span><span class="w">
+</span><span class="p" data-group-id="0441203153-6">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="ss">region</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;us-west&quot;</span><span class="p" data-group-id="0441203153-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="new/0">
@@ -514,7 +514,7 @@ and can be promoted to represent nested spans.</p>
 
   <section class="docstring">
 
-<p>Creates a new <a href="Funx.Effect.Context.html"><code class="inline">Funx.Effect.Context</code></a> struct for use with effectful computations.</p><p>If no <code class="inline">:trace_id</code> is provided, a unique one is generated automatically.
+<p>Creates a new <a href="Funx.Monad.Effect.Context.html"><code class="inline">Funx.Monad.Effect.Context</code></a> struct for use with effectful computations.</p><p>If no <code class="inline">:trace_id</code> is provided, a unique one is generated automatically.
 You may also set optional fields such as <code class="inline">:span_name</code>, <code class="inline">:timeout</code>, <code class="inline">:baggage</code>, and <code class="inline">:metadata</code>.</p><p>The returned context is intended to be passed into <code class="inline">Left</code> and <code class="inline">Right</code> effects,
 where it will be propagated and updated across chained computations.</p><h2 id="new/0-examples" class="section-heading">
   <a href="#new/0-examples" class="hover-link">
@@ -522,11 +522,11 @@ where it will be propagated and updated across chained computations.</p><h2 id="
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="1129897790-1">(</span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;load-data&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="mi">2000</span><span class="p" data-group-id="1129897790-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="4927130076-1">(</span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;load-data&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="mi">2000</span><span class="p" data-group-id="4927130076-1">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="o">.</span><span class="n">span_name</span><span class="w">
 </span><span class="s">&quot;load-data&quot;</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="1129897790-2">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="p" data-group-id="1129897790-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="4927130076-2">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="p" data-group-id="4927130076-2">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="o">.</span><span class="n">trace_id</span><span class="w">
 </span><span class="s">&quot;abc123&quot;</span></code></pre>
   </section>
@@ -587,20 +587,20 @@ where it will be propagated and updated across chained computations.</p><h2 id="
 
       </div>
 
-<p>Returns a new <code class="inline">%Funx.Effect.Context{}</code> with fields overridden by values from the given keyword list.</p><ul><li>Direct fields like <code class="inline">:trace_id</code>, <code class="inline">:parent_trace_id</code>, <code class="inline">:span_name</code>, and <code class="inline">:timeout</code> are replaced if present.</li><li>Nested maps <code class="inline">:baggage</code> and <code class="inline">:metadata</code> are deeply merged, with the keyword list taking precedence.</li></ul><p>This is useful for refining or extending an existing context in a specific part of an effect chain.</p><h2 id="override/2-examples" class="section-heading">
+<p>Returns a new <code class="inline">%Funx.Monad.Effect.Context{}</code> with fields overridden by values from the given keyword list.</p><ul><li>Direct fields like <code class="inline">:trace_id</code>, <code class="inline">:parent_trace_id</code>, <code class="inline">:span_name</code>, and <code class="inline">:timeout</code> are replaced if present.</li><li>Nested maps <code class="inline">:baggage</code> and <code class="inline">:metadata</code> are deeply merged, with the keyword list taking precedence.</li></ul><p>This is useful for refining or extending an existing context in a specific part of an effect chain.</p><h2 id="override/2-examples" class="section-heading">
   <a href="#override/2-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="5793709823-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5793709823-2">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="5793709823-2">}</span><span class="p">,</span><span class="w"> </span><span class="ss">metadata</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5793709823-3">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="5793709823-3">}</span><span class="p" data-group-id="5793709823-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">override</span><span class="p" data-group-id="5793709823-4">(</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;child&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5793709823-5">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5793709823-5">}</span><span class="p">,</span><span class="w"> </span><span class="ss">metadata</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5793709823-6">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="5793709823-6">}</span><span class="p" data-group-id="5793709823-4">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="5528761380-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5528761380-2">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="5528761380-2">}</span><span class="p">,</span><span class="w"> </span><span class="ss">metadata</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5528761380-3">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="5528761380-3">}</span><span class="p" data-group-id="5528761380-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">override</span><span class="p" data-group-id="5528761380-4">(</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;child&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">baggage</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5528761380-5">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5528761380-5">}</span><span class="p">,</span><span class="w"> </span><span class="ss">metadata</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5528761380-6">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="5528761380-6">}</span><span class="p" data-group-id="5528761380-4">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="o">.</span><span class="n">span_name</span><span class="w">
 </span><span class="s">&quot;child&quot;</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="o">.</span><span class="n">baggage</span><span class="w">
-</span><span class="p" data-group-id="5793709823-7">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5793709823-7">}</span><span class="w">
+</span><span class="p" data-group-id="5528761380-7">%{</span><span class="ss">x</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5528761380-7">}</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">updated</span><span class="o">.</span><span class="n">metadata</span><span class="w">
-</span><span class="p" data-group-id="5793709823-8">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="5793709823-8">}</span></code></pre>
+</span><span class="p" data-group-id="5528761380-8">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="5528761380-8">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="promote_trace/2">
@@ -635,8 +635,8 @@ preserving trace lineage across composed effects.</p><h2 id="promote_trace/2-exa
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="8964845529-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;load&quot;</span><span class="p" data-group-id="8964845529-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Effect.Context</span><span class="o">.</span><span class="n">promote_trace</span><span class="p" data-group-id="8964845529-2">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;decode&quot;</span><span class="p" data-group-id="8964845529-2">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="4381562877-1">(</span><span class="ss">trace_id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">span_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;load&quot;</span><span class="p" data-group-id="4381562877-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Context</span><span class="o">.</span><span class="n">promote_trace</span><span class="p" data-group-id="4381562877-2">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;decode&quot;</span><span class="p" data-group-id="4381562877-2">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">child</span><span class="o">.</span><span class="n">parent_trace_id</span><span class="w">
 </span><span class="s">&quot;abc123&quot;</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">child</span><span class="o">.</span><span class="n">trace_id</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s">&quot;abc123&quot;</span><span class="w">

@@ -8,13 +8,13 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Funx.Maybe.Nothing — funx v0.1.0</title>
+    <title>Funx.Monad.Either.Left — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-6E0D8FD9.js"></script>
+    <script src="dist/sidebar_items-72D56BC3.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -112,19 +112,19 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either/left.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Maybe.Nothing</span> 
+    <span translate="no">Funx.Monad.Either.Left</span> 
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>Represents the <code class="inline">Nothing</code> variant of the <code class="inline">Maybe</code> monad, used to model the absence of a value.</p><p>A <code class="inline">Nothing</code> indicates that no value is present. All operations in the monad context simply propagate the absence, making <code class="inline">Nothing</code> an identity for failure or emptiness.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code>, all of which return <code class="inline">Nothing</code>.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code>, invoking the fallback function when folding.</li><li><a href="Funx.Filterable.html"><code class="inline">Funx.Filterable</code></a>: Supports filtering operations, which always return <code class="inline">Nothing</code>.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Enables equality checks between <code class="inline">Nothing</code> and other <code class="inline">Maybe</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering behavior between <code class="inline">Nothing</code> and <code class="inline">Just</code>.</li></ul><p>These implementations ensure that <code class="inline">Nothing</code> behaves consistently in functional composition, filtering, and comparison, treating absence as a stable and composable case.</p>
+<p>Represents the <code class="inline">Left</code> variant of the <code class="inline">Either</code> monad, used to model an error or failure.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Defines equality checks between <code class="inline">Left</code> and other <code class="inline">Either</code> values.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code> to handle folding for <code class="inline">Left</code> values.</li><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions for monadic operations.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering logic for <code class="inline">Left</code> and <code class="inline">Right</code> values.</li></ul><p>The <code class="inline">Left</code> monad propagates the wrapped error through operations without executing the success logic.</p>
     </section>
 
 </div>
@@ -143,7 +143,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+        <a href="#t:t/1" data-no-tooltip translate="no">t(value)</a>
 
       </div>
 
@@ -157,11 +157,11 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#pure/0" data-no-tooltip translate="no">pure()</a>
+        <a href="#pure/1" data-no-tooltip translate="no">pure(value)</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Creates a new <code class="inline">Nothing</code> value.</p></div>
+        <div class="summary-synopsis"><p>Creates a new <code class="inline">Left</code> value.</p></div>
 
     </div>
 
@@ -178,16 +178,16 @@ Pages
       <span class="text">Types</span>
     </h1>
     <div class="types-list">
-<section class="detail" id="t:t/0">
+<section class="detail" id="t:t/1">
 
   <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/1" class="detail-link" data-no-tooltip title="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t()</h1>
+    <h1 class="signature" translate="no">t(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L20" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either/left.ex#L16" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -199,7 +199,7 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Maybe.Nothing{}</pre>
+          <pre translate="no"><span class="attribute">@type</span> t(value) :: %Funx.Monad.Either.Left{left: value}</pre>
 
       </div>
 
@@ -218,16 +218,16 @@ Pages
       <span class="text">Functions</span>
     </h1>
     <div class="functions-list">
-<section class="detail" id="pure/0">
+<section class="detail" id="pure/1">
 
   <div class="detail-header">
-    <a href="#pure/0" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#pure/1" class="detail-link" data-no-tooltip title="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">pure()</h1>
+    <h1 class="signature" translate="no">pure(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L31" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either/left.ex#L29" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -239,18 +239,18 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> pure() :: <a href="#t:t/0">t</a>()</pre>
+          <pre translate="no"><span class="attribute">@spec</span> pure(value) :: <a href="#t:t/1">t</a>(value) when value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
 
       </div>
 
-<p>Creates a new <code class="inline">Nothing</code> value.</p><h2 id="pure/0-examples" class="section-heading">
-  <a href="#pure/0-examples" class="hover-link">
+<p>Creates a new <code class="inline">Left</code> value.</p><p>The <a href="#pure/1"><code class="inline">pure/1</code></a> function wraps a value in the <code class="inline">Left</code> monad, representing an error or failure.</p><h2 id="pure/1-examples" class="section-heading">
+  <a href="#pure/1-examples" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Maybe.Nothing</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9639739461-1">(</span><span class="p" data-group-id="9639739461-1">)</span><span class="w">
-</span><span class="p" data-group-id="9639739461-2">%</span><span class="nc" data-group-id="9639739461-2">Funx.Maybe.Nothing</span><span class="p" data-group-id="9639739461-2">{</span><span class="p" data-group-id="9639739461-2">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2420529488-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="2420529488-1">)</span><span class="w">
+</span><span class="p" data-group-id="2420529488-2">%</span><span class="nc" data-group-id="2420529488-2">Funx.Monad.Either.Left</span><span class="p" data-group-id="2420529488-2">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="2420529488-2">}</span></code></pre>
   </section>
 </section>
 

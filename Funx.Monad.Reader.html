@@ -8,13 +8,13 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Funx.Reader — funx v0.1.0</title>
+    <title>Funx.Monad.Reader — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-6E0D8FD9.js"></script>
+    <script src="dist/sidebar_items-72D56BC3.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -117,14 +117,14 @@ Pages
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Reader</span> 
+    <span translate="no">Funx.Monad.Reader</span> 
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>The <a href="Funx.Reader.html"><code class="inline">Funx.Reader</code></a> module represents the Reader monad, which allows computations to access
+<p>The <a href="Funx.Monad.Reader.html"><code class="inline">Funx.Monad.Reader</code></a> module represents the Reader monad, which allows computations to access
 shared, read-only environment values.</p><p>This module defines core Reader functions:</p><ul><li><a href="#pure/1"><code class="inline">pure/1</code></a> – Lifts a value into the Reader context.</li><li><a href="#run/2"><code class="inline">run/2</code></a> – Executes the Reader with a given environment.</li><li><a href="#asks/1"><code class="inline">asks/1</code></a> – Extracts and transforms a value from the environment.</li><li><a href="#ask/0"><code class="inline">ask/0</code></a> – Extracts the full environment.</li></ul><p>This module implements the following protocol:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> for monadic composition.</li></ul><p>Note: The Reader monad does not implement <code class="inline">Eq</code> or <code class="inline">Ord</code>, since Readers are lazy— they do not actually contain a value until they are run. We only can compare the results of a Reader, not the Reader itself.</p>
     </section>
 
@@ -230,7 +230,7 @@ shared, read-only environment values.</p><p>This module defines core Reader func
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t(env, value) :: %Funx.Reader{run: (env -&gt; value)}</pre>
+          <pre translate="no"><span class="attribute">@type</span> t(env, value) :: %Funx.Monad.Reader{run: (env -&gt; value)}</pre>
 
       </div>
 
@@ -280,9 +280,9 @@ shared, read-only environment values.</p><p>This module defines core Reader func
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Reader</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="6385385376-1">(</span><span class="p" data-group-id="6385385376-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="6385385376-2">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6385385376-3">%{</span><span class="ss">foo</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="6385385376-3">}</span><span class="p" data-group-id="6385385376-2">)</span><span class="w">
-</span><span class="p" data-group-id="6385385376-4">%{</span><span class="ss">foo</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="6385385376-4">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Reader</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="7631302900-1">(</span><span class="p" data-group-id="7631302900-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="7631302900-2">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7631302900-3">%{</span><span class="ss">foo</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="7631302900-3">}</span><span class="p" data-group-id="7631302900-2">)</span><span class="w">
+</span><span class="p" data-group-id="7631302900-4">%{</span><span class="ss">foo</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="7631302900-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="asks/1">
@@ -316,8 +316,8 @@ shared, read-only environment values.</p><p>This module defines core Reader func
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="2397874514-1">(</span><span class="k" data-group-id="2397874514-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="2397874514-3">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="ss">:foo</span><span class="p" data-group-id="2397874514-3">)</span><span class="w"> </span><span class="k" data-group-id="2397874514-2">end</span><span class="p" data-group-id="2397874514-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2397874514-4">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2397874514-5">%{</span><span class="ss">foo</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="2397874514-5">}</span><span class="p" data-group-id="2397874514-4">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="1863925026-1">(</span><span class="k" data-group-id="1863925026-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="1863925026-3">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="ss">:foo</span><span class="p" data-group-id="1863925026-3">)</span><span class="w"> </span><span class="k" data-group-id="1863925026-2">end</span><span class="p" data-group-id="1863925026-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1863925026-4">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1863925026-5">%{</span><span class="ss">foo</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="1863925026-5">}</span><span class="p" data-group-id="1863925026-4">)</span><span class="w">
 </span><span class="s">&quot;bar&quot;</span></code></pre>
   </section>
 </section>
@@ -352,8 +352,8 @@ shared, read-only environment values.</p><p>This module defines core Reader func
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="6880955762-1">(</span><span class="mi">42</span><span class="p" data-group-id="6880955762-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="6880955762-2">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6880955762-3">%{</span><span class="p" data-group-id="6880955762-3">}</span><span class="p" data-group-id="6880955762-2">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="6461038153-1">(</span><span class="mi">42</span><span class="p" data-group-id="6461038153-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="6461038153-2">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6461038153-3">%{</span><span class="p" data-group-id="6461038153-3">}</span><span class="p" data-group-id="6461038153-2">)</span><span class="w">
 </span><span class="mi">42</span></code></pre>
   </section>
 </section>
@@ -388,8 +388,8 @@ shared, read-only environment values.</p><p>This module defines core Reader func
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1098859843-1">(</span><span class="mi">42</span><span class="p" data-group-id="1098859843-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1098859843-2">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1098859843-3">%{</span><span class="p" data-group-id="1098859843-3">}</span><span class="p" data-group-id="1098859843-2">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2396184315-1">(</span><span class="mi">42</span><span class="p" data-group-id="2396184315-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2396184315-2">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2396184315-3">%{</span><span class="p" data-group-id="2396184315-3">}</span><span class="p" data-group-id="2396184315-2">)</span><span class="w">
 </span><span class="mi">42</span></code></pre>
   </section>
 </section>

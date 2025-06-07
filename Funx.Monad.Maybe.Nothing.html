@@ -8,7 +8,7 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Funx.Monoid.Eq.All — funx v0.1.0</title>
+    <title>Funx.Monad.Maybe.Nothing — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -112,19 +112,19 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monoid/eq_all.ex#L3" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Monoid.Eq.All</span> 
+    <span translate="no">Funx.Monad.Maybe.Nothing</span> 
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>A Monoid implementation for equality checks for All.</p>
+<p>Represents the <code class="inline">Nothing</code> variant of the <code class="inline">Maybe</code> monad, used to model the absence of a value.</p><p>A <code class="inline">Nothing</code> indicates that no value is present. All operations in the monad context simply propagate the absence, making <code class="inline">Nothing</code> an identity for failure or emptiness.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code>, all of which return <code class="inline">Nothing</code>.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code>, invoking the fallback function when folding.</li><li><a href="Funx.Filterable.html"><code class="inline">Funx.Filterable</code></a>: Supports filtering operations, which always return <code class="inline">Nothing</code>.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Enables equality checks between <code class="inline">Nothing</code> and other <code class="inline">Maybe</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering behavior between <code class="inline">Nothing</code> and <code class="inline">Just</code>.</li></ul><p>These implementations ensure that <code class="inline">Nothing</code> behaves consistently in functional composition, filtering, and comparison, treating absence as a stable and composable case.</p>
     </section>
 
 </div>
@@ -157,17 +157,11 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#default_eq?/2" data-no-tooltip translate="no">default_eq?(_, _)</a>
+        <a href="#pure/0" data-no-tooltip translate="no">pure()</a>
 
       </div>
 
-    </div>
-
-    <div class="summary-row">
-      <div class="summary-signature">
-        <a href="#default_not_eq?/2" data-no-tooltip translate="no">default_not_eq?(_, _)</a>
-
-      </div>
+        <div class="summary-synopsis"><p>Creates a new <code class="inline">Nothing</code> value.</p></div>
 
     </div>
 
@@ -193,7 +187,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">t()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monoid/eq_all.ex#L8" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L20" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -205,10 +199,7 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Monoid.Eq.All{
-  eq?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()),
-  not_eq?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>())
-}</pre>
+          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Monad.Maybe.Nothing{}</pre>
 
       </div>
 
@@ -227,16 +218,16 @@ Pages
       <span class="text">Functions</span>
     </h1>
     <div class="functions-list">
-<section class="detail" id="default_eq?/2">
+<section class="detail" id="pure/0">
 
   <div class="detail-header">
-    <a href="#default_eq?/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#pure/0" class="detail-link" data-no-tooltip title="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">default_eq?(_, _)</h1>
+    <h1 class="signature" translate="no">pure()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monoid/eq_all.ex#L16" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/nothing.ex#L31" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -246,29 +237,20 @@ Pages
 
   <section class="docstring">
 
+      <div class="specs">
 
-  </section>
-</section>
-<section class="detail" id="default_not_eq?/2">
+          <pre translate="no"><span class="attribute">@spec</span> pure() :: <a href="#t:t/0">t</a>()</pre>
 
-  <div class="detail-header">
-    <a href="#default_not_eq?/2" class="detail-link" data-no-tooltip title="Link to this function">
-      <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
-    </a>
-    <h1 class="signature" translate="no">default_not_eq?(_, _)</h1>
+      </div>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monoid/eq_all.ex#L18" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
-
-
-  </div>
-
-  <section class="docstring">
-
-
+<p>Creates a new <code class="inline">Nothing</code> value.</p><h2 id="pure/0-examples" class="section-heading">
+  <a href="#pure/0-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe.Nothing</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4095658244-1">(</span><span class="p" data-group-id="4095658244-1">)</span><span class="w">
+</span><span class="p" data-group-id="4095658244-2">%</span><span class="nc" data-group-id="4095658244-2">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="4095658244-2">{</span><span class="p" data-group-id="4095658244-2">}</span></code></pre>
   </section>
 </section>
 

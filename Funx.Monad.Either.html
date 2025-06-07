@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.0">
+
+
+    <title>Funx.Monad.Either — funx v0.1.0</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-72D56BC3.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="modules" class="page-module">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+    <span translate="no">Funx.Monad.Either</span> 
+    <small class="app-vsn" translate="no">(funx v0.1.0)</small>
+
+  </h1>
+
+
+    <section id="moduledoc">
+<p>The <a href="Funx.Monad.Either.html"><code class="inline">Funx.Monad.Either</code></a> module provides an implementation of the <code class="inline">Either</code> monad, a functional abstraction used to model computations that may fail.</p><p>An <code class="inline">Either</code> represents one of two possibilities:</p><ul><li><code class="inline">Right(value)</code>: a successful result</li><li><code class="inline">Left(error)</code>: a failure or error</li></ul><p>This pattern is commonly used in place of exceptions to handle errors explicitly and safely in functional pipelines.</p><h3 id="module-constructors" class="section-heading">
+  <a href="#module-constructors" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Constructors</span>
+</h3>
+<ul><li><a href="#right/1"><code class="inline">right/1</code></a>: Wraps a value in the <code class="inline">Right</code> branch.</li><li><a href="#left/1"><code class="inline">left/1</code></a>: Wraps a value in the <code class="inline">Left</code> branch.</li><li><a href="#pure/1"><code class="inline">pure/1</code></a>: Alias for <a href="#right/1"><code class="inline">right/1</code></a>.</li></ul><h3 id="module-refinement" class="section-heading">
+  <a href="#module-refinement" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Refinement</span>
+</h3>
+<ul><li><a href="#right?/1"><code class="inline">right?/1</code></a>: Returns <code class="inline">true</code> if the value is a <code class="inline">Right</code>.</li><li><a href="#left?/1"><code class="inline">left?/1</code></a>: Returns <code class="inline">true</code> if the value is a <code class="inline">Left</code>.</li></ul><h3 id="module-fallback-and-extraction" class="section-heading">
+  <a href="#module-fallback-and-extraction" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Fallback and Extraction</span>
+</h3>
+<ul><li><a href="#get_or_else/2"><code class="inline">get_or_else/2</code></a>: Returns the value from a <code class="inline">Right</code>, or a default if <code class="inline">Left</code>.</li><li><a href="#or_else/2"><code class="inline">or_else/2</code></a>: Returns the original <code class="inline">Right</code>, or invokes a fallback function if <code class="inline">Left</code>.</li><li><a href="#map_left/2"><code class="inline">map_left/2</code></a>: Transforms a <code class="inline">Left</code> using a function, leaving <code class="inline">Right</code> values unchanged.</li><li><a href="#flip/1"><code class="inline">flip/1</code></a>: Swaps <code class="inline">Left</code> and <code class="inline">Right</code>, turning errors into successes and vice versa.</li><li><a href="#filter_or_else/3"><code class="inline">filter_or_else/3</code></a>: Applies a predicate to the <code class="inline">Right</code> value; if false, returns a fallback <code class="inline">Left</code>.</li></ul><h3 id="module-list-operations" class="section-heading">
+  <a href="#module-list-operations" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">List Operations</span>
+</h3>
+<ul><li><a href="#concat/1"><code class="inline">concat/1</code></a>: Removes all <code class="inline">Left</code> values and unwraps the <code class="inline">Right</code> values from a list.</li><li><a href="#concat_map/2"><code class="inline">concat_map/2</code></a>: Applies a function and collects only <code class="inline">Right</code> results.</li><li><a href="#sequence/1"><code class="inline">sequence/1</code></a>: Converts a list of <code class="inline">Either</code> values into a single <code class="inline">Either</code> of list.</li><li><a href="#traverse/2"><code class="inline">traverse/2</code></a>: Applies a function to each element in a list and sequences the results.</li><li><a href="#sequence_a/1"><code class="inline">sequence_a/1</code></a>: Like <a href="#sequence/1"><code class="inline">sequence/1</code></a>, but accumulates all errors from <code class="inline">Left</code> values.</li><li><a href="#traverse_a/2"><code class="inline">traverse_a/2</code></a>: Like <a href="#traverse/2"><code class="inline">traverse/2</code></a>, but accumulates all <code class="inline">Left</code> values instead of short-circuiting.</li><li><a href="#wither_a/2"><code class="inline">wither_a/2</code></a>: Like <a href="#traverse_a/2"><code class="inline">traverse_a/2</code></a>, but filters out <code class="inline">Nothing</code> results and collects only <code class="inline">Just</code> values.</li></ul><h3 id="module-validation" class="section-heading">
+  <a href="#module-validation" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Validation</span>
+</h3>
+<ul><li><a href="#validate/2"><code class="inline">validate/2</code></a>: Applies multiple validators to a single input, collecting all errors.</li></ul><h3 id="module-lifting" class="section-heading">
+  <a href="#module-lifting" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Lifting</span>
+</h3>
+<ul><li><a href="#lift_predicate/3"><code class="inline">lift_predicate/3</code></a>: Turns a predicate into an <code class="inline">Either</code>, returning <code class="inline">Right</code> on <code class="inline">true</code> and <code class="inline">Left</code> on <code class="inline">false</code>.</li><li><a href="#lift_maybe/2"><code class="inline">lift_maybe/2</code></a>: Converts a <code class="inline">Maybe</code> to an <code class="inline">Either</code> using a fallback value.</li><li><a href="#lift_eq/1"><code class="inline">lift_eq/1</code></a>: Lifts an equality function into the <code class="inline">Either</code> context.</li><li><a href="#lift_ord/1"><code class="inline">lift_ord/1</code></a>: Lifts an ordering function into the <code class="inline">Either</code> context.</li></ul><p>  ## Transformation</p><ul><li><a href="#map_left/2"><code class="inline">map_left/2</code></a> – Transforms the error inside a <code class="inline">Left</code>, leaving <code class="inline">Right</code> values untouched.</li></ul><h3 id="module-elixir-interoperability" class="section-heading">
+  <a href="#module-elixir-interoperability" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Elixir Interoperability</span>
+</h3>
+<ul><li><a href="#from_result/1"><code class="inline">from_result/1</code></a>: Converts <code class="inline">{:ok, val}</code> or <code class="inline">{:error, err}</code> into an <code class="inline">Either</code>.</li><li><a href="#to_result/1"><code class="inline">to_result/1</code></a>: Converts an <code class="inline">Either</code> into a result tuple.</li><li><a href="#from_try/1"><code class="inline">from_try/1</code></a>: Runs a function and returns <code class="inline">Right</code> on success or <code class="inline">Left</code> on exception.</li><li><a href="#to_try!/1"><code class="inline">to_try!/1</code></a>: Unwraps a <code class="inline">Right</code>, or raises an error from a <code class="inline">Left</code>.</li></ul><h2 id="module-protocols" class="section-heading">
+  <a href="#module-protocols" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Protocols</span>
+</h2>
+<p>The <code class="inline">Left</code> and <code class="inline">Right</code> structs implement the following protocols, making the <code class="inline">Either</code> abstraction composable and extensible:</p><ul><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Enables equality comparisons between <code class="inline">Either</code> values.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Implements <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code> for reducing over contained values.</li><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Provides <code class="inline">map/2</code>, <code class="inline">ap/2</code>, and <code class="inline">bind/2</code> for monadic composition.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering behavior for comparing <code class="inline">Left</code> and <code class="inline">Right</code> values.</li></ul><p>Although these implementations are defined on each constructor (<code class="inline">Left</code> and <code class="inline">Right</code>), the behavior is consistent across the <code class="inline">Either</code> abstraction.</p><p>This module helps you model failure explicitly, compose error-aware logic, and integrate cleanly with Elixir's functional idioms.</p>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:t/2" data-no-tooltip translate="no">t(left, right)</a>
+
+      </div>
+
+    </div>
+
+</div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#concat/1" data-no-tooltip translate="no">concat(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Removes <code class="inline">Left</code> values from a list of <code class="inline">Either</code> and returns a list of unwrapped <code class="inline">Right</code> values.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#concat_map/2" data-no-tooltip translate="no">concat_map(list, func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Applies the given function to each element in the list and collects the <code class="inline">Right</code> results, discarding any <code class="inline">Left</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#filter_or_else/3" data-no-tooltip translate="no">filter_or_else(either, predicate, left_func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Filters the value inside a <code class="inline">Right</code> using the given <code class="inline">predicate</code>. If the predicate returns <code class="inline">false</code>,
+a <code class="inline">Left</code> is returned using the <code class="inline">left_func</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#flip/1" data-no-tooltip translate="no">flip(arg1)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Swaps the <code class="inline">Left</code> and <code class="inline">Right</code> branches of the <code class="inline">Either</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#from_result/1" data-no-tooltip translate="no">from_result(arg)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts a result (<code class="inline">{:ok, _}</code> or <code class="inline">{:error, _}</code>) to an <code class="inline">Either</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#from_try/1" data-no-tooltip translate="no">from_try(func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Wraps a value in an <code class="inline">Either</code>, catching any exceptions. If an exception occurs, a <code class="inline">Left</code> is returned with the exception.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#get_or_else/2" data-no-tooltip translate="no">get_or_else(either, default)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Retrieves the value from a <code class="inline">Right</code>, returning the <code class="inline">default</code> value if <code class="inline">Left</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#left/1" data-no-tooltip translate="no">left(value)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Wraps a value in the <code class="inline">Left</code> monad.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#left?/1" data-no-tooltip translate="no">left?(arg1)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns <code class="inline">true</code> if the <code class="inline">Either</code> is a <code class="inline">Left</code> value.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#lift_eq/1" data-no-tooltip translate="no">lift_eq(custom_eq)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Lifts an equality function to compare <code class="inline">Either</code> values</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#lift_maybe/2" data-no-tooltip translate="no">lift_maybe(maybe, on_none)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts a <code class="inline">Maybe</code> value to an <code class="inline">Either</code>. If the <code class="inline">Maybe</code> is <code class="inline">Nothing</code>, a <code class="inline">Left</code> is returned using <code class="inline">on_none</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#lift_ord/1" data-no-tooltip translate="no">lift_ord(custom_ord)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Creates a custom ordering function for <code class="inline">Either</code> values using the provided <code class="inline">custom_ord</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#lift_predicate/3" data-no-tooltip translate="no">lift_predicate(value, predicate, on_false)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Lifts a value into an <code class="inline">Either</code> based on the result of a predicate.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#map_left/2" data-no-tooltip translate="no">map_left(right, func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Transforms the <code class="inline">Left</code> value using the given function if the <code class="inline">Either</code> is a <code class="inline">Left</code>.
+If the value is <code class="inline">Right</code>, it is returned unchanged.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#or_else/2" data-no-tooltip translate="no">or_else(right, fallback_fun)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns the current <code class="inline">Right</code> value or invokes the <code class="inline">fallback_fun</code> if <code class="inline">Left</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#pure/1" data-no-tooltip translate="no">pure(value)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Alias for <a href="#right/1"><code class="inline">right/1</code></a>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#right/1" data-no-tooltip translate="no">right(value)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Wraps a value in the <code class="inline">Right</code> monad.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#right?/1" data-no-tooltip translate="no">right?(arg1)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns <code class="inline">true</code> if the <code class="inline">Either</code> is a <code class="inline">Right</code> value.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#sequence/1" data-no-tooltip translate="no">sequence(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Sequences a list of <code class="inline">Either</code> values into an <code class="inline">Either</code> of a list.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#sequence_a/1" data-no-tooltip translate="no">sequence_a(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Sequences a list of <code class="inline">Either</code> values, collecting all errors from <code class="inline">Left</code> values, rather than short-circuiting.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_result/1" data-no-tooltip translate="no">to_result(either)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts an <code class="inline">Either</code> to a result (<code class="inline">{:ok, value}</code> or <code class="inline">{:error, reason}</code>).</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_try!/1" data-no-tooltip translate="no">to_try!(arg1)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts an <code class="inline">Either</code> to its inner value, raising an exception if it is <code class="inline">Left</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#traverse/2" data-no-tooltip translate="no">traverse(list, func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Traverses a list, applying the given function to each element and collecting the results in a single <code class="inline">Right</code>, or short-circuiting with the first <code class="inline">Left</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#traverse_a/2" data-no-tooltip translate="no">traverse_a(list, func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Traverses a list, applying the given function to each element and collecting the results in a single <code class="inline">Right</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#validate/2" data-no-tooltip translate="no">validate(value, validators)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Validates a value using a list of validator functions. Each validator returns an <code class="inline">Either.Right</code> if
+the check passes, or an <code class="inline">Either.Left</code> with an error message if it fails. If any validation fails,
+all errors are aggregated and returned in a single <code class="inline">Left</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#wither_a/2" data-no-tooltip translate="no">wither_a(list, func)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Traverses a list, applying the given function to each element, and collects the successful <code class="inline">Just</code> results into a single <code class="inline">Right</code>.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+    <div class="types-list">
+<section class="detail" id="t:t/2">
+
+  <div class="detail-header">
+    <a href="#t:t/2" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">t(left, right)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L87" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> t(left, right) ::
+  <a href="Funx.Monad.Either.Left.html#t:t/1">Funx.Monad.Either.Left.t</a>(left) | <a href="Funx.Monad.Either.Right.html#t:t/1">Funx.Monad.Either.Right.t</a>(right)</pre>
+
+      </div>
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+    <div class="functions-list">
+<section class="detail" id="concat/1">
+
+  <div class="detail-header">
+    <a href="#concat/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">concat(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L362" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> concat([<a href="#t:t/2">t</a>(error, value)]) :: [value] when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), value: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Removes <code class="inline">Left</code> values from a list of <code class="inline">Either</code> and returns a list of unwrapped <code class="inline">Right</code> values.</p><p>Useful for discarding failed computations while keeping successful results.</p><h2 id="concat/1-examples" class="section-heading">
+  <a href="#concat/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="0132941242-1">(</span><span class="p" data-group-id="0132941242-2">[</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0132941242-3">(</span><span class="mi">1</span><span class="p" data-group-id="0132941242-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0132941242-4">(</span><span class="ss">:error</span><span class="p" data-group-id="0132941242-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0132941242-5">(</span><span class="mi">2</span><span class="p" data-group-id="0132941242-5">)</span><span class="p" data-group-id="0132941242-2">]</span><span class="p" data-group-id="0132941242-1">)</span><span class="w">
+</span><span class="p" data-group-id="0132941242-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0132941242-6">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="0132941242-7">(</span><span class="p" data-group-id="0132941242-8">[</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0132941242-9">(</span><span class="ss">:a</span><span class="p" data-group-id="0132941242-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0132941242-10">(</span><span class="ss">:b</span><span class="p" data-group-id="0132941242-10">)</span><span class="p" data-group-id="0132941242-8">]</span><span class="p" data-group-id="0132941242-7">)</span><span class="w">
+</span><span class="p" data-group-id="0132941242-11">[</span><span class="p" data-group-id="0132941242-11">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="0132941242-12">(</span><span class="p" data-group-id="0132941242-13">[</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0132941242-14">(</span><span class="s">&quot;a&quot;</span><span class="p" data-group-id="0132941242-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0132941242-15">(</span><span class="s">&quot;b&quot;</span><span class="p" data-group-id="0132941242-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0132941242-16">(</span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="0132941242-16">)</span><span class="p" data-group-id="0132941242-13">]</span><span class="p" data-group-id="0132941242-12">)</span><span class="w">
+</span><span class="p" data-group-id="0132941242-17">[</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="0132941242-17">]</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="concat_map/2">
+
+  <div class="detail-header">
+    <a href="#concat_map/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">concat_map(list, func)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L389" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> concat_map([input], (input -&gt; <a href="#t:t/2">t</a>(error, output))) :: [output]
+when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), output: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), error: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Applies the given function to each element in the list and collects the <code class="inline">Right</code> results, discarding any <code class="inline">Left</code>.</p><p>This is useful when mapping a function that may fail and you only want the successful results.</p><h2 id="concat_map/2-examples" class="section-heading">
+  <a href="#concat_map/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="0251923771-1">(</span><span class="p" data-group-id="0251923771-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0251923771-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0251923771-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">rem</span><span class="p" data-group-id="0251923771-4">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0251923771-4">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0251923771-5">(</span><span class="n">x</span><span class="p" data-group-id="0251923771-5">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0251923771-6">(</span><span class="ss">:even</span><span class="p" data-group-id="0251923771-6">)</span><span class="w"> </span><span class="k" data-group-id="0251923771-3">end</span><span class="p" data-group-id="0251923771-1">)</span><span class="w">
+</span><span class="p" data-group-id="0251923771-7">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0251923771-7">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="0251923771-8">(</span><span class="p" data-group-id="0251923771-9">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="0251923771-9">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0251923771-10">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0251923771-11">(</span><span class="n">x</span><span class="p" data-group-id="0251923771-11">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0251923771-12">(</span><span class="ss">:too_small</span><span class="p" data-group-id="0251923771-12">)</span><span class="w"> </span><span class="k" data-group-id="0251923771-10">end</span><span class="p" data-group-id="0251923771-8">)</span><span class="w">
+</span><span class="p" data-group-id="0251923771-13">[</span><span class="mi">4</span><span class="p" data-group-id="0251923771-13">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="0251923771-14">(</span><span class="p" data-group-id="0251923771-15">[</span><span class="p" data-group-id="0251923771-15">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0251923771-16">fn</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0251923771-17">(</span><span class="ss">:none</span><span class="p" data-group-id="0251923771-17">)</span><span class="w"> </span><span class="k" data-group-id="0251923771-16">end</span><span class="p" data-group-id="0251923771-14">)</span><span class="w">
+</span><span class="p" data-group-id="0251923771-18">[</span><span class="p" data-group-id="0251923771-18">]</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="filter_or_else/3">
+
+  <div class="detail-header">
+    <a href="#filter_or_else/3" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">filter_or_else(either, predicate, left_func)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L160" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> filter_or_else(<a href="#t:t/2">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()), (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()), (-&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())) ::
+  <a href="#t:t/2">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+
+      </div>
+
+<p>Filters the value inside a <code class="inline">Right</code> using the given <code class="inline">predicate</code>. If the predicate returns <code class="inline">false</code>,
+a <code class="inline">Left</code> is returned using the <code class="inline">left_func</code>.</p><h2 id="filter_or_else/3-examples" class="section-heading">
+  <a href="#filter_or_else/3-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">filter_or_else</span><span class="p" data-group-id="5321839840-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5321839840-2">(</span><span class="mi">5</span><span class="p" data-group-id="5321839840-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5321839840-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="5321839840-3">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5321839840-4">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="5321839840-4">end</span><span class="p" data-group-id="5321839840-1">)</span><span class="w">
+</span><span class="p" data-group-id="5321839840-5">%</span><span class="nc" data-group-id="5321839840-5">Funx.Monad.Either.Right</span><span class="p" data-group-id="5321839840-5">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5321839840-5">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">filter_or_else</span><span class="p" data-group-id="5321839840-6">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5321839840-7">(</span><span class="mi">2</span><span class="p" data-group-id="5321839840-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5321839840-8">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="5321839840-8">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5321839840-9">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="5321839840-9">end</span><span class="p" data-group-id="5321839840-6">)</span><span class="w">
+</span><span class="p" data-group-id="5321839840-10">%</span><span class="nc" data-group-id="5321839840-10">Funx.Monad.Either.Left</span><span class="p" data-group-id="5321839840-10">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5321839840-10">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="flip/1">
+
+  <div class="detail-header">
+    <a href="#flip/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">flip(arg1)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L227" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> flip(<a href="#t:t/2">t</a>(left, right)) :: <a href="#t:t/2">t</a>(right, left) when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Swaps the <code class="inline">Left</code> and <code class="inline">Right</code> branches of the <code class="inline">Either</code>.</p><p>Turns a <code class="inline">Left</code> into a <code class="inline">Right</code> and vice versa, preserving the contained term.</p><h2 id="flip/1-examples" class="section-heading">
+  <a href="#flip/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">flip</span><span class="p" data-group-id="8028579241-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="8028579241-2">(</span><span class="ss">:error</span><span class="p" data-group-id="8028579241-2">)</span><span class="p" data-group-id="8028579241-1">)</span><span class="w">
+</span><span class="p" data-group-id="8028579241-3">%</span><span class="nc" data-group-id="8028579241-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="8028579241-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="ss">:error</span><span class="p" data-group-id="8028579241-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">flip</span><span class="p" data-group-id="8028579241-4">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8028579241-5">(</span><span class="mi">42</span><span class="p" data-group-id="8028579241-5">)</span><span class="p" data-group-id="8028579241-4">)</span><span class="w">
+</span><span class="p" data-group-id="8028579241-6">%</span><span class="nc" data-group-id="8028579241-6">Funx.Monad.Either.Left</span><span class="p" data-group-id="8028579241-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="8028579241-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="from_result/1">
+
+  <div class="detail-header">
+    <a href="#from_result/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">from_result(arg)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L666" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> from_result({:ok, right} | {:error, left}) :: <a href="#t:t/2">t</a>(left, right)
+when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Converts a result (<code class="inline">{:ok, _}</code> or <code class="inline">{:error, _}</code>) to an <code class="inline">Either</code>.</p><h2 id="from_result/1-examples" class="section-heading">
+  <a href="#from_result/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="6349439743-1">(</span><span class="p" data-group-id="6349439743-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6349439743-2">}</span><span class="p" data-group-id="6349439743-1">)</span><span class="w">
+</span><span class="p" data-group-id="6349439743-3">%</span><span class="nc" data-group-id="6349439743-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="6349439743-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6349439743-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="6349439743-4">(</span><span class="p" data-group-id="6349439743-5">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6349439743-5">}</span><span class="p" data-group-id="6349439743-4">)</span><span class="w">
+</span><span class="p" data-group-id="6349439743-6">%</span><span class="nc" data-group-id="6349439743-6">Funx.Monad.Either.Left</span><span class="p" data-group-id="6349439743-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6349439743-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="from_try/1">
+
+  <div class="detail-header">
+    <a href="#from_try/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">from_try(func)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L701" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> from_try((-&gt; right)) :: <a href="#t:t/2">t</a>(<a href="https://hexdocs.pm/elixir/Exception.html#t:t/0">Exception.t</a>(), right) when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Wraps a value in an <code class="inline">Either</code>, catching any exceptions. If an exception occurs, a <code class="inline">Left</code> is returned with the exception.</p><h2 id="from_try/1-examples" class="section-heading">
+  <a href="#from_try/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="2550624860-1">(</span><span class="k" data-group-id="2550624860-2">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="2550624860-2">end</span><span class="p" data-group-id="2550624860-1">)</span><span class="w">
+</span><span class="p" data-group-id="2550624860-3">%</span><span class="nc" data-group-id="2550624860-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="2550624860-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2550624860-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="2550624860-4">(</span><span class="k" data-group-id="2550624860-5">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="2550624860-5">end</span><span class="p" data-group-id="2550624860-4">)</span><span class="w">
+</span><span class="p" data-group-id="2550624860-6">%</span><span class="nc" data-group-id="2550624860-6">Funx.Monad.Either.Left</span><span class="p" data-group-id="2550624860-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2550624860-7">%</span><span class="nc" data-group-id="2550624860-7">RuntimeError</span><span class="p" data-group-id="2550624860-7">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="2550624860-7">}</span><span class="p" data-group-id="2550624860-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="get_or_else/2">
+
+  <div class="detail-header">
+    <a href="#get_or_else/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">get_or_else(either, default)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L186" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> get_or_else(<a href="#t:t/2">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Retrieves the value from a <code class="inline">Right</code>, returning the <code class="inline">default</code> value if <code class="inline">Left</code>.</p><h2 id="get_or_else/2-examples" class="section-heading">
+  <a href="#get_or_else/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="0485805370-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0485805370-2">(</span><span class="mi">5</span><span class="p" data-group-id="0485805370-2">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="0485805370-1">)</span><span class="w">
+</span><span class="mi">5</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="0485805370-3">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0485805370-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="0485805370-4">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="0485805370-3">)</span><span class="w">
+</span><span class="mi">0</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="left/1">
+
+  <div class="detail-header">
+    <a href="#left/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">left(value)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L115" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> left(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="Funx.Monad.Either.Left.html#t:t/1">Funx.Monad.Either.Left.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+
+      </div>
+
+<p>Wraps a value in the <code class="inline">Left</code> monad.</p><h2 id="left/1-examples" class="section-heading">
+  <a href="#left/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5909729893-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5909729893-1">)</span><span class="w">
+</span><span class="p" data-group-id="5909729893-2">%</span><span class="nc" data-group-id="5909729893-2">Funx.Monad.Either.Left</span><span class="p" data-group-id="5909729893-2">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5909729893-2">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="left?/1">
+
+  <div class="detail-header">
+    <a href="#left?/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">left?(arg1)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L129" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> left?(<a href="#t:t/2">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+
+      </div>
+
+<p>Returns <code class="inline">true</code> if the <code class="inline">Either</code> is a <code class="inline">Left</code> value.</p><h2 id="left?/1-examples" class="section-heading">
+  <a href="#left?/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left?</span><span class="p" data-group-id="3027479625-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3027479625-2">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="3027479625-2">)</span><span class="p" data-group-id="3027479625-1">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left?</span><span class="p" data-group-id="3027479625-3">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3027479625-4">(</span><span class="mi">5</span><span class="p" data-group-id="3027479625-4">)</span><span class="p" data-group-id="3027479625-3">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="lift_eq/1">
+
+  <div class="detail-header">
+    <a href="#lift_eq/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">lift_eq(custom_eq)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L254" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> lift_eq(<a href="Funx.Eq.Utils.html#t:eq_t/0">Funx.Eq.Utils.eq_t</a>()) :: <a href="Funx.Eq.Utils.html#t:eq_map/0">Funx.Eq.Utils.eq_map</a>()</pre>
+
+      </div>
+
+<p>Lifts an equality function to compare <code class="inline">Either</code> values:</p><ul><li><code class="inline">Right</code> vs <code class="inline">Right</code>: Uses the custom equality function.</li><li><code class="inline">Left</code> vs <code class="inline">Left</code>: Uses the custom equality function.</li><li><code class="inline">Left</code> vs <code class="inline">Right</code> or vice versa: Always <code class="inline">false</code>.</li></ul><h2 id="lift_eq/1-examples" class="section-heading">
+  <a href="#lift_eq/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_eq</span><span class="p" data-group-id="3945868985-1">(</span><span class="p" data-group-id="3945868985-2">%{</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="3945868985-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="3945868985-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="3945868985-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="3945868985-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="3945868985-2">}</span><span class="p" data-group-id="3945868985-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3945868985-5">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3945868985-6">(</span><span class="mi">5</span><span class="p" data-group-id="3945868985-6">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3945868985-7">(</span><span class="mi">5</span><span class="p" data-group-id="3945868985-7">)</span><span class="p" data-group-id="3945868985-5">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3945868985-8">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3945868985-9">(</span><span class="mi">5</span><span class="p" data-group-id="3945868985-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3945868985-10">(</span><span class="mi">10</span><span class="p" data-group-id="3945868985-10">)</span><span class="p" data-group-id="3945868985-8">)</span><span class="w">
+</span><span class="no">false</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3945868985-11">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3945868985-12">(</span><span class="ss">:a</span><span class="p" data-group-id="3945868985-12">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3945868985-13">(</span><span class="ss">:a</span><span class="p" data-group-id="3945868985-13">)</span><span class="p" data-group-id="3945868985-11">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3945868985-14">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3945868985-15">(</span><span class="ss">:a</span><span class="p" data-group-id="3945868985-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3945868985-16">(</span><span class="ss">:b</span><span class="p" data-group-id="3945868985-16">)</span><span class="p" data-group-id="3945868985-14">)</span><span class="w">
+</span><span class="no">false</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3945868985-17">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3945868985-18">(</span><span class="mi">5</span><span class="p" data-group-id="3945868985-18">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3945868985-19">(</span><span class="ss">:a</span><span class="p" data-group-id="3945868985-19">)</span><span class="p" data-group-id="3945868985-17">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="lift_maybe/2">
+
+  <div class="detail-header">
+    <a href="#lift_maybe/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">lift_maybe(maybe, on_none)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L618" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> lift_maybe(<a href="Funx.Monad.Maybe.html#t:t/1">Funx.Monad.Maybe.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()), (-&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())) :: <a href="#t:t/2">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+
+      </div>
+
+<p>Converts a <code class="inline">Maybe</code> value to an <code class="inline">Either</code>. If the <code class="inline">Maybe</code> is <code class="inline">Nothing</code>, a <code class="inline">Left</code> is returned using <code class="inline">on_none</code>.</p><h2 id="lift_maybe/2-examples" class="section-heading">
+  <a href="#lift_maybe/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_maybe</span><span class="p" data-group-id="3461082133-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3461082133-2">(</span><span class="mi">5</span><span class="p" data-group-id="3461082133-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3461082133-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="3461082133-3">end</span><span class="p" data-group-id="3461082133-1">)</span><span class="w">
+</span><span class="p" data-group-id="3461082133-4">%</span><span class="nc" data-group-id="3461082133-4">Funx.Monad.Either.Right</span><span class="p" data-group-id="3461082133-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3461082133-4">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_maybe</span><span class="p" data-group-id="3461082133-5">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3461082133-6">(</span><span class="p" data-group-id="3461082133-6">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3461082133-7">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="3461082133-7">end</span><span class="p" data-group-id="3461082133-5">)</span><span class="w">
+</span><span class="p" data-group-id="3461082133-8">%</span><span class="nc" data-group-id="3461082133-8">Funx.Monad.Either.Left</span><span class="p" data-group-id="3461082133-8">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="3461082133-8">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="lift_ord/1">
+
+  <div class="detail-header">
+    <a href="#lift_ord/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">lift_ord(custom_ord)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L296" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> lift_ord(<a href="Funx.Ord.Utils.html#t:ord_t/0">Funx.Ord.Utils.ord_t</a>()) :: <a href="Funx.Ord.Utils.html#t:ord_map/0">Funx.Ord.Utils.ord_map</a>()</pre>
+
+      </div>
+
+<p>Creates a custom ordering function for <code class="inline">Either</code> values using the provided <code class="inline">custom_ord</code>.</p><p>The <code class="inline">custom_ord</code> must be a map with <code class="inline">:lt?</code>, <code class="inline">:le?</code>, <code class="inline">:gt?</code>, and <code class="inline">:ge?</code> functions. These are used to compare the internal <code class="inline">left</code> or <code class="inline">right</code> values.</p><h2 id="lift_ord/1-examples" class="section-heading">
+  <a href="#lift_ord/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_ord</span><span class="p" data-group-id="1495396217-1">(</span><span class="p" data-group-id="1495396217-2">%{</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">lt?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1495396217-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1495396217-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">le?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1495396217-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1495396217-4">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">gt?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1495396217-5">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1495396217-5">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">ge?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1495396217-6">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1495396217-6">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="1495396217-2">}</span><span class="p" data-group-id="1495396217-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1495396217-7">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1495396217-8">(</span><span class="mi">3</span><span class="p" data-group-id="1495396217-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1495396217-9">(</span><span class="mi">5</span><span class="p" data-group-id="1495396217-9">)</span><span class="p" data-group-id="1495396217-7">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1495396217-10">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1495396217-11">(</span><span class="mi">3</span><span class="p" data-group-id="1495396217-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1495396217-12">(</span><span class="mi">5</span><span class="p" data-group-id="1495396217-12">)</span><span class="p" data-group-id="1495396217-10">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1495396217-13">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1495396217-14">(</span><span class="mi">3</span><span class="p" data-group-id="1495396217-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1495396217-15">(</span><span class="mi">5</span><span class="p" data-group-id="1495396217-15">)</span><span class="p" data-group-id="1495396217-13">)</span><span class="w">
+</span><span class="no">false</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1495396217-16">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1495396217-17">(</span><span class="mi">3</span><span class="p" data-group-id="1495396217-17">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="1495396217-18">(</span><span class="mi">5</span><span class="p" data-group-id="1495396217-18">)</span><span class="p" data-group-id="1495396217-16">)</span><span class="w">
+</span><span class="no">true</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="lift_predicate/3">
+
+  <div class="detail-header">
+    <a href="#lift_predicate/3" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">lift_predicate(value, predicate, on_false)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L644" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> lift_predicate(value, (value -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()), (value -&gt; error)) :: <a href="#t:t/2">t</a>(error, value)
+when value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Lifts a value into an <code class="inline">Either</code> based on the result of a predicate.</p><p>Returns <code class="inline">Right(value)</code> if the predicate returns <code class="inline">true</code>, or <code class="inline">Left(on_false.(value))</code> if it returns <code class="inline">false</code>.</p><p>This allows you to wrap a conditional check in a functional context with a custom error message.</p><h2 id="lift_predicate/3-examples" class="section-heading">
+  <a href="#lift_predicate/3-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7735205584-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7735205584-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="7735205584-2">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7735205584-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;</span><span class="si" data-group-id="7735205584-4">#{</span><span class="n">x</span><span class="si" data-group-id="7735205584-4">}</span><span class="s"> is too small&quot;</span><span class="w"> </span><span class="k" data-group-id="7735205584-3">end</span><span class="p" data-group-id="7735205584-1">)</span><span class="w">
+</span><span class="p" data-group-id="7735205584-5">%</span><span class="nc" data-group-id="7735205584-5">Funx.Monad.Either.Right</span><span class="p" data-group-id="7735205584-5">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7735205584-5">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7735205584-6">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7735205584-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="7735205584-7">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7735205584-8">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;</span><span class="si" data-group-id="7735205584-9">#{</span><span class="n">x</span><span class="si" data-group-id="7735205584-9">}</span><span class="s"> is too small&quot;</span><span class="w"> </span><span class="k" data-group-id="7735205584-8">end</span><span class="p" data-group-id="7735205584-6">)</span><span class="w">
+</span><span class="p" data-group-id="7735205584-10">%</span><span class="nc" data-group-id="7735205584-10">Funx.Monad.Either.Left</span><span class="p" data-group-id="7735205584-10">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2 is too small&quot;</span><span class="p" data-group-id="7735205584-10">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="map_left/2">
+
+  <div class="detail-header">
+    <a href="#map_left/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">map_left(right, func)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L341" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> map_left(<a href="#t:t/2">t</a>(error, value), (error -&gt; new_error)) :: <a href="#t:t/2">t</a>(new_error, value)
+when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), new_error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Transforms the <code class="inline">Left</code> value using the given function if the <code class="inline">Either</code> is a <code class="inline">Left</code>.
+If the value is <code class="inline">Right</code>, it is returned unchanged.</p><h2 id="map_left/2-examples" class="section-heading">
+  <a href="#map_left/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="5032548789-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5032548789-2">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5032548789-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5032548789-3">fn</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;wrapped: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="k" data-group-id="5032548789-3">end</span><span class="p" data-group-id="5032548789-1">)</span><span class="w">
+</span><span class="p" data-group-id="5032548789-4">%</span><span class="nc" data-group-id="5032548789-4">Funx.Monad.Either.Left</span><span class="p" data-group-id="5032548789-4">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;wrapped: error&quot;</span><span class="p" data-group-id="5032548789-4">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="5032548789-5">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5032548789-6">(</span><span class="mi">42</span><span class="p" data-group-id="5032548789-6">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5032548789-7">fn</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;ignored&quot;</span><span class="w"> </span><span class="k" data-group-id="5032548789-7">end</span><span class="p" data-group-id="5032548789-5">)</span><span class="w">
+</span><span class="p" data-group-id="5032548789-8">%</span><span class="nc" data-group-id="5032548789-8">Funx.Monad.Either.Right</span><span class="p" data-group-id="5032548789-8">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="5032548789-8">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="or_else/2">
+
+  <div class="detail-header">
+    <a href="#or_else/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">or_else(right, fallback_fun)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L209" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> or_else(<a href="#t:t/2">t</a>(error, value), (-&gt; <a href="#t:t/2">t</a>(error, value))) :: <a href="#t:t/2">t</a>(error, value)
+when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Returns the current <code class="inline">Right</code> value or invokes the <code class="inline">fallback_fun</code> if <code class="inline">Left</code>.</p><p>Useful for recovering from a failure by providing an alternate computation.</p><h2 id="or_else/2-examples" class="section-heading">
+  <a href="#or_else/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="5353257355-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="5353257355-2">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="5353257355-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5353257355-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5353257355-4">(</span><span class="mi">42</span><span class="p" data-group-id="5353257355-4">)</span><span class="w"> </span><span class="k" data-group-id="5353257355-3">end</span><span class="p" data-group-id="5353257355-1">)</span><span class="w">
+</span><span class="p" data-group-id="5353257355-5">%</span><span class="nc" data-group-id="5353257355-5">Funx.Monad.Either.Right</span><span class="p" data-group-id="5353257355-5">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="5353257355-5">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="5353257355-6">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5353257355-7">(</span><span class="mi">10</span><span class="p" data-group-id="5353257355-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5353257355-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="5353257355-9">(</span><span class="mi">42</span><span class="p" data-group-id="5353257355-9">)</span><span class="w"> </span><span class="k" data-group-id="5353257355-8">end</span><span class="p" data-group-id="5353257355-6">)</span><span class="w">
+</span><span class="p" data-group-id="5353257355-10">%</span><span class="nc" data-group-id="5353257355-10">Funx.Monad.Either.Right</span><span class="p" data-group-id="5353257355-10">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="5353257355-10">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="pure/1">
+
+  <div class="detail-header">
+    <a href="#pure/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">pure(value)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L104" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> pure(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="Funx.Monad.Either.Right.html#t:t/1">Funx.Monad.Either.Right.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+
+      </div>
+
+<p>Alias for <a href="#right/1"><code class="inline">right/1</code></a>.</p>
+  </section>
+</section>
+<section class="detail" id="right/1">
+
+  <div class="detail-header">
+    <a href="#right/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">right(value)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L98" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> right(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="Funx.Monad.Either.Right.html#t:t/1">Funx.Monad.Either.Right.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+
+      </div>
+
+<p>Wraps a value in the <code class="inline">Right</code> monad.</p><h2 id="right/1-examples" class="section-heading">
+  <a href="#right/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8893476926-1">(</span><span class="mi">5</span><span class="p" data-group-id="8893476926-1">)</span><span class="w">
+</span><span class="p" data-group-id="8893476926-2">%</span><span class="nc" data-group-id="8893476926-2">Funx.Monad.Either.Right</span><span class="p" data-group-id="8893476926-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8893476926-2">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="right?/1">
+
+  <div class="detail-header">
+    <a href="#right?/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">right?(arg1)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L144" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> right?(<a href="#t:t/2">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+
+      </div>
+
+<p>Returns <code class="inline">true</code> if the <code class="inline">Either</code> is a <code class="inline">Right</code> value.</p><h2 id="right?/1-examples" class="section-heading">
+  <a href="#right?/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right?</span><span class="p" data-group-id="3734516072-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="3734516072-2">(</span><span class="mi">5</span><span class="p" data-group-id="3734516072-2">)</span><span class="p" data-group-id="3734516072-1">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right?</span><span class="p" data-group-id="3734516072-3">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="3734516072-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="3734516072-4">)</span><span class="p" data-group-id="3734516072-3">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="sequence/1">
+
+  <div class="detail-header">
+    <a href="#sequence/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">sequence(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L411" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> sequence([<a href="#t:t/2">t</a>(error, value)]) :: <a href="#t:t/2">t</a>(error, [value])
+when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Sequences a list of <code class="inline">Either</code> values into an <code class="inline">Either</code> of a list.</p><h2 id="sequence/1-examples" class="section-heading">
+  <a href="#sequence/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="6955317953-1">(</span><span class="p" data-group-id="6955317953-2">[</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6955317953-3">(</span><span class="mi">1</span><span class="p" data-group-id="6955317953-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6955317953-4">(</span><span class="mi">2</span><span class="p" data-group-id="6955317953-4">)</span><span class="p" data-group-id="6955317953-2">]</span><span class="p" data-group-id="6955317953-1">)</span><span class="w">
+</span><span class="p" data-group-id="6955317953-5">%</span><span class="nc" data-group-id="6955317953-5">Funx.Monad.Either.Right</span><span class="p" data-group-id="6955317953-5">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6955317953-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6955317953-6">]</span><span class="p" data-group-id="6955317953-5">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="6955317953-7">(</span><span class="p" data-group-id="6955317953-8">[</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6955317953-9">(</span><span class="mi">1</span><span class="p" data-group-id="6955317953-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="6955317953-10">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6955317953-10">)</span><span class="p" data-group-id="6955317953-8">]</span><span class="p" data-group-id="6955317953-7">)</span><span class="w">
+</span><span class="p" data-group-id="6955317953-11">%</span><span class="nc" data-group-id="6955317953-11">Funx.Monad.Either.Left</span><span class="p" data-group-id="6955317953-11">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="6955317953-11">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="sequence_a/1">
+
+  <div class="detail-header">
+    <a href="#sequence_a/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">sequence_a(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L454" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> sequence_a([<a href="#t:t/2">t</a>(error, value)]) :: <a href="#t:t/2">t</a>([error], [value])
+when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Sequences a list of <code class="inline">Either</code> values, collecting all errors from <code class="inline">Left</code> values, rather than short-circuiting.</p><h2 id="sequence_a/1-examples" class="section-heading">
+  <a href="#sequence_a/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">sequence_a</span><span class="p" data-group-id="8634102096-1">(</span><span class="p" data-group-id="8634102096-2">[</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8634102096-3">(</span><span class="mi">1</span><span class="p" data-group-id="8634102096-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="8634102096-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="8634102096-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="8634102096-5">(</span><span class="s">&quot;another error&quot;</span><span class="p" data-group-id="8634102096-5">)</span><span class="p" data-group-id="8634102096-2">]</span><span class="p" data-group-id="8634102096-1">)</span><span class="w">
+</span><span class="p" data-group-id="8634102096-6">%</span><span class="nc" data-group-id="8634102096-6">Funx.Monad.Either.Left</span><span class="p" data-group-id="8634102096-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8634102096-7">[</span><span class="s">&quot;error&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;another error&quot;</span><span class="p" data-group-id="8634102096-7">]</span><span class="p" data-group-id="8634102096-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_result/1">
+
+  <div class="detail-header">
+    <a href="#to_result/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">to_result(either)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L682" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_result(<a href="#t:t/2">t</a>(left, right)) :: {:ok, right} | {:error, left}
+when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Converts an <code class="inline">Either</code> to a result (<code class="inline">{:ok, value}</code> or <code class="inline">{:error, reason}</code>).</p><h2 id="to_result/1-examples" class="section-heading">
+  <a href="#to_result/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="8946746101-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8946746101-2">(</span><span class="mi">5</span><span class="p" data-group-id="8946746101-2">)</span><span class="p" data-group-id="8946746101-1">)</span><span class="w">
+</span><span class="p" data-group-id="8946746101-3">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8946746101-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="8946746101-4">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="8946746101-5">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="8946746101-5">)</span><span class="p" data-group-id="8946746101-4">)</span><span class="w">
+</span><span class="p" data-group-id="8946746101-6">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="8946746101-6">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_try!/1">
+
+  <div class="detail-header">
+    <a href="#to_try!/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">to_try!(arg1)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L733" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_try!(<a href="#t:t/2">t</a>(left, right)) :: right | <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">no_return</a>() when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Converts an <code class="inline">Either</code> to its inner value, raising an exception if it is <code class="inline">Left</code>.</p><p>If the <code class="inline">Left</code> holds an exception struct, it is raised directly. If it holds a string or list of errors, they are converted into a <a href="https://hexdocs.pm/elixir/RuntimeError.html"><code class="inline">RuntimeError</code></a>. Unexpected types are inspected and raised as a <a href="https://hexdocs.pm/elixir/RuntimeError.html"><code class="inline">RuntimeError</code></a>.</p><h2 id="to_try!/1-examples" class="section-heading">
+  <a href="#to_try!/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="9233041773-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9233041773-2">(</span><span class="mi">5</span><span class="p" data-group-id="9233041773-2">)</span><span class="p" data-group-id="9233041773-1">)</span><span class="w">
+</span><span class="mi">5</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="9233041773-3">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9233041773-4">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="9233041773-4">)</span><span class="p" data-group-id="9233041773-3">)</span><span class="w">
+</span><span class="gt">** (RuntimeError) error</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="9233041773-5">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9233041773-6">(</span><span class="p" data-group-id="9233041773-7">[</span><span class="s">&quot;error 1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;error 2&quot;</span><span class="p" data-group-id="9233041773-7">]</span><span class="p" data-group-id="9233041773-6">)</span><span class="p" data-group-id="9233041773-5">)</span><span class="w">
+</span><span class="gt">** (RuntimeError) error 1, error 2</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="9233041773-8">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9233041773-9">(</span><span class="p" data-group-id="9233041773-10">%</span><span class="nc" data-group-id="9233041773-10">ArgumentError</span><span class="p" data-group-id="9233041773-10">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bad argument&quot;</span><span class="p" data-group-id="9233041773-10">}</span><span class="p" data-group-id="9233041773-9">)</span><span class="p" data-group-id="9233041773-8">)</span><span class="w">
+</span><span class="gt">** (ArgumentError) bad argument</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="traverse/2">
+
+  <div class="detail-header">
+    <a href="#traverse/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">traverse(list, func)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L430" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> traverse([a], (a -&gt; <a href="#t:t/2">t</a>(error, b))) :: <a href="#t:t/2">t</a>(error, [b])
+when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), b: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Traverses a list, applying the given function to each element and collecting the results in a single <code class="inline">Right</code>, or short-circuiting with the first <code class="inline">Left</code>.</p><p>This is useful for validating or transforming a list of values where each step may fail.</p><h2 id="traverse/2-examples" class="section-heading">
+  <a href="#traverse/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="4947586991-1">(</span><span class="p" data-group-id="4947586991-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4947586991-2">]</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4947586991-1">)</span><span class="w">
+</span><span class="p" data-group-id="4947586991-3">%</span><span class="nc" data-group-id="4947586991-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="4947586991-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4947586991-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4947586991-4">]</span><span class="p" data-group-id="4947586991-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="4947586991-5">(</span><span class="p" data-group-id="4947586991-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4947586991-6">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4947586991-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="4947586991-8">(</span><span class="n">x</span><span class="p" data-group-id="4947586991-8">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="4947586991-9">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="4947586991-9">)</span><span class="w"> </span><span class="k" data-group-id="4947586991-7">end</span><span class="p" data-group-id="4947586991-5">)</span><span class="w">
+</span><span class="p" data-group-id="4947586991-10">%</span><span class="nc" data-group-id="4947586991-10">Funx.Monad.Either.Left</span><span class="p" data-group-id="4947586991-10">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="4947586991-10">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="traverse_a/2">
+
+  <div class="detail-header">
+    <a href="#traverse_a/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">traverse_a(list, func)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L472" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> traverse_a([a], (a -&gt; <a href="#t:t/2">t</a>([e], b))) :: <a href="#t:t/2">t</a>([e], [b])
+when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), b: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), e: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Traverses a list, applying the given function to each element and collecting the results in a single <code class="inline">Right</code>.</p><p>Unlike <a href="#traverse/2"><code class="inline">traverse/2</code></a>, this version accumulates all <code class="inline">Left</code> values rather than stopping at the first failure.
+It is useful for validations where you want to gather all errors at once.</p><h2 id="traverse_a/2-examples" class="section-heading">
+  <a href="#traverse_a/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">validate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7291671174-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7291671174-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="7291671174-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="7291671174-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7291671174-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;must be positive: </span><span class="si" data-group-id="7291671174-5">#{</span><span class="n">v</span><span class="si" data-group-id="7291671174-5">}</span><span class="s">&quot;</span><span class="w"> </span><span class="k" data-group-id="7291671174-4">end</span><span class="p" data-group-id="7291671174-2">)</span><span class="w"> </span><span class="k" data-group-id="7291671174-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">traverse_a</span><span class="p" data-group-id="7291671174-6">(</span><span class="p" data-group-id="7291671174-7">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7291671174-7">]</span><span class="p">,</span><span class="w"> </span><span class="n">validate</span><span class="p" data-group-id="7291671174-6">)</span><span class="w">
+</span><span class="p" data-group-id="7291671174-8">%</span><span class="nc" data-group-id="7291671174-8">Funx.Monad.Either.Right</span><span class="p" data-group-id="7291671174-8">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7291671174-9">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7291671174-9">]</span><span class="p" data-group-id="7291671174-8">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">traverse_a</span><span class="p" data-group-id="7291671174-10">(</span><span class="p" data-group-id="7291671174-11">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">3</span><span class="p" data-group-id="7291671174-11">]</span><span class="p">,</span><span class="w"> </span><span class="n">validate</span><span class="p" data-group-id="7291671174-10">)</span><span class="w">
+</span><span class="p" data-group-id="7291671174-12">%</span><span class="nc" data-group-id="7291671174-12">Funx.Monad.Either.Left</span><span class="p" data-group-id="7291671174-12">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7291671174-13">[</span><span class="s">&quot;must be positive: -2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;must be positive: -3&quot;</span><span class="p" data-group-id="7291671174-13">]</span><span class="p" data-group-id="7291671174-12">}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="validate/2">
+
+  <div class="detail-header">
+    <a href="#validate/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">validate(value, validators)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L597" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> validate(value, [(value -&gt; <a href="#t:t/2">t</a>(error, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()))]) :: <a href="#t:t/2">t</a>([error], value)
+when error: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Validates a value using a list of validator functions. Each validator returns an <code class="inline">Either.Right</code> if
+the check passes, or an <code class="inline">Either.Left</code> with an error message if it fails. If any validation fails,
+all errors are aggregated and returned in a single <code class="inline">Left</code>.</p><h3 id="validate/2-flat-list-aggregation" class="section-heading">
+  <a href="#validate/2-flat-list-aggregation" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Flat list aggregation</span>
+</h3>
+<p>When using the default aggregation strategy, errors are collected in a plain list:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1667295159-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="1667295159-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="1667295159-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1667295159-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1667295159-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="1667295159-5">(</span><span class="n">v</span><span class="p" data-group-id="1667295159-5">)</span><span class="w"> </span><span class="k" data-group-id="1667295159-4">end</span><span class="p" data-group-id="1667295159-2">)</span><span class="w">
+</span><span class="k" data-group-id="1667295159-1">end</span><span class="w">
+
+</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1667295159-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="1667295159-7">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="1667295159-8">(</span><span class="n">rem</span><span class="p" data-group-id="1667295159-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1667295159-9">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1667295159-8">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1667295159-10">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="1667295159-11">(</span><span class="n">v</span><span class="p" data-group-id="1667295159-11">)</span><span class="w"> </span><span class="k" data-group-id="1667295159-10">end</span><span class="p" data-group-id="1667295159-7">)</span><span class="w">
+</span><span class="k" data-group-id="1667295159-6">end</span><span class="w">
+
+</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="1667295159-12">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1667295159-13">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="1667295159-13">]</span><span class="p" data-group-id="1667295159-12">)</span><span class="w">
+</span><span class="c1">#=&gt; %Funx.Monad.Either.Right{right: 4}</span><span class="w">
+
+</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="1667295159-14">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1667295159-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="1667295159-15">]</span><span class="p" data-group-id="1667295159-14">)</span><span class="w">
+</span><span class="c1">#=&gt; %Funx.Monad.Either.Left{left: [&quot;Value must be even: 3&quot;]}</span><span class="w">
+
+</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="1667295159-16">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1667295159-17">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="1667295159-17">]</span><span class="p" data-group-id="1667295159-16">)</span><span class="w">
+</span><span class="c1">#=&gt; %Funx.Monad.Either.Left{left: [&quot;Value must be positive: -3&quot;, &quot;Value must be even: -3&quot;]}</span></code></pre><h3 id="validate/2-structured-aggregation-with-validationerror" class="section-heading">
+  <a href="#validate/2-structured-aggregation-with-validationerror" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Structured aggregation with <code class="inline">ValidationError</code></span>
+</h3>
+<p>You can also use a custom struct to hold errors. This example uses <code class="inline">ValidationError</code> and a corresponding
+<code class="inline">Funx.Semigroup</code> implementation to accumulate errors into a single structure:</p><pre><code class="makeup elixir" translate="no"><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="w">
+
+</span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7503495439-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7503495439-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="7503495439-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="7503495439-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7503495439-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="7503495439-5">(</span><span class="n">v</span><span class="p" data-group-id="7503495439-5">)</span><span class="w"> </span><span class="k" data-group-id="7503495439-4">end</span><span class="p" data-group-id="7503495439-2">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="7503495439-6">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="7503495439-6">)</span><span class="w">
+</span><span class="k" data-group-id="7503495439-1">end</span><span class="w">
+
+</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7503495439-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7503495439-8">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="7503495439-9">(</span><span class="n">rem</span><span class="p" data-group-id="7503495439-10">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7503495439-10">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="7503495439-9">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7503495439-11">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="7503495439-12">(</span><span class="n">v</span><span class="p" data-group-id="7503495439-12">)</span><span class="w"> </span><span class="k" data-group-id="7503495439-11">end</span><span class="p" data-group-id="7503495439-8">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="7503495439-13">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="7503495439-13">)</span><span class="w">
+</span><span class="k" data-group-id="7503495439-7">end</span><span class="w">
+
+</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="7503495439-14">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7503495439-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="7503495439-15">]</span><span class="p" data-group-id="7503495439-14">)</span><span class="w">
+</span><span class="c1">#=&gt; %Funx.Monad.Either.Left{</span><span class="w">
+</span><span class="c1">#     left: %ValidationError{</span><span class="w">
+</span><span class="c1">#       errors: [&quot;Value must be positive: -3&quot;, &quot;Value must be even: -3&quot;]</span><span class="w">
+</span><span class="c1">#     }</span><span class="w">
+</span><span class="c1">#   }</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="wither_a/2">
+
+  <div class="detail-header">
+    <a href="#wither_a/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">wither_a(list, func)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/either.ex#L515" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> wither_a([a], (a -&gt; <a href="#t:t/2">t</a>([e], <a href="Funx.Monad.Maybe.html#t:t/1">Funx.Monad.Maybe.t</a>(b)))) :: <a href="#t:t/2">t</a>([e], [b])
+when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), b: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), e: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Traverses a list, applying the given function to each element, and collects the successful <code class="inline">Just</code> results into a single <code class="inline">Right</code>.</p><p>The given function must return an <code class="inline">Either</code> of <code class="inline">Maybe</code>. <code class="inline">Right(Just x)</code> values are kept; <code class="inline">Right(Nothing)</code> values are filtered out.
+If any application returns <code class="inline">Left</code>, all <code class="inline">Left</code> values are accumulated.</p><p>This is useful for effectful filtering, where you want to validate or transform elements and conditionally keep them, while still reporting all errors.</p><h2 id="wither_a/2-examples" class="section-heading">
+  <a href="#wither_a/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">filter_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7606963219-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7606963219-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">is_integer</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7606963219-3">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;not an integer: </span><span class="si" data-group-id="7606963219-4">#{</span><span class="n">inspect</span><span class="p" data-group-id="7606963219-5">(</span><span class="n">v</span><span class="p" data-group-id="7606963219-5">)</span><span class="si" data-group-id="7606963219-4">}</span><span class="s">&quot;</span><span class="w"> </span><span class="k" data-group-id="7606963219-3">end</span><span class="p" data-group-id="7606963219-2">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="7606963219-6">(</span><span class="k" data-group-id="7606963219-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7606963219-8">(</span><span class="n">x</span><span class="p" data-group-id="7606963219-8">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7606963219-9">(</span><span class="p" data-group-id="7606963219-9">)</span><span class="w"> </span><span class="k" data-group-id="7606963219-7">end</span><span class="p" data-group-id="7606963219-6">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="7606963219-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">wither_a</span><span class="p" data-group-id="7606963219-10">(</span><span class="p" data-group-id="7606963219-11">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7606963219-11">]</span><span class="p">,</span><span class="w"> </span><span class="n">filter_positive</span><span class="p" data-group-id="7606963219-10">)</span><span class="w">
+</span><span class="p" data-group-id="7606963219-12">%</span><span class="nc" data-group-id="7606963219-12">Funx.Monad.Either.Right</span><span class="p" data-group-id="7606963219-12">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7606963219-13">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7606963219-13">]</span><span class="p" data-group-id="7606963219-12">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">wither_a</span><span class="p" data-group-id="7606963219-14">(</span><span class="p" data-group-id="7606963219-15">[</span><span class="s">&quot;oops&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">2</span><span class="p" data-group-id="7606963219-15">]</span><span class="p">,</span><span class="w"> </span><span class="n">filter_positive</span><span class="p" data-group-id="7606963219-14">)</span><span class="w">
+</span><span class="p" data-group-id="7606963219-16">%</span><span class="nc" data-group-id="7606963219-16">Funx.Monad.Either.Left</span><span class="p" data-group-id="7606963219-16">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7606963219-17">[</span><span class="s">&quot;not an integer: </span><span class="se">\&quot;</span><span class="s">oops</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p" data-group-id="7606963219-17">]</span><span class="p" data-group-id="7606963219-16">}</span></code></pre>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.0" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.0">Hex Preview</a>
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
