@@ -1,4 +1,4 @@
-defmodule Funx.Either.Left do
+defmodule Funx.Monad.Either.Left do
   @moduledoc """
   Represents the `Left` variant of the `Either` monad, used to model an error or failure.
 
@@ -22,21 +22,21 @@ defmodule Funx.Either.Left do
 
   ## Examples
 
-      iex> Funx.Either.Left.pure("error")
-      %Funx.Either.Left{left: "error"}
+      iex> Funx.Monad.Either.Left.pure("error")
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec pure(value) :: t(value) when value: term()
   def pure(value), do: %__MODULE__{left: value}
 end
 
-defimpl String.Chars, for: Funx.Either.Left do
-  alias Funx.Either.Left
+defimpl String.Chars, for: Funx.Monad.Either.Left do
+  alias Funx.Monad.Either.Left
 
   def to_string(%Left{left: left}), do: "Left(#{left})"
 end
 
-defimpl Funx.Monad, for: Funx.Either.Left do
-  alias Funx.Either.{Left, Right}
+defimpl Funx.Monad, for: Funx.Monad.Either.Left do
+  alias Funx.Monad.Either.{Left, Right}
 
   @spec map(Left.t(value), (term() -> term())) :: Left.t(value)
         when value: term()
@@ -52,8 +52,8 @@ defimpl Funx.Monad, for: Funx.Either.Left do
   def bind(%Left{} = left, _func), do: left
 end
 
-defimpl Funx.Foldable, for: Funx.Either.Left do
-  alias Funx.Either.Left
+defimpl Funx.Foldable, for: Funx.Monad.Either.Left do
+  alias Funx.Monad.Either.Left
 
   def fold_l(%Left{left: left}, _right_func, left_func) do
     left_func.(left)
@@ -64,8 +64,8 @@ defimpl Funx.Foldable, for: Funx.Either.Left do
   end
 end
 
-defimpl Funx.Eq, for: Funx.Either.Left do
-  alias Funx.Either.{Left, Right}
+defimpl Funx.Eq, for: Funx.Monad.Either.Left do
+  alias Funx.Monad.Either.{Left, Right}
   alias Funx.Eq
 
   def eq?(%Left{left: v1}, %Left{left: v2}), do: Eq.eq?(v1, v2)
@@ -75,8 +75,8 @@ defimpl Funx.Eq, for: Funx.Either.Left do
   def not_eq?(%Left{}, %Right{}), do: true
 end
 
-defimpl Funx.Ord, for: Funx.Either.Left do
-  alias Funx.Either.{Left, Right}
+defimpl Funx.Ord, for: Funx.Monad.Either.Left do
+  alias Funx.Monad.Either.{Left, Right}
   alias Funx.Ord
 
   def lt?(%Left{left: v1}, %Left{left: v2}), do: Ord.lt?(v1, v2)
@@ -92,6 +92,6 @@ defimpl Funx.Ord, for: Funx.Either.Left do
   def ge?(%Left{}, %Right{}), do: false
 end
 
-defimpl Funx.Summarizable, for: Funx.Either.Left do
+defimpl Funx.Summarizable, for: Funx.Monad.Either.Left do
   def summarize(%{left: value}), do: {:either_left, Funx.Summarizable.summarize(value)}
 end

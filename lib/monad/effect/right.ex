@@ -1,4 +1,4 @@
-defmodule Funx.Effect.Right do
+defmodule Funx.Monad.Effect.Right do
   @moduledoc """
   Represents the `Right` variant of the `Effect` monad, used to model a successful computation in an asynchronous context.
 
@@ -15,7 +15,7 @@ defmodule Funx.Effect.Right do
     * `asks/2` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Right`.
   """
 
-  alias Funx.{Effect, Either}
+  alias Funx.Monad.{Effect, Either}
 
   @enforce_keys [:effect, :context]
   defstruct [:effect, :context]
@@ -43,9 +43,9 @@ defmodule Funx.Effect.Right do
 
   ## Examples
 
-      iex> effect = Funx.Effect.Right.pure("success")
-      iex> Funx.Effect.run(effect)
-      %Funx.Either.Right{right: "success"}
+      iex> effect = Funx.Monad.Effect.Right.pure("success")
+      iex> Funx.Monad.Effect.run(effect)
+      %Funx.Monad.Either.Right{right: "success"}
   """
   @spec pure(right, Effect.Context.opts_or_context()) :: t(right)
         when right: term()
@@ -57,17 +57,17 @@ defmodule Funx.Effect.Right do
   end
 
   @doc """
-  Returns a `Funx.Effect.Right` that yields the environment passed to `Funx.Effect.run/2`.
+  Returns a `Funx.Monad.Effect.Right` that yields the environment passed to `Funx.Monad.Effect.run/2`.
 
   This is the Reader monad's equivalent of `ask`, giving access to the entire injected environment
   for further computation.
 
   ## Example
 
-      iex> Funx.Effect.Right.ask()
+      iex> Funx.Monad.Effect.Right.ask()
       ...> |> Funx.Monad.map(& &1[:user])
-      ...> |> Funx.Effect.run(%{user: "alice"})
-      %Funx.Either.Right{right: "alice"}
+      ...> |> Funx.Monad.Effect.run(%{user: "alice"})
+      %Funx.Monad.Either.Right{right: "alice"}
   """
   @spec ask(Effect.Context.opts_or_context()) :: t(env)
         when env: term()
@@ -83,17 +83,17 @@ defmodule Funx.Effect.Right do
   end
 
   @doc """
-  Returns a `Funx.Effect.Right` that applies the given function to the environment passed to `Funx.Effect.run/2`.
+  Returns a `Funx.Monad.Effect.Right` that applies the given function to the environment passed to `Funx.Monad.Effect.run/2`.
 
   This allows extracting a value from the environment and using it in an effectful computation,
   following the Reader pattern.
 
   ## Example
 
-      iex> Funx.Effect.Right.asks(fn env -> env[:user] end)
-      ...> |> Funx.Monad.bind(fn user -> Funx.Effect.right(user) end)
-      ...> |> Funx.Effect.run(%{user: "alice"})
-      %Funx.Either.Right{right: "alice"}
+      iex> Funx.Monad.Effect.Right.asks(fn env -> env[:user] end)
+      ...> |> Funx.Monad.bind(fn user -> Funx.Monad.Effect.right(user) end)
+      ...> |> Funx.Monad.Effect.run(%{user: "alice"})
+      %Funx.Monad.Either.Right{right: "alice"}
   """
 
   @spec asks((Effect.Context.t() -> result), Effect.Context.opts_or_context()) :: t(result)
@@ -110,8 +110,8 @@ defmodule Funx.Effect.Right do
   end
 end
 
-defimpl Funx.Monad, for: Funx.Effect.Right do
-  alias Funx.{Effect, Either}
+defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
+  alias Funx.Monad.{Effect, Either}
   alias Effect.{Left, Right}
 
   @spec map(Right.t(input), (input -> output)) :: Right.t(output)

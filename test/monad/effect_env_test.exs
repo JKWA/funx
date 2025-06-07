@@ -1,8 +1,8 @@
-defmodule Funx.Effect.ContextTest do
+defmodule Funx.Monad.Effect.ContextTest do
   use ExUnit.Case, async: true
-  doctest Funx.Effect.Context
+  doctest Funx.Monad.Effect.Context
 
-  alias Funx.Effect
+  alias Funx.Monad.Effect
 
   describe "new/1" do
     test "generates a trace_id when none is provided" do

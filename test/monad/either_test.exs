@@ -1,20 +1,21 @@
-defmodule Funx.EitherTest do
+defmodule Funx.Monad.EitherTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
 
-  doctest Funx.Either
-  doctest Funx.Either.Left
-  doctest Funx.Either.Right
+  doctest Funx.Monad.Either
+  doctest Funx.Monad.Either.Left
+  doctest Funx.Monad.Either.Right
 
-  import Funx.Either
+  import Funx.Monad.Either
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
-  import Funx.Maybe, only: [just: 1, nothing: 0]
+  import Funx.Monad.Maybe, only: [just: 1, nothing: 0]
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Summarizable, only: [summarize: 1]
 
-  alias Funx.{Eq, Maybe, Ord}
-  alias Funx.Either.{Left, Right}
+  alias Funx.{Eq, Ord}
+  alias Funx.Monad.{Either, Maybe}
+  alias Either.{Left, Right}
 
   describe "pure/1" do
     test "wraps a value in a Right monad" do
@@ -394,8 +395,8 @@ defmodule Funx.EitherTest do
   end
 
   describe "traverse_a/2 with ValidationError aggregation" do
-    alias Funx.Either
     alias Funx.Errors.ValidationError
+    alias Funx.Monad.Either
 
     defp fail_if_odd(x) do
       if rem(x, 2) == 0 do

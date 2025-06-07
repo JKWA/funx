@@ -1,15 +1,16 @@
-defmodule Funx.IdentityTest do
+defmodule Funx.Monad.IdentityTest do
   @moduledoc false
 
   use Funx.TestCase, async: true
 
-  import Funx.Identity
+  import Funx.Monad.Identity
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Summarizable, only: [summarize: 1]
 
-  alias Funx.{Eq, Identity, Ord}
+  alias Funx.{Eq, Ord}
+  alias Funx.Monad.Identity
 
-  doctest Funx.Identity
+  doctest Funx.Monad.Identity
 
   defp multiply_by_2(x), do: x * 2
 

@@ -18,10 +18,10 @@ defprotocol Funx.Foldable do
 
   ## Examples
 
-      iex> Funx.Foldable.fold_l(Funx.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
+      iex> Funx.Foldable.fold_l(Funx.Monad.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
       6
 
-      iex> Funx.Foldable.fold_l(Funx.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
+      iex> Funx.Foldable.fold_l(Funx.Monad.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
       0
   """
   def fold_l(structure, func_a, func_b)
@@ -38,10 +38,10 @@ defprotocol Funx.Foldable do
 
   ## Examples
 
-      iex> Funx.Foldable.fold_r(Funx.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
+      iex> Funx.Foldable.fold_r(Funx.Monad.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
       6
 
-      iex> Funx.Foldable.fold_r(Funx.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
+      iex> Funx.Foldable.fold_r(Funx.Monad.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
       0
   """
   def fold_r(structure, func_a, func_b)

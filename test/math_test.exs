@@ -1,7 +1,7 @@
 defmodule Funx.MathTest do
   use ExUnit.Case, async: true
   alias Funx.Math
-  alias Funx.Maybe
+  alias Funx.Monad.Maybe
 
   doctest Funx.Math
 

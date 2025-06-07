@@ -1,6 +1,6 @@
-defmodule Funx.Either do
+defmodule Funx.Monad.Either do
   @moduledoc """
-  The `Funx.Either` module provides an implementation of the `Either` monad, a functional abstraction used to model computations that may fail.
+  The `Funx.Monad.Either` module provides an implementation of the `Either` monad, a functional abstraction used to model computations that may fail.
 
   An `Either` represents one of two possibilities:
 
@@ -78,12 +78,11 @@ defmodule Funx.Either do
   import Funx.Monad, only: [map: 2]
   import Funx.Foldable, only: [fold_l: 3]
 
-  alias Funx.Either.{Left, Right}
   alias Funx.Eq
-  alias Funx.Maybe
-  alias Funx.Maybe.{Just, Nothing}
-
   alias Funx.Ord
+  alias Funx.Monad.{Either, Maybe}
+  alias Either.{Left, Right}
+  alias Maybe.{Just, Nothing}
 
   @type t(left, right) :: Left.t(left) | Right.t(right)
 
@@ -92,8 +91,8 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.right(5)
-      %Funx.Either.Right{right: 5}
+      iex> Funx.Monad.Either.right(5)
+      %Funx.Monad.Either.Right{right: 5}
   """
   @spec right(any()) :: Right.t(any())
   def right(value), do: Right.pure(value)
@@ -109,8 +108,8 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.left("error")
-      %Funx.Either.Left{left: "error"}
+      iex> Funx.Monad.Either.left("error")
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec left(any()) :: Left.t(any())
   def left(value), do: Left.pure(value)
@@ -120,10 +119,10 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.left?(Funx.Either.left("error"))
+      iex> Funx.Monad.Either.left?(Funx.Monad.Either.left("error"))
       true
 
-      iex> Funx.Either.left?(Funx.Either.right(5))
+      iex> Funx.Monad.Either.left?(Funx.Monad.Either.right(5))
       false
   """
   @spec left?(t(any(), any())) :: boolean()
@@ -135,10 +134,10 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.right?(Funx.Either.right(5))
+      iex> Funx.Monad.Either.right?(Funx.Monad.Either.right(5))
       true
 
-      iex> Funx.Either.right?(Funx.Either.left("error"))
+      iex> Funx.Monad.Either.right?(Funx.Monad.Either.left("error"))
       false
   """
   @spec right?(t(any(), any())) :: boolean()
@@ -151,11 +150,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.filter_or_else(Funx.Either.right(5), fn x -> x > 3 end, fn -> "error" end)
-      %Funx.Either.Right{right: 5}
+      iex> Funx.Monad.Either.filter_or_else(Funx.Monad.Either.right(5), fn x -> x > 3 end, fn -> "error" end)
+      %Funx.Monad.Either.Right{right: 5}
 
-      iex> Funx.Either.filter_or_else(Funx.Either.right(2), fn x -> x > 3 end, fn -> "error" end)
-      %Funx.Either.Left{left: "error"}
+      iex> Funx.Monad.Either.filter_or_else(Funx.Monad.Either.right(2), fn x -> x > 3 end, fn -> "error" end)
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec filter_or_else(t(any(), any()), (any() -> boolean()), (-> any())) :: t(any(), any())
   def filter_or_else(either, predicate, left_func) do
@@ -177,10 +176,10 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.get_or_else(Funx.Either.right(5), 0)
+      iex> Funx.Monad.Either.get_or_else(Funx.Monad.Either.right(5), 0)
       5
 
-      iex> Funx.Either.get_or_else(Funx.Either.left("error"), 0)
+      iex> Funx.Monad.Either.get_or_else(Funx.Monad.Either.left("error"), 0)
       0
   """
   @spec get_or_else(t(any(), any()), any()) :: any()
@@ -199,11 +198,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.or_else(Funx.Either.left("error"), fn -> Funx.Either.right(42) end)
-      %Funx.Either.Right{right: 42}
+      iex> Funx.Monad.Either.or_else(Funx.Monad.Either.left("error"), fn -> Funx.Monad.Either.right(42) end)
+      %Funx.Monad.Either.Right{right: 42}
 
-      iex> Funx.Either.or_else(Funx.Either.right(10), fn -> Funx.Either.right(42) end)
-      %Funx.Either.Right{right: 10}
+      iex> Funx.Monad.Either.or_else(Funx.Monad.Either.right(10), fn -> Funx.Monad.Either.right(42) end)
+      %Funx.Monad.Either.Right{right: 10}
   """
   @spec or_else(t(error, value), (-> t(error, value))) :: t(error, value)
         when error: term(), value: term()
@@ -217,11 +216,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.flip(Funx.Either.left(:error))
-      %Funx.Either.Right{right: :error}
+      iex> Funx.Monad.Either.flip(Funx.Monad.Either.left(:error))
+      %Funx.Monad.Either.Right{right: :error}
 
-      iex> Funx.Either.flip(Funx.Either.right(42))
-      %Funx.Either.Left{left: 42}
+      iex> Funx.Monad.Either.flip(Funx.Monad.Either.right(42))
+      %Funx.Monad.Either.Left{left: 42}
   """
   @spec flip(t(left, right)) :: t(right, left)
         when left: term(), right: term()
@@ -236,19 +235,19 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> eq = Funx.Either.lift_eq(%{
+      iex> eq = Funx.Monad.Either.lift_eq(%{
       ...>   eq?: fn x, y -> x == y end,
       ...>   not_eq?: fn x, y -> x != y end
       ...> })
-      iex> eq.eq?.(Funx.Either.right(5), Funx.Either.right(5))
+      iex> eq.eq?.(Funx.Monad.Either.right(5), Funx.Monad.Either.right(5))
       true
-      iex> eq.eq?.(Funx.Either.right(5), Funx.Either.right(10))
+      iex> eq.eq?.(Funx.Monad.Either.right(5), Funx.Monad.Either.right(10))
       false
-      iex> eq.eq?.(Funx.Either.left(:a), Funx.Either.left(:a))
+      iex> eq.eq?.(Funx.Monad.Either.left(:a), Funx.Monad.Either.left(:a))
       true
-      iex> eq.eq?.(Funx.Either.left(:a), Funx.Either.left(:b))
+      iex> eq.eq?.(Funx.Monad.Either.left(:a), Funx.Monad.Either.left(:b))
       false
-      iex> eq.eq?.(Funx.Either.right(5), Funx.Either.left(:a))
+      iex> eq.eq?.(Funx.Monad.Either.right(5), Funx.Monad.Either.left(:a))
       false
   """
   @spec lift_eq(Eq.Utils.eq_t()) :: Eq.Utils.eq_map()
@@ -278,19 +277,19 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> ord = Funx.Either.lift_ord(%{
+      iex> ord = Funx.Monad.Either.lift_ord(%{
       ...>   lt?: fn x, y -> x < y end,
       ...>   le?: fn x, y -> x <= y end,
       ...>   gt?: fn x, y -> x > y end,
       ...>   ge?: fn x, y -> x >= y end
       ...> })
-      iex> ord.lt?.(Funx.Either.right(3), Funx.Either.right(5))
+      iex> ord.lt?.(Funx.Monad.Either.right(3), Funx.Monad.Either.right(5))
       true
-      iex> ord.lt?.(Funx.Either.left(3), Funx.Either.right(5))
+      iex> ord.lt?.(Funx.Monad.Either.left(3), Funx.Monad.Either.right(5))
       true
-      iex> ord.lt?.(Funx.Either.right(3), Funx.Either.left(5))
+      iex> ord.lt?.(Funx.Monad.Either.right(3), Funx.Monad.Either.left(5))
       false
-      iex> ord.lt?.(Funx.Either.left(3), Funx.Either.left(5))
+      iex> ord.lt?.(Funx.Monad.Either.left(3), Funx.Monad.Either.left(5))
       true
   """
   @spec lift_ord(Ord.Utils.ord_t()) :: Ord.Utils.ord_map()
@@ -331,11 +330,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.map_left(Funx.Either.left("error"), fn e -> "wrapped: " <> e end)
-      %Funx.Either.Left{left: "wrapped: error"}
+      iex> Funx.Monad.Either.map_left(Funx.Monad.Either.left("error"), fn e -> "wrapped: " <> e end)
+      %Funx.Monad.Either.Left{left: "wrapped: error"}
 
-      iex> Funx.Either.map_left(Funx.Either.right(42), fn _ -> "ignored" end)
-      %Funx.Either.Right{right: 42}
+      iex> Funx.Monad.Either.map_left(Funx.Monad.Either.right(42), fn _ -> "ignored" end)
+      %Funx.Monad.Either.Right{right: 42}
   """
   @spec map_left(t(error, value), (error -> new_error)) :: t(new_error, value)
         when error: term(), new_error: term(), value: term()
@@ -349,13 +348,13 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.concat([Funx.Either.right(1), Funx.Either.left(:error), Funx.Either.right(2)])
+      iex> Funx.Monad.Either.concat([Funx.Monad.Either.right(1), Funx.Monad.Either.left(:error), Funx.Monad.Either.right(2)])
       [1, 2]
 
-      iex> Funx.Either.concat([Funx.Either.left(:a), Funx.Either.left(:b)])
+      iex> Funx.Monad.Either.concat([Funx.Monad.Either.left(:a), Funx.Monad.Either.left(:b)])
       []
 
-      iex> Funx.Either.concat([Funx.Either.right("a"), Funx.Either.right("b"), Funx.Either.right("c")])
+      iex> Funx.Monad.Either.concat([Funx.Monad.Either.right("a"), Funx.Monad.Either.right("b"), Funx.Monad.Either.right("c")])
       ["a", "b", "c"]
   """
   @spec concat([t(error, value)]) :: [value]
@@ -376,13 +375,13 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.concat_map([1, 2, 3], fn x -> if rem(x, 2) == 1, do: Funx.Either.right(x), else: Funx.Either.left(:even) end)
+      iex> Funx.Monad.Either.concat_map([1, 2, 3], fn x -> if rem(x, 2) == 1, do: Funx.Monad.Either.right(x), else: Funx.Monad.Either.left(:even) end)
       [1, 3]
 
-      iex> Funx.Either.concat_map([2, 4], fn x -> if x > 3, do: Funx.Either.right(x), else: Funx.Either.left(:too_small) end)
+      iex> Funx.Monad.Either.concat_map([2, 4], fn x -> if x > 3, do: Funx.Monad.Either.right(x), else: Funx.Monad.Either.left(:too_small) end)
       [4]
 
-      iex> Funx.Either.concat_map([], fn _ -> Funx.Either.left(:none) end)
+      iex> Funx.Monad.Either.concat_map([], fn _ -> Funx.Monad.Either.left(:none) end)
       []
   """
   @spec concat_map([input], (input -> t(error, output))) :: [output]
@@ -402,11 +401,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.sequence([Funx.Either.right(1), Funx.Either.right(2)])
-      %Funx.Either.Right{right: [1, 2]}
+      iex> Funx.Monad.Either.sequence([Funx.Monad.Either.right(1), Funx.Monad.Either.right(2)])
+      %Funx.Monad.Either.Right{right: [1, 2]}
 
-      iex> Funx.Either.sequence([Funx.Either.right(1), Funx.Either.left("error")])
-      %Funx.Either.Left{left: "error"}
+      iex> Funx.Monad.Either.sequence([Funx.Monad.Either.right(1), Funx.Monad.Either.left("error")])
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec sequence([t(error, value)]) :: t(error, [value]) when error: term(), value: term()
   def sequence(list) when is_list(list), do: traverse(list, fn x -> x end)
@@ -418,11 +417,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.traverse([1, 2, 3], &Funx.Either.right/1)
-      %Funx.Either.Right{right: [1, 2, 3]}
+      iex> Funx.Monad.Either.traverse([1, 2, 3], &Funx.Monad.Either.right/1)
+      %Funx.Monad.Either.Right{right: [1, 2, 3]}
 
-      iex> Funx.Either.traverse([1, -2, 3], fn x -> if x > 0, do: Funx.Either.right(x), else: Funx.Either.left("error") end)
-      %Funx.Either.Left{left: "error"}
+      iex> Funx.Monad.Either.traverse([1, -2, 3], fn x -> if x > 0, do: Funx.Monad.Either.right(x), else: Funx.Monad.Either.left("error") end)
+      %Funx.Monad.Either.Left{left: "error"}
   """
 
   @spec traverse([a], (a -> t(error, b))) :: t(error, [b])
@@ -446,8 +445,8 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.sequence_a([Funx.Either.right(1), Funx.Either.left("error"), Funx.Either.left("another error")])
-      %Funx.Either.Left{left: ["error", "another error"]}
+      iex> Funx.Monad.Either.sequence_a([Funx.Monad.Either.right(1), Funx.Monad.Either.left("error"), Funx.Monad.Either.left("another error")])
+      %Funx.Monad.Either.Left{left: ["error", "another error"]}
   """
   @spec sequence_a([t(error, value)]) :: t([error], [value])
         when error: term(), value: term()
@@ -462,11 +461,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> validate = fn x -> Funx.Either.lift_predicate(x, &(&1 > 0), fn v -> "must be positive: \#{v}" end) end
-      iex> Funx.Either.traverse_a([1, 2, 3], validate)
-      %Funx.Either.Right{right: [1, 2, 3]}
-      iex> Funx.Either.traverse_a([1, -2, -3], validate)
-      %Funx.Either.Left{left: ["must be positive: -2", "must be positive: -3"]}
+      iex> validate = fn x -> Funx.Monad.Either.lift_predicate(x, &(&1 > 0), fn v -> "must be positive: \#{v}" end) end
+      iex> Funx.Monad.Either.traverse_a([1, 2, 3], validate)
+      %Funx.Monad.Either.Right{right: [1, 2, 3]}
+      iex> Funx.Monad.Either.traverse_a([1, -2, -3], validate)
+      %Funx.Monad.Either.Left{left: ["must be positive: -2", "must be positive: -3"]}
   """
   @spec traverse_a([a], (a -> t([e], b))) :: t([e], [b])
         when a: term(), b: term(), e: term()
@@ -502,13 +501,13 @@ defmodule Funx.Either do
   ## Examples
 
       iex> filter_positive = fn x ->
-      ...>   Funx.Either.lift_predicate(x, &is_integer/1, fn v -> "not an integer: \#{inspect(v)}" end)
-      ...>   |> Funx.Monad.map(fn x -> if x > 0, do: Funx.Maybe.just(x), else: Funx.Maybe.nothing() end)
+      ...>   Funx.Monad.Either.lift_predicate(x, &is_integer/1, fn v -> "not an integer: \#{inspect(v)}" end)
+      ...>   |> Funx.Monad.map(fn x -> if x > 0, do: Funx.Monad.Maybe.just(x), else: Funx.Monad.Maybe.nothing() end)
       ...> end
-      iex> Funx.Either.wither_a([1, -2, 3], filter_positive)
-      %Funx.Either.Right{right: [1, 3]}
-      iex> Funx.Either.wither_a(["oops", -2], filter_positive)
-      %Funx.Either.Left{left: ["not an integer: \\"oops\\""]}
+      iex> Funx.Monad.Either.wither_a([1, -2, 3], filter_positive)
+      %Funx.Monad.Either.Right{right: [1, 3]}
+      iex> Funx.Monad.Either.wither_a(["oops", -2], filter_positive)
+      %Funx.Monad.Either.Left{left: ["not an integer: \\"oops\\""]}
   """
 
   @spec wither_a([a], (a -> t([e], Maybe.t(b)))) :: t([e], [b])
@@ -548,21 +547,21 @@ defmodule Funx.Either do
 
   ```elixir
   validate_positive = fn x ->
-    Funx.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
+    Funx.Monad.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
   end
 
   validate_even = fn x ->
-    Funx.Either.lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
+    Funx.Monad.Either.lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
   end
 
-  Funx.Either.validate(4, [validate_positive, validate_even])
-  #=> %Funx.Either.Right{right: 4}
+  Funx.Monad.Either.validate(4, [validate_positive, validate_even])
+  #=> %Funx.Monad.Either.Right{right: 4}
 
-  Funx.Either.validate(3, [validate_positive, validate_even])
-  #=> %Funx.Either.Left{left: ["Value must be even: 3"]}
+  Funx.Monad.Either.validate(3, [validate_positive, validate_even])
+  #=> %Funx.Monad.Either.Left{left: ["Value must be even: 3"]}
 
-  Funx.Either.validate(-3, [validate_positive, validate_even])
-  #=> %Funx.Either.Left{left: ["Value must be positive: -3", "Value must be even: -3"]}
+  Funx.Monad.Either.validate(-3, [validate_positive, validate_even])
+  #=> %Funx.Monad.Either.Left{left: ["Value must be positive: -3", "Value must be even: -3"]}
   ```
 
   ### Structured aggregation with `ValidationError`
@@ -574,17 +573,17 @@ defmodule Funx.Either do
   alias Funx.Errors.ValidationError
 
   validate_positive = fn x ->
-    Funx.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
-    |> Funx.Either.map_left(&ValidationError.new/1)
+    Funx.Monad.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
+    |> Funx.Monad.Either.map_left(&ValidationError.new/1)
   end
 
   validate_even = fn x ->
-    Funx.Either.lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
-    |> Funx.Either.map_left(&ValidationError.new/1)
+    Funx.Monad.Either.lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
+    |> Funx.Monad.Either.map_left(&ValidationError.new/1)
   end
 
-  Funx.Either.validate(-3, [validate_positive, validate_even])
-  #=> %Funx.Either.Left{
+  Funx.Monad.Either.validate(-3, [validate_positive, validate_even])
+  #=> %Funx.Monad.Either.Left{
   #     left: %ValidationError{
   #       errors: ["Value must be positive: -3", "Value must be even: -3"]
   #     }
@@ -609,11 +608,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.lift_maybe(Funx.Maybe.just(5), fn -> "error" end)
-      %Funx.Either.Right{right: 5}
+      iex> Funx.Monad.Either.lift_maybe(Funx.Monad.Maybe.just(5), fn -> "error" end)
+      %Funx.Monad.Either.Right{right: 5}
 
-      iex> Funx.Either.lift_maybe(Funx.Maybe.nothing(), fn -> "error" end)
-      %Funx.Either.Left{left: "error"}
+      iex> Funx.Monad.Either.lift_maybe(Funx.Monad.Maybe.nothing(), fn -> "error" end)
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec lift_maybe(Maybe.t(any()), (-> any())) :: t(any(), any())
   def lift_maybe(maybe, on_none) when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
@@ -633,11 +632,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.lift_predicate(5, fn x -> x > 3 end, fn x -> "\#{x} is too small" end)
-      %Funx.Either.Right{right: 5}
+      iex> Funx.Monad.Either.lift_predicate(5, fn x -> x > 3 end, fn x -> "\#{x} is too small" end)
+      %Funx.Monad.Either.Right{right: 5}
 
-      iex> Funx.Either.lift_predicate(2, fn x -> x > 3 end, fn x -> "\#{x} is too small" end)
-      %Funx.Either.Left{left: "2 is too small"}
+      iex> Funx.Monad.Either.lift_predicate(2, fn x -> x > 3 end, fn x -> "\#{x} is too small" end)
+      %Funx.Monad.Either.Left{left: "2 is too small"}
   """
 
   @spec lift_predicate(value, (value -> boolean), (value -> error)) :: t(error, value)
@@ -656,11 +655,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.from_result({:ok, 5})
-      %Funx.Either.Right{right: 5}
+      iex> Funx.Monad.Either.from_result({:ok, 5})
+      %Funx.Monad.Either.Right{right: 5}
 
-      iex> Funx.Either.from_result({:error, "error"})
-      %Funx.Either.Left{left: "error"}
+      iex> Funx.Monad.Either.from_result({:error, "error"})
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec from_result({:ok, right} | {:error, left}) :: t(left, right)
         when left: term(), right: term()
@@ -672,10 +671,10 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.to_result(Funx.Either.right(5))
+      iex> Funx.Monad.Either.to_result(Funx.Monad.Either.right(5))
       {:ok, 5}
 
-      iex> Funx.Either.to_result(Funx.Either.left("error"))
+      iex> Funx.Monad.Either.to_result(Funx.Monad.Either.left("error"))
       {:error, "error"}
   """
   @spec to_result(t(left, right)) :: {:ok, right} | {:error, left}
@@ -692,11 +691,11 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.from_try(fn -> 5 end)
-      %Funx.Either.Right{right: 5}
+      iex> Funx.Monad.Either.from_try(fn -> 5 end)
+      %Funx.Monad.Either.Right{right: 5}
 
-      iex> Funx.Either.from_try(fn -> raise "error" end)
-      %Funx.Either.Left{left: %RuntimeError{message: "error"}}
+      iex> Funx.Monad.Either.from_try(fn -> raise "error" end)
+      %Funx.Monad.Either.Left{left: %RuntimeError{message: "error"}}
   """
   @spec from_try((-> right)) :: t(Exception.t(), right) when right: term()
   def from_try(func) do
@@ -716,16 +715,16 @@ defmodule Funx.Either do
 
   ## Examples
 
-      iex> Funx.Either.to_try!(Funx.Either.right(5))
+      iex> Funx.Monad.Either.to_try!(Funx.Monad.Either.right(5))
       5
 
-      iex> Funx.Either.to_try!(Funx.Either.left("error"))
+      iex> Funx.Monad.Either.to_try!(Funx.Monad.Either.left("error"))
       ** (RuntimeError) error
 
-      iex> Funx.Either.to_try!(Funx.Either.left(["error 1", "error 2"]))
+      iex> Funx.Monad.Either.to_try!(Funx.Monad.Either.left(["error 1", "error 2"]))
       ** (RuntimeError) error 1, error 2
 
-      iex> Funx.Either.to_try!(Funx.Either.left(%ArgumentError{message: "bad argument"}))
+      iex> Funx.Monad.Either.to_try!(Funx.Monad.Either.left(%ArgumentError{message: "bad argument"}))
       ** (ArgumentError) bad argument
   """
 

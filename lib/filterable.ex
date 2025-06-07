@@ -18,14 +18,14 @@ defprotocol Funx.Filterable do
 
   ## Examples
 
-      iex> Funx.Filterable.guard(Funx.Maybe.just(42), true)
-      %Funx.Maybe.Just{value: 42}
+      iex> Funx.Filterable.guard(Funx.Monad.Maybe.just(42), true)
+      %Funx.Monad.Maybe.Just{value: 42}
 
-      iex> Funx.Filterable.guard(Funx.Maybe.just(42), false)
-      %Funx.Maybe.Nothing{}
+      iex> Funx.Filterable.guard(Funx.Monad.Maybe.just(42), false)
+      %Funx.Monad.Maybe.Nothing{}
 
-      iex> Funx.Filterable.guard(Funx.Maybe.nothing(), true)
-      %Funx.Maybe.Nothing{}
+      iex> Funx.Filterable.guard(Funx.Monad.Maybe.nothing(), true)
+      %Funx.Monad.Maybe.Nothing{}
   """
   def guard(structure, bool)
 
@@ -41,11 +41,11 @@ defprotocol Funx.Filterable do
 
   ## Examples
 
-      iex> Funx.Filterable.filter(Funx.Maybe.just(5), &(&1 > 3))
-      %Funx.Maybe.Just{value: 5}
+      iex> Funx.Filterable.filter(Funx.Monad.Maybe.just(5), &(&1 > 3))
+      %Funx.Monad.Maybe.Just{value: 5}
 
-      iex> Funx.Filterable.filter(Funx.Maybe.just(2), &(&1 > 3))
-      %Funx.Maybe.Nothing{}
+      iex> Funx.Filterable.filter(Funx.Monad.Maybe.just(2), &(&1 > 3))
+      %Funx.Monad.Maybe.Nothing{}
   """
   def filter(structure, predicate)
 
@@ -62,11 +62,11 @@ defprotocol Funx.Filterable do
 
   ## Examples
 
-      iex> Funx.Filterable.filter_map(Funx.Maybe.just(5), fn x -> if x > 3, do: Funx.Maybe.just(x * 2), else: Funx.Maybe.nothing() end)
-      %Funx.Maybe.Just{value: 10}
+      iex> Funx.Filterable.filter_map(Funx.Monad.Maybe.just(5), fn x -> if x > 3, do: Funx.Monad.Maybe.just(x * 2), else: Funx.Monad.Maybe.nothing() end)
+      %Funx.Monad.Maybe.Just{value: 10}
 
-      iex> Funx.Filterable.filter_map(Funx.Maybe.just(2), fn x -> if x > 3, do: Funx.Maybe.just(x * 2), else: Funx.Maybe.nothing() end)
-      %Funx.Maybe.Nothing{}
+      iex> Funx.Filterable.filter_map(Funx.Monad.Maybe.just(2), fn x -> if x > 3, do: Funx.Monad.Maybe.just(x * 2), else: Funx.Monad.Maybe.nothing() end)
+      %Funx.Monad.Maybe.Nothing{}
   """
   def filter_map(structure, func)
 end

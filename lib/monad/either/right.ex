@@ -1,4 +1,4 @@
-defmodule Funx.Either.Right do
+defmodule Funx.Monad.Either.Right do
   @moduledoc """
   Represents the `Right` variant of the `Either` monad, used to model a success or valid result.
 
@@ -23,21 +23,21 @@ defmodule Funx.Either.Right do
 
   ## Examples
 
-      iex> Funx.Either.Right.pure(5)
-      %Funx.Either.Right{right: 5}
+      iex> Funx.Monad.Either.Right.pure(5)
+      %Funx.Monad.Either.Right{right: 5}
   """
   @spec pure(value) :: t(value) when value: term()
   def pure(value), do: %__MODULE__{right: value}
 end
 
-defimpl String.Chars, for: Funx.Either.Right do
-  alias Funx.Either.Right
+defimpl String.Chars, for: Funx.Monad.Either.Right do
+  alias Funx.Monad.Either.Right
 
   def to_string(%Right{right: value}), do: "Right(#{value})"
 end
 
-defimpl Funx.Monad, for: Funx.Either.Right do
-  alias Funx.Either.{Left, Right}
+defimpl Funx.Monad, for: Funx.Monad.Either.Right do
+  alias Funx.Monad.Either.{Left, Right}
 
   @spec map(Right.t(value), (value -> result)) :: Right.t(result)
         when value: term(), result: term()
@@ -56,8 +56,8 @@ defimpl Funx.Monad, for: Funx.Either.Right do
   def bind(%Right{right: value}, func), do: func.(value)
 end
 
-defimpl Funx.Foldable, for: Funx.Either.Right do
-  alias Funx.Either.Right
+defimpl Funx.Foldable, for: Funx.Monad.Either.Right do
+  alias Funx.Monad.Either.Right
 
   def fold_l(%Right{right: value}, right_func, _left_func) do
     right_func.(value)
@@ -68,8 +68,8 @@ defimpl Funx.Foldable, for: Funx.Either.Right do
   end
 end
 
-defimpl Funx.Eq, for: Funx.Either.Right do
-  alias Funx.Either.{Left, Right}
+defimpl Funx.Eq, for: Funx.Monad.Either.Right do
+  alias Funx.Monad.Either.{Left, Right}
   alias Funx.Eq
 
   def eq?(%Right{right: v1}, %Right{right: v2}), do: Eq.eq?(v1, v2)
@@ -79,8 +79,8 @@ defimpl Funx.Eq, for: Funx.Either.Right do
   def not_eq?(%Right{}, %Left{}), do: true
 end
 
-defimpl Funx.Ord, for: Funx.Either.Right do
-  alias Funx.Either.{Left, Right}
+defimpl Funx.Ord, for: Funx.Monad.Either.Right do
+  alias Funx.Monad.Either.{Left, Right}
   alias Funx.Ord
 
   def lt?(%Right{right: v1}, %Right{right: v2}), do: Ord.lt?(v1, v2)
@@ -96,6 +96,6 @@ defimpl Funx.Ord, for: Funx.Either.Right do
   def ge?(%Right{}, %Left{}), do: true
 end
 
-defimpl Funx.Summarizable, for: Funx.Either.Right do
+defimpl Funx.Summarizable, for: Funx.Monad.Either.Right do
   def summarize(%{right: value}), do: {:either_right, Funx.Summarizable.summarize(value)}
 end

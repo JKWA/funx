@@ -1,4 +1,4 @@
-defmodule Funx.Effect.Context do
+defmodule Funx.Monad.Effect.Context do
   @moduledoc """
   Represents the execution context attached to an effect.
 
@@ -53,7 +53,7 @@ defmodule Funx.Effect.Context do
   @type opts_or_context :: keyword() | t()
 
   @doc """
-  Creates a new `Funx.Effect.Context` struct for use with effectful computations.
+  Creates a new `Funx.Monad.Effect.Context` struct for use with effectful computations.
 
   If no `:trace_id` is provided, a unique one is generated automatically.
   You may also set optional fields such as `:span_name`, `:timeout`, `:baggage`, and `:metadata`.
@@ -63,11 +63,11 @@ defmodule Funx.Effect.Context do
 
   ## Examples
 
-      iex> ctx = Funx.Effect.Context.new(span_name: "load-data", timeout: 2000)
+      iex> ctx = Funx.Monad.Effect.Context.new(span_name: "load-data", timeout: 2000)
       iex> ctx.span_name
       "load-data"
 
-      iex> ctx = Funx.Effect.Context.new(trace_id: "abc123")
+      iex> ctx = Funx.Monad.Effect.Context.new(trace_id: "abc123")
       iex> ctx.trace_id
       "abc123"
   """
@@ -99,7 +99,7 @@ defmodule Funx.Effect.Context do
   end
 
   @doc """
-  Merges two `%Funx.Effect.Context{}` structs into one, preferring non-nil values from the first context.
+  Merges two `%Funx.Monad.Effect.Context{}` structs into one, preferring non-nil values from the first context.
 
   This is used to preserve trace continuity and propagate context across composed effects.
 
@@ -109,9 +109,9 @@ defmodule Funx.Effect.Context do
 
   ## Examples
 
-      iex> c1 = Funx.Effect.Context.new(trace_id: "a", baggage: %{user: 1})
-      iex> c2 = Funx.Effect.Context.new(trace_id: "b", baggage: %{region: "us-west"})
-      iex> Funx.Effect.Context.merge(c1, c2).baggage
+      iex> c1 = Funx.Monad.Effect.Context.new(trace_id: "a", baggage: %{user: 1})
+      iex> c2 = Funx.Monad.Effect.Context.new(trace_id: "b", baggage: %{region: "us-west"})
+      iex> Funx.Monad.Effect.Context.merge(c1, c2).baggage
       %{user: 1, region: "us-west"}
   """
   @spec merge(t(), t()) :: t()
@@ -127,7 +127,7 @@ defmodule Funx.Effect.Context do
   end
 
   @doc """
-  Returns a new `%Funx.Effect.Context{}` with fields overridden by values from the given keyword list.
+  Returns a new `%Funx.Monad.Effect.Context{}` with fields overridden by values from the given keyword list.
 
   - Direct fields like `:trace_id`, `:parent_trace_id`, `:span_name`, and `:timeout` are replaced if present.
   - Nested maps `:baggage` and `:metadata` are deeply merged, with the keyword list taking precedence.
@@ -136,8 +136,8 @@ defmodule Funx.Effect.Context do
 
   ## Examples
 
-      iex> ctx = Funx.Effect.Context.new(trace_id: "abc", baggage: %{x: 1}, metadata: %{debug: false})
-      iex> updated = Funx.Effect.Context.override(ctx, span_name: "child", baggage: %{x: 2}, metadata: %{debug: true})
+      iex> ctx = Funx.Monad.Effect.Context.new(trace_id: "abc", baggage: %{x: 1}, metadata: %{debug: false})
+      iex> updated = Funx.Monad.Effect.Context.override(ctx, span_name: "child", baggage: %{x: 2}, metadata: %{debug: true})
       iex> updated.span_name
       "child"
       iex> updated.baggage
@@ -169,8 +169,8 @@ defmodule Funx.Effect.Context do
 
   ## Examples
 
-      iex> parent = Funx.Effect.Context.new(trace_id: "abc123", span_name: "load")
-      iex> child = Funx.Effect.Context.promote_trace(parent, "decode")
+      iex> parent = Funx.Monad.Effect.Context.new(trace_id: "abc123", span_name: "load")
+      iex> child = Funx.Monad.Effect.Context.promote_trace(parent, "decode")
       iex> child.parent_trace_id
       "abc123"
       iex> child.trace_id != "abc123"
@@ -197,7 +197,7 @@ defmodule Funx.Effect.Context do
 
   ## Examples
 
-      iex> id = Funx.Effect.Context.generate_trace_id()
+      iex> id = Funx.Monad.Effect.Context.generate_trace_id()
       iex> String.length(id)
       32
       iex> id =~ ~r/^[a-f0-9]+$/

@@ -1,6 +1,6 @@
-defmodule Funx.Identity do
+defmodule Funx.Monad.Identity do
   @moduledoc """
-  The `Funx.Identity` module represents the identity monad, where values are simply wrapped in a structure
+  The `Funx.Monad.Identity` module represents the identity monad, where values are simply wrapped in a structure
   and operations are applied directly to those values.
 
   This module implements the following protocols:
@@ -23,8 +23,8 @@ defmodule Funx.Identity do
 
   ## Examples
 
-      iex> Funx.Identity.pure(5)
-      %Funx.Identity{value: 5}
+      iex> Funx.Monad.Identity.pure(5)
+      %Funx.Monad.Identity{value: 5}
   """
   @spec pure(value) :: t(value) when value: term()
   def pure(value), do: %__MODULE__{value: value}
@@ -34,7 +34,7 @@ defmodule Funx.Identity do
 
   ## Examples
 
-      iex> Funx.Identity.extract(Funx.Identity.pure(5))
+      iex> Funx.Monad.Identity.extract(Funx.Monad.Identity.pure(5))
       5
   """
   @spec extract(t(value)) :: value when value: term()
@@ -79,8 +79,8 @@ defmodule Funx.Identity do
   end
 end
 
-defimpl Funx.Monad, for: Funx.Identity do
-  alias Funx.Identity
+defimpl Funx.Monad, for: Funx.Monad.Identity do
+  alias Funx.Monad.Identity
 
   @spec map(Identity.t(a), (a -> b)) :: Identity.t(b) when a: term(), b: term()
   def map(%Identity{value: value}, func) do
@@ -98,14 +98,14 @@ defimpl Funx.Monad, for: Funx.Identity do
   end
 end
 
-defimpl String.Chars, for: Funx.Identity do
-  alias Funx.Identity
+defimpl String.Chars, for: Funx.Monad.Identity do
+  alias Funx.Monad.Identity
 
   def to_string(%Identity{value: value}), do: "Identity(#{value})"
 end
 
-defimpl Funx.Eq, for: Funx.Identity do
-  alias Funx.Identity
+defimpl Funx.Eq, for: Funx.Monad.Identity do
+  alias Funx.Monad.Identity
   alias Funx.Eq
 
   @spec eq?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
@@ -115,9 +115,9 @@ defimpl Funx.Eq, for: Funx.Identity do
   def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.not_eq?(v1, v2)
 end
 
-defimpl Funx.Ord, for: Funx.Identity do
+defimpl Funx.Ord, for: Funx.Monad.Identity do
   alias Funx.Ord
-  alias Funx.Identity
+  alias Funx.Monad.Identity
 
   @spec lt?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
   def lt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.lt?(v1, v2)
@@ -132,6 +132,6 @@ defimpl Funx.Ord, for: Funx.Identity do
   def ge?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.ge?(v1, v2)
 end
 
-defimpl Funx.Summarizable, for: Funx.Identity do
+defimpl Funx.Summarizable, for: Funx.Monad.Identity do
   def summarize(%{value: value}), do: {:identity, Funx.Summarizable.summarize(value)}
 end

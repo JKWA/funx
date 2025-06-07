@@ -22,13 +22,13 @@ defprotocol Funx.Monad do
 
   ## Examples
 
-      iex> Funx.Monad.ap(Funx.Maybe.just(fn x -> x * 2 end), Funx.Maybe.just(3))
-      %Funx.Maybe.Just{value: 6}
+      iex> Funx.Monad.ap(Funx.Monad.Maybe.just(fn x -> x * 2 end), Funx.Monad.Maybe.just(3))
+      %Funx.Monad.Maybe.Just{value: 6}
 
   In the case of `Nothing`:
 
-      iex> Funx.Monad.ap(Funx.Maybe.nothing(), Funx.Maybe.just(3))
-      %Funx.Maybe.Nothing{}
+      iex> Funx.Monad.ap(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(3))
+      %Funx.Monad.Maybe.Nothing{}
   """
   @spec ap(t(), t()) :: t()
   def ap(monadic_func, monad_value)
@@ -43,13 +43,13 @@ defprotocol Funx.Monad do
 
   ## Examples
 
-      iex> Funx.Monad.bind(Funx.Maybe.just(5), fn x -> Funx.Maybe.just(x * 2) end)
-      %Funx.Maybe.Just{value: 10}
+      iex> Funx.Monad.bind(Funx.Monad.Maybe.just(5), fn x -> Funx.Monad.Maybe.just(x * 2) end)
+      %Funx.Monad.Maybe.Just{value: 10}
 
   In the case of `Nothing`:
 
-      iex> Funx.Monad.bind(Funx.Maybe.nothing(), fn _ -> Funx.Maybe.just(5) end)
-      %Funx.Maybe.Nothing{}
+      iex> Funx.Monad.bind(Funx.Monad.Maybe.nothing(), fn _ -> Funx.Monad.Maybe.just(5) end)
+      %Funx.Monad.Maybe.Nothing{}
   """
   @spec bind(t(), (term() -> t())) :: t()
   def bind(monad_value, func_returning_monad)
@@ -62,13 +62,13 @@ defprotocol Funx.Monad do
 
   ## Examples
 
-      iex> Funx.Monad.map(Funx.Maybe.just(2), fn x -> x + 3 end)
-      %Funx.Maybe.Just{value: 5}
+      iex> Funx.Monad.map(Funx.Monad.Maybe.just(2), fn x -> x + 3 end)
+      %Funx.Monad.Maybe.Just{value: 5}
 
   In the case of `Nothing`:
 
-      iex> Funx.Monad.map(Funx.Maybe.nothing(), fn x -> x + 3 end)
-      %Funx.Maybe.Nothing{}
+      iex> Funx.Monad.map(Funx.Monad.Maybe.nothing(), fn x -> x + 3 end)
+      %Funx.Monad.Maybe.Nothing{}
   """
   @spec map(t(), (term() -> term())) :: t()
   def map(monad_value, func)

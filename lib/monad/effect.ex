@@ -1,6 +1,6 @@
-defmodule Funx.Effect do
+defmodule Funx.Monad.Effect do
   @moduledoc """
-  The `Funx.Effect` module defines the `Effect` monad, which represents asynchronous computations
+  The `Funx.Monad.Effect` module defines the `Effect` monad, which represents asynchronous computations
   that may succeed (`Right`) or fail (`Left`). Execution is deferred until explicitly run, making
   `Effect` useful for structuring lazy, asynchronous workflows.
 
@@ -108,7 +108,7 @@ defmodule Funx.Effect do
   import Funx.Appendable, only: [append: 2, coerce: 1]
   import Funx.Monad, only: [map: 2]
 
-  alias Funx.{Effect, Either, Maybe}
+  alias Funx.Monad.{Effect, Either, Maybe}
   alias Effect.{Left, Right}
   alias Maybe.{Just, Nothing}
 
@@ -126,18 +126,18 @@ defmodule Funx.Effect do
   Wraps a value in the `Right` variant of the `Effect` monad, representing a successful asynchronous computation.
 
   This is an alias for `pure/2`. You may optionally provide execution context, either as a keyword list or
-  a `%Funx.Effect.Context{}` struct. The context is attached to the effect and propagated during execution.
+  a `%Funx.Monad.Effect.Context{}` struct. The context is attached to the effect and propagated during execution.
 
   ## Examples
 
-      iex> result = Funx.Effect.right(42)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 42}
+      iex> result = Funx.Monad.Effect.right(42)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
 
-      iex> context = Funx.Effect.Context.new(trace_id: "custom-id", span_name: "from right")
-      iex> result = Funx.Effect.right(42, context)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 42}
+      iex> context = Funx.Monad.Effect.Context.new(trace_id: "custom-id", span_name: "from right")
+      iex> result = Funx.Monad.Effect.right(42, context)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
   """
   @spec right(right, Effect.Context.opts_or_context()) :: t(term(), right) when right: term()
   def right(value, opts_or_context \\ []), do: Right.pure(value, opts_or_context)
@@ -151,14 +151,14 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> result = Funx.Effect.pure(42)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 42}
+      iex> result = Funx.Monad.Effect.pure(42)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
 
-      iex> context = Funx.Effect.Context.new(trace_id: "custom-id", span_name: "pure example")
-      iex> result = Funx.Effect.pure(42, context)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 42}
+      iex> context = Funx.Monad.Effect.Context.new(trace_id: "custom-id", span_name: "pure example")
+      iex> result = Funx.Monad.Effect.pure(42, context)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
   """
   @spec pure(right, Effect.Context.opts_or_context()) :: t(term(), right) when right: term()
   def pure(value, opts_or_context \\ []), do: right(value, opts_or_context)
@@ -170,75 +170,75 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> result = Funx.Effect.left("error")
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: "error"}
+      iex> result = Funx.Monad.Effect.left("error")
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: "error"}
 
-      iex> context = Funx.Effect.Context.new(trace_id: "err-id", span_name: "failure")
-      iex> result = Funx.Effect.left("error", context)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: "error"}
+      iex> context = Funx.Monad.Effect.Context.new(trace_id: "err-id", span_name: "failure")
+      iex> result = Funx.Monad.Effect.left("error", context)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec left(left, Effect.Context.opts_or_context()) :: t(left, term()) when left: term()
   def left(value, opts_or_context \\ []), do: Left.pure(value, opts_or_context)
 
   @doc """
-  Returns a `Funx.Effect.Right` that yields the environment passed to `Funx.Effect.run/2`.
+  Returns a `Funx.Monad.Effect.Right` that yields the environment passed to `Funx.Monad.Effect.run/2`.
 
   This is the Reader-style `ask`, used to access the full environment inside an effectful computation.
 
   ## Example
 
-      iex> Funx.Effect.ask()
+      iex> Funx.Monad.Effect.ask()
       ...> |> Funx.Monad.map(& &1[:region])
-      ...> |> Funx.Effect.run(%{region: "us-west"})
-      %Funx.Either.Right{right: "us-west"}
+      ...> |> Funx.Monad.Effect.run(%{region: "us-west"})
+      %Funx.Monad.Either.Right{right: "us-west"}
   """
-  @spec ask :: Funx.Effect.Right.t()
+  @spec ask :: Funx.Monad.Effect.Right.t()
   def ask, do: Right.ask()
 
   @doc """
-  Returns a `Funx.Effect.Left` that fails with the entire environment passed to `Funx.Effect.run/2`.
+  Returns a `Funx.Monad.Effect.Left` that fails with the entire environment passed to `Funx.Monad.Effect.run/2`.
 
   This is the Reader-style equivalent of `ask/0`, but marks the environment as a failure.
   Useful when the presence of certain runtime data should short-circuit execution.
 
   ## Example
 
-      iex> Funx.Effect.fail()
-      ...> |> Funx.Effect.run(%{error: :invalid_token})
-      %Funx.Either.Left{left: %{error: :invalid_token}}
+      iex> Funx.Monad.Effect.fail()
+      ...> |> Funx.Monad.Effect.run(%{error: :invalid_token})
+      %Funx.Monad.Either.Left{left: %{error: :invalid_token}}
   """
 
   @spec fail :: Left.t()
   def fail, do: Left.ask()
 
   @doc """
-  Returns a `Funx.Effect.Right` that applies the given function to the environment passed to `Funx.Effect.run/2`.
+  Returns a `Funx.Monad.Effect.Right` that applies the given function to the environment passed to `Funx.Monad.Effect.run/2`.
 
   This allows extracting a value from the environment and using it in an effectful computation,
   following the Reader pattern.
 
   ## Example
 
-      iex> Funx.Effect.asks(fn env -> env[:user] end)
-      ...> |> Funx.Monad.bind(fn user -> Funx.Effect.right(user) end)
-      ...> |> Funx.Effect.run(%{user: "alice"})
-      %Funx.Either.Right{right: "alice"}
+      iex> Funx.Monad.Effect.asks(fn env -> env[:user] end)
+      ...> |> Funx.Monad.bind(fn user -> Funx.Monad.Effect.right(user) end)
+      ...> |> Funx.Monad.Effect.run(%{user: "alice"})
+      %Funx.Monad.Either.Right{right: "alice"}
   """
   @spec asks((term() -> term())) :: Right.t()
   def asks(f), do: Right.asks(f)
 
   @doc """
-  Returns a `Funx.Effect.Left` that applies the given function to the environment passed to `Funx.Effect.run/2`.
+  Returns a `Funx.Monad.Effect.Left` that applies the given function to the environment passed to `Funx.Monad.Effect.run/2`.
 
   This is the failure-side equivalent of `asks/1`, used to produce an error effect based on runtime context.
 
   ## Example
 
-      iex> Funx.Effect.fails(fn env -> {:missing_key, env} end)
-      ...> |> Funx.Effect.run(%{input: nil})
-      %Funx.Either.Left{left: {:missing_key, %{input: nil}}}
+      iex> Funx.Monad.Effect.fails(fn env -> {:missing_key, env} end)
+      ...> |> Funx.Monad.Effect.run(%{input: nil})
+      %Funx.Monad.Either.Left{left: {:missing_key, %{input: nil}}}
   """
   @spec fails((term() -> term())) :: Left.t()
   def fails(f), do: Left.asks(f)
@@ -255,13 +255,13 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> result = Funx.Effect.right(42)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 42}
+      iex> result = Funx.Monad.Effect.right(42)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
 
-      iex> result = Funx.Effect.right(42, span_name: "initial")
-      iex> Funx.Effect.run(result, span_name: "promoted")
-      %Funx.Either.Right{right: 42}
+      iex> result = Funx.Monad.Effect.right(42, span_name: "initial")
+      iex> Funx.Monad.Effect.run(result, span_name: "promoted")
+      %Funx.Monad.Either.Right{right: 42}
   """
 
   @spec run(t(left, right)) :: Either.t(left, right)
@@ -284,7 +284,8 @@ defmodule Funx.Effect do
       do: run(effect, env, [])
 
   def run(effect, opts)
-      when (is_struct(effect, Funx.Effect.Right) or is_struct(effect, Funx.Effect.Left)) and
+      when (is_struct(effect, Funx.Monad.Effect.Right) or
+              is_struct(effect, Funx.Monad.Effect.Left)) and
              is_list(opts) do
     env = Keyword.get(opts, :env, %{})
     run(effect, env, opts)
@@ -293,7 +294,8 @@ defmodule Funx.Effect do
   # NOTE: Coveralls is confused by the guard clause in the function head
   # coveralls-ignore-next-line
   def run(%{context: %Effect.Context{} = context} = effect, env, opts \\ [])
-      when (is_struct(effect, Funx.Effect.Right) or is_struct(effect, Funx.Effect.Left)) and
+      when (is_struct(effect, Funx.Monad.Effect.Right) or
+              is_struct(effect, Funx.Monad.Effect.Left)) and
              is_map(env) and
              is_list(opts) do
     context =
@@ -390,13 +392,13 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> result = Funx.Effect.lift_predicate(10, &(&1 > 5), fn x -> "\#{x} is too small" end)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 10}
+      iex> result = Funx.Monad.Effect.lift_predicate(10, &(&1 > 5), fn x -> "\#{x} is too small" end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 10}
 
-      iex> result = Funx.Effect.lift_predicate(3, &(&1 > 5), fn x -> "\#{x} is too small" end)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: "3 is too small"}
+      iex> result = Funx.Monad.Effect.lift_predicate(3, &(&1 > 5), fn x -> "\#{x} is too small" end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: "3 is too small"}
   """
   @spec lift_predicate(
           term(),
@@ -421,15 +423,15 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> either = %Funx.Either.Right{right: 42}
-      iex> result = Funx.Effect.lift_either(either)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 42}
+      iex> either = %Funx.Monad.Either.Right{right: 42}
+      iex> result = Funx.Monad.Effect.lift_either(either)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
 
-      iex> either = %Funx.Either.Left{left: "error"}
-      iex> result = Funx.Effect.lift_either(either)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: "error"}
+      iex> either = %Funx.Monad.Either.Left{left: "error"}
+      iex> result = Funx.Monad.Effect.lift_either(either)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec lift_either(Either.t(left, right), Effect.Context.opts_or_context()) :: t(left, right)
         when left: term(), right: term()
@@ -452,15 +454,15 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> maybe = Funx.Maybe.just(42)
-      iex> result = Funx.Effect.lift_maybe(maybe, fn -> "No value" end)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 42}
+      iex> maybe = Funx.Monad.Maybe.just(42)
+      iex> result = Funx.Monad.Effect.lift_maybe(maybe, fn -> "No value" end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
 
-      iex> maybe = Funx.Maybe.nothing()
-      iex> result = Funx.Effect.lift_maybe(maybe, fn -> "No value" end)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: "No value"}
+      iex> maybe = Funx.Monad.Maybe.nothing()
+      iex> result = Funx.Monad.Effect.lift_maybe(maybe, fn -> "No value" end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: "No value"}
   """
   @spec lift_maybe(Maybe.t(right), (-> left), Effect.Context.opts_or_context()) :: t(left, right)
         when left: term(), right: term()
@@ -479,15 +481,15 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> effect = Funx.Effect.left("error")
-      iex> transformed = Funx.Effect.map_left(effect, fn e -> "wrapped: " <> e end)
-      iex> Funx.Effect.run(transformed)
-      %Funx.Either.Left{left: "wrapped: error"}
+      iex> effect = Funx.Monad.Effect.left("error")
+      iex> transformed = Funx.Monad.Effect.map_left(effect, fn e -> "wrapped: " <> e end)
+      iex> Funx.Monad.Effect.run(transformed)
+      %Funx.Monad.Either.Left{left: "wrapped: error"}
 
-      iex> effect = Funx.Effect.pure(42)
-      iex> transformed = Funx.Effect.map_left(effect, fn _ -> "should not be called" end)
-      iex> Funx.Effect.run(transformed)
-      %Funx.Either.Right{right: 42}
+      iex> effect = Funx.Monad.Effect.pure(42)
+      iex> transformed = Funx.Monad.Effect.map_left(effect, fn _ -> "should not be called" end)
+      iex> Funx.Monad.Effect.run(transformed)
+      %Funx.Monad.Either.Right{right: 42}
   """
   @spec map_left(t(error, value), (error -> new_error)) :: t(new_error, value)
         when error: term(), new_error: term(), value: term()
@@ -523,15 +525,15 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> effect = Funx.Effect.pure(42)
-      iex> flipped = Funx.Effect.flip(effect)
-      iex> Funx.Effect.run(flipped)
-      %Funx.Either.Left{left: 42}
+      iex> effect = Funx.Monad.Effect.pure(42)
+      iex> flipped = Funx.Monad.Effect.flip(effect)
+      iex> Funx.Monad.Effect.run(flipped)
+      %Funx.Monad.Either.Left{left: 42}
 
-      iex> effect = Funx.Effect.left("fail")
-      iex> flipped = Funx.Effect.flip(effect)
-      iex> Funx.Effect.run(flipped)
-      %Funx.Either.Right{right: "fail"}
+      iex> effect = Funx.Monad.Effect.left("fail")
+      iex> flipped = Funx.Monad.Effect.flip(effect)
+      iex> Funx.Monad.Effect.run(flipped)
+      %Funx.Monad.Either.Right{right: "fail"}
   """
   @spec flip(t(error, value)) :: t(value, error)
         when error: term(), value: term()
@@ -577,15 +579,15 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> effects = [Funx.Effect.right(1), Funx.Effect.right(2)]
-      iex> result = Funx.Effect.sequence(effects)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: [1, 2]}
+      iex> effects = [Funx.Monad.Effect.right(1), Funx.Monad.Effect.right(2)]
+      iex> result = Funx.Monad.Effect.sequence(effects)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: [1, 2]}
 
-      iex> effects = [Funx.Effect.right(1), Funx.Effect.left("error")]
-      iex> result = Funx.Effect.sequence(effects)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: "error"}
+      iex> effects = [Funx.Monad.Effect.right(1), Funx.Monad.Effect.left("error")]
+      iex> result = Funx.Monad.Effect.sequence(effects)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec sequence([t(left, right)], Effect.Context.opts_or_context()) :: t(left, [right])
         when left: term(), right: term()
@@ -603,14 +605,14 @@ defmodule Funx.Effect do
   ## Examples
 
       iex> is_positive = fn num ->
-      ...>   Funx.Effect.lift_predicate(num, fn x -> x > 0 end, fn x -> Integer.to_string(x) <> " is not positive" end)
+      ...>   Funx.Monad.Effect.lift_predicate(num, fn x -> x > 0 end, fn x -> Integer.to_string(x) <> " is not positive" end)
       ...> end
-      iex> result = Funx.Effect.traverse([1, 2, 3], fn num -> is_positive.(num) end)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: [1, 2, 3]}
-      iex> result = Funx.Effect.traverse([1, -2, 3], fn num -> is_positive.(num) end)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: "-2 is not positive"}
+      iex> result = Funx.Monad.Effect.traverse([1, 2, 3], fn num -> is_positive.(num) end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: [1, 2, 3]}
+      iex> result = Funx.Monad.Effect.traverse([1, -2, 3], fn num -> is_positive.(num) end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: "-2 is not positive"}
   """
   @spec traverse([input], (input -> t(left, right)), Effect.Context.opts_or_context()) ::
           t(left, [right])
@@ -676,13 +678,13 @@ defmodule Funx.Effect do
   ## Examples
 
       iex> effects = [
-      ...>   Funx.Effect.right(1),
-      ...>   Funx.Effect.left("Error 1"),
-      ...>   Funx.Effect.left("Error 2")
+      ...>   Funx.Monad.Effect.right(1),
+      ...>   Funx.Monad.Effect.left("Error 1"),
+      ...>   Funx.Monad.Effect.left("Error 2")
       ...> ]
-      iex> result = Funx.Effect.sequence_a(effects)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: ["Error 1", "Error 2"]}
+      iex> result = Funx.Monad.Effect.sequence_a(effects)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: ["Error 1", "Error 2"]}
   """
 
   @spec sequence_a([t(error, value)], Effect.Context.opts_or_context()) :: t([error], [value])
@@ -703,14 +705,14 @@ defmodule Funx.Effect do
   ## Examples
 
       iex> validate = fn n ->
-      ...>   Funx.Effect.lift_predicate(n, fn x -> x > 0 end, fn x -> Integer.to_string(x) <> " is not positive" end)
+      ...>   Funx.Monad.Effect.lift_predicate(n, fn x -> x > 0 end, fn x -> Integer.to_string(x) <> " is not positive" end)
       ...> end
-      iex> result = Funx.Effect.traverse_a([1, -2, 3], validate)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: ["-2 is not positive"]}
-      iex> result = Funx.Effect.traverse_a([1, 2, 3], validate)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: [1, 2, 3]}
+      iex> result = Funx.Monad.Effect.traverse_a([1, -2, 3], validate)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: ["-2 is not positive"]}
+      iex> result = Funx.Monad.Effect.traverse_a([1, 2, 3], validate)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: [1, 2, 3]}
   """
   @spec traverse_a([input], (input -> t(error, value)), Effect.Context.opts_or_context()) ::
           t([error], [value])
@@ -841,21 +843,21 @@ defmodule Funx.Effect do
   ## Examples
 
       iex> validate_positive = fn x ->
-      ...>   Funx.Effect.lift_predicate(x, fn n -> n > 0 end, fn n -> "Value " <> Integer.to_string(n) <> " must be positive" end)
+      ...>   Funx.Monad.Effect.lift_predicate(x, fn n -> n > 0 end, fn n -> "Value " <> Integer.to_string(n) <> " must be positive" end)
       ...> end
       iex> validate_even = fn x ->
-      ...>   Funx.Effect.lift_predicate(x, fn n -> rem(n, 2) == 0 end, fn n -> "Value " <> Integer.to_string(n) <> " must be even" end)
+      ...>   Funx.Monad.Effect.lift_predicate(x, fn n -> rem(n, 2) == 0 end, fn n -> "Value " <> Integer.to_string(n) <> " must be even" end)
       ...> end
       iex> validators = [validate_positive, validate_even]
-      iex> result = Funx.Effect.validate(4, validators)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 4}
-      iex> result = Funx.Effect.validate(3, validators)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: ["Value 3 must be even"]}
-      iex> result = Funx.Effect.validate(-3, validators)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: ["Value -3 must be positive", "Value -3 must be even"]}
+      iex> result = Funx.Monad.Effect.validate(4, validators)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 4}
+      iex> result = Funx.Monad.Effect.validate(3, validators)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: ["Value 3 must be even"]}
+      iex> result = Funx.Monad.Effect.validate(-3, validators)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: ["Value -3 must be positive", "Value -3 must be even"]}
   """
 
   @spec validate(
@@ -884,13 +886,13 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> result = Funx.Effect.from_result({:ok, 42})
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 42}
+      iex> result = Funx.Monad.Effect.from_result({:ok, 42})
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
 
-      iex> result = Funx.Effect.from_result({:error, "error"})
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: "error"}
+      iex> result = Funx.Monad.Effect.from_result({:error, "error"})
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec from_result({:ok, right} | {:error, left}, Effect.Context.opts_or_context()) ::
           t(left, right)
@@ -916,12 +918,12 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> effect = Funx.Effect.right(42, span_name: "convert-ok")
-      iex> Funx.Effect.to_result(effect, span_name: "to_result")
+      iex> effect = Funx.Monad.Effect.right(42, span_name: "convert-ok")
+      iex> Funx.Monad.Effect.to_result(effect, span_name: "to_result")
       {:ok, 42}
 
-      iex> error = Funx.Effect.left("fail", span_name: "convert-error")
-      iex> Funx.Effect.to_result(error, span_name: "to_result")
+      iex> error = Funx.Monad.Effect.left("fail", span_name: "convert-error")
+      iex> Funx.Monad.Effect.to_result(error, span_name: "to_result")
       {:error, "fail"}
 
   Telemetry will include the promoted span name (`"to_result -> convert-ok"`) and context metadata.
@@ -944,13 +946,13 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> result = Funx.Effect.from_try(fn -> 42 end)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Right{right: 42}
+      iex> result = Funx.Monad.Effect.from_try(fn -> 42 end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
 
-      iex> result = Funx.Effect.from_try(fn -> raise "error" end)
-      iex> Funx.Effect.run(result)
-      %Funx.Either.Left{left: %RuntimeError{message: "error"}}
+      iex> result = Funx.Monad.Effect.from_try(fn -> raise "error" end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{left: %RuntimeError{message: "error"}}
   """
   @spec from_try((-> right), Effect.Context.opts_or_context()) :: t(Exception.t(), right)
         when right: term()
@@ -980,12 +982,12 @@ defmodule Funx.Effect do
 
   ## Examples
 
-      iex> effect = Funx.Effect.right(42, span_name: "return")
-      iex> Funx.Effect.to_try!(effect)
+      iex> effect = Funx.Monad.Effect.right(42, span_name: "return")
+      iex> Funx.Monad.Effect.to_try!(effect)
       42
 
-      iex> error = Funx.Effect.left(%RuntimeError{message: "failure"}, span_name: "error")
-      iex> Funx.Effect.to_try!(error)
+      iex> error = Funx.Monad.Effect.left(%RuntimeError{message: "failure"}, span_name: "error")
+      iex> Funx.Monad.Effect.to_try!(error)
       ** (RuntimeError) failure
 
   Telemetry will emit a `:stop` event with `:status` set to `:ok` or `:error`, depending on the outcome.

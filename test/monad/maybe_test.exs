@@ -1,21 +1,21 @@
-defmodule Funx.MaybeTest do
+defmodule Funx.Monad.MaybeTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
 
-  doctest Funx.Maybe
-  doctest Funx.Maybe.Just
-  doctest Funx.Maybe.Nothing
+  doctest Funx.Monad.Maybe
+  doctest Funx.Monad.Maybe.Just
+  doctest Funx.Monad.Maybe.Nothing
 
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
-  import Funx.Maybe
+  import Funx.Monad.Maybe
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Filterable, only: [filter: 2, filter_map: 2, guard: 2]
   import Funx.Summarizable, only: [summarize: 1]
 
-  alias Funx.{Either, Eq, Ord}
-  alias Funx.Identity
-  alias Funx.Maybe.{Just, Nothing}
+  alias Funx.{Eq, Ord}
+  alias Funx.Monad.{Either, Identity, Maybe}
+  alias Maybe.{Just, Nothing}
 
   describe "Just.pure/1" do
     test "wraps a non-nil value in a Just monad" do

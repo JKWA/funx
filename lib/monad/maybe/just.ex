@@ -1,4 +1,4 @@
-defmodule Funx.Maybe.Just do
+defmodule Funx.Monad.Maybe.Just do
   @moduledoc """
   Represents the `Just` variant of the `Maybe` monad, used to model the presence of a value.
 
@@ -27,13 +27,13 @@ defmodule Funx.Maybe.Just do
 
   ## Examples
 
-      iex> Funx.Maybe.Just.pure(5)
-      %Funx.Maybe.Just{value: 5}
+      iex> Funx.Monad.Maybe.Just.pure(5)
+      %Funx.Monad.Maybe.Just{value: 5}
 
   ### Raises
   - `ArgumentError` if `nil` is provided.
 
-      iex> Funx.Maybe.Just.pure(nil)
+      iex> Funx.Monad.Maybe.Just.pure(nil)
       ** (ArgumentError) Cannot wrap nil in a Just
   """
   @spec pure(value) :: t(value) when value: term()
@@ -41,14 +41,14 @@ defmodule Funx.Maybe.Just do
   def pure(value), do: %__MODULE__{value: value}
 end
 
-defimpl String.Chars, for: Funx.Maybe.Just do
-  alias Funx.Maybe.Just
+defimpl String.Chars, for: Funx.Monad.Maybe.Just do
+  alias Funx.Monad.Maybe.Just
 
   def to_string(%Just{value: value}), do: "Just(#{value})"
 end
 
-defimpl Funx.Monad, for: Funx.Maybe.Just do
-  alias Funx.Maybe.{Just, Nothing}
+defimpl Funx.Monad, for: Funx.Monad.Maybe.Just do
+  alias Funx.Monad.Maybe.{Just, Nothing}
 
   @spec map(Just.t(value), (value -> result)) :: Just.t(result)
         when value: term(), result: term()
@@ -67,8 +67,8 @@ defimpl Funx.Monad, for: Funx.Maybe.Just do
   def bind(%Just{value: value}, func), do: func.(value)
 end
 
-defimpl Funx.Foldable, for: Funx.Maybe.Just do
-  alias Funx.Maybe.Just
+defimpl Funx.Foldable, for: Funx.Monad.Maybe.Just do
+  alias Funx.Monad.Maybe.Just
 
   @spec fold_l(Just.t(value), (value -> result), (-> result)) :: result
         when value: term(), result: term()
@@ -83,17 +83,17 @@ defimpl Funx.Foldable, for: Funx.Maybe.Just do
   end
 end
 
-defimpl Funx.Filterable, for: Funx.Maybe.Just do
-  alias Funx.Maybe
-  alias Funx.Maybe.Just
+defimpl Funx.Filterable, for: Funx.Monad.Maybe.Just do
+  alias Funx.Monad.Maybe
+  alias Funx.Monad.Maybe.Just
   alias Funx.Monad
 
-  @spec guard(Funx.Maybe.Just.t(value), boolean()) :: Funx.Maybe.t(value)
+  @spec guard(Funx.Monad.Maybe.Just.t(value), boolean()) :: Funx.Monad.Maybe.t(value)
         when value: var
   def guard(%Just{} = maybe, true), do: maybe
   def guard(%Just{}, false), do: Maybe.nothing()
 
-  @spec filter(Funx.Maybe.Just.t(value), (value -> boolean())) :: Funx.Maybe.t(value)
+  @spec filter(Funx.Monad.Maybe.Just.t(value), (value -> boolean())) :: Funx.Monad.Maybe.t(value)
         when value: var
   def filter(%Just{} = maybe, predicate) do
     Monad.bind(maybe, fn value ->
@@ -105,8 +105,8 @@ defimpl Funx.Filterable, for: Funx.Maybe.Just do
     end)
   end
 
-  @spec filter_map(Funx.Maybe.Just.t(value), (value -> Funx.Maybe.t(result))) ::
-          Funx.Maybe.t(result)
+  @spec filter_map(Funx.Monad.Maybe.Just.t(value), (value -> Funx.Monad.Maybe.t(result))) ::
+          Funx.Monad.Maybe.t(result)
         when value: var, result: var
   def filter_map(%Just{value: value}, func) do
     case func.(value) do
@@ -116,8 +116,8 @@ defimpl Funx.Filterable, for: Funx.Maybe.Just do
   end
 end
 
-defimpl Funx.Eq, for: Funx.Maybe.Just do
-  alias Funx.Maybe.{Just, Nothing}
+defimpl Funx.Eq, for: Funx.Monad.Maybe.Just do
+  alias Funx.Monad.Maybe.{Just, Nothing}
   alias Funx.Eq
 
   def eq?(%Just{value: v1}, %Just{value: v2}), do: Eq.eq?(v1, v2)
@@ -127,8 +127,8 @@ defimpl Funx.Eq, for: Funx.Maybe.Just do
   def not_eq?(%Just{}, %Nothing{}), do: true
 end
 
-defimpl Funx.Ord, for: Funx.Maybe.Just do
-  alias Funx.Maybe.{Just, Nothing}
+defimpl Funx.Ord, for: Funx.Monad.Maybe.Just do
+  alias Funx.Monad.Maybe.{Just, Nothing}
   alias Funx.Ord
 
   def lt?(%Just{value: v1}, %Just{value: v2}), do: Ord.lt?(v1, v2)
@@ -144,6 +144,6 @@ defimpl Funx.Ord, for: Funx.Maybe.Just do
   def ge?(%Just{}, %Nothing{}), do: true
 end
 
-defimpl Funx.Summarizable, for: Funx.Maybe.Just do
+defimpl Funx.Summarizable, for: Funx.Monad.Maybe.Just do
   def summarize(%{value: value}), do: {:maybe_just, Funx.Summarizable.summarize(value)}
 end

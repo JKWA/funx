@@ -18,13 +18,13 @@ defprotocol Funx.Ord do
 
   ## Examples
 
-      iex> Funx.Ord.lt?(Funx.Maybe.just(3), Funx.Maybe.just(5))
+      iex> Funx.Ord.lt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
       true
 
-      iex> Funx.Ord.lt?(Funx.Maybe.just(5), Funx.Maybe.just(3))
+      iex> Funx.Ord.lt?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
       false
 
-      iex> Funx.Ord.lt?(Funx.Maybe.nothing(), Funx.Maybe.just(3))
+      iex> Funx.Ord.lt?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(3))
       true
   """
   def lt?(a, b)
@@ -34,13 +34,13 @@ defprotocol Funx.Ord do
 
   ## Examples
 
-      iex> Funx.Ord.le?(Funx.Maybe.just(3), Funx.Maybe.just(5))
+      iex> Funx.Ord.le?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
       true
 
-      iex> Funx.Ord.le?(Funx.Maybe.just(5), Funx.Maybe.just(5))
+      iex> Funx.Ord.le?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(5))
       true
 
-      iex> Funx.Ord.le?(Funx.Maybe.just(5), Funx.Maybe.just(3))
+      iex> Funx.Ord.le?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
       false
   """
   def le?(a, b)
@@ -50,13 +50,13 @@ defprotocol Funx.Ord do
 
   ## Examples
 
-      iex> Funx.Ord.gt?(Funx.Maybe.just(5), Funx.Maybe.just(3))
+      iex> Funx.Ord.gt?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
       true
 
-      iex> Funx.Ord.gt?(Funx.Maybe.just(3), Funx.Maybe.just(5))
+      iex> Funx.Ord.gt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
       false
 
-      iex> Funx.Ord.gt?(Funx.Maybe.just(3), Funx.Maybe.nothing())
+      iex> Funx.Ord.gt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.nothing())
       true
   """
   def gt?(a, b)
@@ -66,13 +66,13 @@ defprotocol Funx.Ord do
 
   ## Examples
 
-      iex> Funx.Ord.ge?(Funx.Maybe.just(5), Funx.Maybe.just(3))
+      iex> Funx.Ord.ge?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
       true
 
-      iex> Funx.Ord.ge?(Funx.Maybe.just(5), Funx.Maybe.just(5))
+      iex> Funx.Ord.ge?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(5))
       true
 
-      iex> Funx.Ord.ge?(Funx.Maybe.just(3), Funx.Maybe.just(5))
+      iex> Funx.Ord.ge?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
       false
   """
   def ge?(a, b)

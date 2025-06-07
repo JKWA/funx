@@ -13,32 +13,32 @@ defprotocol Funx.Eq do
 
   ## Examples
 
-  With a custom implementation for a `Funx.Maybe` type:
+  With a custom implementation for a `Funx.Monad.Maybe` type:
 
-      iex> Funx.Eq.eq?(Funx.Maybe.just(3), Funx.Maybe.just(3))
+      iex> Funx.Eq.eq?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(3))
       true
 
-      iex> Funx.Eq.eq?(Funx.Maybe.just(3), Funx.Maybe.just(5))
+      iex> Funx.Eq.eq?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
       false
 
-      iex> Funx.Eq.eq?(Funx.Maybe.nothing(), Funx.Maybe.nothing())
+      iex> Funx.Eq.eq?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.nothing())
       true
 
-      iex> Funx.Eq.eq?(Funx.Maybe.nothing(), Funx.Maybe.just(5))
+      iex> Funx.Eq.eq?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(5))
       false
 
   Checking inequality with `not_eq?/2`:
 
-      iex> Funx.Eq.not_eq?(Funx.Maybe.just(3), Funx.Maybe.just(3))
+      iex> Funx.Eq.not_eq?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(3))
       false
 
-      iex> Funx.Eq.not_eq?(Funx.Maybe.just(3), Funx.Maybe.just(5))
+      iex> Funx.Eq.not_eq?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
       true
 
-      iex> Funx.Eq.not_eq?(Funx.Maybe.nothing(), Funx.Maybe.nothing())
+      iex> Funx.Eq.not_eq?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.nothing())
       false
 
-      iex> Funx.Eq.not_eq?(Funx.Maybe.nothing(), Funx.Maybe.just(5))
+      iex> Funx.Eq.not_eq?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(5))
       true
   """
 

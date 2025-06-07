@@ -4,7 +4,7 @@ defmodule Funx.Eq.UtilsTest do
   use ExUnit.Case, async: true
   import Funx.Filterable, only: [filter: 2]
   alias Funx.Eq.Utils
-  alias Funx.Maybe
+  alias Funx.Monad.Maybe
   alias Funx.Test.Person
 
   doctest Funx.Eq.Utils

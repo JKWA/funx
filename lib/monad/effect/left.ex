@@ -1,4 +1,4 @@
-defmodule Funx.Effect.Left do
+defmodule Funx.Monad.Effect.Left do
   @moduledoc """
   Represents the `Left` variant of the `Effect` monad, used to model a failure or error in an asynchronous context.
 
@@ -14,7 +14,7 @@ defmodule Funx.Effect.Left do
     * `asks/2` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Left`.
   """
 
-  alias Funx.{Effect, Either}
+  alias Funx.Monad.{Effect, Either}
 
   @enforce_keys [:effect, :context]
   defstruct [:effect, :context]
@@ -43,9 +43,9 @@ defmodule Funx.Effect.Left do
 
   ## Examples
 
-      iex> effect = Funx.Effect.Left.pure("error")
-      iex> Funx.Effect.run(effect)
-      %Funx.Either.Left{left: "error"}
+      iex> effect = Funx.Monad.Effect.Left.pure("error")
+      iex> Funx.Monad.Effect.run(effect)
+      %Funx.Monad.Either.Left{left: "error"}
   """
   @spec pure(left, Effect.Context.opts_or_context()) :: t(left)
         when left: term()
@@ -59,16 +59,16 @@ defmodule Funx.Effect.Left do
   end
 
   @doc """
-  Returns a `Funx.Effect.Left` that yields the environment passed to `Funx.Effect.run/2`.
+  Returns a `Funx.Monad.Effect.Left` that yields the environment passed to `Funx.Monad.Effect.run/2`.
 
   This is the Reader-style `ask`, used to construct a failure from the full injected environment.
   It can be useful for debugging, instrumentation, or propagating request-scoped failure information.
 
   ## Example
 
-      iex> Funx.Effect.Left.ask()
-      ...> |> Funx.Effect.run(%{error: :unauthorized})
-      %Funx.Either.Left{left: %{error: :unauthorized}}
+      iex> Funx.Monad.Effect.Left.ask()
+      ...> |> Funx.Monad.Effect.run(%{error: :unauthorized})
+      %Funx.Monad.Either.Left{left: %{error: :unauthorized}}
   """
   @spec ask(Effect.Context.opts_or_context()) :: t(env)
         when env: term()
@@ -84,16 +84,16 @@ defmodule Funx.Effect.Left do
   end
 
   @doc """
-  Returns a `Funx.Effect.Left` that applies the given function to the environment passed to `Funx.Effect.run/2`.
+  Returns a `Funx.Monad.Effect.Left` that applies the given function to the environment passed to `Funx.Monad.Effect.run/2`.
 
   This allows constructing a failure (`Left`) based on runtime input. It complements `Right.asks/2`,
   but marks the result as a failure rather than a success.
 
   ## Example
 
-      iex> Funx.Effect.Left.asks(fn env -> {:error, env[:reason]} end)
-      ...> |> Funx.Effect.run(%{reason: :invalid})
-      %Funx.Either.Left{left: {:error, :invalid}}
+      iex> Funx.Monad.Effect.Left.asks(fn env -> {:error, env[:reason]} end)
+      ...> |> Funx.Monad.Effect.run(%{reason: :invalid})
+      %Funx.Monad.Either.Left{left: {:error, :invalid}}
   """
   @spec asks((env -> left), Effect.Context.opts_or_context()) :: t(left)
         when env: term(), left: term()
@@ -109,9 +109,9 @@ defmodule Funx.Effect.Left do
   end
 end
 
-defimpl Funx.Monad, for: Funx.Effect.Left do
-  alias Funx.Effect
-  alias Funx.Effect.Left
+defimpl Funx.Monad, for: Funx.Monad.Effect.Left do
+  alias Funx.Monad.Effect
+  alias Funx.Monad.Effect.Left
 
   @spec bind(Left.t(left), (term() -> Effect.t(left, result))) :: Left.t(left)
         when left: term(), result: term()

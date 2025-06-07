@@ -1,6 +1,6 @@
-defmodule Funx.Reader do
+defmodule Funx.Monad.Reader do
   @moduledoc """
-  The `Funx.Reader` module represents the Reader monad, which allows computations to access
+  The `Funx.Monad.Reader` module represents the Reader monad, which allows computations to access
   shared, read-only environment values.
 
   This module defines core Reader functions:
@@ -28,8 +28,8 @@ defmodule Funx.Reader do
 
   ## Examples
 
-      iex> reader = Funx.Reader.pure(42)
-      iex> Funx.Reader.run(reader, %{})
+      iex> reader = Funx.Monad.Reader.pure(42)
+      iex> Funx.Monad.Reader.run(reader, %{})
       42
   """
   @spec pure(value :: A) :: t(any(), A) when A: var
@@ -40,8 +40,8 @@ defmodule Funx.Reader do
 
   ## Examples
 
-      iex> reader = Funx.Reader.pure(42)
-      iex> Funx.Reader.run(reader, %{})
+      iex> reader = Funx.Monad.Reader.pure(42)
+      iex> Funx.Monad.Reader.run(reader, %{})
       42
   """
   @spec run(t(Env, A), Env) :: A when Env: var, A: var
@@ -52,8 +52,8 @@ defmodule Funx.Reader do
 
   ## Examples
 
-      iex> reader = Funx.Reader.asks(fn env -> Map.get(env, :foo) end)
-      iex> Funx.Reader.run(reader, %{foo: "bar"})
+      iex> reader = Funx.Monad.Reader.asks(fn env -> Map.get(env, :foo) end)
+      iex> Funx.Monad.Reader.run(reader, %{foo: "bar"})
       "bar"
   """
 
@@ -65,16 +65,16 @@ defmodule Funx.Reader do
 
   ## Examples
 
-      iex> reader = Funx.Reader.ask()
-      iex> Funx.Reader.run(reader, %{foo: "bar"})
+      iex> reader = Funx.Monad.Reader.ask()
+      iex> Funx.Monad.Reader.run(reader, %{foo: "bar"})
       %{foo: "bar"}
   """
   @spec ask() :: t(Env, Env) when Env: var
   def ask, do: asks(fn env -> env end)
 end
 
-defimpl Funx.Monad, for: Funx.Reader do
-  alias Funx.Reader
+defimpl Funx.Monad, for: Funx.Monad.Reader do
+  alias Funx.Monad.Reader
 
   @spec map(Reader.t(Env, A), (A -> B)) :: Reader.t(Env, B)
         when Env: var, A: var, B: var

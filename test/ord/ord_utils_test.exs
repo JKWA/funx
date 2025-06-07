@@ -6,7 +6,7 @@ defmodule Funx.Ord.UtilsTest do
   import Kernel, except: [min: 2, max: 2]
   import Funx.Ord.Utils
 
-  alias Funx.{Either, Identity, Maybe}
+  alias Funx.Monad.{Either, Identity, Maybe}
   alias Funx.Ord.Any
   alias Funx.Test.Person
   doctest Funx.Ord.Utils

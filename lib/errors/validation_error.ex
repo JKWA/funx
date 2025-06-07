@@ -31,17 +31,17 @@ defmodule Funx.Errors.ValidationError do
   alias Funx.Errors.ValidationError
 
   validate_positive = fn x ->
-    Funx.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
-    |> Funx.Either.map_left(&ValidationError.new/1)
+    Funx.Monad.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
+    |> Funx.Monad.Either.map_left(&ValidationError.new/1)
   end
 
   validate_even = fn x ->
-    Funx.Either.lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
-    |> Funx.Either.map_left(&ValidationError.new/1)
+    Funx.Monad.Either.lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
+    |> Funx.Monad.Either.map_left(&ValidationError.new/1)
   end
 
-  Funx.Either.validate(-3, [validate_positive, validate_even])
-  #=> %Funx.Either.Left{
+  Funx.Monad.Either.validate(-3, [validate_positive, validate_even])
+  #=> %Funx.Monad.Either.Left{
   #     left: %ValidationError{
   #       errors: ["Value must be positive: -3", "Value must be even: -3"]
   #     }

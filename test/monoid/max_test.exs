@@ -4,7 +4,7 @@ defmodule Funx.Monoid.MaxTest do
   import Funx.Monoid.Utils, only: [m_concat: 2]
   import Funx.Ord.Utils
 
-  alias Funx.Maybe
+  alias Funx.Monad.Maybe
   alias Funx.Monoid
   alias Funx.Test.Person
 

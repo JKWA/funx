@@ -3,18 +3,17 @@ defmodule EffectTest do
 
   use Funx.TestCase, async: true
 
-  doctest Funx.Effect
-  doctest Funx.Effect.Left
-  doctest Funx.Effect.Right
+  doctest Funx.Monad.Effect
+  doctest Funx.Monad.Effect.Left
+  doctest Funx.Monad.Effect.Right
 
-  import Funx.Effect
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
+  import Funx.Monad.Effect
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
   import Funx.Summarizable, only: [summarize: 1]
 
-  alias Funx.Effect
-  alias Funx.{Either, Maybe}
   alias Funx.Errors.ValidationError
+  alias Funx.Monad.{Effect, Either, Maybe}
 
   setup [:with_telemetry_config]
 
@@ -77,7 +76,7 @@ defmodule EffectTest do
         effect: fn _env ->
           Task.async(fn ->
             Process.sleep(10_000)
-            Funx.Either.right(:late)
+            Either.right(:late)
           end)
         end
       }
@@ -258,17 +257,17 @@ defmodule EffectTest do
     test "reads a value from the environment" do
       effect =
         Effect.Right.asks(fn env -> env[:user_id] end)
-        |> Funx.Effect.run(%{user_id: 42})
+        |> Effect.run(%{user_id: 42})
 
-      assert effect == Funx.Either.right(42)
+      assert effect == Either.right(42)
     end
 
     test "returns a Right-tagged effect regardless of env content" do
       effect =
         Effect.Right.asks(fn env -> Map.get(env, :missing_key, :default) end)
-        |> Funx.Effect.run()
+        |> Effect.run()
 
-      assert effect == Funx.Either.right(:default)
+      assert effect == Either.right(:default)
     end
 
     test "allows chaining with bind to perform a dependent effect" do
@@ -277,25 +276,25 @@ defmodule EffectTest do
         |> Funx.Monad.bind(fn config ->
           Effect.right("Configured for #{config}")
         end)
-        |> Funx.Effect.run(%{config: "production"})
+        |> Effect.run(%{config: "production"})
 
-      assert result == Funx.Either.right("Configured for production")
+      assert result == Either.right("Configured for production")
     end
 
     test "does not raise if env is empty but function handles it" do
       effect =
         Effect.Right.asks(fn _env -> :ok end)
-        |> Funx.Effect.run(%{})
+        |> Effect.run(%{})
 
-      assert effect == Funx.Either.right(:ok)
+      assert effect == Either.right(:ok)
     end
 
     test "propagates telemetry with span name when context is passed" do
       span = "reads-key"
-      ctx = Funx.Effect.Context.new(span_name: span)
+      ctx = Effect.Context.new(span_name: span)
 
       Effect.Right.asks(fn env -> env[:x] end, ctx)
-      |> Funx.Effect.run(%{x: 1})
+      |> Effect.run(%{x: 1})
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], _,
                       %{span_name: ^span, effect_type: :right, status: :ok}},
@@ -303,7 +302,7 @@ defmodule EffectTest do
     end
   end
 
-  describe "Funx.Effect.fails/1" do
+  describe "Effect.fails/1" do
     setup do
       capture_telemetry([:funx, :effect, :run, :stop], self())
       :ok
@@ -311,35 +310,35 @@ defmodule EffectTest do
 
     test "constructs a Left from the runtime environment" do
       result =
-        Funx.Effect.fails(fn env -> {:missing, env[:key]} end)
-        |> Funx.Effect.run(%{key: :user_id})
+        Effect.fails(fn env -> {:missing, env[:key]} end)
+        |> Effect.run(%{key: :user_id})
 
-      assert result == Funx.Either.left({:missing, :user_id})
+      assert result == Either.left({:missing, :user_id})
     end
 
     test "returns a Left even when no env values are accessed" do
       result =
-        Funx.Effect.fails(fn _ -> :static_failure end)
-        |> Funx.Effect.run(%{})
+        Effect.fails(fn _ -> :static_failure end)
+        |> Effect.run(%{})
 
-      assert result == Funx.Either.left(:static_failure)
+      assert result == Either.left(:static_failure)
     end
 
     test "supports dynamic error construction from nested maps" do
       env = %{input: %{field: "bad"}}
 
       result =
-        Funx.Effect.fails(fn env -> {:invalid_field, env.input.field} end)
-        |> Funx.Effect.run(env)
+        Effect.fails(fn env -> {:invalid_field, env.input.field} end)
+        |> Effect.run(env)
 
-      assert result == Funx.Either.left({:invalid_field, "bad"})
+      assert result == Either.left({:invalid_field, "bad"})
     end
 
     test "propagates telemetry with custom span name" do
-      ctx = Funx.Effect.Context.new(span_name: "fail-example")
+      ctx = Effect.Context.new(span_name: "fail-example")
 
       Effect.Left.asks(fn env -> {:error, env} end, ctx)
-      |> Funx.Effect.run(%{reason: :bad_data})
+      |> Effect.run(%{reason: :bad_data})
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], _,
                       %{span_name: "fail-example", effect_type: :left, status: :error}},
@@ -1134,7 +1133,7 @@ defmodule EffectTest do
       effect = %Effect.Left{
         context: context,
         effect: fn _env ->
-          Task.async(fn -> %Funx.Either.Right{right: :recovered} end)
+          Task.async(fn -> %Either.Right{right: :recovered} end)
         end
       }
 

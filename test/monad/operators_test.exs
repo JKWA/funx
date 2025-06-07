@@ -4,7 +4,7 @@ defmodule Funx.OperatorsTest do
   use ExUnit.Case, async: true
   import Funx.Operators
 
-  import Funx.Maybe
+  import Funx.Monad.Maybe
 
   def add_one(x), do: x + 1
 

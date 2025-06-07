@@ -8,7 +8,7 @@ defmodule Funx.Math do
 
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
   import Funx.Monad, only: [bind: 2, map: 2]
-  alias Funx.Maybe
+  alias Funx.Monad.Maybe
   alias Funx.Monoid.{Max, Min, Product, Sum}
 
   @doc """
@@ -145,10 +145,10 @@ defmodule Funx.Math do
   ## Examples
 
       iex> Funx.Math.mean([1, 2, 3, 4])
-      Funx.Maybe.pure(2.5)
+      Funx.Monad.Maybe.pure(2.5)
 
       iex> Funx.Math.mean([])
-      Funx.Maybe.nothing()
+      Funx.Monad.Maybe.nothing()
   """
   @spec mean([number()]) :: Maybe.t(number())
   def mean([]), do: Maybe.nothing()
@@ -165,10 +165,10 @@ defmodule Funx.Math do
   ## Examples
 
       iex> Funx.Math.range([3, 7, 2])
-      Funx.Maybe.pure(5)
+      Funx.Monad.Maybe.pure(5)
 
       iex> Funx.Math.range([])
-      Funx.Maybe.nothing()
+      Funx.Monad.Maybe.nothing()
   """
   @spec range([number()]) :: Maybe.t(number())
   def range([]), do: Maybe.nothing()
@@ -225,13 +225,13 @@ defmodule Funx.Math do
   ## Examples
 
       iex> Funx.Math.deviation([1, 2, 3, 4])
-      Funx.Maybe.pure([-1.5, -0.5, 0.5, 1.5])
+      Funx.Monad.Maybe.pure([-1.5, -0.5, 0.5, 1.5])
 
       iex> Funx.Math.deviation([5, 5, 5])
-      Funx.Maybe.pure([0.0, 0.0, 0.0])
+      Funx.Monad.Maybe.pure([0.0, 0.0, 0.0])
 
       iex> Funx.Math.deviation([])
-      Funx.Maybe.nothing()
+      Funx.Monad.Maybe.nothing()
   """
   @spec deviation([number()]) :: Maybe.t([number()])
   def deviation(list) when is_list(list) do
@@ -250,13 +250,13 @@ defmodule Funx.Math do
   ## Examples
 
       iex> Funx.Math.variance([1, 2, 3, 4])
-      Funx.Maybe.pure(1.25)
+      Funx.Monad.Maybe.pure(1.25)
 
       iex> Funx.Math.variance([5, 5, 5])
-      Funx.Maybe.pure(0.0)
+      Funx.Monad.Maybe.pure(0.0)
 
       iex> Funx.Math.variance([])
-      Funx.Maybe.nothing()
+      Funx.Monad.Maybe.nothing()
   """
   @spec variance([number()]) :: Maybe.t(number())
   def variance(list) when is_list(list) do
@@ -275,13 +275,13 @@ defmodule Funx.Math do
   ## Examples
 
       iex> Funx.Math.std_dev([1, 2, 3, 4])
-      Funx.Maybe.pure(1.118033988749895)
+      Funx.Monad.Maybe.pure(1.118033988749895)
 
       iex> Funx.Math.std_dev([5, 5, 5])
-      Funx.Maybe.pure(0.0)
+      Funx.Monad.Maybe.pure(0.0)
 
       iex> Funx.Math.std_dev([])
-      Funx.Maybe.nothing()
+      Funx.Monad.Maybe.nothing()
   """
   @spec std_dev([number()]) :: Maybe.t(number())
   def std_dev(list) when is_list(list) do

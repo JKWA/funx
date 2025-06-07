@@ -1,4 +1,4 @@
-defmodule Funx.Maybe.Nothing do
+defmodule Funx.Monad.Maybe.Nothing do
   @moduledoc """
   Represents the `Nothing` variant of the `Maybe` monad, used to model the absence of a value.
 
@@ -24,21 +24,21 @@ defmodule Funx.Maybe.Nothing do
 
   ## Examples
 
-      iex> Funx.Maybe.Nothing.pure()
-      %Funx.Maybe.Nothing{}
+      iex> Funx.Monad.Maybe.Nothing.pure()
+      %Funx.Monad.Maybe.Nothing{}
   """
   @spec pure() :: t()
   def pure, do: %__MODULE__{}
 end
 
-defimpl String.Chars, for: Funx.Maybe.Nothing do
-  alias Funx.Maybe.Nothing
+defimpl String.Chars, for: Funx.Monad.Maybe.Nothing do
+  alias Funx.Monad.Maybe.Nothing
 
   def to_string(%Nothing{}), do: "Nothing"
 end
 
-defimpl Funx.Monad, for: Funx.Maybe.Nothing do
-  alias Funx.Maybe.Nothing
+defimpl Funx.Monad, for: Funx.Monad.Maybe.Nothing do
+  alias Funx.Monad.Maybe.Nothing
 
   @spec map(Nothing.t(), (term() -> term())) :: Nothing.t()
   def map(%Nothing{}, _func), do: %Nothing{}
@@ -50,8 +50,8 @@ defimpl Funx.Monad, for: Funx.Maybe.Nothing do
   def bind(%Nothing{}, _func), do: %Nothing{}
 end
 
-defimpl Funx.Foldable, for: Funx.Maybe.Nothing do
-  alias Funx.Maybe.Nothing
+defimpl Funx.Foldable, for: Funx.Monad.Maybe.Nothing do
+  alias Funx.Monad.Maybe.Nothing
 
   def fold_l(%Nothing{}, _just_func, nothing_func) do
     nothing_func.()
@@ -62,22 +62,22 @@ defimpl Funx.Foldable, for: Funx.Maybe.Nothing do
   end
 end
 
-defimpl Funx.Filterable, for: Funx.Maybe.Nothing do
-  alias Funx.Maybe.Nothing
+defimpl Funx.Filterable, for: Funx.Monad.Maybe.Nothing do
+  alias Funx.Monad.Maybe.Nothing
 
-  @spec guard(Funx.Maybe.Nothing.t(), boolean()) :: Funx.Maybe.t(any())
+  @spec guard(Funx.Monad.Maybe.Nothing.t(), boolean()) :: Funx.Monad.Maybe.t(any())
   def guard(%Nothing{}, _boolean), do: %Nothing{}
 
-  @spec filter(Funx.Maybe.Nothing.t(), (any() -> boolean())) :: Funx.Maybe.t(any())
+  @spec filter(Funx.Monad.Maybe.Nothing.t(), (any() -> boolean())) :: Funx.Monad.Maybe.t(any())
   def filter(%Nothing{}, _predicate), do: %Nothing{}
 
-  @spec filter_map(Funx.Maybe.Nothing.t(), (any() -> Funx.Maybe.t(any()))) ::
-          Funx.Maybe.Nothing.t()
+  @spec filter_map(Funx.Monad.Maybe.Nothing.t(), (any() -> Funx.Monad.Maybe.t(any()))) ::
+          Funx.Monad.Maybe.Nothing.t()
   def filter_map(%Nothing{}, _func), do: %Nothing{}
 end
 
-defimpl Funx.Eq, for: Funx.Maybe.Nothing do
-  alias Funx.Maybe.{Nothing, Just}
+defimpl Funx.Eq, for: Funx.Monad.Maybe.Nothing do
+  alias Funx.Monad.Maybe.{Nothing, Just}
 
   def eq?(%Nothing{}, %Nothing{}), do: true
   def eq?(%Nothing{}, %Just{}), do: false
@@ -86,8 +86,8 @@ defimpl Funx.Eq, for: Funx.Maybe.Nothing do
   def not_eq?(%Nothing{}, %Just{}), do: true
 end
 
-defimpl Funx.Ord, for: Funx.Maybe.Nothing do
-  alias Funx.Maybe.{Nothing, Just}
+defimpl Funx.Ord, for: Funx.Monad.Maybe.Nothing do
+  alias Funx.Monad.Maybe.{Nothing, Just}
 
   def lt?(%Nothing{}, %Just{}), do: true
   def lt?(%Nothing{}, %Nothing{}), do: false
@@ -102,6 +102,6 @@ defimpl Funx.Ord, for: Funx.Maybe.Nothing do
   def ge?(%Nothing{}, %Nothing{}), do: true
 end
 
-defimpl Funx.Summarizable, for: Funx.Maybe.Nothing do
+defimpl Funx.Summarizable, for: Funx.Monad.Maybe.Nothing do
   def summarize(_), do: {:maybe_nothing, Funx.Summarizable.summarize(nil)}
 end

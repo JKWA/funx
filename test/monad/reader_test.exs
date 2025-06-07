@@ -1,9 +1,9 @@
-defmodule Funx.ReaderTest do
+defmodule Funx.Monad.ReaderTest do
   @moduledoc false
 
   use ExUnit.Case
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
-  import Funx.Reader
+  import Funx.Monad.Reader
 
   describe "pure/1" do
     test "wraps a value in the Reader monad" do
