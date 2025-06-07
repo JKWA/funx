@@ -20,7 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Funx.Monad.Maybe`
   - `Funx.Monad.Either`
   - `Funx.Monad.Effect`
-  - `Funx.Operators`
 
 ### Documentation
 
