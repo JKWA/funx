@@ -98,12 +98,6 @@ defmodule Funx.Monad.Either do
   def right(value), do: Right.pure(value)
 
   @doc """
-  Alias for `right/1`.
-  """
-  @spec pure(any()) :: Right.t(any())
-  def pure(value), do: Right.pure(value)
-
-  @doc """
   Wraps a value in the `Left` monad.
 
   ## Examples
@@ -113,6 +107,17 @@ defmodule Funx.Monad.Either do
   """
   @spec left(any()) :: Left.t(any())
   def left(value), do: Left.pure(value)
+
+  @doc """
+  Alias for `right/1`.
+
+  ## Examples
+
+      iex> Funx.Monad.Either.pure(2)
+      %Funx.Monad.Either.Right{right: 2}
+  """
+  @spec pure(any()) :: Right.t(any())
+  def pure(value), do: right(value)
 
   @doc """
   Returns `true` if the `Either` is a `Left` value.

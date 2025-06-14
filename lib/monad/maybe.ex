@@ -77,17 +77,10 @@ defmodule Funx.Monad.Maybe do
 
   @doc """
   Wraps a value in `Just`.
-
   ## Examples
 
-      iex> Funx.Monad.Maybe.pure(5)
-      %Funx.Monad.Maybe.Just{value: 5}
-  """
-  @spec pure(any()) :: Just.t(any())
-  def pure(value), do: Just.pure(value)
-
-  @doc """
-  Alias for `pure/1`.
+      iex> Funx.Monad.Maybe.just(2)
+      %Funx.Monad.Maybe.Just{value: 2}
   """
   @spec just(any()) :: Just.t(any())
   def just(value), do: Just.pure(value)
@@ -102,6 +95,17 @@ defmodule Funx.Monad.Maybe do
   """
   @spec nothing() :: Nothing.t()
   def nothing, do: Nothing.pure()
+
+  @doc """
+  Alias for `just/1`.
+
+  ## Examples
+
+      iex> Funx.Monad.Maybe.pure(5)
+      %Funx.Monad.Maybe.Just{value: 5}
+  """
+  @spec pure(any()) :: Just.t(any())
+  def pure(value), do: just(value)
 
   @doc """
   Returns `true` if the `Maybe` is `Just`, otherwise `false`.
