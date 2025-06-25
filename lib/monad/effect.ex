@@ -39,7 +39,7 @@ defmodule Funx.Monad.Effect do
 
   ## Lifting
 
-    * `lift_either/1` – Lifts an `Either` value into an `Effect`.
+    * `lift_either/2` – Lifts a thunk that returns an Either into an Effect. Evaluation is deferred until the effect is run.
     * `lift_maybe/2` – Lifts a `Maybe` into an `Effect`, using a fallback error for `Nothing`.
     * `lift_predicate/3` – Lifts a predicate into an `Effect`, using a provided fallback on failure.
 
@@ -417,32 +417,39 @@ defmodule Funx.Monad.Effect do
   end
 
   @doc """
-  Converts an `Either` value into the `Effect` monad.
+  Lazily converts an `Either` value into the `Effect` monad.
 
-  You can optionally pass an context, including telemetry and trace metadata via `opts`.
+  Instead of passing the `Either` directly, you provide a zero-arity function (`thunk`) that returns an `Either`.
+  This defers execution until the effect is run, making it suitable for tracing and composition.
+
+  You can optionally pass a context or options (`opts`), including telemetry and trace metadata.
 
   ## Examples
 
-      iex> either = %Funx.Monad.Either.Right{right: 42}
-      iex> result = Funx.Monad.Effect.lift_either(either)
+      iex> result = Funx.Monad.Effect.lift_either(fn -> %Funx.Monad.Either.Right{right: 42} end)
       iex> Funx.Monad.Effect.run(result)
       %Funx.Monad.Either.Right{right: 42}
 
-      iex> either = %Funx.Monad.Either.Left{left: "error"}
-      iex> result = Funx.Monad.Effect.lift_either(either)
+      iex> result = Funx.Monad.Effect.lift_either(fn -> %Funx.Monad.Either.Left{left: "error"} end)
       iex> Funx.Monad.Effect.run(result)
       %Funx.Monad.Either.Left{left: "error"}
   """
-  @spec lift_either(Either.t(left, right), Effect.Context.opts_or_context()) :: t(left, right)
+
+  @spec lift_either((-> Either.t(left, right)), Effect.Context.opts_or_context()) ::
+          t(left, right)
         when left: term(), right: term()
-  def lift_either(either, opts \\ [])
-
-  def lift_either(%Either.Right{right: right_value}, opts) do
-    right(right_value, opts)
-  end
-
-  def lift_either(%Either.Left{left: left_value}, opts) do
-    left(left_value, opts)
+  def lift_either(thunk, opts \\ []) when is_function(thunk, 0) do
+    %Right{
+      effect: fn _env ->
+        Task.async(fn ->
+          case thunk.() do
+            %Either.Right{right: r} -> %Either.Right{right: r}
+            %Either.Left{left: l} -> %Either.Left{left: l}
+          end
+        end)
+      end,
+      context: Effect.Context.new(opts)
+    }
   end
 
   @doc """

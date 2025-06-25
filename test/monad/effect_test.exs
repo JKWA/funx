@@ -1260,17 +1260,15 @@ defmodule EffectTest do
     end
   end
 
-  describe "lift_either/1" do
+  describe "lift_either/2" do
     setup do
       capture_telemetry([:funx, :effect, :run, :stop], self())
       :ok
     end
 
-    test "wraps an Either.Right into a Effect.Right" do
-      either = %Either.Right{right: 42}
-
+    test "wraps an Either.Right thunk into an Effect.Right" do
       result =
-        lift_either(either, span_name: "lift")
+        lift_either(fn -> %Either.Right{right: 42} end, span_name: "lift")
         |> run()
 
       assert result == Either.right(42)
@@ -1288,11 +1286,9 @@ defmodule EffectTest do
       assert telemetry_result == summarize(result)
     end
 
-    test "wraps an Either.Left into a Effect.Left" do
-      either = %Either.Left{left: "error"}
-
+    test "wraps an Either.Left thunk into an Effect.Left" do
       result =
-        lift_either(either, span_name: "lift")
+        lift_either(fn -> %Either.Left{left: "error"} end, span_name: "lift")
         |> run()
 
       assert result == Either.left("error")
