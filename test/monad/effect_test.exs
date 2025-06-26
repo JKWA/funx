@@ -1158,20 +1158,20 @@ defmodule EffectTest do
     end
   end
 
-  describe "flip/1" do
+  describe "flip_either/1" do
     setup do
       capture_telemetry([:funx, :effect, :run, :stop], self())
       :ok
     end
 
     test "flips Right to Left" do
-      result = flip(right("oops", span_name: "value")) |> run()
+      result = flip_either(right("oops", span_name: "value")) |> run()
       assert result == Either.left("oops")
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
                       %{
                         result: telemetry_result,
-                        span_name: "flip -> value",
+                        span_name: "flip_either -> value",
                         effect_type: :left,
                         status: :error
                       }},
@@ -1182,23 +1182,23 @@ defmodule EffectTest do
     end
 
     test "flips Left to Right" do
-      result = flip(left("recovered")) |> run()
+      result = flip_either(left("recovered")) |> run()
       assert result == Either.right("recovered")
     end
 
-    test "double flip returns original" do
+    test "double flip_either returns original" do
       input = right("stay")
-      result = input |> flip() |> flip() |> run()
+      result = input |> flip_either() |> flip_either() |> run()
       assert result == run(input)
     end
 
     test "flips structured data from Right to Left" do
-      result = flip(right(%{status: :fail})) |> run()
+      result = flip_either(right(%{status: :fail})) |> run()
       assert result == Either.left(%{status: :fail})
     end
 
     test "flips structured data from Left to Right" do
-      result = flip(left(%{status: :hold})) |> run()
+      result = flip_either(left(%{status: :hold})) |> run()
       assert result == Either.right(%{status: :hold})
     end
   end

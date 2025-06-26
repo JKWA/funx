@@ -35,7 +35,8 @@ defmodule Funx.Monad.Effect do
   ## Error Handling
 
     * `map_left/2` – Transforms a `Left` using a function, leaving `Right` values unchanged.
-    * `flip/1` – Swaps `Left` and `Right`, inverting success and failure.
+    * `flip_either/1` –  Inverts the success and failure branches of an `Effect`.
+
 
   ## Lifting
 
@@ -522,54 +523,87 @@ defmodule Funx.Monad.Effect do
   end
 
   @doc """
-  Swaps the success and failure branches of an `Effect`.
+  Inverts the success and failure branches of an `Effect`.
 
-  If the `Effect` resolves to a `Right`, it becomes a `Left` with the same value.
-  If it resolves to a `Left`, it becomes a `Right` with the same error.
+  For a `Right`, this reverses the result: a successful value becomes a failure, and
+  a failure becomes a success. For a `Left`, only failure is expected; if the `Left`
+  produces a success, it is ignored.
 
-  This can be useful for inverting success and failure semantics—for example,
-  when you want to treat an expected error as a successful outcome.
+  This is useful when you want to reverse the semantics of a computation—treating
+  an expected error as success, or vice versa.
 
   ## Examples
 
       iex> effect = Funx.Monad.Effect.pure(42)
-      iex> flipped = Funx.Monad.Effect.flip(effect)
+      iex> flipped = Funx.Monad.Effect.flip_either(effect)
       iex> Funx.Monad.Effect.run(flipped)
       %Funx.Monad.Either.Left{left: 42}
-
       iex> effect = Funx.Monad.Effect.left("fail")
-      iex> flipped = Funx.Monad.Effect.flip(effect)
+      iex> flipped = Funx.Monad.Effect.flip_either(effect)
       iex> Funx.Monad.Effect.run(flipped)
       %Funx.Monad.Either.Right{right: "fail"}
   """
-  @spec flip(t(error, value)) :: t(value, error)
-        when error: term(), value: term()
-  def flip(%Right{effect: eff, context: context}) do
-    promoted_trace = Effect.Context.promote_trace(context, "flip")
 
-    %Left{
+  # @spec flip(t(error, value)) :: t(value, error)
+  #       when error: term(), value: term()
+  # def flip(%Right{effect: eff, context: context}) do
+  #   promoted_trace = Effect.Context.promote_trace(context, "flip")
+
+  #   %Left{
+  #     context: promoted_trace,
+  #     effect: fn env ->
+  #       Task.async(fn ->
+  #         case run(%Right{effect: eff, context: context}, env) do
+  #           %Either.Right{right: val} ->
+  #             %Either.Left{left: val}
+  #         end
+  #       end)
+  #     end
+  #   }
+  # end
+
+  # def flip(%Left{effect: eff, context: context}) do
+  #   promoted_trace = Effect.Context.promote_trace(context, "flip")
+
+  #   %Right{
+  #     context: promoted_trace,
+  #     effect: fn env ->
+  #       Task.async(fn ->
+  #         case run(%Left{effect: eff, context: context}, env) do
+  #           %Either.Left{left: err} ->
+  #             %Either.Right{right: err}
+  #         end
+  #       end)
+  #     end
+  #   }
+  # end
+
+  @spec flip_either(t(error, value)) :: t(value, error)
+        when error: term(), value: term()
+
+  def flip_either(%Right{effect: eff, context: context}) do
+    promoted_trace = Effect.Context.promote_trace(context, "flip_either")
+
+    %Right{
       context: promoted_trace,
       effect: fn env ->
         Task.async(fn ->
-          case run(%Right{effect: eff, context: context}, env) do
-            %Either.Right{right: val} ->
-              %Either.Left{left: val}
-          end
+          run(%Right{effect: eff, context: context}, env)
+          |> Either.flip()
         end)
       end
     }
   end
 
-  def flip(%Left{effect: eff, context: context}) do
-    promoted_trace = Effect.Context.promote_trace(context, "flip")
+  def flip_either(%Left{effect: eff, context: context}) do
+    promoted_trace = Effect.Context.promote_trace(context, "flip_either")
 
     %Right{
       context: promoted_trace,
       effect: fn env ->
         Task.async(fn ->
           case run(%Left{effect: eff, context: context}, env) do
-            %Either.Left{left: err} ->
-              %Either.Right{right: err}
+            %Either.Left{left: err} -> %Either.Right{right: err}
           end
         end)
       end
