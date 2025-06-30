@@ -886,6 +886,30 @@ defmodule EffectTest do
 
       assert telemetry_result == summarize(result)
     end
+
+    test "bind catches and wraps exceptions in Left tagged with :bind_exception" do
+      effect =
+        right("trigger", span_name: "bind test")
+        |> bind(fn _ -> raise "bind failure" end)
+
+      result = run(effect)
+
+      assert match?(
+               %Either.Left{left: {:bind_exception, %RuntimeError{message: "bind failure"}}},
+               result
+             )
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "bind -> bind test",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert telemetry_result == summarize(result)
+    end
   end
 
   describe "map/2" do

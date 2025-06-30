@@ -139,6 +139,32 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
     }
   end
 
+  @spec bind(Right.t(input), (input -> Effect.t(left, output))) :: Effect.t(left, output)
+        when input: term(), output: term(), left: term()
+  def bind(%Right{effect: effect, context: context}, kleisli_fn) do
+    promoted_context = Effect.Context.promote_trace(context, "bind")
+
+    %Right{
+      context: promoted_context,
+      effect: fn env ->
+        Task.async(fn ->
+          case Effect.run(%Right{effect: effect, context: context}, env) do
+            %Either.Right{right: value} ->
+              try do
+                next = kleisli_fn.(value)
+                Effect.run(next, env)
+              rescue
+                e -> %Either.Left{left: {:bind_exception, e}}
+              end
+
+            %Either.Left{} = left ->
+              left
+          end
+        end)
+      end
+    }
+  end
+
   @spec ap(Right.t((input -> output)), Right.t(input)) :: Right.t(output)
         when input: term(), output: term()
 
@@ -178,28 +204,6 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
     %Left{
       context: promoted_context,
       effect: fn env -> eff.(env) end
-    }
-  end
-
-  @spec bind(Right.t(input), (input -> Effect.t(left, output))) :: Effect.t(left, output)
-        when input: term(), output: term(), left: term()
-  def bind(%Right{effect: effect, context: context}, binder) do
-    promoted_context = Effect.Context.promote_trace(context, "bind")
-
-    %Right{
-      context: promoted_context,
-      effect: fn env ->
-        Task.async(fn ->
-          case Effect.run(%Right{effect: effect, context: context}, env) do
-            %Either.Right{right: value} ->
-              next = binder.(value)
-              Effect.run(next, env)
-
-            %Either.Left{} = left ->
-              left
-          end
-        end)
-      end
     }
   end
 end

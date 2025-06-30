@@ -113,18 +113,18 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Left do
   alias Funx.Monad.Effect
   alias Funx.Monad.Effect.Left
 
-  @spec bind(Left.t(left), (term() -> Effect.t(left, result))) :: Left.t(left)
-        when left: term(), result: term()
-  def bind(%Left{effect: effect, context: context}, _binder) do
+  @spec map(Left.t(left), (term() -> term())) :: Left.t(left)
+        when left: term()
+  def map(%Left{effect: effect, context: context}, _mapper) do
     %Left{
       context: context,
       effect: fn env -> effect.(env) end
     }
   end
 
-  @spec map(Left.t(left), (term() -> term())) :: Left.t(left)
-        when left: term()
-  def map(%Left{effect: effect, context: context}, _mapper) do
+  @spec bind(Left.t(left), (term() -> Effect.t(left, result))) :: Left.t(left)
+        when left: term(), result: term()
+  def bind(%Left{effect: effect, context: context}, _kleisli_fn) do
     %Left{
       context: context,
       effect: fn env -> effect.(env) end
