@@ -111,6 +111,7 @@ defmodule Funx.Monad.Effect.Right do
 end
 
 defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
+  alias Funx.Errors.EffectError
   alias Funx.Monad.{Effect, Either}
   alias Effect.{Left, Right}
 
@@ -128,7 +129,7 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
               try do
                 %Either.Right{right: mapper.(value)}
               rescue
-                e -> %Either.Left{left: {:map_exception, e}}
+                e -> %Either.Left{left: EffectError.new(:map, e)}
               end
 
             %Either.Left{} = left ->
@@ -154,7 +155,7 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
                 next = kleisli_fn.(value)
                 Effect.run(next, env)
               rescue
-                e -> %Either.Left{left: {:bind_exception, e}}
+                e -> %Either.Left{left: EffectError.new(:bind, e)}
               end
 
             %Either.Left{} = left ->
@@ -188,7 +189,7 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
             try do
               %Either.Right{right: func.(value)}
             rescue
-              e -> %Either.Left{left: {:ap_exception, e}}
+              e -> %Either.Left{left: EffectError.new(:ap, e)}
             end
           else
             %Either.Left{} = left -> left

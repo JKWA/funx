@@ -51,7 +51,7 @@ defmodule Funx.Errors.ValidationError do
 
   import Funx.Macros, only: [eq_for: 2, ord_for: 2]
 
-  defstruct [:errors, __exception__: true]
+  defstruct errors: [], __exception__: true
 
   eq_for(Funx.Errors.ValidationError, :errors)
   ord_for(Funx.Errors.ValidationError, :errors)

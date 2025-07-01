@@ -12,7 +12,7 @@ defmodule EffectTest do
   import Funx.Foldable, only: [fold_l: 3, fold_r: 3]
   import Funx.Summarizable, only: [summarize: 1]
 
-  alias Funx.Errors.ValidationError
+  alias Funx.Errors.{EffectError, ValidationError}
   alias Funx.Monad.{Effect, Either, Maybe}
 
   setup [:with_telemetry_config]
@@ -558,7 +558,7 @@ defmodule EffectTest do
     end
 
     @tag :telemetry
-    test "ap wraps exceptions raised by the function in a Left" do
+    test "ap wraps exceptions raised by the function in an EffectError Left" do
       func = right(fn _ -> raise "boom" end, span_name: "boom")
       value = right(42, span_name: "value")
 
@@ -567,7 +567,12 @@ defmodule EffectTest do
         |> ap(value)
         |> run()
 
-      assert %Either.Left{left: {:ap_exception, %RuntimeError{message: "boom"}}} = result
+      assert %Either.Left{
+               left: %EffectError{
+                 stage: :ap,
+                 reason: %RuntimeError{message: "boom"}
+               }
+             } = result
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
@@ -887,7 +892,7 @@ defmodule EffectTest do
       assert telemetry_result == summarize(result)
     end
 
-    test "bind catches and wraps exceptions in Left tagged with :bind_exception" do
+    test "bind catches and wraps exceptions in Left tagged with EffectError at :bind stage" do
       effect =
         right("trigger", span_name: "bind test")
         |> bind(fn _ -> raise "bind failure" end)
@@ -895,7 +900,12 @@ defmodule EffectTest do
       result = run(effect)
 
       assert match?(
-               %Either.Left{left: {:bind_exception, %RuntimeError{message: "bind failure"}}},
+               %Either.Left{
+                 left: %EffectError{
+                   stage: :bind,
+                   reason: %RuntimeError{message: "bind failure"}
+                 }
+               },
                result
              )
 
@@ -1013,7 +1023,15 @@ defmodule EffectTest do
         |> map(fn _ -> raise "boom" end)
         |> run()
 
-      assert match?(%Either.Left{left: {:map_exception, %RuntimeError{message: "boom"}}}, result)
+      assert match?(
+               %Either.Left{
+                 left: %EffectError{
+                   stage: :map,
+                   reason: %RuntimeError{message: "boom"}
+                 }
+               },
+               result
+             )
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
                       %{
