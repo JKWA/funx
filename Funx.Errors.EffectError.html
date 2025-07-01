@@ -8,7 +8,7 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Funx.Monoid.Product — funx v0.1.0</title>
+    <title>Funx.Errors.EffectError — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -19,7 +19,7 @@
     <script async src="dist/html-YIPIRHGU.js"></script>
 
   </head>
-  <body data-type="modules" class="page-module">
+  <body data-type="modules" class="page-exception">
     <script>
 
       try {
@@ -112,20 +112,27 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monoid/product.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/errors/effect_error.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Monoid.Product</span> 
+    <span translate="no">Funx.Errors.EffectError</span> <small>exception</small>
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>A Monoid implementation for products.</p><p>This monoid uses multiplication as its associative operation
-and <code class="inline">1</code> as the identity element.</p>
+<p>Represents a system-level failure in an effectful computation.</p><p><code class="inline">EffectError</code> is raised or returned when a failure occurs during the execution
+of an <code class="inline">Effect</code> stage, such as <code class="inline">map</code>, <code class="inline">bind</code>, or <code class="inline">ap</code>. It is not meant for user-facing
+validation, but rather for internal tracing, telemetry, and diagnostics.</p><h2 id="module-fields" class="section-heading">
+  <a href="#module-fields" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Fields</span>
+</h2>
+<ul><li><code class="inline">stage</code> – the name of the effect stage where the error occurred (<code class="inline">:map</code>, <code class="inline">:bind</code>, <code class="inline">:ap</code>, etc.)</li><li><code class="inline">reason</code> – the term (often an exception) that caused the failure</li></ul><p>This error implements the <a href="https://hexdocs.pm/elixir/Exception.html"><code class="inline">Exception</code></a>, <a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>, and <a href="Funx.Summarizable.html"><code class="inline">Funx.Summarizable</code></a> behaviours.</p>
     </section>
 
 </div>
@@ -151,6 +158,22 @@ and <code class="inline">1</code> as the identity element.</p>
     </div>
 
 </div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#new/2" data-no-tooltip translate="no">new(stage, reason)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Creates a new <code class="inline">EffectError</code> from the given stage and reason.</p></div>
+
+    </div>
+
+</div>
 
   </section>
 
@@ -172,7 +195,7 @@ and <code class="inline">1</code> as the identity element.</p>
     </a>
     <h1 class="signature" translate="no">t()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monoid/product.ex#L9" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/errors/effect_error.ex#L21" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -184,11 +207,62 @@ and <code class="inline">1</code> as the identity element.</p>
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Monoid.Product{value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()}</pre>
+          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Errors.EffectError{
+  __exception__: true,
+  reason: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(),
+  stage: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">atom</a>()
+}</pre>
 
       </div>
 
 
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+    <div class="functions-list">
+<section class="detail" id="new/2">
+
+  <div class="detail-header">
+    <a href="#new/2" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">new(stage, reason)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/main/lib/errors/effect_error.ex#L35" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> new(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">atom</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) :: <a href="#t:t/0">t</a>()</pre>
+
+      </div>
+
+<p>Creates a new <code class="inline">EffectError</code> from the given stage and reason.</p><h2 id="new/2-examples" class="section-heading">
+  <a href="#new/2-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.EffectError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="9030675797-1">(</span><span class="ss">:bind</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9030675797-2">%</span><span class="nc" data-group-id="9030675797-2">RuntimeError</span><span class="p" data-group-id="9030675797-2">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;boom&quot;</span><span class="p" data-group-id="9030675797-2">}</span><span class="p" data-group-id="9030675797-1">)</span><span class="w">
+</span><span class="p" data-group-id="9030675797-3">%</span><span class="nc" data-group-id="9030675797-3">Funx.Errors.EffectError</span><span class="p" data-group-id="9030675797-3">{</span><span class="ss">stage</span><span class="p">:</span><span class="w"> </span><span class="ss">:bind</span><span class="p">,</span><span class="w"> </span><span class="ss">reason</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9030675797-4">%</span><span class="nc" data-group-id="9030675797-4">RuntimeError</span><span class="p" data-group-id="9030675797-4">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;boom&quot;</span><span class="p" data-group-id="9030675797-4">}</span><span class="p" data-group-id="9030675797-3">}</span></code></pre>
   </section>
 </section>
 
