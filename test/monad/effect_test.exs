@@ -76,13 +76,14 @@ defmodule EffectTest do
         effect: fn _env ->
           Task.async(fn ->
             Process.sleep(10_000)
-            Either.right(:late)
+            %Either.Right{right: :late}
           end)
         end
       }
 
-      result = effect |> run()
-      assert result == Either.left(:timeout)
+      result = run(effect)
+
+      assert %Either.Left{left: %EffectError{stage: :run, reason: :timeout}} = result
     end
   end
 
@@ -156,7 +157,7 @@ defmodule EffectTest do
     end
 
     @tag :telemetry
-    test "run returns a Left with {:exception, error} if task is invalid" do
+    test "run returns a Left if task is invalid" do
       context = Effect.Context.new(span_name: "invalid task")
 
       effect = %Effect.Right{
@@ -168,14 +169,17 @@ defmodule EffectTest do
 
       assert match?(
                %Either.Left{
-                 left: {:exception, %FunctionClauseError{function: :yield, module: Task}}
+                 left: %EffectError{
+                   stage: :run,
+                   reason: %FunctionClauseError{}
+                 }
                },
                result
              )
     end
 
     @tag :telemetry
-    test "run returns a Left with {:invalid_result, value} if task returns non-Either" do
+    test "run returns a Left if task returns non-Either" do
       context = Effect.Context.new(span_name: "invalid result")
 
       effect = %Effect.Right{
@@ -187,7 +191,12 @@ defmodule EffectTest do
 
       result = effect |> run()
 
-      assert result == %Either.Left{left: {:invalid_result, :not_an_either}}
+      assert result == %Either.Left{
+               left: %EffectError{
+                 stage: :run,
+                 reason: {:invalid_result, :not_an_either}
+               }
+             }
     end
 
     @tag :telemetry
@@ -1245,6 +1254,43 @@ defmodule EffectTest do
     end
   end
 
+  describe "Effect.lift_func/1" do
+    test "wraps return value in Right" do
+      thunk = fn -> 42 end
+      effect = Effect.lift_func(thunk)
+      assert %Either.Right{right: 42} = Effect.run(effect)
+    end
+
+    test "wraps raised error in Left with EffectError" do
+      thunk = fn -> raise "boom" end
+      effect = Effect.lift_func(thunk)
+      result = Effect.run(effect)
+
+      assert %Either.Left{
+               left: %EffectError{stage: :lift_func, reason: %RuntimeError{message: "boom"}}
+             } = result
+    end
+
+    test "preserves exception struct in reason" do
+      thunk = fn -> raise ArgumentError, "bad argument" end
+      effect = Effect.lift_func(thunk)
+      result = Effect.run(effect)
+
+      assert %Either.Left{
+               left: %EffectError{
+                 stage: :lift_func,
+                 reason: %ArgumentError{message: "bad argument"}
+               }
+             } = result
+    end
+
+    test "can lift a no-op function" do
+      thunk = fn -> :ok end
+      effect = Effect.lift_func(thunk)
+      assert %Either.Right{right: :ok} = Effect.run(effect)
+    end
+  end
+
   describe "lift_predicate/3" do
     setup do
       capture_telemetry([:funx, :effect, :run, :stop], self())
@@ -1334,6 +1380,28 @@ defmodule EffectTest do
         |> run()
 
       assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "lift",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
+    end
+
+    test "wraps a raised error inside the thunk into an Effect.Left with EffectError" do
+      result =
+        lift_either(fn -> raise "boom" end, span_name: "lift")
+        |> run()
+
+      assert %Either.Left{
+               left: %EffectError{stage: :lift_either, reason: %RuntimeError{message: "boom"}}
+             } = result
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
                       %{

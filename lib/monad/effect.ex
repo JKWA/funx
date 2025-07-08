@@ -37,12 +37,12 @@ defmodule Funx.Monad.Effect do
     * `map_left/2` – Transforms a `Left` using a function, leaving `Right` values unchanged.
     * `flip_either/1` –  Inverts the success and failure branches of an `Effect`.
 
-
   ## Lifting
 
-    * `lift_either/2` – Lifts a thunk that returns an Either into an Effect. Evaluation is deferred until the effect is run.
-    * `lift_maybe/2` – Lifts a `Maybe` into an `Effect`, using a fallback error for `Nothing`.
-    * `lift_predicate/3` – Lifts a predicate into an `Effect`, using a provided fallback on failure.
+    * `lift_func/2` – Lifts a thunk that returns any value into an `Effect`, wrapping it in `Right`. If the thunk raises, the error is captured as a `Left(EffectError)`.
+    * `lift_either/2` – Lifts a thunk that returns an `Either` into an `Effect`. Evaluation is deferred until the effect is run. Errors are also captured and wrapped in `Left(EffectError)`.
+    * `lift_maybe/3` – Lifts a `Maybe` into an `Effect`, using a fallback error if the value is `Nothing`.
+    * `lift_predicate/3` – Lifts a predicate check into an `Effect`. Returns `Right(value)` if the predicate passes; otherwise returns `Left(fallback)`.
 
   ## Reader Operations
 
@@ -109,6 +109,7 @@ defmodule Funx.Monad.Effect do
   import Funx.Appendable, only: [append: 2, coerce: 1]
   import Funx.Monad, only: [map: 2]
 
+  alias Funx.Errors.EffectError
   alias Funx.Monad.{Effect, Either, Maybe}
   alias Effect.{Left, Right}
   alias Maybe.{Just, Nothing}
@@ -376,12 +377,51 @@ defmodule Funx.Monad.Effect do
       case Task.yield(task, timeout) || Task.shutdown(task) do
         {:ok, %Either.Right{} = right} -> right
         {:ok, %Either.Left{} = left} -> left
-        {:ok, other} -> %Either.Left{left: {:invalid_result, other}}
-        nil -> %Either.Left{left: :timeout}
+        {:ok, other} -> %Either.Left{left: EffectError.new(:run, {:invalid_result, other})}
+        nil -> %Either.Left{left: EffectError.new(:run, :timeout)}
       end
     rescue
-      error -> %Either.Left{left: {:exception, error}}
+      error -> %Either.Left{left: EffectError.new(:run, error)}
     end
+  end
+
+  @doc """
+  Lifts a thunk into the `Effect` monad, wrapping its result in a `Right`.
+
+  This function defers execution of the given zero-arity function (`thunk`) until the effect is run.
+  The result is automatically wrapped as `Either.Right`.
+
+  You may also pass a context or options (`opts`) to configure telemetry or span metadata.
+
+  If the thunk raises an exception, it is caught and returned as a `Left` containing an `EffectError` tagged with `:lift`.
+
+  ## Examples
+
+      iex> result = Funx.Monad.Effect.lift_func(fn -> 42 end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Right{right: 42}
+
+      iex> result = Funx.Monad.Effect.lift_func(fn -> raise "boom" end)
+      iex> Funx.Monad.Effect.run(result)
+      %Funx.Monad.Either.Left{
+        left: %Funx.Errors.EffectError{stage: :lift_func, reason: %RuntimeError{message: "boom"}}
+      }
+  """
+  @spec lift_func((-> right), Effect.Context.opts_or_context()) :: t(left, right)
+        when left: term(), right: term()
+  def lift_func(thunk, opts \\ []) when is_function(thunk, 0) do
+    %Right{
+      effect: fn _env ->
+        Task.async(fn ->
+          try do
+            %Either.Right{right: thunk.()}
+          rescue
+            error -> %Either.Left{left: EffectError.new(:lift_func, error)}
+          end
+        end)
+      end,
+      context: Effect.Context.new(opts)
+    }
   end
 
   @doc """
@@ -418,12 +458,14 @@ defmodule Funx.Monad.Effect do
   end
 
   @doc """
-  Lazily converts an `Either` value into the `Effect` monad.
+  Lifts a thunk that returns an `Either` into the `Effect` monad.
 
-  Instead of passing the `Either` directly, you provide a zero-arity function (`thunk`) that returns an `Either`.
-  This defers execution until the effect is run, making it suitable for tracing and composition.
+  Instead of passing an `Either` value directly, you provide a zero-arity function (`thunk`) that returns one.
+  This defers execution until the effect is run, allowing integration with tracing and composable pipelines.
 
-  You can optionally pass a context or options (`opts`), including telemetry and trace metadata.
+  You may also pass a context or options (`opts`) to configure telemetry or span metadata.
+
+  If the thunk raises an exception, it is caught and returned as a `Left` containing an `EffectError` tagged with `:lift`.
 
   ## Examples
 
@@ -435,7 +477,6 @@ defmodule Funx.Monad.Effect do
       iex> Funx.Monad.Effect.run(result)
       %Funx.Monad.Either.Left{left: "error"}
   """
-
   @spec lift_either((-> Either.t(left, right)), Effect.Context.opts_or_context()) ::
           t(left, right)
         when left: term(), right: term()
@@ -443,9 +484,13 @@ defmodule Funx.Monad.Effect do
     %Right{
       effect: fn _env ->
         Task.async(fn ->
-          case thunk.() do
-            %Either.Right{right: r} -> %Either.Right{right: r}
-            %Either.Left{left: l} -> %Either.Left{left: l}
+          try do
+            case thunk.() do
+              %Either.Right{right: r} -> %Either.Right{right: r}
+              %Either.Left{left: l} -> %Either.Left{left: l}
+            end
+          rescue
+            error -> %Either.Left{left: EffectError.new(:lift_either, error)}
           end
         end)
       end,
