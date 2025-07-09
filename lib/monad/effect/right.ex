@@ -52,7 +52,7 @@ defmodule Funx.Monad.Effect.Right do
   def pure(value, opts_or_context \\ []) do
     %__MODULE__{
       context: Effect.Context.new(opts_or_context),
-      effect: fn _env -> Task.async(fn -> %Either.Right{right: value} end) end
+      effect: fn _env -> Task.async(fn -> Either.pure(value) end) end
     }
   end
 
@@ -77,7 +77,7 @@ defmodule Funx.Monad.Effect.Right do
     %__MODULE__{
       context: context,
       effect: fn env ->
-        Task.async(fn -> %Either.Right{right: env} end)
+        Task.async(fn -> Either.pure(env) end)
       end
     }
   end
@@ -104,7 +104,7 @@ defmodule Funx.Monad.Effect.Right do
     %__MODULE__{
       context: context,
       effect: fn env ->
-        Task.async(fn -> %Either.Right{right: f.(env)} end)
+        Task.async(fn -> Either.pure(f.(env)) end)
       end
     }
   end
@@ -117,7 +117,7 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
 
   @spec map(Right.t(input), (input -> output)) :: Right.t(output)
         when input: term(), output: term()
-  def map(%Right{effect: effect, context: context}, mapper) do
+  def map(%Right{effect: effect, context: context}, transform) do
     updated_context = Effect.Context.promote_trace(context, "map")
 
     %Right{
@@ -127,9 +127,9 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
           case Effect.run(%Right{effect: effect, context: context}, env) do
             %Either.Right{right: value} ->
               try do
-                %Either.Right{right: mapper.(value)}
+                Either.pure(transform.(value))
               rescue
-                e -> %Either.Left{left: EffectError.new(:map, e)}
+                e -> Either.left(EffectError.new(:map, e))
               end
 
             %Either.Left{} = left ->
@@ -155,7 +155,7 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
                 next = kleisli_fn.(value)
                 Effect.run(next, env)
               rescue
-                e -> %Either.Left{left: EffectError.new(:bind, e)}
+                e -> Either.left(EffectError.new(:bind, e))
               end
 
             %Either.Left{} = left ->
@@ -187,9 +187,9 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
                %Either.Right{right: value} <-
                  Effect.run(%Right{effect: effect_value, context: context_val}, env) do
             try do
-              %Either.Right{right: func.(value)}
+              Either.pure(func.(value))
             rescue
-              e -> %Either.Left{left: EffectError.new(:ap, e)}
+              e -> Either.left(EffectError.new(:ap, e))
             end
           else
             %Either.Left{} = left -> left

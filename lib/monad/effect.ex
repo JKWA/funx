@@ -377,11 +377,11 @@ defmodule Funx.Monad.Effect do
       case Task.yield(task, timeout) || Task.shutdown(task) do
         {:ok, %Either.Right{} = right} -> right
         {:ok, %Either.Left{} = left} -> left
-        {:ok, other} -> %Either.Left{left: EffectError.new(:run, {:invalid_result, other})}
-        nil -> %Either.Left{left: EffectError.new(:run, :timeout)}
+        {:ok, other} -> Either.left(EffectError.new(:run, {:invalid_result, other}))
+        nil -> Either.left(EffectError.new(:run, :timeout))
       end
     rescue
-      error -> %Either.Left{left: EffectError.new(:run, error)}
+      error -> Either.left(EffectError.new(:run, error))
     end
   end
 
@@ -414,9 +414,9 @@ defmodule Funx.Monad.Effect do
       effect: fn _env ->
         Task.async(fn ->
           try do
-            %Either.Right{right: thunk.()}
+            Either.pure(thunk.())
           rescue
-            error -> %Either.Left{left: EffectError.new(:lift_func, error)}
+            error -> Either.left(EffectError.new(:lift_func, error))
           end
         end)
       end,
@@ -486,11 +486,11 @@ defmodule Funx.Monad.Effect do
         Task.async(fn ->
           try do
             case thunk.() do
-              %Either.Right{right: r} -> %Either.Right{right: r}
-              %Either.Left{left: l} -> %Either.Left{left: l}
+              %Either.Right{} = right -> right
+              %Either.Left{} = left -> left
             end
           rescue
-            error -> %Either.Left{left: EffectError.new(:lift_either, error)}
+            error -> Either.left(EffectError.new(:lift_either, error))
           end
         end)
       end,
@@ -589,67 +589,32 @@ defmodule Funx.Monad.Effect do
       %Funx.Monad.Either.Right{right: "fail"}
   """
 
-  # @spec flip(t(error, value)) :: t(value, error)
-  #       when error: term(), value: term()
-  # def flip(%Right{effect: eff, context: context}) do
-  #   promoted_trace = Effect.Context.promote_trace(context, "flip")
-
-  #   %Left{
-  #     context: promoted_trace,
-  #     effect: fn env ->
-  #       Task.async(fn ->
-  #         case run(%Right{effect: eff, context: context}, env) do
-  #           %Either.Right{right: val} ->
-  #             %Either.Left{left: val}
-  #         end
-  #       end)
-  #     end
-  #   }
-  # end
-
-  # def flip(%Left{effect: eff, context: context}) do
-  #   promoted_trace = Effect.Context.promote_trace(context, "flip")
-
-  #   %Right{
-  #     context: promoted_trace,
-  #     effect: fn env ->
-  #       Task.async(fn ->
-  #         case run(%Left{effect: eff, context: context}, env) do
-  #           %Either.Left{left: err} ->
-  #             %Either.Right{right: err}
-  #         end
-  #       end)
-  #     end
-  #   }
-  # end
-
   @spec flip_either(t(error, value)) :: t(value, error)
         when error: term(), value: term()
 
-  def flip_either(%Right{effect: eff, context: context}) do
+  def flip_either(%Right{context: context} = right) do
     promoted_trace = Effect.Context.promote_trace(context, "flip_either")
 
     %Right{
       context: promoted_trace,
       effect: fn env ->
         Task.async(fn ->
-          run(%Right{effect: eff, context: context}, env)
+          run(right, env)
           |> Either.flip()
         end)
       end
     }
   end
 
-  def flip_either(%Left{effect: eff, context: context}) do
+  def flip_either(%Left{context: context} = left) do
     promoted_trace = Effect.Context.promote_trace(context, "flip_either")
 
     %Right{
       context: promoted_trace,
       effect: fn env ->
         Task.async(fn ->
-          case run(%Left{effect: eff, context: context}, env) do
-            %Either.Left{left: err} -> %Either.Right{right: err}
-          end
+          run(left, env)
+          |> Either.flip()
         end)
       end
     }
@@ -709,44 +674,37 @@ defmodule Funx.Monad.Effect do
   def traverse([], _func, opts), do: pure([], opts)
 
   def traverse(list, func, opts) when is_list(list) and is_function(func, 1) do
-    traverse_trace = Effect.Context.new(opts)
+    root_context = Effect.Context.new(opts)
 
     list
     |> Enum.with_index()
-    |> Enum.reduce_while(pure([], opts), fn {item, idx}, %Right{context: acc_trace} = acc ->
-      case {func.(item), acc} do
-        {%Right{effect: eff1, context: item_trace}, %Right{effect: eff2}} ->
-          trace_with_name =
-            Effect.Context.default_span_name_if_empty(
-              item_trace,
-              "#{traverse_trace.span_name}[#{idx}]"
-            )
-
-          updated_trace = Effect.Context.promote_trace(trace_with_name, "traverse")
+    |> Enum.reduce_while(pure([], root_context), fn {item, idx},
+                                                    %Right{context: acc_ctx, effect: acc_eff} ->
+      case func.(item) do
+        %Right{context: item_ctx, effect: item_eff} ->
+          span_name = "#{root_context.span_name}[#{idx}]"
+          named_ctx = Effect.Context.default_span_name_if_empty(item_ctx, span_name)
+          updated_ctx = Effect.Context.promote_trace(named_ctx, "traverse")
 
           {:cont,
            %Right{
-             context: updated_trace,
+             context: updated_ctx,
              effect: fn env ->
                Task.async(fn ->
                  with %Either.Right{right: val} <-
-                        run(%Right{effect: eff1, context: trace_with_name}, env),
+                        Effect.run(%Right{context: named_ctx, effect: item_eff}, env),
                       %Either.Right{right: acc_vals} <-
-                        run(%Right{effect: eff2, context: acc_trace}, env) do
-                   %Either.Right{right: [val | acc_vals]}
+                        Effect.run(%Right{context: acc_ctx, effect: acc_eff}, env) do
+                   Either.pure([val | acc_vals])
                  end
                end)
              end
            }}
 
-        {%Left{} = left, _} ->
-          trace_with_name =
-            Effect.Context.default_span_name_if_empty(
-              left.context,
-              "#{traverse_trace.span_name}[#{idx}]"
-            )
-
-          {:halt, %Left{left | context: trace_with_name}}
+        %Left{context: fail_ctx} = left ->
+          span_name = "#{root_context.span_name}[#{idx}]"
+          named_ctx = Effect.Context.default_span_name_if_empty(fail_ctx, span_name)
+          {:halt, %Left{left | context: named_ctx}}
       end
     end)
     |> map(&:lists.reverse/1)
@@ -808,35 +766,29 @@ defmodule Funx.Monad.Effect do
   def traverse_a([], _func, opts), do: right([], opts)
 
   def traverse_a(list, func, opts) when is_list(list) and is_function(func, 1) do
-    traverse_trace = Effect.Context.new(opts)
+    root_context = Effect.Context.new(opts)
 
     effects =
       list
       |> Enum.with_index()
       |> Enum.map(fn {item, idx} ->
         case func.(item) do
-          %Right{effect: eff, context: context} ->
-            span_trace =
-              Effect.Context.default_span_name_if_empty(
-                context,
-                "#{traverse_trace.span_name}[#{idx}]"
-              )
+          %Right{effect: eff, context: ctx} ->
+            span_ctx =
+              Effect.Context.default_span_name_if_empty(ctx, "#{root_context.span_name}[#{idx}]")
 
-            %Right{context: span_trace, effect: eff}
+            %Right{context: span_ctx, effect: eff}
 
-          %Left{effect: eff, context: context} ->
-            span_trace =
-              Effect.Context.default_span_name_if_empty(
-                context,
-                "#{traverse_trace.span_name}[#{idx}]"
-              )
+          %Left{effect: eff, context: ctx} ->
+            span_ctx =
+              Effect.Context.default_span_name_if_empty(ctx, "#{root_context.span_name}[#{idx}]")
 
-            %Left{context: span_trace, effect: eff}
+            %Left{context: span_ctx, effect: eff}
         end
       end)
 
     %Right{
-      context: traverse_trace,
+      context: root_context,
       effect: fn env ->
         Task.async(fn ->
           tasks = Enum.map(effects, &spawn_effect/1)
@@ -848,65 +800,63 @@ defmodule Funx.Monad.Effect do
               {:error, _, _} -> false
             end)
 
-          case errs do
-            [] ->
-              merged_trace =
-                merge_trace(traverse_trace, Enum.map(oks, &elem(&1, 1)), "traverse_a")
+          if errs == [] do
+            merged_ctx = merge_trace(root_context, Enum.map(oks, &elem(&1, 1)), "traverse_a")
 
-              values =
-                oks
-                |> Enum.map(fn {:ok, _, val} -> val end)
-                |> Enum.filter(& &1)
+            values =
+              oks
+              |> Enum.map(fn {:ok, _, val} -> val end)
+              |> Enum.filter(& &1)
 
-              %Either.Right{right: values}
-              |> then(fn res ->
-                %Right{
-                  context: merged_trace,
-                  effect: fn _env -> Task.async(fn -> res end) end
-                }
-              end)
-              |> run(env)
+            wrap_right(values, merged_ctx)
+            |> run(env)
+          else
+            merged_ctx = merge_trace(root_context, Enum.map(errs, &elem(&1, 1)), "traverse_a")
 
-            _ ->
-              merged_trace =
-                merge_trace(traverse_trace, Enum.map(errs, &elem(&1, 1)), "traverse_a")
+            errors =
+              errs
+              |> Enum.map(fn {:error, _, val} -> coerce(val) end)
+              |> Enum.reduce(&append(&2, &1))
 
-              errors =
-                errs
-                |> Enum.map(fn {:error, _, val} -> coerce(val) end)
-                |> Enum.reduce(&append(&2, &1))
-
-              %Either.Left{left: errors}
-              |> then(fn res ->
-                %Left{
-                  context: merged_trace,
-                  effect: fn _env -> Task.async(fn -> res end) end
-                }
-              end)
-              |> run(env)
+            wrap_left(errors, merged_ctx)
+            |> run(env)
           end
         end)
       end
     }
   end
 
-  defp spawn_effect(%Right{context: t, effect: e}),
-    do: {:right, t, Task.async(fn -> run(%Right{context: t, effect: e}, %{}) end)}
+  defp spawn_effect(%Right{context: ctx, effect: eff}),
+    do: {:right, ctx, Task.async(fn -> run(%Right{context: ctx, effect: eff}, %{}) end)}
 
-  defp spawn_effect(%Left{context: t, effect: e}),
-    do: {:left, t, Task.async(fn -> run(%Left{context: t, effect: e}, %{}) end)}
+  defp spawn_effect(%Left{context: ctx, effect: eff}),
+    do: {:left, ctx, Task.async(fn -> run(%Left{context: ctx, effect: eff}, %{}) end)}
 
-  defp collect_result({:right, context, task}) do
+  defp collect_result({:right, ctx, task}) do
     case await(task) do
-      %Either.Right{right: val} -> {:ok, context, val}
-      %Either.Left{left: err} -> {:error, context, err}
+      %Either.Right{right: val} -> {:ok, ctx, val}
+      %Either.Left{left: err} -> {:error, ctx, err}
     end
   end
 
-  defp collect_result({:left, context, task}) do
+  defp collect_result({:left, ctx, task}) do
     case await(task) do
-      %Either.Left{left: err} -> {:error, context, err}
+      %Either.Left{left: err} -> {:error, ctx, err}
     end
+  end
+
+  defp wrap_right(values, ctx) do
+    %Right{
+      context: ctx,
+      effect: fn _ -> Task.async(fn -> Either.pure(values) end) end
+    }
+  end
+
+  defp wrap_left(errors, ctx) do
+    %Left{
+      context: ctx,
+      effect: fn _ -> Task.async(fn -> Either.left(errors) end) end
+    }
   end
 
   defp merge_trace(base, traces, label) do

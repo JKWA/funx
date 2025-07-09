@@ -54,7 +54,7 @@ defmodule Funx.Monad.Effect.Left do
 
     %__MODULE__{
       context: context,
-      effect: fn _env -> Task.async(fn -> %Either.Left{left: value} end) end
+      effect: fn _env -> Task.async(fn -> Either.left(value) end) end
     }
   end
 
@@ -78,7 +78,7 @@ defmodule Funx.Monad.Effect.Left do
     %__MODULE__{
       context: context,
       effect: fn env ->
-        Task.async(fn -> %Either.Left{left: env} end)
+        Task.async(fn -> Either.left(env) end)
       end
     }
   end
@@ -103,7 +103,7 @@ defmodule Funx.Monad.Effect.Left do
     %__MODULE__{
       context: context,
       effect: fn env ->
-        Task.async(fn -> %Either.Left{left: f.(env)} end)
+        Task.async(fn -> Either.left(f.(env)) end)
       end
     }
   end
@@ -115,28 +115,14 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Left do
 
   @spec map(Left.t(left), (term() -> term())) :: Left.t(left)
         when left: term()
-  def map(%Left{effect: effect, context: context}, _mapper) do
-    %Left{
-      context: context,
-      effect: fn env -> effect.(env) end
-    }
-  end
+
+  def map(%Left{} = left, _), do: left
 
   @spec bind(Left.t(left), (term() -> Effect.t(left, result))) :: Left.t(left)
         when left: term(), result: term()
-  def bind(%Left{effect: effect, context: context}, _kleisli_fn) do
-    %Left{
-      context: context,
-      effect: fn env -> effect.(env) end
-    }
-  end
+  def bind(%Left{} = left, _func), do: left
 
   @spec ap(Left.t(left), Effect.t(left, any())) :: Left.t(left)
         when left: term()
-  def ap(%Left{effect: effect, context: context}, _other) do
-    %Left{
-      context: context,
-      effect: fn env -> effect.(env) end
-    }
-  end
+  def ap(%Left{} = left, _func), do: left
 end
