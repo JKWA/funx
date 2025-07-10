@@ -2576,51 +2576,62 @@ defmodule EffectTest do
     end
   end
 
-  describe "from_try/1" do
-    test "converts a successful function into Effect.Right" do
-      result = from_try(fn -> 42 end)
-
-      assert result |> run() == %Either.Right{right: 42}
-    end
-
-    test "converts a raised exception into Effect.Left" do
-      result = from_try(fn -> raise "error" end)
-
-      assert result |> run() == %Either.Left{left: %RuntimeError{message: "error"}}
-    end
-
-    test "uses provided context context" do
-      context = Effect.Context.new(trace_id: "context-from-try", span_name: "try block")
-
+  describe "from_try/2" do
+    setup do
       capture_telemetry([:funx, :effect, :run, :stop], self())
-
-      effect = from_try(fn -> 99 end, context)
-      result = effect |> run()
-
-      assert result == %Either.Right{right: 99}
-
-      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
-                      %{trace_id: "context-from-try", span_name: "try block"}},
-                     100
-
-      assert is_integer(duration) and duration > 0
+      :ok
     end
 
-    test "Effect.Context.new/1 returns the struct unchanged if already a Effect.Context" do
-      context = Effect.Context.new(trace_id: "test-context", span_name: "existing")
-      assert Effect.Context.new(context) == context
-    end
+    test "returns Right when function succeeds" do
+      value = 2
+      add_one = fn v -> v + 1 end
+      effect_fn = from_try(add_one, span_name: "result")
 
-    test "from_try/2 uses existing Effect.Context" do
-      capture_telemetry([:funx, :effect, :run, :stop], self())
-
-      context = Effect.Context.new(trace_id: "context-from-try", span_name: "try block")
-
-      result = from_try(fn -> 99 end, context)
-      assert result |> run() == Either.right(99)
+      effect = effect_fn.(value)
+      assert run(effect) == Either.right(3)
 
       assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
-                      %{trace_id: "context-from-try", span_name: "try block"}}
+                      %{
+                        span_name: "result",
+                        effect_type: :right,
+                        status: :ok,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result == {:either_right, {:integer, 3}}
+    end
+
+    test "returns Left when function raises" do
+      context = Effect.Context.new(trace_id: "context-from-try", span_name: "try block")
+
+      value = "not a number"
+      add_one = fn v -> v + 1 end
+      effect_fn = from_try(add_one, context)
+
+      effect = effect_fn.(value)
+      result = run(effect)
+
+      assert match?(%Either.Left{left: %ArithmeticError{}}, result)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _},
+                      %{
+                        trace_id: "context-from-try",
+                        span_name: "try block",
+                        effect_type: :left,
+                        status: :error,
+                        result: telemetry_result
+                      }},
+                     100
+
+      assert telemetry_result ==
+               {:either_left,
+                {:map,
+                 [
+                   __exception__: {:atom, true},
+                   __module__: {:atom, ArithmeticError},
+                   message: {:string, "bad argument in arithmetic expression"}
+                 ]}}
     end
   end
 

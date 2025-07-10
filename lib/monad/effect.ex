@@ -55,7 +55,7 @@ defmodule Funx.Monad.Effect do
 
     * `from_result/2` – Converts a `{:ok, _}` or `{:error, _}` tuple into an `Effect`.
     * `to_result/1` – Converts an `Effect` to `{:ok, _}` or `{:error, _}`.
-    * `from_try/2` – Executes a function, catching exceptions into a `Left`.
+    * `from_try/2` – Wraps a function that may raise, returning Right on success, or Left if an exception is raised.
     * `to_try!/1` – Extracts the value from a `Right`, or raises an exception if `Left`.
 
   ## Protocols
@@ -976,34 +976,41 @@ defmodule Funx.Monad.Effect do
   end
 
   @doc """
-  Wraps a function in an `Effect`, catching exceptions and wrapping them in a `Left`.
+  Lifts a potentially exception-raising function into a Kleisli function for the `Effect` monad.
 
-  You can optionally provide a `Effect.Context` for telemetry and span propagation.
+  This returns a function of type (`input -> Effect`) that applies the given function to a value.
+  If the function raises, the error is captured and returned in a `Left`. You can optionally
+  provide a context (or opts) for tracing and telemetry.
 
   ## Examples
-
-      iex> result = Funx.Monad.Effect.from_try(fn -> 42 end)
-      iex> Funx.Monad.Effect.run(result)
-      %Funx.Monad.Either.Right{right: 42}
-
-      iex> result = Funx.Monad.Effect.from_try(fn -> raise "error" end)
-      iex> Funx.Monad.Effect.run(result)
-      %Funx.Monad.Either.Left{left: %RuntimeError{message: "error"}}
+      iex> safe_div = Funx.Monad.Effect.from_try(fn x -> 10 / x end)
+      iex> effect = Funx.Monad.Effect.pure(2) |> Funx.Monad.bind(safe_div)
+      iex> Funx.Monad.Effect.run(effect)
+      %Funx.Monad.Either.Right{right: 5.0}
+      iex> bad_div = Funx.Monad.Effect.pure(0) |> Funx.Monad.bind(safe_div)
+      iex> Funx.Monad.Effect.run(bad_div)
+      %Funx.Monad.Either.Left{left: %ArithmeticError{}}
   """
-  @spec from_try((-> right), Effect.Context.opts_or_context()) :: t(Exception.t(), right)
-        when right: term()
-  def from_try(func, opts_or_context \\ []) do
+  @spec from_try((input -> right), Effect.Context.opts_or_context()) ::
+          (input -> t(Exception.t(), right))
+        when input: term(), right: term()
+
+  def from_try(func, opts_or_context \\ []) when is_function(func, 1) do
     context =
       case opts_or_context do
-        %Effect.Context{} = context -> context
+        %Effect.Context{} = ctx -> ctx
         opts when is_list(opts) -> Effect.Context.new(opts)
       end
 
-    try do
-      result = func.()
-      right(result, context)
-    rescue
-      exception -> left(exception, context)
+    fn value ->
+      %Right{
+        context: context,
+        effect: fn _env ->
+          Task.async(fn ->
+            Either.from_try(fn -> func.(value) end)
+          end)
+        end
+      }
     end
   end
 
@@ -1032,9 +1039,8 @@ defmodule Funx.Monad.Effect do
   @spec to_try!(t(left, right), keyword()) :: right | no_return
         when left: term(), right: term()
   def to_try!(effect, opts \\ []) do
-    case run(effect, opts) do
-      %Either.Right{right: value} -> value
-      %Either.Left{left: reason} -> raise reason
-    end
+    effect
+    |> run(opts)
+    |> Either.to_try!()
   end
 end
