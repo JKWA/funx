@@ -78,8 +78,8 @@ defimpl Funx.Foldable, for: Funx.Monad.Maybe.Just do
 
   @spec fold_r(Just.t(value), (value -> result), (-> result)) :: result
         when value: term(), result: term()
-  def fold_r(%Just{value: value}, just_func, _nothing_func) do
-    just_func.(value)
+  def fold_r(%Just{} = just, just_func, nothing_func) do
+    fold_l(just, just_func, nothing_func)
   end
 end
 

@@ -57,8 +57,8 @@ defimpl Funx.Foldable, for: Funx.Monad.Maybe.Nothing do
     nothing_func.()
   end
 
-  def fold_r(%Nothing{}, _just_func, nothing_func) do
-    nothing_func.()
+  def fold_r(%Nothing{} = nothing, just_func, nothing_func) do
+    fold_l(nothing, just_func, nothing_func)
   end
 end
 

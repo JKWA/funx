@@ -88,10 +88,6 @@ defimpl Funx.Foldable, for: Function do
       iex> Funx.Foldable.fold_r(fn -> false end, fn -> "True case" end, fn -> "False case" end)
       "False case"
   """
-  def fold_r(predicate, true_func, false_func) do
-    case predicate.() do
-      true -> true_func.()
-      false -> false_func.()
-    end
-  end
+
+  def fold_r(predicate, true_func, false_func), do: fold_l(predicate, true_func, false_func)
 end

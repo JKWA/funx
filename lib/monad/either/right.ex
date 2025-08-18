@@ -63,8 +63,8 @@ defimpl Funx.Foldable, for: Funx.Monad.Either.Right do
     right_func.(value)
   end
 
-  def fold_r(%Right{right: value}, right_func, _left_func) do
-    right_func.(value)
+  def fold_r(%Right{} = right, right_func, left_func) do
+    fold_l(right, right_func, left_func)
   end
 end
 
