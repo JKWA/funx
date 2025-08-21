@@ -8,7 +8,7 @@
     <meta name="project" content="funx v0.1.0">
 
 
-    <title>Funx.Monad.Maybe.Just — funx v0.1.0</title>
+    <title>Funx.Monad.Writer.Result — funx v0.1.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -112,19 +112,20 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/just.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/result.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Monad.Maybe.Just</span> 
+    <span translate="no">Funx.Monad.Writer.Result</span> 
     <small class="app-vsn" translate="no">(funx v0.1.0)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>Represents the <code class="inline">Just</code> variant of the <code class="inline">Maybe</code> monad, used to model the presence of a value.</p><p>A <code class="inline">Just</code> wraps a single value and participates in functional composition by propagating the contained value through monadic operations.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> for monadic composition.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code> to fold over the wrapped value.</li><li><a href="Funx.Filterable.html"><code class="inline">Funx.Filterable</code></a>: Supports filtering with <code class="inline">filter/2</code>, <code class="inline">filter_map/2</code>, and <code class="inline">guard/2</code>.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Enables equality checks between <code class="inline">Just</code> and other <code class="inline">Maybe</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering behavior between <code class="inline">Just</code> and <code class="inline">Nothing</code>.</li></ul><p>These protocol implementations allow <code class="inline">Just</code> to participate in structured computation, validation, filtering, and comparison within the <code class="inline">Maybe</code> context.</p>
+<p>Represents the result of running a Writer computation:
+the final value and the accumulated monoid.</p>
     </section>
 
 </div>
@@ -143,25 +144,9 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/1" data-no-tooltip translate="no">t(value)</a>
+        <a href="#t:t/2" data-no-tooltip translate="no">t(a, l)</a>
 
       </div>
-
-    </div>
-
-</div>
-<div class="summary-functions summary">
-  <h2>
-    <a href="#functions">Functions</a>
-  </h2>
-
-    <div class="summary-row">
-      <div class="summary-signature">
-        <a href="#pure/1" data-no-tooltip translate="no">pure(value)</a>
-
-      </div>
-
-        <div class="summary-synopsis"><p>Creates a new <code class="inline">Just</code> value.</p></div>
 
     </div>
 
@@ -178,16 +163,16 @@ Pages
       <span class="text">Types</span>
     </h1>
     <div class="types-list">
-<section class="detail" id="t:t/1">
+<section class="detail" id="t:t/2">
 
   <div class="detail-header">
-    <a href="#t:t/1" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/2" class="detail-link" data-no-tooltip title="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
       <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t(value)</h1>
+    <h1 class="signature" translate="no">t(a, l)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/just.ex#L21" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/result.ex#L9" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -199,65 +184,11 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t(value) :: %Funx.Monad.Maybe.Just{value: value}</pre>
+          <pre translate="no"><span class="attribute">@type</span> t(a, l) :: %Funx.Monad.Writer.Result{log: l, value: a}</pre>
 
       </div>
 
 
-  </section>
-</section>
-
-    </div>
-  </section>
-
-  <section id="functions" class="details-list">
-    <h1 class="section-heading">
-      <a class="hover-link" href="#functions">
-        <i class="ri-link-m" aria-hidden="true"></i>
-      </a>
-      <span class="text">Functions</span>
-    </h1>
-    <div class="functions-list">
-<section class="detail" id="pure/1">
-
-  <div class="detail-header">
-    <a href="#pure/1" class="detail-link" data-no-tooltip title="Link to this function">
-      <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
-    </a>
-    <h1 class="signature" translate="no">pure(value)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/maybe/just.ex#L40" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
-
-
-  </div>
-
-  <section class="docstring">
-
-      <div class="specs">
-
-          <pre translate="no"><span class="attribute">@spec</span> pure(value) :: <a href="#t:t/1">t</a>(value) when value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
-
-      </div>
-
-<p>Creates a new <code class="inline">Just</code> value.</p><p>The <a href="#pure/1"><code class="inline">pure/1</code></a> function wraps a value in the <code class="inline">Just</code> monad, representing the presence of the value.</p><h2 id="pure/1-examples" class="section-heading">
-  <a href="#pure/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe.Just</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2287138093-1">(</span><span class="mi">5</span><span class="p" data-group-id="2287138093-1">)</span><span class="w">
-</span><span class="p" data-group-id="2287138093-2">%</span><span class="nc" data-group-id="2287138093-2">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="2287138093-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2287138093-2">}</span></code></pre><h3 id="pure/1-raises" class="section-heading">
-  <a href="#pure/1-raises" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Raises</span>
-</h3>
-<ul><li><p><a href="https://hexdocs.pm/elixir/ArgumentError.html"><code class="inline">ArgumentError</code></a> if <code class="inline">nil</code> is provided.</p><p>  iex&gt; Funx.Monad.Maybe.Just.pure(nil)
-  ** (ArgumentError) Cannot wrap nil in a Just</p></li></ul>
   </section>
 </section>
 
