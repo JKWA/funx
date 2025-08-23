@@ -3,7 +3,8 @@ name: Release to Hex
 on:
   push:
     tags:
-      - "v*.*.*"   # e.g. v0.1.0
+      - "v*.*.*"   # e.g. v0.1.1
+  workflow_dispatch: {}
 
 jobs:
   ci:
@@ -41,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}   # the pushed tag, e.g. refs/tags/v0.1.0
+          ref: ${{ github.ref }}   # the tag ref, e.g. refs/tags/v0.1.1
           fetch-depth: 0
 
       - name: Set up Elixir/OTP
@@ -53,14 +54,17 @@ jobs:
       - name: Install Hex
         run: mix local.hex --force
 
+      # PROD: build and publish package (no dev deps)
       - name: Install deps (prod only)
         env:
           MIX_ENV: prod
         run: mix deps.get --only prod
 
       - name: Verify tag matches @version
+        env:
+          MIX_ENV: prod
         run: |
-          TAG="${GITHUB_REF_NAME}"        # e.g. v0.1.0
+          TAG="${GITHUB_REF_NAME}"        # e.g. v0.1.1
           FILE_VERSION=$(elixir -e 'mix = File.read!("mix.exs"); [_,v] = Regex.run(~r/@version\s*"([^"]+)"/, mix); IO.puts(v)')
           echo "Tag: $TAG  Version: $FILE_VERSION"
           if [ "v$FILE_VERSION" != "$TAG" ]; then
@@ -69,20 +73,29 @@ jobs:
           fi
 
       - name: Build package
+        env:
+          MIX_ENV: prod
         run: mix hex.build
 
       - name: Publish package to Hex
         env:
+          MIX_ENV: prod
           HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
         run: mix hex.publish --yes
 
+      # DEV: generate and publish docs (needs ex_doc)
       - name: Install dev deps for docs
+        env:
+          MIX_ENV: dev
         run: mix deps.get --only dev
 
       - name: Generate docs
+        env:
+          MIX_ENV: dev
         run: mix docs
 
       - name: Publish docs to HexDocs
         env:
+          MIX_ENV: dev
           HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
         run: mix hex.publish docs --yes
