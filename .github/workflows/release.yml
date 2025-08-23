@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Elixir/OTP
         uses: erlef/setup-beam@v1
@@ -39,7 +41,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-tags: true
+          ref: ${{ github.ref }}   # the pushed tag, e.g. refs/tags/v0.1.0
+          fetch-depth: 0
 
       - name: Set up Elixir/OTP
         uses: erlef/setup-beam@v1
@@ -58,7 +61,7 @@ jobs:
       - name: Verify tag matches @version
         run: |
           TAG="${GITHUB_REF_NAME}"        # e.g. v0.1.0
-          FILE_VERSION=$(elixir -e 'File.read!("mix.exs") |> then(&(Regex.run(~r/@version\s*"([^"]+)"/, &1))) |> Enum.at(1) |> IO.puts()')
+          FILE_VERSION=$(elixir -e 'mix = File.read!("mix.exs"); [_,v] = Regex.run(~r/@version\s*"([^"]+)"/, mix); IO.puts(v)')
           echo "Tag: $TAG  Version: $FILE_VERSION"
           if [ "v$FILE_VERSION" != "$TAG" ]; then
             echo "Tag does not match @version (v$FILE_VERSION)."
