@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.1.0">
+    <meta name="project" content="funx v0.1.1">
 
 
-    <title>Funx.Eq.Utils — funx v0.1.0</title>
+    <title>Funx.Eq.Utils — funx v0.1.1</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -52,7 +52,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.1.0
+          v0.1.1
         </div>
       </div>
     </div>
@@ -114,13 +114,13 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
     <span translate="no">Funx.Eq.Utils</span> 
-    <small class="app-vsn" translate="no">(funx v0.1.0)</small>
+    <small class="app-vsn" translate="no">(funx v0.1.1)</small>
 
   </h1>
 
@@ -287,7 +287,7 @@ or implement the <a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a> 
     </a>
     <h1 class="signature" translate="no">eq_map()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L8" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L8" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -318,7 +318,7 @@ or implement the <a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a> 
     </a>
     <h1 class="signature" translate="no">eq_t()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L13" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L13" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -358,7 +358,7 @@ or implement the <a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a> 
     </a>
     <h1 class="signature" translate="no">append_all(a, b)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L116" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L116" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -383,12 +383,12 @@ where all comparators must agree.</p><h2 id="append_all/2-examples" class="secti
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="7919975251-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="7919975251-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="7919975251-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="7919975251-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">append_all</span><span class="p" data-group-id="7919975251-3">(</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="7919975251-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="7919975251-4">(</span><span class="p" data-group-id="7919975251-5">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7919975251-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7919975251-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7919975251-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="7919975251-4">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="6858768475-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="6858768475-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="6858768475-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="6858768475-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">append_all</span><span class="p" data-group-id="6858768475-3">(</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="6858768475-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6858768475-4">(</span><span class="p" data-group-id="6858768475-5">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="6858768475-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6858768475-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="6858768475-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="6858768475-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="7919975251-7">(</span><span class="p" data-group-id="7919975251-8">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7919975251-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7919975251-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="7919975251-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="7919975251-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6858768475-7">(</span><span class="p" data-group-id="6858768475-8">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="6858768475-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6858768475-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="6858768475-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="6858768475-7">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -401,7 +401,7 @@ where all comparators must agree.</p><h2 id="append_all/2-examples" class="secti
     </a>
     <h1 class="signature" translate="no">append_any(a, b)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L137" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L137" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -425,12 +425,12 @@ must return <code class="inline">true</code> for the final result to be consider
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="0088261724-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="0088261724-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="0088261724-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="0088261724-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">append_any</span><span class="p" data-group-id="0088261724-3">(</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="0088261724-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="0088261724-4">(</span><span class="p" data-group-id="0088261724-5">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0088261724-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0088261724-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="0088261724-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="0088261724-4">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4907011179-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="4907011179-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4907011179-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="4907011179-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">append_any</span><span class="p" data-group-id="4907011179-3">(</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="4907011179-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4907011179-4">(</span><span class="p" data-group-id="4907011179-5">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4907011179-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4907011179-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="4907011179-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="4907011179-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="0088261724-7">(</span><span class="p" data-group-id="0088261724-8">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0088261724-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0088261724-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="0088261724-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="0088261724-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4907011179-7">(</span><span class="p" data-group-id="4907011179-8">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4907011179-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4907011179-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="4907011179-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="4907011179-7">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -443,7 +443,7 @@ must return <code class="inline">true</code> for the final result to be consider
     </a>
     <h1 class="signature" translate="no">concat_all(eq_list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L158" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L158" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -466,12 +466,12 @@ that two values are equal.</p><h2 id="concat_all/1-examples" class="section-head
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="2464200933-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="2464200933-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="2464200933-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="2464200933-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">concat_all</span><span class="p" data-group-id="2464200933-3">(</span><span class="p" data-group-id="2464200933-4">[</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="2464200933-4">]</span><span class="p" data-group-id="2464200933-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2464200933-5">(</span><span class="p" data-group-id="2464200933-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2464200933-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2464200933-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2464200933-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="2464200933-5">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="9148220191-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="9148220191-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="9148220191-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="9148220191-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">concat_all</span><span class="p" data-group-id="9148220191-3">(</span><span class="p" data-group-id="9148220191-4">[</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="9148220191-4">]</span><span class="p" data-group-id="9148220191-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="9148220191-5">(</span><span class="p" data-group-id="9148220191-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="9148220191-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9148220191-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="9148220191-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="9148220191-5">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2464200933-8">(</span><span class="p" data-group-id="2464200933-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2464200933-9">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2464200933-10">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="2464200933-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="2464200933-8">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="9148220191-8">(</span><span class="p" data-group-id="9148220191-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="9148220191-9">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9148220191-10">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="9148220191-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="9148220191-8">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -484,7 +484,7 @@ that two values are equal.</p><h2 id="concat_all/1-examples" class="section-head
     </a>
     <h1 class="signature" translate="no">concat_any(eq_list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L179" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L179" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -507,12 +507,12 @@ equality, making it more permissive.</p><h2 id="concat_any/1-examples" class="se
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="0100614340-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="0100614340-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="0100614340-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="0100614340-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">concat_any</span><span class="p" data-group-id="0100614340-3">(</span><span class="p" data-group-id="0100614340-4">[</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="0100614340-4">]</span><span class="p" data-group-id="0100614340-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="0100614340-5">(</span><span class="p" data-group-id="0100614340-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0100614340-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0100614340-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="0100614340-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="0100614340-5">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="0796633037-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="0796633037-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="0796633037-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="0796633037-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">concat_any</span><span class="p" data-group-id="0796633037-3">(</span><span class="p" data-group-id="0796633037-4">[</span><span class="n">eq1</span><span class="p">,</span><span class="w"> </span><span class="n">eq2</span><span class="p" data-group-id="0796633037-4">]</span><span class="p" data-group-id="0796633037-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="0796633037-5">(</span><span class="p" data-group-id="0796633037-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0796633037-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0796633037-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="0796633037-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="0796633037-5">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="0100614340-8">(</span><span class="p" data-group-id="0100614340-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0100614340-9">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0100614340-10">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="0100614340-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="0100614340-8">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="0796633037-8">(</span><span class="p" data-group-id="0796633037-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0796633037-9">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0796633037-10">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="0796633037-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">combined</span><span class="p" data-group-id="0796633037-8">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -527,7 +527,7 @@ equality, making it more permissive.</p><h2 id="concat_any/1-examples" class="se
     </a>
     <h1 class="signature" translate="no">contramap(f, eq \\ Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L36" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L36" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -551,10 +551,10 @@ If a custom comparator map is provided, it wraps the function in the map to appl
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="3061710225-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="3061710225-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3061710225-2">(</span><span class="p" data-group-id="3061710225-3">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="3061710225-3">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3061710225-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="3061710225-4">}</span><span class="p" data-group-id="3061710225-2">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8664039927-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="8664039927-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="8664039927-2">(</span><span class="p" data-group-id="8664039927-3">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="8664039927-3">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8664039927-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="8664039927-4">}</span><span class="p" data-group-id="8664039927-2">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3061710225-5">(</span><span class="p" data-group-id="3061710225-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="3061710225-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3061710225-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="3061710225-7">}</span><span class="p" data-group-id="3061710225-5">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="8664039927-5">(</span><span class="p" data-group-id="8664039927-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="8664039927-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8664039927-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="8664039927-7">}</span><span class="p" data-group-id="8664039927-5">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -569,7 +569,7 @@ If a custom comparator map is provided, it wraps the function in the map to appl
     </a>
     <h1 class="signature" translate="no">eq?(a, b, eq \\ Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L76" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L76" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -591,9 +591,9 @@ If a custom comparator map is provided, it wraps the function in the map to appl
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4216775600-1">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="4216775600-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6361686635-1">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="6361686635-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4216775600-2">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="4216775600-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6361686635-2">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="6361686635-2">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -608,7 +608,7 @@ If a custom comparator map is provided, it wraps the function in the map to appl
     </a>
     <h1 class="signature" translate="no">eq_by?(f, a, b, eq \\ Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L59" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L59" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -630,9 +630,9 @@ If a custom comparator map is provided, it wraps the function in the map to appl
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq_by?</span><span class="p" data-group-id="6004308362-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6004308362-2">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="6004308362-2">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6004308362-3">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="6004308362-3">}</span><span class="p" data-group-id="6004308362-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq_by?</span><span class="p" data-group-id="5890146620-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5890146620-2">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5890146620-2">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5890146620-3">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5890146620-3">}</span><span class="p" data-group-id="5890146620-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq_by?</span><span class="p" data-group-id="6004308362-4">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6004308362-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="6004308362-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6004308362-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="6004308362-6">}</span><span class="p" data-group-id="6004308362-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">eq_by?</span><span class="p" data-group-id="5890146620-4">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5890146620-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5890146620-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5890146620-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="5890146620-6">}</span><span class="p" data-group-id="5890146620-4">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -647,7 +647,7 @@ If a custom comparator map is provided, it wraps the function in the map to appl
     </a>
     <h1 class="signature" translate="no">not_eq?(a, b, eq \\ Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L93" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L93" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -669,9 +669,9 @@ If a custom comparator map is provided, it wraps the function in the map to appl
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="7580359556-1">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">99</span><span class="p" data-group-id="7580359556-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="7558997032-1">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">99</span><span class="p" data-group-id="7558997032-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="7580359556-2">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p" data-group-id="7580359556-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="7558997032-2">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p" data-group-id="7558997032-2">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -684,7 +684,7 @@ If a custom comparator map is provided, it wraps the function in the map to appl
     </a>
     <h1 class="signature" translate="no">to_eq_map(eq_map)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L204" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L204" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -708,7 +708,7 @@ If a custom comparator map is provided, it wraps the function in the map to appl
     </a>
     <h1 class="signature" translate="no">to_predicate(target, eq \\ Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq/utils.ex#L198" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.1/lib/eq/utils.ex#L198" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -731,10 +731,10 @@ based on the specified <code class="inline">Eq</code>. If no custom <code class=
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8562090032-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="8562090032-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">predicate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="8562090032-2">(</span><span class="p" data-group-id="8562090032-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="8562090032-3">}</span><span class="p">,</span><span class="w"> </span><span class="n">eq</span><span class="p" data-group-id="8562090032-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Filterable</span><span class="o">.</span><span class="n">filter</span><span class="p" data-group-id="8562090032-4">(</span><span class="p" data-group-id="8562090032-5">[</span><span class="p" data-group-id="8562090032-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="8562090032-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8562090032-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="8562090032-7">}</span><span class="p" data-group-id="8562090032-5">]</span><span class="p">,</span><span class="w"> </span><span class="n">predicate</span><span class="p" data-group-id="8562090032-4">)</span><span class="w">
-</span><span class="p" data-group-id="8562090032-8">[</span><span class="p" data-group-id="8562090032-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="8562090032-9">}</span><span class="p" data-group-id="8562090032-8">]</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="1894469026-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="1894469026-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">predicate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Eq.Utils</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="1894469026-2">(</span><span class="p" data-group-id="1894469026-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="1894469026-3">}</span><span class="p">,</span><span class="w"> </span><span class="n">eq</span><span class="p" data-group-id="1894469026-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Filterable</span><span class="o">.</span><span class="n">filter</span><span class="p" data-group-id="1894469026-4">(</span><span class="p" data-group-id="1894469026-5">[</span><span class="p" data-group-id="1894469026-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="1894469026-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1894469026-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="1894469026-7">}</span><span class="p" data-group-id="1894469026-5">]</span><span class="p">,</span><span class="w"> </span><span class="n">predicate</span><span class="p" data-group-id="1894469026-4">)</span><span class="w">
+</span><span class="p" data-group-id="1894469026-8">[</span><span class="p" data-group-id="1894469026-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="1894469026-9">}</span><span class="p" data-group-id="1894469026-8">]</span></code></pre>
   </section>
 </section>
 
@@ -745,9 +745,9 @@ based on the specified <code class="inline">Eq</code>. If no custom <code class=
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.1.0" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.1.1" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/funx/0.1.0">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.1.1">Hex Preview</a>
 
           </span>
 
