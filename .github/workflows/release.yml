@@ -1,0 +1,85 @@
+name: Release to Hex
+
+on:
+  push:
+    tags:
+      - "v*.*.*"   # e.g. v0.1.0
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Elixir/OTP
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.16"
+          otp-version: "26"
+
+      - name: Install Hex
+        run: mix local.hex --force
+
+      - name: Install deps
+        run: mix deps.get
+
+      - name: Compile
+        run: mix compile --warnings-as-errors
+
+      - name: Run tests
+        env:
+          MIX_ENV: test
+        run: mix test --color
+
+  publish:
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+
+      - name: Set up Elixir/OTP
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.16"
+          otp-version: "26"
+
+      - name: Install Hex
+        run: mix local.hex --force
+
+      - name: Install deps (prod only)
+        env:
+          MIX_ENV: prod
+        run: mix deps.get --only prod
+
+      - name: Verify tag matches @version
+        run: |
+          TAG="${GITHUB_REF_NAME}"        # e.g. v0.1.0
+          FILE_VERSION=$(elixir -e 'File.read!("mix.exs") |> then(&Regex.run(~r/@version\s*"([^"]+)"/, &1)) |> Enum.at(1) |> IO.puts()')
+          echo "Tag: $TAG  Version: $FILE_VERSION"
+          if [ "v$FILE_VERSION" != "$TAG" ]; then
+            echo "Tag does not match @version (v$FILE_VERSION)."
+            exit 1
+          fi
+
+      - name: Build package
+        run: mix hex.build
+
+      - name: Publish package to Hex
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+        run: mix hex.publish --yes
+
+      - name: Install dev deps for docs
+        run: mix deps.get --only dev
+
+      - name: Generate docs
+        run: mix docs
+
+      - name: Publish docs to HexDocs
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+        run: mix hex.publish docs --yes

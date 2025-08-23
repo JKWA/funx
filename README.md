@@ -1,5 +1,7 @@
 # Funx  
 
+⚠️ **Beta notice:** Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.
+
 [![Continuous Integration](https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/funx/actions/workflows/ci.yml)  
 
 [View the code on GitHub](https://github.com/JKWA/funx)  
