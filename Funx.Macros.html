@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.1.2">
+    <meta name="project" content="funx v0.1.3">
 
 
-    <title>Funx.Macros — funx v0.1.2</title>
+    <title>Funx.Macros — funx v0.1.3</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -52,7 +52,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.1.2
+          v0.1.3
         </div>
       </div>
     </div>
@@ -114,13 +114,13 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.2/lib/macros.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.3/lib/macros.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
     <span translate="no">Funx.Macros</span> 
-    <small class="app-vsn" translate="no">(funx v0.1.2)</small>
+    <small class="app-vsn" translate="no">(funx v0.1.3)</small>
 
   </h1>
 
@@ -189,7 +189,7 @@ using the specified field as the basis for ordering comparisons.</p></div>
     </a>
     <h1 class="signature" translate="no">eq_for(for_struct, field)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.2/lib/macros.ex#L29" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.3/lib/macros.ex#L29" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -208,17 +208,17 @@ using the specified field as the basis for equality comparison.</p><h2 id="eq_fo
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="4536146893-1">do</span><span class="w">
-  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="4536146893-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4536146893-2">]</span><span class="w">
-</span><span class="k" data-group-id="4536146893-1">end</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="2692740945-1">do</span><span class="w">
+  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="2692740945-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="2692740945-2">]</span><span class="w">
+</span><span class="k" data-group-id="2692740945-1">end</span><span class="w">
 
 </span><span class="kn">require</span><span class="w"> </span><span class="nc">Funx.Macros</span><span class="w">
-</span><span class="nc">Funx.Macros</span><span class="o">.</span><span class="n">eq_for</span><span class="p" data-group-id="4536146893-3">(</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4536146893-3">)</span><span class="w">
+</span><span class="nc">Funx.Macros</span><span class="o">.</span><span class="n">eq_for</span><span class="p" data-group-id="2692740945-3">(</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="2692740945-3">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4536146893-4">(</span><span class="p" data-group-id="4536146893-5">%</span><span class="nc" data-group-id="4536146893-5">Person</span><span class="p" data-group-id="4536146893-5">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4536146893-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4536146893-6">%</span><span class="nc" data-group-id="4536146893-6">Person</span><span class="p" data-group-id="4536146893-6">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4536146893-6">}</span><span class="p" data-group-id="4536146893-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2692740945-4">(</span><span class="p" data-group-id="2692740945-5">%</span><span class="nc" data-group-id="2692740945-5">Person</span><span class="p" data-group-id="2692740945-5">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2692740945-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2692740945-6">%</span><span class="nc" data-group-id="2692740945-6">Person</span><span class="p" data-group-id="2692740945-6">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2692740945-6">}</span><span class="p" data-group-id="2692740945-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4536146893-7">(</span><span class="p" data-group-id="4536146893-8">%</span><span class="nc" data-group-id="4536146893-8">Person</span><span class="p" data-group-id="4536146893-8">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="4536146893-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4536146893-9">%</span><span class="nc" data-group-id="4536146893-9">Person</span><span class="p" data-group-id="4536146893-9">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4536146893-9">}</span><span class="p" data-group-id="4536146893-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2692740945-7">(</span><span class="p" data-group-id="2692740945-8">%</span><span class="nc" data-group-id="2692740945-8">Person</span><span class="p" data-group-id="2692740945-8">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="2692740945-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2692740945-9">%</span><span class="nc" data-group-id="2692740945-9">Person</span><span class="p" data-group-id="2692740945-9">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2692740945-9">}</span><span class="p" data-group-id="2692740945-7">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -231,7 +231,7 @@ using the specified field as the basis for equality comparison.</p><h2 id="eq_fo
     </a>
     <h1 class="signature" translate="no">ord_for(for_struct, field)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.2/lib/macros.ex#L66" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.3/lib/macros.ex#L66" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -250,17 +250,17 @@ using the specified field as the basis for ordering comparisons.</p><h2 id="ord_
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="0591523430-1">do</span><span class="w">
-  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="0591523430-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="0591523430-2">]</span><span class="w">
-</span><span class="k" data-group-id="0591523430-1">end</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="4915232038-1">do</span><span class="w">
+  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="4915232038-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4915232038-2">]</span><span class="w">
+</span><span class="k" data-group-id="4915232038-1">end</span><span class="w">
 
 </span><span class="kn">require</span><span class="w"> </span><span class="nc">Funx.Macros</span><span class="w">
-</span><span class="nc">Funx.Macros</span><span class="o">.</span><span class="n">ord_for</span><span class="p" data-group-id="0591523430-3">(</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="0591523430-3">)</span><span class="w">
+</span><span class="nc">Funx.Macros</span><span class="o">.</span><span class="n">ord_for</span><span class="p" data-group-id="4915232038-3">(</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4915232038-3">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="0591523430-4">(</span><span class="p" data-group-id="0591523430-5">%</span><span class="nc" data-group-id="0591523430-5">Person</span><span class="p" data-group-id="0591523430-5">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="0591523430-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0591523430-6">%</span><span class="nc" data-group-id="0591523430-6">Person</span><span class="p" data-group-id="0591523430-6">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0591523430-6">}</span><span class="p" data-group-id="0591523430-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="4915232038-4">(</span><span class="p" data-group-id="4915232038-5">%</span><span class="nc" data-group-id="4915232038-5">Person</span><span class="p" data-group-id="4915232038-5">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="4915232038-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4915232038-6">%</span><span class="nc" data-group-id="4915232038-6">Person</span><span class="p" data-group-id="4915232038-6">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4915232038-6">}</span><span class="p" data-group-id="4915232038-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="0591523430-7">(</span><span class="p" data-group-id="0591523430-8">%</span><span class="nc" data-group-id="0591523430-8">Person</span><span class="p" data-group-id="0591523430-8">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">35</span><span class="p" data-group-id="0591523430-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0591523430-9">%</span><span class="nc" data-group-id="0591523430-9">Person</span><span class="p" data-group-id="0591523430-9">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0591523430-9">}</span><span class="p" data-group-id="0591523430-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="4915232038-7">(</span><span class="p" data-group-id="4915232038-8">%</span><span class="nc" data-group-id="4915232038-8">Person</span><span class="p" data-group-id="4915232038-8">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">35</span><span class="p" data-group-id="4915232038-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4915232038-9">%</span><span class="nc" data-group-id="4915232038-9">Person</span><span class="p" data-group-id="4915232038-9">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4915232038-9">}</span><span class="p" data-group-id="4915232038-7">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -272,9 +272,9 @@ using the specified field as the basis for ordering comparisons.</p><h2 id="ord_
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.1.2" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.1.3" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/funx/0.1.2">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.1.3">Hex Preview</a>
 
           </span>
 
