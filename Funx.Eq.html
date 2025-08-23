@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Eq.html" />
+
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
     <script src="dist/sidebar_items-1C980DF8.js"></script>
@@ -112,7 +114,7 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/eq.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -140,26 +142,26 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
   </a>
   <span class="text">Examples</span>
 </h2>
-<p>With a custom implementation for a <a href="Funx.Monad.Maybe.html"><code class="inline">Funx.Monad.Maybe</code></a> type:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6396350959-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6396350959-2">(</span><span class="mi">3</span><span class="p" data-group-id="6396350959-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6396350959-3">(</span><span class="mi">3</span><span class="p" data-group-id="6396350959-3">)</span><span class="p" data-group-id="6396350959-1">)</span><span class="w">
+<p>With a custom implementation for a <a href="Funx.Monad.Maybe.html"><code class="inline">Funx.Monad.Maybe</code></a> type:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2763873573-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2763873573-2">(</span><span class="mi">3</span><span class="p" data-group-id="2763873573-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2763873573-3">(</span><span class="mi">3</span><span class="p" data-group-id="2763873573-3">)</span><span class="p" data-group-id="2763873573-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6396350959-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6396350959-5">(</span><span class="mi">3</span><span class="p" data-group-id="6396350959-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6396350959-6">(</span><span class="mi">5</span><span class="p" data-group-id="6396350959-6">)</span><span class="p" data-group-id="6396350959-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2763873573-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2763873573-5">(</span><span class="mi">3</span><span class="p" data-group-id="2763873573-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2763873573-6">(</span><span class="mi">5</span><span class="p" data-group-id="2763873573-6">)</span><span class="p" data-group-id="2763873573-4">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6396350959-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6396350959-8">(</span><span class="p" data-group-id="6396350959-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6396350959-9">(</span><span class="p" data-group-id="6396350959-9">)</span><span class="p" data-group-id="6396350959-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2763873573-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2763873573-8">(</span><span class="p" data-group-id="2763873573-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2763873573-9">(</span><span class="p" data-group-id="2763873573-9">)</span><span class="p" data-group-id="2763873573-7">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6396350959-10">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6396350959-11">(</span><span class="p" data-group-id="6396350959-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6396350959-12">(</span><span class="mi">5</span><span class="p" data-group-id="6396350959-12">)</span><span class="p" data-group-id="6396350959-10">)</span><span class="w">
-</span><span class="no">false</span></code></pre><p>Checking inequality with <a href="#not_eq?/2"><code class="inline">not_eq?/2</code></a>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8657440311-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8657440311-2">(</span><span class="mi">3</span><span class="p" data-group-id="8657440311-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8657440311-3">(</span><span class="mi">3</span><span class="p" data-group-id="8657440311-3">)</span><span class="p" data-group-id="8657440311-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2763873573-10">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2763873573-11">(</span><span class="p" data-group-id="2763873573-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2763873573-12">(</span><span class="mi">5</span><span class="p" data-group-id="2763873573-12">)</span><span class="p" data-group-id="2763873573-10">)</span><span class="w">
+</span><span class="no">false</span></code></pre><p>Checking inequality with <a href="#not_eq?/2"><code class="inline">not_eq?/2</code></a>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8875047535-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8875047535-2">(</span><span class="mi">3</span><span class="p" data-group-id="8875047535-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8875047535-3">(</span><span class="mi">3</span><span class="p" data-group-id="8875047535-3">)</span><span class="p" data-group-id="8875047535-1">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8657440311-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8657440311-5">(</span><span class="mi">3</span><span class="p" data-group-id="8657440311-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8657440311-6">(</span><span class="mi">5</span><span class="p" data-group-id="8657440311-6">)</span><span class="p" data-group-id="8657440311-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8875047535-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8875047535-5">(</span><span class="mi">3</span><span class="p" data-group-id="8875047535-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8875047535-6">(</span><span class="mi">5</span><span class="p" data-group-id="8875047535-6">)</span><span class="p" data-group-id="8875047535-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8657440311-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8657440311-8">(</span><span class="p" data-group-id="8657440311-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8657440311-9">(</span><span class="p" data-group-id="8657440311-9">)</span><span class="p" data-group-id="8657440311-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8875047535-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8875047535-8">(</span><span class="p" data-group-id="8875047535-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8875047535-9">(</span><span class="p" data-group-id="8875047535-9">)</span><span class="p" data-group-id="8875047535-7">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8657440311-10">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8657440311-11">(</span><span class="p" data-group-id="8657440311-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8657440311-12">(</span><span class="mi">5</span><span class="p" data-group-id="8657440311-12">)</span><span class="p" data-group-id="8657440311-10">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8875047535-10">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8875047535-11">(</span><span class="p" data-group-id="8875047535-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8875047535-12">(</span><span class="mi">5</span><span class="p" data-group-id="8875047535-12">)</span><span class="p" data-group-id="8875047535-10">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
     </section>
 
@@ -235,7 +237,7 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
     </a>
     <h1 class="signature" translate="no">t()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/eq.ex#L1" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq.ex#L1" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -275,7 +277,7 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
     </a>
     <h1 class="signature" translate="no">eq?(a, b)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/eq.ex#L58" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq.ex#L58" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -291,10 +293,10 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6635239301-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="6635239301-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1190600841-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="1190600841-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="6635239301-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6635239301-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1190600841-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1190600841-2">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -307,7 +309,7 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
     </a>
     <h1 class="signature" translate="no">not_eq?(a, b)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/eq.ex#L71" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/eq.ex#L71" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -323,10 +325,10 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="0704566057-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0704566057-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="7610570612-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7610570612-1">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="0704566057-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0704566057-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="7610570612-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7610570612-2">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>

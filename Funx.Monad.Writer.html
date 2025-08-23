@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Writer.html" />
+
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
     <script src="dist/sidebar_items-1C980DF8.js"></script>
@@ -112,7 +114,7 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -276,7 +278,7 @@ accumulated using a monoid.</p></div>
     </a>
     <h1 class="signature" translate="no">t(a)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L42" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L42" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -318,7 +320,7 @@ a <code class="inline">{value, monoid}</code> tuple, where the monoid contains t
     </a>
     <h1 class="signature" translate="no">censor(writer, f)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L150" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L150" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -340,13 +342,13 @@ a <code class="inline">{value, monoid}</code> tuple, where the monoid contains t
   </a>
   <span class="text">Example</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="3621949968-1">(</span><span class="p" data-group-id="3621949968-2">{</span><span class="s">&quot;ok&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3621949968-3">[</span><span class="ss">:a</span><span class="p">,</span><span class="w"> </span><span class="ss">:b</span><span class="p" data-group-id="3621949968-3">]</span><span class="p" data-group-id="3621949968-2">}</span><span class="p" data-group-id="3621949968-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">censored</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">censor</span><span class="p" data-group-id="3621949968-4">(</span><span class="n">writer</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3621949968-5">fn</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">reverse</span><span class="p" data-group-id="3621949968-6">(</span><span class="n">log</span><span class="p" data-group-id="3621949968-6">)</span><span class="w"> </span><span class="k" data-group-id="3621949968-5">end</span><span class="p" data-group-id="3621949968-4">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3621949968-7">(</span><span class="n">censored</span><span class="p" data-group-id="3621949968-7">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="2126051821-1">(</span><span class="p" data-group-id="2126051821-2">{</span><span class="s">&quot;ok&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2126051821-3">[</span><span class="ss">:a</span><span class="p">,</span><span class="w"> </span><span class="ss">:b</span><span class="p" data-group-id="2126051821-3">]</span><span class="p" data-group-id="2126051821-2">}</span><span class="p" data-group-id="2126051821-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">censored</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">censor</span><span class="p" data-group-id="2126051821-4">(</span><span class="n">writer</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2126051821-5">fn</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">reverse</span><span class="p" data-group-id="2126051821-6">(</span><span class="n">log</span><span class="p" data-group-id="2126051821-6">)</span><span class="w"> </span><span class="k" data-group-id="2126051821-5">end</span><span class="p" data-group-id="2126051821-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2126051821-7">(</span><span class="n">censored</span><span class="p" data-group-id="2126051821-7">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="w">
 </span><span class="s">&quot;ok&quot;</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">log</span><span class="w">
-</span><span class="p" data-group-id="3621949968-8">[</span><span class="ss">:b</span><span class="p">,</span><span class="w"> </span><span class="ss">:a</span><span class="p" data-group-id="3621949968-8">]</span></code></pre>
+</span><span class="p" data-group-id="2126051821-8">[</span><span class="ss">:b</span><span class="p">,</span><span class="w"> </span><span class="ss">:a</span><span class="p" data-group-id="2126051821-8">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="eval/2">
@@ -360,7 +362,7 @@ a <code class="inline">{value, monoid}</code> tuple, where the monoid contains t
     </a>
     <h1 class="signature" translate="no">eval(writer, monoid \\ %ListConcat{})</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L250" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L250" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -383,12 +385,12 @@ a <code class="inline">{value, monoid}</code> tuple, where the monoid contains t
   <span class="text">Example</span>
 </h2>
 <pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="0451843296-1">(</span><span class="p" data-group-id="0451843296-2">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0451843296-3">[</span><span class="ss">:init</span><span class="p" data-group-id="0451843296-3">]</span><span class="p" data-group-id="0451843296-2">}</span><span class="p" data-group-id="0451843296-1">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="0451843296-4">(</span><span class="k" data-group-id="0451843296-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">tell</span><span class="p" data-group-id="0451843296-6">(</span><span class="p" data-group-id="0451843296-7">[</span><span class="ss">:logged</span><span class="p" data-group-id="0451843296-7">]</span><span class="p" data-group-id="0451843296-6">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="0451843296-8">(</span><span class="k" data-group-id="0451843296-9">fn</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="0451843296-10">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0451843296-10">)</span><span class="w"> </span><span class="k" data-group-id="0451843296-9">end</span><span class="p" data-group-id="0451843296-8">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="0451843296-5">end</span><span class="p" data-group-id="0451843296-4">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">eval</span><span class="p" data-group-id="0451843296-11">(</span><span class="n">writer</span><span class="p" data-group-id="0451843296-11">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="7442734968-1">(</span><span class="p" data-group-id="7442734968-2">{</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7442734968-3">[</span><span class="ss">:init</span><span class="p" data-group-id="7442734968-3">]</span><span class="p" data-group-id="7442734968-2">}</span><span class="p" data-group-id="7442734968-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="7442734968-4">(</span><span class="k" data-group-id="7442734968-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">tell</span><span class="p" data-group-id="7442734968-6">(</span><span class="p" data-group-id="7442734968-7">[</span><span class="ss">:logged</span><span class="p" data-group-id="7442734968-7">]</span><span class="p" data-group-id="7442734968-6">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="7442734968-8">(</span><span class="k" data-group-id="7442734968-9">fn</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7442734968-10">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7442734968-10">)</span><span class="w"> </span><span class="k" data-group-id="7442734968-9">end</span><span class="p" data-group-id="7442734968-8">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="7442734968-5">end</span><span class="p" data-group-id="7442734968-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">eval</span><span class="p" data-group-id="7442734968-11">(</span><span class="n">writer</span><span class="p" data-group-id="7442734968-11">)</span><span class="w">
 </span><span class="mi">20</span></code></pre>
   </section>
 </section>
@@ -403,7 +405,7 @@ a <code class="inline">{value, monoid}</code> tuple, where the monoid contains t
     </a>
     <h1 class="signature" translate="no">exec(writer, monoid \\ %ListConcat{})</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L228" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L228" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -426,10 +428,10 @@ a <code class="inline">{value, monoid}</code> tuple, where the monoid contains t
   <span class="text">Example</span>
 </h2>
 <pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="8851623903-1">(</span><span class="p" data-group-id="8851623903-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8851623903-3">[</span><span class="ss">:step1</span><span class="p" data-group-id="8851623903-3">]</span><span class="p" data-group-id="8851623903-2">}</span><span class="p" data-group-id="8851623903-1">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="8851623903-4">(</span><span class="k" data-group-id="8851623903-5">fn</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">tell</span><span class="p" data-group-id="8851623903-6">(</span><span class="p" data-group-id="8851623903-7">[</span><span class="ss">:step2</span><span class="p" data-group-id="8851623903-7">]</span><span class="p" data-group-id="8851623903-6">)</span><span class="w"> </span><span class="k" data-group-id="8851623903-5">end</span><span class="p" data-group-id="8851623903-4">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">exec</span><span class="p" data-group-id="8851623903-8">(</span><span class="n">writer</span><span class="p" data-group-id="8851623903-8">)</span><span class="w">
-</span><span class="p" data-group-id="8851623903-9">[</span><span class="ss">:step1</span><span class="p">,</span><span class="w"> </span><span class="ss">:step2</span><span class="p" data-group-id="8851623903-9">]</span></code></pre>
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="7422501114-1">(</span><span class="p" data-group-id="7422501114-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7422501114-3">[</span><span class="ss">:step1</span><span class="p" data-group-id="7422501114-3">]</span><span class="p" data-group-id="7422501114-2">}</span><span class="p" data-group-id="7422501114-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="7422501114-4">(</span><span class="k" data-group-id="7422501114-5">fn</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">tell</span><span class="p" data-group-id="7422501114-6">(</span><span class="p" data-group-id="7422501114-7">[</span><span class="ss">:step2</span><span class="p" data-group-id="7422501114-7">]</span><span class="p" data-group-id="7422501114-6">)</span><span class="w"> </span><span class="k" data-group-id="7422501114-5">end</span><span class="p" data-group-id="7422501114-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">exec</span><span class="p" data-group-id="7422501114-8">(</span><span class="n">writer</span><span class="p" data-group-id="7422501114-8">)</span><span class="w">
+</span><span class="p" data-group-id="7422501114-9">[</span><span class="ss">:step1</span><span class="p">,</span><span class="w"> </span><span class="ss">:step2</span><span class="p" data-group-id="7422501114-9">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="listen/1">
@@ -441,7 +443,7 @@ a <code class="inline">{value, monoid}</code> tuple, where the monoid contains t
     </a>
     <h1 class="signature" translate="no">listen(writer)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L125" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L125" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -463,13 +465,13 @@ a <code class="inline">{value, monoid}</code> tuple, where the monoid contains t
   </a>
   <span class="text">Example</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="2437474614-1">(</span><span class="p" data-group-id="2437474614-2">{</span><span class="s">&quot;done&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2437474614-3">[</span><span class="ss">:start</span><span class="p">,</span><span class="w"> </span><span class="ss">:finish</span><span class="p" data-group-id="2437474614-3">]</span><span class="p" data-group-id="2437474614-2">}</span><span class="p" data-group-id="2437474614-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">listened</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">listen</span><span class="p" data-group-id="2437474614-4">(</span><span class="n">writer</span><span class="p" data-group-id="2437474614-4">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2437474614-5">(</span><span class="n">listened</span><span class="p" data-group-id="2437474614-5">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="0330073747-1">(</span><span class="p" data-group-id="0330073747-2">{</span><span class="s">&quot;done&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0330073747-3">[</span><span class="ss">:start</span><span class="p">,</span><span class="w"> </span><span class="ss">:finish</span><span class="p" data-group-id="0330073747-3">]</span><span class="p" data-group-id="0330073747-2">}</span><span class="p" data-group-id="0330073747-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">listened</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">listen</span><span class="p" data-group-id="0330073747-4">(</span><span class="n">writer</span><span class="p" data-group-id="0330073747-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="0330073747-5">(</span><span class="n">listened</span><span class="p" data-group-id="0330073747-5">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="w">
-</span><span class="p" data-group-id="2437474614-6">{</span><span class="s">&quot;done&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2437474614-7">[</span><span class="ss">:start</span><span class="p">,</span><span class="w"> </span><span class="ss">:finish</span><span class="p" data-group-id="2437474614-7">]</span><span class="p" data-group-id="2437474614-6">}</span><span class="w">
+</span><span class="p" data-group-id="0330073747-6">{</span><span class="s">&quot;done&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0330073747-7">[</span><span class="ss">:start</span><span class="p">,</span><span class="w"> </span><span class="ss">:finish</span><span class="p" data-group-id="0330073747-7">]</span><span class="p" data-group-id="0330073747-6">}</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">log</span><span class="w">
-</span><span class="p" data-group-id="2437474614-8">[</span><span class="ss">:start</span><span class="p">,</span><span class="w"> </span><span class="ss">:finish</span><span class="p" data-group-id="2437474614-8">]</span></code></pre>
+</span><span class="p" data-group-id="0330073747-8">[</span><span class="ss">:start</span><span class="p">,</span><span class="w"> </span><span class="ss">:finish</span><span class="p" data-group-id="0330073747-8">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="pass/1">
@@ -481,7 +483,7 @@ a <code class="inline">{value, monoid}</code> tuple, where the monoid contains t
     </a>
     <h1 class="signature" translate="no">pass(writer)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L183" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L183" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -507,13 +509,13 @@ just before it's returned.</p><h2 id="pass/1-example" class="section-heading">
   <span class="text">Example</span>
 </h2>
 <pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1676848974-1">(</span><span class="p" data-group-id="1676848974-2">{</span><span class="s">&quot;done&quot;</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1676848974-3">fn</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p" data-group-id="1676848974-4">[</span><span class="ss">:transformed</span><span class="p" data-group-id="1676848974-4">]</span><span class="w"> </span><span class="k" data-group-id="1676848974-3">end</span><span class="p" data-group-id="1676848974-2">}</span><span class="p" data-group-id="1676848974-1">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">pass</span><span class="p" data-group-id="1676848974-5">(</span><span class="p" data-group-id="1676848974-5">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1676848974-6">(</span><span class="p" data-group-id="1676848974-6">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1262811871-1">(</span><span class="p" data-group-id="1262811871-2">{</span><span class="s">&quot;done&quot;</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1262811871-3">fn</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p" data-group-id="1262811871-4">[</span><span class="ss">:transformed</span><span class="p" data-group-id="1262811871-4">]</span><span class="w"> </span><span class="k" data-group-id="1262811871-3">end</span><span class="p" data-group-id="1262811871-2">}</span><span class="p" data-group-id="1262811871-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">pass</span><span class="p" data-group-id="1262811871-5">(</span><span class="p" data-group-id="1262811871-5">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1262811871-6">(</span><span class="p" data-group-id="1262811871-6">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="w">
 </span><span class="s">&quot;done&quot;</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">log</span><span class="w">
-</span><span class="p" data-group-id="1676848974-7">[</span><span class="ss">:transformed</span><span class="p" data-group-id="1676848974-7">]</span></code></pre>
+</span><span class="p" data-group-id="1262811871-7">[</span><span class="ss">:transformed</span><span class="p" data-group-id="1262811871-7">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="pure/1">
@@ -525,7 +527,7 @@ just before it's returned.</p><h2 id="pass/1-example" class="section-heading">
     </a>
     <h1 class="signature" translate="no">pure(value)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L57" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L57" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -547,12 +549,12 @@ just before it's returned.</p><h2 id="pass/1-example" class="section-heading">
   </a>
   <span class="text">Example</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4717007344-1">(</span><span class="mi">42</span><span class="p" data-group-id="4717007344-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4717007344-2">(</span><span class="n">writer</span><span class="p" data-group-id="4717007344-2">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2138892474-1">(</span><span class="mi">42</span><span class="p" data-group-id="2138892474-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2138892474-2">(</span><span class="n">writer</span><span class="p" data-group-id="2138892474-2">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="w">
 </span><span class="mi">42</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">log</span><span class="w">
-</span><span class="p" data-group-id="4717007344-3">[</span><span class="p" data-group-id="4717007344-3">]</span></code></pre>
+</span><span class="p" data-group-id="2138892474-3">[</span><span class="p" data-group-id="2138892474-3">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="run/2">
@@ -566,7 +568,7 @@ just before it's returned.</p><h2 id="pass/1-example" class="section-heading">
     </a>
     <h1 class="signature" translate="no">run(writer, monoid \\ %ListConcat{})</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L209" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L209" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -589,12 +591,12 @@ when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</
   </a>
   <span class="text">Example</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="2635953309-1">(</span><span class="p" data-group-id="2635953309-2">{</span><span class="s">&quot;ok&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2635953309-3">[</span><span class="ss">:a</span><span class="p">,</span><span class="w"> </span><span class="ss">:b</span><span class="p" data-group-id="2635953309-3">]</span><span class="p" data-group-id="2635953309-2">}</span><span class="p" data-group-id="2635953309-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2635953309-4">(</span><span class="n">writer</span><span class="p" data-group-id="2635953309-4">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="1456958261-1">(</span><span class="p" data-group-id="1456958261-2">{</span><span class="s">&quot;ok&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1456958261-3">[</span><span class="ss">:a</span><span class="p">,</span><span class="w"> </span><span class="ss">:b</span><span class="p" data-group-id="1456958261-3">]</span><span class="p" data-group-id="1456958261-2">}</span><span class="p" data-group-id="1456958261-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1456958261-4">(</span><span class="n">writer</span><span class="p" data-group-id="1456958261-4">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="w">
 </span><span class="s">&quot;ok&quot;</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">log</span><span class="w">
-</span><span class="p" data-group-id="2635953309-5">[</span><span class="ss">:a</span><span class="p">,</span><span class="w"> </span><span class="ss">:b</span><span class="p" data-group-id="2635953309-5">]</span></code></pre>
+</span><span class="p" data-group-id="1456958261-5">[</span><span class="ss">:a</span><span class="p">,</span><span class="w"> </span><span class="ss">:b</span><span class="p" data-group-id="1456958261-5">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="tell/1">
@@ -606,7 +608,7 @@ when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</
     </a>
     <h1 class="signature" translate="no">tell(raw_log)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L99" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L99" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -628,12 +630,12 @@ when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</
   </a>
   <span class="text">Example</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">tell</span><span class="p" data-group-id="9939071702-1">(</span><span class="p" data-group-id="9939071702-2">[</span><span class="ss">:event</span><span class="p" data-group-id="9939071702-2">]</span><span class="p" data-group-id="9939071702-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="9939071702-3">(</span><span class="n">writer</span><span class="p" data-group-id="9939071702-3">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">tell</span><span class="p" data-group-id="7697486125-1">(</span><span class="p" data-group-id="7697486125-2">[</span><span class="ss">:event</span><span class="p" data-group-id="7697486125-2">]</span><span class="p" data-group-id="7697486125-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="7697486125-3">(</span><span class="n">writer</span><span class="p" data-group-id="7697486125-3">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="w">
 </span><span class="ss">:ok</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">log</span><span class="w">
-</span><span class="p" data-group-id="9939071702-4">[</span><span class="ss">:event</span><span class="p" data-group-id="9939071702-4">]</span></code></pre>
+</span><span class="p" data-group-id="7697486125-4">[</span><span class="ss">:event</span><span class="p" data-group-id="7697486125-4">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="writer/1">
@@ -645,7 +647,7 @@ when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</
     </a>
     <h1 class="signature" translate="no">writer(arg)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/main/lib/monad/writer/writer.ex#L76" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.0/lib/monad/writer/writer.ex#L76" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -667,12 +669,12 @@ when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</
   </a>
   <span class="text">Example</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="9606922791-1">(</span><span class="p" data-group-id="9606922791-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9606922791-3">[</span><span class="ss">:step1</span><span class="p">,</span><span class="w"> </span><span class="ss">:step2</span><span class="p" data-group-id="9606922791-3">]</span><span class="p" data-group-id="9606922791-2">}</span><span class="p" data-group-id="9606922791-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="9606922791-4">(</span><span class="n">writer</span><span class="p" data-group-id="9606922791-4">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">writer</span><span class="p" data-group-id="9078278117-1">(</span><span class="p" data-group-id="9078278117-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9078278117-3">[</span><span class="ss">:step1</span><span class="p">,</span><span class="w"> </span><span class="ss">:step2</span><span class="p" data-group-id="9078278117-3">]</span><span class="p" data-group-id="9078278117-2">}</span><span class="p" data-group-id="9078278117-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Writer</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="9078278117-4">(</span><span class="n">writer</span><span class="p" data-group-id="9078278117-4">)</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="w">
 </span><span class="ss">:ok</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="n">result</span><span class="o">.</span><span class="n">log</span><span class="w">
-</span><span class="p" data-group-id="9606922791-5">[</span><span class="ss">:step1</span><span class="p">,</span><span class="w"> </span><span class="ss">:step2</span><span class="p" data-group-id="9606922791-5">]</span></code></pre>
+</span><span class="p" data-group-id="9078278117-5">[</span><span class="ss">:step1</span><span class="p">,</span><span class="w"> </span><span class="ss">:step2</span><span class="p" data-group-id="9078278117-5">]</span></code></pre>
   </section>
 </section>
 
