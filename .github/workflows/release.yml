@@ -3,7 +3,7 @@ name: Release to Hex
 on:
   push:
     tags:
-      - "v*.*.*"   # e.g. v0.1.1
+      - "v*.*.*"   # e.g. v0.1.2
   workflow_dispatch: {}
 
 jobs:
@@ -23,10 +23,15 @@ jobs:
       - name: Install Hex
         run: mix local.hex --force
 
-      - name: Install deps
+      - name: Install deps (dev)
         run: mix deps.get
 
-      - name: Compile
+      - name: Install deps (test)
+        env:
+          MIX_ENV: test
+        run: mix deps.get
+
+      - name: Compile (dev)
         run: mix compile --warnings-as-errors
 
       - name: Run tests
@@ -42,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}   # the tag ref, e.g. refs/tags/v0.1.1
+          ref: ${{ github.ref }}   # the tag ref, e.g. refs/tags/v0.1.2
           fetch-depth: 0
 
       - name: Set up Elixir/OTP
@@ -55,16 +60,16 @@ jobs:
         run: mix local.hex --force
 
       # PROD: build and publish package (no dev deps)
-      - name: Install deps (prod only)
+      - name: Install deps (prod)
         env:
           MIX_ENV: prod
-        run: mix deps.get --only prod
+        run: mix deps.get
 
       - name: Verify tag matches @version
         env:
           MIX_ENV: prod
         run: |
-          TAG="${GITHUB_REF_NAME}"        # e.g. v0.1.1
+          TAG="${GITHUB_REF_NAME}"        # e.g. v0.1.2
           FILE_VERSION=$(elixir -e 'mix = File.read!("mix.exs"); [_,v] = Regex.run(~r/@version\s*"([^"]+)"/, mix); IO.puts(v)')
           echo "Tag: $TAG  Version: $FILE_VERSION"
           if [ "v$FILE_VERSION" != "$TAG" ]; then
@@ -77,17 +82,17 @@ jobs:
           MIX_ENV: prod
         run: mix hex.build
 
-      - name: Publish package to Hex
+      - name: Publish package to Hex (package only)
         env:
           MIX_ENV: prod
           HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
-        run: mix hex.publish --yes
+        run: mix hex.publish package --yes
 
       # DEV: generate and publish docs (needs ex_doc)
-      - name: Install dev deps for docs
+      - name: Install deps (dev)
         env:
           MIX_ENV: dev
-        run: mix deps.get --only dev
+        run: mix deps.get
 
       - name: Generate docs
         env:
