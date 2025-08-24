@@ -43,6 +43,7 @@ Monads encapsulate computations, allowing operations to be chained while handlin
 - `Either`: Models computations with two possibilities—`Left` and `Right`.
 - `Effect`: Encapsulates deferred execution with error handling, similar to `Task`.
 - `Reader`: Passes an immutable environment through a computation for dependency injection or configuration.
+- `Writer`: Threads a log alongside a result using any monoid—useful for tracing, reporting, or accumulating metadata during computation.
 
 ## Monoids
 
@@ -56,6 +57,8 @@ Monoids combine values using an associative operation and an identity element. T
 - `Predicate.Any`: At least one predicate must hold.
 - `Ord`: Defines ordering compositionally.
 - `Max` and `Min`: Select the largest or smallest value by custom ordering.
+- `ListConcat`: Concatenates lists (`[]` is the identity).
+- `StringConcat`: Concatenates strings (`""` is the identity).
 
 ## Predicates
 
@@ -93,6 +96,8 @@ Sequencing runs a series of monadic operations in order, combining the results.
 - `concat_map/2`: Applies a function to each element and collects only the present results.
 - `sequence/1`: Converts a list of monadic values into a single monadic value containing a list. Short-circuits on the first failure or absence.
 - `traverse/2`: Applies a function to each element and sequences the resulting monadic values.
+- `sequence_a/1`: Applicative version of sequence—combines all and collects results.
+- `traverse_a/2`: Applicative version of traverse—applies a function to each element and collects results.
 
 ## Lifting
 
@@ -118,7 +123,7 @@ To use Funx, add it to the list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:funx, "~> 0.1.0"}
+    {:funx, "~> 0.1.4"}
   ]
 end
 ```
