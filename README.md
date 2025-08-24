@@ -2,6 +2,12 @@
 
 ⚠️ **Beta notice:** Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.
 
+As a rule, functional libraries consider teaching functional programming as out of scope. This one does not.
+
+Funx was built alongside [**Advanced Functional Programming with Elixir**](https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir), which helps you build lasting mental models of functional programming—showing not just how these abstractions work, but how to apply them in real systems using Elixir.
+
+<img src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/book_cover_small.jpg" alt="Advanced Functional Programming with Elixir Book Cover" width="200" />
+
 [![Continuous Integration](https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/funx/actions/workflows/ci.yml)  
 
 [View the code on GitHub](https://github.com/JKWA/funx)  
