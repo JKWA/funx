@@ -14,29 +14,37 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - elixir: '1.16.3'
+            otp: '26.2'
+          - elixir: '1.17.2'
+            otp: '27.1'
     env:
       MIX_ENV: test
+
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Erlang and Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        elixir-version: '1.16'
-        otp-version: '26.0'
+      - name: Set up Erlang and Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
 
-    - name: Install Hex and Rebar
-      run: |
-        mix local.hex --force
-        mix local.rebar --force
+      - name: Install Hex and Rebar
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
 
-    - name: Install Dependencies
-      run: mix deps.get
+      - name: Install Dependencies
+        run: mix deps.get
 
-    - name: Run Credo for Code Consistency
-      run: mix credo --strict
-      continue-on-error: false
+      - name: Run Credo for Code Consistency
+        run: mix credo --strict
+        continue-on-error: false
 
-    - name: Run Tests with ExUnit
-      run: mix test --cover
-      continue-on-error: false
+      - name: Run Tests with ExUnit
+        run: mix test --cover
+        continue-on-error: false

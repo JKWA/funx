@@ -18,13 +18,11 @@ jobs:
       MIX_ENV: dev
     steps:
     - uses: actions/checkout@v4
-
     - name: Set up Erlang and Elixir
       uses: erlef/setup-beam@v1
       with:
-        elixir-version: '1.16'
-        otp-version: '26.0'
-
+        elixir-version: '1.17.2'
+        otp-version: '27.1'
     - name: Install Hex and Rebar
       run: |
         mix local.hex --force
