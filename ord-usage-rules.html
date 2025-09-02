@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.4">
+
+
+    <title>Funx.Ord Usage Rules — funx v0.1.4</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/ord-usage-rules.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-F7A29036.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.4
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.4/lib/ord/usage-rules.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+
+    <span><code class="inline">Funx.Ord</code> Usage Rules</span>
+  </h1>
+
+<h2 id="quick-reference" class="section-heading">
+  <a href="#quick-reference" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Quick Reference</span>
+</h2>
+<ul><li>Use <code class="inline">Ord.lt?/2</code>, <code class="inline">Ord.le?/2</code>, <code class="inline">Ord.gt?/2</code>, and <code class="inline">Ord.ge?/2</code> instead of raw comparison operators.</li><li>Always implement all four functions when defining an instance.</li><li>The fallback implementation uses Elixir's native operators and may raise for some types.</li><li><code class="inline">Ord.Utils.*</code> functions default to protocol dispatch.</li><li><a href="Funx.List.html#sort/2"><code class="inline">Funx.List.sort/2</code></a> and <code class="inline">strict_sort/2</code> use <code class="inline">Ord</code>, not <code class="inline">Eq</code>.</li><li><code class="inline">Ord</code> is composable with helpers like <code class="inline">contramap</code>, <code class="inline">append</code>, <code class="inline">concat</code>, and <code class="inline">reverse</code>.</li></ul><hr class="thin"/><h2 id="overview" class="section-heading">
+  <a href="#overview" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Overview</span>
+</h2>
+<p><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a> defines contextual ordering in Elixir.
+Use <code class="inline">Ord</code> to express domain-specific comparison rules.</p><ul><li>Raw operators like <code class="inline">&lt;</code> and <code class="inline">&gt;</code> are not extensible or composable.</li><li><code class="inline">Ord</code> is implemented via protocol and can be customized per type.</li><li><code class="inline">Ord</code> integrates with <a href="Funx.List.html"><code class="inline">Funx.List</code></a>, <code class="inline">Ord.Utils</code>, and sorting operations.</li><li><code class="inline">Ord</code> supports composition and projection via utility helpers.</li></ul><hr class="thin"/><h2 id="protocol-rules" class="section-heading">
+  <a href="#protocol-rules" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Protocol Rules</span>
+</h2>
+<ul><li><p>Implement all of the following:</p><pre><code class="makeup elixir" translate="no"><span class="n">lt?</span><span class="p" data-group-id="4638887864-1">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="4638887864-1">)</span><span class="w">  </span><span class="c1"># less than</span><span class="w">
+</span><span class="n">le?</span><span class="p" data-group-id="4638887864-2">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="4638887864-2">)</span><span class="w">  </span><span class="c1"># less than or equal</span><span class="w">
+</span><span class="n">gt?</span><span class="p" data-group-id="4638887864-3">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="4638887864-3">)</span><span class="w">  </span><span class="c1"># greater than</span><span class="w">
+</span><span class="n">ge?</span><span class="p" data-group-id="4638887864-4">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="4638887864-4">)</span><span class="w">  </span><span class="c1"># greater than or equal</span></code></pre></li><li><p>Implementations should define a total order and follow standard laws:</p><ul><li>Antisymmetry: if <code class="inline">a &lt;= b</code> and <code class="inline">b &lt;= a</code>, then <code class="inline">a == b</code></li><li>Transitivity: if <code class="inline">a &lt;= b</code> and <code class="inline">b &lt;= c</code>, then <code class="inline">a &lt;= c</code></li><li>Connexity: for any <code class="inline">a</code>, <code class="inline">b</code>, either <code class="inline">a &lt;= b</code> or <code class="inline">b &lt;= a</code></li></ul></li><li><p>Prefer semantic ordering (e.g., domain fields) over structural details.</p></li></ul><hr class="thin"/><h2 id="fallback-any" class="section-heading">
+  <a href="#fallback-any" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Fallback (<code class="inline">Any</code>)</span>
+</h2>
+<p>If no instance is defined, the protocol falls back to Elixir’s built-in comparison operators:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defimpl</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="p">,</span><span class="w"> </span><span class="ss">for</span><span class="p">:</span><span class="w"> </span><span class="nc">Any</span><span class="w"> </span><span class="k" data-group-id="2393658200-1">do</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">lt?</span><span class="p" data-group-id="2393658200-2">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="2393658200-2">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w">  </span><span class="n">b</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">le?</span><span class="p" data-group-id="2393658200-3">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="2393658200-3">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">b</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">gt?</span><span class="p" data-group-id="2393658200-4">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="2393658200-4">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&gt;</span><span class="w">  </span><span class="n">b</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">ge?</span><span class="p" data-group-id="2393658200-5">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="2393658200-5">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">b</span><span class="w">
+</span><span class="k" data-group-id="2393658200-1">end</span></code></pre><h3 id="safe-fallback-types" class="section-heading">
+  <a href="#safe-fallback-types" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Safe fallback types:</span>
+</h3>
+<ul><li>Numbers (<code class="inline">1 &lt; 2</code>)</li><li>Strings and binaries (<code class="inline">&quot;a&quot; &lt; &quot;b&quot;</code>)</li><li>Tuples and lists (compared lexicographically)</li></ul><h3 id="unsafe-fallback-types" class="section-heading">
+  <a href="#unsafe-fallback-types" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Unsafe fallback types:</span>
+</h3>
+<ul><li>Maps and structs: raise <a href="https://hexdocs.pm/elixir/ArgumentError.html"><code class="inline">ArgumentError</code></a> when compared with <code class="inline">&lt;</code>, <code class="inline">&lt;=</code>, etc.</li><li>Cross-type comparisons: may raise or produce invalid results</li></ul><p>Use fallback only if you know the inputs are safe.
+Define explicit <code class="inline">Ord</code> instances for structs and domain types.</p><hr class="thin"/><h2 id="preferred-usage" class="section-heading">
+  <a href="#preferred-usage" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Preferred Usage</span>
+</h2>
+<h3 id="use-ord-instead-of-raw-operators" class="section-heading">
+  <a href="#use-ord-instead-of-raw-operators" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Use <code class="inline">Ord</code> Instead of Raw Operators</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="kd">defimpl</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="p">,</span><span class="w"> </span><span class="ss">for</span><span class="p">:</span><span class="w"> </span><span class="nc">User</span><span class="w"> </span><span class="k" data-group-id="5469626753-1">do</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">lt?</span><span class="p" data-group-id="5469626753-2">(</span><span class="p" data-group-id="5469626753-3">%</span><span class="nc" data-group-id="5469626753-3">User</span><span class="p" data-group-id="5469626753-3">{</span><span class="ss">joined_at</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="p" data-group-id="5469626753-3">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5469626753-4">%</span><span class="nc" data-group-id="5469626753-4">User</span><span class="p" data-group-id="5469626753-4">{</span><span class="ss">joined_at</span><span class="p">:</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-4">}</span><span class="p" data-group-id="5469626753-2">)</span><span class="p">,</span><span class="w">
+    </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5469626753-5">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-5">)</span><span class="w">
+
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">le?</span><span class="p" data-group-id="5469626753-6">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-6">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">lt?</span><span class="p" data-group-id="5469626753-7">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-7">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">eq?</span><span class="p" data-group-id="5469626753-8">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-8">)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">gt?</span><span class="p" data-group-id="5469626753-9">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-9">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">le?</span><span class="p" data-group-id="5469626753-10">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-10">)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">ge?</span><span class="p" data-group-id="5469626753-11">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-11">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">lt?</span><span class="p" data-group-id="5469626753-12">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-12">)</span><span class="w">
+
+  </span><span class="kd">defp</span><span class="w"> </span><span class="nf">eq?</span><span class="p" data-group-id="5469626753-13">(</span><span class="p" data-group-id="5469626753-14">%</span><span class="nc" data-group-id="5469626753-14">User</span><span class="p" data-group-id="5469626753-14">{</span><span class="ss">joined_at</span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="p" data-group-id="5469626753-14">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5469626753-15">%</span><span class="nc" data-group-id="5469626753-15">User</span><span class="p" data-group-id="5469626753-15">{</span><span class="ss">joined_at</span><span class="p">:</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-15">}</span><span class="p" data-group-id="5469626753-13">)</span><span class="p">,</span><span class="w">
+    </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="5469626753-16">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="5469626753-16">)</span><span class="w">
+</span><span class="k" data-group-id="5469626753-1">end</span></code></pre><p>Project domain fields and delegate to <code class="inline">Ord</code> on those fields.
+If the projected field also has an <code class="inline">Eq</code> instance, use it for consistency.</p><hr class="thin"/><h3 id="use-ord-utils-for-dispatch" class="section-heading">
+  <a href="#use-ord-utils-for-dispatch" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Use <code class="inline">Ord.Utils</code> for Dispatch</span>
+</h3>
+<p>All <code class="inline">Ord.Utils</code> functions default to the protocol.
+You do not need to pass logic manually if the type has an instance.</p><pre><code class="makeup elixir" translate="no"><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="3448233991-1">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="3448233991-1">)</span><span class="w">      </span><span class="c1"># :lt | :eq | :gt</span><span class="w">
+</span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="3448233991-2">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="3448233991-2">)</span><span class="w">
+</span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="3448233991-3">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="3448233991-3">)</span><span class="w">
+</span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="3448233991-4">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p" data-group-id="3448233991-4">)</span><span class="w">
+</span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="3448233991-5">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p" data-group-id="3448233991-5">)</span><span class="w">
+</span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">comparator</span><span class="p" data-group-id="3448233991-6">(</span><span class="p" data-group-id="3448233991-6">)</span><span class="w">       </span><span class="c1"># For Enum.sort/2</span></code></pre><hr class="thin"/><h3 id="projections-and-composition" class="section-heading">
+  <a href="#projections-and-composition" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Projections and Composition</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Order by projected key</span><span class="w">
+</span><span class="n">by_length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4364697207-1">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4364697207-1">)</span><span class="w">
+</span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="4364697207-2">(</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;zebra&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">by_length</span><span class="p" data-group-id="4364697207-2">)</span><span class="w">  </span><span class="c1"># &quot;zebra&quot;</span><span class="w">
+
+</span><span class="c1"># Reverse an ordering</span><span class="w">
+</span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">reverse</span><span class="p" data-group-id="4364697207-3">(</span><span class="n">by_length</span><span class="p" data-group-id="4364697207-3">)</span><span class="w">
+
+</span><span class="c1"># Compose by multiple fields</span><span class="w">
+</span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w">
+  </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="4364697207-4">(</span><span class="p" data-group-id="4364697207-5">[</span><span class="w">
+    </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4364697207-6">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p" data-group-id="4364697207-6">)</span><span class="p">,</span><span class="w">
+    </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4364697207-7">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="4364697207-7">)</span><span class="w">
+  </span><span class="p" data-group-id="4364697207-5">]</span><span class="p" data-group-id="4364697207-4">)</span><span class="w">
+
+</span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="4364697207-8">(</span><span class="p" data-group-id="4364697207-9">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="4364697207-9">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4364697207-10">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Charlie&quot;</span><span class="p" data-group-id="4364697207-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="4364697207-8">)</span><span class="w">
+</span><span class="c1"># =&gt; :lt</span></code></pre><p>Use <code class="inline">append/2</code> or <code class="inline">concat/1</code> to build lexicographic orderings.
+Use <code class="inline">reverse/1</code> to invert direction.</p><hr class="thin"/><h3 id="convert-ord-to-eq" class="section-heading">
+  <a href="#convert-ord-to-eq" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Convert <code class="inline">Ord</code> to <code class="inline">Eq</code></span>
+</h3>
+<p>You can derive equality from ordering:</p><pre><code class="makeup elixir" translate="no"><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">to_eq</span><span class="p" data-group-id="0141442765-1">(</span><span class="p" data-group-id="0141442765-1">)</span><span class="w">
+</span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="0141442765-2">(</span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="0141442765-2">)</span><span class="w">  </span><span class="c1"># true</span></code></pre><p>This ensures consistent logic across equality and ordering.</p><hr class="thin"/><h2 id="in-funx-list" class="section-heading">
+  <a href="#in-funx-list" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">In <a href="Funx.List.html"><code class="inline">Funx.List</code></a></span>
+</h2>
+<p>Sorting uses <code class="inline">Ord</code>.
+All <a href="Funx.List.html"><code class="inline">Funx.List</code></a> sorting functions accept a comparator, defaulting to the protocol.</p><pre><code class="makeup elixir" translate="no"><span class="nc">Funx.List</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="9753649124-1">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="w"> </span><span class="o">\\</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="p" data-group-id="9753649124-1">)</span><span class="w">
+</span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">strict_sort</span><span class="p" data-group-id="9753649124-2">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="w"> </span><span class="o">\\</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="p" data-group-id="9753649124-2">)</span></code></pre><p><code class="inline">strict_sort/2</code> removes duplicates using <code class="inline">Ord.Utils.to_eq/1</code>.</p><h3 id="examples" class="section-heading">
+  <a href="#examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Default: numeric sort</span><span class="w">
+</span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="8021598103-1">(</span><span class="p" data-group-id="8021598103-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8021598103-2">]</span><span class="p" data-group-id="8021598103-1">)</span><span class="w">
+</span><span class="c1"># =&gt; [1, 2, 3]</span><span class="w">
+
+</span><span class="c1"># Custom: by string length, then alphabetically</span><span class="w">
+</span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w">
+  </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="8021598103-3">(</span><span class="p" data-group-id="8021598103-4">[</span><span class="w">
+    </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8021598103-5">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="8021598103-5">)</span><span class="p">,</span><span class="w">
+    </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8021598103-6">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="p" data-group-id="8021598103-6">)</span><span class="w">
+  </span><span class="p" data-group-id="8021598103-4">]</span><span class="p" data-group-id="8021598103-3">)</span><span class="w">
+
+</span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="8021598103-7">(</span><span class="sx">~w(zero one two three)</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="8021598103-7">)</span><span class="w">
+</span><span class="c1"># =&gt; [&quot;one&quot;, &quot;two&quot;, &quot;zero&quot;, &quot;three&quot;]</span><span class="w">
+
+</span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">strict_sort</span><span class="p" data-group-id="8021598103-8">(</span><span class="p" data-group-id="8021598103-9">[</span><span class="s">&quot;aa&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;aa&quot;</span><span class="p" data-group-id="8021598103-9">]</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="8021598103-8">)</span><span class="w">
+</span><span class="c1"># =&gt; [&quot;a&quot;, &quot;aa&quot;]</span></code></pre><hr class="thin"/><h2 id="stability-contract" class="section-heading">
+  <a href="#stability-contract" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Stability Contract</span>
+</h2>
+<ul><li>All functions must be pure.</li><li>Each instance must define a total order.</li><li>If the type also defines <code class="inline">Eq</code>, keep the implementations consistent:</li></ul><pre><code class="makeup elixir" translate="no"><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="4857837054-1">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="4857837054-1">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="ss">:eq</span><span class="w">  </span><span class="o">&lt;=</span><span class="o">&gt;</span><span class="w">  </span><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4857837054-2">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="4857837054-2">)</span></code></pre><hr class="thin"/><h2 id="anti-patterns" class="section-heading">
+  <a href="#anti-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Anti-Patterns</span>
+</h2>
+<ul><li>Using <code class="inline">&lt;</code> or <code class="inline">&gt;</code> on maps or structs.</li><li>Comparing values of unrelated types.</li><li>Mixing protocol-based and ad-hoc logic in the same function.</li></ul><hr class="thin"/><h2 id="good-patterns" class="section-heading">
+  <a href="#good-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Good Patterns</span>
+</h2>
+<ul><li>Use <code class="inline">contramap</code> to project comparison keys.</li><li>Use <code class="inline">append</code> or <code class="inline">concat</code> to build multi-key orderings.</li><li>Use <code class="inline">reverse</code> to define descending order without rewriting logic.</li><li>Use <code class="inline">Ord.Utils.comparator/1</code> when sorting with <a href="https://hexdocs.pm/elixir/Enum.html#sort/2"><code class="inline">Enum.sort/2</code></a>.</li></ul><hr class="thin"/><h2 id="when-to-define-an-ord-instance" class="section-heading">
+  <a href="#when-to-define-an-ord-instance" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">When to Define an <code class="inline">Ord</code> Instance</span>
+</h2>
+<p>Define an <code class="inline">Ord</code> instance when you need to control how values are ordered.</p><h3 id="common-cases" class="section-heading">
+  <a href="#common-cases" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Common cases</span>
+</h3>
+<ul><li>Time-based comparisons (<code class="inline">inserted_at</code>, <code class="inline">scheduled_on</code>)</li><li>Lexicographic fallback (sort by age, then name)</li><li>Score-based ordering (revenue, priority, bonus)</li><li>Domain-specific sort (e.g., &quot;VIP before General&quot;)</li></ul><hr class="thin"/><h2 id="built-in-instances" class="section-heading">
+  <a href="#built-in-instances" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Built-in Instances</span>
+</h2>
+<p><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a> includes protocol implementations for Elixir’s temporal types:</p><ul><li><a href="https://hexdocs.pm/elixir/DateTime.html"><code class="inline">DateTime</code></a> → uses <a href="https://hexdocs.pm/elixir/DateTime.html#compare/2"><code class="inline">DateTime.compare/2</code></a></li><li><a href="https://hexdocs.pm/elixir/Date.html"><code class="inline">Date</code></a> → uses <a href="https://hexdocs.pm/elixir/Date.html#compare/2"><code class="inline">Date.compare/2</code></a></li><li><a href="https://hexdocs.pm/elixir/Time.html"><code class="inline">Time</code></a> → uses <a href="https://hexdocs.pm/elixir/Time.html#compare/2"><code class="inline">Time.compare/2</code></a></li><li><a href="https://hexdocs.pm/elixir/NaiveDateTime.html"><code class="inline">NaiveDateTime</code></a> → uses <a href="https://hexdocs.pm/elixir/NaiveDateTime.html#compare/2"><code class="inline">NaiveDateTime.compare/2</code></a></li></ul><p>These implementations support full ordering: <code class="inline">lt?/2</code>, <code class="inline">le?/2</code>, <code class="inline">gt?/2</code>, <code class="inline">ge?/2</code>.
+They are safe for use with <code class="inline">Ord.Utils</code> and <a href="Funx.List.html"><code class="inline">Funx.List</code></a>.</p><p>Avoid relying on the fallback for maps or structs—define explicit rules instead.</p>
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="eq-usage-rules.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Funx.Eq Usage Rules
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+      <a href="list-usage-rules.html" class="bottom-actions-button" rel="next">
+        <span class="subheader">
+          Next Page →
+        </span>
+        <span class="title">
+Funx.List Usage Rules
+        </span>
+      </a>
+
+  </div>
+</div>
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.4" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.4">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/funx/0.1.4/show/lib/ord/usage-rules.md">current file</a>)
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
