@@ -19,7 +19,35 @@ defmodule Funx.MixProject do
       ],
       docs: [
         main: "readme",
-        extras: ["README.md", "CHANGELOG.md", "LICENSE"],
+        extras: [
+          "README.md",
+          "CHANGELOG.md",
+          "LICENSE",
+          "lib/usage-rules.md": [
+            title: "Funx Usage Rules",
+            filename: "usage-rules"
+          ],
+          "lib/eq/usage-rules.md": [
+            title: "Funx.Eq Usage Rules",
+            filename: "eq-usage-rules"
+          ],
+          "lib/ord/usage-rules.md": [
+            title: "Funx.Ord Usage Rules",
+            filename: "ord-usage-rules"
+          ],
+          "lib/list/usage-rules.md": [
+            title: "Funx.List Usage Rules",
+            filename: "list-usage-rules"
+          ]
+        ],
+        groups_for_extras: [
+          "Usage Rules": [
+            "lib/usage-rules.md",
+            "lib/eq/usage-rules.md",
+            "lib/ord/usage-rules.md",
+            "lib/list/usage-rules.md"
+          ]
+        ],
         filter_prefix: "Examples",
         source_url: "https://github.com/JKWA/funx",
         source_ref: "v#{@version}",
