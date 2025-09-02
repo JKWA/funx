@@ -19,6 +19,9 @@ This index links them together.
 - [Funx.List Usage Rules](./list/usage-rules.md)  
   Set operations, deduplication, and sorting that respect `Eq` and `Ord`.
 
+- [Funx.Monoid Usage Rules](./monoid/usage-rules.md)  
+  Identities and associative combination, powering folds and composition.
+
 ---
 
 ## Conventions
@@ -40,4 +43,6 @@ lib/
     usage-rules.md      # ← Funx.Ord rules
   list/
     usage-rules.md      # ← Funx.List rules
+  monoid/
+    usage-rules.md    # ← this file
 ```

@@ -38,6 +38,10 @@ defmodule Funx.MixProject do
           "lib/list/usage-rules.md": [
             title: "Funx.List Usage Rules",
             filename: "list-usage-rules"
+          ],
+          "lib/monoid/usage-rules.md": [
+            title: "Funx.Monoid Usage Rules",
+            filename: "monoid-usage-rules"
           ]
         ],
         groups_for_extras: [
@@ -45,7 +49,8 @@ defmodule Funx.MixProject do
             "lib/usage-rules.md",
             "lib/eq/usage-rules.md",
             "lib/ord/usage-rules.md",
-            "lib/list/usage-rules.md"
+            "lib/list/usage-rules.md",
+            "lib/monoid/usage-rules.md"
           ]
         ],
         filter_prefix: "Examples",
