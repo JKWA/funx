@@ -1,4 +1,9 @@
-# Funx  
+# <img src="assets/images/funx-logo.png" alt="Funx Logo" width="40" style="vertical-align: middle;"/> Funx
+
+[![Continuous Integration](https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/funx/actions/workflows/ci.yml)
+
+[![Hex.pm](https://img.shields.io/hexpm/v/funx.svg)](https://hex.pm/packages/funx)
+
 
 ⚠️ **Beta notice:** Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.
 
@@ -8,9 +13,7 @@ Funx was built alongside [**Advanced Functional Programming with Elixir**](https
 
 <img src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/book_cover_small.jpg" alt="Advanced Functional Programming with Elixir Book Cover" width="200" />
 
-[![Continuous Integration](https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/funx/actions/workflows/ci.yml)  
-
-[View the code on GitHub](https://github.com/JKWA/funx)  
+ 
 
 **Funx** is a functional programming library for Elixir providing protocols and combinators for equality, ordering, monoids, monads, and other core abstractions.
 
