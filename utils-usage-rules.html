@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.4">
+
+
+    <title>Funx.Utils Usage Rules — funx v0.1.4</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/utils-usage-rules.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-E188B250.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.4
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.4/lib/utils/usage-rules.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+
+    <span><code class="inline">Funx.Utils</code> Usage Rules</span>
+  </h1>
+
+<h2 id="quick-reference" class="section-heading">
+  <a href="#quick-reference" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Quick Reference</span>
+</h2>
+<ul><li>Use <code class="inline">curry_r/1</code> to curry functions right-to-left—ideal for Elixir’s <code class="inline">|&gt;</code> pipe style.</li><li>Use <code class="inline">curry/1</code> or <code class="inline">curry_l/1</code> to curry left-to-right when needed.</li><li>Use <code class="inline">flip/1</code> to reverse arguments in binary functions.</li><li>All currying functions adapt to any arity and return nested unary functions.</li></ul><hr class="thin"/><h2 id="overview" class="section-heading">
+  <a href="#overview" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Overview</span>
+</h2>
+<p><a href="Funx.Utils.html"><code class="inline">Funx.Utils</code></a> provides functional utilities for reshaping multi-argument functions to support composition, partial application, and point-free style.
+Use <code class="inline">curry_r/1</code> by default—it aligns with Elixir’s <code class="inline">|&gt;</code> operator by shifting configuration to the right and leaving the data position first.</p><p>These tools are especially useful with predicates, monads, and other combinators where composition and reuse are key.</p><hr class="thin"/><h2 id="composition-rules" class="section-heading">
+  <a href="#composition-rules" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Composition Rules</span>
+</h2>
+<table><thead><tr><th style="text-align: left;">Function</th><th style="text-align: left;">Description</th></tr></thead><tbody><tr><td style="text-align: left;"><code class="inline">curry_r/1</code></td><td style="text-align: left;">Curries a function right-to-left (recommended for pipelines)</td></tr><tr><td style="text-align: left;"><code class="inline">curry/1</code></td><td style="text-align: left;">Curries left-to-right</td></tr><tr><td style="text-align: left;"><code class="inline">curry_l/1</code></td><td style="text-align: left;">Alias for <code class="inline">curry/1</code>, makes intent explicit</td></tr><tr><td style="text-align: left;"><code class="inline">flip/1</code></td><td style="text-align: left;">Reverses arguments of a binary function</td></tr></tbody></table><p>Each function returns a chain of unary functions that accumulate arguments until fully applied.</p><hr class="thin"/><h2 id="usage-patterns" class="section-heading">
+  <a href="#usage-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Usage Patterns</span>
+</h2>
+<h3 id="right-to-left-currying-for-pipelines" class="section-heading">
+  <a href="#right-to-left-currying-for-pipelines" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Right-to-Left Currying for Pipelines</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="6887109725-1">fn</span><span class="w"> </span><span class="n">prefix</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">prefix</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k" data-group-id="6887109725-1">end</span><span class="w">
+</span><span class="n">greet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curry_r</span><span class="p" data-group-id="6887109725-2">(</span><span class="n">f</span><span class="p" data-group-id="6887109725-2">)</span><span class="o">.</span><span class="p" data-group-id="6887109725-3">(</span><span class="s">&quot;Hello, &quot;</span><span class="p" data-group-id="6887109725-3">)</span><span class="w">
+</span><span class="s">&quot;Alice&quot;</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">greet</span><span class="p" data-group-id="6887109725-4">(</span><span class="p" data-group-id="6887109725-4">)</span><span class="w">
+</span><span class="c1"># =&gt; &quot;Hello, Alice&quot;</span></code></pre><h3 id="flip-for-reordering-binary-functions" class="section-heading">
+  <a href="#flip-for-reordering-binary-functions" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Flip for Reordering Binary Functions</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="n">div</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3854386053-1">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="3854386053-1">end</span><span class="w">
+</span><span class="n">flipped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flip</span><span class="p" data-group-id="3854386053-2">(</span><span class="n">div</span><span class="p" data-group-id="3854386053-2">)</span><span class="w">
+</span><span class="n">flipped</span><span class="o">.</span><span class="p" data-group-id="3854386053-3">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="3854386053-3">)</span><span class="w">  </span><span class="c1"># =&gt; 5.0</span></code></pre><h3 id="left-to-right-currying-less-common" class="section-heading">
+  <a href="#left-to-right-currying-less-common" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Left-to-Right Currying (Less Common)</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curry</span><span class="p" data-group-id="0492227629-1">(</span><span class="k" data-group-id="0492227629-2">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="k" data-group-id="0492227629-2">end</span><span class="p" data-group-id="0492227629-1">)</span><span class="w">
+</span><span class="n">sum</span><span class="o">.</span><span class="p" data-group-id="0492227629-3">(</span><span class="mi">1</span><span class="p" data-group-id="0492227629-3">)</span><span class="o">.</span><span class="p" data-group-id="0492227629-4">(</span><span class="mi">2</span><span class="p" data-group-id="0492227629-4">)</span><span class="o">.</span><span class="p" data-group-id="0492227629-5">(</span><span class="mi">3</span><span class="p" data-group-id="0492227629-5">)</span><span class="w">  </span><span class="c1"># =&gt; 6</span></code></pre><hr class="thin"/><h2 id="guidelines-for-composition" class="section-heading">
+  <a href="#guidelines-for-composition" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Guidelines for Composition</span>
+</h2>
+<p>Follow these patterns when reshaping or generating function transformations:</p><ul><li>Prefer <code class="inline">curry_r/1</code> for functions that appear in pipelines.</li><li>Use <code class="inline">flip/1</code> when argument order doesn’t match surrounding context.</li><li>Use <code class="inline">curry/1</code> or <code class="inline">curry_l/1</code> when left-to-right application is more natural.</li><li>Avoid manual <code class="inline">fn</code> nesting—use the provided helpers instead.</li><li>Avoid fixed-arity assumptions—currying adapts dynamically.</li><li>Avoid capture syntax (<code class="inline">&amp;mod.fun/arity</code>) when partial application is needed.
+Capture locks arity and order, and cannot be curried or reordered.</li></ul><p>Currying is often most useful when composed with lifted combinators like <code class="inline">map</code>, <code class="inline">bind</code>, <code class="inline">filter</code>, and so on.</p><hr class="thin"/><h2 id="stability-contract" class="section-heading">
+  <a href="#stability-contract" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Stability Contract</span>
+</h2>
+<p>Ensure that generated or transformed functions preserve:</p><ul><li>Purity — returned functions are referentially transparent.</li><li>Laziness — arguments are applied only when provided.</li><li>Equivalence — full application matches the original function:</li></ul><pre><code class="makeup elixir" translate="no"><span class="n">curry_r</span><span class="p" data-group-id="6296219339-1">(</span><span class="n">f</span><span class="p" data-group-id="6296219339-1">)</span><span class="o">.</span><span class="p" data-group-id="6296219339-2">(</span><span class="n">b</span><span class="p" data-group-id="6296219339-2">)</span><span class="o">.</span><span class="p" data-group-id="6296219339-3">(</span><span class="n">a</span><span class="p" data-group-id="6296219339-3">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="p" data-group-id="6296219339-4">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="6296219339-4">)</span></code></pre><hr class="thin"/><h2 id="anti-patterns" class="section-heading">
+  <a href="#anti-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Anti-Patterns</span>
+</h2>
+<p>Avoid generating or emitting:</p><ul><li>Manual currying via nested <code class="inline">fn</code> chains: <code class="inline">fn a -&gt; fn b -&gt; f.(a, b) end end</code></li><li>Fixed-arity assumptions that break with dynamic currying</li><li>Argument reordering by hand—prefer <code class="inline">flip/1</code></li><li>Full application immediately after currying</li><li>Capture syntax (<code class="inline">&amp;fun/2</code>) when transformation is required</li></ul><hr class="thin"/><h2 id="good-patterns" class="section-heading">
+  <a href="#good-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Good Patterns</span>
+</h2>
+<p>Encourage completions like:</p><pre><code class="makeup elixir" translate="no"><span class="c1"># Partial right-to-left application for pipelines</span><span class="w">
+</span><span class="n">assign_role</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curry_r</span><span class="p" data-group-id="5346254917-1">(</span><span class="k" data-group-id="5346254917-2">fn</span><span class="w"> </span><span class="n">role</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="5346254917-3">%{</span><span class="n">user</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="ss">role</span><span class="p">:</span><span class="w"> </span><span class="n">role</span><span class="p" data-group-id="5346254917-3">}</span><span class="w"> </span><span class="k" data-group-id="5346254917-2">end</span><span class="p" data-group-id="5346254917-1">)</span><span class="w">
+</span><span class="n">user</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">assign_role</span><span class="o">.</span><span class="p" data-group-id="5346254917-4">(</span><span class="s">&quot;admin&quot;</span><span class="p" data-group-id="5346254917-4">)</span></code></pre><pre><code class="makeup elixir" translate="no"><span class="c1"># Flipping to enable higher-order composition</span><span class="w">
+</span><span class="n">compare</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flip</span><span class="p" data-group-id="5613442157-1">(</span><span class="k" data-group-id="5613442157-2">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="5613442157-2">end</span><span class="p" data-group-id="5613442157-1">)</span><span class="w">
+</span><span class="nc">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p" data-group-id="5613442157-3">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">compare</span><span class="o">.</span><span class="p" data-group-id="5613442157-4">(</span><span class="mi">10</span><span class="p" data-group-id="5613442157-4">)</span><span class="p" data-group-id="5613442157-3">)</span></code></pre><pre><code class="makeup elixir" translate="no"><span class="c1"># Contextual function with partial application</span><span class="w">
+</span><span class="n">transform</span><span class="w"> </span><span class="o">=</span><span class="w">
+  </span><span class="n">curry_r</span><span class="p" data-group-id="9243647733-1">(</span><span class="k" data-group-id="9243647733-2">fn</span><span class="w"> </span><span class="n">format</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">format</span><span class="o">.</span><span class="p" data-group-id="9243647733-3">(</span><span class="s">&quot;&lt;&quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot;&gt;&quot;</span><span class="p" data-group-id="9243647733-3">)</span><span class="w"> </span><span class="k" data-group-id="9243647733-2">end</span><span class="p" data-group-id="9243647733-1">)</span><span class="w">
+</span><span class="s">&quot;Alex&quot;</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">transform</span><span class="o">.</span><span class="p" data-group-id="9243647733-4">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">upcase</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="9243647733-4">)</span></code></pre><hr class="thin"/><h2 id="when-to-use" class="section-heading">
+  <a href="#when-to-use" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">When to Use</span>
+</h2>
+<p>Reach for these utilities when you want to:</p><ul><li>Enable point-free style</li><li>Compose partial functions within a pipeline</li><li>Shift configuration before data</li><li>Adapt argument order to match surrounding combinators</li><li>Prepare functions before lifting into a monadic or applicative context</li></ul><hr class="thin"/><h2 id="built-in-behavior" class="section-heading">
+  <a href="#built-in-behavior" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Built-in Behavior</span>
+</h2>
+<ul><li><code class="inline">curry_r/1</code>, <code class="inline">curry/1</code>, and <code class="inline">curry_l/1</code> inspect function arity via <a href="https://www.erlang.org/doc/apps/erts/erlang.html#fun_info/2"><code class="inline">:erlang.fun_info/2</code></a>.</li><li>Returned functions accumulate arguments until fully applied.</li><li><code class="inline">flip/1</code> applies only to functions of arity 2.</li></ul>
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="usage-rules.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Funx Usage Rules
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+      <a href="eq-usage-rules.html" class="bottom-actions-button" rel="next">
+        <span class="subheader">
+          Next Page →
+        </span>
+        <span class="title">
+Funx.Eq Usage Rules
+        </span>
+      </a>
+
+  </div>
+</div>
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.4" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.4">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/funx/0.1.4/show/lib/utils/usage-rules.md">current file</a>)
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>

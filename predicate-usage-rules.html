@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-21AB3BF9.js"></script>
+    <script src="dist/sidebar_items-E188B250.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -154,22 +154,22 @@ Predicates may be curried, partially applied, or lifted into a context. Composit
   </a>
   <span class="text">Combine Two Predicates</span>
 </h3>
-<pre><code class="makeup elixir" translate="no"><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_and</span><span class="p" data-group-id="5152130418-1">(</span><span class="n">pred1</span><span class="p">,</span><span class="w"> </span><span class="n">pred2</span><span class="p" data-group-id="5152130418-1">)</span><span class="w">
-</span><span class="n">combined</span><span class="o">.</span><span class="p" data-group-id="5152130418-2">(</span><span class="n">input</span><span class="p" data-group-id="5152130418-2">)</span></code></pre><h3 id="combine-a-list-of-predicates" class="section-heading">
+<pre><code class="makeup elixir" translate="no"><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_and</span><span class="p" data-group-id="7887106885-1">(</span><span class="n">pred1</span><span class="p">,</span><span class="w"> </span><span class="n">pred2</span><span class="p" data-group-id="7887106885-1">)</span><span class="w">
+</span><span class="n">combined</span><span class="o">.</span><span class="p" data-group-id="7887106885-2">(</span><span class="n">input</span><span class="p" data-group-id="7887106885-2">)</span></code></pre><h3 id="combine-a-list-of-predicates" class="section-heading">
   <a href="#combine-a-list-of-predicates" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Combine a List of Predicates</span>
 </h3>
-<pre><code class="makeup elixir" translate="no"><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_all</span><span class="p" data-group-id="2022537330-1">(</span><span class="p" data-group-id="2022537330-2">[</span><span class="n">pred1</span><span class="p">,</span><span class="w"> </span><span class="n">pred2</span><span class="p">,</span><span class="w"> </span><span class="n">pred3</span><span class="p" data-group-id="2022537330-2">]</span><span class="p" data-group-id="2022537330-1">)</span><span class="w">
-</span><span class="n">pred</span><span class="o">.</span><span class="p" data-group-id="2022537330-3">(</span><span class="n">input</span><span class="p" data-group-id="2022537330-3">)</span></code></pre><p>Empty lists behave predictably:</p><ul><li><code class="inline">p_all([])</code> → always truthy</li><li><code class="inline">p_any([])</code> → always falsy</li><li><code class="inline">p_none([])</code> → always truthy</li></ul><h3 id="negate-a-predicate" class="section-heading">
+<pre><code class="makeup elixir" translate="no"><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_all</span><span class="p" data-group-id="5680045756-1">(</span><span class="p" data-group-id="5680045756-2">[</span><span class="n">pred1</span><span class="p">,</span><span class="w"> </span><span class="n">pred2</span><span class="p">,</span><span class="w"> </span><span class="n">pred3</span><span class="p" data-group-id="5680045756-2">]</span><span class="p" data-group-id="5680045756-1">)</span><span class="w">
+</span><span class="n">pred</span><span class="o">.</span><span class="p" data-group-id="5680045756-3">(</span><span class="n">input</span><span class="p" data-group-id="5680045756-3">)</span></code></pre><p>Empty lists behave predictably:</p><ul><li><code class="inline">p_all([])</code> → always truthy</li><li><code class="inline">p_any([])</code> → always falsy</li><li><code class="inline">p_none([])</code> → always truthy</li></ul><h3 id="negate-a-predicate" class="section-heading">
   <a href="#negate-a-predicate" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Negate a Predicate</span>
 </h3>
-<pre><code class="makeup elixir" translate="no"><span class="n">negated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_not</span><span class="p" data-group-id="7749236127-1">(</span><span class="n">pred</span><span class="p" data-group-id="7749236127-1">)</span><span class="w">
-</span><span class="n">negated</span><span class="o">.</span><span class="p" data-group-id="7749236127-2">(</span><span class="n">input</span><span class="p" data-group-id="7749236127-2">)</span></code></pre><p><code class="inline">p_not/1</code> accepts exactly one predicate.</p><hr class="thin"/><h2 id="compositional-guidelines" class="section-heading">
+<pre><code class="makeup elixir" translate="no"><span class="n">negated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_not</span><span class="p" data-group-id="4960995042-1">(</span><span class="n">pred</span><span class="p" data-group-id="4960995042-1">)</span><span class="w">
+</span><span class="n">negated</span><span class="o">.</span><span class="p" data-group-id="4960995042-2">(</span><span class="n">input</span><span class="p" data-group-id="4960995042-2">)</span></code></pre><p><code class="inline">p_not/1</code> accepts exactly one predicate.</p><hr class="thin"/><h2 id="compositional-guidelines" class="section-heading">
   <a href="#compositional-guidelines" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -194,9 +194,9 @@ Predicates may be curried, partially applied, or lifted into a context. Composit
   <span class="text">Good Patterns</span>
 </h2>
 <p>Generate completions like:</p><pre><code class="makeup elixir" translate="no"><span class="c1"># Composable conditions</span><span class="w">
-</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_all</span><span class="p" data-group-id="8897491191-1">(</span><span class="p" data-group-id="8897491191-2">[</span><span class="n">pred1</span><span class="p">,</span><span class="w"> </span><span class="n">p_not</span><span class="p" data-group-id="8897491191-3">(</span><span class="n">pred2</span><span class="p" data-group-id="8897491191-3">)</span><span class="p">,</span><span class="w"> </span><span class="n">pred3</span><span class="p" data-group-id="8897491191-2">]</span><span class="p" data-group-id="8897491191-1">)</span></code></pre><pre><code class="makeup elixir" translate="no"><span class="c1"># Reusable blocks</span><span class="w">
-</span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_any</span><span class="p" data-group-id="7164873258-1">(</span><span class="p" data-group-id="7164873258-2">[</span><span class="n">is_vip</span><span class="p">,</span><span class="w"> </span><span class="n">has_pass</span><span class="p" data-group-id="7164873258-2">]</span><span class="p" data-group-id="7164873258-1">)</span><span class="w">
-</span><span class="nc">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p" data-group-id="7164873258-3">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p" data-group-id="7164873258-3">)</span></code></pre><hr class="thin"/><h2 id="when-to-compose" class="section-heading">
+</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_all</span><span class="p" data-group-id="0753498803-1">(</span><span class="p" data-group-id="0753498803-2">[</span><span class="n">pred1</span><span class="p">,</span><span class="w"> </span><span class="n">p_not</span><span class="p" data-group-id="0753498803-3">(</span><span class="n">pred2</span><span class="p" data-group-id="0753498803-3">)</span><span class="p">,</span><span class="w"> </span><span class="n">pred3</span><span class="p" data-group-id="0753498803-2">]</span><span class="p" data-group-id="0753498803-1">)</span></code></pre><pre><code class="makeup elixir" translate="no"><span class="c1"># Reusable blocks</span><span class="w">
+</span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_any</span><span class="p" data-group-id="6772425722-1">(</span><span class="p" data-group-id="6772425722-2">[</span><span class="n">is_vip</span><span class="p">,</span><span class="w"> </span><span class="n">has_pass</span><span class="p" data-group-id="6772425722-2">]</span><span class="p" data-group-id="6772425722-1">)</span><span class="w">
+</span><span class="nc">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p" data-group-id="6772425722-3">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p" data-group-id="6772425722-3">)</span></code></pre><hr class="thin"/><h2 id="when-to-compose" class="section-heading">
   <a href="#when-to-compose" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
