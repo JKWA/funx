@@ -22,6 +22,9 @@ This index links them together.
 - [Funx.Monoid Usage Rules](./monoid/usage-rules.md)  
   Identities and associative combination, powering folds and composition.
 
+- [Funx.Predicate Usage Rules](./predicate/usage-rules.md)  
+  Logical composition of predicates using short-circuiting, reusable combinators.
+
 ---
 
 ## Conventions
@@ -44,5 +47,7 @@ lib/
   list/
     usage-rules.md      # ← Funx.List rules
   monoid/
-    usage-rules.md    # ← this file
+    usage-rules.md      # ← Funx.Monoid rules
+  predicate/
+    usage-rules.md      # ← Funx.Predicate rules
 ```
