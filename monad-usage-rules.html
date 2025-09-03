@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.4">
+
+
+    <title>Funx.Monad Usage Rules — funx v0.1.4</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/monad-usage-rules.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-7DC5A4F7.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.4
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.4/lib/monad/usage-rules.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+
+    <span><code class="inline">Funx.Monad</code> Usage Rules</span>
+  </h1>
+
+<h2 id="quick-reference" class="section-heading">
+  <a href="#quick-reference" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Quick Reference</span>
+</h2>
+<ul><li>A monad = <code class="inline">pure/1</code> (inject into context) + <code class="inline">bind/2</code> (chain with context).</li><li>Use <code class="inline">map/2</code> to transform while preserving structure.</li><li>Use <code class="inline">bind/2</code> to sequence context-aware operations.</li><li>Use <code class="inline">ap/2</code> to apply functions already in context.</li><li>Prefer monads when control flow depends on prior results.</li><li>Avoid extracting intermediate values—compose instead.</li></ul><hr class="thin"/><h2 id="overview" class="section-heading">
+  <a href="#overview" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Overview</span>
+</h2>
+<p><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a> supports declarative control flow in the presence of context.
+It lets you sequence steps without branching manually or managing state explicitly.</p><p>The <code class="inline">Monad</code> protocol defines three core operations:</p><table><thead><tr><th style="text-align: left;">Function</th><th style="text-align: left;">Purpose</th></tr></thead><tbody><tr><td style="text-align: left;"><code class="inline">pure/1</code></td><td style="text-align: left;">Injects a plain value into the monadic context.</td></tr><tr><td style="text-align: left;"><code class="inline">map/2</code></td><td style="text-align: left;">Applies a transformation while preserving structure.</td></tr><tr><td style="text-align: left;"><code class="inline">bind/2</code></td><td style="text-align: left;">Sequences context-aware steps—each step may reshape the structure.</td></tr><tr><td style="text-align: left;"><code class="inline">ap/2</code></td><td style="text-align: left;">Applies a function and a value, both inside the same context.</td></tr></tbody></table><hr class="thin"/><h2 id="when-to-use-it" class="section-heading">
+  <a href="#when-to-use-it" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">When to Use It</span>
+</h2>
+<p>Use a monad when your code depends on prior steps that occur inside a context:</p><table><thead><tr><th style="text-align: left;">Context</th><th style="text-align: left;">Use Case Example</th></tr></thead><tbody><tr><td style="text-align: left;"><code class="inline">Maybe</code></td><td style="text-align: left;">A missing value cancels the rest.</td></tr><tr><td style="text-align: left;"><code class="inline">Either</code></td><td style="text-align: left;">A failure short-circuits the pipeline.</td></tr><tr><td style="text-align: left;"><code class="inline">Effect</code></td><td style="text-align: left;">Asynchronous steps chained in order.</td></tr><tr><td style="text-align: left;"><code class="inline">Reader</code></td><td style="text-align: left;">Configuration passed implicitly.</td></tr><tr><td style="text-align: left;"><code class="inline">Writer</code></td><td style="text-align: left;">Accumulate logs or context across steps.</td></tr></tbody></table><p>Each step you define declares what happens next—the monad handles how and when.</p><hr class="thin"/><h2 id="transforming-with-map-2" class="section-heading">
+  <a href="#transforming-with-map-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Transforming with <code class="inline">map/2</code></span>
+</h2>
+<p>Use <code class="inline">map/2</code> to apply a function without changing the structure:</p><pre><code class="makeup elixir" translate="no"><span class="n">map</span><span class="p" data-group-id="8010611857-1">(</span><span class="n">monad</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8010611857-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">transform</span><span class="p" data-group-id="8010611857-3">(</span><span class="n">x</span><span class="p" data-group-id="8010611857-3">)</span><span class="w"> </span><span class="k" data-group-id="8010611857-2">end</span><span class="p" data-group-id="8010611857-1">)</span></code></pre><p>If <code class="inline">monad</code> is a list, the result is a list.
+If it's a <code class="inline">Maybe</code>, the result is still a <code class="inline">Maybe</code>.
+The shape of the context is preserved.</p><hr class="thin"/><h2 id="sequencing-with-bind-2" class="section-heading">
+  <a href="#sequencing-with-bind-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Sequencing with <code class="inline">bind/2</code></span>
+</h2>
+<p>Use <code class="inline">bind/2</code> when your function returns a new monadic value and should take over the pipeline:</p><pre><code class="makeup elixir" translate="no"><span class="n">bind</span><span class="p" data-group-id="1874935044-1">(</span><span class="n">monad</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1874935044-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">step</span><span class="p" data-group-id="1874935044-3">(</span><span class="n">x</span><span class="p" data-group-id="1874935044-3">)</span><span class="w"> </span><span class="k" data-group-id="1874935044-2">end</span><span class="p" data-group-id="1874935044-1">)</span></code></pre><p>Each function must return the same type of monad.
+This kind of function is called a Kleisli function—a function from a plain value to a wrapped value.</p><p>The structure may change. The monad will flatten and continue.
+This allows dependent steps to be composed declaratively.</p><hr class="thin"/><h2 id="applying-with-ap-2" class="section-heading">
+  <a href="#applying-with-ap-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Applying with <code class="inline">ap/2</code></span>
+</h2>
+<p>Use <code class="inline">ap/2</code> when both the value and the function are inside the context:</p><pre><code class="makeup elixir" translate="no"><span class="n">ap</span><span class="p" data-group-id="1061707046-1">(</span><span class="n">monadic_value</span><span class="p">,</span><span class="w"> </span><span class="n">monadic_function</span><span class="p" data-group-id="1061707046-1">)</span></code></pre><p>This is especially useful when you want to apply multiple independent values to a multi-argument function:</p><pre><code class="makeup elixir" translate="no"><span class="n">pure</span><span class="p" data-group-id="3627438280-1">(</span><span class="k" data-group-id="3627438280-2">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="3627438280-2">end</span><span class="p" data-group-id="3627438280-1">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="3627438280-3">(</span><span class="n">m1</span><span class="p" data-group-id="3627438280-3">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="3627438280-4">(</span><span class="n">m2</span><span class="p" data-group-id="3627438280-4">)</span></code></pre><hr class="thin"/><h2 id="composing-declarative-logic" class="section-heading">
+  <a href="#composing-declarative-logic" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Composing Declarative Logic</span>
+</h2>
+<p>Functional control flow becomes:</p><pre><code class="makeup elixir" translate="no"><span class="n">pure</span><span class="p" data-group-id="1039924364-1">(</span><span class="n">initial</span><span class="p" data-group-id="1039924364-1">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="1039924364-2">(</span><span class="n">step1</span><span class="p" data-group-id="1039924364-2">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="1039924364-3">(</span><span class="n">step2</span><span class="p" data-group-id="1039924364-3">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="1039924364-4">(</span><span class="n">step3</span><span class="p" data-group-id="1039924364-4">)</span></code></pre><p>Each step declares its own rule.
+The monad handles branching, structure, and short-circuiting as needed.
+This replaces <code class="inline">case</code>, <code class="inline">with</code>, and <code class="inline">try</code> chains with composable, predictable logic.</p><hr class="thin"/><h2 id="design-guidance" class="section-heading">
+  <a href="#design-guidance" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Design Guidance</span>
+</h2>
+<ul><li>Do not unwrap intermediate values—compose using <code class="inline">bind/2</code>.</li><li>Do not mix monadic and non-monadic code inside pipelines.</li><li>Avoid early <code class="inline">case</code> or pattern matches—prefer <code class="inline">bind</code> to handle flow.</li></ul>
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="predicate-usage-rules.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Funx.Predicate Usage Rules
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+  </div>
+</div>
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.4" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.4">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/funx/0.1.4/show/lib/monad/usage-rules.md">current file</a>)
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
