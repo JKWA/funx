@@ -31,6 +31,9 @@ This index links them together.
 - [Funx.Monad Usage Rules](./monad/usage-rules.md)
   Declarative control flow through `map`, `bind`, and `ap`—composing context-aware steps without manual branching.
 
+- [Funx.Monad.Identity Usage Rules](./monad/identity/usage-rules.md)  
+  The simplest monad: structure without effects. The baseline for monadic composition.
+
 ---
 
 ## Conventions
@@ -45,19 +48,21 @@ This index links them together.
 
 ```text
 lib/
-  usage-rules.md        # ← index (this file)
+  usage-rules.md            # ← index (this file)
   utils/
-    usage-rules.md      # ← Funx.Utils rules
+    usage-rules.md          # ← Funx.Utils rules
   eq/
-    usage-rules.md      # ← Funx.Eq rules
+    usage-rules.md          # ← Funx.Eq rules
   ord/
-    usage-rules.md      # ← Funx.Ord rules
+    usage-rules.md          # ← Funx.Ord rules
   list/
-    usage-rules.md      # ← Funx.List rules
+    usage-rules.md          # ← Funx.List rules
   monoid/
-    usage-rules.md      # ← Funx.Monoid rules
+    usage-rules.md          # ← Funx.Monoid rules
   predicate/
-    usage-rules.md      # ← Funx.Predicate rules
+    usage-rules.md          # ← Funx.Predicate rules
   monad/
-    usage-rules.md      # ← Funx.Monad rules
+    usage-rules.md          # ← Funx.Monad rules
+    identity/
+      usage-rules.md        # ← Funx.Monad.Identity rules
 ```
