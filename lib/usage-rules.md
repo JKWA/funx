@@ -10,6 +10,9 @@ This index links them together.
 
 ## Available Rules
 
+- [Funx.Utils Usage Rules](./utils/usage-rules.md)  
+  Currying, flipping, and function transformation for point-free and pipeline-based composition.
+
 - [Funx.Eq Usage Rules](./eq/usage-rules.md)  
   Equality and identity logic across domain types.
 
@@ -40,6 +43,8 @@ This index links them together.
 ```text
 lib/
   usage-rules.md        # ← index (this file)
+  utils/
+    usage-rules.md      # ← Funx.Utils rules
   eq/
     usage-rules.md      # ← Funx.Eq rules
   ord/

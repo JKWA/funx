@@ -27,6 +27,10 @@ defmodule Funx.MixProject do
             title: "Funx Usage Rules",
             filename: "usage-rules"
           ],
+          "lib/utils/usage-rules.md": [
+            title: "Funx.Utils Usage Rules",
+            filename: "utils-usage-rules"
+          ],
           "lib/eq/usage-rules.md": [
             title: "Funx.Eq Usage Rules",
             filename: "eq-usage-rules"
@@ -51,6 +55,7 @@ defmodule Funx.MixProject do
         groups_for_extras: [
           "Usage Rules": [
             "lib/usage-rules.md",
+            "lib/utils/usage-rules.md",
             "lib/eq/usage-rules.md",
             "lib/ord/usage-rules.md",
             "lib/list/usage-rules.md",
