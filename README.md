@@ -1,9 +1,15 @@
-# <img src="assets/images/funx-logo.png" alt="Funx Logo" width="40" style="vertical-align: middle;"/> Funx
+<p style="background-color: #38127C;">
+  <img 
+  src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/funx-banner.jpg"
+  alt="Funx Banner"
+  height="120"/>
+</p>
+
+# Funx - Functional Programming Patterns for Elixir
 
 [![Continuous Integration](https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/funx/actions/workflows/ci.yml)
 
 [![Hex.pm](https://img.shields.io/hexpm/v/funx.svg)](https://hex.pm/packages/funx)
-
 
 ⚠️ **Beta notice:** Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.
 
