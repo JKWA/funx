@@ -27,6 +27,9 @@ This index links them together.
 
 - [Funx.Predicate Usage Rules](./predicate/usage-rules.md)  
   Logical composition of predicates using short-circuiting, reusable combinators.
+  
+- [Funx.Monad Usage Rules](./monad/usage-rules.md)
+  Declarative control flow through `map`, `bind`, and `ap`—composing context-aware steps without manual branching.
 
 ---
 
@@ -55,4 +58,6 @@ lib/
     usage-rules.md      # ← Funx.Monoid rules
   predicate/
     usage-rules.md      # ← Funx.Predicate rules
+  monad/
+    usage-rules.md      # ← Funx.Monad rules
 ```

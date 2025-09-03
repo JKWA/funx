@@ -50,6 +50,10 @@ defmodule Funx.MixProject do
           "lib/predicate/usage-rules.md": [
             title: "Funx.Predicate Usage Rules",
             filename: "predicate-usage-rules"
+          ],
+          "lib/monad/usage-rules.md": [
+            title: "Funx.Monad Usage Rules",
+            filename: "monad-usage-rules"
           ]
         ],
         groups_for_extras: [
@@ -60,7 +64,8 @@ defmodule Funx.MixProject do
             "lib/ord/usage-rules.md",
             "lib/list/usage-rules.md",
             "lib/monoid/usage-rules.md",
-            "lib/predicate/usage-rules.md"
+            "lib/predicate/usage-rules.md",
+            "lib/monad/usage-rules.md"
           ]
         ],
         filter_prefix: "Examples",
