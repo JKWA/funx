@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.4">
+
+
+    <title>Funx.Predicate Usage Rules — funx v0.1.4</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/predicate-usage-rules.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-21AB3BF9.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.4
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.4/lib/predicate/usage-rules.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+
+    <span><code class="inline">Funx.Predicate</code> Usage Rules</span>
+  </h1>
+
+<h2 id="quick-reference" class="section-heading">
+  <a href="#quick-reference" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Quick Reference</span>
+</h2>
+<ul><li>A predicate is any function that returns a truthy or falsy result (arity is unrestricted).</li><li>Use <code class="inline">p_and/2</code> and <code class="inline">p_or/2</code> for binary composition.</li><li>Use <code class="inline">p_not/1</code> to negate a single predicate.</li><li>Use <code class="inline">p_all/1</code>, <code class="inline">p_any/1</code>, and <code class="inline">p_none/1</code> for list-based composition.</li><li>All combinators return new predicates and preserve short-circuiting.</li><li>Backed by monoids: <code class="inline">%Pred.All{}</code> (AND) and <code class="inline">%Pred.Any{}</code> (OR).</li></ul><hr class="thin"/><h2 id="overview" class="section-heading">
+  <a href="#overview" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Overview</span>
+</h2>
+<p><a href="Funx.Predicate.html"><code class="inline">Funx.Predicate</code></a> defines composable helpers for building logic from predicates—functions that return truthy or falsy results.
+Predicates may be curried, partially applied, or lifted into a context. Composition is declarative and implemented via the <code class="inline">Monoid</code> protocol, enabling identity-safe and short-circuiting behavior across flows.</p><p>Use these helpers to generate reusable logic blocks, express boolean conditions in pipelines, and support functional control flow.</p><hr class="thin"/><h2 id="composition-rules" class="section-heading">
+  <a href="#composition-rules" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Composition Rules</span>
+</h2>
+<table><thead><tr><th style="text-align: left;">Function</th><th style="text-align: left;">Description</th></tr></thead><tbody><tr><td style="text-align: left;"><code class="inline">p_and/2</code></td><td style="text-align: left;">Logical AND of two predicates</td></tr><tr><td style="text-align: left;"><code class="inline">p_or/2</code></td><td style="text-align: left;">Logical OR of two predicates</td></tr><tr><td style="text-align: left;"><code class="inline">p_not/1</code></td><td style="text-align: left;">Logical negation of a single predicate</td></tr><tr><td style="text-align: left;"><code class="inline">p_all/1</code></td><td style="text-align: left;">AND fold over a list of predicates</td></tr><tr><td style="text-align: left;"><code class="inline">p_any/1</code></td><td style="text-align: left;">OR fold over a list of predicates</td></tr><tr><td style="text-align: left;"><code class="inline">p_none/1</code></td><td style="text-align: left;"><code class="inline">p_not(p_any(...))</code></td></tr></tbody></table><p>All are powered by <code class="inline">%Pred.All{}</code> and <code class="inline">%Pred.Any{}</code>, and support composition before or after lifting into context.</p><hr class="thin"/><h2 id="correct-usage-patterns" class="section-heading">
+  <a href="#correct-usage-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Correct Usage Patterns</span>
+</h2>
+<h3 id="combine-two-predicates" class="section-heading">
+  <a href="#combine-two-predicates" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Combine Two Predicates</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_and</span><span class="p" data-group-id="5152130418-1">(</span><span class="n">pred1</span><span class="p">,</span><span class="w"> </span><span class="n">pred2</span><span class="p" data-group-id="5152130418-1">)</span><span class="w">
+</span><span class="n">combined</span><span class="o">.</span><span class="p" data-group-id="5152130418-2">(</span><span class="n">input</span><span class="p" data-group-id="5152130418-2">)</span></code></pre><h3 id="combine-a-list-of-predicates" class="section-heading">
+  <a href="#combine-a-list-of-predicates" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Combine a List of Predicates</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_all</span><span class="p" data-group-id="2022537330-1">(</span><span class="p" data-group-id="2022537330-2">[</span><span class="n">pred1</span><span class="p">,</span><span class="w"> </span><span class="n">pred2</span><span class="p">,</span><span class="w"> </span><span class="n">pred3</span><span class="p" data-group-id="2022537330-2">]</span><span class="p" data-group-id="2022537330-1">)</span><span class="w">
+</span><span class="n">pred</span><span class="o">.</span><span class="p" data-group-id="2022537330-3">(</span><span class="n">input</span><span class="p" data-group-id="2022537330-3">)</span></code></pre><p>Empty lists behave predictably:</p><ul><li><code class="inline">p_all([])</code> → always truthy</li><li><code class="inline">p_any([])</code> → always falsy</li><li><code class="inline">p_none([])</code> → always truthy</li></ul><h3 id="negate-a-predicate" class="section-heading">
+  <a href="#negate-a-predicate" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Negate a Predicate</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="n">negated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_not</span><span class="p" data-group-id="7749236127-1">(</span><span class="n">pred</span><span class="p" data-group-id="7749236127-1">)</span><span class="w">
+</span><span class="n">negated</span><span class="o">.</span><span class="p" data-group-id="7749236127-2">(</span><span class="n">input</span><span class="p" data-group-id="7749236127-2">)</span></code></pre><p><code class="inline">p_not/1</code> accepts exactly one predicate.</p><hr class="thin"/><h2 id="compositional-guidelines" class="section-heading">
+  <a href="#compositional-guidelines" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Compositional Guidelines</span>
+</h2>
+<p>LLMs should:</p><ul><li>Prefer <code class="inline">p_all/1</code> or <code class="inline">p_any/1</code> for 3+ conditions (avoid deep <code class="inline">p_and/2</code> chains).</li><li>Use <code class="inline">p_not/1</code> instead of manually wrapping with <code class="inline">not</code>.</li><li>Use <code class="inline">p_none/1</code> to express “none of these” logic.</li><li>Support predicates of any arity—assume currying is allowed.</li><li>Compose before or after lifting into a context (e.g. <code class="inline">Maybe</code>, <code class="inline">Either</code>).</li><li>Treat predicates as logic components—not inline branches.</li><li>Avoid expanding predicate logic into full evaluation chains.</li></ul><hr class="thin"/><h2 id="stability-contract" class="section-heading">
+  <a href="#stability-contract" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Stability Contract</span>
+</h2>
+<p>Completions must preserve:</p><ul><li><strong>Purity</strong> — predicates are referentially transparent.</li><li><strong>Short-circuiting</strong> — return early when result is known.</li><li><strong>Logical identity</strong>:<ul><li><code class="inline">p_all([])</code> → always returns truthy</li><li><code class="inline">p_any([])</code> → always returns falsy</li><li><code class="inline">p_none([])</code> → always returns truthy</li></ul></li></ul><hr class="thin"/><h2 id="anti-patterns" class="section-heading">
+  <a href="#anti-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Anti-Patterns</span>
+</h2>
+<p>Avoid these:</p><ul><li><code class="inline">fn x -&gt; a.(x) and b.(x) end</code> — use <code class="inline">p_and/2</code></li><li><code class="inline">fn x -&gt; not pred.(x) end</code> — use <code class="inline">p_not/1</code></li><li><a href="https://hexdocs.pm/elixir/Enum.html#any?/2"><code class="inline">Enum.any?/2</code></a> or <a href="https://hexdocs.pm/elixir/Enum.html#all?/2"><code class="inline">Enum.all?/2</code></a> for predicate folding</li><li>Misusing <code class="inline">p_not/1</code> as if it accepts multiple predicates</li><li>Assuming arity-1 (do not destructure inputs or overgeneralize)</li></ul><hr class="thin"/><h2 id="good-patterns" class="section-heading">
+  <a href="#good-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Good Patterns</span>
+</h2>
+<p>Generate completions like:</p><pre><code class="makeup elixir" translate="no"><span class="c1"># Composable conditions</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_all</span><span class="p" data-group-id="8897491191-1">(</span><span class="p" data-group-id="8897491191-2">[</span><span class="n">pred1</span><span class="p">,</span><span class="w"> </span><span class="n">p_not</span><span class="p" data-group-id="8897491191-3">(</span><span class="n">pred2</span><span class="p" data-group-id="8897491191-3">)</span><span class="p">,</span><span class="w"> </span><span class="n">pred3</span><span class="p" data-group-id="8897491191-2">]</span><span class="p" data-group-id="8897491191-1">)</span></code></pre><pre><code class="makeup elixir" translate="no"><span class="c1"># Reusable blocks</span><span class="w">
+</span><span class="n">filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p_any</span><span class="p" data-group-id="7164873258-1">(</span><span class="p" data-group-id="7164873258-2">[</span><span class="n">is_vip</span><span class="p">,</span><span class="w"> </span><span class="n">has_pass</span><span class="p" data-group-id="7164873258-2">]</span><span class="p" data-group-id="7164873258-1">)</span><span class="w">
+</span><span class="nc">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p" data-group-id="7164873258-3">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p" data-group-id="7164873258-3">)</span></code></pre><hr class="thin"/><h2 id="when-to-compose" class="section-heading">
+  <a href="#when-to-compose" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">When to Compose</span>
+</h2>
+<p>Use predicate combinators for:</p><ul><li>Validation and gating logic</li><li>Rule pipelines and filters</li><li>Declarative control structures</li><li>Monadic guards</li><li>Reusable logic composition</li></ul><p>Reach for these when boolean logic needs to be:</p><ul><li>Declarative</li><li>Curried</li><li>Lifted</li><li>Composed</li><li>Short-circuited</li></ul><hr class="thin"/><h2 id="built-in-behavior" class="section-heading">
+  <a href="#built-in-behavior" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Built-in Behavior</span>
+</h2>
+<p>All combinators rely on:</p><ul><li><code class="inline">%Funx.Monoid.Predicate.All{}</code> — implements logical AND</li><li><code class="inline">%Funx.Monoid.Predicate.Any{}</code> — implements logical OR</li></ul><p>Composition uses:</p><ul><li><code class="inline">m_append/3</code> — binary</li><li><code class="inline">m_concat/2</code> — list</li></ul><p>These abstractions preserve identity, associativity, and short-circuit evaluation—allowing safe expansion and reliable reuse.</p>
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="monoid-usage-rules.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Funx.Monoid Usage Rules
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+  </div>
+</div>
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.4" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.4">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/funx/0.1.4/show/lib/predicate/usage-rules.md">current file</a>)
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
