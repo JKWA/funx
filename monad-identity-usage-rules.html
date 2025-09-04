@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5B10BDF9.js"></script>
+    <script src="dist/sidebar_items-A5E68E17.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -123,105 +123,642 @@ Pages
     <span><code class="inline">Funx.Monad.Identity</code> Usage Rules</span>
   </h1>
 
-<h2 id="quick-reference" class="section-heading">
+<h2 id="llm-guidance" class="section-heading">
+  <a href="#llm-guidance" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">LLM Guidance</span>
+</h2>
+<h3 id="functional-programming-foundation" class="section-heading">
+  <a href="#functional-programming-foundation" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Functional Programming Foundation</span>
+</h3>
+<p><strong>CRITICAL Elixir Implementation</strong>: All monadic operations are under <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a> protocol</p><ul><li><strong>NO separate Functor/Applicative protocols</strong> - Elixir protocols cannot be extended after definition</li><li>Always use <code class="inline">Monad.map/2</code>, <code class="inline">Monad.bind/2</code>, <code class="inline">Monad.ap/2</code> or import <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a></li><li>Different from Haskell's separate Functor, Applicative, Monad typeclasses</li></ul><p><strong>Identity</strong>: The simplest possible monad - a transparent wrapper</p><ul><li><code class="inline">identity(value)</code> - wraps any value with no additional behavior</li><li><strong>No side effects</strong>: Unlike Maybe (absence) or Either (errors)</li><li><strong>Transparent operations</strong>: All operations work directly on the wrapped value</li><li><strong>Foundation monad</strong>: Used for learning, testing, and building other monads</li><li><strong>Laws satisfied trivially</strong>: All monad laws hold automatically</li></ul><h3 id="when-to-use-identity" class="section-heading">
+  <a href="#when-to-use-identity" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">When to Use Identity</span>
+</h3>
+<p><strong>✅ Use Identity for:</strong></p><ul><li><strong>Testing monadic code</strong>: Simplest monad for unit tests</li><li><strong>Learning FP concepts</strong>: Understand map/bind/ap without side effects</li><li><strong>Polymorphic functions</strong>: Code that works with any monad</li><li><strong>Prototyping</strong>: Placeholder before choosing real monad</li></ul><p><strong>❌ Don't use Identity for:</strong></p><ul><li><strong>Production business logic</strong>: Usually need Maybe/Either semantics</li><li><strong>Error handling</strong>: Identity has no failure concept</li><li><strong>Optional values</strong>: Identity wraps everything, no absence</li></ul><h3 id="context-clues" class="section-heading">
+  <a href="#context-clues" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Context Clues</span>
+</h3>
+<p><strong>User language → Identity patterns:</strong></p><ul><li>&quot;simplest monad&quot; → Identity is the canonical minimal monad</li><li>&quot;test my monad code&quot; → Use Identity for predictable testing</li><li>&quot;works with any monad&quot; → Write polymorphic code using Identity for examples</li><li>&quot;learning functional programming&quot; → Start with Identity to understand concepts</li></ul><h2 id="quick-reference" class="section-heading">
   <a href="#quick-reference" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Quick Reference</span>
 </h2>
-<ul><li><code class="inline">pure/1</code> injects a value into the <code class="inline">Identity</code> context.</li><li><code class="inline">extract/1</code> unwraps the value.</li><li><code class="inline">map/2</code>, <code class="inline">bind/2</code>, <code class="inline">ap/2</code> are protocol functions that <em>target</em> <code class="inline">Identity</code>.</li><li><code class="inline">lift_eq/1</code>, <code class="inline">lift_ord/1</code> lift custom <code class="inline">Eq</code> and <code class="inline">Ord</code> logic.</li></ul><p>Implements <code class="inline">Monad</code>, <code class="inline">Eq</code>, <code class="inline">Ord</code>, <a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>, and <code class="inline">Summarizable</code>.</p><h2 id="overview" class="section-heading">
+<ul><li>Use <code class="inline">identity(value)</code> to wrap any value transparently</li><li>All operations work directly on the wrapped value with no special behavior</li><li><code class="inline">run_identity(wrapped_value)</code> to extract the value</li><li>Import <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a> for <code class="inline">map</code>, <code class="inline">bind</code>, <code class="inline">ap</code> operations</li><li>Perfect for testing, learning, and polymorphic programming</li><li>Satisfies all monad laws trivially due to its simplicity</li></ul><h2 id="overview" class="section-heading">
   <a href="#overview" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Overview</span>
 </h2>
-<p><code class="inline">Identity</code> wraps a value without introducing branching, failure, delay, or effects.
-It exists to carry structure—so logic can be written in terms of generic <code class="inline">Monad</code>, <code class="inline">Eq</code>, or <code class="inline">Ord</code> operations.</p><p>This makes <code class="inline">Identity</code> ideal for scaffolding, testing, and teaching: nothing is hidden, nothing is added.</p><h2 id="when-to-use" class="section-heading">
-  <a href="#when-to-use" class="hover-link">
+<p><a href="Funx.Monad.Identity.html"><code class="inline">Funx.Monad.Identity</code></a> is the simplest monad - a transparent wrapper with no additional behavior.</p><p>Use Identity for:</p><ul><li>Learning monadic operations without complexity</li><li>Testing monadic code with predictable behavior</li><li>Writing polymorphic functions that work with any monad</li><li>Building and understanding more complex monads</li></ul><p><strong>Key insight</strong>: Identity is &quot;just a wrapper&quot; - it provides the monadic interface while doing absolutely nothing else. This makes it perfect for understanding what the interface itself provides.</p><h2 id="constructor" class="section-heading">
+  <a href="#constructor" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">When to Use</span>
+  <span class="text">Constructor</span>
 </h2>
-<table><thead><tr><th style="text-align: left;">Use Case</th><th style="text-align: left;">Reason</th></tr></thead><tbody><tr><td style="text-align: left;">Teaching</td><td style="text-align: left;">Simplest monad—no surprises</td></tr><tr><td style="text-align: left;">Pipeline testing</td><td style="text-align: left;">Safe to test <code class="inline">bind/2</code> and <code class="inline">map/2</code></td></tr><tr><td style="text-align: left;">Function lifting</td><td style="text-align: left;">Enables polymorphic reuse</td></tr><tr><td style="text-align: left;">Placeholder</td><td style="text-align: left;">Swap in richer monads later</td></tr></tbody></table><h2 id="core-functions" class="section-heading">
-  <a href="#core-functions" class="hover-link">
+<h3 id="identity-1-wrap-any-value" class="section-heading">
+  <a href="#identity-1-wrap-any-value" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Core Functions</span>
+  <span class="text"><code class="inline">identity/1</code> - Wrap Any Value</span>
+</h3>
+<p>Creates an Identity monad containing a value:</p><pre><code class="makeup elixir" translate="no"><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8408933248-1">(</span><span class="mi">42</span><span class="p" data-group-id="8408933248-1">)</span><span class="w">              </span><span class="c1"># Identity(42)</span><span class="w">
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8408933248-2">(</span><span class="s">&quot;hello&quot;</span><span class="p" data-group-id="8408933248-2">)</span><span class="w">         </span><span class="c1"># Identity(&quot;hello&quot;)</span><span class="w">
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8408933248-3">(</span><span class="p" data-group-id="8408933248-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="8408933248-4">]</span><span class="p" data-group-id="8408933248-3">)</span><span class="w">       </span><span class="c1"># Identity([1, 2, 3])</span><span class="w">
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8408933248-5">(</span><span class="p" data-group-id="8408933248-6">%{</span><span class="ss">key</span><span class="p">:</span><span class="w"> </span><span class="ss">:value</span><span class="p" data-group-id="8408933248-6">}</span><span class="p" data-group-id="8408933248-5">)</span><span class="w">  </span><span class="c1"># Identity(%{key: :value})</span></code></pre><h3 id="run_identity-1-extract-the-value" class="section-heading">
+  <a href="#run_identity-1-extract-the-value" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">run_identity/1</code> - Extract the Value</span>
+</h3>
+<p>Extracts the wrapped value from an Identity:</p><pre><code class="makeup elixir" translate="no"><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9416692689-1">(</span><span class="mi">42</span><span class="p" data-group-id="9416692689-1">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">run_identity</span><span class="p" data-group-id="9416692689-2">(</span><span class="p" data-group-id="9416692689-2">)</span><span class="w">     </span><span class="c1"># 42</span><span class="w">
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9416692689-3">(</span><span class="s">&quot;hello&quot;</span><span class="p" data-group-id="9416692689-3">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">run_identity</span><span class="p" data-group-id="9416692689-4">(</span><span class="p" data-group-id="9416692689-4">)</span><span class="w"> </span><span class="c1"># &quot;hello&quot;</span></code></pre><h2 id="core-operations" class="section-heading">
+  <a href="#core-operations" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Core Operations</span>
 </h2>
-<table><thead><tr><th style="text-align: left;">Function</th><th style="text-align: left;">Purpose</th></tr></thead><tbody><tr><td style="text-align: left;"><code class="inline">pure/1</code></td><td style="text-align: left;">Wrap a value for composition</td></tr><tr><td style="text-align: left;"><code class="inline">extract/1</code></td><td style="text-align: left;">Unwrap the inner value</td></tr><tr><td style="text-align: left;"><code class="inline">Monad.map/2</code></td><td style="text-align: left;">Apply a plain function (structure-preserving)</td></tr><tr><td style="text-align: left;"><code class="inline">Monad.bind/2</code></td><td style="text-align: left;">Chain Kleisli functions</td></tr><tr><td style="text-align: left;"><code class="inline">Monad.ap/2</code></td><td style="text-align: left;">Apply a contextual function to a value</td></tr><tr><td style="text-align: left;"><code class="inline">lift_eq/1</code></td><td style="text-align: left;">Lift a custom <code class="inline">Eq</code> definition</td></tr><tr><td style="text-align: left;"><code class="inline">lift_ord/1</code></td><td style="text-align: left;">Lift a custom <code class="inline">Ord</code> definition</td></tr></tbody></table><h2 id="examples" class="section-heading">
-  <a href="#examples" class="hover-link">
+<h3 id="map-2-transform-the-wrapped-value" class="section-heading">
+  <a href="#map-2-transform-the-wrapped-value" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Examples</span>
+  <span class="text"><code class="inline">map/2</code> - Transform the Wrapped Value</span>
+</h3>
+<p>Applies a function to the wrapped value:</p><pre><code class="makeup elixir" translate="no"><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w">
+
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9381113147-1">(</span><span class="mi">5</span><span class="p" data-group-id="9381113147-1">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="9381113147-2">(</span><span class="k" data-group-id="9381113147-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="9381113147-3">end</span><span class="p" data-group-id="9381113147-2">)</span><span class="w">    </span><span class="c1"># Identity(10)</span><span class="w">
+
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9381113147-4">(</span><span class="s">&quot;hello&quot;</span><span class="p" data-group-id="9381113147-4">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="9381113147-5">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">upcase</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="9381113147-5">)</span><span class="w">     </span><span class="c1"># Identity(&quot;HELLO&quot;)</span><span class="w">
+
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9381113147-6">(</span><span class="p" data-group-id="9381113147-7">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9381113147-7">]</span><span class="p" data-group-id="9381113147-6">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="9381113147-8">(</span><span class="o">&amp;</span><span class="nc">Enum</span><span class="o">.</span><span class="n">sum</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="9381113147-8">)</span><span class="w">          </span><span class="c1"># Identity(6)</span></code></pre><p><strong>Identity map behavior:</strong></p><ul><li>Function is always applied (no short-circuiting like Maybe)</li><li>Result is always wrapped in Identity</li><li>No side effects or special cases</li></ul><h3 id="bind-2-chain-identity-operations" class="section-heading">
+  <a href="#bind-2-chain-identity-operations" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">bind/2</code> - Chain Identity Operations</span>
+</h3>
+<p>Chains operations that return Identity values:</p><pre><code class="makeup elixir" translate="no"><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w">
+
+</span><span class="c1"># Functions that return Identity</span><span class="w">
+</span><span class="n">double_wrapped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1422797667-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="1422797667-2">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1422797667-2">)</span><span class="w"> </span><span class="k" data-group-id="1422797667-1">end</span><span class="w">
+</span><span class="n">stringify_wrapped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1422797667-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="1422797667-4">(</span><span class="n">to_string</span><span class="p" data-group-id="1422797667-5">(</span><span class="n">x</span><span class="p" data-group-id="1422797667-5">)</span><span class="p" data-group-id="1422797667-4">)</span><span class="w"> </span><span class="k" data-group-id="1422797667-3">end</span><span class="w">
+</span><span class="n">upcase_wrapped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1422797667-6">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="1422797667-7">(</span><span class="nc">String</span><span class="o">.</span><span class="n">upcase</span><span class="p" data-group-id="1422797667-8">(</span><span class="n">s</span><span class="p" data-group-id="1422797667-8">)</span><span class="p" data-group-id="1422797667-7">)</span><span class="w"> </span><span class="k" data-group-id="1422797667-6">end</span><span class="w">
+
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="1422797667-9">(</span><span class="mi">5</span><span class="p" data-group-id="1422797667-9">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="1422797667-10">(</span><span class="n">double_wrapped</span><span class="p" data-group-id="1422797667-10">)</span><span class="w">        </span><span class="c1"># Identity(10)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="1422797667-11">(</span><span class="n">stringify_wrapped</span><span class="p" data-group-id="1422797667-11">)</span><span class="w">     </span><span class="c1"># Identity(&quot;10&quot;)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="1422797667-12">(</span><span class="n">upcase_wrapped</span><span class="p" data-group-id="1422797667-12">)</span><span class="w">        </span><span class="c1"># Identity(&quot;10&quot;)</span></code></pre><p><strong>Identity bind behavior:</strong></p><ul><li>Always applies the function (no conditional logic)</li><li>Automatically flattens nested Identity values</li><li>Perfect for demonstrating monadic composition</li></ul><h3 id="ap-2-apply-functions-across-identity-values" class="section-heading">
+  <a href="#ap-2-apply-functions-across-identity-values" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">ap/2</code> - Apply Functions Across Identity Values</span>
+</h3>
+<p>Applies a wrapped function to a wrapped value:</p><pre><code class="makeup elixir" translate="no"><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w">
+
+</span><span class="c1"># Function wrapped in Identity</span><span class="w">
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7589350835-1">(</span><span class="k" data-group-id="7589350835-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="k" data-group-id="7589350835-2">end</span><span class="p" data-group-id="7589350835-1">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="7589350835-3">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7589350835-4">(</span><span class="mi">5</span><span class="p" data-group-id="7589350835-4">)</span><span class="p" data-group-id="7589350835-3">)</span><span class="w">          </span><span class="c1"># Identity(15)</span><span class="w">
+
+</span><span class="c1"># Multiple arguments with curried function</span><span class="w">
+</span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7589350835-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k" data-group-id="7589350835-6">fn</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="7589350835-6">end</span><span class="w"> </span><span class="k" data-group-id="7589350835-5">end</span><span class="w">
+
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7589350835-7">(</span><span class="n">add</span><span class="p" data-group-id="7589350835-7">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="7589350835-8">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7589350835-9">(</span><span class="mi">3</span><span class="p" data-group-id="7589350835-9">)</span><span class="p" data-group-id="7589350835-8">)</span><span class="w">          </span><span class="c1"># Identity(fn y -&gt; 3 + y end)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="7589350835-10">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7589350835-11">(</span><span class="mi">4</span><span class="p" data-group-id="7589350835-11">)</span><span class="p" data-group-id="7589350835-10">)</span><span class="w">          </span><span class="c1"># Identity(7)</span><span class="w">
+
+</span><span class="c1"># String concatenation</span><span class="w">
+</span><span class="n">concat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7589350835-12">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k" data-group-id="7589350835-13">fn</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="7589350835-13">end</span><span class="w"> </span><span class="k" data-group-id="7589350835-12">end</span><span class="w">
+
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7589350835-14">(</span><span class="n">concat</span><span class="p" data-group-id="7589350835-14">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="7589350835-15">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7589350835-16">(</span><span class="s">&quot;Hello, &quot;</span><span class="p" data-group-id="7589350835-16">)</span><span class="p" data-group-id="7589350835-15">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="7589350835-17">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7589350835-18">(</span><span class="s">&quot;World!&quot;</span><span class="p" data-group-id="7589350835-18">)</span><span class="p" data-group-id="7589350835-17">)</span><span class="w">   </span><span class="c1"># Identity(&quot;Hello, World!&quot;)</span></code></pre><p><strong>Identity ap behavior:</strong></p><ul><li>Always applies function to value (no failure cases)</li><li>Demonstrates applicative functor pattern clearly</li><li>Perfect for learning function application in context</li></ul><h2 id="testing-with-identity" class="section-heading">
+  <a href="#testing-with-identity" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Testing with Identity</span>
 </h2>
-<h3 id="wrapping-and-extracting" class="section-heading">
-  <a href="#wrapping-and-extracting" class="hover-link">
+<h3 id="unit-testing-monad-laws" class="section-heading">
+  <a href="#unit-testing-monad-laws" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Wrapping and Extracting</span>
+  <span class="text">Unit Testing Monad Laws</span>
 </h3>
-<pre><code class="makeup elixir" translate="no"><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="5270997860-1">(</span><span class="mi">42</span><span class="p" data-group-id="5270997860-1">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">extract</span><span class="p" data-group-id="5270997860-2">(</span><span class="p" data-group-id="5270997860-2">)</span><span class="w">
-</span><span class="c1"># =&gt; 42</span></code></pre><h3 id="mapping-via-monad" class="section-heading">
-  <a href="#mapping-via-monad" class="hover-link">
+<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">IdentityLawsTest</span><span class="w"> </span><span class="k" data-group-id="7248758356-1">do</span><span class="w">
+  </span><span class="kn">use</span><span class="w"> </span><span class="nc">ExUnit.Case</span><span class="w">
+  </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w">
+  
+  </span><span class="n">test</span><span class="w"> </span><span class="s">&quot;left identity law&quot;</span><span class="w"> </span><span class="k" data-group-id="7248758356-2">do</span><span class="w">
+    </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="w">
+    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7248758356-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7248758356-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7248758356-4">)</span><span class="w"> </span><span class="k" data-group-id="7248758356-3">end</span><span class="w">
+    
+    </span><span class="c1"># Left identity: pure(x) |&gt; bind(f) == f.(x)</span><span class="w">
+    </span><span class="c1"># Wrapping a value then binding should equal direct application</span><span class="w">
+    </span><span class="n">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="7248758356-5">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7248758356-6">(</span><span class="n">value</span><span class="p" data-group-id="7248758356-6">)</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="7248758356-5">)</span><span class="w">
+    </span><span class="n">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="p" data-group-id="7248758356-7">(</span><span class="n">value</span><span class="p" data-group-id="7248758356-7">)</span><span class="w">
+    
+    </span><span class="n">assert</span><span class="w"> </span><span class="n">left</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">right</span><span class="w">
+  </span><span class="k" data-group-id="7248758356-2">end</span><span class="w">
+  
+  </span><span class="n">test</span><span class="w"> </span><span class="s">&quot;right identity law&quot;</span><span class="w"> </span><span class="k" data-group-id="7248758356-8">do</span><span class="w">
+    </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7248758356-9">(</span><span class="mi">42</span><span class="p" data-group-id="7248758356-9">)</span><span class="w">
+    
+    </span><span class="c1"># Right identity: m |&gt; bind(pure) == m</span><span class="w">
+    </span><span class="c1"># Binding with pure should leave the monad unchanged</span><span class="w">
+    </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="7248758356-10">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="7248758356-10">)</span><span class="w">
+    
+    </span><span class="n">assert</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="w">
+  </span><span class="k" data-group-id="7248758356-8">end</span><span class="w">
+  
+  </span><span class="n">test</span><span class="w"> </span><span class="s">&quot;associativity law&quot;</span><span class="w"> </span><span class="k" data-group-id="7248758356-11">do</span><span class="w">
+    </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7248758356-12">(</span><span class="mi">42</span><span class="p" data-group-id="7248758356-12">)</span><span class="w">
+    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7248758356-13">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7248758356-14">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7248758356-14">)</span><span class="w"> </span><span class="k" data-group-id="7248758356-13">end</span><span class="w">
+    </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7248758356-15">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7248758356-16">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7248758356-16">)</span><span class="w"> </span><span class="k" data-group-id="7248758356-15">end</span><span class="w">
+    
+    </span><span class="c1"># Associativity: (m |&gt; bind(f)) |&gt; bind(g) == m |&gt; bind(fn x -&gt; bind(f.(x), g) end)</span><span class="w">
+    </span><span class="c1"># Order of binding operations doesn&#39;t matter</span><span class="w">
+    </span><span class="n">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="7248758356-17">(</span><span class="n">bind</span><span class="p" data-group-id="7248758356-18">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="7248758356-18">)</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p" data-group-id="7248758356-17">)</span><span class="w">
+    </span><span class="n">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="7248758356-19">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7248758356-20">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="7248758356-21">(</span><span class="n">f</span><span class="o">.</span><span class="p" data-group-id="7248758356-22">(</span><span class="n">x</span><span class="p" data-group-id="7248758356-22">)</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p" data-group-id="7248758356-21">)</span><span class="w"> </span><span class="k" data-group-id="7248758356-20">end</span><span class="p" data-group-id="7248758356-19">)</span><span class="w">
+    
+    </span><span class="n">assert</span><span class="w"> </span><span class="n">left</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">right</span><span class="w">
+  </span><span class="k" data-group-id="7248758356-11">end</span><span class="w">
+  
+  </span><span class="n">test</span><span class="w"> </span><span class="s">&quot;functor laws&quot;</span><span class="w"> </span><span class="k" data-group-id="7248758356-23">do</span><span class="w">
+    </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7248758356-24">(</span><span class="mi">42</span><span class="p" data-group-id="7248758356-24">)</span><span class="w">
+    </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7248758356-25">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="7248758356-25">end</span><span class="w">
+    </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7248758356-26">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="k" data-group-id="7248758356-26">end</span><span class="w">
+    
+    </span><span class="c1"># map(id, m) == m</span><span class="w">
+    </span><span class="n">assert</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="7248758356-27">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">Function</span><span class="o">.</span><span class="n">identity</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="7248758356-27">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="w">
+    
+    </span><span class="c1"># map(f . g, m) == map(f, map(g, m))</span><span class="w">
+    </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7248758356-28">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="p" data-group-id="7248758356-29">(</span><span class="n">g</span><span class="o">.</span><span class="p" data-group-id="7248758356-30">(</span><span class="n">x</span><span class="p" data-group-id="7248758356-30">)</span><span class="p" data-group-id="7248758356-29">)</span><span class="w"> </span><span class="k" data-group-id="7248758356-28">end</span><span class="w">
+    </span><span class="n">assert</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="7248758356-31">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="7248758356-31">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="7248758356-32">(</span><span class="n">map</span><span class="p" data-group-id="7248758356-33">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p" data-group-id="7248758356-33">)</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="7248758356-32">)</span><span class="w">
+  </span><span class="k" data-group-id="7248758356-23">end</span><span class="w">
+</span><span class="k" data-group-id="7248758356-1">end</span></code></pre><h3 id="testing-polymorphic-functions" class="section-heading">
+  <a href="#testing-polymorphic-functions" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Mapping (via <code class="inline">Monad</code>)</span>
+  <span class="text">Testing Polymorphic Functions</span>
 </h3>
-<pre><code class="makeup elixir" translate="no"><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2580954997-1">(</span><span class="mi">3</span><span class="p" data-group-id="2580954997-1">)</span><span class="w">
-</span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="2580954997-2">(</span><span class="o">&amp;</span><span class="p" data-group-id="2580954997-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="2580954997-3">)</span><span class="p" data-group-id="2580954997-2">)</span><span class="w">
-</span><span class="c1"># =&gt; %Identity{value: 4}</span></code></pre><h3 id="chaining-via-bind-2" class="section-heading">
-  <a href="#chaining-via-bind-2" class="hover-link">
+<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">PolymorphicTest</span><span class="w"> </span><span class="k" data-group-id="9849340588-1">do</span><span class="w">
+  </span><span class="kn">use</span><span class="w"> </span><span class="nc">ExUnit.Case</span><span class="w">
+  </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w">
+  
+  </span><span class="c1"># A function that works with any monad</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">process_data</span><span class="p" data-group-id="9849340588-2">(</span><span class="n">monad_value</span><span class="p" data-group-id="9849340588-2">)</span><span class="w"> </span><span class="k" data-group-id="9849340588-3">do</span><span class="w">
+    </span><span class="n">monad_value</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="9849340588-4">(</span><span class="o">&amp;</span><span class="n">to_string</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="9849340588-4">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="9849340588-5">(</span><span class="k" data-group-id="9849340588-6">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> 
+      </span><span class="k">if</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="p" data-group-id="9849340588-7">(</span><span class="n">s</span><span class="p" data-group-id="9849340588-7">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="9849340588-8">do</span><span class="w">
+        </span><span class="c1"># Return appropriate monad type</span><span class="w">
+        </span><span class="k">case</span><span class="w"> </span><span class="n">monad_value</span><span class="w"> </span><span class="k" data-group-id="9849340588-9">do</span><span class="w">
+          </span><span class="p" data-group-id="9849340588-10">%</span><span class="nc" data-group-id="9849340588-10">Identity</span><span class="p" data-group-id="9849340588-10">{</span><span class="p" data-group-id="9849340588-10">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9849340588-11">(</span><span class="nc">String</span><span class="o">.</span><span class="n">upcase</span><span class="p" data-group-id="9849340588-12">(</span><span class="n">s</span><span class="p" data-group-id="9849340588-12">)</span><span class="p" data-group-id="9849340588-11">)</span><span class="w">
+          </span><span class="p" data-group-id="9849340588-13">%</span><span class="nc" data-group-id="9849340588-13">Maybe</span><span class="p" data-group-id="9849340588-13">{</span><span class="p" data-group-id="9849340588-13">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9849340588-14">(</span><span class="nc">String</span><span class="o">.</span><span class="n">upcase</span><span class="p" data-group-id="9849340588-15">(</span><span class="n">s</span><span class="p" data-group-id="9849340588-15">)</span><span class="p" data-group-id="9849340588-14">)</span><span class="w">
+          </span><span class="p" data-group-id="9849340588-16">%</span><span class="nc" data-group-id="9849340588-16">Either</span><span class="p" data-group-id="9849340588-16">{</span><span class="p" data-group-id="9849340588-16">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="9849340588-17">(</span><span class="nc">String</span><span class="o">.</span><span class="n">upcase</span><span class="p" data-group-id="9849340588-18">(</span><span class="n">s</span><span class="p" data-group-id="9849340588-18">)</span><span class="p" data-group-id="9849340588-17">)</span><span class="w">
+        </span><span class="k" data-group-id="9849340588-9">end</span><span class="w">
+      </span><span class="k" data-group-id="9849340588-8">else</span><span class="w">
+        </span><span class="k">case</span><span class="w"> </span><span class="n">monad_value</span><span class="w"> </span><span class="k" data-group-id="9849340588-19">do</span><span class="w">
+          </span><span class="p" data-group-id="9849340588-20">%</span><span class="nc" data-group-id="9849340588-20">Identity</span><span class="p" data-group-id="9849340588-20">{</span><span class="p" data-group-id="9849340588-20">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9849340588-21">(</span><span class="s">&quot;TOO SHORT&quot;</span><span class="p" data-group-id="9849340588-21">)</span><span class="w">
+          </span><span class="p" data-group-id="9849340588-22">%</span><span class="nc" data-group-id="9849340588-22">Maybe</span><span class="p" data-group-id="9849340588-22">{</span><span class="p" data-group-id="9849340588-22">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9849340588-23">(</span><span class="p" data-group-id="9849340588-23">)</span><span class="w">
+          </span><span class="p" data-group-id="9849340588-24">%</span><span class="nc" data-group-id="9849340588-24">Either</span><span class="p" data-group-id="9849340588-24">{</span><span class="p" data-group-id="9849340588-24">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="9849340588-25">(</span><span class="s">&quot;String too short&quot;</span><span class="p" data-group-id="9849340588-25">)</span><span class="w">
+        </span><span class="k" data-group-id="9849340588-19">end</span><span class="w">
+      </span><span class="k" data-group-id="9849340588-8">end</span><span class="w">
+    </span><span class="k" data-group-id="9849340588-6">end</span><span class="p" data-group-id="9849340588-5">)</span><span class="w">
+  </span><span class="k" data-group-id="9849340588-3">end</span><span class="w">
+  
+  </span><span class="n">test</span><span class="w"> </span><span class="s">&quot;polymorphic function with Identity&quot;</span><span class="w"> </span><span class="k" data-group-id="9849340588-26">do</span><span class="w">
+    </span><span class="c1"># Test with long string</span><span class="w">
+    </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">process_data</span><span class="p" data-group-id="9849340588-27">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9849340588-28">(</span><span class="mi">12345</span><span class="p" data-group-id="9849340588-28">)</span><span class="p" data-group-id="9849340588-27">)</span><span class="w">
+    </span><span class="n">assert</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9849340588-29">(</span><span class="s">&quot;12345&quot;</span><span class="p" data-group-id="9849340588-29">)</span><span class="w">
+    
+    </span><span class="c1"># Test with short string  </span><span class="w">
+    </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">process_data</span><span class="p" data-group-id="9849340588-30">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9849340588-31">(</span><span class="mi">42</span><span class="p" data-group-id="9849340588-31">)</span><span class="p" data-group-id="9849340588-30">)</span><span class="w">
+    </span><span class="n">assert</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="9849340588-32">(</span><span class="s">&quot;TOO SHORT&quot;</span><span class="p" data-group-id="9849340588-32">)</span><span class="w">
+  </span><span class="k" data-group-id="9849340588-26">end</span><span class="w">
+</span><span class="k" data-group-id="9849340588-1">end</span></code></pre><h2 id="polymorphic-programming" class="section-heading">
+  <a href="#polymorphic-programming" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Chaining (via <code class="inline">bind/2</code>)</span>
-</h3>
-<pre><code class="makeup elixir" translate="no"><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="8031460859-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8031460859-2">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="8031460859-2">)</span><span class="w"> </span><span class="k" data-group-id="8031460859-1">end</span><span class="w">
+  <span class="text">Polymorphic Programming</span>
+</h2>
+<p>Identity is perfect for learning and testing polymorphic monad code:</p><pre><code class="makeup elixir" translate="no"><span class="c1"># Generic function that works with any monad</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">transform_and_chain</span><span class="p" data-group-id="7475104865-1">(</span><span class="n">monad_value</span><span class="p" data-group-id="7475104865-1">)</span><span class="w"> </span><span class="k" data-group-id="7475104865-2">do</span><span class="w">
+  </span><span class="n">monad_value</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="7475104865-3">(</span><span class="o">&amp;</span><span class="p" data-group-id="7475104865-4">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7475104865-4">)</span><span class="p" data-group-id="7475104865-3">)</span><span class="w">              </span><span class="c1"># Add 5</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="7475104865-5">(</span><span class="k" data-group-id="7475104865-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> 
+    </span><span class="k">case</span><span class="w"> </span><span class="n">monad_value</span><span class="w"> </span><span class="k" data-group-id="7475104865-7">do</span><span class="w">                  </span><span class="c1"># Return appropriate type</span><span class="w">
+      </span><span class="p" data-group-id="7475104865-8">%</span><span class="nc" data-group-id="7475104865-8">Identity</span><span class="p" data-group-id="7475104865-8">{</span><span class="p" data-group-id="7475104865-8">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7475104865-9">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7475104865-9">)</span><span class="w">
+      </span><span class="p" data-group-id="7475104865-10">%</span><span class="nc" data-group-id="7475104865-10">Maybe</span><span class="p" data-group-id="7475104865-10">{</span><span class="p" data-group-id="7475104865-10">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7475104865-11">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7475104865-11">)</span><span class="w">
+      </span><span class="p" data-group-id="7475104865-12">%</span><span class="nc" data-group-id="7475104865-12">Either</span><span class="p" data-group-id="7475104865-12">{</span><span class="p" data-group-id="7475104865-12">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="7475104865-13">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7475104865-13">)</span><span class="w">
+    </span><span class="k" data-group-id="7475104865-7">end</span><span class="w">
+  </span><span class="k" data-group-id="7475104865-6">end</span><span class="p" data-group-id="7475104865-5">)</span><span class="w">
+</span><span class="k" data-group-id="7475104865-2">end</span><span class="w">
 
-</span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8031460859-3">(</span><span class="mi">3</span><span class="p" data-group-id="8031460859-3">)</span><span class="w">
-</span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="8031460859-4">(</span><span class="n">step</span><span class="p" data-group-id="8031460859-4">)</span><span class="w">
-</span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="8031460859-5">(</span><span class="n">step</span><span class="p" data-group-id="8031460859-5">)</span><span class="w">
-</span><span class="c1"># =&gt; %Identity{value: 5}</span></code></pre><h3 id="applying-via-ap-2" class="section-heading">
-  <a href="#applying-via-ap-2" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Applying (via <code class="inline">ap/2</code>)</span>
-</h3>
-<pre><code class="makeup elixir" translate="no"><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2004879131-1">(</span><span class="k" data-group-id="2004879131-2">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="2004879131-2">end</span><span class="p" data-group-id="2004879131-1">)</span><span class="w">
-</span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">ap</span><span class="p" data-group-id="2004879131-3">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2004879131-4">(</span><span class="mi">1</span><span class="p" data-group-id="2004879131-4">)</span><span class="p" data-group-id="2004879131-3">)</span><span class="w">
-</span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">ap</span><span class="p" data-group-id="2004879131-5">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2004879131-6">(</span><span class="mi">2</span><span class="p" data-group-id="2004879131-6">)</span><span class="p" data-group-id="2004879131-5">)</span><span class="w">
-</span><span class="c1"># =&gt; %Identity{value: 3}</span></code></pre><h3 id="equality-via-eq" class="section-heading">
-  <a href="#equality-via-eq" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Equality (via <code class="inline">Eq</code>)</span>
-</h3>
-<pre><code class="makeup elixir" translate="no"><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="8446380248-1">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8446380248-2">(</span><span class="mi">5</span><span class="p" data-group-id="8446380248-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8446380248-3">(</span><span class="mi">5</span><span class="p" data-group-id="8446380248-3">)</span><span class="p" data-group-id="8446380248-1">)</span><span class="w"> </span><span class="c1"># true</span><span class="w">
+</span><span class="c1"># Test with Identity - predictable, simple behavior</span><span class="w">
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="7475104865-14">(</span><span class="mi">10</span><span class="p" data-group-id="7475104865-14">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">transform_and_chain</span><span class="p" data-group-id="7475104865-15">(</span><span class="p" data-group-id="7475104865-15">)</span><span class="w">  </span><span class="c1"># Identity(30)</span><span class="w">
 
-</span><span class="n">custom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Eq.Utils</span><span class="o">.</span><span class="n">by_key</span><span class="p" data-group-id="8446380248-4">(</span><span class="ss">:id</span><span class="p" data-group-id="8446380248-4">)</span><span class="w">
-</span><span class="nc">Identity</span><span class="o">.</span><span class="n">lift_eq</span><span class="p" data-group-id="8446380248-5">(</span><span class="n">custom</span><span class="p" data-group-id="8446380248-5">)</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="8446380248-6">(</span><span class="w">
-  </span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8446380248-7">(</span><span class="p" data-group-id="8446380248-8">%{</span><span class="ss">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="8446380248-8">}</span><span class="p" data-group-id="8446380248-7">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8446380248-9">(</span><span class="p" data-group-id="8446380248-10">%{</span><span class="ss">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="8446380248-10">}</span><span class="p" data-group-id="8446380248-9">)</span><span class="w">
-</span><span class="p" data-group-id="8446380248-6">)</span></code></pre><h3 id="ordering-via-ord" class="section-heading">
-  <a href="#ordering-via-ord" class="hover-link">
+</span><span class="c1"># Same function works with other monads</span><span class="w">
+</span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7475104865-16">(</span><span class="mi">10</span><span class="p" data-group-id="7475104865-16">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">transform_and_chain</span><span class="p" data-group-id="7475104865-17">(</span><span class="p" data-group-id="7475104865-17">)</span><span class="w">  </span><span class="c1"># Just(30)</span></code></pre><h3 id="custom-monad-implementation-example" class="section-heading">
+  <a href="#custom-monad-implementation-example" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Ordering (via <code class="inline">Ord</code>)</span>
+  <span class="text">Custom Monad Implementation Example</span>
 </h3>
-<pre><code class="makeup elixir" translate="no"><span class="nc">Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="3095444041-1">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3095444041-2">(</span><span class="mi">1</span><span class="p" data-group-id="3095444041-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3095444041-3">(</span><span class="mi">2</span><span class="p" data-group-id="3095444041-3">)</span><span class="p" data-group-id="3095444041-1">)</span><span class="w"> </span><span class="c1"># true</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Identity shows how to implement monads from scratch</span><span class="w">
+</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">CustomMonad</span><span class="w"> </span><span class="k" data-group-id="4014392719-1">do</span><span class="w">
+  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="4014392719-2">[</span><span class="ss">:value</span><span class="p" data-group-id="4014392719-2">]</span><span class="w">
+  
+  </span><span class="c1"># Note: pure/1 is the convention used in Haskell/FP literature</span><span class="w">
+  </span><span class="c1"># It maps to identity/1 in this codebase</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">pure</span><span class="p" data-group-id="4014392719-3">(</span><span class="n">value</span><span class="p" data-group-id="4014392719-3">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4014392719-4">%</span><span class="nc" data-group-id="4014392719-4">CustomMonad</span><span class="p" data-group-id="4014392719-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">value</span><span class="p" data-group-id="4014392719-4">}</span><span class="w">
+  
+  </span><span class="kd">defimpl</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w"> </span><span class="k" data-group-id="4014392719-5">do</span><span class="w">
+    </span><span class="kd">def</span><span class="w"> </span><span class="nf">map</span><span class="p" data-group-id="4014392719-6">(</span><span class="p" data-group-id="4014392719-7">%</span><span class="nc" data-group-id="4014392719-7">CustomMonad</span><span class="p" data-group-id="4014392719-7">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">v</span><span class="p" data-group-id="4014392719-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="4014392719-6">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">CustomMonad</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4014392719-8">(</span><span class="n">f</span><span class="o">.</span><span class="p" data-group-id="4014392719-9">(</span><span class="n">v</span><span class="p" data-group-id="4014392719-9">)</span><span class="p" data-group-id="4014392719-8">)</span><span class="w">
+    
+    </span><span class="kd">def</span><span class="w"> </span><span class="nf">bind</span><span class="p" data-group-id="4014392719-10">(</span><span class="p" data-group-id="4014392719-11">%</span><span class="nc" data-group-id="4014392719-11">CustomMonad</span><span class="p" data-group-id="4014392719-11">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">v</span><span class="p" data-group-id="4014392719-11">}</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="4014392719-10">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="p" data-group-id="4014392719-12">(</span><span class="n">v</span><span class="p" data-group-id="4014392719-12">)</span><span class="w">
+    
+    </span><span class="kd">def</span><span class="w"> </span><span class="nf">ap</span><span class="p" data-group-id="4014392719-13">(</span><span class="p" data-group-id="4014392719-14">%</span><span class="nc" data-group-id="4014392719-14">CustomMonad</span><span class="p" data-group-id="4014392719-14">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="4014392719-14">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4014392719-15">%</span><span class="nc" data-group-id="4014392719-15">CustomMonad</span><span class="p" data-group-id="4014392719-15">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">v</span><span class="p" data-group-id="4014392719-15">}</span><span class="p" data-group-id="4014392719-13">)</span><span class="w"> </span><span class="k" data-group-id="4014392719-16">do</span><span class="w">
+      </span><span class="nc">CustomMonad</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4014392719-17">(</span><span class="n">f</span><span class="o">.</span><span class="p" data-group-id="4014392719-18">(</span><span class="n">v</span><span class="p" data-group-id="4014392719-18">)</span><span class="p" data-group-id="4014392719-17">)</span><span class="w">
+    </span><span class="k" data-group-id="4014392719-16">end</span><span class="w">
+  </span><span class="k" data-group-id="4014392719-5">end</span><span class="w">
+</span><span class="k" data-group-id="4014392719-1">end</span><span class="w">
 
-</span><span class="n">custom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Ord.Utils</span><span class="o">.</span><span class="n">by_key</span><span class="p" data-group-id="3095444041-4">(</span><span class="ss">:score</span><span class="p" data-group-id="3095444041-4">)</span><span class="w">
-</span><span class="nc">Identity</span><span class="o">.</span><span class="n">lift_ord</span><span class="p" data-group-id="3095444041-5">(</span><span class="n">custom</span><span class="p" data-group-id="3095444041-5">)</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="3095444041-6">(</span><span class="w">
-  </span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3095444041-7">(</span><span class="p" data-group-id="3095444041-8">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="3095444041-8">}</span><span class="p" data-group-id="3095444041-7">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3095444041-9">(</span><span class="p" data-group-id="3095444041-10">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3095444041-10">}</span><span class="p" data-group-id="3095444041-9">)</span><span class="w">
-</span><span class="p" data-group-id="3095444041-6">)</span></code></pre><h3 id="display-and-logging" class="section-heading">
-  <a href="#display-and-logging" class="hover-link">
+</span><span class="c1"># This custom monad behaves exactly like Identity</span><span class="w">
+</span><span class="nc">CustomMonad</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4014392719-19">(</span><span class="mi">42</span><span class="p" data-group-id="4014392719-19">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="4014392719-20">(</span><span class="o">&amp;</span><span class="p" data-group-id="4014392719-21">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4014392719-21">)</span><span class="p" data-group-id="4014392719-20">)</span><span class="w">  </span><span class="c1"># %CustomMonad{value: 84}</span></code></pre><h2 id="performance-characteristics" class="section-heading">
+  <a href="#performance-characteristics" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
-  <span class="text">Display and Logging</span>
+  <span class="text">Performance Characteristics</span>
+</h2>
+<h3 id="minimal-overhead" class="section-heading">
+  <a href="#minimal-overhead" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Minimal Overhead</span>
 </h3>
-<pre><code class="makeup elixir" translate="no"><span class="n">to_string</span><span class="p" data-group-id="1211717702-1">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1211717702-2">(</span><span class="mi">42</span><span class="p" data-group-id="1211717702-2">)</span><span class="p" data-group-id="1211717702-1">)</span><span class="w">
-</span><span class="c1"># =&gt; &quot;Identity(42)&quot;</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Identity has almost no runtime overhead</span><span class="w">
+</span><span class="c1"># It&#39;s essentially a tagged tuple with one element</span><span class="w">
 
-</span><span class="nc">Summarizable</span><span class="o">.</span><span class="n">summarize</span><span class="p" data-group-id="1211717702-3">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1211717702-4">(</span><span class="ss">:ok</span><span class="p" data-group-id="1211717702-4">)</span><span class="p" data-group-id="1211717702-3">)</span><span class="w">
-</span><span class="c1"># =&gt; {:identity, :ok}</span></code></pre>
+</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">PerformanceTest</span><span class="w"> </span><span class="k" data-group-id="8210744062-1">do</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">identity_operations</span><span class="p" data-group-id="8210744062-2">(</span><span class="n">n</span><span class="p" data-group-id="8210744062-2">)</span><span class="w"> </span><span class="k" data-group-id="8210744062-3">do</span><span class="w">
+    </span><span class="c1"># These operations are very fast</span><span class="w">
+    </span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">reduce</span><span class="p" data-group-id="8210744062-4">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8210744062-5">(</span><span class="mi">0</span><span class="p" data-group-id="8210744062-5">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8210744062-6">fn</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="n">acc</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="8210744062-7">(</span><span class="o">&amp;</span><span class="p" data-group-id="8210744062-8">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p" data-group-id="8210744062-8">)</span><span class="p" data-group-id="8210744062-7">)</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="8210744062-9">(</span><span class="k" data-group-id="8210744062-10">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8210744062-11">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8210744062-11">)</span><span class="w"> </span><span class="k" data-group-id="8210744062-10">end</span><span class="p" data-group-id="8210744062-9">)</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="8210744062-12">(</span><span class="o">&amp;</span><span class="n">rem</span><span class="p" data-group-id="8210744062-13">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="p" data-group-id="8210744062-13">)</span><span class="p" data-group-id="8210744062-12">)</span><span class="w">
+    </span><span class="k" data-group-id="8210744062-6">end</span><span class="p" data-group-id="8210744062-4">)</span><span class="w">
+  </span><span class="k" data-group-id="8210744062-3">end</span><span class="w">
+  
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">plain_operations</span><span class="p" data-group-id="8210744062-14">(</span><span class="n">n</span><span class="p" data-group-id="8210744062-14">)</span><span class="w"> </span><span class="k" data-group-id="8210744062-15">do</span><span class="w">
+    </span><span class="c1"># Compare with plain operations</span><span class="w">
+    </span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">reduce</span><span class="p" data-group-id="8210744062-16">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8210744062-17">fn</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="p" data-group-id="8210744062-18">(</span><span class="n">acc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p" data-group-id="8210744062-18">)</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="p" data-group-id="8210744062-19">(</span><span class="o">&amp;</span><span class="p" data-group-id="8210744062-20">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8210744062-20">)</span><span class="p" data-group-id="8210744062-19">)</span><span class="o">.</span><span class="p" data-group-id="8210744062-21">(</span><span class="p" data-group-id="8210744062-21">)</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">rem</span><span class="p" data-group-id="8210744062-22">(</span><span class="mi">1000</span><span class="p" data-group-id="8210744062-22">)</span><span class="w">
+    </span><span class="k" data-group-id="8210744062-17">end</span><span class="p" data-group-id="8210744062-16">)</span><span class="w">
+  </span><span class="k" data-group-id="8210744062-15">end</span><span class="w">
+</span><span class="k" data-group-id="8210744062-1">end</span><span class="w">
+
+</span><span class="c1"># The Identity version will be only slightly slower than plain operations</span><span class="w">
+</span><span class="c1"># due to the minimal wrapping/unwrapping overhead</span></code></pre><h3 id="memory-usage" class="section-heading">
+  <a href="#memory-usage" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Memory Usage</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Identity uses minimal memory - just a wrapper struct</span><span class="w">
+</span><span class="n">identity_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="0715339922-1">(</span><span class="s">&quot;Hello, World!&quot;</span><span class="p" data-group-id="0715339922-1">)</span><span class="w">
+
+</span><span class="c1"># Memory layout is approximately:</span><span class="w">
+</span><span class="c1"># %Identity{value: &quot;Hello, World!&quot;}</span><span class="w">
+</span><span class="c1"># Just the string plus a small struct wrapper</span><span class="w">
+
+</span><span class="c1"># Compare with other monads:</span><span class="w">
+</span><span class="n">maybe_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0715339922-2">(</span><span class="s">&quot;Hello, World!&quot;</span><span class="p" data-group-id="0715339922-2">)</span><span class="w">     </span><span class="c1"># Similar overhead</span><span class="w">
+</span><span class="n">either_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0715339922-3">(</span><span class="s">&quot;Hello, World!&quot;</span><span class="p" data-group-id="0715339922-3">)</span><span class="w">  </span><span class="c1"># Similar overhead</span></code></pre><h2 id="string-representation" class="section-heading">
+  <a href="#string-representation" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">String Representation</span>
+</h2>
+<p>Identity implements String.Chars for easy IEx interaction:</p><pre><code class="makeup elixir" translate="no"><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="5338916784-1">(</span><span class="mi">42</span><span class="p" data-group-id="5338916784-1">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="5338916784-2">(</span><span class="p" data-group-id="5338916784-2">)</span><span class="w">     </span><span class="c1"># &quot;Identity(42)&quot;</span><span class="w">
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="5338916784-3">(</span><span class="s">&quot;hello&quot;</span><span class="p" data-group-id="5338916784-3">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="5338916784-4">(</span><span class="p" data-group-id="5338916784-4">)</span><span class="w"> </span><span class="c1"># &quot;Identity(\&quot;hello\&quot;)&quot;</span></code></pre><h2 id="learning-patterns" class="section-heading">
+  <a href="#learning-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Learning Patterns</span>
+</h2>
+<h3 id="understanding-monad-interface" class="section-heading">
+  <a href="#understanding-monad-interface" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Understanding Monad Interface</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">MonadTutorial</span><span class="w"> </span><span class="k" data-group-id="3214037953-1">do</span><span class="w">
+  </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w">
+  
+  </span><span class="c1"># Identity helps understand what each operation does</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">demonstrate_map</span><span class="p" data-group-id="3214037953-2">(</span><span class="p" data-group-id="3214037953-2">)</span><span class="w"> </span><span class="k" data-group-id="3214037953-3">do</span><span class="w">
+    </span><span class="c1"># map transforms the value inside</span><span class="w">
+    </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="3214037953-4">(</span><span class="mi">5</span><span class="p" data-group-id="3214037953-4">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="3214037953-5">(</span><span class="k" data-group-id="3214037953-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k" data-group-id="3214037953-6">end</span><span class="p" data-group-id="3214037953-5">)</span><span class="w">
+    
+    </span><span class="nc">IO</span><span class="o">.</span><span class="n">puts</span><span class="p" data-group-id="3214037953-7">(</span><span class="s">&quot;map: Identity(5) -&gt; Identity(25)&quot;</span><span class="p" data-group-id="3214037953-7">)</span><span class="w">
+    </span><span class="n">result</span><span class="w">  </span><span class="c1"># Identity(25)</span><span class="w">
+  </span><span class="k" data-group-id="3214037953-3">end</span><span class="w">
+  
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">demonstrate_bind</span><span class="p" data-group-id="3214037953-8">(</span><span class="p" data-group-id="3214037953-8">)</span><span class="w"> </span><span class="k" data-group-id="3214037953-9">do</span><span class="w">
+    </span><span class="c1"># bind chains operations that return wrapped values</span><span class="w">
+    </span><span class="n">double_it</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3214037953-10">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="3214037953-11">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3214037953-11">)</span><span class="w"> </span><span class="k" data-group-id="3214037953-10">end</span><span class="w">
+    
+    </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="3214037953-12">(</span><span class="mi">5</span><span class="p" data-group-id="3214037953-12">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="3214037953-13">(</span><span class="n">double_it</span><span class="p" data-group-id="3214037953-13">)</span><span class="w">
+    
+    </span><span class="nc">IO</span><span class="o">.</span><span class="n">puts</span><span class="p" data-group-id="3214037953-14">(</span><span class="s">&quot;bind: Identity(5) -&gt; Identity(10)&quot;</span><span class="p" data-group-id="3214037953-14">)</span><span class="w">  
+    </span><span class="n">result</span><span class="w">  </span><span class="c1"># Identity(10)</span><span class="w">
+  </span><span class="k" data-group-id="3214037953-9">end</span><span class="w">
+  
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">demonstrate_ap</span><span class="p" data-group-id="3214037953-15">(</span><span class="p" data-group-id="3214037953-15">)</span><span class="w"> </span><span class="k" data-group-id="3214037953-16">do</span><span class="w">
+    </span><span class="c1"># ap applies wrapped functions to wrapped values</span><span class="w">
+    </span><span class="n">add_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3214037953-17">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k" data-group-id="3214037953-18">fn</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="3214037953-18">end</span><span class="w"> </span><span class="k" data-group-id="3214037953-17">end</span><span class="w">
+    
+    </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="3214037953-19">(</span><span class="n">add_fn</span><span class="p" data-group-id="3214037953-19">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="3214037953-20">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="3214037953-21">(</span><span class="mi">3</span><span class="p" data-group-id="3214037953-21">)</span><span class="p" data-group-id="3214037953-20">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="3214037953-22">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="3214037953-23">(</span><span class="mi">7</span><span class="p" data-group-id="3214037953-23">)</span><span class="p" data-group-id="3214037953-22">)</span><span class="w">
+    
+    </span><span class="nc">IO</span><span class="o">.</span><span class="n">puts</span><span class="p" data-group-id="3214037953-24">(</span><span class="s">&quot;ap: Identity(add) + Identity(3) + Identity(7) -&gt; Identity(10)&quot;</span><span class="p" data-group-id="3214037953-24">)</span><span class="w">
+    </span><span class="n">result</span><span class="w">  </span><span class="c1"># Identity(10)</span><span class="w">
+  </span><span class="k" data-group-id="3214037953-16">end</span><span class="w">
+  
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">show_difference_from_maybe</span><span class="p" data-group-id="3214037953-25">(</span><span class="p" data-group-id="3214037953-25">)</span><span class="w"> </span><span class="k" data-group-id="3214037953-26">do</span><span class="w">
+    </span><span class="c1"># Same operations with Maybe show the difference</span><span class="w">
+    </span><span class="n">transform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3214037953-27">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="3214037953-27">end</span><span class="w">
+    
+    </span><span class="c1"># Identity always transforms</span><span class="w">
+    </span><span class="n">identity_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="3214037953-28">(</span><span class="mi">5</span><span class="p" data-group-id="3214037953-28">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="3214037953-29">(</span><span class="n">transform</span><span class="p" data-group-id="3214037953-29">)</span><span class="w">
+    </span><span class="c1"># Identity(10)</span><span class="w">
+    
+    </span><span class="c1"># Maybe might not transform (if Nothing)</span><span class="w">
+    </span><span class="n">maybe_result1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3214037953-30">(</span><span class="mi">5</span><span class="p" data-group-id="3214037953-30">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="3214037953-31">(</span><span class="n">transform</span><span class="p" data-group-id="3214037953-31">)</span><span class="w">      </span><span class="c1"># Maybe.just(10) </span><span class="w">
+    </span><span class="n">maybe_result2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3214037953-32">(</span><span class="p" data-group-id="3214037953-32">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="3214037953-33">(</span><span class="n">transform</span><span class="p" data-group-id="3214037953-33">)</span><span class="w">    </span><span class="c1"># Maybe.nothing()</span><span class="w">
+    
+    </span><span class="c1"># Identity is predictable, Maybe depends on presence</span><span class="w">
+  </span><span class="k" data-group-id="3214037953-26">end</span><span class="w">
+</span><span class="k" data-group-id="3214037953-1">end</span></code></pre><p>Identity helps you understand monadic patterns without complexity:</p><pre><code class="makeup elixir" translate="no"><span class="c1"># Pattern recognition: Transform -&gt; Validate -&gt; Chain</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">learn_pattern</span><span class="p" data-group-id="4320267179-1">(</span><span class="n">value</span><span class="p" data-group-id="4320267179-1">)</span><span class="w"> </span><span class="k" data-group-id="4320267179-2">do</span><span class="w">
+  </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="4320267179-3">(</span><span class="n">value</span><span class="p" data-group-id="4320267179-3">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="4320267179-4">(</span><span class="o">&amp;</span><span class="p" data-group-id="4320267179-5">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4320267179-5">)</span><span class="p" data-group-id="4320267179-4">)</span><span class="w">           </span><span class="c1"># Transform: add 10</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="4320267179-6">(</span><span class="k" data-group-id="4320267179-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">              </span><span class="c1"># Validate and chain</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="k" data-group-id="4320267179-8">do</span><span class="w">
+      </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="4320267179-9">(</span><span class="s">&quot;large: </span><span class="si" data-group-id="4320267179-10">#{</span><span class="n">x</span><span class="si" data-group-id="4320267179-10">}</span><span class="s">&quot;</span><span class="p" data-group-id="4320267179-9">)</span><span class="w">
+    </span><span class="k" data-group-id="4320267179-8">else</span><span class="w">
+      </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="4320267179-11">(</span><span class="s">&quot;small: </span><span class="si" data-group-id="4320267179-12">#{</span><span class="n">x</span><span class="si" data-group-id="4320267179-12">}</span><span class="s">&quot;</span><span class="p" data-group-id="4320267179-11">)</span><span class="w">
+    </span><span class="k" data-group-id="4320267179-8">end</span><span class="w">
+  </span><span class="k" data-group-id="4320267179-7">end</span><span class="p" data-group-id="4320267179-6">)</span><span class="w">
+</span><span class="k" data-group-id="4320267179-2">end</span><span class="w">
+
+</span><span class="n">learn_pattern</span><span class="p" data-group-id="4320267179-13">(</span><span class="mi">10</span><span class="p" data-group-id="4320267179-13">)</span><span class="w">  </span><span class="c1"># Identity(&quot;large: 20&quot;)</span><span class="w">
+</span><span class="n">learn_pattern</span><span class="p" data-group-id="4320267179-14">(</span><span class="mi">3</span><span class="p" data-group-id="4320267179-14">)</span><span class="w">   </span><span class="c1"># Identity(&quot;small: 13&quot;)</span></code></pre><h2 id="integration-with-utils" class="section-heading">
+  <a href="#integration-with-utils" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Integration with Utils</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Identity works seamlessly with Utils functions</span><span class="w">
+</span><span class="n">add_ten</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Utils</span><span class="o">.</span><span class="n">curry_r</span><span class="p" data-group-id="8039669099-1">(</span><span class="o">&amp;</span><span class="o">+</span><span class="o">/</span><span class="mi">2</span><span class="p" data-group-id="8039669099-1">)</span><span class="o">.</span><span class="p" data-group-id="8039669099-2">(</span><span class="mi">10</span><span class="p" data-group-id="8039669099-2">)</span><span class="w">
+
+</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8039669099-3">(</span><span class="mi">5</span><span class="p" data-group-id="8039669099-3">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="8039669099-4">(</span><span class="n">add_ten</span><span class="p" data-group-id="8039669099-4">)</span><span class="w">        </span><span class="c1"># Identity(15)</span><span class="w">
+
+</span><span class="c1"># Function composition in monadic context  </span><span class="w">
+</span><span class="n">identity_pipeline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="8039669099-5">fn</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8039669099-6">(</span><span class="n">value</span><span class="p" data-group-id="8039669099-6">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="8039669099-7">(</span><span class="o">&amp;</span><span class="p" data-group-id="8039669099-8">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="8039669099-8">)</span><span class="p" data-group-id="8039669099-7">)</span><span class="w">    </span><span class="c1"># Add 1</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="8039669099-9">(</span><span class="o">&amp;</span><span class="p" data-group-id="8039669099-10">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8039669099-10">)</span><span class="p" data-group-id="8039669099-9">)</span><span class="w">    </span><span class="c1"># Multiply by 2  </span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="8039669099-11">(</span><span class="o">&amp;</span><span class="p" data-group-id="8039669099-12">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="8039669099-12">)</span><span class="p" data-group-id="8039669099-11">)</span><span class="w">    </span><span class="c1"># Subtract 3</span><span class="w">
+</span><span class="k" data-group-id="8039669099-5">end</span><span class="w">
+
+</span><span class="n">identity_pipeline</span><span class="o">.</span><span class="p" data-group-id="8039669099-13">(</span><span class="mi">5</span><span class="p" data-group-id="8039669099-13">)</span><span class="w">        </span><span class="c1"># Identity(9)</span></code></pre><h3 id="testing-other-monads" class="section-heading">
+  <a href="#testing-other-monads" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Testing Other Monads</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">MonadTester</span><span class="w"> </span><span class="k" data-group-id="3591321876-1">do</span><span class="w">
+  </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w">
+  
+  </span><span class="c1"># Test the same logic across different monads</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">test_computation</span><span class="p" data-group-id="3591321876-2">(</span><span class="n">monad_constructor</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p" data-group-id="3591321876-2">)</span><span class="w"> </span><span class="k" data-group-id="3591321876-3">do</span><span class="w">
+    </span><span class="n">computation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3591321876-4">fn</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="n">m</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="3591321876-5">(</span><span class="o">&amp;</span><span class="p" data-group-id="3591321876-6">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3591321876-6">)</span><span class="p" data-group-id="3591321876-5">)</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="3591321876-7">(</span><span class="k" data-group-id="3591321876-8">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+        </span><span class="n">monad_constructor</span><span class="o">.</span><span class="p" data-group-id="3591321876-9">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3591321876-9">)</span><span class="w">
+      </span><span class="k" data-group-id="3591321876-8">end</span><span class="p" data-group-id="3591321876-7">)</span><span class="w">
+      </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="3591321876-10">(</span><span class="o">&amp;</span><span class="n">to_string</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="3591321876-10">)</span><span class="w">
+    </span><span class="k" data-group-id="3591321876-4">end</span><span class="w">
+    
+    </span><span class="n">monad_constructor</span><span class="o">.</span><span class="p" data-group-id="3591321876-11">(</span><span class="n">value</span><span class="p" data-group-id="3591321876-11">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">computation</span><span class="o">.</span><span class="p" data-group-id="3591321876-12">(</span><span class="p" data-group-id="3591321876-12">)</span><span class="w">
+  </span><span class="k" data-group-id="3591321876-3">end</span><span class="w">
+  
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_tests</span><span class="p" data-group-id="3591321876-13">(</span><span class="p" data-group-id="3591321876-13">)</span><span class="w"> </span><span class="k" data-group-id="3591321876-14">do</span><span class="w">
+    </span><span class="c1"># Test with Identity - always succeeds predictably</span><span class="w">
+    </span><span class="n">identity_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">test_computation</span><span class="p" data-group-id="3591321876-15">(</span><span class="o">&amp;</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="3591321876-15">)</span><span class="w">
+    </span><span class="c1"># Identity(&quot;25&quot;)</span><span class="w">
+    
+    </span><span class="c1"># Test with Maybe - succeeds with just</span><span class="w">
+    </span><span class="n">maybe_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">test_computation</span><span class="p" data-group-id="3591321876-16">(</span><span class="o">&amp;</span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="3591321876-16">)</span><span class="w"> 
+    </span><span class="c1"># Maybe.just(&quot;25&quot;)</span><span class="w">
+    
+    </span><span class="c1"># Test with Either - succeeds with right</span><span class="w">
+    </span><span class="n">either_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">test_computation</span><span class="p" data-group-id="3591321876-17">(</span><span class="o">&amp;</span><span class="nc">Either</span><span class="o">.</span><span class="n">right</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="3591321876-17">)</span><span class="w">
+    </span><span class="c1"># Either.right(&quot;25&quot;)</span><span class="w">
+    
+    </span><span class="c1"># Identity gives us the baseline expected behavior</span><span class="w">
+    </span><span class="p" data-group-id="3591321876-18">%{</span><span class="w">
+      </span><span class="ss">identity</span><span class="p">:</span><span class="w"> </span><span class="n">identity_result</span><span class="p">,</span><span class="w">
+      </span><span class="ss">maybe</span><span class="p">:</span><span class="w"> </span><span class="n">maybe_result</span><span class="p">,</span><span class="w"> 
+      </span><span class="ss">either</span><span class="p">:</span><span class="w"> </span><span class="n">either_result</span><span class="w">
+    </span><span class="p" data-group-id="3591321876-18">}</span><span class="w">
+  </span><span class="k" data-group-id="3591321876-14">end</span><span class="w">
+</span><span class="k" data-group-id="3591321876-1">end</span></code></pre><h2 id="advanced-patterns" class="section-heading">
+  <a href="#advanced-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Advanced Patterns</span>
+</h2>
+<h3 id="custom-monad-implementation-guide" class="section-heading">
+  <a href="#custom-monad-implementation-guide" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Custom Monad Implementation Guide</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Identity shows the minimal implementation needed for a monad</span><span class="w">
+
+</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">CustomMonad</span><span class="w"> </span><span class="k" data-group-id="3426550009-1">do</span><span class="w">
+  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="3426550009-2">[</span><span class="ss">:value</span><span class="p" data-group-id="3426550009-2">]</span><span class="w">
+  
+  </span><span class="c1"># Constructor (like Identity.identity/1)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">pure</span><span class="p" data-group-id="3426550009-3">(</span><span class="n">value</span><span class="p" data-group-id="3426550009-3">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="p">%</span><span class="bp">__MODULE__</span><span class="p" data-group-id="3426550009-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">value</span><span class="p" data-group-id="3426550009-4">}</span><span class="w">
+  
+  </span><span class="c1"># Functor implementation (like map)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">fmap</span><span class="p" data-group-id="3426550009-5">(</span><span class="p">%</span><span class="bp">__MODULE__</span><span class="p" data-group-id="3426550009-6">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">v</span><span class="p" data-group-id="3426550009-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="3426550009-5">)</span><span class="w"> </span><span class="k" data-group-id="3426550009-7">do</span><span class="w">
+    </span><span class="p">%</span><span class="bp">__MODULE__</span><span class="p" data-group-id="3426550009-8">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="p" data-group-id="3426550009-9">(</span><span class="n">v</span><span class="p" data-group-id="3426550009-9">)</span><span class="p" data-group-id="3426550009-8">}</span><span class="w">
+  </span><span class="k" data-group-id="3426550009-7">end</span><span class="w">
+  
+  </span><span class="c1"># Monad implementation (like bind)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">bind</span><span class="p" data-group-id="3426550009-10">(</span><span class="p">%</span><span class="bp">__MODULE__</span><span class="p" data-group-id="3426550009-11">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">v</span><span class="p" data-group-id="3426550009-11">}</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="3426550009-10">)</span><span class="w"> </span><span class="k" data-group-id="3426550009-12">do</span><span class="w">
+    </span><span class="n">f</span><span class="o">.</span><span class="p" data-group-id="3426550009-13">(</span><span class="n">v</span><span class="p" data-group-id="3426550009-13">)</span><span class="w">  </span><span class="c1"># f should return another CustomMonad</span><span class="w">
+  </span><span class="k" data-group-id="3426550009-12">end</span><span class="w">
+  
+  </span><span class="c1"># Extractor (like run_identity)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">extract</span><span class="p" data-group-id="3426550009-14">(</span><span class="p">%</span><span class="bp">__MODULE__</span><span class="p" data-group-id="3426550009-15">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">v</span><span class="p" data-group-id="3426550009-15">}</span><span class="p" data-group-id="3426550009-14">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">v</span><span class="w">
+</span><span class="k" data-group-id="3426550009-1">end</span><span class="w">
+
+</span><span class="c1"># This follows the same pattern as Identity but could add behavior</span><span class="w">
+</span><span class="c1"># For example, logging, counting operations, etc.</span><span class="w">
+
+</span><span class="kd">defimpl</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="p">,</span><span class="w"> </span><span class="ss">for</span><span class="p">:</span><span class="w"> </span><span class="nc">CustomMonad</span><span class="w"> </span><span class="k" data-group-id="3426550009-16">do</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">map</span><span class="p" data-group-id="3426550009-17">(</span><span class="n">monad</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="3426550009-17">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">CustomMonad</span><span class="o">.</span><span class="n">fmap</span><span class="p" data-group-id="3426550009-18">(</span><span class="n">monad</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="3426550009-18">)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">bind</span><span class="p" data-group-id="3426550009-19">(</span><span class="n">monad</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="3426550009-19">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">CustomMonad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="3426550009-20">(</span><span class="n">monad</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="3426550009-20">)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">ap</span><span class="p" data-group-id="3426550009-21">(</span><span class="n">monad_f</span><span class="p">,</span><span class="w"> </span><span class="n">monad_x</span><span class="p" data-group-id="3426550009-21">)</span><span class="w"> </span><span class="k" data-group-id="3426550009-22">do</span><span class="w">
+    </span><span class="c1"># Standard applicative implementation</span><span class="w">
+    </span><span class="nc">CustomMonad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="3426550009-23">(</span><span class="n">monad_f</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3426550009-24">fn</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="nc">CustomMonad</span><span class="o">.</span><span class="n">fmap</span><span class="p" data-group-id="3426550009-25">(</span><span class="n">monad_x</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="3426550009-25">)</span><span class="w">
+    </span><span class="k" data-group-id="3426550009-24">end</span><span class="p" data-group-id="3426550009-23">)</span><span class="w">
+  </span><span class="k" data-group-id="3426550009-22">end</span><span class="w">
+</span><span class="k" data-group-id="3426550009-16">end</span></code></pre><h3 id="monad-stack-exploration" class="section-heading">
+  <a href="#monad-stack-exploration" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Monad Stack Exploration</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Identity at the bottom of monad transformer stacks</span><span class="w">
+
+</span><span class="c1"># MaybeT Identity a ≅ Maybe a</span><span class="w">
+</span><span class="c1"># EitherT e Identity a ≅ Either e a  </span><span class="w">
+</span><span class="c1"># StateT s Identity a ≅ State s a</span><span class="w">
+
+</span><span class="c1"># Identity is often the &quot;base&quot; monad in transformer stacks</span><span class="w">
+</span><span class="c1"># Understanding Identity helps understand how transformers work</span><span class="w">
+
+</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">StackExample</span><span class="w"> </span><span class="k" data-group-id="4772142056-1">do</span><span class="w">
+  </span><span class="c1"># Simulate MaybeT Identity (which is just Maybe)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">maybe_t_identity_example</span><span class="p" data-group-id="4772142056-2">(</span><span class="n">value</span><span class="p" data-group-id="4772142056-2">)</span><span class="w"> </span><span class="k" data-group-id="4772142056-3">do</span><span class="w">
+    </span><span class="c1"># This is conceptually MaybeT Identity, but it&#39;s just Maybe</span><span class="w">
+    </span><span class="k">case</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="k" data-group-id="4772142056-4">do</span><span class="w">
+      </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4772142056-5">(</span><span class="p" data-group-id="4772142056-5">)</span><span class="w">
+      </span><span class="n">x</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4772142056-6">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4772142056-6">)</span><span class="w">
+      </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4772142056-7">(</span><span class="p" data-group-id="4772142056-7">)</span><span class="w">
+    </span><span class="k" data-group-id="4772142056-4">end</span><span class="w">
+  </span><span class="k" data-group-id="4772142056-3">end</span><span class="w">
+  
+  </span><span class="c1"># If we had a real MaybeT Identity, it would look like:</span><span class="w">
+  </span><span class="c1"># newtype MaybeT Identity a = Identity (Maybe a)</span><span class="w">
+  </span><span class="c1"># But since Identity is transparent, it&#39;s just Maybe a</span><span class="w">
+</span><span class="k" data-group-id="4772142056-1">end</span></code></pre><h2 id="common-patterns-and-use-cases" class="section-heading">
+  <a href="#common-patterns-and-use-cases" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Common Patterns and Use Cases</span>
+</h2>
+<h3 id="educational-sequencing" class="section-heading">
+  <a href="#educational-sequencing" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Educational Sequencing</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Use Identity to learn sequence/traverse patterns</span><span class="w">
+</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">SequenceExample</span><span class="w"> </span><span class="k" data-group-id="2920354710-1">do</span><span class="w">
+  </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w">
+  
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">sequence_identities</span><span class="p" data-group-id="2920354710-2">(</span><span class="n">list_of_identities</span><span class="p" data-group-id="2920354710-2">)</span><span class="w"> </span><span class="k" data-group-id="2920354710-3">do</span><span class="w">
+    </span><span class="c1"># This is educational - sequence([Identity a]) -&gt; Identity [a]</span><span class="w">
+    </span><span class="n">values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list_of_identities</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="2920354710-4">(</span><span class="o">&amp;</span><span class="nc">Identity</span><span class="o">.</span><span class="n">run_identity</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="2920354710-4">)</span><span class="w">
+    </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="2920354710-5">(</span><span class="n">values</span><span class="p" data-group-id="2920354710-5">)</span><span class="w">
+  </span><span class="k" data-group-id="2920354710-3">end</span><span class="w">
+  
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">traverse_with_identity</span><span class="p" data-group-id="2920354710-6">(</span><span class="n">list</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p" data-group-id="2920354710-6">)</span><span class="w"> </span><span class="k" data-group-id="2920354710-7">do</span><span class="w">
+    </span><span class="c1"># Apply f to each element, collect in Identity</span><span class="w">
+    </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="2920354710-8">(</span><span class="n">f</span><span class="p" data-group-id="2920354710-8">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="2920354710-9">(</span><span class="o">&amp;</span><span class="nc">Identity</span><span class="o">.</span><span class="n">run_identity</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="2920354710-9">)</span><span class="w">
+    </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="2920354710-10">(</span><span class="n">results</span><span class="p" data-group-id="2920354710-10">)</span><span class="w">
+  </span><span class="k" data-group-id="2920354710-7">end</span><span class="w">
+  
+  </span><span class="c1"># Examples</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">examples</span><span class="p" data-group-id="2920354710-11">(</span><span class="p" data-group-id="2920354710-11">)</span><span class="w"> </span><span class="k" data-group-id="2920354710-12">do</span><span class="w">
+    </span><span class="n">identities</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="2920354710-13">[</span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="2920354710-14">(</span><span class="mi">1</span><span class="p" data-group-id="2920354710-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="2920354710-15">(</span><span class="mi">2</span><span class="p" data-group-id="2920354710-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="2920354710-16">(</span><span class="mi">3</span><span class="p" data-group-id="2920354710-16">)</span><span class="p" data-group-id="2920354710-13">]</span><span class="w">
+    </span><span class="n">sequenced</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sequence_identities</span><span class="p" data-group-id="2920354710-17">(</span><span class="n">identities</span><span class="p" data-group-id="2920354710-17">)</span><span class="w">
+    </span><span class="c1"># Identity([1, 2, 3])</span><span class="w">
+    
+    </span><span class="n">numbers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="2920354710-18">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2920354710-18">]</span><span class="w">
+    </span><span class="n">traversed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">traverse_with_identity</span><span class="p" data-group-id="2920354710-19">(</span><span class="n">numbers</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2920354710-20">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="2920354710-21">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2920354710-21">)</span><span class="w"> </span><span class="k" data-group-id="2920354710-20">end</span><span class="p" data-group-id="2920354710-19">)</span><span class="w">
+    </span><span class="c1"># Identity([2, 4, 6])</span><span class="w">
+  </span><span class="k" data-group-id="2920354710-12">end</span><span class="w">
+</span><span class="k" data-group-id="2920354710-1">end</span></code></pre><h3 id="debugging-monad-chains" class="section-heading">
+  <a href="#debugging-monad-chains" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Debugging Monad Chains</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Identity for debugging complex monad chains</span><span class="w">
+</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">DebugMonad</span><span class="w"> </span><span class="k" data-group-id="8607666918-1">do</span><span class="w">
+  </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="w">
+  
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">debug_chain</span><span class="p" data-group-id="8607666918-2">(</span><span class="n">value</span><span class="p" data-group-id="8607666918-2">)</span><span class="w"> </span><span class="k" data-group-id="8607666918-3">do</span><span class="w">
+    </span><span class="c1"># Use Identity to debug logic without side effects</span><span class="w">
+    </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8607666918-4">(</span><span class="n">value</span><span class="p" data-group-id="8607666918-4">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="8607666918-5">(</span><span class="k" data-group-id="8607666918-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> 
+      </span><span class="nc">IO</span><span class="o">.</span><span class="n">puts</span><span class="p" data-group-id="8607666918-7">(</span><span class="s">&quot;Step 1: </span><span class="si" data-group-id="8607666918-8">#{</span><span class="n">x</span><span class="si" data-group-id="8607666918-8">}</span><span class="s">&quot;</span><span class="p" data-group-id="8607666918-7">)</span><span class="w">
+      </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w">
+    </span><span class="k" data-group-id="8607666918-6">end</span><span class="p" data-group-id="8607666918-5">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="8607666918-9">(</span><span class="k" data-group-id="8607666918-10">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="nc">IO</span><span class="o">.</span><span class="n">puts</span><span class="p" data-group-id="8607666918-11">(</span><span class="s">&quot;Step 2: </span><span class="si" data-group-id="8607666918-12">#{</span><span class="n">x</span><span class="si" data-group-id="8607666918-12">}</span><span class="s">&quot;</span><span class="p" data-group-id="8607666918-11">)</span><span class="w">
+      </span><span class="nc">Identity</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="8607666918-13">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="8607666918-13">)</span><span class="w">
+    </span><span class="k" data-group-id="8607666918-10">end</span><span class="p" data-group-id="8607666918-9">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="8607666918-14">(</span><span class="k" data-group-id="8607666918-15">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="nc">IO</span><span class="o">.</span><span class="n">puts</span><span class="p" data-group-id="8607666918-16">(</span><span class="s">&quot;Step 3: </span><span class="si" data-group-id="8607666918-17">#{</span><span class="n">x</span><span class="si" data-group-id="8607666918-17">}</span><span class="s">&quot;</span><span class="p" data-group-id="8607666918-16">)</span><span class="w">
+      </span><span class="n">to_string</span><span class="p" data-group-id="8607666918-18">(</span><span class="n">x</span><span class="p" data-group-id="8607666918-18">)</span><span class="w">
+    </span><span class="k" data-group-id="8607666918-15">end</span><span class="p" data-group-id="8607666918-14">)</span><span class="w">
+  </span><span class="k" data-group-id="8607666918-3">end</span><span class="w">
+  
+  </span><span class="c1"># Once logic is correct, switch to real monad</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">production_chain</span><span class="p" data-group-id="8607666918-19">(</span><span class="n">value</span><span class="p" data-group-id="8607666918-19">)</span><span class="w"> </span><span class="k" data-group-id="8607666918-20">do</span><span class="w">
+    </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8607666918-21">(</span><span class="n">value</span><span class="p" data-group-id="8607666918-21">)</span><span class="w">  </span><span class="c1"># or Either.right(value)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="8607666918-22">(</span><span class="k" data-group-id="8607666918-23">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="8607666918-23">end</span><span class="p" data-group-id="8607666918-22">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="8607666918-24">(</span><span class="k" data-group-id="8607666918-25">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> 
+      </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="8607666918-26">do</span><span class="w">
+        </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8607666918-27">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="8607666918-27">)</span><span class="w">
+      </span><span class="k" data-group-id="8607666918-26">else</span><span class="w">
+        </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8607666918-28">(</span><span class="p" data-group-id="8607666918-28">)</span><span class="w">
+      </span><span class="k" data-group-id="8607666918-26">end</span><span class="w">
+    </span><span class="k" data-group-id="8607666918-25">end</span><span class="p" data-group-id="8607666918-24">)</span><span class="w">
+    </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="8607666918-29">(</span><span class="o">&amp;</span><span class="n">to_string</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="8607666918-29">)</span><span class="w">
+  </span><span class="k" data-group-id="8607666918-20">end</span><span class="w">
+</span><span class="k" data-group-id="8607666918-1">end</span></code></pre><h2 id="summary" class="section-heading">
+  <a href="#summary" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Summary</span>
+</h2>
+<p>Identity provides the foundation for understanding monadic programming:</p><p><strong>Core Operations:</strong></p><ul><li><code class="inline">identity/1</code>: Wrap any value transparently</li><li><code class="inline">run_identity/1</code>: Extract the wrapped value</li><li><code class="inline">map/2</code>: Transform wrapped values with no side effects</li><li><code class="inline">bind/2</code>: Chain Identity-returning operations with automatic flattening</li><li><code class="inline">ap/2</code>: Apply wrapped functions to wrapped values</li></ul><p><strong>Key Uses:</strong></p><ul><li><strong>Learning</strong>: Understand monad interface without complexity</li><li><strong>Testing</strong>: Predictable behavior for unit tests</li><li><strong>Polymorphism</strong>: Write generic code that works with any monad</li><li><strong>Prototyping</strong>: Placeholder before choosing real monad</li><li><strong>Debugging</strong>: Validate monad chain logic</li></ul><p><strong>Mathematical Properties:</strong></p><ul><li><strong>Functor</strong>: <code class="inline">map</code> applies function directly to wrapped value</li><li><strong>Applicative</strong>: <code class="inline">ap</code> applies function with no failure cases</li><li><strong>Monad</strong>: <code class="inline">bind</code> chains operations with trivial flattening</li><li><strong>Laws</strong>: All monad laws satisfied automatically due to simplicity</li></ul><p>Remember: Identity is &quot;just a wrapper&quot; - it provides the monadic interface while being completely transparent. This makes it perfect for learning what monads are and testing monadic code without the complexity of real-world side effects.</p>
 </div>
 
 <div class="bottom-actions" id="bottom-actions">
