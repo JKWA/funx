@@ -8,8 +8,6 @@
 * `m_append/3` and `m_concat/2` are low-level helpers that power higher abstractions.  
 * Application code should prefer helpers in `Math`, `Eq.Utils`, `Ord.Utils`, or `Predicate`.
 
----
-
 ## Overview
 
 `Funx.Monoid` defines how values combine under an associative operation with an identity.  
@@ -21,16 +19,12 @@ Each monoid is represented by a struct (e.g. `%Sum{}`, `%Product{}`, `%Eq.All{}`
 
 Monoids are rarely used directly in application code. Instead, they support utilities like `Math.sum/1`, `Eq.Utils.concat_all/1`, and `Ord.Utils.concat/1`.
 
----
-
 ## Protocol Rules
 
 * Provide all four functions: `empty/1`, `append/2`, `wrap/2`, `unwrap/1`.  
 * Identity: `append(empty(m), x) == x == append(x, empty(m))`.  
 * Associativity: `append(append(a, b), c) == append(a, append(b, c))`.  
 * Purity: results must be deterministic and side-effect free.  
-
----
 
 ## Preferred Usage
 
@@ -45,8 +39,6 @@ Use high-level helpers instead of wiring monoids manually:
 
 These functions already call `m_concat/2` and `m_append/3`.  
 You don’t need to construct `%Monoid.*{}` by hand.
-
----
 
 ### Examples
 
@@ -84,8 +76,6 @@ Math.max([7, 3, 5])     # => 7
 Math.min([7, 3, 5])     # => 3
 ```
 
----
-
 ## Interop
 
 * `Eq.Utils` relies on `Eq.All` and `Eq.Any` monoids for composition.
@@ -94,15 +84,11 @@ Math.min([7, 3, 5])     # => 3
 
 **Rule of thumb:** application code never wires `%Monoid.*{}` directly—always go through the utility combinators.
 
----
-
 ## Stability Contract
 
 * Identities must be stable and input-independent.
 * `append/2` must be associative for all valid values.
 * `wrap/2` and `unwrap/1` must be inverses.
-
----
 
 ## Anti-Patterns
 
@@ -111,15 +97,11 @@ Math.min([7, 3, 5])     # => 3
 * Using fake identities (`nil` instead of `0` for sum).
 * Hiding side effects inside protocol functions.
 
----
-
 ## Good Patterns
 
 * Use `Math`, `Eq.Utils`, `Ord.Utils`, or `Predicate` instead of raw monoids.
 * Keep identities explicit in library code (`0`, `1`, `[]`, `Float.min_finite()` / `Float.max_finite()`).
 * Let `m_concat/2` and `m_append/3` handle the wrapping/combining logic.
-
----
 
 ## When to Define a New Monoid
 
@@ -131,8 +113,6 @@ Define a monoid struct if you need associative combination + identity:
 * Predicate or decision combination
 
 Expose it through a utility module—application code should not use it raw.
-
----
 
 ## Built-in Instances
 

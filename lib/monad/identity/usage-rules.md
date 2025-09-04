@@ -9,16 +9,12 @@
 
 Implements `Monad`, `Eq`, `Ord`, `String.Chars`, and `Summarizable`.
 
----
-
 ## Overview
 
 `Identity` wraps a value without introducing branching, failure, delay, or effects.
 It exists to carry structure—so logic can be written in terms of generic `Monad`, `Eq`, or `Ord` operations.
 
 This makes `Identity` ideal for scaffolding, testing, and teaching: nothing is hidden, nothing is added.
-
----
 
 ## When to Use
 
@@ -28,8 +24,6 @@ This makes `Identity` ideal for scaffolding, testing, and teaching: nothing is h
 | Pipeline testing | Safe to test `bind/2` and `map/2` |
 | Function lifting | Enables polymorphic reuse         |
 | Placeholder      | Swap in richer monads later       |
-
----
 
 ## Core Functions
 
@@ -43,7 +37,6 @@ This makes `Identity` ideal for scaffolding, testing, and teaching: nothing is h
 | `lift_eq/1`    | Lift a custom `Eq` definition                 |
 | `lift_ord/1`   | Lift a custom `Ord` definition                |
 
----
 
 ## Examples
 
@@ -54,8 +47,6 @@ Identity.pure(42) |> extract()
 # => 42
 ```
 
----
-
 ### Mapping (via `Monad`)
 
 ```elixir
@@ -63,8 +54,6 @@ Identity.pure(3)
 |> Monad.map(&(&1 + 1))
 # => %Identity{value: 4}
 ```
-
----
 
 ### Chaining (via `bind/2`)
 
@@ -77,8 +66,6 @@ Identity.pure(3)
 # => %Identity{value: 5}
 ```
 
----
-
 ### Applying (via `ap/2`)
 
 ```elixir
@@ -87,8 +74,6 @@ Identity.pure(fn x, y -> x + y end)
 |> Monad.ap(Identity.pure(2))
 # => %Identity{value: 3}
 ```
-
----
 
 ### Equality (via `Eq`)
 
@@ -101,8 +86,6 @@ Identity.lift_eq(custom).eq?.(
 )
 ```
 
----
-
 ### Ordering (via `Ord`)
 
 ```elixir
@@ -113,8 +96,6 @@ Identity.lift_ord(custom).gt?.(
   Identity.pure(%{score: 10}), Identity.pure(%{score: 5})
 )
 ```
-
----
 
 ### Display and Logging
 

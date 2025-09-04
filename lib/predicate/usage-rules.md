@@ -9,16 +9,12 @@
 * All combinators return new predicates and preserve short-circuiting.
 * Backed by monoids: `%Pred.All{}` (AND) and `%Pred.Any{}` (OR).
 
----
-
 ## Overview
 
 `Funx.Predicate` defines composable helpers for building logic from predicates—functions that return truthy or falsy results.
 Predicates may be curried, partially applied, or lifted into a context. Composition is declarative and implemented via the `Monoid` protocol, enabling identity-safe and short-circuiting behavior across flows.
 
 Use these helpers to generate reusable logic blocks, express boolean conditions in pipelines, and support functional control flow.
-
----
 
 ## Composition Rules
 
@@ -32,8 +28,6 @@ Use these helpers to generate reusable logic blocks, express boolean conditions 
 | `p_none/1` | `p_not(p_any(...))`                    |
 
 All are powered by `%Pred.All{}` and `%Pred.Any{}`, and support composition before or after lifting into context.
-
----
 
 ## Correct Usage Patterns
 
@@ -66,8 +60,6 @@ negated.(input)
 
 `p_not/1` accepts exactly one predicate.
 
----
-
 ## Compositional Guidelines
 
 LLMs should:
@@ -79,8 +71,6 @@ LLMs should:
 * Compose before or after lifting into a context (e.g. `Maybe`, `Either`).
 * Treat predicates as logic components—not inline branches.
 * Avoid expanding predicate logic into full evaluation chains.
-
----
 
 ## Stability Contract
 
@@ -94,8 +84,6 @@ Completions must preserve:
   * `p_any([])` → always returns falsy
   * `p_none([])` → always returns truthy
 
----
-
 ## Anti-Patterns
 
 Avoid these:
@@ -105,8 +93,6 @@ Avoid these:
 * `Enum.any?/2` or `Enum.all?/2` for predicate folding
 * Misusing `p_not/1` as if it accepts multiple predicates
 * Assuming arity-1 (do not destructure inputs or overgeneralize)
-
----
 
 ## Good Patterns
 
@@ -122,8 +108,6 @@ pred = p_all([pred1, p_not(pred2), pred3])
 filter = p_any([is_vip, has_pass])
 Enum.filter(list, filter)
 ```
-
----
 
 ## When to Compose
 
@@ -142,8 +126,6 @@ Reach for these when boolean logic needs to be:
 * Lifted
 * Composed
 * Short-circuited
-
----
 
 ## Built-in Behavior
 

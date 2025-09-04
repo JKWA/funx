@@ -9,8 +9,6 @@
 * Prefer monads when control flow depends on prior results.
 * Avoid extracting intermediate values—compose instead.
 
----
-
 ## Overview
 
 `Funx.Monad` supports declarative control flow in the presence of context.
@@ -24,8 +22,6 @@ The `Monad` protocol defines three core operations:
 | `map/2`  | Applies a transformation while preserving structure.               |
 | `bind/2` | Sequences context-aware steps—each step may reshape the structure. |
 | `ap/2`   | Applies a function and a value, both inside the same context.      |
-
----
 
 ## When to Use It
 
@@ -41,8 +37,6 @@ Use a monad when your code depends on prior steps that occur inside a context:
 
 Each step you define declares what happens next—the monad handles how and when.
 
----
-
 ## Transforming with `map/2`
 
 Use `map/2` to apply a function without changing the structure:
@@ -54,8 +48,6 @@ map(monad, fn x -> transform(x) end)
 If `monad` is a list, the result is a list.
 If it's a `Maybe`, the result is still a `Maybe`.
 The shape of the context is preserved.
-
----
 
 ## Sequencing with `bind/2`
 
@@ -70,8 +62,6 @@ This kind of function is called a Kleisli function—a function from a plain val
 
 The structure may change. The monad will flatten and continue.
 This allows dependent steps to be composed declaratively.
-
----
 
 ## Applying with `ap/2`
 
@@ -89,8 +79,6 @@ pure(fn x, y -> x + y end)
 |> ap(m2)
 ```
 
----
-
 ## Composing Declarative Logic
 
 Functional control flow becomes:
@@ -105,8 +93,6 @@ pure(initial)
 Each step declares its own rule.
 The monad handles branching, structure, and short-circuiting as needed.
 This replaces `case`, `with`, and `try` chains with composable, predictable logic.
-
----
 
 ## Design Guidance
 

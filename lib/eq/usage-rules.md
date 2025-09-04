@@ -9,8 +9,6 @@
 * `Funx.List` functions (`uniq`, `union`, `intersection`, etc.) respect `Eq`.
 * `Eq` is composable (`contramap`, `append_all`, `concat_any`); `==` is not.
 
----
-
 ## Overview
 
 `Funx.Eq` defines contextual equality in Elixir.
@@ -21,8 +19,6 @@ Use `Eq` instead of `==` for identity checks, filters, and deduplication.
 
 `Eq.Utils` provides combinators for building custom equality rules.
 `Funx.List` uses `Eq` automatically—set operations respect domain semantics.
-
----
 
 ## Protocol Rules
 
@@ -54,8 +50,6 @@ end
 Fallback is fine for primitives.
 For maps and structs, define your own `Eq` instance.
 
----
-
 ## Preferred Usage
 
 ### Use `Eq.eq?/2` Instead of `==`
@@ -80,8 +74,6 @@ eq = Eq.Utils.contramap(& &1.id)
 Eq.Utils.eq?(user1, user2, eq)
 ```
 
----
-
 ### Default Dispatch in `Eq.Utils`
 
 All helpers default to protocol dispatch—you don’t need to pass logic manually.
@@ -92,8 +84,6 @@ Eq.Utils.not_eq?(a, b)
 Eq.Utils.eq_by?(&proj/1, a, b)
 Eq.Utils.to_predicate(target)
 ```
-
----
 
 ### Projections and Composition
 
@@ -117,8 +107,6 @@ You can also use:
 * `append_all/2` (left-to-right composition)
 * `concat_all/1` (multi-key lexicographic comparison)
 * `concat_any/1` (any-match logic)
-
----
 
 ## In `Funx.List`
 
@@ -153,15 +141,11 @@ eq = Eq.Utils.contramap(& &1.name)
 Funx.List.uniq(users, eq)
 ```
 
----
-
 ## Stability Contract
 
 * `eq?/2` must be pure (same inputs → same output).
 * `eq?/2` and `not_eq?/2` must be exact complements.
 * Instances should be domain-aware and consistent.
-
----
 
 ## Anti-Patterns
 
@@ -178,16 +162,12 @@ Funx.List.uniq(users, eq)
   Eq.eq?(:ok, %{ok: true})  # meaningless
   ```
 
----
-
 ## Good Patterns
 
 * Use `Eq` for identity checks, filters, and deduplication.
 * Use `contramap` to project domain keys.
 * Compose equality logic close to its use.
 * Avoid relying on fallback for domain types.
-
----
 
 ## When to Define an `Eq` Instance
 
@@ -208,8 +188,6 @@ Define an `Eq` instance when you need control over what counts as equal.
 * `Eq` is extensible through protocols.
 * `Eq` is composable (`contramap`, `append_all`, `concat_any`).
 * `Eq` integrates with `Eq.Utils` and `Funx.List`.
-
----
 
 ## Built-in Instances
 

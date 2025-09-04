@@ -47,8 +47,6 @@
 
 Implements `Monad`, `Eq`, `Ord`, `Foldable`, `Filterable`, `String.Chars`, and `Summarizable`.
 
----
-
 ## Overview
 
 The `Maybe` monad represents optional presence.
@@ -110,8 +108,6 @@ Applies a wrapped function to a wrapped value.
 pure(fn x -> x * 10 end)
 |> ap(just(2))      # => Just(20)
 ```
-
----
 
 ## Fallbacks
 

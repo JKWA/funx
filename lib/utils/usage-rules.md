@@ -7,16 +7,12 @@
 * Use `flip/1` to reverse arguments in binary functions.
 * All currying functions adapt to any arity and return nested unary functions.
 
----
-
 ## Overview
 
 `Funx.Utils` provides functional utilities for reshaping multi-argument functions to support composition, partial application, and point-free style.
 Use `curry_r/1` by default—it aligns with Elixir’s `|>` operator by shifting configuration to the right and leaving the data position first.
 
 These tools are especially useful with predicates, monads, and other combinators where composition and reuse are key.
-
----
 
 ## Composition Rules
 
@@ -28,8 +24,6 @@ These tools are especially useful with predicates, monads, and other combinators
 | `flip/1`    | Reverses arguments of a binary function                      |
 
 Each function returns a chain of unary functions that accumulate arguments until fully applied.
-
----
 
 ## Usage Patterns
 
@@ -57,8 +51,6 @@ sum = curry(fn a, b, c -> a + b + c end)
 sum.(1).(2).(3)  # => 6
 ```
 
----
-
 ## Guidelines for Composition
 
 Follow these patterns when reshaping or generating function transformations:
@@ -73,8 +65,6 @@ Follow these patterns when reshaping or generating function transformations:
 
 Currying is often most useful when composed with lifted combinators like `map`, `bind`, `filter`, and so on.
 
----
-
 ## Stability Contract
 
 Ensure that generated or transformed functions preserve:
@@ -87,8 +77,6 @@ Ensure that generated or transformed functions preserve:
 curry_r(f).(b).(a) == f.(a, b)
 ```
 
----
-
 ## Anti-Patterns
 
 Avoid generating or emitting:
@@ -98,8 +86,6 @@ Avoid generating or emitting:
 * Argument reordering by hand—prefer `flip/1`
 * Full application immediately after currying
 * Capture syntax (`&fun/2`) when transformation is required
-
----
 
 ## Good Patterns
 
@@ -124,8 +110,6 @@ transform =
 "Alex" |> transform.(&String.upcase/1)
 ```
 
----
-
 ## When to Use
 
 Reach for these utilities when you want to:
@@ -135,8 +119,6 @@ Reach for these utilities when you want to:
 * Shift configuration before data
 * Adapt argument order to match surrounding combinators
 * Prepare functions before lifting into a monadic or applicative context
-
----
 
 ## Built-in Behavior
 

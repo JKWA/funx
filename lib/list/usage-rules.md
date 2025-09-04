@@ -9,16 +9,12 @@
 * All functions default to protocol dispatch; no wiring needed if instances exist.
 * Ad-hoc comparators can be passed using `Eq.Utils.contramap/1` or `Ord.Utils.contramap/1`.
 
----
-
 ## Overview
 
 The `Funx.List` module provides equality- and ordering-aware utilities for working with lists.
 It supports deduplication, sorting, and set-like behavior using `Eq` and `Ord` instances.
 
 This allows logic like "unique cars by VIN" or "sort by price, then mileage" to be clean, composable, and domain-aware.
-
----
 
 ## Eq-Based Operations
 
@@ -38,8 +34,6 @@ eq = Eq.Utils.contramap(& &1.make)
 Funx.List.uniq(cars, eq)
 ```
 
----
-
 ### `union/3`
 
 Combines two lists, removing duplicates using `Eq`.
@@ -48,8 +42,6 @@ Combines two lists, removing duplicates using `Eq`.
 Funx.List.union([1, 2], [2, 3])
 # => [1, 2, 3]
 ```
-
----
 
 ### `intersection/3`
 
@@ -60,8 +52,6 @@ Funx.List.intersection([1, 2, 3], [2, 3, 4])
 # => [2, 3]
 ```
 
----
-
 ### `difference/3`
 
 Returns elements from the first list that are not in the second.
@@ -71,8 +61,6 @@ Funx.List.difference([1, 2, 3], [2])
 # => [1, 3]
 ```
 
----
-
 ### `symmetric_difference/3`
 
 Returns elements that appear in only one of the two lists.
@@ -81,8 +69,6 @@ Returns elements that appear in only one of the two lists.
 Funx.List.symmetric_difference([1, 2], [2, 3])
 # => [1, 3]
 ```
-
----
 
 ### `subset?/3` and `superset?/3`
 
@@ -95,8 +81,6 @@ Funx.List.subset?([1, 2], [1, 2, 3])
 Funx.List.superset?([1, 2, 3], [1, 2])
 # => true
 ```
-
----
 
 ## Ord-Based Operations
 
@@ -116,8 +100,6 @@ ord = Ord.Utils.contramap(& &1.price)
 Funx.List.sort(cars, ord)
 ```
 
----
-
 ### `strict_sort/2`
 
 Sorts the list and removes duplicates. Uses `Ord` for sorting and derives `Eq` from ordering.
@@ -126,8 +108,6 @@ Sorts the list and removes duplicates. Uses `Ord` for sorting and derives `Eq` f
 Funx.List.strict_sort([3, 1, 3, 2])
 # => [1, 2, 3]
 ```
-
----
 
 ## Concatenation
 
@@ -140,16 +120,12 @@ Funx.List.concat([[1], [2, 3], [4]])
 # => [1, 2, 3, 4]
 ```
 
----
-
 ## Good Patterns
 
 * Use `uniq/2`, `intersection/3`, and related functions instead of manual deduplication.
 * Use `contramap/1` to lift equality or ordering by projecting key fields.
 * Use `strict_sort/2` when you need sorted unique results.
 * Define protocol instances for domain types to remove the need for custom comparator logic.
-
----
 
 ## Anti-Patterns
 
@@ -173,8 +149,6 @@ Funx.List.concat([[1], [2, 3], [4]])
   # BAD
   if user1.id == user2.id and Eq.eq?(user1, user2), do: ...
   ```
-
----
 
 ## When to Use
 

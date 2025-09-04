@@ -6,8 +6,6 @@ They complement the module docs (which describe *what* the APIs do).
 Each protocol or major module has its own `usage-rules.md`, stored next to the code.  
 This index links them together.
 
----
-
 ## Available Rules
 
 - [Funx.Utils Usage Rules](./utils/usage-rules.md)  
@@ -37,15 +35,11 @@ This index links them together.
 - [Funx.Monad.Maybe Usage Rules](./monad/maybe/usage-rules.md)  
   Optional computation: preserve structure, short-circuit failure, avoid `nil` in pipelines.
 
----
-
 ## Conventions
 
 - Collocation: rules live beside the code they describe.  
 - Scope: focus on *usage guidance* and best practices, not API reference.  
 - LLM-friendly: small sections, explicit examples, stable links.
-
----
 
 ## Project Layout (rules only)
 

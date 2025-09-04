@@ -9,8 +9,6 @@
 * `Funx.List.sort/2` and `strict_sort/2` use `Ord`, not `Eq`.
 * `Ord` is composable with helpers like `contramap`, `append`, `concat`, and `reverse`.
 
----
-
 ## Overview
 
 `Funx.Ord` defines contextual ordering in Elixir.
@@ -20,8 +18,6 @@ Use `Ord` to express domain-specific comparison rules.
 * `Ord` is implemented via protocol and can be customized per type.
 * `Ord` integrates with `Funx.List`, `Ord.Utils`, and sorting operations.
 * `Ord` supports composition and projection via utility helpers.
-
----
 
 ## Protocol Rules
 
@@ -42,8 +38,6 @@ Use `Ord` to express domain-specific comparison rules.
 
 * Prefer semantic ordering (e.g., domain fields) over structural details.
 
----
-
 ## Fallback (`Any`)
 
 If no instance is defined, the protocol falls back to Elixir’s built-in comparison operators:
@@ -57,21 +51,19 @@ defimpl Funx.Ord, for: Any do
 end
 ```
 
-### Safe fallback types:
+### Safe fallback types
 
 * Numbers (`1 < 2`)
 * Strings and binaries (`"a" < "b"`)
 * Tuples and lists (compared lexicographically)
 
-### Unsafe fallback types:
+### Unsafe fallback types
 
 * Maps and structs: raise `ArgumentError` when compared with `<`, `<=`, etc.
 * Cross-type comparisons: may raise or produce invalid results
 
 Use fallback only if you know the inputs are safe.
 Define explicit `Ord` instances for structs and domain types.
-
----
 
 ## Preferred Usage
 
@@ -94,8 +86,6 @@ end
 Project domain fields and delegate to `Ord` on those fields.
 If the projected field also has an `Eq` instance, use it for consistency.
 
----
-
 ### Use `Ord.Utils` for Dispatch
 
 All `Ord.Utils` functions default to the protocol.
@@ -109,8 +99,6 @@ Ord.Utils.clamp(value, min, max)
 Ord.Utils.between(value, min, max)
 Ord.Utils.comparator()       # For Enum.sort/2
 ```
-
----
 
 ### Projections and Composition
 
@@ -136,8 +124,6 @@ Ord.Utils.compare(%{age: 30, name: "Bob"}, %{age: 30, name: "Charlie"}, ord)
 Use `append/2` or `concat/1` to build lexicographic orderings.
 Use `reverse/1` to invert direction.
 
----
-
 ### Convert `Ord` to `Eq`
 
 You can derive equality from ordering:
@@ -148,8 +134,6 @@ eq.eq?.(7, 7)  # true
 ```
 
 This ensures consistent logic across equality and ordering.
-
----
 
 ## In `Funx.List`
 
@@ -184,8 +168,6 @@ Funx.List.strict_sort(["aa", "a", "aa"], ord)
 # => ["a", "aa"]
 ```
 
----
-
 ## Stability Contract
 
 * All functions must be pure.
@@ -196,15 +178,11 @@ Funx.List.strict_sort(["aa", "a", "aa"], ord)
 Ord.Utils.compare(a, b) == :eq  <=>  Eq.eq?(a, b)
 ```
 
----
-
 ## Anti-Patterns
 
 * Using `<` or `>` on maps or structs.
 * Comparing values of unrelated types.
 * Mixing protocol-based and ad-hoc logic in the same function.
-
----
 
 ## Good Patterns
 
@@ -212,8 +190,6 @@ Ord.Utils.compare(a, b) == :eq  <=>  Eq.eq?(a, b)
 * Use `append` or `concat` to build multi-key orderings.
 * Use `reverse` to define descending order without rewriting logic.
 * Use `Ord.Utils.comparator/1` when sorting with `Enum.sort/2`.
-
----
 
 ## When to Define an `Ord` Instance
 
@@ -225,8 +201,6 @@ Define an `Ord` instance when you need to control how values are ordered.
 * Lexicographic fallback (sort by age, then name)
 * Score-based ordering (revenue, priority, bonus)
 * Domain-specific sort (e.g., "VIP before General")
-
----
 
 ## Built-in Instances
 
