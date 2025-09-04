@@ -62,6 +62,10 @@ defmodule Funx.MixProject do
           "lib/monad/maybe/usage-rules.md": [
             title: "Funx.Monad.Maybe Usage Rules",
             filename: "monad-maybe-usage-rules"
+          ],
+          "lib/monad/either/usage-rules.md": [
+            title: "Funx.Monad.Either Usage Rules",
+            filename: "monad-either-usage-rules"
           ]
         ],
         groups_for_extras: [
@@ -75,7 +79,8 @@ defmodule Funx.MixProject do
             "lib/predicate/usage-rules.md",
             "lib/monad/usage-rules.md",
             "lib/monad/identity/usage-rules.md",
-            "lib/monad/maybe/usage-rules.md"
+            "lib/monad/maybe/usage-rules.md",
+            "lib/monad/either/usage-rules.md"
           ]
         ],
         filter_prefix: "Examples",

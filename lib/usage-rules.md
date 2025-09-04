@@ -9,31 +9,34 @@ This index links them together.
 ## Available Rules
 
 - [Funx.Utils Usage Rules](./utils/usage-rules.md)  
-  Currying, flipping, and function transformation for point-free and pipeline-based composition.
+  Currying, flipping, and function transformation for point-free, pipeline-friendly composition.
 
 - [Funx.Eq Usage Rules](./eq/usage-rules.md)  
-  Equality and identity logic across domain types.
+  Domain-specific equality and identity for comparison, deduplication, and filtering.
 
 - [Funx.Ord Usage Rules](./ord/usage-rules.md)  
-  Ordering and comparison logic for domain types.
+  Context-aware ordering for sorting, ranking, and prioritization.
 
 - [Funx.List Usage Rules](./list/usage-rules.md)  
-  Set operations, deduplication, and sorting that respect `Eq` and `Ord`.
+  Equality- and order-aware set operations, deduplication, and sorting.
 
 - [Funx.Monoid Usage Rules](./monoid/usage-rules.md)  
-  Identities and associative combination, powering folds and composition.
+  Identity and associative combination, enabling folds, logs, and accumulation.
 
 - [Funx.Predicate Usage Rules](./predicate/usage-rules.md)  
-  Logical composition of predicates using short-circuiting, reusable combinators.
-  
-- [Funx.Monad Usage Rules](./monad/usage-rules.md)
-  Declarative control flow through `map`, `bind`, and `ap`—composing context-aware steps without manual branching.
+  Logical composition using `&&`/`||`, reusable combinators, and lifted conditions.
+
+- [Funx.Monad Usage Rules](./monad/usage-rules.md)  
+  Declarative control flow with `map`, `bind`, and `ap`—composing context-aware steps.
 
 - [Funx.Monad.Identity Usage Rules](./monad/identity/usage-rules.md)  
-  The simplest monad: structure without effects. The baseline for monadic composition.
+  Structure without effects—used as a baseline for composing monads.
 
 - [Funx.Monad.Maybe Usage Rules](./monad/maybe/usage-rules.md)  
-  Optional computation: preserve structure, short-circuit failure, avoid `nil` in pipelines.
+  Optional computation: preserve structure, short-circuit on absence, avoid `nil`.
+
+- [Funx.Monad.Either Usage Rules](./monad/either/usage-rules.md)  
+  Branching computation with error context—fail fast or accumulate validation errors.
 
 ## Conventions
 
@@ -64,4 +67,6 @@ lib/
       usage-rules.md        # ← Funx.Monad.Identity rules
     maybe/
       usage-rules.md        # ← Funx.Monad.Maybe rules
+    either/
+      usage-rules.md        # ← Funx.Monad.Either rules
 ```
