@@ -34,6 +34,9 @@ This index links them together.
 - [Funx.Monad.Identity Usage Rules](./monad/identity/usage-rules.md)  
   The simplest monad: structure without effects. The baseline for monadic composition.
 
+- [Funx.Monad.Maybe Usage Rules](./monad/maybe/usage-rules.md)  
+  Optional computation: preserve structure, short-circuit failure, avoid `nil` in pipelines.
+
 ---
 
 ## Conventions
@@ -65,4 +68,6 @@ lib/
     usage-rules.md          # ← Funx.Monad rules
     identity/
       usage-rules.md        # ← Funx.Monad.Identity rules
+    maybe/
+      usage-rules.md        # ← Funx.Monad.Maybe rules
 ```
