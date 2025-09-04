@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.4">
+
+
+    <title>Funx.Monad.Maybe Usage Rules — funx v0.1.4</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/monad-maybe-usage-rules.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-66EC123B.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.4
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.4/lib/monad/maybe/usage-rules.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+
+    <span><code class="inline">Funx.Monad.Maybe</code> Usage Rules</span>
+  </h1>
+
+<h2 id="quick-reference" class="section-heading">
+  <a href="#quick-reference" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Quick Reference</span>
+</h2>
+<h3 id="construction" class="section-heading">
+  <a href="#construction" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Construction</span>
+</h3>
+<ul><li><code class="inline">just/1</code> – Wraps a present value. Raises on <code class="inline">nil</code>.</li><li><code class="inline">nothing/0</code> – Represents absence.</li><li><code class="inline">pure/1</code> – Alias for <code class="inline">just/1</code>.</li></ul><h3 id="monadic-composition" class="section-heading">
+  <a href="#monadic-composition" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Monadic Composition</span>
+</h3>
+<p><em>(via <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a> protocol)</em></p><ul><li><code class="inline">map/2</code> – Transforms a present value; preserves <code class="inline">Maybe</code> structure.</li><li><code class="inline">bind/2</code> – Chains context-aware steps; skips if <code class="inline">Nothing</code>.</li><li><code class="inline">ap/2</code> – Applies a function in context to a value in context.</li></ul><h3 id="refinement-queries" class="section-heading">
+  <a href="#refinement-queries" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Refinement &amp; Queries</span>
+</h3>
+<ul><li><code class="inline">just?/1</code>, <code class="inline">nothing?/1</code> – Pattern-aware checks.</li><li><code class="inline">to_predicate/1</code> – Converts to boolean presence.</li></ul><h3 id="fallback" class="section-heading">
+  <a href="#fallback" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Fallback</span>
+</h3>
+<ul><li><code class="inline">get_or_else/2</code> – Extracts or defaults.</li><li><code class="inline">or_else/2</code> – Substitutes with fallback <code class="inline">Maybe</code>.</li></ul><h3 id="lists" class="section-heading">
+  <a href="#lists" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Lists</span>
+</h3>
+<ul><li><code class="inline">concat/1</code> – Keeps present values.</li><li><code class="inline">concat_map/2</code> – Filters and maps to <code class="inline">Just</code>.</li><li><code class="inline">sequence/1</code> – Combines if all are present.</li><li><code class="inline">traverse/2</code> – Applies function, stops on first <code class="inline">Nothing</code>.</li></ul><h3 id="lifting" class="section-heading">
+  <a href="#lifting" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Lifting</span>
+</h3>
+<ul><li><code class="inline">lift_predicate/2</code> – Conditional construction.</li><li><code class="inline">lift_identity/1</code>, <code class="inline">lift_either/1</code> – Interop with other monads.</li><li><code class="inline">lift_eq/1</code>, <code class="inline">lift_ord/1</code> – Lifts <code class="inline">Eq</code> and <code class="inline">Ord</code> logic.</li></ul><h3 id="elixir-interop" class="section-heading">
+  <a href="#elixir-interop" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Elixir Interop</span>
+</h3>
+<ul><li><code class="inline">from_nil/1</code>, <code class="inline">to_nil/1</code></li><li><code class="inline">from_result/1</code>, <code class="inline">to_result/1</code></li><li><code class="inline">from_try/1</code>, <code class="inline">to_try!/2</code></li></ul><p>Implements <code class="inline">Monad</code>, <code class="inline">Eq</code>, <code class="inline">Ord</code>, <code class="inline">Foldable</code>, <code class="inline">Filterable</code>, <a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>, and <code class="inline">Summarizable</code>.</p><h2 id="overview" class="section-heading">
+  <a href="#overview" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Overview</span>
+</h2>
+<p>The <code class="inline">Maybe</code> monad represents optional presence.
+It models the difference between “something” and “nothing” using two variants:</p><ul><li><code class="inline">Just(value)</code> — present and usable</li><li><code class="inline">Nothing</code> — absent, incomplete, or failed</li></ul><p><code class="inline">Maybe</code> provides declarative control flow.
+It avoids manual branching (<code class="inline">if</code>, <code class="inline">case</code>, <code class="inline">with</code>) by composing steps that only run if data is present.</p><h2 id="when-to-use-it" class="section-heading">
+  <a href="#when-to-use-it" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">When to Use It</span>
+</h2>
+<table><thead><tr><th style="text-align: left;">Problem</th><th style="text-align: left;">Use <code class="inline">Maybe</code> to…</th></tr></thead><tbody><tr><td style="text-align: left;">You receive <code class="inline">nil</code> from a library</td><td style="text-align: left;">Make absence explicit and pipe-safe</td></tr><tr><td style="text-align: left;">A function may fail to produce</td><td style="text-align: left;">Return <code class="inline">Nothing</code> instead of raising</td></tr><tr><td style="text-align: left;">A value may be incomplete</td><td style="text-align: left;">Encode presence at the type level</td></tr><tr><td style="text-align: left;">You want conditional composition</td><td style="text-align: left;">Use <code class="inline">bind/2</code> to skip steps on <code class="inline">Nothing</code></td></tr><tr><td style="text-align: left;">You need a fallback</td><td style="text-align: left;">Use <code class="inline">get_or_else/2</code> or <code class="inline">or_else/2</code></td></tr><tr><td style="text-align: left;">You’re transforming optional</td><td style="text-align: left;">Use <code class="inline">map/2</code> to preserve structure</td></tr><tr><td style="text-align: left;">You’re combining optional values</td><td style="text-align: left;">Use <code class="inline">ap/2</code>, <code class="inline">sequence/1</code>, or <code class="inline">traverse/2</code></td></tr></tbody></table><p>Think of <code class="inline">Maybe</code> as a guardrail that wraps a computation.
+Each operation either continues or short-circuits, but the structure (<code class="inline">Just</code> or <code class="inline">Nothing</code>) is preserved until explicitly extracted.</p><h2 id="monadic-control" class="section-heading">
+  <a href="#monadic-control" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Monadic Control</span>
+</h2>
+<p>These functions are dispatched via the <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a> protocol:</p><h3 id="map-2" class="section-heading">
+  <a href="#map-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">map/2</code></span>
+</h3>
+<p>Transforms the contents of a <code class="inline">Just</code>.
+Preserves the <code class="inline">Maybe</code> structure.
+Does nothing if the value is <code class="inline">Nothing</code>.</p><pre><code class="makeup elixir" translate="no"><span class="n">map</span><span class="p" data-group-id="4315840108-1">(</span><span class="n">just</span><span class="p" data-group-id="4315840108-2">(</span><span class="mi">2</span><span class="p" data-group-id="4315840108-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4315840108-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k" data-group-id="4315840108-3">end</span><span class="p" data-group-id="4315840108-1">)</span><span class="w">     </span><span class="c1"># =&gt; Just(3)</span><span class="w">
+</span><span class="n">map</span><span class="p" data-group-id="4315840108-4">(</span><span class="n">nothing</span><span class="p" data-group-id="4315840108-5">(</span><span class="p" data-group-id="4315840108-5">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4315840108-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k" data-group-id="4315840108-6">end</span><span class="p" data-group-id="4315840108-4">)</span><span class="w">  </span><span class="c1"># =&gt; Nothing</span></code></pre><h3 id="bind-2" class="section-heading">
+  <a href="#bind-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">bind/2</code></span>
+</h3>
+<p>Chains a Kleisli function, one that takes a value and returns a <code class="inline">Maybe</code>.
+Used to sequence steps that might fail or skip.</p><pre><code class="makeup elixir" translate="no"><span class="n">just</span><span class="p" data-group-id="5417120703-1">(</span><span class="mi">2</span><span class="p" data-group-id="5417120703-1">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="5417120703-2">(</span><span class="k" data-group-id="5417120703-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="5417120703-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="5417120703-4">)</span><span class="w"> </span><span class="k" data-group-id="5417120703-3">end</span><span class="p" data-group-id="5417120703-2">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="5417120703-5">(</span><span class="k" data-group-id="5417120703-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="5417120703-7">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5417120703-7">)</span><span class="w"> </span><span class="k" data-group-id="5417120703-6">end</span><span class="p" data-group-id="5417120703-5">)</span><span class="w">
+</span><span class="c1"># =&gt; Just(6)</span></code></pre><h3 id="ap-2" class="section-heading">
+  <a href="#ap-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">ap/2</code></span>
+</h3>
+<p>Applies a wrapped function to a wrapped value.</p><pre><code class="makeup elixir" translate="no"><span class="n">pure</span><span class="p" data-group-id="5032054991-1">(</span><span class="k" data-group-id="5032054991-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="k" data-group-id="5032054991-2">end</span><span class="p" data-group-id="5032054991-1">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="5032054991-3">(</span><span class="n">just</span><span class="p" data-group-id="5032054991-4">(</span><span class="mi">2</span><span class="p" data-group-id="5032054991-4">)</span><span class="p" data-group-id="5032054991-3">)</span><span class="w">      </span><span class="c1"># =&gt; Just(20)</span></code></pre><h2 id="fallbacks" class="section-heading">
+  <a href="#fallbacks" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Fallbacks</span>
+</h2>
+<h3 id="get_or_else-2" class="section-heading">
+  <a href="#get_or_else-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">get_or_else/2</code></span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="n">get_or_else</span><span class="p" data-group-id="2073103717-1">(</span><span class="n">just</span><span class="p" data-group-id="2073103717-2">(</span><span class="s">&quot;ok&quot;</span><span class="p" data-group-id="2073103717-2">)</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;fallback&quot;</span><span class="p" data-group-id="2073103717-1">)</span><span class="w">    </span><span class="c1"># =&gt; &quot;ok&quot;</span><span class="w">
+</span><span class="n">get_or_else</span><span class="p" data-group-id="2073103717-3">(</span><span class="n">nothing</span><span class="p" data-group-id="2073103717-4">(</span><span class="p" data-group-id="2073103717-4">)</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;fallback&quot;</span><span class="p" data-group-id="2073103717-3">)</span><span class="w">     </span><span class="c1"># =&gt; &quot;fallback&quot;</span></code></pre><h3 id="or_else-2" class="section-heading">
+  <a href="#or_else-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">or_else/2</code></span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="n">or_else</span><span class="p" data-group-id="8993799697-1">(</span><span class="n">just</span><span class="p" data-group-id="8993799697-2">(</span><span class="s">&quot;ok&quot;</span><span class="p" data-group-id="8993799697-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8993799697-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="8993799697-4">(</span><span class="s">&quot;alt&quot;</span><span class="p" data-group-id="8993799697-4">)</span><span class="w"> </span><span class="k" data-group-id="8993799697-3">end</span><span class="p" data-group-id="8993799697-1">)</span><span class="w">    </span><span class="c1"># =&gt; Just(&quot;ok&quot;)</span><span class="w">
+</span><span class="n">or_else</span><span class="p" data-group-id="8993799697-5">(</span><span class="n">nothing</span><span class="p" data-group-id="8993799697-6">(</span><span class="p" data-group-id="8993799697-6">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8993799697-7">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="8993799697-8">(</span><span class="s">&quot;alt&quot;</span><span class="p" data-group-id="8993799697-8">)</span><span class="w"> </span><span class="k" data-group-id="8993799697-7">end</span><span class="p" data-group-id="8993799697-5">)</span><span class="w">     </span><span class="c1"># =&gt; Just(&quot;alt&quot;)</span></code></pre><h2 id="filtering" class="section-heading">
+  <a href="#filtering" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Filtering</span>
+</h2>
+<h3 id="filter-2" class="section-heading">
+  <a href="#filter-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">filter/2</code></span>
+</h3>
+<p>Keeps <code class="inline">Just</code> if it passes the predicate; else becomes <code class="inline">Nothing</code>.</p><pre><code class="makeup elixir" translate="no"><span class="n">filter</span><span class="p" data-group-id="1718874887-1">(</span><span class="n">just</span><span class="p" data-group-id="1718874887-2">(</span><span class="mi">5</span><span class="p" data-group-id="1718874887-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1718874887-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="1718874887-3">end</span><span class="p" data-group-id="1718874887-1">)</span><span class="w">   </span><span class="c1"># =&gt; Just(5)</span><span class="w">
+</span><span class="n">filter</span><span class="p" data-group-id="1718874887-4">(</span><span class="n">just</span><span class="p" data-group-id="1718874887-5">(</span><span class="mi">2</span><span class="p" data-group-id="1718874887-5">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1718874887-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="1718874887-6">end</span><span class="p" data-group-id="1718874887-4">)</span><span class="w">   </span><span class="c1"># =&gt; Nothing</span></code></pre><h3 id="guard-2" class="section-heading">
+  <a href="#guard-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">guard/2</code></span>
+</h3>
+<p>Keeps <code class="inline">Just</code> if boolean is true.</p><pre><code class="makeup elixir" translate="no"><span class="n">guard</span><span class="p" data-group-id="2933141390-1">(</span><span class="n">just</span><span class="p" data-group-id="2933141390-2">(</span><span class="s">&quot;go&quot;</span><span class="p" data-group-id="2933141390-2">)</span><span class="p">,</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="2933141390-1">)</span><span class="w">    </span><span class="c1"># =&gt; Just(&quot;go&quot;)</span><span class="w">
+</span><span class="n">guard</span><span class="p" data-group-id="2933141390-3">(</span><span class="n">just</span><span class="p" data-group-id="2933141390-4">(</span><span class="s">&quot;go&quot;</span><span class="p" data-group-id="2933141390-4">)</span><span class="p">,</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="2933141390-3">)</span><span class="w">   </span><span class="c1"># =&gt; Nothing</span></code></pre><h2 id="list-composition" class="section-heading">
+  <a href="#list-composition" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">List Composition</span>
+</h2>
+<p>Use <code class="inline">Maybe</code> to represent failure or emptiness across a list:</p><pre><code class="makeup elixir" translate="no"><span class="n">sequence</span><span class="p" data-group-id="1473392687-1">(</span><span class="p" data-group-id="1473392687-2">[</span><span class="n">just</span><span class="p" data-group-id="1473392687-3">(</span><span class="mi">1</span><span class="p" data-group-id="1473392687-3">)</span><span class="p">,</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="1473392687-4">(</span><span class="mi">2</span><span class="p" data-group-id="1473392687-4">)</span><span class="p" data-group-id="1473392687-2">]</span><span class="p" data-group-id="1473392687-1">)</span><span class="w">    </span><span class="c1"># =&gt; Just([1, 2])</span><span class="w">
+</span><span class="n">sequence</span><span class="p" data-group-id="1473392687-5">(</span><span class="p" data-group-id="1473392687-6">[</span><span class="n">just</span><span class="p" data-group-id="1473392687-7">(</span><span class="mi">1</span><span class="p" data-group-id="1473392687-7">)</span><span class="p">,</span><span class="w"> </span><span class="n">nothing</span><span class="p" data-group-id="1473392687-8">(</span><span class="p" data-group-id="1473392687-8">)</span><span class="p" data-group-id="1473392687-6">]</span><span class="p" data-group-id="1473392687-5">)</span><span class="w">  </span><span class="c1"># =&gt; Nothing</span><span class="w">
+
+</span><span class="n">traverse</span><span class="p" data-group-id="1473392687-9">(</span><span class="p" data-group-id="1473392687-10">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1473392687-10">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1473392687-11">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="1473392687-12">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="1473392687-12">)</span><span class="w"> </span><span class="k" data-group-id="1473392687-11">end</span><span class="p" data-group-id="1473392687-9">)</span><span class="w">
+</span><span class="c1"># =&gt; Just([2, 3])</span></code></pre><h2 id="lifting-from-other-contexts" class="section-heading">
+  <a href="#lifting-from-other-contexts" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Lifting from Other Contexts</span>
+</h2>
+<p>These functions convert other values into the <code class="inline">Maybe</code> domain:</p><pre><code class="makeup elixir" translate="no"><span class="n">from_nil</span><span class="p" data-group-id="9293942912-1">(</span><span class="no">nil</span><span class="p" data-group-id="9293942912-1">)</span><span class="w">        </span><span class="c1"># =&gt; Nothing</span><span class="w">
+</span><span class="n">from_nil</span><span class="p" data-group-id="9293942912-2">(</span><span class="s">&quot;hi&quot;</span><span class="p" data-group-id="9293942912-2">)</span><span class="w">       </span><span class="c1"># =&gt; Just(&quot;hi&quot;)</span><span class="w">
+
+</span><span class="n">lift_identity</span><span class="p" data-group-id="9293942912-3">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9293942912-4">(</span><span class="mi">42</span><span class="p" data-group-id="9293942912-4">)</span><span class="p" data-group-id="9293942912-3">)</span><span class="w">     </span><span class="c1"># =&gt; Just(42)</span><span class="w">
+</span><span class="n">lift_identity</span><span class="p" data-group-id="9293942912-5">(</span><span class="nc">Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9293942912-6">(</span><span class="no">nil</span><span class="p" data-group-id="9293942912-6">)</span><span class="p" data-group-id="9293942912-5">)</span><span class="w">    </span><span class="c1"># =&gt; Nothing</span></code></pre><h2 id="interop-with-other-types" class="section-heading">
+  <a href="#interop-with-other-types" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Interop with Other Types</span>
+</h2>
+<table><thead><tr><th style="text-align: left;">From</th><th style="text-align: left;">To <code class="inline">Maybe</code></th></tr></thead><tbody><tr><td style="text-align: left;"><code class="inline">nil</code></td><td style="text-align: left;"><code class="inline">Nothing</code></td></tr><tr><td style="text-align: left;"><code class="inline">{:ok, val}</code></td><td style="text-align: left;"><code class="inline">Just(val)</code></td></tr><tr><td style="text-align: left;"><code class="inline">{:error, _}</code></td><td style="text-align: left;"><code class="inline">Nothing</code></td></tr><tr><td style="text-align: left;"><code class="inline">Identity(nil)</code></td><td style="text-align: left;"><code class="inline">Nothing</code></td></tr><tr><td style="text-align: left;"><code class="inline">Left(_)</code></td><td style="text-align: left;"><code class="inline">Nothing</code></td></tr><tr><td style="text-align: left;"><code class="inline">Right(val)</code></td><td style="text-align: left;"><code class="inline">Just(val)</code></td></tr><tr><td style="text-align: left;"><code class="inline">try(fn -&gt; ... end)</code></td><td style="text-align: left;"><code class="inline">Just</code> or <code class="inline">Nothing</code></td></tr></tbody></table><h2 id="comparison-support" class="section-heading">
+  <a href="#comparison-support" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Comparison Support</span>
+</h2>
+<p>Lifts <code class="inline">Eq</code> and <code class="inline">Ord</code> logic to support custom comparison of <code class="inline">Just</code> values:</p><ul><li><code class="inline">lift_eq/1</code></li><li><code class="inline">lift_ord/1</code></li></ul><h2 id="elixir-integration" class="section-heading">
+  <a href="#elixir-integration" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Elixir Integration</span>
+</h2>
+<p>Supports:</p><ul><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a> — inspectable output</li><li><code class="inline">Summarizable</code> — structured inspection tools</li><li><code class="inline">Foldable</code>, <code class="inline">Filterable</code>, and <code class="inline">Monad</code> protocols</li></ul>
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="monad-identity-usage-rules.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Funx.Monad.Identity Usage Rules
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+  </div>
+</div>
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.4" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.4">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/funx/0.1.4/show/lib/monad/maybe/usage-rules.md">current file</a>)
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
