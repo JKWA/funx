@@ -1,211 +1,131 @@
 # `Funx.Eq` Usage Rules
 
-## Quick Reference
+## Core Concepts
 
-* Use `Eq.eq?/2` instead of `==`.
-* Implement both `eq?/2` and `not_eq?/2`.
-* If no instance exists, the fallback uses Elixir’s `==` and `!=` via `Any`.
-* `Eq.Utils.*` defaults to protocol dispatch—no extra wiring needed.
-* `Funx.List` functions (`uniq`, `union`, `intersection`, etc.) respect `Eq`.
-* `Eq` is composable (`contramap`, `append_all`, `concat_any`); `==` is not.
+**Contramap**: Contravariant functor - transforms inputs before comparison
 
-## Overview
+- `contramap(& &1.id, Eq)` compares by ID field only
+- Mathematical dual of `map` - transforms "backwards" through the data flow
+- Key pattern: transform the input, not the comparison result
 
-`Funx.Eq` defines contextual equality in Elixir.
-Use `Eq` instead of `==` for identity checks, filters, and deduplication.
+**Utils Pattern**: Inject custom Eq logic or default to protocol
 
-* `==` is structural and fixed. It cannot be changed or composed.
-* `Eq` is extensible and composable. You can define it for your own types, and build new comparisons with helpers like `contramap`, `append_all`, and `concat_any`.
+- `Eq.Utils.eq?(a, b, custom_eq)` - uses custom_eq
+- `Eq.Utils.eq?(a, b)` - uses protocol dispatch
 
-`Eq.Utils` provides combinators for building custom equality rules.
-`Funx.List` uses `Eq` automatically—set operations respect domain semantics.
+**Monoid Composition**: Combine equality checks
 
-## Protocol Rules
+- `append_all/any(eq1, eq2)` - combine two (FALSE/TRUE-biased)
+- `concat_all/any([eq1, eq2, eq3])` - combine list (FALSE/TRUE-biased)
 
-* Implement both `eq?/2` and `not_eq?/2`.
-
-* Follow the standard equality laws:
-
-  * Reflexivity: `eq?(a, a) == true`
-  * Symmetry: `eq?(a, b) == eq?(b, a)`
-  * Transitivity: if `eq?(a, b)` and `eq?(b, c)`, then `eq?(a, c)`
-
-* Prefer semantic equality over structural equality:
-
-  * Identity fields
-  * Business logic
-  * Domain rules
-
-### Fallback (`Any`)
-
-If no explicit implementation is provided, `Any` uses Elixir’s `==`:
+## Quick Patterns
 
 ```elixir
-defimpl Funx.Eq, for: Any do
-  def eq?(a, b), do: a == b
-  def not_eq?(a, b), do: a != b
-end
-```
-
-Fallback is fine for primitives.
-For maps and structs, define your own `Eq` instance.
-
-## Preferred Usage
-
-### Use `Eq.eq?/2` Instead of `==`
-
-Define equality in terms of domain identity.
-Prefer projecting and delegating:
-
-```elixir
+# Protocol implementation (when needed)
 defimpl Funx.Eq, for: User do
-  def eq?(%User{id: v1}, %User{id: v2}), do: Funx.Eq.eq?(v1, v2)
+  def eq?(%User{id: id1}, %User{id: id2}), do: Funx.Eq.eq?(id1, id2)
   def not_eq?(a, b), do: not eq?(a, b)
 end
-```
 
-This delegates to the `Eq` instance for `id`, if one exists.
-It keeps your comparison logic composable and consistent.
+# PREFERRED: Build custom Eq, inject into Utils
+by_id = Eq.Utils.contramap(& &1.id)
+Eq.Utils.eq?(user1, user2, by_id)
 
-You can also build custom equality on the fly:
-
-```elixir
-eq = Eq.Utils.contramap(& &1.id)
-Eq.Utils.eq?(user1, user2, eq)
-```
-
-### Default Dispatch in `Eq.Utils`
-
-All helpers default to protocol dispatch—you don’t need to pass logic manually.
-
-```elixir
-Eq.Utils.eq?(a, b)
-Eq.Utils.not_eq?(a, b)
-Eq.Utils.eq_by?(&proj/1, a, b)
-Eq.Utils.to_predicate(target)
-```
-
-### Projections and Composition
-
-```elixir
-# Compare by ID
-eq = Eq.Utils.contramap(& &1.id)
-Eq.Utils.eq?(%User{id: 1}, %User{id: 1}, eq)
-
-# Filter a list by identity
-Enum.filter(users, Eq.Utils.to_predicate(current_user, eq))
-
-# Combine comparators
-Eq.Utils.concat_all([
+# Combine fields
+name_and_age = Eq.Utils.concat_all([
   Eq.Utils.contramap(& &1.name),
   Eq.Utils.contramap(& &1.age)
 ])
+
+# Use with Funx.List
+Funx.List.uniq(users, by_id)
 ```
 
-You can also use:
+## Key Rules
 
-* `append_all/2` (left-to-right composition)
-* `concat_all/1` (multi-key lexicographic comparison)
-* `concat_any/1` (any-match logic)
+- **MUST implement both** `eq?/2` and `not_eq?/2` (no optional defaults)
+- **Best practice**: `not_eq?(a, b) = not eq?(a, b)`
+- Use `contramap/2` to transform inputs before comparison
+- Use monoid functions for composition: `append_all/any`, `concat_all/any`
+- Prefer `Eq.Utils.eq?(a, b, custom_eq)` pattern
 
-## In `Funx.List`
+## When to Use
 
-`Funx.List` uses `Eq` automatically via `Eq.Utils`.
-No extra setup required.
-
-### Equality-Sensitive Functions
-
-* `uniq/2`
-* `union/3`
-* `intersection/3`
-* `difference/3`
-* `symmetric_difference/3`
-* `subset?/3`
-* `superset?/3`
-
-> Sorting is handled by `Funx.Ord` (`sort/2`, `strict_sort/2`).
-
-### Examples
-
-```elixir
-# With a protocol impl
-Funx.List.uniq([%User{id: 1}, %User{id: 1}])
-# => [%User{id: 1}]
-
-# With fallback (Any)
-Funx.List.uniq([1, 1.0])
-# => [1]  # Elixir: 1 == 1.0
-
-# With ad-hoc comparator
-eq = Eq.Utils.contramap(& &1.name)
-Funx.List.uniq(users, eq)
-```
-
-## Stability Contract
-
-* `eq?/2` must be pure (same inputs → same output).
-* `eq?/2` and `not_eq?/2` must be exact complements.
-* Instances should be domain-aware and consistent.
+- Domain equality (compare by ID, not all fields)
+- Deduplication with `Funx.List.uniq/2`
+- Set operations (`union`, `intersection`, etc.)
+- Custom filtering logic
 
 ## Anti-Patterns
 
-* Mixing `==` and `Eq` in the same logic:
-
-  ```elixir
-  # BAD
-  if a == b and Eq.eq?(a, b), do: ...
-  ```
-
-* Comparing unrelated types:
-
-  ```elixir
-  Eq.eq?(:ok, %{ok: true})  # meaningless
-  ```
-
-## Good Patterns
-
-* Use `Eq` for identity checks, filters, and deduplication.
-* Use `contramap` to project domain keys.
-* Compose equality logic close to its use.
-* Avoid relying on fallback for domain types.
-
-## When to Define an `Eq` Instance
-
-Define an `Eq` instance when you need control over what counts as equal.
-
-### Common Cases
-
-* Identity fields (`id`, `slug`, `handle`)
-* Semantic keys (birthdays = same day/month)
-* Ignoring metadata (timestamps, versions)
-* Composite identity (multiple fields together)
-* Domain logic (business rules define equality)
-* Set-like operations (deduplication, membership)
-
-### Why `Eq` Instead of `==`
-
-* `==` is fixed and structural.
-* `Eq` is extensible through protocols.
-* `Eq` is composable (`contramap`, `append_all`, `concat_any`).
-* `Eq` integrates with `Eq.Utils` and `Funx.List`.
-
-## Built-in Instances
-
-`Funx.Eq` provides ready-to-use instances for Elixir’s time types:
-Each uses the standard library’s `compare/2`, but only checks for equality:
-
-* `DateTime` → `DateTime.compare(a, b) == :eq`
-* `Date` → `Date.compare(a, b) == :eq`
-* `Time` → `Time.compare(a, b) == :eq`
-* `NaiveDateTime` → `NaiveDateTime.compare(a, b) == :eq`
-
-Also included:
-A fallback for `Any` using Elixir’s `==` and `!=`:
-
 ```elixir
-Eq.eq?(1, 1.0)  # true
-Eq.eq?("a", "a")  # true
+# ❌ Don't mix == and Eq.eq?
+if user1 == user2 and Eq.eq?(user1.name, user2.name), do: ...
+
+# ❌ Don't forget not_eq?/2
+defimpl Funx.Eq, for: User do
+  def eq?(%User{id: id1}, %User{id: id2}), do: id1 == id2
+  # Missing not_eq?/2!
+end
+
+# ❌ Don't transform comparison result
+contramap(fn result -> not result end)  # Wrong!
 ```
 
-Safe for primitives.
-**For domain types, define an explicit instance.**
+## Testing
+
+```elixir
+test "Eq laws hold" do
+  # Reflexivity: a == a
+  assert Eq.eq?(user, user)
+  
+  # Symmetry: a == b implies b == a  
+  assert Eq.eq?(user1, user2) == Eq.eq?(user2, user1)
+  
+  # Complement: eq? and not_eq? are opposites
+  assert Eq.eq?(user1, user2) == not Eq.not_eq?(user1, user2)
+end
+
+test "contramap preserves Eq laws" do
+  by_id = Eq.Utils.contramap(& &1.id)
+  user1 = %User{id: 1, name: "Alice"}
+  user2 = %User{id: 1, name: "Bob"}  # Same ID, different name
+  
+  # Contramap projection maintains equality laws
+  assert by_id.eq?.(user1, user2)  # Same ID
+  assert by_id.eq?.(user1, user1)  # Reflexive
+end
+
+test "monoid composition laws" do
+  eq1 = Eq.Utils.contramap(& &1.name)
+  eq2 = Eq.Utils.contramap(& &1.age)
+  
+  # Monoid bias behavior
+  all_eq = Eq.Utils.concat_all([eq1, eq2])  # FALSE-biased
+  any_eq = Eq.Utils.concat_any([eq1, eq2])  # TRUE-biased
+  
+  person1 = %{name: "Alice", age: 25}
+  person2 = %{name: "Alice", age: 30}  # Name matches, age differs
+  
+  assert any_eq.eq?.(person1, person2)  # TRUE-bias: stops at name match
+  refute all_eq.eq?.(person1, person2) # FALSE-bias: fails on age difference
+end
+```
+
+## Fallback Behavior
+
+- **Any protocol**: Uses Elixir's `==` and `!=` for primitive types
+- **Custom types**: Define explicit `Eq` implementation for domain logic
+- **Time types**: Built-in instances use standard library comparison
+
+## Summary
+
+`Funx.Eq` provides **extensible, composable equality** for domain semantics beyond structural `==`:
+
+- **Contramap** (contravariant functor): Transform inputs before comparison
+- **Monoid composition**: Combine equality checks with FALSE/TRUE-biased operations  
+- **Utils injection**: `Eq.Utils.eq?(a, b, custom_eq)` pattern for flexible equality
+- **Protocol + fallback**: Custom domain logic with `Any` fallback for primitives
+- **Mathematical foundation**: Preserves equality laws through transformations and composition
+
+**Canon**: Use `contramap` for projections, monoid functions for composition, Utils injection for flexibility.
