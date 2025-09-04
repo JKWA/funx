@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.4">
+
+
+    <title>Funx.Monad.Either Usage Rules — funx v0.1.4</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/monad-either-usage-rules.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-5B10BDF9.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.4
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.4/lib/monad/either/usage-rules.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+
+    <span><code class="inline">Funx.Monad.Either</code> Usage Rules</span>
+  </h1>
+
+<h2 id="quick-reference" class="section-heading">
+  <a href="#quick-reference" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Quick Reference</span>
+</h2>
+<h3 id="construction" class="section-heading">
+  <a href="#construction" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Construction</span>
+</h3>
+<ul><li><code class="inline">right/1</code> — Wraps a success.</li><li><code class="inline">left/1</code> — Wraps a failure.</li><li><code class="inline">pure/1</code> — Alias for <code class="inline">right/1</code>.</li></ul><h3 id="monadic-composition" class="section-heading">
+  <a href="#monadic-composition" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Monadic Composition</span>
+</h3>
+<p><em>(via <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a> protocol)</em></p><ul><li><code class="inline">map/2</code> — Transforms a <code class="inline">Right</code>; skips <code class="inline">Left</code>.</li><li><code class="inline">bind/2</code> — Chains context-aware functions (<code class="inline">a -&gt; Either</code>); short-circuits on <code class="inline">Left</code>.</li><li><code class="inline">ap/2</code> — Applies a <code class="inline">Right(fun)</code> to a <code class="inline">Right(arg)</code>; propagates <code class="inline">Left</code>.</li></ul><h3 id="refinement-queries" class="section-heading">
+  <a href="#refinement-queries" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Refinement &amp; Queries</span>
+</h3>
+<ul><li><code class="inline">right?/1</code>, <code class="inline">left?/1</code> — Check which variant.</li><li><code class="inline">flip/1</code> — Swaps <code class="inline">Left</code> and <code class="inline">Right</code>.</li></ul><h3 id="fallback" class="section-heading">
+  <a href="#fallback" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Fallback</span>
+</h3>
+<ul><li><code class="inline">get_or_else/2</code> — Extracts or supplies default.</li><li><code class="inline">or_else/2</code> — Replaces a <code class="inline">Left</code> with a fallback <code class="inline">Either</code>.</li><li><code class="inline">map_left/2</code> — Transforms the <code class="inline">Left</code> side only.</li></ul><h3 id="filtering" class="section-heading">
+  <a href="#filtering" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Filtering</span>
+</h3>
+<ul><li><code class="inline">filter_or_else/3</code> — Keeps a <code class="inline">Right</code> only if it satisfies a predicate.</li></ul><h3 id="monadic-lists" class="section-heading">
+  <a href="#monadic-lists" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Monadic Lists</span>
+</h3>
+<ul><li><code class="inline">concat/1</code> — Extracts all <code class="inline">Right</code> values from a list.</li><li><code class="inline">concat_map/2</code> — Maps to <code class="inline">Either</code>, filters <code class="inline">Right</code> results.</li><li><code class="inline">sequence/1</code> — Combines if all are <code class="inline">Right</code>; halts on first <code class="inline">Left</code>.</li><li><code class="inline">traverse/2</code> — Applies a function to each element, stops at first <code class="inline">Left</code>.</li></ul><h3 id="applicative-lists" class="section-heading">
+  <a href="#applicative-lists" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Applicative Lists</span>
+</h3>
+<ul><li><code class="inline">sequence_a/1</code> — Combines all; accumulates <code class="inline">Left</code> errors (requires <code class="inline">Semigroup</code>).</li><li><code class="inline">traverse_a/2</code> — Maps with error accumulation.</li><li><code class="inline">wither_a/2</code> — Maps to <code class="inline">Maybe</code> while accumulating errors.</li></ul><h3 id="validation" class="section-heading">
+  <a href="#validation" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Validation</span>
+</h3>
+<ul><li><code class="inline">validate/2</code> — Applies multiple validators to one input, accumulating all failures.</li></ul><h3 id="lifting" class="section-heading">
+  <a href="#lifting" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Lifting</span>
+</h3>
+<ul><li><code class="inline">lift_predicate/3</code> — Wraps <code class="inline">Right</code> if condition holds, otherwise <code class="inline">Left</code>.</li><li><code class="inline">lift_maybe/2</code> — Converts <code class="inline">Maybe</code> to <code class="inline">Either</code>.</li><li><code class="inline">lift_eq/1</code>, <code class="inline">lift_ord/1</code> — Adapts <code class="inline">Eq</code> and <code class="inline">Ord</code> logic.</li></ul><h3 id="elixir-interop" class="section-heading">
+  <a href="#elixir-interop" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Elixir Interop</span>
+</h3>
+<ul><li><code class="inline">from_result/1</code>, <code class="inline">to_result/1</code></li><li><code class="inline">from_try/1</code>, <code class="inline">to_try!/1</code></li></ul><p>Implements: <code class="inline">Monad</code>, <code class="inline">Eq</code>, <code class="inline">Ord</code>, <code class="inline">Foldable</code>, <a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>, <code class="inline">Summarizable</code>.</p><h2 id="overview" class="section-heading">
+  <a href="#overview" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Overview</span>
+</h2>
+<p>The <code class="inline">Either</code> monad represents a computation that can succeed or fail. It carries one of two variants:</p><ul><li><code class="inline">Right(success)</code> — a valid result</li><li><code class="inline">Left(error)</code> — a failure, error, or explanation</li></ul><p><code class="inline">Either</code> is <strong>right-biased</strong>: <code class="inline">map/2</code>, <code class="inline">bind/2</code>, and <code class="inline">ap/2</code> apply only to the <code class="inline">Right</code>. If the value is <code class="inline">Left</code>, these operations skip the function and preserve the error. This simplifies branching logic—allowing you to chain multiple steps without manually checking for failure.</p><p>Use <code class="inline">Right</code> when the computation succeeds. Use <code class="inline">Left</code> when it fails but should continue in a controlled, declarative manner.</p><h2 id="when-to-use-it" class="section-heading">
+  <a href="#when-to-use-it" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">When to Use It</span>
+</h2>
+<table><thead><tr><th style="text-align: left;">Situation</th><th style="text-align: left;">Use <code class="inline">Either</code> to…</th></tr></thead><tbody><tr><td style="text-align: left;">Represent recoverable failures</td><td style="text-align: left;">Avoid exceptions, wrap with <code class="inline">Left</code></td></tr><tr><td style="text-align: left;">Chain dependent steps</td><td style="text-align: left;">Use <code class="inline">bind/2</code> to short-circuit on failure</td></tr><tr><td style="text-align: left;">Validate multiple fields</td><td style="text-align: left;">Use <code class="inline">traverse_a/2</code> to accumulate errors</td></tr><tr><td style="text-align: left;">Fallback gracefully</td><td style="text-align: left;">Use <code class="inline">or_else/2</code> or <code class="inline">get_or_else/2</code></td></tr><tr><td style="text-align: left;">Transform only errors</td><td style="text-align: left;">Use <code class="inline">map_left/2</code></td></tr><tr><td style="text-align: left;">Turn predicates into branches</td><td style="text-align: left;">Use <code class="inline">filter_or_else/3</code> or <code class="inline">lift_predicate/3</code></td></tr><tr><td style="text-align: left;">Convert from <code class="inline">Maybe</code> or <code class="inline">Result</code></td><td style="text-align: left;">Use <code class="inline">lift_maybe/2</code> or <code class="inline">from_result/1</code></td></tr></tbody></table><h2 id="monadic-control" class="section-heading">
+  <a href="#monadic-control" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Monadic Control</span>
+</h2>
+<h3 id="map-2" class="section-heading">
+  <a href="#map-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">map/2</code></span>
+</h3>
+<p>Preserves structure, applies a function to transform a <code class="inline">Right</code>. Preserves <code class="inline">Left</code> unchanged.</p><pre><code class="makeup elixir" translate="no"><span class="n">map</span><span class="p" data-group-id="0515197400-1">(</span><span class="n">right</span><span class="p" data-group-id="0515197400-2">(</span><span class="mi">2</span><span class="p" data-group-id="0515197400-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0515197400-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k" data-group-id="0515197400-3">end</span><span class="p" data-group-id="0515197400-1">)</span><span class="w">
+</span><span class="c1"># =&gt; Right(3)</span><span class="w">
+
+</span><span class="n">map</span><span class="p" data-group-id="0515197400-4">(</span><span class="n">left</span><span class="p" data-group-id="0515197400-5">(</span><span class="s">&quot;fail&quot;</span><span class="p" data-group-id="0515197400-5">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0515197400-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k" data-group-id="0515197400-6">end</span><span class="p" data-group-id="0515197400-4">)</span><span class="w">
+</span><span class="c1"># =&gt; Left(&quot;fail&quot;)</span></code></pre><h3 id="bind-2" class="section-heading">
+  <a href="#bind-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">bind/2</code></span>
+</h3>
+<p>Chains functions that return an <code class="inline">Either</code>. Skips remaining steps if <code class="inline">Left</code>.</p><pre><code class="makeup elixir" translate="no"><span class="n">right</span><span class="p" data-group-id="6544705340-1">(</span><span class="mi">2</span><span class="p" data-group-id="6544705340-1">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="6544705340-2">(</span><span class="k" data-group-id="6544705340-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="6544705340-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="6544705340-4">)</span><span class="w"> </span><span class="k" data-group-id="6544705340-3">end</span><span class="p" data-group-id="6544705340-2">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="6544705340-5">(</span><span class="k" data-group-id="6544705340-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="6544705340-7">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6544705340-7">)</span><span class="w"> </span><span class="k" data-group-id="6544705340-6">end</span><span class="p" data-group-id="6544705340-5">)</span><span class="w">
+</span><span class="c1"># =&gt; Right(6)</span></code></pre><h3 id="ap-2" class="section-heading">
+  <a href="#ap-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">ap/2</code></span>
+</h3>
+<p>Applies a <code class="inline">Right(fun)</code> to a <code class="inline">Right(arg)</code>. Any <code class="inline">Left</code> halts the chain.</p><pre><code class="makeup elixir" translate="no"><span class="n">pure</span><span class="p" data-group-id="2028453682-1">(</span><span class="k" data-group-id="2028453682-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="k" data-group-id="2028453682-2">end</span><span class="p" data-group-id="2028453682-1">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="2028453682-3">(</span><span class="n">right</span><span class="p" data-group-id="2028453682-4">(</span><span class="mi">3</span><span class="p" data-group-id="2028453682-4">)</span><span class="p" data-group-id="2028453682-3">)</span><span class="w">
+</span><span class="c1"># =&gt; Right(30)</span><span class="w">
+
+</span><span class="n">left</span><span class="p" data-group-id="2028453682-5">(</span><span class="s">&quot;bad&quot;</span><span class="p" data-group-id="2028453682-5">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="2028453682-6">(</span><span class="n">right</span><span class="p" data-group-id="2028453682-7">(</span><span class="mi">3</span><span class="p" data-group-id="2028453682-7">)</span><span class="p" data-group-id="2028453682-6">)</span><span class="w">
+</span><span class="c1"># =&gt; Left(&quot;bad&quot;)</span></code></pre><h2 id="fallback-and-filtering" class="section-heading">
+  <a href="#fallback-and-filtering" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Fallback and Filtering</span>
+</h2>
+<h3 id="get_or_else-2" class="section-heading">
+  <a href="#get_or_else-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">get_or_else/2</code></span>
+</h3>
+<p>Returns the inner value if <code class="inline">Right</code>, fallback otherwise.</p><pre><code class="makeup elixir" translate="no"><span class="n">get_or_else</span><span class="p" data-group-id="9477085901-1">(</span><span class="n">right</span><span class="p" data-group-id="9477085901-2">(</span><span class="s">&quot;ok&quot;</span><span class="p" data-group-id="9477085901-2">)</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;fallback&quot;</span><span class="p" data-group-id="9477085901-1">)</span><span class="w">     </span><span class="c1"># =&gt; &quot;ok&quot;</span><span class="w">
+</span><span class="n">get_or_else</span><span class="p" data-group-id="9477085901-3">(</span><span class="n">left</span><span class="p" data-group-id="9477085901-4">(</span><span class="s">&quot;fail&quot;</span><span class="p" data-group-id="9477085901-4">)</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;fallback&quot;</span><span class="p" data-group-id="9477085901-3">)</span><span class="w">    </span><span class="c1"># =&gt; &quot;fallback&quot;</span></code></pre><h3 id="or_else-2" class="section-heading">
+  <a href="#or_else-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">or_else/2</code></span>
+</h3>
+<p>Replaces a <code class="inline">Left</code> with another <code class="inline">Either</code>.</p><pre><code class="makeup elixir" translate="no"><span class="n">or_else</span><span class="p" data-group-id="1317579573-1">(</span><span class="n">right</span><span class="p" data-group-id="1317579573-2">(</span><span class="s">&quot;ok&quot;</span><span class="p" data-group-id="1317579573-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1317579573-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="1317579573-4">(</span><span class="s">&quot;alt&quot;</span><span class="p" data-group-id="1317579573-4">)</span><span class="w"> </span><span class="k" data-group-id="1317579573-3">end</span><span class="p" data-group-id="1317579573-1">)</span><span class="w">
+</span><span class="c1"># =&gt; Right(&quot;ok&quot;)</span><span class="w">
+
+</span><span class="n">or_else</span><span class="p" data-group-id="1317579573-5">(</span><span class="n">left</span><span class="p" data-group-id="1317579573-6">(</span><span class="s">&quot;fail&quot;</span><span class="p" data-group-id="1317579573-6">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1317579573-7">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="1317579573-8">(</span><span class="s">&quot;alt&quot;</span><span class="p" data-group-id="1317579573-8">)</span><span class="w"> </span><span class="k" data-group-id="1317579573-7">end</span><span class="p" data-group-id="1317579573-5">)</span><span class="w">
+</span><span class="c1"># =&gt; Right(&quot;alt&quot;)</span></code></pre><h3 id="map_left-2" class="section-heading">
+  <a href="#map_left-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">map_left/2</code></span>
+</h3>
+<p>Transforms the error value, preserving <code class="inline">Right</code>.</p><pre><code class="makeup elixir" translate="no"><span class="n">map_left</span><span class="p" data-group-id="0387543445-1">(</span><span class="n">left</span><span class="p" data-group-id="0387543445-2">(</span><span class="s">&quot;fail&quot;</span><span class="p" data-group-id="0387543445-2">)</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">upcase</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="0387543445-1">)</span><span class="w">
+</span><span class="c1"># =&gt; Left(&quot;FAIL&quot;)</span></code></pre><h3 id="filter_or_else-3" class="section-heading">
+  <a href="#filter_or_else-3" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">filter_or_else/3</code></span>
+</h3>
+<p>Keeps a <code class="inline">Right</code> only if it satisfies a predicate. Returns <code class="inline">Left</code> with provided reason otherwise.</p><pre><code class="makeup elixir" translate="no"><span class="n">filter_or_else</span><span class="p" data-group-id="7196822804-1">(</span><span class="n">right</span><span class="p" data-group-id="7196822804-2">(</span><span class="mi">5</span><span class="p" data-group-id="7196822804-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7196822804-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="7196822804-3">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7196822804-4">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;too small&quot;</span><span class="w"> </span><span class="k" data-group-id="7196822804-4">end</span><span class="p" data-group-id="7196822804-1">)</span><span class="w">
+</span><span class="c1"># =&gt; Right(5)</span><span class="w">
+
+</span><span class="n">filter_or_else</span><span class="p" data-group-id="7196822804-5">(</span><span class="n">right</span><span class="p" data-group-id="7196822804-6">(</span><span class="mi">2</span><span class="p" data-group-id="7196822804-6">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7196822804-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="7196822804-7">end</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7196822804-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;too small&quot;</span><span class="w"> </span><span class="k" data-group-id="7196822804-8">end</span><span class="p" data-group-id="7196822804-5">)</span><span class="w">
+</span><span class="c1"># =&gt; Left(&quot;too small&quot;)</span></code></pre><h2 id="list-composition" class="section-heading">
+  <a href="#list-composition" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">List Composition</span>
+</h2>
+<h3 id="monadic-traverse-2-sequence-1" class="section-heading">
+  <a href="#monadic-traverse-2-sequence-1" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Monadic (<code class="inline">traverse/2</code>, <code class="inline">sequence/1</code>)</span>
+</h3>
+<p>Stops on first <code class="inline">Left</code>. Use when one error is enough to halt the operation.</p><pre><code class="makeup elixir" translate="no"><span class="n">traverse</span><span class="p" data-group-id="2028496730-1">(</span><span class="p" data-group-id="2028496730-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2028496730-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2028496730-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="2028496730-4">(</span><span class="n">x</span><span class="p" data-group-id="2028496730-4">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="n">left</span><span class="p" data-group-id="2028496730-5">(</span><span class="s">&quot;too big&quot;</span><span class="p" data-group-id="2028496730-5">)</span><span class="w">
+</span><span class="k" data-group-id="2028496730-3">end</span><span class="p" data-group-id="2028496730-1">)</span><span class="w">
+</span><span class="c1"># =&gt; Left(&quot;too big&quot;)</span></code></pre><h3 id="applicative-traverse_a-2-sequence_a-1" class="section-heading">
+  <a href="#applicative-traverse_a-2-sequence_a-1" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Applicative (<code class="inline">traverse_a/2</code>, <code class="inline">sequence_a/1</code>)</span>
+</h3>
+<p>Continues through all inputs. Accumulates all failures via <code class="inline">Semigroup</code>.</p><pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Semigroup.Sum</span><span class="w">
+
+</span><span class="n">traverse_a</span><span class="p" data-group-id="6450944582-1">(</span><span class="p" data-group-id="6450944582-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="6450944582-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="6450944582-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="k">if</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="6450944582-4">(</span><span class="n">x</span><span class="p" data-group-id="6450944582-4">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="n">left</span><span class="p" data-group-id="6450944582-5">(</span><span class="nc">Sum</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="6450944582-6">(</span><span class="mi">1</span><span class="p" data-group-id="6450944582-6">)</span><span class="p" data-group-id="6450944582-5">)</span><span class="w">
+</span><span class="k" data-group-id="6450944582-3">end</span><span class="p" data-group-id="6450944582-1">)</span><span class="w">
+</span><span class="c1"># =&gt; Left(%Sum{unwrap: 3})</span></code></pre><p>Use <code class="inline">traverse/2</code> when you want fast failure.
+Use <code class="inline">traverse_a/2</code> when you want all errors, e.g., in form validation.</p><h2 id="validation-1" class="section-heading">
+  <a href="#validation-1" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Validation</span>
+</h2>
+<h3 id="validate-2" class="section-heading">
+  <a href="#validate-2" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text"><code class="inline">validate/2</code></span>
+</h3>
+<p>Composes multiple validators over a single input, accumulating all failures.</p><pre><code class="makeup elixir" translate="no"><span class="n">validators</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="6438349759-1">[</span><span class="w">
+  </span><span class="k" data-group-id="6438349759-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">lift_predicate</span><span class="p" data-group-id="6438349759-3">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="6438349759-4">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="6438349759-4">)</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="s">&quot;too small: </span><span class="si" data-group-id="6438349759-5">#{</span><span class="n">x</span><span class="si" data-group-id="6438349759-5">}</span><span class="s">&quot;</span><span class="p" data-group-id="6438349759-3">)</span><span class="w"> </span><span class="k" data-group-id="6438349759-2">end</span><span class="p">,</span><span class="w">
+  </span><span class="k" data-group-id="6438349759-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">lift_predicate</span><span class="p" data-group-id="6438349759-7">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="6438349759-8">(</span><span class="n">rem</span><span class="p" data-group-id="6438349759-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6438349759-9">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="6438349759-8">)</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="s">&quot;not even: </span><span class="si" data-group-id="6438349759-10">#{</span><span class="n">x</span><span class="si" data-group-id="6438349759-10">}</span><span class="s">&quot;</span><span class="p" data-group-id="6438349759-7">)</span><span class="w"> </span><span class="k" data-group-id="6438349759-6">end</span><span class="w">
+</span><span class="p" data-group-id="6438349759-1">]</span><span class="w">
+
+</span><span class="n">validate</span><span class="p" data-group-id="6438349759-11">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">validators</span><span class="p" data-group-id="6438349759-11">)</span><span class="w">
+</span><span class="c1"># =&gt; Left([&quot;not even: 3&quot;])</span><span class="w">
+
+</span><span class="n">validate</span><span class="p" data-group-id="6438349759-12">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">validators</span><span class="p" data-group-id="6438349759-12">)</span><span class="w">
+</span><span class="c1"># =&gt; Left([&quot;too small: -2&quot;])</span></code></pre><h2 id="lifting-and-interop" class="section-heading">
+  <a href="#lifting-and-interop" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Lifting and Interop</span>
+</h2>
+<h3 id="from-other-types" class="section-heading">
+  <a href="#from-other-types" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">From Other Types</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="n">from_result</span><span class="p" data-group-id="8103593915-1">(</span><span class="p" data-group-id="8103593915-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8103593915-2">}</span><span class="p" data-group-id="8103593915-1">)</span><span class="w">        </span><span class="c1"># =&gt; Right(5)</span><span class="w">
+</span><span class="n">from_result</span><span class="p" data-group-id="8103593915-3">(</span><span class="p" data-group-id="8103593915-4">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bad&quot;</span><span class="p" data-group-id="8103593915-4">}</span><span class="p" data-group-id="8103593915-3">)</span><span class="w"> </span><span class="c1"># =&gt; Left(&quot;bad&quot;)</span><span class="w">
+
+</span><span class="n">from_try</span><span class="p" data-group-id="8103593915-5">(</span><span class="k" data-group-id="8103593915-6">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s">&quot;fail&quot;</span><span class="w"> </span><span class="k" data-group-id="8103593915-6">end</span><span class="p" data-group-id="8103593915-5">)</span><span class="w">
+</span><span class="c1"># =&gt; Left(%RuntimeError{...})</span><span class="w">
+
+</span><span class="n">lift_maybe</span><span class="p" data-group-id="8103593915-7">(</span><span class="n">just</span><span class="p" data-group-id="8103593915-8">(</span><span class="mi">5</span><span class="p" data-group-id="8103593915-8">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8103593915-9">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;none&quot;</span><span class="w"> </span><span class="k" data-group-id="8103593915-9">end</span><span class="p" data-group-id="8103593915-7">)</span><span class="w">     </span><span class="c1"># =&gt; Right(5)</span><span class="w">
+</span><span class="n">lift_maybe</span><span class="p" data-group-id="8103593915-10">(</span><span class="n">nothing</span><span class="p" data-group-id="8103593915-11">(</span><span class="p" data-group-id="8103593915-11">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8103593915-12">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;none&quot;</span><span class="w"> </span><span class="k" data-group-id="8103593915-12">end</span><span class="p" data-group-id="8103593915-10">)</span><span class="w">   </span><span class="c1"># =&gt; Left(&quot;none&quot;)</span></code></pre><h2 id="comparison-support" class="section-heading">
+  <a href="#comparison-support" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Comparison Support</span>
+</h2>
+<p>Lifts <code class="inline">Eq</code> and <code class="inline">Ord</code> instances into the <code class="inline">Either</code> context.</p><ul><li>Use <code class="inline">lift_eq/1</code> to compare wrapped values.</li><li>Use <code class="inline">lift_ord/1</code> for ordering.</li><li><code class="inline">Right(_) &gt; Left(_)</code> always.</li></ul><h2 id="summary" class="section-heading">
+  <a href="#summary" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Summary</span>
+</h2>
+<p><code class="inline">Either</code> helps you model errors explicitly, control branching declaratively, and validate complex input without sacrificing clarity. Use it to avoid exceptions, preserve intent, and build expressive pipelines.</p><ul><li>Short-circuit with <code class="inline">bind/2</code></li><li>Accumulate errors with <code class="inline">ap/2</code></li><li>Choose structure based on desired failure behavior: fast or wide</li></ul>
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="monad-maybe-usage-rules.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Funx.Monad.Maybe Usage Rules
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+  </div>
+</div>
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.4" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.4">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/funx/0.1.4/show/lib/monad/either/usage-rules.md">current file</a>)
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
