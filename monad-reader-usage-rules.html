@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.4">
+
+
+    <title>Funx.Monad.Reader Usage Rules — funx v0.1.4</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/monad-reader-usage-rules.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-79E76F4A.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.4
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.4/lib/monad/reader/usage-rules.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+
+    <span><code class="inline">Funx.Monad.Reader</code> Usage Rules</span>
+  </h1>
+
+<h2 id="llm-functional-programming-foundation" class="section-heading">
+  <a href="#llm-functional-programming-foundation" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">LLM Functional Programming Foundation</span>
+</h2>
+<p><strong>Key Concepts for LLMs:</strong></p><p><strong>CRITICAL Elixir Implementation</strong>: All monadic operations are under <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a> protocol</p><ul><li><strong>NO separate Functor/Applicative protocols</strong> - Elixir protocols cannot be extended after definition</li><li>Always use <code class="inline">Monad.map/2</code>, <code class="inline">Monad.bind/2</code>, <code class="inline">Monad.ap/2</code> or import <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a></li><li>Different from Haskell's separate Functor, Applicative, Monad typeclasses</li></ul><p><strong>Reader</strong>: Represents deferred computation with read-only environment access</p><ul><li><code class="inline">pure(value)</code> creates a Reader that ignores environment, returns value</li><li><code class="inline">run(reader, env)</code> executes the deferred computation with environment</li><li><code class="inline">asks/1</code> extracts and transforms environment data</li><li><code class="inline">ask/0</code> extracts full environment unchanged</li></ul><p><strong>Deferred Computation</strong>: Define now, run later with environment</p><ul><li>Reader describes computation steps but doesn't execute until <code class="inline">run/2</code></li><li><strong>Lazy evaluation</strong>: Nothing happens until environment is supplied</li><li><strong>Thunk pattern</strong>: Functions that defer computation until needed</li></ul><p><strong>Environment Threading</strong>: Read-only context passed through computation chain</p><ul><li>Environment flows through <code class="inline">map/2</code>, <code class="inline">bind/2</code>, <code class="inline">ap/2</code> automatically</li><li>Each step can access environment via <code class="inline">asks/1</code> without explicit passing</li><li><strong>Key insight</strong>: Eliminates prop drilling and explicit parameter passing</li></ul><h2 id="llm-decision-guide-when-to-use-reader" class="section-heading">
+  <a href="#llm-decision-guide-when-to-use-reader" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">LLM Decision Guide: When to Use Reader</span>
+</h2>
+<h3 id="use-reader-for" class="section-heading">
+  <a href="#use-reader-for" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Use Reader For</span>
+</h3>
+<ul><li><strong>Dependency injection</strong> - swap implementations without changing logic</li><li><strong>Configuration access</strong> - shared settings across computation chain</li><li><strong>Avoiding prop drilling</strong> - deep access without threading parameters</li><li><strong>Environment-dependent logic</strong> - computation that varies by context</li></ul><h3 id="don-t-use-reader-for" class="section-heading">
+  <a href="#don-t-use-reader-for" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Don't Use Reader For</span>
+</h3>
+<ul><li><strong>State modification</strong> - Reader is read-only (use Writer or State)</li><li><strong>Error handling</strong> - Reader doesn't short-circuit (use Either)</li><li><strong>Optional values</strong> - Reader always requires environment (use Maybe)</li><li><strong>Simple value transformation</strong> - Reader adds unnecessary complexity</li></ul><h2 id="core-patterns" class="section-heading">
+  <a href="#core-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Core Patterns</span>
+</h2>
+<h3 id="construction-and-execution" class="section-heading">
+  <a href="#construction-and-execution" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Construction and Execution</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="p">,</span><span class="w"> </span><span class="ss">only</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5233762304-1">[</span><span class="ss">map</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="ss">bind</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="ss">ap</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5233762304-1">]</span><span class="w">
+
+</span><span class="c1"># Create Reader with pure value</span><span class="w">
+</span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="5233762304-2">(</span><span class="mi">42</span><span class="p" data-group-id="5233762304-2">)</span><span class="w">
+</span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="5233762304-3">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="5233762304-3">)</span><span class="w">  </span><span class="c1"># 42</span><span class="w">
+
+</span><span class="c1"># Create Reader that uses environment  </span><span class="w">
+</span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="5233762304-4">(</span><span class="k" data-group-id="5233762304-5">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">env</span><span class="o">.</span><span class="n">api_key</span><span class="w"> </span><span class="k" data-group-id="5233762304-5">end</span><span class="p" data-group-id="5233762304-4">)</span><span class="w">
+</span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="5233762304-6">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5233762304-7">%{</span><span class="ss">api_key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret&quot;</span><span class="p" data-group-id="5233762304-7">}</span><span class="p" data-group-id="5233762304-6">)</span><span class="w">  </span><span class="c1"># &quot;secret&quot;</span><span class="w">
+
+</span><span class="c1"># Access full environment</span><span class="w">
+</span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="5233762304-8">(</span><span class="p" data-group-id="5233762304-8">)</span><span class="w">
+</span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="5233762304-9">(</span><span class="n">reader</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5233762304-10">%{</span><span class="ss">foo</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p" data-group-id="5233762304-10">}</span><span class="p" data-group-id="5233762304-9">)</span><span class="w">  </span><span class="c1"># %{foo: &quot;bar&quot;}</span></code></pre><h3 id="dependency-injection-pattern" class="section-heading">
+  <a href="#dependency-injection-pattern" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Dependency Injection Pattern</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Define services</span><span class="w">
+</span><span class="n">prod_service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3591971748-1">fn</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Hello </span><span class="si" data-group-id="3591971748-2">#{</span><span class="n">name</span><span class="si" data-group-id="3591971748-2">}</span><span class="s"> from production!&quot;</span><span class="w"> </span><span class="k" data-group-id="3591971748-1">end</span><span class="w">
+</span><span class="n">test_service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3591971748-3">fn</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Hello </span><span class="si" data-group-id="3591971748-4">#{</span><span class="n">name</span><span class="si" data-group-id="3591971748-4">}</span><span class="s"> from test!&quot;</span><span class="w"> </span><span class="k" data-group-id="3591971748-3">end</span><span class="w">
+
+</span><span class="c1"># Create computation that depends on injected service</span><span class="w">
+</span><span class="n">greet_user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3591971748-5">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="3591971748-6">(</span><span class="k" data-group-id="3591971748-7">fn</span><span class="w"> </span><span class="n">service</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">service</span><span class="o">.</span><span class="p" data-group-id="3591971748-8">(</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="3591971748-8">)</span><span class="w"> </span><span class="k" data-group-id="3591971748-7">end</span><span class="p" data-group-id="3591971748-6">)</span><span class="w">
+</span><span class="k" data-group-id="3591971748-5">end</span><span class="w">
+
+</span><span class="c1"># Build deferred computation</span><span class="w">
+</span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="3591971748-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="3591971748-9">}</span><span class="w">
+</span><span class="n">greeting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">greet_user</span><span class="o">.</span><span class="p" data-group-id="3591971748-10">(</span><span class="n">user</span><span class="p" data-group-id="3591971748-10">)</span><span class="w">
+
+</span><span class="c1"># Inject different services</span><span class="w">
+</span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3591971748-11">(</span><span class="n">greeting</span><span class="p">,</span><span class="w"> </span><span class="n">prod_service</span><span class="p" data-group-id="3591971748-11">)</span><span class="w">  </span><span class="c1"># &quot;Hello Alice from production!&quot;</span><span class="w">
+</span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3591971748-12">(</span><span class="n">greeting</span><span class="p">,</span><span class="w"> </span><span class="n">test_service</span><span class="p" data-group-id="3591971748-12">)</span><span class="w">  </span><span class="c1"># &quot;Hello Alice from test!&quot;</span></code></pre><h3 id="configuration-access-pattern" class="section-heading">
+  <a href="#configuration-access-pattern" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Configuration Access Pattern</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Configuration-dependent computation</span><span class="w">
+</span><span class="n">create_api_client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="7518662216-1">(</span><span class="k" data-group-id="7518662216-2">fn</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="p" data-group-id="7518662216-3">%</span><span class="nc" data-group-id="7518662216-3">ApiClient</span><span class="p" data-group-id="7518662216-3">{</span><span class="w">
+    </span><span class="ss">endpoint</span><span class="p">:</span><span class="w"> </span><span class="n">config</span><span class="o">.</span><span class="n">api_endpoint</span><span class="p">,</span><span class="w">
+    </span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="n">config</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span><span class="w">
+    </span><span class="ss">retries</span><span class="p">:</span><span class="w"> </span><span class="n">config</span><span class="o">.</span><span class="n">max_retries</span><span class="w">
+  </span><span class="p" data-group-id="7518662216-3">}</span><span class="w">
+</span><span class="k" data-group-id="7518662216-2">end</span><span class="p" data-group-id="7518662216-1">)</span><span class="w">
+
+</span><span class="c1"># Use configuration</span><span class="w">
+</span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="7518662216-4">%{</span><span class="ss">api_endpoint</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https://api.example.com&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w"> </span><span class="ss">max_retries</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7518662216-4">}</span><span class="w">
+</span><span class="n">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="7518662216-5">(</span><span class="n">create_api_client</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p" data-group-id="7518662216-5">)</span></code></pre><h3 id="avoid-prop-drilling-pattern" class="section-heading">
+  <a href="#avoid-prop-drilling-pattern" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Avoid Prop Drilling Pattern</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Without Reader (prop drilling)</span><span class="w">
+</span><span class="n">square_tunnel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0800024643-1">fn</span><span class="w"> </span><span class="p" data-group-id="0800024643-2">{</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="p" data-group-id="0800024643-2">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="0800024643-3">{</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">user</span><span class="p" data-group-id="0800024643-3">}</span><span class="w"> </span><span class="k" data-group-id="0800024643-1">end</span><span class="w">
+</span><span class="n">format_result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0800024643-4">fn</span><span class="w"> </span><span class="p" data-group-id="0800024643-5">{</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="p" data-group-id="0800024643-5">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;</span><span class="si" data-group-id="0800024643-6">#{</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="si" data-group-id="0800024643-6">}</span><span class="s"> has </span><span class="si" data-group-id="0800024643-7">#{</span><span class="n">n</span><span class="si" data-group-id="0800024643-7">}</span><span class="s">&quot;</span><span class="w"> </span><span class="k" data-group-id="0800024643-4">end</span><span class="w">
+
+</span><span class="p" data-group-id="0800024643-8">{</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="p" data-group-id="0800024643-8">}</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">square_tunnel</span><span class="o">.</span><span class="p" data-group-id="0800024643-9">(</span><span class="p" data-group-id="0800024643-9">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">format_result</span><span class="o">.</span><span class="p" data-group-id="0800024643-10">(</span><span class="p" data-group-id="0800024643-10">)</span><span class="w">
+
+</span><span class="c1"># With Reader (clean separation)</span><span class="w">
+</span><span class="n">square</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0800024643-11">fn</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="k" data-group-id="0800024643-11">end</span><span class="w">
+</span><span class="n">format_with_user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0800024643-12">fn</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="0800024643-13">(</span><span class="k" data-group-id="0800024643-14">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;</span><span class="si" data-group-id="0800024643-15">#{</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="si" data-group-id="0800024643-15">}</span><span class="s"> has </span><span class="si" data-group-id="0800024643-16">#{</span><span class="n">n</span><span class="si" data-group-id="0800024643-16">}</span><span class="s">&quot;</span><span class="w"> </span><span class="k" data-group-id="0800024643-14">end</span><span class="p" data-group-id="0800024643-13">)</span><span class="w">
+</span><span class="k" data-group-id="0800024643-12">end</span><span class="w">
+
+</span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="0800024643-17">(</span><span class="mi">4</span><span class="p" data-group-id="0800024643-17">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="0800024643-18">(</span><span class="n">square</span><span class="p" data-group-id="0800024643-18">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="0800024643-19">(</span><span class="n">format_with_user</span><span class="p" data-group-id="0800024643-19">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="0800024643-20">(</span><span class="n">user</span><span class="p" data-group-id="0800024643-20">)</span><span class="w">  </span><span class="c1"># &quot;Alice has 16&quot;</span></code></pre><h2 id="key-rules" class="section-heading">
+  <a href="#key-rules" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Key Rules</span>
+</h2>
+<ul><li><strong>PURE for values</strong> - Use <code class="inline">Reader.pure/1</code> for environment-independent values</li><li><strong>ASKS for environment</strong> - Use <code class="inline">Reader.asks/1</code> to access and transform environment</li><li><strong>RUN to execute</strong> - Always call <code class="inline">Reader.run/2</code> to resolve deferred computation</li><li><strong>LAZY execution</strong> - Reader describes steps, nothing happens until run</li><li><strong>READ-ONLY access</strong> - Environment cannot be modified, only read</li><li><strong>NO comparison</strong> - Reader doesn't implement Eq/Ord (no meaningful comparison of deferred computations)</li></ul><h2 id="monadic-composition" class="section-heading">
+  <a href="#monadic-composition" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Monadic Composition</span>
+</h2>
+<h3 id="sequential-computation-bind" class="section-heading">
+  <a href="#sequential-computation-bind" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Sequential Computation (bind)</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Chain Reader computations that depend on previous results</span><span class="w">
+</span><span class="n">fetch_user_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4486612167-1">fn</span><span class="w"> </span><span class="n">user_id</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="4486612167-2">(</span><span class="k" data-group-id="4486612167-3">fn</span><span class="w"> </span><span class="n">db</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Database</span><span class="o">.</span><span class="n">get_user_config</span><span class="p" data-group-id="4486612167-4">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">user_id</span><span class="p" data-group-id="4486612167-4">)</span><span class="w"> </span><span class="k" data-group-id="4486612167-3">end</span><span class="p" data-group-id="4486612167-2">)</span><span class="w">
+</span><span class="k" data-group-id="4486612167-1">end</span><span class="w">
+
+</span><span class="n">apply_defaults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4486612167-5">fn</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="4486612167-6">(</span><span class="k" data-group-id="4486612167-7">fn</span><span class="w"> </span><span class="n">defaults</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Map</span><span class="o">.</span><span class="n">merge</span><span class="p" data-group-id="4486612167-8">(</span><span class="n">defaults</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p" data-group-id="4486612167-8">)</span><span class="w"> </span><span class="k" data-group-id="4486612167-7">end</span><span class="p" data-group-id="4486612167-6">)</span><span class="w">
+</span><span class="k" data-group-id="4486612167-5">end</span><span class="w">
+
+</span><span class="c1"># Chain operations</span><span class="w">
+</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">123</span><span class="w">
+</span><span class="n">final_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4486612167-9">(</span><span class="n">user_id</span><span class="p" data-group-id="4486612167-9">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="4486612167-10">(</span><span class="n">fetch_user_config</span><span class="p" data-group-id="4486612167-10">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="4486612167-11">(</span><span class="n">apply_defaults</span><span class="p" data-group-id="4486612167-11">)</span><span class="w">
+
+</span><span class="c1"># Execute with environment</span><span class="w">
+</span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="4486612167-12">%{</span><span class="ss">db</span><span class="p">:</span><span class="w"> </span><span class="n">database</span><span class="p">,</span><span class="w"> </span><span class="ss">defaults</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4486612167-13">%{</span><span class="ss">theme</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dark&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;en&quot;</span><span class="p" data-group-id="4486612167-13">}</span><span class="p" data-group-id="4486612167-12">}</span><span class="w">
+</span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4486612167-14">(</span><span class="n">final_config</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="4486612167-14">)</span></code></pre><h3 id="parallel-computation-ap" class="section-heading">
+  <a href="#parallel-computation-ap" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Parallel Computation (ap)</span>
+</h3>
+<p><strong>Note</strong>: <code class="inline">ap/2</code> applies a wrapped function to a wrapped value, threading environment through both.</p><pre><code class="makeup elixir" translate="no"><span class="c1"># Combine multiple Reader computations</span><span class="w">
+</span><span class="n">get_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="2680230218-1">(</span><span class="k" data-group-id="2680230218-2">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k" data-group-id="2680230218-2">end</span><span class="p" data-group-id="2680230218-1">)</span><span class="w">
+</span><span class="n">get_email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="2680230218-3">(</span><span class="k" data-group-id="2680230218-4">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="w"> </span><span class="k" data-group-id="2680230218-4">end</span><span class="p" data-group-id="2680230218-3">)</span><span class="w">
+</span><span class="n">format_contact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2680230218-5">(</span><span class="k" data-group-id="2680230218-6">fn</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k" data-group-id="2680230218-7">fn</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;</span><span class="si" data-group-id="2680230218-8">#{</span><span class="n">name</span><span class="si" data-group-id="2680230218-8">}</span><span class="s"> &lt;</span><span class="si" data-group-id="2680230218-9">#{</span><span class="n">email</span><span class="si" data-group-id="2680230218-9">}</span><span class="s">&gt;&quot;</span><span class="w"> </span><span class="k" data-group-id="2680230218-7">end</span><span class="w"> </span><span class="k" data-group-id="2680230218-6">end</span><span class="p" data-group-id="2680230218-5">)</span><span class="w">
+
+</span><span class="c1"># Apply pattern for parallel access</span><span class="w">
+</span><span class="n">contact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">format_contact</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="2680230218-10">(</span><span class="n">get_name</span><span class="p" data-group-id="2680230218-10">)</span><span class="w">
+</span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="2680230218-11">(</span><span class="n">get_email</span><span class="p" data-group-id="2680230218-11">)</span><span class="w">
+
+</span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="2680230218-12">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice@example.com&quot;</span><span class="p" data-group-id="2680230218-12">}</span><span class="w">
+</span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2680230218-13">(</span><span class="n">contact</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="p" data-group-id="2680230218-13">)</span><span class="w">  </span><span class="c1"># &quot;Alice &lt;alice@example.com&gt;&quot;</span></code></pre><h3 id="transformation-map" class="section-heading">
+  <a href="#transformation-map" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Transformation (map)</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Transform Reader results</span><span class="w">
+</span><span class="n">get_age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="2969012939-1">(</span><span class="k" data-group-id="2969012939-2">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="k" data-group-id="2969012939-2">end</span><span class="p" data-group-id="2969012939-1">)</span><span class="w">
+</span><span class="n">categorize_age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="2969012939-3">fn</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="k">cond</span><span class="w"> </span><span class="k" data-group-id="2969012939-4">do</span><span class="w">
+    </span><span class="n">age</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:minor</span><span class="w">
+    </span><span class="n">age</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">65</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:adult</span><span class="w">
+    </span><span class="no">true</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:senior</span><span class="w">
+  </span><span class="k" data-group-id="2969012939-4">end</span><span class="w">
+</span><span class="k" data-group-id="2969012939-3">end</span><span class="w">
+
+</span><span class="n">age_category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_age</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">map</span><span class="p" data-group-id="2969012939-5">(</span><span class="n">categorize_age</span><span class="p" data-group-id="2969012939-5">)</span><span class="w">
+</span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2969012939-6">(</span><span class="n">age_category</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2969012939-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="2969012939-7">}</span><span class="p" data-group-id="2969012939-6">)</span><span class="w">  </span><span class="c1"># :adult</span></code></pre><h2 id="advanced-patterns" class="section-heading">
+  <a href="#advanced-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Advanced Patterns</span>
+</h2>
+<h3 id="nested-environment-access" class="section-heading">
+  <a href="#nested-environment-access" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Nested Environment Access</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Access nested configuration</span><span class="w">
+</span><span class="n">get_db_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="7982789206-1">(</span><span class="k" data-group-id="7982789206-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">env</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">connection_string</span><span class="w"> </span><span class="k" data-group-id="7982789206-2">end</span><span class="p" data-group-id="7982789206-1">)</span><span class="w">
+</span><span class="n">get_cache_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="7982789206-3">(</span><span class="k" data-group-id="7982789206-4">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">env</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">redis_url</span><span class="w"> </span><span class="k" data-group-id="7982789206-4">end</span><span class="p" data-group-id="7982789206-3">)</span><span class="w">
+
+</span><span class="c1"># Combine nested access</span><span class="w">
+</span><span class="n">setup_services</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="7982789206-5">(</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7982789206-6">(</span><span class="k" data-group-id="7982789206-7">fn</span><span class="w"> </span><span class="n">db</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k" data-group-id="7982789206-8">fn</span><span class="w"> </span><span class="n">cache</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="7982789206-9">%{</span><span class="ss">database</span><span class="p">:</span><span class="w"> </span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="ss">cache</span><span class="p">:</span><span class="w"> </span><span class="n">cache</span><span class="p" data-group-id="7982789206-9">}</span><span class="w"> </span><span class="k" data-group-id="7982789206-8">end</span><span class="w"> </span><span class="k" data-group-id="7982789206-7">end</span><span class="p" data-group-id="7982789206-6">)</span><span class="p">,</span><span class="w">
+  </span><span class="n">get_db_config</span><span class="w">
+</span><span class="p" data-group-id="7982789206-5">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">ap</span><span class="p" data-group-id="7982789206-10">(</span><span class="n">get_cache_config</span><span class="p" data-group-id="7982789206-10">)</span><span class="w">
+
+</span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="7982789206-11">%{</span><span class="w">
+  </span><span class="ss">database</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7982789206-12">%{</span><span class="ss">connection_string</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;postgres://...&quot;</span><span class="p" data-group-id="7982789206-12">}</span><span class="p">,</span><span class="w">
+  </span><span class="ss">cache</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7982789206-13">%{</span><span class="ss">redis_url</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;redis://...&quot;</span><span class="p" data-group-id="7982789206-13">}</span><span class="w">
+</span><span class="p" data-group-id="7982789206-11">}</span><span class="w">
+</span><span class="n">services</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="7982789206-14">(</span><span class="n">setup_services</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="7982789206-14">)</span></code></pre><h3 id="conditional-logic-with-environment" class="section-heading">
+  <a href="#conditional-logic-with-environment" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Conditional Logic with Environment</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Environment-dependent branching</span><span class="w">
+</span><span class="n">get_feature_flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="8925051915-1">fn</span><span class="w"> </span><span class="n">feature</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="8925051915-2">(</span><span class="k" data-group-id="8925051915-3">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="8925051915-4">(</span><span class="n">env</span><span class="o">.</span><span class="n">features</span><span class="p">,</span><span class="w"> </span><span class="n">feature</span><span class="p">,</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="8925051915-4">)</span><span class="w"> </span><span class="k" data-group-id="8925051915-3">end</span><span class="p" data-group-id="8925051915-2">)</span><span class="w">
+</span><span class="k" data-group-id="8925051915-1">end</span><span class="w">
+
+</span><span class="n">conditional_processing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="8925051915-5">fn</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="n">get_feature_flag</span><span class="o">.</span><span class="p" data-group-id="8925051915-6">(</span><span class="ss">:use_new_algorithm</span><span class="p" data-group-id="8925051915-6">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="8925051915-7">(</span><span class="k" data-group-id="8925051915-8">fn</span><span class="w"> </span><span class="n">enabled</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="n">enabled</span><span class="w"> </span><span class="k" data-group-id="8925051915-9">do</span><span class="w">
+      </span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8925051915-10">(</span><span class="n">new_algorithm</span><span class="p" data-group-id="8925051915-11">(</span><span class="n">data</span><span class="p" data-group-id="8925051915-11">)</span><span class="p" data-group-id="8925051915-10">)</span><span class="w">
+    </span><span class="k" data-group-id="8925051915-9">else</span><span class="w">  
+      </span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8925051915-12">(</span><span class="n">legacy_algorithm</span><span class="p" data-group-id="8925051915-13">(</span><span class="n">data</span><span class="p" data-group-id="8925051915-13">)</span><span class="p" data-group-id="8925051915-12">)</span><span class="w">
+    </span><span class="k" data-group-id="8925051915-9">end</span><span class="w">
+  </span><span class="k" data-group-id="8925051915-8">end</span><span class="p" data-group-id="8925051915-7">)</span><span class="w">
+</span><span class="k" data-group-id="8925051915-5">end</span><span class="w">
+
+</span><span class="c1"># Usage</span><span class="w">
+</span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="8925051915-14">%{</span><span class="ss">features</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8925051915-15">%{</span><span class="ss">use_new_algorithm</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="8925051915-15">}</span><span class="p" data-group-id="8925051915-14">}</span><span class="w">
+</span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conditional_processing</span><span class="o">.</span><span class="p" data-group-id="8925051915-16">(</span><span class="n">data</span><span class="p" data-group-id="8925051915-16">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="8925051915-17">(</span><span class="n">env</span><span class="p" data-group-id="8925051915-17">)</span></code></pre><h3 id="reader-composition" class="section-heading">
+  <a href="#reader-composition" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Reader Composition</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Compose Readers for complex workflows</span><span class="w">
+</span><span class="n">authenticate_user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0318466335-1">fn</span><span class="w"> </span><span class="n">credentials</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="0318466335-2">(</span><span class="k" data-group-id="0318466335-3">fn</span><span class="w"> </span><span class="n">auth_service</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth_service</span><span class="o">.</span><span class="n">verify</span><span class="p" data-group-id="0318466335-4">(</span><span class="n">credentials</span><span class="p" data-group-id="0318466335-4">)</span><span class="w"> </span><span class="k" data-group-id="0318466335-3">end</span><span class="p" data-group-id="0318466335-2">)</span><span class="w">
+</span><span class="k" data-group-id="0318466335-1">end</span><span class="w">
+
+</span><span class="n">authorize_action</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0318466335-5">fn</span><span class="w"> </span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">action</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="0318466335-6">(</span><span class="k" data-group-id="0318466335-7">fn</span><span class="w"> </span><span class="n">authz_service</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">authz_service</span><span class="o">.</span><span class="n">can?</span><span class="p" data-group-id="0318466335-8">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">action</span><span class="p" data-group-id="0318466335-8">)</span><span class="w"> </span><span class="k" data-group-id="0318466335-7">end</span><span class="p" data-group-id="0318466335-6">)</span><span class="w">
+</span><span class="k" data-group-id="0318466335-5">end</span><span class="w">
+
+</span><span class="n">fetch_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0318466335-9">fn</span><span class="w"> </span><span class="n">query</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="0318466335-10">(</span><span class="k" data-group-id="0318466335-11">fn</span><span class="w"> </span><span class="n">db</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p" data-group-id="0318466335-12">(</span><span class="n">query</span><span class="p" data-group-id="0318466335-12">)</span><span class="w"> </span><span class="k" data-group-id="0318466335-11">end</span><span class="p" data-group-id="0318466335-10">)</span><span class="w">
+</span><span class="k" data-group-id="0318466335-9">end</span><span class="w">
+
+</span><span class="c1"># Compose into workflow</span><span class="w">
+</span><span class="n">secure_data_access</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0318466335-13">fn</span><span class="w"> </span><span class="n">credentials</span><span class="p">,</span><span class="w"> </span><span class="n">action</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="n">authenticate_user</span><span class="o">.</span><span class="p" data-group-id="0318466335-14">(</span><span class="n">credentials</span><span class="p" data-group-id="0318466335-14">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="0318466335-15">(</span><span class="k" data-group-id="0318466335-16">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">authorize_action</span><span class="o">.</span><span class="p" data-group-id="0318466335-17">(</span><span class="n">user</span><span class="p">,</span><span class="w"> </span><span class="n">action</span><span class="p" data-group-id="0318466335-17">)</span><span class="p">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="0318466335-18">(</span><span class="k" data-group-id="0318466335-19">fn</span><span class="w"> </span><span class="c">_authorized</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">fetch_data</span><span class="o">.</span><span class="p" data-group-id="0318466335-20">(</span><span class="n">query</span><span class="p" data-group-id="0318466335-20">)</span><span class="p">)</span><span class="w">
+</span><span class="k" data-group-id="0318466335-19">end</span><span class="w">
+
+</span><span class="c1"># Execute with services</span><span class="w">
+</span><span class="n">services</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="0318466335-21">%{</span><span class="w">
+  </span><span class="ss">auth_service</span><span class="p">:</span><span class="w"> </span><span class="n">auth_service</span><span class="p">,</span><span class="w">
+  </span><span class="ss">authz_service</span><span class="p">:</span><span class="w"> </span><span class="n">authz_service</span><span class="p">,</span><span class="w"> 
+  </span><span class="ss">db</span><span class="p">:</span><span class="w"> </span><span class="n">database</span><span class="w">
+</span><span class="p" data-group-id="0318466335-21">}</span><span class="w">
+</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="0318466335-22">(</span><span class="n">secure_data_access</span><span class="o">.</span><span class="p" data-group-id="0318466335-23">(</span><span class="n">creds</span><span class="p">,</span><span class="w"> </span><span class="ss">:read</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;SELECT * FROM users&quot;</span><span class="p" data-group-id="0318466335-23">)</span><span class="p">,</span><span class="w"> </span><span class="n">services</span><span class="p" data-group-id="0318466335-22">)</span></code></pre><h2 id="integration-with-other-monads" class="section-heading">
+  <a href="#integration-with-other-monads" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Integration with Other Monads</span>
+</h2>
+<h3 id="reader-either-error-handling" class="section-heading">
+  <a href="#reader-either-error-handling" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Reader + Either (Error Handling)</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Reader that might fail</span><span class="w">
+</span><span class="n">safe_divide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="8587434191-1">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="8587434191-2">(</span><span class="k" data-group-id="8587434191-3">fn</span><span class="w"> </span><span class="n">precision</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="8587434191-4">do</span><span class="w">
+      </span><span class="nc">Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="8587434191-5">(</span><span class="s">&quot;Division by zero&quot;</span><span class="p" data-group-id="8587434191-5">)</span><span class="w">
+    </span><span class="k" data-group-id="8587434191-4">else</span><span class="w">
+      </span><span class="nc">Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="8587434191-6">(</span><span class="nc">Float</span><span class="o">.</span><span class="n">round</span><span class="p" data-group-id="8587434191-7">(</span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">precision</span><span class="p" data-group-id="8587434191-7">)</span><span class="p" data-group-id="8587434191-6">)</span><span class="w">
+    </span><span class="k" data-group-id="8587434191-4">end</span><span class="w">
+  </span><span class="k" data-group-id="8587434191-3">end</span><span class="p" data-group-id="8587434191-2">)</span><span class="w">
+</span><span class="k" data-group-id="8587434191-1">end</span><span class="w">
+
+</span><span class="c1"># Chain Reader and Either</span><span class="w">
+</span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="8587434191-8">(</span><span class="n">safe_divide</span><span class="o">.</span><span class="p" data-group-id="8587434191-9">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="8587434191-9">)</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8587434191-8">)</span><span class="w">  </span><span class="c1"># Either.right(3.33)</span></code></pre><h3 id="reader-maybe-optional-values" class="section-heading">
+  <a href="#reader-maybe-optional-values" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Reader + Maybe (Optional Values)</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Reader with optional results</span><span class="w">
+</span><span class="n">lookup_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="2350066269-1">fn</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="2350066269-2">(</span><span class="k" data-group-id="2350066269-3">fn</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+    </span><span class="k">case</span><span class="w"> </span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="2350066269-4">(</span><span class="n">config</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p" data-group-id="2350066269-4">)</span><span class="w"> </span><span class="k" data-group-id="2350066269-5">do</span><span class="w">
+      </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2350066269-6">(</span><span class="p" data-group-id="2350066269-6">)</span><span class="w">
+      </span><span class="n">value</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2350066269-7">(</span><span class="n">value</span><span class="p" data-group-id="2350066269-7">)</span><span class="w">
+    </span><span class="k" data-group-id="2350066269-5">end</span><span class="w">
+  </span><span class="k" data-group-id="2350066269-3">end</span><span class="p" data-group-id="2350066269-2">)</span><span class="w">
+</span><span class="k" data-group-id="2350066269-1">end</span><span class="w">
+
+</span><span class="c1"># Usage</span><span class="w">
+</span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="2350066269-8">%{</span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p" data-group-id="2350066269-8">}</span><span class="w">
+</span><span class="n">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2350066269-9">(</span><span class="n">lookup_config</span><span class="o">.</span><span class="p" data-group-id="2350066269-10">(</span><span class="ss">:timeout</span><span class="p" data-group-id="2350066269-10">)</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p" data-group-id="2350066269-9">)</span><span class="w">  </span><span class="c1"># Maybe.just(5000)</span><span class="w">
+</span><span class="n">missing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2350066269-11">(</span><span class="n">lookup_config</span><span class="o">.</span><span class="p" data-group-id="2350066269-12">(</span><span class="ss">:retries</span><span class="p" data-group-id="2350066269-12">)</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p" data-group-id="2350066269-11">)</span><span class="w">  </span><span class="c1"># Maybe.nothing()</span></code></pre><h2 id="testing-patterns" class="section-heading">
+  <a href="#testing-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Testing Patterns</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Test Reader computations by providing mock environments</span><span class="w">
+</span><span class="n">test</span><span class="w"> </span><span class="s">&quot;dependency injection with Reader&quot;</span><span class="w"> </span><span class="k" data-group-id="5189727469-1">do</span><span class="w">
+  </span><span class="n">mock_service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5189727469-2">fn</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Mock greeting for </span><span class="si" data-group-id="5189727469-3">#{</span><span class="n">name</span><span class="si" data-group-id="5189727469-3">}</span><span class="s">&quot;</span><span class="w"> </span><span class="k" data-group-id="5189727469-2">end</span><span class="w">
+  </span><span class="n">real_service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5189727469-4">fn</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Real greeting for </span><span class="si" data-group-id="5189727469-5">#{</span><span class="n">name</span><span class="si" data-group-id="5189727469-5">}</span><span class="s">&quot;</span><span class="w"> </span><span class="k" data-group-id="5189727469-4">end</span><span class="w">
+  
+  </span><span class="n">greet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5189727469-6">fn</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+    </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="5189727469-7">(</span><span class="k" data-group-id="5189727469-8">fn</span><span class="w"> </span><span class="n">service</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">service</span><span class="o">.</span><span class="p" data-group-id="5189727469-9">(</span><span class="n">name</span><span class="p" data-group-id="5189727469-9">)</span><span class="w"> </span><span class="k" data-group-id="5189727469-8">end</span><span class="p" data-group-id="5189727469-7">)</span><span class="w">
+  </span><span class="k" data-group-id="5189727469-6">end</span><span class="w">
+  
+  </span><span class="n">greeting_reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">greet</span><span class="o">.</span><span class="p" data-group-id="5189727469-10">(</span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="5189727469-10">)</span><span class="w">
+  
+  </span><span class="c1"># Test with mock</span><span class="w">
+  </span><span class="n">assert</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="5189727469-11">(</span><span class="n">greeting_reader</span><span class="p">,</span><span class="w"> </span><span class="n">mock_service</span><span class="p" data-group-id="5189727469-11">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Mock greeting for Alice&quot;</span><span class="w">
+  
+  </span><span class="c1"># Test with real service  </span><span class="w">
+  </span><span class="n">assert</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="5189727469-12">(</span><span class="n">greeting_reader</span><span class="p">,</span><span class="w"> </span><span class="n">real_service</span><span class="p" data-group-id="5189727469-12">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Real greeting for Alice&quot;</span><span class="w">
+</span><span class="k" data-group-id="5189727469-1">end</span><span class="w">
+
+</span><span class="c1"># Test configuration access</span><span class="w">
+</span><span class="n">test</span><span class="w"> </span><span class="s">&quot;configuration-dependent behavior&quot;</span><span class="w"> </span><span class="k" data-group-id="5189727469-13">do</span><span class="w">
+  </span><span class="n">process_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5189727469-14">fn</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+    </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="5189727469-15">(</span><span class="k" data-group-id="5189727469-16">fn</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="k">if</span><span class="w"> </span><span class="n">config</span><span class="o">.</span><span class="n">debug</span><span class="w"> </span><span class="k" data-group-id="5189727469-17">do</span><span class="w">
+        </span><span class="s">&quot;Debug: processing </span><span class="si" data-group-id="5189727469-18">#{</span><span class="n">inspect</span><span class="p" data-group-id="5189727469-19">(</span><span class="n">data</span><span class="p" data-group-id="5189727469-19">)</span><span class="si" data-group-id="5189727469-18">}</span><span class="s">&quot;</span><span class="w">
+      </span><span class="k" data-group-id="5189727469-17">else</span><span class="w">
+        </span><span class="s">&quot;Processing data&quot;</span><span class="w">
+      </span><span class="k" data-group-id="5189727469-17">end</span><span class="w">
+    </span><span class="k" data-group-id="5189727469-16">end</span><span class="p" data-group-id="5189727469-15">)</span><span class="w">
+  </span><span class="k" data-group-id="5189727469-14">end</span><span class="w">
+  
+  </span><span class="n">processor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">process_data</span><span class="o">.</span><span class="p" data-group-id="5189727469-20">(</span><span class="p" data-group-id="5189727469-21">%{</span><span class="ss">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="5189727469-21">}</span><span class="p" data-group-id="5189727469-20">)</span><span class="w">
+  
+  </span><span class="n">debug_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="5189727469-22">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="5189727469-22">}</span><span class="w">
+  </span><span class="n">prod_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="5189727469-23">%{</span><span class="ss">debug</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="5189727469-23">}</span><span class="w">
+  
+  </span><span class="n">assert</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="5189727469-24">(</span><span class="n">processor</span><span class="p">,</span><span class="w"> </span><span class="n">debug_config</span><span class="p" data-group-id="5189727469-24">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Debug: processing %{id: 1}&quot;</span><span class="w">
+  </span><span class="n">assert</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="5189727469-25">(</span><span class="n">processor</span><span class="p">,</span><span class="w"> </span><span class="n">prod_config</span><span class="p" data-group-id="5189727469-25">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Processing data&quot;</span><span class="w">
+</span><span class="k" data-group-id="5189727469-13">end</span></code></pre><h2 id="anti-patterns" class="section-heading">
+  <a href="#anti-patterns" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Anti-Patterns</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># L Don&#39;t modify environment (Reader is read-only)</span><span class="w">
+</span><span class="n">bad_reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="3300238423-1">(</span><span class="k" data-group-id="3300238423-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> 
+  </span><span class="nc">Map</span><span class="o">.</span><span class="n">put</span><span class="p" data-group-id="3300238423-3">(</span><span class="n">env</span><span class="p">,</span><span class="w"> </span><span class="ss">:modified</span><span class="p">,</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="3300238423-3">)</span><span class="w">  </span><span class="c1"># Environment change won&#39;t persist!</span><span class="w">
+</span><span class="k" data-group-id="3300238423-2">end</span><span class="p" data-group-id="3300238423-1">)</span><span class="w">
+
+</span><span class="c1"># L Don&#39;t use Reader for error handling</span><span class="w">
+</span><span class="n">bad_error_handling</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="3300238423-4">(</span><span class="k" data-group-id="3300238423-5">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="k">if</span><span class="w"> </span><span class="n">env</span><span class="o">.</span><span class="n">error?</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="k">raise</span><span class="p" data-group-id="3300238423-6">(</span><span class="s">&quot;Error!&quot;</span><span class="p" data-group-id="3300238423-6">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Success&quot;</span><span class="w">  </span><span class="c1"># Use Either instead</span><span class="w">
+</span><span class="k" data-group-id="3300238423-5">end</span><span class="p" data-group-id="3300238423-4">)</span><span class="w">
+
+</span><span class="c1"># L Don&#39;t nest Reader.run calls unnecessarily</span><span class="w">
+</span><span class="n">bad_nesting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3300238423-7">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="n">inner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3300238423-8">(</span><span class="mi">42</span><span class="p" data-group-id="3300238423-8">)</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3300238423-9">(</span><span class="n">inner</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="3300238423-9">)</span><span class="w">  </span><span class="c1"># Unnecessary - just use 42 directly</span><span class="w">
+</span><span class="k" data-group-id="3300238423-7">end</span><span class="w">
+
+</span><span class="c1"># L Don&#39;t compare Readers directly</span><span class="w">
+</span><span class="n">reader1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3300238423-10">(</span><span class="mi">42</span><span class="p" data-group-id="3300238423-10">)</span><span class="w">  
+</span><span class="n">reader2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3300238423-11">(</span><span class="mi">42</span><span class="p" data-group-id="3300238423-11">)</span><span class="w">
+</span><span class="c1"># reader1 == reader2  # Won&#39;t work - Readers don&#39;t implement Eq</span><span class="w">
+
+</span><span class="c1">#  Compare results instead</span><span class="w">
+</span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="3300238423-12">%{</span><span class="p" data-group-id="3300238423-12">}</span><span class="w">
+</span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3300238423-13">(</span><span class="n">reader1</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="3300238423-13">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3300238423-14">(</span><span class="n">reader2</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="3300238423-14">)</span><span class="w">  </span><span class="c1"># true</span></code></pre><h2 id="performance-considerations" class="section-heading">
+  <a href="#performance-considerations" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Performance Considerations</span>
+</h2>
+<ul><li>Reader computations are lazy - no work until <code class="inline">run/2</code></li><li>Environment is passed through entire computation chain</li><li>Large environments may impact memory usage</li><li>Consider using focused <code class="inline">asks/1</code> to extract only needed data</li><li>Reader composition creates nested function calls - deep nesting may affect stack</li></ul><h2 id="best-practices" class="section-heading">
+  <a href="#best-practices" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Best Practices</span>
+</h2>
+<ul><li>Use Reader for read-only environment access, not state modification</li><li>Keep environments focused - avoid passing entire application state</li><li>Prefer <code class="inline">asks/1</code> with specific extractors over <code class="inline">ask/0</code> with full environment</li><li>Test Reader computations by providing different environments</li><li>Combine Reader with Either/Maybe for error handling and optional values</li><li>Use dependency injection pattern to swap implementations for testing</li><li>Document expected environment structure for Reader computations</li></ul><h2 id="common-use-cases" class="section-heading">
+  <a href="#common-use-cases" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Common Use Cases</span>
+</h2>
+<h3 id="web-application-configuration" class="section-heading">
+  <a href="#web-application-configuration" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Web Application Configuration</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Request processing with configuration</span><span class="w">
+</span><span class="n">process_request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="2343146712-1">fn</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="2343146712-2">(</span><span class="k" data-group-id="2343146712-3">fn</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+    </span><span class="p" data-group-id="2343146712-4">%{</span><span class="w">
+      </span><span class="ss">max_upload_size</span><span class="p">:</span><span class="w"> </span><span class="n">config</span><span class="o">.</span><span class="n">upload</span><span class="o">.</span><span class="n">max_size</span><span class="p">,</span><span class="w">
+      </span><span class="ss">allowed_types</span><span class="p">:</span><span class="w"> </span><span class="n">config</span><span class="o">.</span><span class="n">upload</span><span class="o">.</span><span class="n">allowed_types</span><span class="p">,</span><span class="w">
+      </span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="n">config</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">timeout</span><span class="w">
+    </span><span class="p" data-group-id="2343146712-4">}</span><span class="w">
+  </span><span class="k" data-group-id="2343146712-3">end</span><span class="p" data-group-id="2343146712-2">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="2343146712-5">(</span><span class="k" data-group-id="2343146712-6">fn</span><span class="w"> </span><span class="n">settings</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">validate_request</span><span class="p" data-group-id="2343146712-7">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">settings</span><span class="p" data-group-id="2343146712-7">)</span><span class="w"> </span><span class="k" data-group-id="2343146712-6">end</span><span class="p" data-group-id="2343146712-5">)</span><span class="w">
+</span><span class="k" data-group-id="2343146712-1">end</span><span class="w">
+
+</span><span class="c1"># Execute with app config</span><span class="w">
+</span><span class="n">app_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="2343146712-8">%{</span><span class="w">
+  </span><span class="ss">upload</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2343146712-9">%{</span><span class="ss">max_size</span><span class="p">:</span><span class="w"> </span><span class="mi">10_000_000</span><span class="p">,</span><span class="w"> </span><span class="ss">allowed_types</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2343146712-10">[</span><span class="s">&quot;jpg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;png&quot;</span><span class="p" data-group-id="2343146712-10">]</span><span class="p" data-group-id="2343146712-9">}</span><span class="p">,</span><span class="w">
+  </span><span class="ss">request</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2343146712-11">%{</span><span class="ss">timeout</span><span class="p">:</span><span class="w"> </span><span class="mi">30_000</span><span class="p" data-group-id="2343146712-11">}</span><span class="w">
+</span><span class="p" data-group-id="2343146712-8">}</span><span class="w">
+</span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2343146712-12">(</span><span class="n">process_request</span><span class="o">.</span><span class="p" data-group-id="2343146712-13">(</span><span class="n">request</span><span class="p" data-group-id="2343146712-13">)</span><span class="p">,</span><span class="w"> </span><span class="n">app_config</span><span class="p" data-group-id="2343146712-12">)</span></code></pre><h3 id="database-operations" class="section-heading">
+  <a href="#database-operations" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Database Operations</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Database operations with connection</span><span class="w">
+</span><span class="n">fetch_user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4827997410-1">fn</span><span class="w"> </span><span class="n">user_id</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="4827997410-2">(</span><span class="k" data-group-id="4827997410-3">fn</span><span class="w"> </span><span class="n">db</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Database</span><span class="o">.</span><span class="n">get_user</span><span class="p" data-group-id="4827997410-4">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">user_id</span><span class="p" data-group-id="4827997410-4">)</span><span class="w"> </span><span class="k" data-group-id="4827997410-3">end</span><span class="p" data-group-id="4827997410-2">)</span><span class="w">
+</span><span class="k" data-group-id="4827997410-1">end</span><span class="w">
+
+</span><span class="n">fetch_user_posts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4827997410-5">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="4827997410-6">(</span><span class="k" data-group-id="4827997410-7">fn</span><span class="w"> </span><span class="n">db</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Database</span><span class="o">.</span><span class="n">get_posts_by_user</span><span class="p" data-group-id="4827997410-8">(</span><span class="n">db</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p" data-group-id="4827997410-8">)</span><span class="w"> </span><span class="k" data-group-id="4827997410-7">end</span><span class="p" data-group-id="4827997410-6">)</span><span class="w">
+</span><span class="k" data-group-id="4827997410-5">end</span><span class="w">
+
+</span><span class="c1"># Compose database operations</span><span class="w">
+</span><span class="n">get_user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4827997410-9">fn</span><span class="w"> </span><span class="n">user_id</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="n">fetch_user</span><span class="o">.</span><span class="p" data-group-id="4827997410-10">(</span><span class="n">user_id</span><span class="p" data-group-id="4827997410-10">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">bind</span><span class="p" data-group-id="4827997410-11">(</span><span class="n">fetch_user_posts</span><span class="p" data-group-id="4827997410-11">)</span><span class="w">
+</span><span class="k" data-group-id="4827997410-9">end</span><span class="w">
+
+</span><span class="c1"># Execute with database connection</span><span class="w">
+</span><span class="n">db_connection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Database</span><span class="o">.</span><span class="n">connect</span><span class="p" data-group-id="4827997410-12">(</span><span class="p" data-group-id="4827997410-12">)</span><span class="w">
+</span><span class="n">user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4827997410-13">(</span><span class="n">get_user_data</span><span class="o">.</span><span class="p" data-group-id="4827997410-14">(</span><span class="mi">123</span><span class="p" data-group-id="4827997410-14">)</span><span class="p">,</span><span class="w"> </span><span class="n">db_connection</span><span class="p" data-group-id="4827997410-13">)</span></code></pre><h3 id="feature-flag-systems" class="section-heading">
+  <a href="#feature-flag-systems" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Feature Flag Systems</span>
+</h3>
+<pre><code class="makeup elixir" translate="no"><span class="c1"># Feature-dependent behavior</span><span class="w">
+</span><span class="n">render_component</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0502183333-1">fn</span><span class="w"> </span><span class="n">component_type</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Reader</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="0502183333-2">(</span><span class="k" data-group-id="0502183333-3">fn</span><span class="w"> </span><span class="n">features</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="n">features</span><span class="o">.</span><span class="n">new_ui_enabled</span><span class="w"> </span><span class="k" data-group-id="0502183333-4">do</span><span class="w">
+      </span><span class="n">render_new_component</span><span class="p" data-group-id="0502183333-5">(</span><span class="n">component_type</span><span class="p" data-group-id="0502183333-5">)</span><span class="w">
+    </span><span class="k" data-group-id="0502183333-4">else</span><span class="w">
+      </span><span class="n">render_legacy_component</span><span class="p" data-group-id="0502183333-6">(</span><span class="n">component_type</span><span class="p" data-group-id="0502183333-6">)</span><span class="w">
+    </span><span class="k" data-group-id="0502183333-4">end</span><span class="w">
+  </span><span class="k" data-group-id="0502183333-3">end</span><span class="p" data-group-id="0502183333-2">)</span><span class="w">
+</span><span class="k" data-group-id="0502183333-1">end</span><span class="w">
+
+</span><span class="c1"># Usage with feature flags</span><span class="w">
+</span><span class="n">features</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="0502183333-7">%{</span><span class="ss">new_ui_enabled</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p">,</span><span class="w"> </span><span class="ss">analytics_enabled</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="0502183333-7">}</span><span class="w">
+</span><span class="n">component</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Reader</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="0502183333-8">(</span><span class="n">render_component</span><span class="o">.</span><span class="p" data-group-id="0502183333-9">(</span><span class="ss">:navigation</span><span class="p" data-group-id="0502183333-9">)</span><span class="p">,</span><span class="w"> </span><span class="n">features</span><span class="p" data-group-id="0502183333-8">)</span></code></pre><h2 id="summary" class="section-heading">
+  <a href="#summary" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Summary</span>
+</h2>
+<p><a href="Funx.Monad.Reader.html"><code class="inline">Funx.Monad.Reader</code></a> provides <strong>deferred computation with read-only environment access</strong>:</p><ul><li><strong>Deferred execution</strong> - describe computation steps, execute later with environment</li><li><strong>Environment threading</strong> - automatic context passing without prop drilling</li><li><strong>Dependency injection</strong> - swap implementations without changing logic</li><li><strong>Configuration access</strong> - shared settings across computation chains</li><li><strong>Lazy evaluation</strong> - nothing happens until <code class="inline">Reader.run/2</code></li><li><strong>Read-only access</strong> - environment cannot be modified, only accessed</li><li><strong>Monadic composition</strong> - chain environment-dependent computations cleanly</li></ul><p><strong>Canon</strong>: Use Reader for dependency injection, configuration access, and avoiding prop drilling. Always <code class="inline">run/2</code> to execute deferred computations.</p>
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="monad-maybe-usage-rules.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Funx.Monad.Maybe Usage Rules
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+      <a href="monoid-usage-rules.html" class="bottom-actions-button" rel="next">
+        <span class="subheader">
+          Next Page →
+        </span>
+        <span class="title">
+Funx.Monoid Usage Rules
+        </span>
+      </a>
+
+  </div>
+</div>
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.4" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.4">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/funx/0.1.4/show/lib/monad/reader/usage-rules.md">current file</a>)
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
