@@ -8,26 +8,23 @@ This index links them together.
 
 ## Available Rules
 
-- [Funx.Utils Usage Rules](./utils/usage-rules.md)  
-  Currying, flipping, and function transformation for point-free, pipeline-friendly composition.
+- [Funx.Appendable Usage Rules](./appendable/usage-rules.md)  
+  Flexible aggregation for accumulating results - structured vs flat collection strategies.
 
 - [Funx.Eq Usage Rules](./eq/usage-rules.md)  
   Domain-specific equality and identity for comparison, deduplication, and filtering.
 
-- [Funx.Ord Usage Rules](./ord/usage-rules.md)  
-  Context-aware ordering for sorting, ranking, and prioritization.
+- [Funx.Errors.ValidationError Usage Rules](./errors/validation_error/usage-rules.md)  
+  Domain validation with structured error collection, composition, and Either integration.
 
 - [Funx.List Usage Rules](./list/usage-rules.md)  
   Equality- and order-aware set operations, deduplication, and sorting.
 
-- [Funx.Monoid Usage Rules](./monoid/usage-rules.md)  
-  Identity and associative combination, enabling folds, logs, and accumulation.
-
-- [Funx.Predicate Usage Rules](./predicate/usage-rules.md)  
-  Logical composition using `&&`/`||`, reusable combinators, and lifted conditions.
-
 - [Funx.Monad Usage Rules](./monad/usage-rules.md)  
   Declarative control flow with `map`, `bind`, and `ap`—composing context-aware steps.
+
+- [Funx.Monad.Either Usage Rules](./monad/either/usage-rules.md)  
+  Branching computation with error context—fail fast or accumulate validation errors.
 
 - [Funx.Monad.Identity Usage Rules](./monad/identity/usage-rules.md)  
   Structure without effects—used as a baseline for composing monads.
@@ -35,14 +32,20 @@ This index links them together.
 - [Funx.Monad.Maybe Usage Rules](./monad/maybe/usage-rules.md)  
   Optional computation: preserve structure, short-circuit on absence, avoid `nil`.
 
-- [Funx.Monad.Either Usage Rules](./monad/either/usage-rules.md)  
-  Branching computation with error context—fail fast or accumulate validation errors.
+- [Funx.Monad.Reader Usage Rules](./monad/reader/usage-rules.md)  
+  Deferred computation with read-only environment access—dependency injection and configuration.
 
-- [Funx.Errors.ValidationError Usage Rules](./errors/validation_error/usage-rules.md)  
-  Domain validation with structured error collection, composition, and Either integration.
+- [Funx.Monoid Usage Rules](./monoid/usage-rules.md)  
+  Identity and associative combination, enabling folds, logs, and accumulation.
 
-- [Funx.Appendable Usage Rules](./appendable/usage-rules.md)  
-  Flexible aggregation for accumulating results - structured vs flat collection strategies.
+- [Funx.Ord Usage Rules](./ord/usage-rules.md)  
+  Context-aware ordering for sorting, ranking, and prioritization.
+
+- [Funx.Predicate Usage Rules](./predicate/usage-rules.md)  
+  Logical composition using `&&`/`||`, reusable combinators, and lifted conditions.
+
+- [Funx.Utils Usage Rules](./utils/usage-rules.md)  
+  Currying, flipping, and function transformation for point-free, pipeline-friendly composition.
 
 ## Conventions
 
@@ -72,6 +75,8 @@ lib/
       usage-rules.md        # ← Funx.Monad.Identity rules
     maybe/
       usage-rules.md        # ← Funx.Monad.Maybe rules
+    reader/
+      usage-rules.md        # ← Funx.Monad.Reader rules
   monoid/
     usage-rules.md          # ← Funx.Monoid rules
   ord/

@@ -27,33 +27,29 @@ defmodule Funx.MixProject do
             title: "Funx Usage Rules",
             filename: "usage-rules"
           ],
-          "lib/utils/usage-rules.md": [
-            title: "Funx.Utils Usage Rules",
-            filename: "utils-usage-rules"
+          "lib/appendable/usage-rules.md": [
+            title: "Funx.Appendable Usage Rules",
+            filename: "appendable-usage-rules"
           ],
           "lib/eq/usage-rules.md": [
             title: "Funx.Eq Usage Rules",
             filename: "eq-usage-rules"
           ],
-          "lib/ord/usage-rules.md": [
-            title: "Funx.Ord Usage Rules",
-            filename: "ord-usage-rules"
+          "lib/errors/validation_error/usage-rules.md": [
+            title: "Funx.Errors.ValidationError Usage Rules",
+            filename: "errors-validation-error-usage-rules"
           ],
           "lib/list/usage-rules.md": [
             title: "Funx.List Usage Rules",
             filename: "list-usage-rules"
           ],
-          "lib/monoid/usage-rules.md": [
-            title: "Funx.Monoid Usage Rules",
-            filename: "monoid-usage-rules"
-          ],
-          "lib/predicate/usage-rules.md": [
-            title: "Funx.Predicate Usage Rules",
-            filename: "predicate-usage-rules"
-          ],
           "lib/monad/usage-rules.md": [
             title: "Funx.Monad Usage Rules",
             filename: "monad-usage-rules"
+          ],
+          "lib/monad/either/usage-rules.md": [
+            title: "Funx.Monad.Either Usage Rules",
+            filename: "monad-either-usage-rules"
           ],
           "lib/monad/identity/usage-rules.md": [
             title: "Funx.Monad.Identity Usage Rules",
@@ -63,29 +59,43 @@ defmodule Funx.MixProject do
             title: "Funx.Monad.Maybe Usage Rules",
             filename: "monad-maybe-usage-rules"
           ],
-          "lib/monad/either/usage-rules.md": [
-            title: "Funx.Monad.Either Usage Rules",
-            filename: "monad-either-usage-rules"
+          "lib/monad/reader/usage-rules.md": [
+            title: "Funx.Monad.Reader Usage Rules",
+            filename: "monad-reader-usage-rules"
           ],
-          "lib/errors/validation_error/usage-rules.md": [
-            title: "Funx.Errors.ValidationError Usage Rules",
-            filename: "errors-validation-error-usage-rules"
+          "lib/monoid/usage-rules.md": [
+            title: "Funx.Monoid Usage Rules",
+            filename: "monoid-usage-rules"
+          ],
+          "lib/ord/usage-rules.md": [
+            title: "Funx.Ord Usage Rules",
+            filename: "ord-usage-rules"
+          ],
+          "lib/predicate/usage-rules.md": [
+            title: "Funx.Predicate Usage Rules",
+            filename: "predicate-usage-rules"
+          ],
+          "lib/utils/usage-rules.md": [
+            title: "Funx.Utils Usage Rules",
+            filename: "utils-usage-rules"
           ]
         ],
         groups_for_extras: [
           "Usage Rules": [
             "lib/usage-rules.md",
-            "lib/utils/usage-rules.md",
+            "lib/appendable/usage-rules.md",
             "lib/eq/usage-rules.md",
-            "lib/ord/usage-rules.md",
+            "lib/errors/validation_error/usage-rules.md",
             "lib/list/usage-rules.md",
-            "lib/monoid/usage-rules.md",
-            "lib/predicate/usage-rules.md",
             "lib/monad/usage-rules.md",
+            "lib/monad/either/usage-rules.md",
             "lib/monad/identity/usage-rules.md",
             "lib/monad/maybe/usage-rules.md",
-            "lib/monad/either/usage-rules.md",
-            "lib/errors/validation_error/usage-rules.md"
+            "lib/monad/reader/usage-rules.md",
+            "lib/monoid/usage-rules.md",
+            "lib/ord/usage-rules.md",
+            "lib/predicate/usage-rules.md",
+            "lib/utils/usage-rules.md"
           ]
         ],
         filter_prefix: "Examples",

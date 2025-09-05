@@ -17,6 +17,7 @@
 - Example: `find_user :: UserId -> Maybe User`
 
 **Key List Operation Patterns:**
+
 - `concat([Maybe a])` → `[a]` (extract all Just values, ignore Nothing)
 - `concat_map([a], kleisli_fn)` → `[b]` (apply Kleisli, collect Just results)
 - `traverse([a], kleisli_fn)` → `Maybe [b]` (apply Kleisli, all succeed or Nothing)
@@ -110,6 +111,7 @@
 `Funx.Monad.Maybe` handles presence and absence without explicit null checks.
 
 Use Maybe for:
+
 - Optional fields and nullable database columns
 - Operations that might not return a value
 - Chaining computations that should skip on missing data
@@ -267,6 +269,7 @@ fold_l(Maybe.nothing(),
 ```
 
 **Use `fold_l` when:**
+
 - You need to convert Maybe to a different type
 - You want functional case analysis without pattern matching
 - You're implementing higher-level combinators
@@ -341,7 +344,6 @@ bind(inner_nothing, fn inner -> inner end)    # nothing()
 - You have nested Maybe values that need flattening
 - You're implementing monadic operations manually
 - You're working with higher-order Maybe computations
-
 
 ## Functional Error Handling
 
@@ -595,6 +597,7 @@ Maybe.traverse(["1", "invalid", "3"], parse_number)  # nothing()
 ```
 
 **Use `traverse` when:**
+
 - All operations must succeed for meaningful result
 - You need fail-fast behavior on lists
 - Converting `[a]` to `Maybe [b]` with validation
@@ -623,6 +626,7 @@ Maybe.concat_map(["bad", "invalid", "error"], parse_number)  # []
 ```
 
 **Use `concat_map` when:**
+
 - Partial success is acceptable
 - You want to collect all valid results
 - You need resilient processing that continues on failure
