@@ -8,22 +8,45 @@
 # Funx - Functional Programming Patterns for Elixir
 
 [![Continuous Integration](https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg)](https://github.com/JKWA/funx/actions/workflows/ci.yml)
-
 [![Hex.pm](https://img.shields.io/hexpm/v/funx.svg)](https://hex.pm/packages/funx)
 
-⚠️ **Beta notice:** Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.
+⚠️ **Beta:** Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.
 
-As a rule, functional libraries consider teaching functional programming as out of scope. This one does not.
+**Funx** is a functional programming library for Elixir that provides protocols and combinators for equality, ordering, monoids, monads, and other core abstractions. Elixir doesn’t have a static type system, so it can’t enforce functional patterns through the compiler. Funx brings those patterns into Elixir using the language’s own tools—pattern matching, protocols, and structs—without sacrificing its dynamic nature.  
 
-Funx was built alongside [**Advanced Functional Programming with Elixir**](https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir), which helps you build lasting mental models of functional programming—showing not just how these abstractions work, but how to apply them in real systems using Elixir.
+Funx was built alongside [**Advanced Functional Programming with Elixir**](https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir), a PragProg title that shows how to apply these abstractions in real systems.  
 
 <img src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/book_cover_small.jpg" alt="Advanced Functional Programming with Elixir Book Cover" width="200" />
 
-**Funx** is a functional programming library for Elixir providing protocols and combinators for equality, ordering, monoids, monads, and other core abstractions.
+💡 **AI-assisted learning:** With an LLM, Funx becomes more than a library. It becomes your teacher for functional programming in Elixir. Install the library into a demo project, ask questions, and let it generate code as you learn.
 
-Elixir doesn’t have a static type system, so it can’t enforce functional patterns through the compiler. Instead, it uses pattern matching, protocols, and structs to model abstractions at runtime.
+## Installation  
 
-Funx brings functional programming patterns into Elixir using the language’s own tools—without sacrificing its dynamic nature.
+To use Funx, add it to the list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:funx, "~> 0.1.5"}
+  ]
+end
+```
+
+Then, run the following command to fetch the dependencies:
+
+```bash
+mix deps.get
+```
+
+## Usage Rules
+
+Each module includes usage rules designed for humans and LLMs:
+
+- When to use a given abstraction
+- How to compose and combine it
+- Examples of domain modeling with `Eq`, `Ord`, `Maybe`, etc.
+
+➡️ [Browse Usage Rules](./lib/usage-rules.md)
 
 ## Equality
 
@@ -123,37 +146,9 @@ Funx integrates with common Elixir patterns like `{:ok, value}` and `{:error, re
 - `from_try/1`: Wraps a function call in a monad, capturing exceptions as failures.
 - `to_try!/1`: Extracts the value from a monad or raises if it represents a failure.
 
-## Installation  
-
-To use Funx, add it to the list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:funx, "~> 0.1.5"}
-  ]
-end
-```
-
-Then, run the following command to fetch the dependencies:
-
-```bash
-mix deps.get
-```
-
 ## Documentation  
 
-Full documentation is available on [GitHub Pages](https://jkwa.github.io/funx/readme.html).  
-
-## Usage Rules
-
-Each module includes usage rules designed for humans and LLMs:
-
-- When to use a given abstraction
-- How to compose and combine it
-- Examples of domain modeling with `Eq`, `Ord`, `Maybe`, etc.
-
-➡️ [Browse Usage Rules](./lib/usage-rules.md)
+Full documentation is available on [GitHub Pages](https://jkwa.github.io/funx/readme.html).
 
 ## Contributing  
 
