@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-DE869A29.js"></script>
+    <script src="dist/sidebar_items-D90190AB.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -126,7 +126,25 @@ Pages
 <p style="background-color: #38127C;">  <img
   src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/funx-banner.jpg"
   alt="Funx Banner"
-  height="120"/></p><h1>Funx - Functional Programming Patterns for Elixir</h1><p><a href="https://github.com/JKWA/funx/actions/workflows/ci.yml"><img src="https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration"/></a></p><p><a href="https://hex.pm/packages/funx"><img src="https://img.shields.io/hexpm/v/funx.svg" alt="Hex.pm"/></a></p><p>⚠️ <strong>Beta notice:</strong> Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.</p><p>As a rule, functional libraries consider teaching functional programming as out of scope. This one does not.</p><p>Funx was built alongside <a href="https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir"><strong>Advanced Functional Programming with Elixir</strong></a>, which helps you build lasting mental models of functional programming—showing not just how these abstractions work, but how to apply them in real systems using Elixir.</p><img src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/book_cover_small.jpg" alt="Advanced Functional Programming with Elixir Book Cover" width="200"/><p><strong>Funx</strong> is a functional programming library for Elixir providing protocols and combinators for equality, ordering, monoids, monads, and other core abstractions.</p><p>Elixir doesn’t have a static type system, so it can’t enforce functional patterns through the compiler. Instead, it uses pattern matching, protocols, and structs to model abstractions at runtime.</p><p>Funx brings functional programming patterns into Elixir using the language’s own tools—without sacrificing its dynamic nature.</p><h2 id="equality" class="section-heading">
+  height="120"/></p><h1>Funx - Functional Programming Patterns for Elixir</h1><p><a href="https://github.com/JKWA/funx/actions/workflows/ci.yml"><img src="https://github.com/JKWA/funx/actions/workflows/ci.yml/badge.svg" alt="Continuous Integration"/></a>
+<a href="https://hex.pm/packages/funx"><img src="https://img.shields.io/hexpm/v/funx.svg" alt="Hex.pm"/></a></p><p>⚠️ <strong>Beta:</strong> Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.</p><p><strong>Funx</strong> is a functional programming library for Elixir that provides protocols and combinators for equality, ordering, monoids, monads, and other core abstractions. Elixir doesn’t have a static type system, so it can’t enforce functional patterns through the compiler. Funx brings those patterns into Elixir using the language’s own tools—pattern matching, protocols, and structs—without sacrificing its dynamic nature.  </p><p>Funx was built alongside <a href="https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir"><strong>Advanced Functional Programming with Elixir</strong></a>, a PragProg title that shows how to apply these abstractions in real systems.  </p><img src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/book_cover_small.jpg" alt="Advanced Functional Programming with Elixir Book Cover" width="200"/><p>💡 <strong>AI-assisted learning:</strong> With an LLM, Funx becomes more than a library. It becomes your teacher for functional programming in Elixir. Install the library into a demo project, ask questions, and let it generate code as you learn.</p><h2 id="installation" class="section-heading">
+  <a href="#installation" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Installation</span>
+</h2>
+<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="1219543794-1">do</span><span class="w">
+  </span><span class="p" data-group-id="1219543794-2">[</span><span class="w">
+    </span><span class="p" data-group-id="1219543794-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.5&quot;</span><span class="p" data-group-id="1219543794-3">}</span><span class="w">
+  </span><span class="p" data-group-id="1219543794-2">]</span><span class="w">
+</span><span class="k" data-group-id="1219543794-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
+</span></code></pre><h2 id="usage-rules" class="section-heading">
+  <a href="#usage-rules" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Usage Rules</span>
+</h2>
+<p>Each module includes usage rules designed for humans and LLMs:</p><ul><li>When to use a given abstraction</li><li>How to compose and combine it</li><li>Examples of domain modeling with <code class="inline">Eq</code>, <code class="inline">Ord</code>, <code class="inline">Maybe</code>, etc.</li></ul><p>➡️ <a href="utils-usage-rules.html">Browse Usage Rules</a></p><h2 id="equality" class="section-heading">
   <a href="#equality" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -186,30 +204,13 @@ Pages
   </a>
   <span class="text">Interop</span>
 </h2>
-<p>Funx integrates with common Elixir patterns like <code class="inline">{:ok, value}</code> and <code class="inline">{:error, reason}</code>.</p><ul><li><code class="inline">from_result/1</code>: Converts a result tuple into a monadic context that distinguishes success from failure.</li><li><code class="inline">to_result/1</code>: Converts a monadic value back into a result tuple.</li><li><code class="inline">from_try/1</code>: Wraps a function call in a monad, capturing exceptions as failures.</li><li><code class="inline">to_try!/1</code>: Extracts the value from a monad or raises if it represents a failure.</li></ul><h2 id="installation" class="section-heading">
-  <a href="#installation" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Installation</span>
-</h2>
-<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="8106403918-1">do</span><span class="w">
-  </span><span class="p" data-group-id="8106403918-2">[</span><span class="w">
-    </span><span class="p" data-group-id="8106403918-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.5&quot;</span><span class="p" data-group-id="8106403918-3">}</span><span class="w">
-  </span><span class="p" data-group-id="8106403918-2">]</span><span class="w">
-</span><span class="k" data-group-id="8106403918-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
-</span></code></pre><h2 id="documentation" class="section-heading">
+<p>Funx integrates with common Elixir patterns like <code class="inline">{:ok, value}</code> and <code class="inline">{:error, reason}</code>.</p><ul><li><code class="inline">from_result/1</code>: Converts a result tuple into a monadic context that distinguishes success from failure.</li><li><code class="inline">to_result/1</code>: Converts a monadic value back into a result tuple.</li><li><code class="inline">from_try/1</code>: Wraps a function call in a monad, capturing exceptions as failures.</li><li><code class="inline">to_try!/1</code>: Extracts the value from a monad or raises if it represents a failure.</li></ul><h2 id="documentation" class="section-heading">
   <a href="#documentation" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Documentation</span>
 </h2>
-<p>Full documentation is available on <a href="https://jkwa.github.io/funx/readme.html">GitHub Pages</a>.  </p><h2 id="usage-rules" class="section-heading">
-  <a href="#usage-rules" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Usage Rules</span>
-</h2>
-<p>Each module includes usage rules designed for humans and LLMs:</p><ul><li>When to use a given abstraction</li><li>How to compose and combine it</li><li>Examples of domain modeling with <code class="inline">Eq</code>, <code class="inline">Ord</code>, <code class="inline">Maybe</code>, etc.</li></ul><p>➡️ <a href="utils-usage-rules.html">Browse Usage Rules</a></p><h2 id="contributing" class="section-heading">
+<p>Full documentation is available on <a href="https://jkwa.github.io/funx/readme.html">GitHub Pages</a>.</p><h2 id="contributing" class="section-heading">
   <a href="#contributing" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
