@@ -1,27 +1,25 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## Beta Status (v0.1.x)
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+⚠️ **Funx is in active development. APIs may change until version 1.0.**
 
-## [Unreleased]
+We're currently in beta, focusing on:
 
-### Added
+- Core functionality implementation and stabilization
+- Comprehensive usage rules and documentation for humans and LLMs
+- Real-world testing and feedback incorporation
+- API refinement based on practical usage patterns
 
-- Initial project structure and setup.
-- Implemented the following modules:
-  - `Funx.Eq`
-  - `Funx.Foldable`
-  - `Funx.Ord`
-  - `Funx.Predicate`
-  - `Funx.Monad`
-  - `Funx.Monad.Identity`
-  - `Funx.Monad.Maybe`
-  - `Funx.Monad.Either`
-  - `Funx.Monad.Effect`
+**Current Status**: Feature-complete beta with comprehensive documentation. Ready for experimentation and feedback, but expect potential API changes before 1.0.
 
-### Documentation
+## Feedback Welcome
 
-- Added basic documentation for modules and functions.
-- Set up project to generate documentation using ExDoc.
+- 🐛 **Issues**: [Report bugs and suggest improvements](https://github.com/JKWA/funx/issues)
+- 📖 **Documentation**: Help us improve usage rules and examples
+- 🧪 **Real-world usage**: Share your experience using Funx in projects
+- 💬 **Discussion**: Join conversations about functional programming patterns in Elixir
+
+---
+
+*Detailed changelog will begin with version 1.0. Until then, see [GitHub releases](https://github.com/JKWA/funx/releases) for version-specific changes.*
