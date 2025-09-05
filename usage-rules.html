@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-A5E68E17.js"></script>
+    <script src="dist/sidebar_items-BB212813.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -129,7 +129,7 @@ Pages
   </a>
   <span class="text">Available Rules</span>
 </h2>
-<ul><li><p><a href="monad-either-usage-rules.html">Funx.Utils Usage Rules</a><br/>Currying, flipping, and function transformation for point-free, pipeline-friendly composition.</p></li><li><p><a href="monad-either-usage-rules.html">Funx.Eq Usage Rules</a><br/>Domain-specific equality and identity for comparison, deduplication, and filtering.</p></li><li><p><a href="monad-either-usage-rules.html">Funx.Ord Usage Rules</a><br/>Context-aware ordering for sorting, ranking, and prioritization.</p></li><li><p><a href="monad-either-usage-rules.html">Funx.List Usage Rules</a><br/>Equality- and order-aware set operations, deduplication, and sorting.</p></li><li><p><a href="monad-either-usage-rules.html">Funx.Monoid Usage Rules</a><br/>Identity and associative combination, enabling folds, logs, and accumulation.</p></li><li><p><a href="monad-either-usage-rules.html">Funx.Predicate Usage Rules</a><br/>Logical composition using <code class="inline">&amp;&amp;</code>/<code class="inline">||</code>, reusable combinators, and lifted conditions.</p></li><li><p><a href="monad-either-usage-rules.html">Funx.Monad Usage Rules</a><br/>Declarative control flow with <code class="inline">map</code>, <code class="inline">bind</code>, and <code class="inline">ap</code>—composing context-aware steps.</p></li><li><p><a href="monad-either-usage-rules.html">Funx.Monad.Identity Usage Rules</a><br/>Structure without effects—used as a baseline for composing monads.</p></li><li><p><a href="monad-either-usage-rules.html">Funx.Monad.Maybe Usage Rules</a><br/>Optional computation: preserve structure, short-circuit on absence, avoid <code class="inline">nil</code>.</p></li><li><p><a href="monad-either-usage-rules.html">Funx.Monad.Either Usage Rules</a><br/>Branching computation with error context—fail fast or accumulate validation errors.</p></li></ul><h2 id="conventions" class="section-heading">
+<ul><li><p><a href="errors-validation-error-usage-rules.html">Funx.Utils Usage Rules</a><br/>Currying, flipping, and function transformation for point-free, pipeline-friendly composition.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Eq Usage Rules</a><br/>Domain-specific equality and identity for comparison, deduplication, and filtering.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Ord Usage Rules</a><br/>Context-aware ordering for sorting, ranking, and prioritization.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.List Usage Rules</a><br/>Equality- and order-aware set operations, deduplication, and sorting.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Monoid Usage Rules</a><br/>Identity and associative combination, enabling folds, logs, and accumulation.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Predicate Usage Rules</a><br/>Logical composition using <code class="inline">&amp;&amp;</code>/<code class="inline">||</code>, reusable combinators, and lifted conditions.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Monad Usage Rules</a><br/>Declarative control flow with <code class="inline">map</code>, <code class="inline">bind</code>, and <code class="inline">ap</code>—composing context-aware steps.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Monad.Identity Usage Rules</a><br/>Structure without effects—used as a baseline for composing monads.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Monad.Maybe Usage Rules</a><br/>Optional computation: preserve structure, short-circuit on absence, avoid <code class="inline">nil</code>.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Monad.Either Usage Rules</a><br/>Branching computation with error context—fail fast or accumulate validation errors.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Errors.ValidationError Usage Rules</a><br/>Domain validation with structured error collection, composition, and Either integration.</p></li><li><p><a href="errors-validation-error-usage-rules.html">Funx.Appendable Usage Rules</a><br/>Flexible aggregation for accumulating results - structured vs flat collection strategies.</p></li></ul><h2 id="conventions" class="section-heading">
   <a href="#conventions" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -143,26 +143,31 @@ Pages
 </h2>
 <pre><code class="text">lib/
   usage-rules.md            # ← index (this file)
-  utils/
-    usage-rules.md          # ← Funx.Utils rules
+  appendable/
+    usage-rules.md          # ← Funx.Appendable rules
   eq/
     usage-rules.md          # ← Funx.Eq rules
-  ord/
-    usage-rules.md          # ← Funx.Ord rules
+  errors/
+    validation_error/
+      usage-rules.md        # ← Funx.Errors.ValidationError rules
   list/
     usage-rules.md          # ← Funx.List rules
-  monoid/
-    usage-rules.md          # ← Funx.Monoid rules
-  predicate/
-    usage-rules.md          # ← Funx.Predicate rules
   monad/
     usage-rules.md          # ← Funx.Monad rules
+    either/
+      usage-rules.md        # ← Funx.Monad.Either rules
     identity/
       usage-rules.md        # ← Funx.Monad.Identity rules
     maybe/
       usage-rules.md        # ← Funx.Monad.Maybe rules
-    either/
-      usage-rules.md        # ← Funx.Monad.Either rules</code></pre>
+  monoid/
+    usage-rules.md          # ← Funx.Monoid rules
+  ord/
+    usage-rules.md          # ← Funx.Ord rules
+  predicate/
+    usage-rules.md          # ← Funx.Predicate rules
+  utils/
+    usage-rules.md          # ← Funx.Utils rules</code></pre>
 </div>
 
 <div class="bottom-actions" id="bottom-actions">
