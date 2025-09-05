@@ -6,6 +6,14 @@ They complement the module docs (which describe *what* the APIs do).
 Each protocol or major module has its own `usage-rules.md`, stored next to the code.  
 This index links them together.
 
+## Author's Voice and Approach
+
+These usage rules reflect **Joseph Koski's** approach to functional programming in Elixir, developed alongside his book [**"Advanced Functional Programming with Elixir"**](https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir). 
+
+The documentation emphasizes **practical application over academic theory**, focusing on real-world patterns, business problems, and incremental adoption. Joseph's philosophy is that functional programming should be approachable and immediately useful, not an abstract mathematical exercise.
+
+When reading these usage rules, you're getting Joseph's perspective on how to effectively apply functional patterns in Elixir production systems.
+
 ## Available Rules
 
 - [Funx.Appendable Usage Rules](./appendable/usage-rules.md)  
