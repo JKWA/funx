@@ -66,6 +66,10 @@ defmodule Funx.MixProject do
           "lib/monad/either/usage-rules.md": [
             title: "Funx.Monad.Either Usage Rules",
             filename: "monad-either-usage-rules"
+          ],
+          "lib/errors/validation_error/usage-rules.md": [
+            title: "Funx.Errors.ValidationError Usage Rules",
+            filename: "errors-validation-error-usage-rules"
           ]
         ],
         groups_for_extras: [
@@ -80,7 +84,8 @@ defmodule Funx.MixProject do
             "lib/monad/usage-rules.md",
             "lib/monad/identity/usage-rules.md",
             "lib/monad/maybe/usage-rules.md",
-            "lib/monad/either/usage-rules.md"
+            "lib/monad/either/usage-rules.md",
+            "lib/errors/validation_error/usage-rules.md"
           ]
         ],
         filter_prefix: "Examples",
@@ -103,8 +108,10 @@ defmodule Funx.MixProject do
         licenses: ["MIT"],
         maintainers: ["Joseph Koski"],
         links: %{
+          "Docs" => "https://hexdocs.pm/funx",
           "GitHub" => "https://github.com/JKWA/funx",
-          "Docs" => "https://jkwa.github.io/funx/readme.html"
+          "Advanced FP with Elixir (Book)" =>
+            "https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir"
         },
         files: ["lib", "mix.exs", "README.md", "CHANGELOG.md", "LICENSE"]
       ]

@@ -1,5 +1,5 @@
 <p style="background-color: #38127C;">
-  <img 
+  <img
   src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/funx-banner.jpg"
   alt="Funx Banner"
   height="120"/>
@@ -18,8 +18,6 @@ As a rule, functional libraries consider teaching functional programming as out 
 Funx was built alongside [**Advanced Functional Programming with Elixir**](https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir), which helps you build lasting mental models of functional programming—showing not just how these abstractions work, but how to apply them in real systems using Elixir.
 
 <img src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/book_cover_small.jpg" alt="Advanced Functional Programming with Elixir Book Cover" width="200" />
-
- 
 
 **Funx** is a functional programming library for Elixir providing protocols and combinators for equality, ordering, monoids, monads, and other core abstractions.
 
@@ -146,6 +144,16 @@ mix deps.get
 ## Documentation  
 
 Full documentation is available on [GitHub Pages](https://jkwa.github.io/funx/readme.html).  
+
+## Usage Rules
+
+Each module includes usage rules designed for humans and LLMs:
+
+- When to use a given abstraction
+- How to compose and combine it
+- Examples of domain modeling with `Eq`, `Ord`, `Maybe`, etc.
+
+➡️ [Browse Usage Rules](./lib/usage-rules.md)
 
 ## Contributing  
 

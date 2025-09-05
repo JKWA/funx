@@ -2,6 +2,12 @@
 
 ## Core Concepts
 
+**Protocol + Custom Eq Pattern**: Use both together for maximum flexibility
+
+- **Protocol implementation** = domain's default equality (whatever makes business sense)
+- **Custom Eq injection** = context-specific equality when needed
+- **Key insight**: Protocol provides sensible defaults, custom Eq provides flexibility
+
 **Contramap**: Contravariant functor - transforms inputs before comparison
 
 - `contramap(& &1.id, Eq)` compares by ID field only
@@ -21,15 +27,20 @@
 ## Quick Patterns
 
 ```elixir
-# Protocol implementation (when needed)
+# STEP 1: Implement protocol for domain's default equality
 defimpl Funx.Eq, for: User do
   def eq?(%User{id: id1}, %User{id: id2}), do: Funx.Eq.eq?(id1, id2)
   def not_eq?(a, b), do: not eq?(a, b)
 end
 
-# PREFERRED: Build custom Eq, inject into Utils
-by_id = Eq.Utils.contramap(& &1.id)
-Eq.Utils.eq?(user1, user2, by_id)
+# STEP 2: Use protocol directly for default equality
+Eq.eq?(user1, user2)  # Uses protocol (by ID)
+List.uniq(users)      # Uses protocol default
+
+# STEP 3: Inject custom Eq for specific contexts
+by_name = Eq.Utils.contramap(& &1.name)
+Eq.Utils.eq?(user1, user2, by_name)  # Compare by name instead
+List.uniq(users, by_name)            # Dedupe by name, not ID
 
 # Combine fields
 name_and_age = Eq.Utils.concat_all([
@@ -43,18 +54,21 @@ Funx.List.uniq(users, by_id)
 
 ## Key Rules
 
+- **IMPLEMENT PROTOCOL** for domain's default equality (whatever makes business sense)
+- **USE CUSTOM EQ** when you need different equality for specific operations
 - **MUST implement both** `eq?/2` and `not_eq?/2` (no optional defaults)
 - **Best practice**: `not_eq?(a, b) = not eq?(a, b)`
 - Use `contramap/2` to transform inputs before comparison
 - Use monoid functions for composition: `append_all/any`, `concat_all/any`
-- Prefer `Eq.Utils.eq?(a, b, custom_eq)` pattern
+- Pattern: Protocol for defaults, Utils injection for flexibility
 
 ## When to Use
 
-- Domain equality (compare by ID, not all fields)
-- Deduplication with `Funx.List.uniq/2`
+- **Protocol implementation**: When you need domain's default equality (whatever makes business sense, not structural equality)
+- **Custom Eq injection**: When you need different equality for specific contexts
+- Deduplication with `Funx.List.uniq/2` (protocol default or custom)
 - Set operations (`union`, `intersection`, etc.)
-- Custom filtering logic
+- Context-specific filtering and comparison logic
 
 ## Anti-Patterns
 

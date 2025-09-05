@@ -38,6 +38,12 @@ This index links them together.
 - [Funx.Monad.Either Usage Rules](./monad/either/usage-rules.md)  
   Branching computation with error context—fail fast or accumulate validation errors.
 
+- [Funx.Errors.ValidationError Usage Rules](./errors/validation_error/usage-rules.md)  
+  Domain validation with structured error collection, composition, and Either integration.
+
+- [Funx.Appendable Usage Rules](./appendable/usage-rules.md)  
+  Flexible aggregation for accumulating results - structured vs flat collection strategies.
+
 ## Conventions
 
 - Collocation: rules live beside the code they describe.  
@@ -49,24 +55,29 @@ This index links them together.
 ```text
 lib/
   usage-rules.md            # ← index (this file)
-  utils/
-    usage-rules.md          # ← Funx.Utils rules
+  appendable/
+    usage-rules.md          # ← Funx.Appendable rules
   eq/
     usage-rules.md          # ← Funx.Eq rules
-  ord/
-    usage-rules.md          # ← Funx.Ord rules
+  errors/
+    validation_error/
+      usage-rules.md        # ← Funx.Errors.ValidationError rules
   list/
     usage-rules.md          # ← Funx.List rules
-  monoid/
-    usage-rules.md          # ← Funx.Monoid rules
-  predicate/
-    usage-rules.md          # ← Funx.Predicate rules
   monad/
     usage-rules.md          # ← Funx.Monad rules
+    either/
+      usage-rules.md        # ← Funx.Monad.Either rules
     identity/
       usage-rules.md        # ← Funx.Monad.Identity rules
     maybe/
       usage-rules.md        # ← Funx.Monad.Maybe rules
-    either/
-      usage-rules.md        # ← Funx.Monad.Either rules
+  monoid/
+    usage-rules.md          # ← Funx.Monoid rules
+  ord/
+    usage-rules.md          # ← Funx.Ord rules
+  predicate/
+    usage-rules.md          # ← Funx.Predicate rules
+  utils/
+    usage-rules.md          # ← Funx.Utils rules
 ```

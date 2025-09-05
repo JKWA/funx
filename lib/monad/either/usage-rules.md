@@ -35,6 +35,7 @@
 - Example: `validate_email :: String -> Either ValidationError Email`
 
 **Key List Operation Patterns:**
+
 - `concat([Either e a])` → `[a]` (extract all Right values, ignore Left)
 - `concat_map([a], kleisli_fn)` → `[b]` (apply Kleisli, collect Right results)
 - `traverse([a], kleisli_fn)` → `Either e [b]` (apply Kleisli, all succeed or first Left)
@@ -108,6 +109,7 @@
 `Funx.Monad.Either` handles success/failure scenarios with detailed error context.
 
 Use Either for:
+
 - Parsing and validation with specific error messages
 - Operations that can fail in multiple ways
 - Business logic where error details matter for recovery
@@ -295,56 +297,21 @@ Either.concat([
 
 The high-level validation function that collects ALL errors from multiple validators:
 
-**Important**: Validation functions must return error lists for accumulation:
-
-- ✅ `Either.left(["Error message"])` - List format for accumulation
-- ❌ `Either.left("Error message")` - String format causes type errors
-
 ```elixir
-# Create individual validators for each field
-validate_name = fn name ->
-  if String.length(name) > 0 do
-    Either.right(name)
-  else
-    Either.left(["Name cannot be empty"])
-  end
+# Basic validation with error lists
+validate_positive = fn n ->
+  if n > 0, do: Either.right(n), else: Either.left(["Must be positive"])
 end
 
-validate_email = fn email ->
-  if String.contains?(email, "@") do
-    Either.right(email) 
-  else
-    Either.left(["Invalid email format"])
-  end
+validate_even = fn n ->
+  if rem(n, 2) == 0, do: Either.right(n), else: Either.left(["Must be even"])
 end
 
-validate_age = fn age ->
-  if is_integer(age) and age >= 0 do
-    Either.right(age)
-  else
-    Either.left(["Age must be a positive integer"])
-  end
-end
+Either.validate(3, [validate_positive, validate_even])
+# left(["Must be even"])
 
-# Validate a user record - collects ALL errors
-user_data = %{name: "", email: "invalid-email", age: -5}
-
-# Apply all validators to the user data
-Either.validate(user_data, [
-  fn user -> validate_name(user.name) end,
-  fn user -> validate_email(user.email) end, 
-  fn user -> validate_age(user.age) end
-])
-# left(["Name cannot be empty", "Invalid email format", "Age must be a positive integer"])
-
-# Valid data returns the original value
-valid_user = %{name: "Alice", email: "alice@example.com", age: 30}
-Either.validate(valid_user, [
-  fn user -> validate_name(user.name) end,
-  fn user -> validate_email(user.email) end,
-  fn user -> validate_age(user.age) end
-])
-# right(%{name: "Alice", email: "alice@example.com", age: 30})
+Either.validate(-2, [validate_positive, validate_even])  
+# left(["Must be positive"])
 ```
 
 **Use `validate` when:**
@@ -354,6 +321,30 @@ Either.validate(valid_user, [
 - You want to show users all validation problems at once
 - You need to apply multiple validation rules to a single value
 
+### Validation with ValidationError
+
+For comprehensive domain validation with structured error handling, use `Funx.Errors.ValidationError`:
+
+```elixir
+alias Funx.Errors.ValidationError
+
+# Wrap simple errors in ValidationError
+validate_age = fn age ->
+  Either.lift_predicate(age, &(&1 >= 18), "Must be 18 or older")
+  |> Either.map_left(&ValidationError.new/1)
+end
+
+Either.validate(user, [validate_age])
+# left(ValidationError{errors: ["Must be 18 or older"]})
+```
+
+**See `ValidationError` usage rules for advanced patterns:**
+
+- Curried validation functions with `curry_r/1`
+- Fallback validation with `Either.or_else/2`
+- Error message transformation techniques
+- Group validation with `traverse/2` and `traverse_a/2`
+- Sequential vs comprehensive validation strategies
 
 ### `concat_map/2` - Apply Function and Collect Rights
 
@@ -384,6 +375,7 @@ Either.traverse(["1", "invalid", "3"], parse_number)
 ```
 
 **Use `traverse` when:**
+
 - All operations must succeed for meaningful result
 - You want fail-fast behavior on lists
 - Converting `[a]` to `Either e [b]` with validation
@@ -410,6 +402,7 @@ Either.traverse_a(["1", "2", "3"], validate_number)  # right([1, 2, 3])
 ```
 
 **Use `traverse_a` when:**
+
 - You want to collect ALL errors from validation
 - You need comprehensive error reporting
 - You're implementing validation that shows all problems at once
@@ -430,6 +423,7 @@ Either.concat_map(["bad", "invalid", "error"], parse_number)  # []
 ```
 
 **Use `concat_map` when:**
+
 - Partial success is acceptable
 - You want to collect all valid results
 - You need resilient processing that continues on failure
@@ -458,6 +452,7 @@ Either.sequence(either_list) == Either.traverse(either_list, fn x -> x end)
 ```
 
 **Use `sequence` when:**
+
 - You have a list of Either values from previous computations
 - You want all to succeed, or the first failure
 - You're collecting results from multiple operations
@@ -585,6 +580,7 @@ fold_l(Either.left("failed"),
 ```
 
 **Use `fold_l` when:**
+
 - You need to convert Either to a different type
 - You want functional case analysis without pattern matching
 - You're implementing higher-level combinators

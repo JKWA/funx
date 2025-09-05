@@ -1,217 +1,307 @@
 # `Funx.Ord` Usage Rules
 
-## Quick Reference
+## Core Concepts
 
-* Use `Ord.lt?/2`, `Ord.le?/2`, `Ord.gt?/2`, and `Ord.ge?/2` instead of raw comparison operators.
-* Always implement all four functions when defining an instance.
-* The fallback implementation uses Elixir's native operators and may raise for some types.
-* `Ord.Utils.*` functions default to protocol dispatch.
-* `Funx.List.sort/2` and `strict_sort/2` use `Ord`, not `Eq`.
-* `Ord` is composable with helpers like `contramap`, `append`, `concat`, and `reverse`.
+**Protocol + Custom Ord Pattern**: Use both together for maximum flexibility
 
-## Overview
+- **Protocol implementation** = domain's default ordering (whatever makes business sense)
+- **Custom Ord injection** = context-specific ordering when needed
+- **Key insight**: Protocol provides sensible defaults, custom Ord provides flexibility
 
-`Funx.Ord` defines contextual ordering in Elixir.
-Use `Ord` to express domain-specific comparison rules.
+**Contramap**: Contravariant functor - transforms inputs before comparison
 
-* Raw operators like `<` and `>` are not extensible or composable.
-* `Ord` is implemented via protocol and can be customized per type.
-* `Ord` integrates with `Funx.List`, `Ord.Utils`, and sorting operations.
-* `Ord` supports composition and projection via utility helpers.
+- `contramap(&String.length/1, Ord)` compares by string length only
+- Mathematical dual of `map` - transforms "backwards" through the data flow  
+- Key pattern: transform the input, not the comparison result
 
-## Protocol Rules
+**Utils Pattern**: Inject custom Ord logic or default to protocol
 
-* Implement all of the following:
+- `Ord.Utils.compare(a, b, custom_ord)` - uses custom_ord
+- `Ord.Utils.compare(a, b)` - uses protocol dispatch
 
-  ```elixir
-  lt?(a, b)  # less than
-  le?(a, b)  # less than or equal
-  gt?(a, b)  # greater than
-  ge?(a, b)  # greater than or equal
-  ```
+**Monoid Composition**: Combine ordering logic lexicographically
 
-* Implementations should define a total order and follow standard laws:
+- `append(ord1, ord2)` - combine two (ord1 then ord2)
+- `concat([ord1, ord2, ord3])` - combine list (in sequence)
 
-  * Antisymmetry: if `a <= b` and `b <= a`, then `a == b`
-  * Transitivity: if `a <= b` and `b <= c`, then `a <= c`
-  * Connexity: for any `a`, `b`, either `a <= b` or `b <= a`
-
-* Prefer semantic ordering (e.g., domain fields) over structural details.
-
-## Fallback (`Any`)
-
-If no instance is defined, the protocol falls back to Elixir’s built-in comparison operators:
+## Quick Patterns
 
 ```elixir
-defimpl Funx.Ord, for: Any do
-  def lt?(a, b), do: a <  b
-  def le?(a, b), do: a <= b
-  def gt?(a, b), do: a >  b
-  def ge?(a, b), do: a >= b
-end
-```
-
-### Safe fallback types
-
-* Numbers (`1 < 2`)
-* Strings and binaries (`"a" < "b"`)
-* Tuples and lists (compared lexicographically)
-
-### Unsafe fallback types
-
-* Maps and structs: raise `ArgumentError` when compared with `<`, `<=`, etc.
-* Cross-type comparisons: may raise or produce invalid results
-
-Use fallback only if you know the inputs are safe.
-Define explicit `Ord` instances for structs and domain types.
-
-## Preferred Usage
-
-### Use `Ord` Instead of Raw Operators
-
-```elixir
+# STEP 1: Implement protocol for domain's default ordering
 defimpl Funx.Ord, for: User do
-  def lt?(%User{joined_at: a}, %User{joined_at: b}),
-    do: Funx.Ord.lt?(a, b)
-
+  def lt?(%User{joined_at: a}, %User{joined_at: b}), do: Funx.Ord.lt?(a, b)
   def le?(a, b), do: lt?(a, b) or eq?(a, b)
-  def gt?(a, b), do: not le?(a, b)
+  def gt?(a, b), do: not le?(a, b)  
   def ge?(a, b), do: not lt?(a, b)
-
-  defp eq?(%User{joined_at: a}, %User{joined_at: b}),
-    do: Funx.Eq.eq?(a, b)
 end
+
+# STEP 2: Use protocol directly for default ordering
+Ord.lt?(user1, user2)  # Uses protocol (by joined_at)
+List.sort(users)       # Uses protocol default
+
+# STEP 3: Inject custom Ord for specific contexts
+by_age = Ord.Utils.contramap(& &1.age)
+Ord.Utils.compare(user1, user2, by_age)  # Compare by age instead
+List.sort(users, by_age)                 # Sort by age, not joined_at
+
+# Combine fields lexicographically
+age_then_name = Ord.Utils.concat([
+  Ord.Utils.contramap(& &1.age),
+  Ord.Utils.contramap(& &1.name)
+])
+
+# Use with Funx.List
+Funx.List.sort(users, by_age)
+Funx.List.strict_sort(users, age_then_name)  # removes duplicates
 ```
 
-Project domain fields and delegate to `Ord` on those fields.
-If the projected field also has an `Eq` instance, use it for consistency.
+## Key Rules
 
-### Use `Ord.Utils` for Dispatch
+- **IMPLEMENT PROTOCOL** for domain's default ordering (whatever makes business sense)
+- **USE CUSTOM ORD** when you need different ordering for specific operations
+- **MUST implement all four** `lt?/2`, `le?/2`, `gt?/2`, `ge?/2` (no optional defaults)
+- **Must define total order**: antisymmetric, transitive, connex
+- Use `contramap/2` to transform inputs before comparison
+- Use monoid functions for composition: `append/2`, `concat/1`  
+- Pattern: Protocol for defaults, Utils injection for flexibility
+- Keep `Ord` and `Eq` consistent: `compare(a,b) == :eq <=> Eq.eq?(a,b)`
 
-All `Ord.Utils` functions default to the protocol.
-You do not need to pass logic manually if the type has an instance.
+## When to Use
 
-```elixir
-Ord.Utils.compare(a, b)      # :lt | :eq | :gt
-Ord.Utils.min(a, b)
-Ord.Utils.max(a, b)
-Ord.Utils.clamp(value, min, max)
-Ord.Utils.between(value, min, max)
-Ord.Utils.comparator()       # For Enum.sort/2
-```
-
-### Projections and Composition
-
-```elixir
-# Order by projected key
-by_length = Ord.Utils.contramap(&String.length/1)
-Ord.Utils.max("cat", "zebra", by_length)  # "zebra"
-
-# Reverse an ordering
-desc = Ord.Utils.reverse(by_length)
-
-# Compose by multiple fields
-ord =
-  Ord.Utils.concat([
-    Ord.Utils.contramap(& &1.age),
-    Ord.Utils.contramap(& &1.name)
-  ])
-
-Ord.Utils.compare(%{age: 30, name: "Bob"}, %{age: 30, name: "Charlie"}, ord)
-# => :lt
-```
-
-Use `append/2` or `concat/1` to build lexicographic orderings.
-Use `reverse/1` to invert direction.
-
-### Convert `Ord` to `Eq`
-
-You can derive equality from ordering:
-
-```elixir
-eq = Ord.Utils.to_eq()
-eq.eq?.(7, 7)  # true
-```
-
-This ensures consistent logic across equality and ordering.
-
-## In `Funx.List`
-
-Sorting uses `Ord`.
-All `Funx.List` sorting functions accept a comparator, defaulting to the protocol.
-
-```elixir
-Funx.List.sort(list, ord \\ Funx.Ord)
-Funx.List.strict_sort(list, ord \\ Funx.Ord)
-```
-
-`strict_sort/2` removes duplicates using `Ord.Utils.to_eq/1`.
-
-### Examples
-
-```elixir
-# Default: numeric sort
-Funx.List.sort([3, 1, 2])
-# => [1, 2, 3]
-
-# Custom: by string length, then alphabetically
-ord =
-  Ord.Utils.concat([
-    Ord.Utils.contramap(&String.length/1),
-    Ord.Utils.contramap(& &1)
-  ])
-
-Funx.List.sort(~w(zero one two three), ord)
-# => ["one", "two", "zero", "three"]
-
-Funx.List.strict_sort(["aa", "a", "aa"], ord)
-# => ["a", "aa"]
-```
-
-## Stability Contract
-
-* All functions must be pure.
-* Each instance must define a total order.
-* If the type also defines `Eq`, keep the implementations consistent:
-
-```elixir
-Ord.Utils.compare(a, b) == :eq  <=>  Eq.eq?(a, b)
-```
+- **Protocol implementation**: When you need domain's default ordering (whatever makes business sense)
+- **Custom Ord injection**: When you need different ordering for specific contexts
+- Custom sort with `Funx.List.sort/2` (protocol default or custom)
+- Range operations (`min`, `max`, `clamp`, `between`)
+- Multi-field lexicographic sorting and complex ordering logic
 
 ## Anti-Patterns
 
-* Using `<` or `>` on maps or structs.
-* Comparing values of unrelated types.
-* Mixing protocol-based and ad-hoc logic in the same function.
+```elixir
+# ❌ Don't use raw operators on structs
+if user1 < user2, do: ...  # May raise ArgumentError
 
-## Good Patterns
+# ❌ Don't forget any comparison functions
+defimpl Funx.Ord, for: User do
+  def lt?(%User{id: id1}, %User{id: id2}), do: id1 < id2
+  # Missing le?/2, gt?/2, ge?/2!
+end
 
-* Use `contramap` to project comparison keys.
-* Use `append` or `concat` to build multi-key orderings.
-* Use `reverse` to define descending order without rewriting logic.
-* Use `Ord.Utils.comparator/1` when sorting with `Enum.sort/2`.
+# ❌ Don't transform comparison result  
+contramap(fn result -> not result end)  # Wrong!
 
-## When to Define an `Ord` Instance
+# ❌ Don't mix protocols inconsistently
+def process(a, b) do
+  if a < b do  # Raw operator
+    Ord.Utils.max(a, b)  # Protocol-based
+  end
+end
+```
 
-Define an `Ord` instance when you need to control how values are ordered.
+## Testing
 
-### Common cases
+```elixir
+test "Ord laws hold" do
+  # Antisymmetry: a <= b and b <= a implies a == b
+  assert Ord.le?(user1, user2) and Ord.le?(user2, user1) 
+    implies Ord.Utils.compare(user1, user2) == :eq
+  
+  # Transitivity: a <= b and b <= c implies a <= c
+  assert Ord.le?(user1, user2) and Ord.le?(user2, user3)
+    implies Ord.le?(user1, user3)
+  
+  # Connexity: either a <= b or b <= a
+  assert Ord.le?(user1, user2) or Ord.le?(user2, user1)
+end
 
-* Time-based comparisons (`inserted_at`, `scheduled_on`)
-* Lexicographic fallback (sort by age, then name)
-* Score-based ordering (revenue, priority, bonus)
-* Domain-specific sort (e.g., "VIP before General")
+test "contramap preserves Ord laws" do
+  by_age = Ord.Utils.contramap(& &1.age)
+  user1 = %User{age: 25, name: "Alice"}
+  user2 = %User{age: 30, name: "Bob"}
+  
+  # Contramap projection maintains ordering laws
+  assert by_age.lt?.(user1, user2)  # 25 < 30
+  assert not by_age.lt?.(user1, user1)  # Anti-reflexive
+end
 
-## Built-in Instances
+test "monoid composition laws" do
+  ord1 = Ord.Utils.contramap(& &1.age)
+  ord2 = Ord.Utils.contramap(& &1.name)
+  
+  # Lexicographic: age first, then name
+  combined = Ord.Utils.append(ord1, ord2)
+  
+  # Same age, different names
+  alice = %User{age: 30, name: "Alice"}
+  bob = %User{age: 30, name: "Bob"}
+  assert combined.lt?.(alice, bob)  # Alice < Bob by name
+end
+```
 
-`Funx.Ord` includes protocol implementations for Elixir’s temporal types:
+## Core Functions
 
-* `DateTime` → uses `DateTime.compare/2`
-* `Date` → uses `Date.compare/2`
-* `Time` → uses `Time.compare/2`
-* `NaiveDateTime` → uses `NaiveDateTime.compare/2`
+### Protocol Functions
 
-These implementations support full ordering: `lt?/2`, `le?/2`, `gt?/2`, `ge?/2`.
-They are safe for use with `Ord.Utils` and `Funx.List`.
+```elixir
+# Direct protocol calls
+Ord.lt?(a, b)    # less than
+Ord.le?(a, b)    # less than or equal  
+Ord.gt?(a, b)    # greater than
+Ord.ge?(a, b)    # greater than or equal
 
-Avoid relying on the fallback for maps or structs—define explicit rules instead.
+# These delegate to implementations or fallback to Elixir operators
+Ord.lt?(5, 10)              # true (fallback)
+Ord.lt?(user1, user2)       # uses User implementation
+```
+
+### Utils Functions
+
+```elixir
+# Comparison and utilities
+Ord.Utils.compare(a, b)           # :lt | :eq | :gt
+Ord.Utils.min(a, b)               # minimum value
+Ord.Utils.max(a, b)               # maximum value
+Ord.Utils.clamp(value, min, max)  # bound value within range
+Ord.Utils.between(value, min, max) # check if in range
+
+# For Enum.sort/2 compatibility  
+comparator = Ord.Utils.comparator(custom_ord)
+Enum.sort(list, comparator)
+```
+
+### Transformation Functions
+
+```elixir
+# Transform inputs before comparison
+by_length = Ord.Utils.contramap(&String.length/1)
+Ord.Utils.max("cat", "zebra", by_length)  # "zebra" (longer)
+
+# Reverse ordering
+desc = Ord.Utils.reverse()
+Ord.Utils.min(3, 7, desc)  # 7 (max in normal order)
+
+# Convert to equality
+eq = Ord.Utils.to_eq()
+eq.eq?.(5, 5)  # true (compare(5,5) == :eq)
+```
+
+### Composition Functions
+
+```elixir
+# Combine orderings lexicographically
+age_then_name = Ord.Utils.append(
+  Ord.Utils.contramap(& &1.age),
+  Ord.Utils.contramap(& &1.name)
+)
+
+# Combine list of orderings
+multi_sort = Ord.Utils.concat([
+  Ord.Utils.contramap(& &1.priority),
+  Ord.Utils.contramap(& &1.created_at), 
+  Ord.Utils.contramap(& &1.id)
+])
+```
+
+## Integration with Funx.List
+
+```elixir
+# Basic sorting
+Funx.List.sort([3, 1, 4])  # [1, 3, 4]
+
+# Custom ordering
+users = [%User{age: 30}, %User{age: 25}]
+by_age = Ord.Utils.contramap(& &1.age)
+Funx.List.sort(users, by_age)
+
+# Sort and remove duplicates
+Funx.List.strict_sort(users, by_age)  # uses Ord.Utils.to_eq for dedup
+
+# Multi-field sort
+by_age_then_name = Ord.Utils.concat([
+  Ord.Utils.contramap(& &1.age),
+  Ord.Utils.contramap(& &1.name)
+])
+Funx.List.sort(users, by_age_then_name)
+```
+
+## Built-in Implementations
+
+### Temporal Types
+
+```elixir
+# DateTime, Date, Time, NaiveDateTime all have safe implementations
+events = [%Event{occurred_at: ~U[2024-01-02 10:00:00Z]}, 
+          %Event{occurred_at: ~U[2024-01-01 10:00:00Z]}]
+
+by_time = Ord.Utils.contramap(& &1.occurred_at)
+Funx.List.sort(events, by_time)  # chronological order
+```
+
+### Fallback (Any)
+
+```elixir
+# Safe with basic types
+Ord.lt?(1, 2)        # true
+Ord.lt?("a", "b")    # true  
+Ord.lt?([1], [1,2])  # true
+
+# Unsafe with structs/maps - define explicit implementations
+# Ord.lt?(%User{}, %User{})  # May raise ArgumentError
+```
+
+## Common Patterns
+
+### Multi-field Sorting
+
+```elixir
+# Sort by priority (high first), then by created date (old first)
+task_ordering = Ord.Utils.concat([
+  Ord.Utils.reverse(Ord.Utils.contramap(& &1.priority)),
+  Ord.Utils.contramap(& &1.created_at)
+])
+
+Funx.List.sort(tasks, task_ordering)
+```
+
+### Range Operations
+
+```elixir
+# Clamp values within bounds
+score = Ord.Utils.clamp(user_score, 0, 100)
+
+# Check if value is in acceptable range  
+valid = Ord.Utils.between(temperature, min_temp, max_temp)
+
+# Find extreme values
+oldest_user = Enum.reduce(users, &Ord.Utils.min(&1, &2, by_age))
+```
+
+### Domain-Specific Ordering
+
+```elixir
+defmodule Priority do
+  @priorities [:low, :medium, :high, :critical]
+  
+  def to_index(priority), do: Enum.find_index(@priorities, &(&1 == priority))
+end
+
+# Order by priority level
+by_priority = Ord.Utils.contramap(&Priority.to_index/1)
+Funx.List.sort(tasks, by_priority)
+```
+
+## Performance Considerations
+
+- Protocol dispatch has minimal overhead
+- `contramap` creates new functions - avoid in tight loops
+- Composition with `concat` chains multiple comparisons
+- `Funx.List.sort` is optimized for custom comparators
+- Built-in temporal comparisons are efficient
+
+## Best Practices
+
+- Define `Ord` for domain types, not just structs
+- Keep `Ord` and `Eq` implementations consistent  
+- Use `Utils` functions rather than direct protocol calls
+- Prefer composition over custom implementations
+- Test ordering laws in your implementations
+- Document the ordering semantics for domain types
