@@ -21,7 +21,8 @@
 **Monadic vs. Applicative**: Different styles for handling multiple wrapped values
 
 - **Monadic (sequential)**: Later computations depend on earlier results
-- **Applicative (independent)**: All computations are independent and can run in parallel
+- **Applicative (independent)**: All computations are independent and *can* run in parallel
+- **Concurrency note**: Parallel execution only applies to Effect monad - Maybe/Either are synchronous
 - **Rule**: Use monadic when you need the result of one computation to determine the next
 
 **Bind vs. Map**: Different operations for different transformations
@@ -32,9 +33,10 @@
 
 **Context Preservation**: Monads maintain computational context through transformations
 
-- **Maybe monad**: Preserves presence/absence context
-- **Either monad**: Preserves success/failure with error information
-- **Identity monad**: Transparent context for learning and composition
+- **Maybe monad**: Preserves presence/absence context (synchronous)
+- **Either monad**: Preserves success/failure with error information (synchronous)
+- **Effect monad**: Preserves async computation with Reader environment (deferred/concurrent)
+- **Identity monad**: Transparent context for learning and composition (synchronous)
 - **Context flows**: Through bind chains automatically
 
 ## LLM Decision Guide: When to Use Monad Protocol

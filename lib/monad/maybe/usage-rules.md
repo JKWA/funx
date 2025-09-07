@@ -43,10 +43,12 @@
 - `[Maybe a]` → `Maybe [a]` (list of Maybe becomes Maybe of list)
 - Not about sequential processing - about type transformation
 
-**Presence vs Absence**:
+**Maybe**: Represents immediate presence/absence of values
 
-- Presence: Value exists and is usable
-- Absence: Value is missing, incomplete, or unavailable
+- **Presence**: Value exists and is usable (`just(value)`)
+- **Absence**: Value is missing, incomplete, or unavailable (`nothing()`)
+- **Immediate/Synchronous**: Values exist right now, no deferred execution
+- **No concurrency**: All operations are synchronous - use Effect for async operations
 
 ## LLM Decision Guide: When to Use Maybe
 
@@ -57,6 +59,13 @@
 - Chaining operations that should skip on absence
 - Optional fields or nullable database columns
 - User says: "optional", "might not exist", "could be missing"
+
+**❌ Use Effect when:**
+
+- Async operations (database calls, HTTP requests, file I/O)
+- Need concurrency or deferred execution
+- Operations that take significant time
+- User says: "async", "concurrent", "fetch", "call API"
 
 **❌ Use Either when:**
 

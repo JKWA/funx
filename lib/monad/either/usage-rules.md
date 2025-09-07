@@ -10,11 +10,13 @@
 - Always use `Monad.map/2`, `Monad.bind/2`, `Monad.ap/2` or import `Funx.Monad`
 - Different from Haskell's separate Functor, Applicative, Monad typeclasses
 
-**Either**: Represents success/failure with detailed error context
+**Either**: Represents immediate success/failure with detailed error context
 
 - `left(error)` represents failure with error information
 - `right(value)` represents success with the actual value
 - **Right-biased**: Operations work on the Right (success) path
+- **Immediate/Synchronous**: Values exist right now, no deferred execution
+- **No concurrency**: All operations are synchronous - use Effect for async operations
 
 **Right-biased Monad**: Operations transform Right values, preserve Left errors
 
@@ -57,6 +59,13 @@
 - Business logic with detailed failure messages
 - Error recovery or different handling per error type
 - User says: "validate", "check", "ensure", "verify", "error details"
+
+**❌ Use Effect when:**
+
+- Async operations (database calls, HTTP requests, file I/O)
+- Need concurrency or deferred execution
+- Operations that take significant time
+- User says: "async", "concurrent", "fetch", "call API"
 
 **❌ Use Maybe when:**
 

@@ -51,6 +51,10 @@ defmodule Funx.MixProject do
             title: "Funx.Monad.Either Usage Rules",
             filename: "monad-either-usage-rules"
           ],
+          "lib/monad/effect/usage-rules.md": [
+            title: "Funx.Monad.Effect Usage Rules",
+            filename: "monad-effect-usage-rules"
+          ],
           "lib/monad/identity/usage-rules.md": [
             title: "Funx.Monad.Identity Usage Rules",
             filename: "monad-identity-usage-rules"
@@ -89,6 +93,7 @@ defmodule Funx.MixProject do
             "lib/list/usage-rules.md",
             "lib/monad/usage-rules.md",
             "lib/monad/either/usage-rules.md",
+            "lib/monad/effect/usage-rules.md",
             "lib/monad/identity/usage-rules.md",
             "lib/monad/maybe/usage-rules.md",
             "lib/monad/reader/usage-rules.md",

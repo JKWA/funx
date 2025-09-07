@@ -34,6 +34,9 @@ When reading these usage rules, you're getting Joseph's perspective on how to ef
 - [Funx.Monad.Either Usage Rules](./monad/either/usage-rules.md)  
   Branching computation with error context—fail fast or accumulate validation errors.
 
+- [Funx.Monad.Effect Usage Rules](./monad/effect/usage-rules.md)  
+  Deferred observable async computation—Reader + Either + async execution with full telemetry.
+
 - [Funx.Monad.Identity Usage Rules](./monad/identity/usage-rules.md)  
   Structure without effects—used as a baseline for composing monads.
 
@@ -79,6 +82,8 @@ lib/
     usage-rules.md          # ← Funx.Monad rules
     either/
       usage-rules.md        # ← Funx.Monad.Either rules
+    effect/
+      usage-rules.md        # ← Funx.Monad.Effect rules
     identity/
       usage-rules.md        # ← Funx.Monad.Identity rules
     maybe/
