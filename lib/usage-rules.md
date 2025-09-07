@@ -25,6 +25,9 @@ When reading these usage rules, you're getting Joseph's perspective on how to ef
 - [Funx.Errors.ValidationError Usage Rules](./errors/validation_error/usage-rules.md)  
   Domain validation with structured error collection, composition, and Either integration.
 
+- [Funx.Foldable Usage Rules](./foldable/usage-rules.md)  
+  Conditional structure collapse with different functions for present vs absent cases—defaults and aggregation.
+
 - [Funx.List Usage Rules](./list/usage-rules.md)  
   Equality- and order-aware set operations, deduplication, and sorting.
 
@@ -76,6 +79,8 @@ lib/
   errors/
     validation_error/
       usage-rules.md        # ← Funx.Errors.ValidationError rules
+  foldable/
+    usage-rules.md          # ← Funx.Foldable rules
   list/
     usage-rules.md          # ← Funx.List rules
   monad/

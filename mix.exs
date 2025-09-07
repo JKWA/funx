@@ -39,6 +39,10 @@ defmodule Funx.MixProject do
             title: "Funx.Errors.ValidationError Usage Rules",
             filename: "errors-validation-error-usage-rules"
           ],
+          "lib/foldable/usage-rules.md": [
+            title: "Funx.Foldable Usage Rules",
+            filename: "foldable-usage-rules"
+          ],
           "lib/list/usage-rules.md": [
             title: "Funx.List Usage Rules",
             filename: "list-usage-rules"
@@ -90,6 +94,7 @@ defmodule Funx.MixProject do
             "lib/appendable/usage-rules.md",
             "lib/eq/usage-rules.md",
             "lib/errors/validation_error/usage-rules.md",
+            "lib/foldable/usage-rules.md",
             "lib/list/usage-rules.md",
             "lib/monad/usage-rules.md",
             "lib/monad/either/usage-rules.md",
