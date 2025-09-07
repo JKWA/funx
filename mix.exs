@@ -89,7 +89,7 @@ defmodule Funx.MixProject do
           ]
         ],
         groups_for_extras: [
-          "Usage Rules": [
+          "LLM Usage Rules": [
             "lib/usage-rules.md",
             "lib/appendable/usage-rules.md",
             "lib/eq/usage-rules.md",
