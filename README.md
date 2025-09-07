@@ -12,13 +12,16 @@
 
 ⚠️ **Beta:** Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.
 
-**Funx** is a functional programming library for Elixir that provides protocols and combinators for equality, ordering, monoids, monads, and other core abstractions. Elixir doesn’t have a static type system, so it can’t enforce functional patterns through the compiler. Funx brings those patterns into Elixir using the language’s own tools—pattern matching, protocols, and structs—without sacrificing its dynamic nature.  
+## Ecosystem
 
-Funx was built alongside [**Advanced Functional Programming with Elixir**](https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir), a PragProg title that shows how to apply these abstractions in real systems.  
+Most libraries say teaching is out of scope. Funx starts from the opposite question:
 
-<img src="https://raw.githubusercontent.com/JKWA/funx/refs/heads/main/assets/images/book_cover_small.jpg" alt="Advanced Functional Programming with Elixir Book Cover" width="200" />
+> What if teaching were in scope?
 
-💡 **AI-assisted learning:** With an LLM, Funx becomes more than a library. It becomes your teacher for functional programming in Elixir. Install the library into a demo project, ask questions, and let it generate code as you learn.
+- **[Advanced Functional Programming with Elixir](https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir)** — a book that provides the structured learning path and theory.  
+- **[Funx library](https://hex.pm/packages/funx)** — universal functional patterns in Elixir, with usage rules for LLMs.  
+- **[Learn Funx](https://github.com/JKWA/learn_funx)** — a practice environment for using your LLM as a tutor.  
+- **[Discord](https://discord.gg/mFaCAy9Sqd)** — community space to discuss *Advanced Functional Programming with Elixir* (the book), the Funx library, and Learn Funx.
 
 ## Installation  
 
