@@ -240,6 +240,13 @@ For applying these transformations efficiently:
 3. **Process by module type** (monads, monoids, protocols) for consistency
 4. **Validation**: Spot-check files after each batch for accuracy
 
+### Manual Processing for Special Cases
+
+Some files may require manual processing:
+- Files with `iex>` examples need conversion to ````elixir` blocks
+- Complex multi-step examples may need careful splitting
+- Files with mixed documentation styles require individual attention
+
 ### Common Import Patterns
 
 Map fully qualified names to short names based on imports:
@@ -249,4 +256,31 @@ Map fully qualified names to short names based on imports:
 - `import Funx.Predicate` → `Funx.Predicate.p_and` becomes `p_and`
 - `import Funx.Ord.Utils` → `Funx.Ord.Utils.max` becomes `max`
 
-**Principle**: These livebooks are documentation mirrors, not documentation rewrites. Preserve the author's exact words and structure.
+## Key Principles Learned
+
+### Interactive vs Static Documentation
+- **One result per block**: Livebook only shows the last expression result in each code block
+- **No result comments**: Let users see actual execution instead of `# true`, `# false` comments  
+- **Independent execution**: Each code block should be runnable on its own
+
+### Leverage Language Features
+- **Use imports effectively**: `contramap()` is cleaner than `Funx.Eq.Utils.contramap()`
+- **Demonstrate setup benefits**: Show why the import/alias blocks matter
+- **Clean, readable examples**: Focus on the functionality, not boilerplate
+
+### Systematic Processing Works
+- **Batch processing**: Use agents for consistent transformations across many files
+- **Pattern-based approach**: Apply the same rules systematically
+- **Document the process**: So it can be repeated reliably
+
+### Content Fidelity + Format Adaptation
+- **Preserve exact documentation**: Never change the author's words or structure
+- **Adapt for the medium**: But optimize presentation for interactive use
+- **Faithful content, smart formatting**: Best of both worlds
+
+### Special Case Handling
+- **iex> examples**: Convert to ````elixir` blocks for proper syntax highlighting
+- **Multi-step examples**: May need manual attention for optimal splitting
+- **Mixed styles**: Some files require individual review rather than batch processing
+
+**Principle**: These livebooks are documentation mirrors, not documentation rewrites. Preserve the author's exact words and structure while optimizing for interactive execution.

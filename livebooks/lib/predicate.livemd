@@ -109,11 +109,11 @@ cannot_enter = p_none([is_adult, is_vip])
 ```
 
 ```elixir
-cannot_enter.(%{age: 20, ticket: :vip})
+cannot_enter.(%{age: 20, vip: true})
 ```
 
 ```elixir
-cannot_enter.(%{age: 16, ticket: :basic})
+cannot_enter.(%{age: 16, vip: false})
 ```
 
 ## p_and/2
@@ -234,9 +234,9 @@ cannot_enter = p_none([is_adult, is_vip])
 ```
 
 ```elixir
-cannot_enter.(%{age: 20, ticket: :vip})
+cannot_enter.(%{age: 20, vip: true})
 ```
 
 ```elixir
-cannot_enter.(%{age: 16, ticket: :basic})
+cannot_enter.(%{age: 16, vip: false})
 ```

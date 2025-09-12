@@ -40,14 +40,13 @@ The `pure/1` function wraps a value in the `Just` monad, representing the presen
 #### Examples
 
 ```elixir
-iex> Funx.Monad.Maybe.Just.pure(5)
-%Funx.Monad.Maybe.Just{value: 5}
+pure(5)
 ```
 
 #### Raises
 - `ArgumentError` if `nil` is provided.
 
 ```elixir
-iex> Funx.Monad.Maybe.Just.pure(nil)
-** (ArgumentError) Cannot wrap nil in a Just
+# This will raise an ArgumentError
+pure(nil)
 ```

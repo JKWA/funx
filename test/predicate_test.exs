@@ -7,6 +7,8 @@ defmodule Funx.PredicateTest do
   alias Funx.Predicate
   alias Funx.Test.Person
 
+  doctest Funx.Predicate
+
   describe "p_and/2" do
     test "returns true when both predicates are true" do
       pred1 = fn x -> x > 0 end

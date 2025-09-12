@@ -44,13 +44,13 @@ where it will be propagated and updated across chained computations.
 #### Examples
 
 ```elixir
-iex> ctx = Funx.Monad.Effect.Context.new(span_name: "load-data", timeout: 2000)
-iex> ctx.span_name
-"load-data"
+ctx = new(span_name: "load-data", timeout: 2000)
+ctx.span_name
+```
 
-iex> ctx = Funx.Monad.Effect.Context.new(trace_id: "abc123")
-iex> ctx.trace_id
-"abc123"
+```elixir
+ctx = new(trace_id: "abc123")
+ctx.trace_id
 ```
 
 ### merge/2
@@ -66,10 +66,9 @@ This is used to preserve trace continuity and propagate context across composed 
 #### Examples
 
 ```elixir
-iex> c1 = Funx.Monad.Effect.Context.new(trace_id: "a", baggage: %{user: 1})
-iex> c2 = Funx.Monad.Effect.Context.new(trace_id: "b", baggage: %{region: "us-west"})
-iex> Funx.Monad.Effect.Context.merge(c1, c2).baggage
-%{user: 1, region: "us-west"}
+c1 = new(trace_id: "a", baggage: %{user: 1})
+c2 = new(trace_id: "b", baggage: %{region: "us-west"})
+merge(c1, c2).baggage
 ```
 
 ### override/2
@@ -84,14 +83,17 @@ This is useful for refining or extending an existing context in a specific part 
 #### Examples
 
 ```elixir
-iex> ctx = Funx.Monad.Effect.Context.new(trace_id: "abc", baggage: %{x: 1}, metadata: %{debug: false})
-iex> updated = Funx.Monad.Effect.Context.override(ctx, span_name: "child", baggage: %{x: 2}, metadata: %{debug: true})
-iex> updated.span_name
-"child"
-iex> updated.baggage
-%{x: 2}
-iex> updated.metadata
-%{debug: true}
+ctx = new(trace_id: "abc", baggage: %{x: 1}, metadata: %{debug: false})
+updated = override(ctx, span_name: "child", baggage: %{x: 2}, metadata: %{debug: true})
+updated.span_name
+```
+
+```elixir
+updated.baggage
+```
+
+```elixir
+updated.metadata
 ```
 
 ### promote_trace/2
@@ -108,14 +110,17 @@ preserving trace lineage across composed effects.
 #### Examples
 
 ```elixir
-iex> parent = Funx.Monad.Effect.Context.new(trace_id: "abc123", span_name: "load")
-iex> child = Funx.Monad.Effect.Context.promote_trace(parent, "decode")
-iex> child.parent_trace_id
-"abc123"
-iex> child.trace_id != "abc123"
-true
-iex> child.span_name
-"decode -> load"
+parent = new(trace_id: "abc123", span_name: "load")
+child = promote_trace(parent, "decode")
+child.parent_trace_id
+```
+
+```elixir
+child.trace_id != "abc123"
+```
+
+```elixir
+child.span_name
 ```
 
 ### generate_trace_id/0
@@ -127,9 +132,10 @@ This function is used internally to ensure each trace is uniquely identifiable.
 #### Examples
 
 ```elixir
-iex> id = Funx.Monad.Effect.Context.generate_trace_id()
-iex> String.length(id)
-32
-iex> id =~ ~r/^[a-f0-9]+$/
-true
+id = generate_trace_id()
+String.length(id)
+```
+
+```elixir
+id =~ ~r/^[a-f0-9]+$/
 ```

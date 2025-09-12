@@ -16,6 +16,8 @@ for custom structs by leveraging an existing field's comparison operations.
 
 ```elixir
 import Funx.Macros
+alias Funx.Eq
+alias Funx.Ord
 ```
 
 ## eq_for/2
@@ -32,11 +34,13 @@ using the specified field as the basis for equality comparison.
     require Funx.Macros
     Funx.Macros.eq_for(Person, :age)
 
-    iex> Eq.eq?(%Person{age: 30}, %Person{age: 30})
-    true
+```elixir
+Eq.eq?(%Person{age: 30}, %Person{age: 30})
+```
 
-    iex> Eq.eq?(%Person{age: 25}, %Person{age: 30})
-    false
+```elixir
+Eq.eq?(%Person{age: 25}, %Person{age: 30})
+```
 
 ## ord_for/2
 
@@ -52,8 +56,10 @@ using the specified field as the basis for ordering comparisons.
     require Funx.Macros
     Funx.Macros.ord_for(Person, :age)
 
-    iex> Ord.lt?(%Person{age: 25}, %Person{age: 30})
-    true
+```elixir
+Ord.lt?(%Person{age: 25}, %Person{age: 30})
+```
 
-    iex> Ord.gt?(%Person{age: 35}, %Person{age: 30})
-    true
+```elixir
+Ord.gt?(%Person{age: 35}, %Person{age: 30})
+```

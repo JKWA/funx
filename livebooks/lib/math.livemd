@@ -23,8 +23,9 @@ Sums two numbers using the `Sum` monoid.
 
 ### Examples
 
-    iex> Funx.Math.sum(1, 2)
-    3
+```elixir
+sum(1, 2)
+```
 
 ## sum/1
 
@@ -32,11 +33,13 @@ Sums a list of numbers using the `Sum` monoid.
 
 ### Examples
 
-    iex> Funx.Math.sum([1, 2, 3])
-    6
+```elixir
+sum([1, 2, 3])
+```
 
-    iex> Funx.Math.sum([])
-    0
+```elixir
+sum([])
+```
 
 ## product/2
 
@@ -44,8 +47,9 @@ Multiplies two numbers using the `Product` monoid.
 
 ### Examples
 
-    iex> Funx.Math.product(3, 4)
-    12
+```elixir
+product(3, 4)
+```
 
 ## product/1
 
@@ -53,11 +57,13 @@ Multiplies a list of numbers using the `Product` monoid.
 
 ### Examples
 
-    iex> Funx.Math.product([2, 3, 4])
-    24
+```elixir
+product([2, 3, 4])
+```
 
-    iex> Funx.Math.product([])
-    1
+```elixir
+product([])
+```
 
 ## max/2
 
@@ -65,11 +71,13 @@ Returns the maximum of two numbers using the `Max` monoid.
 
 ### Examples
 
-    iex> Funx.Math.max(3, 7)
-    7
+```elixir
+max(3, 7)
+```
 
-    iex> Funx.Math.max(-1, -5)
-    -1
+```elixir
+max(-1, -5)
+```
 
 ## max/1
 
@@ -79,11 +87,13 @@ Returns `Float.min_finite()` if the list is empty.
 
 ### Examples
 
-    iex> Funx.Math.max([3, 7, 2])
-    7
+```elixir
+max([3, 7, 2])
+```
 
-    iex> Funx.Math.max([])
-    Float.min_finite()
+```elixir
+max([])
+```
 
 ## min/2
 
@@ -91,11 +101,13 @@ Returns the minimum of two numbers using the `Min` monoid.
 
 ### Examples
 
-    iex> Funx.Math.min(3, 7)
-    3
+```elixir
+min(3, 7)
+```
 
-    iex> Funx.Math.min(-1, -5)
-    -5
+```elixir
+min(-1, -5)
+```
 
 ## min/1
 
@@ -105,11 +117,13 @@ Returns `Float.max_finite()` if the list is empty.
 
 ### Examples
 
-    iex> Funx.Math.min([3, 7, 2])
-    2
+```elixir
+min([3, 7, 2])
+```
 
-    iex> Funx.Math.min([])
-    Float.max_finite()
+```elixir
+min([])
+```
 
 ## mean/1
 
@@ -119,11 +133,13 @@ Returns `Nothing` if the list is empty.
 
 ### Examples
 
-    iex> Funx.Math.mean([1, 2, 3, 4])
-    Funx.Monad.Maybe.pure(2.5)
+```elixir
+mean([1, 2, 3, 4])
+```
 
-    iex> Funx.Math.mean([])
-    Funx.Monad.Maybe.nothing()
+```elixir
+mean([])
+```
 
 ## range/1
 
@@ -133,11 +149,13 @@ Returns `nothing()` if the list is empty.
 
 ### Examples
 
-    iex> Funx.Math.range([3, 7, 2])
-    Funx.Monad.Maybe.pure(5)
+```elixir
+range([3, 7, 2])
+```
 
-    iex> Funx.Math.range([])
-    Funx.Monad.Maybe.nothing()
+```elixir
+range([])
+```
 
 ## square/1
 
@@ -145,11 +163,13 @@ Computes the square of a number.
 
 ### Examples
 
-    iex> Funx.Math.square(3)
-    9
+```elixir
+square(3)
+```
 
-    iex> Funx.Math.square(-4)
-    16
+```elixir
+square(-4)
+```
 
 ## sum_of_squares/1
 
@@ -159,14 +179,17 @@ Returns `0` if the list is empty.
 
 ### Examples
 
-    iex> Funx.Math.sum_of_squares([1, 2, 3])
-    14
+```elixir
+sum_of_squares([1, 2, 3])
+```
 
-    iex> Funx.Math.sum_of_squares([-2, 5])
-    29
+```elixir
+sum_of_squares([-2, 5])
+```
 
-    iex> Funx.Math.sum_of_squares([])
-    0
+```elixir
+sum_of_squares([])
+```
 
 ## deviation/1
 
@@ -176,14 +199,17 @@ Returns `Nothing` if the list is empty.
 
 ### Examples
 
-    iex> Funx.Math.deviation([1, 2, 3, 4])
-    Funx.Monad.Maybe.pure([-1.5, -0.5, 0.5, 1.5])
+```elixir
+deviation([1, 2, 3, 4])
+```
 
-    iex> Funx.Math.deviation([5, 5, 5])
-    Funx.Monad.Maybe.pure([0.0, 0.0, 0.0])
+```elixir
+deviation([5, 5, 5])
+```
 
-    iex> Funx.Math.deviation([])
-    Funx.Monad.Maybe.nothing()
+```elixir
+deviation([])
+```
 
 ## variance/1
 
@@ -193,14 +219,17 @@ Returns `Nothing` if the list is empty.
 
 ### Examples
 
-    iex> Funx.Math.variance([1, 2, 3, 4])
-    Funx.Monad.Maybe.pure(1.25)
+```elixir
+variance([1, 2, 3, 4])
+```
 
-    iex> Funx.Math.variance([5, 5, 5])
-    Funx.Monad.Maybe.pure(0.0)
+```elixir
+variance([5, 5, 5])
+```
 
-    iex> Funx.Math.variance([])
-    Funx.Monad.Maybe.nothing()
+```elixir
+variance([])
+```
 
 ## std_dev/1
 
@@ -210,11 +239,14 @@ Returns `Nothing` if the list is empty.
 
 ### Examples
 
-    iex> Funx.Math.std_dev([1, 2, 3, 4])
-    Funx.Monad.Maybe.pure(1.118033988749895)
+```elixir
+std_dev([1, 2, 3, 4])
+```
 
-    iex> Funx.Math.std_dev([5, 5, 5])
-    Funx.Monad.Maybe.pure(0.0)
+```elixir
+std_dev([5, 5, 5])
+```
 
-    iex> Funx.Math.std_dev([])
-    Funx.Monad.Maybe.nothing()
+```elixir
+std_dev([])
+```

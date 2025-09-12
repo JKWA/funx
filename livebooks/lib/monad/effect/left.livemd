@@ -40,9 +40,8 @@ an `Effect.Context` struct.
 #### Examples
 
 ```elixir
-iex> effect = Funx.Monad.Effect.Left.pure("error")
-iex> Funx.Monad.Effect.run(effect)
-%Funx.Monad.Either.Left{left: "error"}
+effect = pure("error")
+Funx.Monad.Effect.run(effect)
 ```
 
 ### ask/1
@@ -55,9 +54,8 @@ It can be useful for debugging, instrumentation, or propagating request-scoped f
 #### Example
 
 ```elixir
-iex> Funx.Monad.Effect.Left.ask()
-...> |> Funx.Monad.Effect.run(%{error: :unauthorized})
-%Funx.Monad.Either.Left{left: %{error: :unauthorized}}
+ask()
+|> Funx.Monad.Effect.run(%{error: :unauthorized})
 ```
 
 ### asks/2
@@ -70,7 +68,6 @@ but marks the result as a failure rather than a success.
 #### Example
 
 ```elixir
-iex> Funx.Monad.Effect.Left.asks(fn env -> {:error, env[:reason]} end)
-...> |> Funx.Monad.Effect.run(%{reason: :invalid})
-%Funx.Monad.Either.Left{left: {:error, :invalid}}
+asks(fn env -> {:error, env[:reason]} end)
+|> Funx.Monad.Effect.run(%{reason: :invalid})
 ```

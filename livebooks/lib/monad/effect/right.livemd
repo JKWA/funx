@@ -40,9 +40,8 @@ The `pure/2` function wraps a value in the `Right` effect monad, representing an
 #### Examples
 
 ```elixir
-iex> effect = Funx.Monad.Effect.Right.pure("success")
-iex> Funx.Monad.Effect.run(effect)
-%Funx.Monad.Either.Right{right: "success"}
+effect = pure("success")
+Funx.Monad.Effect.run(effect)
 ```
 
 ### ask/1
@@ -55,10 +54,9 @@ for further computation.
 #### Example
 
 ```elixir
-iex> Funx.Monad.Effect.Right.ask()
-...> |> Funx.Monad.map(& &1[:user])
-...> |> Funx.Monad.Effect.run(%{user: "alice"})
-%Funx.Monad.Either.Right{right: "alice"}
+ask()
+|> Funx.Monad.map(& &1[:user])
+|> Funx.Monad.Effect.run(%{user: "alice"})
 ```
 
 ### asks/2
@@ -71,8 +69,7 @@ following the Reader pattern.
 #### Example
 
 ```elixir
-iex> Funx.Monad.Effect.Right.asks(fn env -> env[:user] end)
-...> |> Funx.Monad.bind(fn user -> Funx.Monad.Effect.right(user) end)
-...> |> Funx.Monad.Effect.run(%{user: "alice"})
-%Funx.Monad.Either.Right{right: "alice"}
+asks(fn env -> env[:user] end)
+|> Funx.Monad.bind(fn user -> Funx.Monad.Effect.right(user) end)
+|> Funx.Monad.Effect.run(%{user: "alice"})
 ```

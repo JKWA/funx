@@ -28,11 +28,12 @@ allowing it to be applied one argument at a time.
 
 ### Example
 
-    iex> add = fn a, b -> a + b end
-    iex> curried_add = FunPark.Utils.curry(add)
-    iex> add_three = curried_add.(3)
-    iex> add_three.(2)
-    5
+```elixir
+add = fn a, b -> a + b end
+curried_add = curry(add)
+add_three = curried_add.(3)
+add_three.(2)
+```
 
 ## curry_l/1
 
@@ -40,11 +41,12 @@ Alias for `curry/1`, explicitly denoting left-to-right argument application.
 
 ### Example
 
-    iex> subtract = fn a, b -> a - b end
-    iex> curried_subtract = FunPark.Utils.curry_l(subtract)
-    iex> subtract_five = curried_subtract.(5)
-    iex> subtract_five.(3)
-    2
+```elixir
+subtract = fn a, b -> a - b end
+curried_subtract = curry_l(subtract)
+subtract_five = curried_subtract.(5)
+subtract_five.(3)
+```
 
 ## curry_r/1
 
@@ -53,11 +55,12 @@ applying arguments from right to left.
 
 ### Example
 
-    iex> divide = fn a, b -> a / b end
-    iex> curried_divide = FunPark.Utils.curry_r(divide)
-    iex> divide_by_two = curried_divide.(2)
-    iex> divide_by_two.(10)
-    5.0
+```elixir
+divide = fn a, b -> a / b end
+curried_divide = curry_r(divide)
+divide_by_two = curried_divide.(2)
+divide_by_two.(10)
+```
 
 ## flip/1
 
@@ -68,7 +71,8 @@ where the first and second arguments are swapped.
 
 ### Examples
 
-    iex> divide = fn a, b -> a / b end
-    iex> flipped_divide = Utils.flip(divide)
-    iex> flipped_divide.(2, 10)
-    5.0
+```elixir
+divide = fn a, b -> a / b end
+flipped_divide = flip(divide)
+flipped_divide.(2, 10)
+```

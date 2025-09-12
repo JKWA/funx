@@ -65,8 +65,9 @@ Removes duplicate elements from a list based on the given equality module.
 
 ### Examples
 
-    iex> Funx.List.uniq([1, 2, 2, 3, 1, 4, 5])
-    [1, 2, 3, 4, 5]
+```elixir
+uniq([1, 2, 2, 3, 1, 4, 5])
+```
 
 ## union/3
 
@@ -74,8 +75,9 @@ Returns the union of two lists, removing duplicates.
 
 ### Examples
 
-    iex> Funx.List.union([1, 2, 3], [3, 4, 5])
-    [1, 2, 3, 4, 5]
+```elixir
+union([1, 2, 3], [3, 4, 5])
+```
 
 ## intersection/3
 
@@ -83,8 +85,9 @@ Returns the intersection of two lists.
 
 ### Examples
 
-    iex> Funx.List.intersection([1, 2, 3, 4], [3, 4, 5])
-    [3, 4]
+```elixir
+intersection([1, 2, 3, 4], [3, 4, 5])
+```
 
 ## difference/3
 
@@ -92,8 +95,9 @@ Returns the difference of two lists.
 
 ### Examples
 
-    iex> Funx.List.difference([1, 2, 3, 4], [3, 4, 5])
-    [1, 2]
+```elixir
+difference([1, 2, 3, 4], [3, 4, 5])
+```
 
 ## symmetric_difference/3
 
@@ -101,8 +105,9 @@ Returns the symmetric difference of two lists.
 
 ### Examples
 
-    iex> Funx.List.symmetric_difference([1, 2, 3], [3, 4, 5])
-    [1, 2, 4, 5]
+```elixir
+symmetric_difference([1, 2, 3], [3, 4, 5])
+```
 
 ## subset?/3
 
@@ -110,11 +115,13 @@ Checks if the first list is a subset of the second.
 
 ### Examples
 
-    iex> Funx.List.subset?([1, 2], [1, 2, 3, 4])
-    true
+```elixir
+subset?([1, 2], [1, 2, 3, 4])
+```
 
-    iex> Funx.List.subset?([1, 5], [1, 2, 3, 4])
-    false
+```elixir
+subset?([1, 5], [1, 2, 3, 4])
+```
 
 ## superset?/3
 
@@ -122,11 +129,13 @@ Checks if the first list is a superset of the second.
 
 ### Examples
 
-    iex> Funx.List.superset?([1, 2, 3, 4], [1, 2])
-    true
+```elixir
+superset?([1, 2, 3, 4], [1, 2])
+```
 
-    iex> Funx.List.superset?([1, 2, 3, 4], [1, 5])
-    false
+```elixir
+superset?([1, 2, 3, 4], [1, 5])
+```
 
 ## sort/2
 
@@ -134,8 +143,9 @@ Sorts a list using the given ordering module.
 
 ### Examples
 
-    iex> Funx.List.sort([3, 1, 4, 1, 5])
-    [1, 1, 3, 4, 5]
+```elixir
+sort([3, 1, 4, 1, 5])
+```
 
 ## strict_sort/2
 
@@ -143,8 +153,9 @@ Sorts a list while ensuring uniqueness.
 
 ### Examples
 
-    iex> Funx.List.strict_sort([3, 1, 4, 1, 5])
-    [1, 3, 4, 5]
+```elixir
+strict_sort([3, 1, 4, 1, 5])
+```
 
 ## concat/1
 
@@ -154,5 +165,6 @@ This uses the `ListConcat` monoid, preserving the original order of elements.
 
 ### Examples
 
-    iex> Funx.List.concat([[1], [2, 3], [4]])
-    [1, 2, 3, 4]
+```elixir
+concat([[1], [2, 3], [4]])
+```

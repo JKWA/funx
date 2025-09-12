@@ -30,11 +30,13 @@ This function collapses a structure by recursively applying the provided functio
 
 ### Examples
 
-    iex> Funx.Foldable.fold_l(Funx.Monad.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
-    6
+```elixir
+fold_l(Funx.Monad.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
+```
 
-    iex> Funx.Foldable.fold_l(Funx.Monad.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
-    0
+```elixir
+fold_l(Funx.Monad.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
+```
 
 ## fold_r/3
 
@@ -49,11 +51,13 @@ This function collapses a structure by recursively applying the provided functio
 
 ### Examples
 
-    iex> Funx.Foldable.fold_r(Funx.Monad.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
-    6
+```elixir
+fold_r(Funx.Monad.Maybe.just(5), fn x -> x + 1 end, fn -> 0 end)
+```
 
-    iex> Funx.Foldable.fold_r(Funx.Monad.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
-    0
+```elixir
+fold_r(Funx.Monad.Maybe.nothing(), fn _ -> 1 end, fn -> 0 end)
+```
 
 ## Function Implementation
 
@@ -70,11 +74,13 @@ The predicate is evaluated, and if it returns `true`, the `true_func` is applied
 
 ### Examples
 
-    iex> Funx.Foldable.fold_l(fn -> true end, fn -> "True case" end, fn -> "False case" end)
-    "True case"
+```elixir
+fold_l(fn -> true end, fn -> "True case" end, fn -> "False case" end)
+```
 
-    iex> Funx.Foldable.fold_l(fn -> false end, fn -> "True case" end, fn -> "False case" end)
-    "False case"
+```elixir
+fold_l(fn -> false end, fn -> "True case" end, fn -> "False case" end)
+```
 
 ## fold_r/3 for Function
 
@@ -84,8 +90,10 @@ The predicate is evaluated, and if it returns `true`, the `true_func` is applied
 
 ### Examples
 
-    iex> Funx.Foldable.fold_r(fn -> true end, fn -> "True case" end, fn -> "False case" end)
-    "True case"
+```elixir
+fold_r(fn -> true end, fn -> "True case" end, fn -> "False case" end)
+```
 
-    iex> Funx.Foldable.fold_r(fn -> false end, fn -> "True case" end, fn -> "False case" end)
-    "False case"
+```elixir
+fold_r(fn -> false end, fn -> "True case" end, fn -> "False case" end)
+```

@@ -40,9 +40,8 @@ Lifts a value into the `Reader` context.
 #### Examples
 
 ```elixir
-iex> reader = Funx.Monad.Reader.pure(42)
-iex> Funx.Monad.Reader.run(reader, %{})
-42
+reader = pure(42)
+run(reader, %{})
 ```
 
 ### run/2
@@ -52,9 +51,8 @@ Runs the `Reader` with the provided environment, returning the computed value.
 #### Examples
 
 ```elixir
-iex> reader = Funx.Monad.Reader.pure(42)
-iex> Funx.Monad.Reader.run(reader, %{})
-42
+reader = pure(42)
+run(reader, %{})
 ```
 
 ### asks/1
@@ -64,9 +62,8 @@ Extracts and transforms the value contained in the environment, making it availa
 #### Examples
 
 ```elixir
-iex> reader = Funx.Monad.Reader.asks(fn env -> Map.get(env, :foo) end)
-iex> Funx.Monad.Reader.run(reader, %{foo: "bar"})
-"bar"
+reader = asks(fn env -> Map.get(env, :foo) end)
+run(reader, %{foo: "bar"})
 ```
 
 ### ask/0
@@ -76,7 +73,6 @@ Extracts the value contained in the environment, making it available within the 
 #### Examples
 
 ```elixir
-iex> reader = Funx.Monad.Reader.ask()
-iex> Funx.Monad.Reader.run(reader, %{foo: "bar"})
-%{foo: "bar"}
+reader = ask()
+run(reader, %{foo: "bar"})
 ```

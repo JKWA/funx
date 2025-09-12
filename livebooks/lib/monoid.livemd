@@ -33,8 +33,9 @@ The identity element is a special value that satisfies the property:
 
 ### Examples
 
-    iex> Funx.Monoid.empty(%Funx.Monoid.Sum{})
-    %Funx.Monoid.Sum{value: 0}
+```elixir
+empty(%Funx.Monoid.Sum{})
+```
 
 ## append/2
 
@@ -46,8 +47,9 @@ The operation must satisfy associativity:
 
 ### Examples
 
-    iex> Funx.Monoid.append(%Funx.Monoid.Sum{value: 1}, %Funx.Monoid.Sum{value: 2})
-    %Funx.Monoid.Sum{value: 3}
+```elixir
+append(%Funx.Monoid.Sum{value: 1}, %Funx.Monoid.Sum{value: 2})
+```
 
 ## wrap/2
 
@@ -55,8 +57,9 @@ Wraps a value into the given monoid struct.
 
 ### Examples
 
-    iex> Funx.Monoid.wrap(%Funx.Monoid.Sum{}, 10)
-    %Funx.Monoid.Sum{value: 10}
+```elixir
+wrap(%Funx.Monoid.Sum{}, 10)
+```
 
 ## unwrap/1
 
@@ -64,5 +67,6 @@ Extracts the underlying value from the monoid struct.
 
 ### Examples
 
-    iex> Funx.Monoid.unwrap(%Funx.Monoid.Sum{value: 10})
-    10
+```elixir
+unwrap(%Funx.Monoid.Sum{value: 10})
+```
