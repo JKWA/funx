@@ -1,0 +1,748 @@
+# Funx.Monad.Effect
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+The `Funx.Monad.Effect` module defines the `Effect` monad, which represents asynchronous computations
+that may succeed (`Right`) or fail (`Left`). Execution is deferred until explicitly run, making
+`Effect` useful for structuring lazy, asynchronous workflows.
+
+This module integrates tracing and telemetry, making it suitable for observability in concurrent
+Elixir systems. All effects carry a `Effect.Context`, which links operations and records spans
+when `run/2` is called.
+
+## Constructors
+
+* `right/1` – Wraps a value in a successful `Right` effect.
+* `left/1` – Wraps a value in a failing `Left` effect.
+* `pure/1` – Alias for `right/1`.
+
+## Execution
+
+* `run/2` – Executes the deferred effect and returns an `Either` result (`Right` or `Left`).
+
+You may pass `:task_supervisor` in the `opts` to run the effect under a specific `Task.Supervisor`. This supervises the top-level task, any internal tasks spawned within the effect function are not supervised.
+
+## Sequencing
+
+* `sequence/1` – Runs a list of effects, stopping at the first `Left`.
+* `traverse/2` – Applies a function returning an `Effect` to each element of a list, sequencing results.
+* `sequence_a/2` – Runs a list of effects, collecting all `Left` errors instead of short-circuiting.
+* `traverse_a/3` – Like `traverse/2`, but accumulates errors across the list.
+
+## Validation
+
+* `validate/2` – Validates a value using one or more effectful validators.
+
+## Error Handling
+
+* `map_left/2` – Transforms a `Left` using a function, leaving `Right` values unchanged.
+* `flip_either/1` –  Inverts the success and failure branches of an `Effect`.
+
+## Lifting
+
+* `lift_func/2` – Lifts a thunk that returns any value into an `Effect`, wrapping it in `Right`. If the thunk raises, the error is captured as a `Left(EffectError)`.
+* `lift_either/2` – Lifts a thunk that returns an `Either` into an `Effect`. Evaluation is deferred until the effect is run. Errors are also captured and wrapped in `Left(EffectError)`.
+* `lift_maybe/3` – Lifts a `Maybe` into an `Effect`, using a fallback error if the value is `Nothing`.
+* `lift_predicate/3` – Lifts a predicate check into an `Effect`. Returns `Right(value)` if the predicate passes; otherwise returns `Left(fallback)`.
+
+## Reader Operations
+
+* `ask/0` – Returns the environment passed to `run/2` as a `Right`.
+* `asks/1` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Right`.
+* `fail/0` – Returns the environment passed to `run/2` as a `Left`.
+* `fails/1` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Left`.
+
+## Elixir Interop
+
+* `from_result/2` – Converts a `{:ok, _}` or `{:error, _}` tuple into an `Effect`.
+* `to_result/1` – Converts an `Effect` to `{:ok, _}` or `{:error, _}`.
+* `from_try/2` – Wraps a function that may raise, returning Right on success, or Left if an exception is raised.
+* `to_try!/1` – Extracts the value from a `Right`, or raises an exception if `Left`.
+
+## Protocols
+The Left and Right structs implement the following protocols:
+
+ * Funx.Monad – Provides map/2, ap/2, and bind/2 for compositional workflows.
+
+Although protocol implementations are defined on Left and Right individually, the behavior
+is unified under the Effect abstraction.
+
+This module enables structured concurrency, error handling, and observability in
+asynchronous workflows.
+
+## Telemetry
+
+The `run/2` function emits telemetry using `:telemetry.span/3`.
+
+### Events
+
+* `[:funx, :effect, :run, :start]`
+* `[:funx, :effect, :run, :stop]`
+
+### Measurements
+
+* `:monotonic_time` – included in both `:start` and `:stop` events.
+* `:system_time` – included only in the `:start` event.
+* `:duration` – included only in the `:stop` event.
+
+### Metadata
+
+* `:timeout` – the timeout in milliseconds passed to `run/2`.
+* `:result` – a summarized version of the result using `Funx.Summarizable`.
+* `:effect_type` – `:right` or `:left`, depending on the effect being run.
+* `:status` – `:ok` if the result is a `Right`, or `:error` if it's a `Left`.
+* `:trace_id` – optional value used to correlate traces across boundaries.
+* `:span_name` – optional name for the span (defaults to `"funx.effect.run"`).
+* `:telemetry_span_context` – reference to correlate `:start` and `:stop` events.
+
+### Example
+
+```elixir
+:telemetry.attach(
+  "effect-run-handler",
+  [:funx, :effect, :run, :stop],
+  fn event, measurements, metadata, _config ->
+    IO.inspect({event, measurements, metadata}, label: "Effect telemetry")
+  end,
+  nil
+)
+```
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Effect
+alias Funx.Monad.Effect
+```
+
+### right/2
+
+Wraps a value in the `Right` variant of the `Effect` monad, representing a successful asynchronous computation.
+
+This is an alias for `pure/2`. You may optionally provide execution context, either as a keyword list or
+a `%Funx.Monad.Effect.Context{}` struct. The context is attached to the effect and propagated during execution.
+
+```elixir
+result = right(42)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+context = Funx.Monad.Effect.Context.new(trace_id: "custom-id", span_name: "from right")
+```
+
+```elixir
+result = right(42, context)
+```
+
+```elixir
+run(result)
+```
+
+### pure/2
+
+Alias for `right/2`.
+
+Wraps a value in the `Right` variant of the `Effect` monad, representing a successful asynchronous computation.
+
+Accepts either a keyword list of context options or a `Effect.Context` struct.
+
+```elixir
+result = pure(42)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+context = Funx.Monad.Effect.Context.new(trace_id: "custom-id", span_name: "pure example")
+```
+
+```elixir
+result = pure(42, context)
+```
+
+```elixir
+run(result)
+```
+
+### left/2
+
+Wraps a value in the `Left` variant of the `Effect` monad, representing a failed asynchronous computation.
+
+Accepts either a keyword list of context options or a `Effect.Context` struct.
+
+```elixir
+result = left("error")
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+context = Funx.Monad.Effect.Context.new(trace_id: "err-id", span_name: "failure")
+```
+
+```elixir
+result = left("error", context)
+```
+
+```elixir
+run(result)
+```
+
+### ask/0
+
+Returns a `Funx.Monad.Effect.Right` that yields the environment passed to `Funx.Monad.Effect.run/2`.
+
+This is the Reader-style `ask`, used to access the full environment inside an effectful computation.
+
+```elixir
+ask()
+|> Funx.Monad.map(& &1[:region])
+```
+
+```elixir
+run(ask() |> Funx.Monad.map(& &1[:region]), %{region: "us-west"})
+```
+
+### fail/0
+
+Returns a `Funx.Monad.Effect.Left` that fails with the entire environment passed to `Funx.Monad.Effect.run/2`.
+
+This is the Reader-style equivalent of `ask/0`, but marks the environment as a failure.
+Useful when the presence of certain runtime data should short-circuit execution.
+
+```elixir
+fail()
+```
+
+```elixir
+run(fail(), %{error: :invalid_token})
+```
+
+### asks/1
+
+Returns a `Funx.Monad.Effect.Right` that applies the given function to the environment passed to `Funx.Monad.Effect.run/2`.
+
+This allows extracting a value from the environment and using it in an effectful computation,
+following the Reader pattern.
+
+```elixir
+asks(fn env -> env[:user] end)
+|> Funx.Monad.bind(fn user -> right(user) end)
+```
+
+```elixir
+run(asks(fn env -> env[:user] end) |> Funx.Monad.bind(fn user -> right(user) end), %{user: "alice"})
+```
+
+### fails/1
+
+Returns a `Funx.Monad.Effect.Left` that applies the given function to the environment passed to `Funx.Monad.Effect.run/2`.
+
+This is the failure-side equivalent of `asks/1`, used to produce an error effect based on runtime context.
+
+```elixir
+fails(fn env -> {:missing_key, env} end)
+```
+
+```elixir
+run(fails(fn env -> {:missing_key, env} end), %{input: nil})
+```
+
+### run/3
+
+Runs the `Effect` and returns the result, awaiting the task if necessary.
+
+You may provide optional telemetry metadata using `opts`, such as `:span_name`
+to promote the current context with a new label.
+
+#### Options
+
+* `:span_name` – (optional) promotes the trace to a new span with the given name.
+
+```elixir
+result = right(42)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+result = right(42, span_name: "initial")
+```
+
+```elixir
+run(result, span_name: "promoted")
+```
+
+### lift_func/2
+
+Lifts a thunk into the `Effect` monad, wrapping its result in a `Right`.
+
+This function defers execution of the given zero-arity function (`thunk`) until the effect is run.
+The result is automatically wrapped as `Either.Right`.
+
+You may also pass a context or options (`opts`) to configure telemetry or span metadata.
+
+If the thunk raises an exception, it is caught and returned as a `Left` containing an `EffectError` tagged with `:lift`.
+
+```elixir
+result = lift_func(fn -> 42 end)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+result = lift_func(fn -> raise "boom" end)
+```
+
+```elixir
+run(result)
+```
+
+### lift_predicate/4
+
+Lifts a value into the `Effect` monad based on a predicate.
+If the predicate returns true, the value is wrapped in `Right`.
+Otherwise, the result of calling `on_false` with the value is wrapped in `Left`.
+
+Optional context metadata (e.g. `:span_name`, `:trace_id`) can be passed via `opts`.
+
+```elixir
+result = lift_predicate(10, &(&1 > 5), fn x -> "#{x} is too small" end)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+result = lift_predicate(3, &(&1 > 5), fn x -> "#{x} is too small" end)
+```
+
+```elixir
+run(result)
+```
+
+### lift_either/2
+
+Lifts a thunk that returns an `Either` into the `Effect` monad.
+
+Instead of passing an `Either` value directly, you provide a zero-arity function (`thunk`) that returns one.
+This defers execution until the effect is run, allowing integration with tracing and composable pipelines.
+
+You may also pass a context or options (`opts`) to configure telemetry or span metadata.
+
+If the thunk raises an exception, it is caught and returned as a `Left` containing an `EffectError` tagged with `:lift`.
+
+```elixir
+result = lift_either(fn -> %Funx.Monad.Either.Right{right: 42} end)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+result = lift_either(fn -> %Funx.Monad.Either.Left{left: "error"} end)
+```
+
+```elixir
+run(result)
+```
+
+### lift_maybe/3
+
+Converts a `Maybe` value into the `Effect` monad.
+If the `Maybe` is `Just`, the value is wrapped in `Right`.
+If it is `Nothing`, the result of `on_none` is wrapped in `Left`.
+
+You can optionally provide context metadata via `opts`.
+
+```elixir
+maybe = Funx.Monad.Maybe.just(42)
+```
+
+```elixir
+result = lift_maybe(maybe, fn -> "No value" end)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+maybe = Funx.Monad.Maybe.nothing()
+```
+
+```elixir
+result = lift_maybe(maybe, fn -> "No value" end)
+```
+
+```elixir
+run(result)
+```
+
+### map_left/2
+
+Transforms the `Left` branch of an `Effect`.
+
+If the `Effect` resolves to a `Left`, the provided function is applied to the error.
+If the `Effect` resolves to a `Right`, the value is returned unchanged.
+
+This function is useful when you want to rewrite or wrap errors without affecting successful computations.
+
+```elixir
+effect = left("error")
+```
+
+```elixir
+transformed = map_left(effect, fn e -> "wrapped: " <> e end)
+```
+
+```elixir
+run(transformed)
+```
+
+```elixir
+effect = pure(42)
+```
+
+```elixir
+transformed = map_left(effect, fn _ -> "should not be called" end)
+```
+
+```elixir
+run(transformed)
+```
+
+### flip_either/1
+
+Inverts the success and failure branches of an `Effect`.
+
+For a `Right`, this reverses the result: a successful value becomes a failure, and
+a failure becomes a success. For a `Left`, only failure is expected; if the `Left`
+produces a success, it is ignored.
+
+This is useful when you want to reverse the semantics of a computation—treating
+an expected error as success, or vice versa.
+
+```elixir
+effect = pure(42)
+```
+
+```elixir
+flipped = flip_either(effect)
+```
+
+```elixir
+run(flipped)
+```
+
+```elixir
+effect = left("fail")
+```
+
+```elixir
+flipped = flip_either(effect)
+```
+
+```elixir
+run(flipped)
+```
+
+### sequence/2
+
+Sequences a list of `Effect` computations, running each in order.
+
+If all effects resolve to `Right`, the result is a `Right` containing a list of values.
+If any effect resolves to `Left`, the sequencing stops early and that `Left` is returned.
+
+Each effect is executed with its own context context, and telemetry spans are emitted for observability.
+
+```elixir
+effects = [right(1), right(2)]
+```
+
+```elixir
+result = sequence(effects)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+effects = [right(1), left("error")]
+```
+
+```elixir
+result = sequence(effects)
+```
+
+```elixir
+run(result)
+```
+
+### traverse/3
+
+Traverses a list with a function that returns `Effect` computations,
+running each in sequence and collecting the `Right` results.
+
+If all effects resolve to `Right`, returns a single `Effect` with a list of results.
+If any effect resolves to `Left`, the traversal stops early and returns that `Left`.
+
+Each step preserves context context and emits telemetry spans, including nested spans when bound.
+
+```elixir
+is_positive = fn num ->
+  lift_predicate(num, fn x -> x > 0 end, fn x -> Integer.to_string(x) <> " is not positive" end)
+end
+```
+
+```elixir
+result = traverse([1, 2, 3], fn num -> is_positive.(num) end)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+result = traverse([1, -2, 3], fn num -> is_positive.(num) end)
+```
+
+```elixir
+run(result)
+```
+
+### sequence_a/2
+
+Sequences a list of `Effect` computations, collecting all `Right` results
+or accumulating all `Left` errors if present.
+
+Unlike `sequence/1`, which stops at the first `Left`, this version continues processing
+all effects, returning a list of errors if any failures occur.
+
+Each effect emits its own telemetry span, and error contexts are preserved through tracing.
+
+```elixir
+effects = [
+  right(1),
+  left("Error 1"),
+  left("Error 2")
+]
+```
+
+```elixir
+result = sequence_a(effects)
+```
+
+```elixir
+run(result)
+```
+
+### traverse_a/3
+
+Traverses a list with a function that returns `Effect` values, combining results
+into a single `Effect`. Unlike `traverse/2`, this version accumulates all errors
+rather than stopping at the first `Left`.
+
+Each successful computation contributes to the final list of results.
+If any computations fail, all errors are collected and returned as a single `Left`.
+
+This function also manages telemetry trace context across all nested effects,
+ensuring that span relationships and trace IDs are preserved through the traversal.
+
+```elixir
+validate = fn n ->
+  lift_predicate(n, fn x -> x > 0 end, fn x -> Integer.to_string(x) <> " is not positive" end)
+end
+```
+
+```elixir
+result = traverse_a([1, -2, 3], validate)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+result = traverse_a([1, 2, 3], validate)
+```
+
+```elixir
+run(result)
+```
+
+### validate/3
+
+Validates a value using one or more validator functions, each returning an `Effect`.
+
+If all validators succeed (`Right`), the original value is returned in a `Right`.
+If any validator fails (`Left`), all errors are accumulated and returned as a single `Left`.
+
+This function also manages telemetry trace context across all nested validations,
+ensuring that span relationships and trace IDs are preserved throughout.
+
+Supports optional `opts` for span metadata (e.g. `:span_name`).
+
+```elixir
+validate_positive = fn x ->
+  lift_predicate(x, fn n -> n > 0 end, fn n -> "Value " <> Integer.to_string(n) <> " must be positive" end)
+end
+```
+
+```elixir
+validate_even = fn x ->
+  lift_predicate(x, fn n -> rem(n, 2) == 0 end, fn n -> "Value " <> Integer.to_string(n) <> " must be even" end)
+end
+```
+
+```elixir
+validators = [validate_positive, validate_even]
+```
+
+```elixir
+result = validate(4, validators)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+result = validate(3, validators)
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+result = validate(-3, validators)
+```
+
+```elixir
+run(result)
+```
+
+### from_result/2
+
+Converts an Elixir `{:ok, value}` or `{:error, reason}` tuple into an `Effect`.
+
+Accepts an optional context context which includes telemetry tracking.
+
+```elixir
+result = from_result({:ok, 42})
+```
+
+```elixir
+run(result)
+```
+
+```elixir
+result = from_result({:error, "error"})
+```
+
+```elixir
+run(result)
+```
+
+### to_result/2
+
+Converts an `Effect` into an Elixir `{:ok, _}` or `{:error, _}` tuple by running the effect.
+
+If the effect completes successfully (`Right`), the result is wrapped in `{:ok, value}`.
+If the effect fails (`Left`), the error is returned as `{:error, reason}`.
+
+This function also emits telemetry via `run/2` and supports optional context metadata through keyword options.
+
+#### Options
+
+* `:span_name` – sets a custom span name for tracing and telemetry.
+
+```elixir
+effect = right(42, span_name: "convert-ok")
+```
+
+```elixir
+to_result(effect, span_name: "to_result")
+```
+
+```elixir
+error = left("fail", span_name: "convert-error")
+```
+
+```elixir
+to_result(error, span_name: "to_result")
+```
+
+### from_try/2
+
+Lifts a potentially exception-raising function into a Kleisli function for the `Effect` monad.
+
+This returns a function of type (`input -> Effect`) that applies the given function to a value.
+If the function raises, the error is captured and returned in a `Left`. You can optionally
+provide a context (or opts) for tracing and telemetry.
+
+```elixir
+safe_div = from_try(fn x -> 10 / x end)
+```
+
+```elixir
+effect = pure(2) |> Funx.Monad.bind(safe_div)
+```
+
+```elixir
+run(effect)
+```
+
+```elixir
+bad_div = pure(0) |> Funx.Monad.bind(safe_div)
+```
+
+```elixir
+run(bad_div)
+```
+
+### to_try!/2
+
+Executes an `Effect` and returns the result if it is a `Right`. If the result is a `Left`,
+this function raises the contained error.
+
+This is useful when you want to interoperate with code that expects regular exceptions,
+such as within test assertions or imperative pipelines.
+
+Runs the effect with full telemetry tracing.
+
+```elixir
+effect = right(42, span_name: "return")
+```
+
+```elixir
+to_try!(effect)
+```
+
+```elixir
+# This will raise an error:
+# error = left(%RuntimeError{message: "failure"}, span_name: "error")
+# to_try!(error)
+```

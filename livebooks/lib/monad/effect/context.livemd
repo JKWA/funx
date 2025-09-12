@@ -1,0 +1,135 @@
+# Funx.Monad.Effect.Context
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+Represents the execution context attached to an effect.
+
+This struct carries contextual information such as `trace_id`, `span_name`,
+timeouts, and arbitrary metadata (`baggage` and `metadata`). It supports
+telemetry integration, span linking, and timeout control, and is propagated
+automatically across composed effects.
+
+Developers can set fields like `timeout`, `trace_id`, or `span_name` when
+constructing `Left` and `Right` effects. The context is merged or promoted
+as needed when chaining effects to preserve trace continuity and execution scope.
+
+This context is not injected at runtime via `run/2`—it is bound to the effect
+when created.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Effect.Context
+alias Funx.Monad.Effect.Context
+```
+
+## Functions
+
+### new/1
+
+Creates a new `Funx.Monad.Effect.Context` struct for use with effectful computations.
+
+If no `:trace_id` is provided, a unique one is generated automatically.
+You may also set optional fields such as `:span_name`, `:timeout`, `:baggage`, and `:metadata`.
+
+The returned context is intended to be passed into `Left` and `Right` effects,
+where it will be propagated and updated across chained computations.
+
+#### Examples
+
+```elixir
+iex> ctx = Funx.Monad.Effect.Context.new(span_name: "load-data", timeout: 2000)
+iex> ctx.span_name
+"load-data"
+
+iex> ctx = Funx.Monad.Effect.Context.new(trace_id: "abc123")
+iex> ctx.trace_id
+"abc123"
+```
+
+### merge/2
+
+Merges two `%Funx.Monad.Effect.Context{}` structs into one, preferring non-nil values from the first context.
+
+This is used to preserve trace continuity and propagate context across composed effects.
+
+- Non-nil fields from the first context take precedence.
+- `baggage` and `metadata` maps are deeply merged.
+- This operation is idempotent and safe for reuse across nested effect chains.
+
+#### Examples
+
+```elixir
+iex> c1 = Funx.Monad.Effect.Context.new(trace_id: "a", baggage: %{user: 1})
+iex> c2 = Funx.Monad.Effect.Context.new(trace_id: "b", baggage: %{region: "us-west"})
+iex> Funx.Monad.Effect.Context.merge(c1, c2).baggage
+%{user: 1, region: "us-west"}
+```
+
+### override/2
+
+Returns a new `%Funx.Monad.Effect.Context{}` with fields overridden by values from the given keyword list.
+
+- Direct fields like `:trace_id`, `:parent_trace_id`, `:span_name`, and `:timeout` are replaced if present.
+- Nested maps `:baggage` and `:metadata` are deeply merged, with the keyword list taking precedence.
+
+This is useful for refining or extending an existing context in a specific part of an effect chain.
+
+#### Examples
+
+```elixir
+iex> ctx = Funx.Monad.Effect.Context.new(trace_id: "abc", baggage: %{x: 1}, metadata: %{debug: false})
+iex> updated = Funx.Monad.Effect.Context.override(ctx, span_name: "child", baggage: %{x: 2}, metadata: %{debug: true})
+iex> updated.span_name
+"child"
+iex> updated.baggage
+%{x: 2}
+iex> updated.metadata
+%{debug: true}
+```
+
+### promote_trace/2
+
+Promotes the current context into a child trace by generating a new `trace_id` and linking to the original.
+
+- The current `trace_id` is moved to `parent_trace_id`.
+- A new `trace_id` is generated for the child context.
+- The given `label` is prepended to the existing `span_name` as `"label -> span"`.
+
+This is typically used to represent a nested span or sub-operation within a larger effect chain,
+preserving trace lineage across composed effects.
+
+#### Examples
+
+```elixir
+iex> parent = Funx.Monad.Effect.Context.new(trace_id: "abc123", span_name: "load")
+iex> child = Funx.Monad.Effect.Context.promote_trace(parent, "decode")
+iex> child.parent_trace_id
+"abc123"
+iex> child.trace_id != "abc123"
+true
+iex> child.span_name
+"decode -> load"
+```
+
+### generate_trace_id/0
+
+Generates a random lowercase hexadecimal trace ID.
+
+This function is used internally to ensure each trace is uniquely identifiable.
+
+#### Examples
+
+```elixir
+iex> id = Funx.Monad.Effect.Context.generate_trace_id()
+iex> String.length(id)
+32
+iex> id =~ ~r/^[a-f0-9]+$/
+true
+```

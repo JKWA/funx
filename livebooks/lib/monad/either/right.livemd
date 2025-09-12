@@ -1,0 +1,41 @@
+# Funx.Monad.Either.Right
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+Represents the `Right` variant of the `Either` monad, used to model a success or valid result.
+
+This module implements the following protocols:
+  - `Funx.Eq`: Defines equality checks between `Right` and other `Either` values.
+  - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Right` values.
+  - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
+  - `Funx.Ord`: Defines ordering logic for `Right` and `Left` values.
+
+The `Right` monad represents a valid result, and the contained value is propagated through operations.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Either.Right
+alias Funx.Monad.Either.Right
+```
+
+## Functions
+
+### pure/1
+
+Creates a new `Right` value.
+
+The `pure/1` function wraps a value in the `Right` monad, representing a valid result.
+
+#### Examples
+
+```elixir
+iex> Funx.Monad.Either.Right.pure(5)
+%Funx.Monad.Either.Right{right: 5}
+```

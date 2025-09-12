@@ -1,0 +1,55 @@
+# Funx.Monoid.Utils
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+Utility functions for working with Monoids.
+
+This module provides functions to combine monoidal values using
+`m_append/3` and `m_concat/2`.
+
+## Function Examples
+
+```elixir
+import Funx.Monoid.Utils
+```
+
+## m_append/3
+
+Appends two values within a given monoid.
+
+This function wraps the input values using the provided `monoid`, applies
+the `append/2` operation, and then unwraps the result.
+
+### Parameters
+
+  - `monoid` – A monoid struct defining how values should be combined.
+  - `a` – The first raw value.
+  - `b` – The second raw value.
+
+### Examples
+
+    iex> alias Funx.Monoid.Sum
+    iex> Funx.Monoid.Utils.m_append(%Sum{}, 3, 5)
+    8
+
+## m_concat/2
+
+Concatenates a list of values using the given monoid.
+
+This function wraps each value using the provided `monoid`, folds the list
+using the monoid's identity and append operation, and then unwraps the result.
+
+### Parameters
+
+  - `monoid` – A monoid struct defining how values should be combined.
+  - `values` – A list of raw values.
+
+### Examples
+
+    iex> alias Funx.Monoid.Sum
+    iex> Funx.Monoid.Utils.m_concat(%Sum{}, [1, 2, 3])
+    6

@@ -1,0 +1,220 @@
+# Funx.Math
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+Provides mathematical operations using Monoids.
+
+This module uses the `Sum` and `Product` monoids to perform operations
+such as addition and multiplication over values or lists of values.
+
+## Function Examples
+
+```elixir
+import Funx.Math
+```
+
+## sum/2
+
+Sums two numbers using the `Sum` monoid.
+
+### Examples
+
+    iex> Funx.Math.sum(1, 2)
+    3
+
+## sum/1
+
+Sums a list of numbers using the `Sum` monoid.
+
+### Examples
+
+    iex> Funx.Math.sum([1, 2, 3])
+    6
+
+    iex> Funx.Math.sum([])
+    0
+
+## product/2
+
+Multiplies two numbers using the `Product` monoid.
+
+### Examples
+
+    iex> Funx.Math.product(3, 4)
+    12
+
+## product/1
+
+Multiplies a list of numbers using the `Product` monoid.
+
+### Examples
+
+    iex> Funx.Math.product([2, 3, 4])
+    24
+
+    iex> Funx.Math.product([])
+    1
+
+## max/2
+
+Returns the maximum of two numbers using the `Max` monoid.
+
+### Examples
+
+    iex> Funx.Math.max(3, 7)
+    7
+
+    iex> Funx.Math.max(-1, -5)
+    -1
+
+## max/1
+
+Finds the maximum value in a list using the `Max` monoid.
+
+Returns `Float.min_finite()` if the list is empty.
+
+### Examples
+
+    iex> Funx.Math.max([3, 7, 2])
+    7
+
+    iex> Funx.Math.max([])
+    Float.min_finite()
+
+## min/2
+
+Returns the minimum of two numbers using the `Min` monoid.
+
+### Examples
+
+    iex> Funx.Math.min(3, 7)
+    3
+
+    iex> Funx.Math.min(-1, -5)
+    -5
+
+## min/1
+
+Finds the minimum value in a list using the `Min` monoid.
+
+Returns `Float.max_finite()` if the list is empty.
+
+### Examples
+
+    iex> Funx.Math.min([3, 7, 2])
+    2
+
+    iex> Funx.Math.min([])
+    Float.max_finite()
+
+## mean/1
+
+Computes the arithmetic mean of a list of numbers.
+
+Returns `Nothing` if the list is empty.
+
+### Examples
+
+    iex> Funx.Math.mean([1, 2, 3, 4])
+    Funx.Monad.Maybe.pure(2.5)
+
+    iex> Funx.Math.mean([])
+    Funx.Monad.Maybe.nothing()
+
+## range/1
+
+Computes the range (difference between max and min) of a list.
+
+Returns `nothing()` if the list is empty.
+
+### Examples
+
+    iex> Funx.Math.range([3, 7, 2])
+    Funx.Monad.Maybe.pure(5)
+
+    iex> Funx.Math.range([])
+    Funx.Monad.Maybe.nothing()
+
+## square/1
+
+Computes the square of a number.
+
+### Examples
+
+    iex> Funx.Math.square(3)
+    9
+
+    iex> Funx.Math.square(-4)
+    16
+
+## sum_of_squares/1
+
+Computes the sum of squares of a list of numbers.
+
+Returns `0` if the list is empty.
+
+### Examples
+
+    iex> Funx.Math.sum_of_squares([1, 2, 3])
+    14
+
+    iex> Funx.Math.sum_of_squares([-2, 5])
+    29
+
+    iex> Funx.Math.sum_of_squares([])
+    0
+
+## deviation/1
+
+Computes the deviations from the mean for a list of numbers.
+
+Returns `Nothing` if the list is empty.
+
+### Examples
+
+    iex> Funx.Math.deviation([1, 2, 3, 4])
+    Funx.Monad.Maybe.pure([-1.5, -0.5, 0.5, 1.5])
+
+    iex> Funx.Math.deviation([5, 5, 5])
+    Funx.Monad.Maybe.pure([0.0, 0.0, 0.0])
+
+    iex> Funx.Math.deviation([])
+    Funx.Monad.Maybe.nothing()
+
+## variance/1
+
+Computes the variance of a list of numbers.
+
+Returns `Nothing` if the list is empty.
+
+### Examples
+
+    iex> Funx.Math.variance([1, 2, 3, 4])
+    Funx.Monad.Maybe.pure(1.25)
+
+    iex> Funx.Math.variance([5, 5, 5])
+    Funx.Monad.Maybe.pure(0.0)
+
+    iex> Funx.Math.variance([])
+    Funx.Monad.Maybe.nothing()
+
+## std_dev/1
+
+Computes the standard deviation of a list of numbers.
+
+Returns `Nothing` if the list is empty.
+
+### Examples
+
+    iex> Funx.Math.std_dev([1, 2, 3, 4])
+    Funx.Monad.Maybe.pure(1.118033988749895)
+
+    iex> Funx.Math.std_dev([5, 5, 5])
+    Funx.Monad.Maybe.pure(0.0)
+
+    iex> Funx.Math.std_dev([])
+    Funx.Monad.Maybe.nothing()

@@ -1,0 +1,82 @@
+# Funx.Monad.Reader
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+The `Funx.Monad.Reader` module represents the Reader monad, which allows computations to access
+shared, read-only environment values.
+
+This module defines core Reader functions:
+
+  * `pure/1` – Lifts a value into the Reader context.
+  * `run/2` – Executes the Reader with a given environment.
+  * `asks/1` – Extracts and transforms a value from the environment.
+  * `ask/0` – Extracts the full environment.
+
+This module implements the following protocol:
+
+  * `Funx.Monad`: Implements `bind/2`, `map/2`, and `ap/2` for monadic composition.
+
+Note: The Reader monad does not implement `Eq` or `Ord`, since Readers are lazy— they do not actually contain a value until they are run. We only can compare the results of a Reader, not the Reader itself.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Reader
+alias Funx.Monad.Reader
+```
+
+## Functions
+
+### pure/1
+
+Lifts a value into the `Reader` context.
+
+#### Examples
+
+```elixir
+iex> reader = Funx.Monad.Reader.pure(42)
+iex> Funx.Monad.Reader.run(reader, %{})
+42
+```
+
+### run/2
+
+Runs the `Reader` with the provided environment, returning the computed value.
+
+#### Examples
+
+```elixir
+iex> reader = Funx.Monad.Reader.pure(42)
+iex> Funx.Monad.Reader.run(reader, %{})
+42
+```
+
+### asks/1
+
+Extracts and transforms the value contained in the environment, making it available within the Reader context.
+
+#### Examples
+
+```elixir
+iex> reader = Funx.Monad.Reader.asks(fn env -> Map.get(env, :foo) end)
+iex> Funx.Monad.Reader.run(reader, %{foo: "bar"})
+"bar"
+```
+
+### ask/0
+
+Extracts the value contained in the environment, making it available within the Reader context.
+
+#### Examples
+
+```elixir
+iex> reader = Funx.Monad.Reader.ask()
+iex> Funx.Monad.Reader.run(reader, %{foo: "bar"})
+%{foo: "bar"}
+```

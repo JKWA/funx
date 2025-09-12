@@ -1,0 +1,390 @@
+# Funx.Monad.Maybe
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+The `Funx.Monad.Maybe` module provides an implementation of the `Maybe` monad, a functional abstraction used to represent optional values in Elixir.
+
+A `Maybe` represents one of two possibilities:
+
+  - `Just(value)`: the presence of a value
+  - `Nothing`: the absence of a value
+
+This pattern is useful for eliminating `nil` checks and handling missing data explicitly and safely in functional pipelines.
+
+## Constructors
+
+  - `just/1`: Wraps a value in the `Just` variant.
+  - `nothing/0`: Returns a `Nothing` value.
+  - `pure/1`: Alias for `just/1`.
+
+## Refinement
+
+  - `just?/1`: Returns `true` if the value is a `Just`.
+  - `nothing?/1`: Returns `true` if the value is a `Nothing`.
+
+## Fallback and Extraction
+
+  - `get_or_else/2`: Returns the value from a `Just`, or a default if `Nothing`.
+  - `or_else/2`: Returns the original `Just`, or invokes a fallback function if `Nothing`.
+
+## List Operations
+
+  - `concat/1`: Removes all `Nothing` values and unwraps the `Just` values from a list.
+  - `concat_map/2`: Applies a function and collects only `Just` results.
+  - `sequence/1`: Converts a list of `Maybe` values into a single `Maybe` of list.
+  - `traverse/2`: Applies a function to each element in a list and sequences the results.
+
+## Lifting
+
+  - `lift_predicate/2`: Converts a value to `Just` if it meets a predicate, otherwise `Nothing`.
+  - `lift_identity/1`: Converts an `Identity` to a `Maybe`.
+  - `lift_either/1`: Converts an `Either` to a `Maybe`.
+  - `lift_eq/1`: Lifts an equality function for use in the `Maybe` context.
+  - `lift_ord/1`: Lifts an ordering function for use in the `Maybe` context.
+
+## Elixir Interoperability
+
+  - `from_nil/1`: Converts `nil` to `Nothing`, otherwise wraps the value in `Just`.
+  - `to_nil/1`: Returns the underlying value or `nil`.
+  - `from_result/1`: Converts `{:ok, val}` or `{:error, _}` into a `Maybe`.
+  - `to_result/1`: Converts a `Maybe` to a result tuple.
+  - `from_try/1`: Runs a function and returns `Just` on success, or `Nothing` if an exception is raised.
+  - `to_try!/2`: Unwraps a `Just`, or raises an error if `Nothing`.
+
+## Protocols
+
+The `Just` and `Nothing` structs implement the following protocols, making the `Maybe` abstraction composable and extensible:
+
+  - `Funx.Eq`: Enables equality comparisons between `Maybe` values.
+  - `Funx.Foldable`: Implements `fold_l/3` and `fold_r/3` for reducing over the value or fallback.
+  - `Funx.Filterable`: Supports conditional retention with `filter/2`, `guard/2`, and `filter_map/2`.
+  - `Funx.Monad`: Provides `map/2`, `ap/2`, and `bind/2` for monadic composition.
+  - `Funx.Ord`: Defines ordering behavior between `Just` and `Nothing` values.
+
+Although these implementations are defined per constructor (`Just` and `Nothing`), the behavior is consistent across the `Maybe` abstraction.
+
+This module helps you represent optional data explicitly, structure conditional logic safely, and eliminate reliance on `nil` in functional pipelines.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Maybe
+alias Funx.Monad.Maybe
+```
+
+### just/1
+
+Wraps a value in `Just`.
+
+```elixir
+just(2)
+```
+
+### nothing/0
+
+Returns a `Nothing` value.
+
+```elixir
+nothing()
+```
+
+### pure/1
+
+Alias for `just/1`.
+
+```elixir
+pure(5)
+```
+
+### just?/1
+
+Returns `true` if the `Maybe` is `Just`, otherwise `false`.
+
+```elixir
+just?(just(5))
+```
+
+```elixir
+just?(nothing())
+```
+
+### nothing?/1
+
+Returns `true` if the `Maybe` is `Nothing`, otherwise `false`.
+
+```elixir
+nothing?(nothing())
+```
+
+```elixir
+nothing?(just(5))
+```
+
+### get_or_else/2
+
+Retrieves the value from a `Maybe`, returning `default` if `Nothing`.
+
+```elixir
+get_or_else(just(5), 0)
+```
+
+```elixir
+get_or_else(nothing(), 0)
+```
+
+### or_else/2
+
+Returns the current `Just` value or invokes the `fallback_fun` if `Nothing`.
+
+```elixir
+or_else(nothing(), fn -> just(42) end)
+```
+
+```elixir
+or_else(just(10), fn -> just(42) end)
+```
+
+### lift_eq/1
+
+Lifts an equality function to compare `Maybe` values:
+  - `Just` vs `Just`: Uses the custom equality function.
+  - `Nothing` vs `Nothing`: Always `true`.
+  - `Just` vs `Nothing` or vice versa: Always `false`.
+
+```elixir
+eq = lift_eq(%{
+  eq?: fn x, y -> x == y end,
+  not_eq?: fn x, y -> x != y end
+})
+```
+
+```elixir
+eq.eq?.(just(5), just(5))
+```
+
+```elixir
+eq.eq?.(just(5), just(10))
+```
+
+```elixir
+eq.eq?.(nothing(), nothing())
+```
+
+```elixir
+eq.eq?.(just(5), nothing())
+```
+
+### lift_ord/1
+
+Adapts an ordering function to compare `Maybe` values:
+  - `Nothing` is considered less than any `Just`.
+  - Two `Just` values are compared by the provided function.
+
+```elixir
+ord = lift_ord(%{
+  lt?: &</2,
+  le?: &<=/2,
+  gt?: &>/2,
+  ge?: &>=/2
+})
+```
+
+```elixir
+ord.lt?.(just(3), just(5))
+```
+
+```elixir
+ord.lt?.(nothing(), just(5))
+```
+
+### concat/1
+
+Removes `Nothing` values from a list of `Maybe` and returns a list of unwrapped `Just` values.
+
+```elixir
+concat([pure(1), nothing(), pure(2)])
+```
+
+```elixir
+concat([nothing(), nothing()])
+```
+
+```elixir
+concat([pure("a"), pure("b"), pure("c")])
+```
+
+### concat_map/2
+
+Maps a function over a list, collecting unwrapped `Just` values and ignoring `Nothing` in a single pass.
+
+```elixir
+concat_map([1, 2, 3, 4], fn x ->
+  if rem(x, 2) == 0, do: pure(x), else: nothing()
+end)
+```
+
+```elixir
+concat_map([1, nil, 3], fn
+  nil -> nothing()
+  x -> pure(x * 2)
+end)
+```
+
+```elixir
+concat_map([1, 2, 3], fn x -> pure(x + 1) end)
+```
+
+```elixir
+concat_map([], fn x -> pure(x) end)
+```
+
+### sequence/1
+
+Converts a list of `Maybe` values into a `Maybe` containing a list. If any element is `Nothing`, the entire result is `Nothing`.
+
+```elixir
+sequence([just(1), just(2)])
+```
+
+```elixir
+sequence([just(1), nothing()])
+```
+
+### traverse/2
+
+Applies a function to each element of a list, collecting results into a single `Maybe`. If any call returns `Nothing`, the operation halts and returns `Nothing`.
+
+```elixir
+traverse([1, 2], fn x -> just(x * 2) end)
+```
+
+```elixir
+traverse([1, nil, 3], fn
+  nil -> nothing()
+  x -> just(x * 2)
+end)
+```
+
+### lift_identity/1
+
+Converts an `Identity` value into a `Maybe`. If the value is `nil`, returns `Nothing`; otherwise `Just`.
+
+```elixir
+lift_identity(Funx.Monad.Identity.pure(5))
+```
+
+```elixir
+lift_identity(Funx.Monad.Identity.pure(nil))
+```
+
+### lift_either/1
+
+Converts an `Either` to a `Maybe`. `Right` becomes `Just`, and `Left` becomes `Nothing`.
+
+```elixir
+lift_either(Funx.Monad.Either.right(5))
+```
+
+```elixir
+lift_either(Funx.Monad.Either.left("Error"))
+```
+
+### lift_predicate/2
+
+Lifts a value into `Maybe` based on a predicate. If `predicate.(value)` is `true`, returns `Just(value)`; otherwise `Nothing`.
+
+```elixir
+lift_predicate(5, fn x -> x > 3 end)
+```
+
+```elixir
+lift_predicate(2, fn x -> x > 3 end)
+```
+
+### to_predicate/1
+
+Returns `true` if the given `Maybe` is a `Just`, or `false` if it is `Nothing`.
+
+This provides a simple way to treat a `Maybe` as a boolean condition, useful when filtering or making branching decisions based on presence.
+
+```elixir
+to_predicate(just(42))
+```
+
+```elixir
+to_predicate(nothing())
+```
+
+### from_nil/1
+
+Converts `nil` to `Nothing`; any other value becomes `Just`.
+
+```elixir
+from_nil(nil)
+```
+
+```elixir
+from_nil(5)
+```
+
+### to_nil/1
+
+Converts a `Maybe` to its wrapped value or `nil`.
+
+```elixir
+to_nil(just(5))
+```
+
+```elixir
+to_nil(nothing())
+```
+
+### from_try/1
+
+Executes a function within a `Maybe` context, returning `Nothing` if an exception occurs.
+
+```elixir
+from_try(fn -> 5 end)
+```
+
+```elixir
+from_try(fn -> raise "error" end)
+```
+
+### to_try!/2
+
+Extracts a value from a `Maybe`, raising an exception if `Nothing`.
+
+```elixir
+to_try!(just(5))
+```
+
+### from_result/1
+
+Converts a result tuple to a `Maybe`. `{:ok, value}` becomes `Just(value)`, while `{:error, _}` becomes `Nothing`.
+
+```elixir
+from_result({:ok, 5})
+```
+
+```elixir
+from_result({:error, :something})
+```
+
+### to_result/1
+
+Converts a `Maybe` to a result tuple. `Just(value)` becomes `{:ok, value}`, while `Nothing` becomes `{:error, :nothing}`.
+
+```elixir
+to_result(just(5))
+```
+
+```elixir
+to_result(nothing())
+```

@@ -1,0 +1,92 @@
+# Funx.Ord
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+The `Funx.Ord` protocol defines a set of comparison functions: `lt?/2`, `le?/2`, `gt?/2`, and `ge?/2`.
+
+This protocol is intended for types that can be ordered, allowing values to be compared for their relative positions in a total order.
+
+By implementing this protocol, you can provide custom logic for how values of a certain type are compared.
+
+## Fallback
+
+The protocol uses `@fallback_to_any true`, which means if a specific type does not implement `Funx.Ord`,
+the default implementation for `Any` will be used, which relies on Elixir's built-in comparison operators.
+
+## Function Examples
+
+```elixir
+import Funx.Ord
+```
+
+## lt?/2
+
+Returns `true` if `a` is less than `b`, otherwise returns `false`.
+
+### Examples
+
+```elixir
+Funx.Ord.lt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
+# true
+
+Funx.Ord.lt?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
+# false
+
+Funx.Ord.lt?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(3))
+# true
+```
+
+## le?/2
+
+Returns `true` if `a` is less than or equal to `b`, otherwise returns `false`.
+
+### Examples
+
+```elixir
+Funx.Ord.le?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
+# true
+
+Funx.Ord.le?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(5))
+# true
+
+Funx.Ord.le?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
+# false
+```
+
+## gt?/2
+
+Returns `true` if `a` is greater than `b`, otherwise returns `false`.
+
+### Examples
+
+```elixir
+Funx.Ord.gt?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
+# true
+
+Funx.Ord.gt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
+# false
+
+Funx.Ord.gt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.nothing())
+# true
+```
+
+## ge?/2
+
+Returns `true` if `a` is greater than or equal to `b`, otherwise returns `false`.
+
+### Examples
+
+```elixir
+Funx.Ord.ge?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
+# true
+
+Funx.Ord.ge?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(5))
+# true
+
+Funx.Ord.ge?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
+# false
+```

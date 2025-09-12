@@ -1,0 +1,26 @@
+# Funx.Config
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+Internal access to `:funx` application configuration.
+
+## Function Examples
+
+```elixir
+import Funx.Config
+```
+
+These functions read from `Application.get_env/3` with sane defaults.
+Used by effect modules for settings like timeouts, telemetry, and summarization.
+
+## Supported config keys
+
+- `:timeout` — default timeout for running effects (default: `5_000` ms)
+- `:telemetry_prefix` — base prefix for telemetry events (default: `[:funx]`)
+- `:telemetry_enabled` — whether telemetry spans are emitted (default: `true`)
+- `:summarizer` — function used to summarize effect results for telemetry
+- `:default_span_name` — fallback span name for telemetry traces

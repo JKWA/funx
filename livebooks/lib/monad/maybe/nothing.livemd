@@ -1,0 +1,43 @@
+# Funx.Monad.Maybe.Nothing
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+Represents the `Nothing` variant of the `Maybe` monad, used to model the absence of a value.
+
+A `Nothing` indicates that no value is present. All operations in the monad context simply propagate the absence, making `Nothing` an identity for failure or emptiness.
+
+This module implements the following protocols:
+
+  - `Funx.Monad`: Implements `bind/2`, `map/2`, and `ap/2`, all of which return `Nothing`.
+  - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3`, invoking the fallback function when folding.
+  - `Funx.Filterable`: Supports filtering operations, which always return `Nothing`.
+  - `Funx.Eq`: Enables equality checks between `Nothing` and other `Maybe` values.
+  - `Funx.Ord`: Defines ordering behavior between `Nothing` and `Just`.
+
+These implementations ensure that `Nothing` behaves consistently in functional composition, filtering, and comparison, treating absence as a stable and composable case.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Maybe.Nothing
+alias Funx.Monad.Maybe.Nothing
+```
+
+## Functions
+
+### pure/0
+
+Creates a new `Nothing` value.
+
+#### Examples
+
+```elixir
+iex> Funx.Monad.Maybe.Nothing.pure()
+%Funx.Monad.Maybe.Nothing{}
+```

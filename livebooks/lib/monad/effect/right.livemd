@@ -1,0 +1,78 @@
+# Funx.Monad.Effect.Right
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+Represents the `Right` variant of the `Effect` monad, used to model a successful computation in an asynchronous context.
+
+This module implements the following protocols:
+  - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions to handle monadic operations within an effectful, lazy execution context.
+  - `String.Chars`: Provides a `to_string/1` function to represent `Right` values as strings.
+
+The `Right` effect allows the computation to proceed with successful values, supporting lazy, asynchronous tasks
+and capturing execution context through the `Effect.Context` struct.
+
+## Reader Operations
+
+  * `ask/1` – Returns the environment passed to `run/2` as a `Right`.
+  * `asks/2` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Right`.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Effect.Right
+alias Funx.Monad.Effect.Right
+```
+
+## Functions
+
+### pure/2
+
+Creates a new `Right` effect.
+
+The `pure/2` function wraps a value in the `Right` effect monad, representing an asynchronous success.
+
+#### Examples
+
+```elixir
+iex> effect = Funx.Monad.Effect.Right.pure("success")
+iex> Funx.Monad.Effect.run(effect)
+%Funx.Monad.Either.Right{right: "success"}
+```
+
+### ask/1
+
+Returns a `Funx.Monad.Effect.Right` that yields the environment passed to `Funx.Monad.Effect.run/2`.
+
+This is the Reader monad's equivalent of `ask`, giving access to the entire injected environment
+for further computation.
+
+#### Example
+
+```elixir
+iex> Funx.Monad.Effect.Right.ask()
+...> |> Funx.Monad.map(& &1[:user])
+...> |> Funx.Monad.Effect.run(%{user: "alice"})
+%Funx.Monad.Either.Right{right: "alice"}
+```
+
+### asks/2
+
+Returns a `Funx.Monad.Effect.Right` that applies the given function to the environment passed to `Funx.Monad.Effect.run/2`.
+
+This allows extracting a value from the environment and using it in an effectful computation,
+following the Reader pattern.
+
+#### Example
+
+```elixir
+iex> Funx.Monad.Effect.Right.asks(fn env -> env[:user] end)
+...> |> Funx.Monad.bind(fn user -> Funx.Monad.Effect.right(user) end)
+...> |> Funx.Monad.Effect.run(%{user: "alice"})
+%Funx.Monad.Either.Right{right: "alice"}
+```

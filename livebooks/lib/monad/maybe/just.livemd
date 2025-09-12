@@ -1,0 +1,53 @@
+# Funx.Monad.Maybe.Just
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+Represents the `Just` variant of the `Maybe` monad, used to model the presence of a value.
+
+A `Just` wraps a single value and participates in functional composition by propagating the contained value through monadic operations.
+
+This module implements the following protocols:
+
+  - `Funx.Monad`: Implements `bind/2`, `map/2`, and `ap/2` for monadic composition.
+  - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to fold over the wrapped value.
+  - `Funx.Filterable`: Supports filtering with `filter/2`, `filter_map/2`, and `guard/2`.
+  - `Funx.Eq`: Enables equality checks between `Just` and other `Maybe` values.
+  - `Funx.Ord`: Defines ordering behavior between `Just` and `Nothing`.
+
+These protocol implementations allow `Just` to participate in structured computation, validation, filtering, and comparison within the `Maybe` context.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Maybe.Just
+alias Funx.Monad.Maybe.Just
+```
+
+## Functions
+
+### pure/1
+
+Creates a new `Just` value.
+
+The `pure/1` function wraps a value in the `Just` monad, representing the presence of the value.
+
+#### Examples
+
+```elixir
+iex> Funx.Monad.Maybe.Just.pure(5)
+%Funx.Monad.Maybe.Just{value: 5}
+```
+
+#### Raises
+- `ArgumentError` if `nil` is provided.
+
+```elixir
+iex> Funx.Monad.Maybe.Just.pure(nil)
+** (ArgumentError) Cannot wrap nil in a Just
+```
