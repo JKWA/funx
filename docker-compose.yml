@@ -13,9 +13,7 @@ services:
       LIVEBOOK_DEFAULT_DIR: "/data/livebooks"
       LIVEBOOK_HOME: "/data"
     volumes:
-      # default notebooks, read-only
-      - ./livebooks/lib:/data/livebooks:ro
-      # writable space for user changes
+      - ./livebooks:/data/livebooks:ro
       - livebook_user:/data
     restart: unless-stopped
 

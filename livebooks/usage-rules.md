@@ -20,18 +20,43 @@ find lib -name "*.ex" -type f
 lib/**/*.ex
 ```
 
-### 2. Directory Structure Mapping
+### 2. Directory Structure Organization
 
-The livebook structure mirrors the source code organization:
+The livebook structure uses **topic-based organization** for optimal browsing experience:
 
 ```
-lib/eq.ex → livebooks/eq.livemd
+lib/eq.ex → livebooks/eq/eq.livemd
 lib/eq/utils.ex → livebooks/eq/utils.livemd
-lib/monad/maybe.ex → livebooks/monad/maybe.livemd
+lib/monad/maybe.ex → livebooks/monad/maybe/maybe.livemd
 lib/monad/maybe/just.ex → livebooks/monad/maybe/just.livemd
 ```
 
-**Note**: The `lib/` level may be flattened in the livebooks directory.
+**Key Principles:**
+- **Topic grouping**: All related content grouped in one directory (e.g., all Eq content in `eq/`)
+- **No source mirroring**: Structure optimizes for user browsing, not implementation organization
+- **Flat hierarchy**: All topic directories at root level (`livebooks/eq/`, `livebooks/monad/`)
+- **Concept coherence**: Each directory represents a complete functional programming concept
+
+#### Final Structure
+```
+livebooks/
+├── index.md                    # Navigation index
+├── eq/                         # Equality concept
+│   ├── eq.livemd              
+│   └── utils.livemd           
+├── monad/                      # All monad types
+│   ├── monad.livemd           
+│   ├── maybe/                  # Maybe monad + implementations
+│   │   ├── maybe.livemd       
+│   │   ├── just.livemd        
+│   │   └── nothing.livemd     
+│   └── either/                 # Either monad + implementations
+│       ├── either.livemd      
+│       ├── left.livemd        
+│       └── right.livemd       
+└── utilities/                  # General utilities only
+    └── utils.livemd           
+```
 
 ### 3. Documentation Extraction Rules
 
@@ -100,8 +125,10 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 - [ ] Code blocks maintain proper syntax highlighting
 
 ### Structure Validation
-- [ ] Directory structure mirrors source organization
+- [ ] Directory structure uses topic-based organization
 - [ ] File naming convention: `.ex` → `.livemd`
+- [ ] All related concepts grouped in single directories
+- [ ] Navigation index created and up-to-date
 - [ ] Livebook sections follow template structure
 - [ ] No missing modules or functions
 
@@ -159,18 +186,22 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 For future recreation, use this systematic approach:
 
 1. **Discover**: `find lib -name "*.ex" -type f`
-2. **Batch process**: Group related modules (eq, ord, monad, monoid)
-3. **Extract**: Use Task tool for systematic extraction
-4. **Validate**: Check completeness against source files
+2. **Extract**: Use Task tool for systematic extraction of documentation
+3. **Organize**: Group by topic in `livebooks/` directories
+4. **Optimize**: Apply interactive formatting transformations
+5. **Index**: Create/update `index.md` navigation file
+6. **Validate**: Check completeness against source files
 
 ## Quality Assurance
 
 Before completing:
 1. Compare livebook count to `.ex` file count
 2. Spot-check random files for exact transcription
-3. Verify all directory structures created
-4. Confirm no implementation code leaked in
-5. Test example code blocks are properly formatted
+3. Verify topic-based directory organization completed
+4. Confirm navigation index includes all files
+5. Test that docker-compose.yml mounts correct livebooks directory
+6. Confirm no implementation code leaked in
+7. Test example code blocks are properly formatted
 
 ---
 
@@ -282,5 +313,21 @@ Map fully qualified names to short names based on imports:
 - **iex> examples**: Convert to ````elixir` blocks for proper syntax highlighting
 - **Multi-step examples**: May need manual attention for optimal splitting
 - **Mixed styles**: Some files require individual review rather than batch processing
+- **Doctest data alignment**: Ensure test data matches predicate expectations (e.g., `vip: true/false` not `ticket: :vip/:basic`)
 
-**Principle**: These livebooks are documentation mirrors, not documentation rewrites. Preserve the author's exact words and structure while optimizing for interactive execution.
+## Maintaining Data Consistency
+
+### Doctest-Livebook Alignment
+When updating livebooks, ensure data structures match the source file's doctests:
+
+#### Common Data Mismatches
+- **Predicate functions**: Use `%{vip: true}` not `%{ticket: :vip}` for boolean predicates
+- **Age-based examples**: Consistent field names (`age`, `tickets`, `vip`) across examples
+- **Map structure**: Align with predicate function expectations
+
+#### Validation Process
+1. **Check source doctests**: Verify what data structures the actual code expects
+2. **Update livebook examples**: Match the corrected source data
+3. **Test consistency**: Ensure examples would work with imported functions
+
+**Principle**: These livebooks are documentation mirrors, not documentation rewrites. Preserve the author's exact words and structure while optimizing for interactive execution and maintaining data consistency with source doctests.
