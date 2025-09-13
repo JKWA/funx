@@ -20,7 +20,6 @@ defmodule Funx.Predicate do
       iex> is_adult = fn person -> person.age >= 18 end
       iex> has_ticket = fn person -> person.tickets > 0 end
       iex> can_enter = Funx.Predicate.p_and(is_adult, has_ticket)
-
       iex> can_enter.(%{age: 20, tickets: 1})
       true
       iex> can_enter.(%{age: 16, tickets: 1})
@@ -31,7 +30,6 @@ defmodule Funx.Predicate do
       iex> is_vip = fn person -> person.vip end
       iex> is_sponsor = fn person -> person.sponsor end
       iex> can_access_vip_area = Funx.Predicate.p_or(is_vip, is_sponsor)
-
       iex> can_access_vip_area.(%{vip: true, sponsor: false})
       true
       iex> can_access_vip_area.(%{vip: false, sponsor: false})
@@ -41,7 +39,6 @@ defmodule Funx.Predicate do
 
       iex> is_minor = fn person -> person.age < 18 end
       iex> is_adult = Funx.Predicate.p_not(is_minor)
-
       iex> is_adult.(%{age: 20})
       true
       iex> is_adult.(%{age: 16})
@@ -49,15 +46,15 @@ defmodule Funx.Predicate do
 
   ### Using `p_all/1` and `p_any/1` for predicate lists:
 
+      iex> is_adult = fn person -> person.age >= 18 end
+      iex> has_ticket = fn person -> person.tickets > 0 end
       iex> conditions = [is_adult, has_ticket]
       iex> must_meet_all = Funx.Predicate.p_all(conditions)
       iex> must_meet_any = Funx.Predicate.p_any(conditions)
-
       iex> must_meet_all.(%{age: 20, tickets: 1})
       true
       iex> must_meet_all.(%{age: 20, tickets: 0})
       false
-
       iex> must_meet_any.(%{age: 20, tickets: 0})
       true
       iex> must_meet_any.(%{age: 16, tickets: 0})
@@ -65,11 +62,12 @@ defmodule Funx.Predicate do
 
   ### Using `p_none/1` to reject multiple conditions:
 
+      iex> is_adult = fn person -> person.age >= 18 end
+      iex> is_vip = fn person -> person.vip end
       iex> cannot_enter = Funx.Predicate.p_none([is_adult, is_vip])
-
-      iex> cannot_enter.(%{age: 20, ticket: :vip})
+      iex> cannot_enter.(%{age: 20, vip: true})
       false
-      iex> cannot_enter.(%{age: 16, ticket: :basic})
+      iex> cannot_enter.(%{age: 16, vip: false})
       true
   """
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
@@ -86,7 +84,6 @@ defmodule Funx.Predicate do
       iex> is_adult = fn person -> person.age >= 18 end
       iex> has_ticket = fn person -> person.tickets > 0 end
       iex> can_enter = Funx.Predicate.p_and(is_adult, has_ticket)
-
       iex> can_enter.(%{age: 20, tickets: 1})
       true
       iex> can_enter.(%{age: 16, tickets: 1})
@@ -106,7 +103,6 @@ defmodule Funx.Predicate do
       iex> is_vip = fn person -> person.vip end
       iex> is_sponsor = fn person -> person.sponsor end
       iex> can_access_vip_area = Funx.Predicate.p_or(is_vip, is_sponsor)
-
       iex> can_access_vip_area.(%{vip: true, sponsor: false})
       true
       iex> can_access_vip_area.(%{vip: false, sponsor: false})
@@ -125,7 +121,6 @@ defmodule Funx.Predicate do
 
       iex> is_minor = fn person -> person.age < 18 end
       iex> is_adult = Funx.Predicate.p_not(is_minor)
-
       iex> is_adult.(%{age: 20})
       true
       iex> is_adult.(%{age: 16})
@@ -142,8 +137,9 @@ defmodule Funx.Predicate do
 
   ## Examples
 
+      iex> is_adult = fn person -> person.age >= 18 end
+      iex> has_ticket = fn person -> person.tickets > 0 end
       iex> can_enter = Funx.Predicate.p_all([is_adult, has_ticket])
-
       iex> can_enter.(%{age: 20, tickets: 1})
       true
       iex> can_enter.(%{age: 16, tickets: 1})
@@ -160,8 +156,9 @@ defmodule Funx.Predicate do
 
   ## Examples
 
+      iex> is_vip = fn person -> person.vip end
+      iex> is_sponsor = fn person -> person.sponsor end
       iex> can_access_vip_area = Funx.Predicate.p_any([is_vip, is_sponsor])
-
       iex> can_access_vip_area.(%{vip: true, sponsor: false})
       true
       iex> can_access_vip_area.(%{vip: false, sponsor: false})
@@ -178,11 +175,12 @@ defmodule Funx.Predicate do
 
   ## Examples
 
+      iex> is_adult = fn person -> person.age >= 18 end
+      iex> is_vip = fn person -> person.vip end
       iex> cannot_enter = Funx.Predicate.p_none([is_adult, is_vip])
-
-      iex> cannot_enter.(%{age: 20, ticket: :vip})
+      iex> cannot_enter.(%{age: 20, vip: true})
       false
-      iex> cannot_enter.(%{age: 16, ticket: :basic})
+      iex> cannot_enter.(%{age: 16, vip: false})
       true
   """
   @spec p_none([t()]) :: t()

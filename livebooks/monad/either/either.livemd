@@ -1,0 +1,504 @@
+# Funx.Monad.Either
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+The `Funx.Monad.Either` module provides an implementation of the `Either` monad, a functional abstraction used to model computations that may fail.
+
+An `Either` represents one of two possibilities:
+
+  - `Right(value)`: a successful result
+  - `Left(error)`: a failure or error
+
+This pattern is commonly used in place of exceptions to handle errors explicitly and safely in functional pipelines.
+
+## Constructors
+
+  - `right/1`: Wraps a value in the `Right` branch.
+  - `left/1`: Wraps a value in the `Left` branch.
+  - `pure/1`: Alias for `right/1`.
+
+## Refinement
+
+  - `right?/1`: Returns `true` if the value is a `Right`.
+  - `left?/1`: Returns `true` if the value is a `Left`.
+
+## Fallback and Extraction
+
+  - `get_or_else/2`: Returns the value from a `Right`, or a default if `Left`.
+  - `or_else/2`: Returns the original `Right`, or invokes a fallback function if `Left`.
+  - `map_left/2`: Transforms a `Left` using a function, leaving `Right` values unchanged.
+  - `flip/1`: Swaps `Left` and `Right`, turning errors into successes and vice versa.
+  - `filter_or_else/3`: Applies a predicate to the `Right` value; if false, returns a fallback `Left`.
+
+## List Operations
+
+  - `concat/1`: Removes all `Left` values and unwraps the `Right` values from a list.
+  - `concat_map/2`: Applies a function and collects only `Right` results.
+  - `sequence/1`: Converts a list of `Either` values into a single `Either` of list.
+  - `traverse/2`: Applies a function to each element in a list and sequences the results.
+  - `sequence_a/1`: Like `sequence/1`, but accumulates all errors from `Left` values.
+  - `traverse_a/2`: Like `traverse/2`, but accumulates all `Left` values instead of short-circuiting.
+  - `wither_a/2`: Like `traverse_a/2`, but filters out `Nothing` results and collects only `Just` values.
+
+## Validation
+
+  - `validate/2`: Applies multiple validators to a single input, collecting all errors.
+
+## Lifting
+
+  - `lift_predicate/3`: Turns a predicate into an `Either`, returning `Right` on `true` and `Left` on `false`.
+  - `lift_maybe/2`: Converts a `Maybe` to an `Either` using a fallback value.
+  - `lift_eq/1`: Lifts an equality function into the `Either` context.
+  - `lift_ord/1`: Lifts an ordering function into the `Either` context.
+
+## Transformation
+
+  - `map_left/2` – Transforms the error inside a `Left`, leaving `Right` values untouched.
+
+## Elixir Interoperability
+
+  - `from_result/1`: Converts `{:ok, val}` or `{:error, err}` into an `Either`.
+  - `to_result/1`: Converts an `Either` into a result tuple.
+  - `from_try/1`: Runs a function and returns `Right` on success or `Left` on exception.
+  - `to_try!/1`: Unwraps a `Right`, or raises an error from a `Left`.
+
+## Protocols
+
+The `Left` and `Right` structs implement the following protocols, making the `Either` abstraction composable and extensible:
+
+  - `Funx.Eq`: Enables equality comparisons between `Either` values.
+  - `Funx.Foldable`: Implements `fold_l/3` and `fold_r/3` for reducing over contained values.
+  - `Funx.Monad`: Provides `map/2`, `ap/2`, and `bind/2` for monadic composition.
+  - `Funx.Ord`: Defines ordering behavior for comparing `Left` and `Right` values.
+
+Although these implementations are defined on each constructor (`Left` and `Right`), the behavior is consistent across the `Either` abstraction.
+
+This module helps you model failure explicitly, compose error-aware logic, and integrate cleanly with Elixir's functional idioms.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Either
+alias Funx.Monad.Either
+```
+
+### right/1
+
+Wraps a value in the `Right` monad.
+
+```elixir
+right(5)
+```
+
+### left/1
+
+Wraps a value in the `Left` monad.
+
+```elixir
+left("error")
+```
+
+### pure/1
+
+Alias for `right/1`.
+
+```elixir
+pure(2)
+```
+
+### left?/1
+
+Returns `true` if the `Either` is a `Left` value.
+
+```elixir
+left?(left("error"))
+```
+
+```elixir
+left?(right(5))
+```
+
+### right?/1
+
+Returns `true` if the `Either` is a `Right` value.
+
+```elixir
+right?(right(5))
+```
+
+```elixir
+right?(left("error"))
+```
+
+### filter_or_else/3
+
+Filters the value inside a `Right` using the given `predicate`. If the predicate returns `false`,
+a `Left` is returned using the `left_func`.
+
+```elixir
+filter_or_else(right(5), fn x -> x > 3 end, fn -> "error" end)
+```
+
+```elixir
+filter_or_else(right(2), fn x -> x > 3 end, fn -> "error" end)
+```
+
+### get_or_else/2
+
+Retrieves the value from a `Right`, returning the `default` value if `Left`.
+
+```elixir
+get_or_else(right(5), 0)
+```
+
+```elixir
+get_or_else(left("error"), 0)
+```
+
+### or_else/2
+
+Returns the current `Right` value or invokes the `fallback_fun` if `Left`.
+
+Useful for recovering from a failure by providing an alternate computation.
+
+```elixir
+or_else(left("error"), fn -> right(42) end)
+```
+
+```elixir
+or_else(right(10), fn -> right(42) end)
+```
+
+### flip/1
+
+Swaps the `Left` and `Right` branches of the `Either`.
+
+Turns a `Left` into a `Right` and vice versa, preserving the contained term.
+
+```elixir
+flip(left(:error))
+```
+
+```elixir
+flip(right(42))
+```
+
+### lift_eq/1
+
+Lifts an equality function to compare `Either` values:
+  - `Right` vs `Right`: Uses the custom equality function.
+  - `Left` vs `Left`: Uses the custom equality function.
+  - `Left` vs `Right` or vice versa: Always `false`.
+
+```elixir
+eq = lift_eq(%{
+  eq?: fn x, y -> x == y end,
+  not_eq?: fn x, y -> x != y end
+})
+```
+
+```elixir
+eq.eq?.(right(5), right(5))
+```
+
+```elixir
+eq.eq?.(right(5), right(10))
+```
+
+```elixir
+eq.eq?.(left(:a), left(:a))
+```
+
+```elixir
+eq.eq?.(left(:a), left(:b))
+```
+
+```elixir
+eq.eq?.(right(5), left(:a))
+```
+
+### lift_ord/1
+
+Creates a custom ordering function for `Either` values using the provided `custom_ord`.
+
+The `custom_ord` must be a map with `:lt?`, `:le?`, `:gt?`, and `:ge?` functions. These are used to compare the internal `left` or `right` values.
+
+```elixir
+ord = lift_ord(%{
+  lt?: fn x, y -> x < y end,
+  le?: fn x, y -> x <= y end,
+  gt?: fn x, y -> x > y end,
+  ge?: fn x, y -> x >= y end
+})
+```
+
+```elixir
+ord.lt?.(right(3), right(5))
+```
+
+```elixir
+ord.lt?.(left(3), right(5))
+```
+
+```elixir
+ord.lt?.(right(3), left(5))
+```
+
+```elixir
+ord.lt?.(left(3), left(5))
+```
+
+### map_left/2
+
+Transforms the `Left` value using the given function if the `Either` is a `Left`.
+If the value is `Right`, it is returned unchanged.
+
+```elixir
+map_left(left("error"), fn e -> "wrapped: " <> e end)
+```
+
+```elixir
+map_left(right(42), fn _ -> "ignored" end)
+```
+
+### concat/1
+
+Removes `Left` values from a list of `Either` and returns a list of unwrapped `Right` values.
+
+Useful for discarding failed computations while keeping successful results.
+
+```elixir
+concat([right(1), left(:error), right(2)])
+```
+
+```elixir
+concat([left(:a), left(:b)])
+```
+
+```elixir
+concat([right("a"), right("b"), right("c")])
+```
+
+### concat_map/2
+
+Applies the given function to each element in the list and collects the `Right` results, discarding any `Left`.
+
+This is useful when mapping a function that may fail and you only want the successful results.
+
+```elixir
+concat_map([1, 2, 3], fn x -> if rem(x, 2) == 1, do: right(x), else: left(:even) end)
+```
+
+```elixir
+concat_map([2, 4], fn x -> if x > 3, do: right(x), else: left(:too_small) end)
+```
+
+```elixir
+concat_map([], fn _ -> left(:none) end)
+```
+
+### sequence/1
+
+Sequences a list of `Either` values into an `Either` of a list.
+
+```elixir
+sequence([right(1), right(2)])
+```
+
+```elixir
+sequence([right(1), left("error")])
+```
+
+### traverse/2
+
+Traverses a list, applying the given function to each element and collecting the results in a single `Right`, or short-circuiting with the first `Left`.
+
+This is useful for validating or transforming a list of values where each step may fail.
+
+```elixir
+traverse([1, 2, 3], &right/1)
+```
+
+```elixir
+traverse([1, -2, 3], fn x -> if x > 0, do: right(x), else: left("error") end)
+```
+
+### sequence_a/1
+
+Sequences a list of `Either` values, collecting all errors from `Left` values, rather than short-circuiting.
+
+```elixir
+sequence_a([right(1), left("error"), left("another error")])
+```
+
+### traverse_a/2
+
+Traverses a list, applying the given function to each element and collecting the results in a single `Right`.
+
+Unlike `traverse/2`, this version accumulates all `Left` values rather than stopping at the first failure.
+It is useful for validations where you want to gather all errors at once.
+
+```elixir
+validate = fn x -> lift_predicate(x, &(&1 > 0), fn v -> "must be positive: #{v}" end) end
+```
+
+```elixir
+traverse_a([1, 2, 3], validate)
+```
+
+```elixir
+traverse_a([1, -2, -3], validate)
+```
+
+### wither_a/2
+
+Traverses a list, applying the given function to each element, and collects the successful `Just` results into a single `Right`.
+
+The given function must return an `Either` of `Maybe`. `Right(Just x)` values are kept; `Right(Nothing)` values are filtered out.
+If any application returns `Left`, all `Left` values are accumulated.
+
+This is useful for effectful filtering, where you want to validate or transform elements and conditionally keep them, while still reporting all errors.
+
+```elixir
+filter_positive = fn x ->
+  lift_predicate(x, &is_integer/1, fn v -> "not an integer: #{inspect(v)}" end)
+  |> Funx.Monad.map(fn x -> if x > 0, do: Funx.Monad.Maybe.just(x), else: Funx.Monad.Maybe.nothing() end)
+end
+```
+
+```elixir
+wither_a([1, -2, 3], filter_positive)
+```
+
+```elixir
+wither_a(["oops", -2], filter_positive)
+```
+
+### validate/2
+
+Validates a value using a list of validator functions. Each validator returns an `Either.Right` if
+the check passes, or an `Either.Left` with an error message if it fails. If any validation fails,
+all errors are aggregated and returned in a single `Left`.
+
+#### Flat list aggregation
+
+When using the default aggregation strategy, errors are collected in a plain list:
+
+```elixir
+validate_positive = fn x ->
+  lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
+end
+```
+
+```elixir
+validate_even = fn x ->
+  lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
+end
+```
+
+```elixir
+validate(4, [validate_positive, validate_even])
+```
+
+```elixir
+validate(3, [validate_positive, validate_even])
+```
+
+```elixir
+validate(-3, [validate_positive, validate_even])
+```
+
+### lift_maybe/2
+
+Converts a `Maybe` value to an `Either`. If the `Maybe` is `Nothing`, a `Left` is returned using `on_none`.
+
+```elixir
+lift_maybe(Funx.Monad.Maybe.just(5), fn -> "error" end)
+```
+
+```elixir
+lift_maybe(Funx.Monad.Maybe.nothing(), fn -> "error" end)
+```
+
+### lift_predicate/3
+
+Lifts a value into an `Either` based on the result of a predicate.
+
+Returns `Right(value)` if the predicate returns `true`, or `Left(on_false.(value))` if it returns `false`.
+
+This allows you to wrap a conditional check in a functional context with a custom error message.
+
+```elixir
+lift_predicate(5, fn x -> x > 3 end, fn x -> "#{x} is too small" end)
+```
+
+```elixir
+lift_predicate(2, fn x -> x > 3 end, fn x -> "#{x} is too small" end)
+```
+
+### from_result/1
+
+Converts a result (`{:ok, _}` or `{:error, _}`) to an `Either`.
+
+```elixir
+from_result({:ok, 5})
+```
+
+```elixir
+from_result({:error, "error"})
+```
+
+### to_result/1
+
+Converts an `Either` to a result (`{:ok, value}` or `{:error, reason}`).
+
+```elixir
+to_result(right(5))
+```
+
+```elixir
+to_result(left("error"))
+```
+
+### from_try/1
+
+Wraps a value in an `Either`, catching any exceptions. If an exception occurs, a `Left` is returned with the exception.
+
+```elixir
+from_try(fn -> 5 end)
+```
+
+```elixir
+from_try(fn -> raise "error" end)
+```
+
+### to_try!/1
+
+Converts an `Either` to its inner value, raising an exception if it is `Left`.
+
+If the `Left` holds an exception struct, it is raised directly. If it holds a string or list of errors, they are converted into a `RuntimeError`. Unexpected types are inspected and raised as a `RuntimeError`.
+
+```elixir
+to_try!(right(5))
+```
+
+```elixir
+# This will raise an error:
+# to_try!(left("error"))
+```
+
+```elixir
+# This will raise an error:
+# to_try!(left(["error 1", "error 2"]))
+```
+
+```elixir
+# This will raise an error:
+# to_try!(left(%ArgumentError{message: "bad argument"}))
+```

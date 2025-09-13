@@ -1,0 +1,73 @@
+# Funx.Monad.Effect.Left
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+Represents the `Left` variant of the `Effect` monad, used to model a failure or error in an asynchronous context.
+
+This module implements the following protocols:
+  - `Funx.Monad`: Implements `bind/2`, `map/2`, and `ap/2` for monadic sequencing in a lazy, effectful context.
+  - `String.Chars`: Provides a string representation of the effect for debugging and inspection.
+
+A `Left` effect propagates its failure value without invoking further computations, preserving short-circuit behavior.
+
+## Reader Operations
+
+  * `ask/1` – Returns the environment passed to `run/2` as a `Left`.
+  * `asks/2` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Left`.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Effect.Left
+alias Funx.Monad.Effect.Left
+```
+
+## Functions
+
+### pure/2
+
+Creates a new `Left` effect.
+
+Wraps a failure value in an asynchronous effect. You may provide context either as a keyword list or
+an `Effect.Context` struct.
+
+#### Examples
+
+```elixir
+effect = pure("error")
+Funx.Monad.Effect.run(effect)
+```
+
+### ask/1
+
+Returns a `Funx.Monad.Effect.Left` that yields the environment passed to `Funx.Monad.Effect.run/2`.
+
+This is the Reader-style `ask`, used to construct a failure from the full injected environment.
+It can be useful for debugging, instrumentation, or propagating request-scoped failure information.
+
+#### Example
+
+```elixir
+ask()
+|> Funx.Monad.Effect.run(%{error: :unauthorized})
+```
+
+### asks/2
+
+Returns a `Funx.Monad.Effect.Left` that applies the given function to the environment passed to `Funx.Monad.Effect.run/2`.
+
+This allows constructing a failure (`Left`) based on runtime input. It complements `Right.asks/2`,
+but marks the result as a failure rather than a success.
+
+#### Example
+
+```elixir
+asks(fn env -> {:error, env[:reason]} end)
+|> Funx.Monad.Effect.run(%{reason: :invalid})
+```

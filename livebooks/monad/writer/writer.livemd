@@ -1,0 +1,365 @@
+# Funx.Monad.Writer
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+The `Funx.Monad.Writer` module defines the Writer monad, which threads a log alongside a computed result.
+
+Logs are accumulated using a `Monoid` implementation, injected lazily at runtime. This makes the Writer monad flexible and monoid-polymorphic—supporting lists, strings, or any user-defined monoid.
+
+## Core functions
+
+* `pure/1` – Wraps a result with an empty log.
+* `writer/1` – Wraps a result and an explicit log.
+* `tell/1` – Emits a log with no result.
+* `listen/1` – Returns both result and log as a pair.
+* `censor/2` – Applies a function to transform the final log.
+* `pass/1` – Uses a log-transforming function returned from within the computation.
+* `run/2` – Executes the Writer and returns a `%Writer.Result{}` with result and log.
+* `eval/2` – Executes and returns only the result.
+* `exec/2` – Executes and returns only the log.
+
+By default, the `ListConcat` monoid is used unless a different monoid is passed to `run`, `eval`, or `exec`.
+
+This module also implements the `Funx.Monad` protocol.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Writer
+alias Funx.Monad.Writer
+```
+
+### pure/1
+
+Wraps a value with no log.
+
+```elixir
+writer = pure(42)
+```
+
+```elixir
+result = run(writer)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### writer/1
+
+Wraps both a value and a raw log into the Writer context.
+
+```elixir
+writer = writer({:ok, [:step1, :step2]})
+```
+
+```elixir
+result = run(writer)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### tell/1
+
+Appends a log value using the monoid, returning `:ok` as the result.
+
+```elixir
+writer = tell([:event])
+```
+
+```elixir
+result = run(writer)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### listen/1
+
+Captures the current log and returns it alongside the result.
+
+The log remains unchanged—only the result is modified to include it.
+
+```elixir
+writer = writer({"done", [:start, :finish]})
+```
+
+```elixir
+listened = listen(writer)
+```
+
+```elixir
+result = run(listened)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### censor/2
+
+Transforms the final log by applying a function to it.
+
+The result remains unchanged—only the log is modified.
+
+```elixir
+writer = writer({"ok", [:a, :b]})
+```
+
+```elixir
+censored = censor(writer, fn log -> Enum.reverse(log) end)
+```
+
+```elixir
+result = run(censored)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### pass/1
+
+Applies a log-transforming function that is returned from within the computation.
+
+This allows the result of a computation to include not only a value, but also
+a function that modifies the final accumulated log.
+
+The input to `pass/1` must be a Writer containing a tuple `{result, f}`, where
+`f` is a function from log to log. This function will be applied to the final log
+just before it's returned.
+
+```elixir
+result =
+  pure({"done", fn log -> log ++ [:transformed] end})
+  |> pass()
+  |> run()
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### run/2
+
+Executes the Writer and returns both the result and the final accumulated log.
+
+By default, it uses `ListConcat` unless a monoid is explicitly passed.
+
+```elixir
+writer = writer({"ok", [:a, :b]})
+```
+
+```elixir
+result = run(writer)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### exec/2
+
+Executes the Writer and returns only the final accumulated log.
+
+Uses `ListConcat` by default.
+
+```elixir
+writer =
+  writer({:ok, [:step1]})
+  |> Funx.Monad.bind(fn _ -> tell([:step2]) end)
+```
+
+```elixir
+exec(writer)
+```
+
+### eval/2
+
+Executes the Writer and returns only the final result value.
+
+Uses `ListConcat` by default.
+
+```elixir
+writer =
+  writer({10, [:init]})
+  |> Funx.Monad.bind(fn x ->
+    tell([:logged])
+    |> Funx.Monad.bind(fn _ -> pure(x * 2) end)
+  end)
+```
+
+```elixir
+eval(writer)
+```
+
+### Using Monad Protocol
+
+The `Writer` monad implements the `Funx.Monad` protocol:
+
+#### map/2
+
+```elixir
+writer = pure(5)
+```
+
+```elixir
+mapped = Funx.Monad.map(writer, fn x -> x * 2 end)
+```
+
+```elixir
+result = run(mapped)
+```
+
+```elixir
+result.value
+```
+
+#### bind/2
+
+```elixir
+writer = pure(5)
+```
+
+```elixir
+bound = Funx.Monad.bind(writer, fn x -> 
+  tell([:computed, x])
+  |> Funx.Monad.bind(fn _ -> pure(x * 2) end)
+end)
+```
+
+```elixir
+result = run(bound)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+#### ap/2
+
+```elixir
+func_writer = pure(&(&1 + 10))
+```
+
+```elixir
+value_writer = writer({7, [:initial]})
+```
+
+```elixir
+applied = Funx.Monad.ap(func_writer, value_writer)
+```
+
+```elixir
+result = run(applied)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### Combining Writer Operations
+
+```elixir
+computation = 
+  pure(1)
+  |> Funx.Monad.bind(fn x ->
+    tell([:step1, x])
+    |> Funx.Monad.bind(fn _ ->
+      pure(x + 2)
+      |> Funx.Monad.bind(fn y ->
+        tell([:step2, y])
+        |> Funx.Monad.bind(fn _ ->
+          pure(y * 3)
+          |> Funx.Monad.bind(fn z ->
+            tell([:final, z])
+            |> Funx.Monad.map(fn _ -> z end)
+          end)
+        end)
+      end)
+    end)
+  end)
+```
+
+```elixir
+result = run(computation)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### Using Different Monoids
+
+You can use different monoids with Writer by passing them to `run/2`, `eval/2`, or `exec/2`:
+
+```elixir
+# Using String concatenation monoid
+string_writer = 
+  pure("Hello")
+  |> Funx.Monad.bind(fn x ->
+    tell(" ")
+    |> Funx.Monad.bind(fn _ ->
+      tell("World")
+      |> Funx.Monad.map(fn _ -> x end)
+    end)
+  end)
+```
+
+```elixir
+# For demonstration, let's run with ListConcat (default)
+result = run(string_writer)
+```
+
+```elixir
+result.log
+```

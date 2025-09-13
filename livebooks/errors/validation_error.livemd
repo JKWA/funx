@@ -1,0 +1,108 @@
+# Funx.Errors.ValidationError
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+Represents a validation error in the Funx library.
+
+A `ValidationError` wraps one or more domain-level validation messages. It is typically used with `Either.Left` to indicate that a value failed validation and should not proceed in a computation. It can also be raised directly, as it implements the `Exception` behaviour.
+
+This module provides functions to construct, merge, and convert validation errors, enabling structured, composable error handling across pipelines and validation chains.
+
+## Functions
+
+* `new/1` – Creates a `ValidationError` from a single error string or a list of error strings.
+* `empty/0` – Returns an empty `ValidationError`.
+* `merge/2` – Combines two `ValidationError` structs into one.
+* `from_tagged/1` – Converts a tagged error tuple (`{:error, errors}`) into a `ValidationError`.
+
+This module also implements the `Exception`, `String.Chars`, and `Funx.Summarizable` protocols, supporting both human-readable output and structured reporting.
+
+## Function Examples
+
+```elixir
+import Funx.Errors.ValidationError
+alias Funx.Errors.ValidationError
+```
+
+### Usage in validation
+
+You can validate a value using a list of validator functions. Each validator returns an `Either.Right` if
+the check passes, or an `Either.Left` with an error message if it fails. If any validation fails,
+all errors are aggregated and returned in a single `Left`.
+
+In contexts where an error must halt execution, `ValidationError` can be raised directly using `raise/1`.
+
+## Examples
+
+You can also use a `ValidationError` to hold errors:
+
+```elixir
+alias Funx.Errors.ValidationError
+
+validate_positive = fn x ->
+  Funx.Monad.Either.lift_predicate(x, &(&1 > 0), fn v -> "Value must be positive: " <> to_string(v) end)
+  |> Funx.Monad.Either.map_left(&ValidationError.new/1)
+end
+
+validate_even = fn x ->
+  Funx.Monad.Either.lift_predicate(x, &(rem(&1, 2) == 0), fn v -> "Value must be even: " <> to_string(v) end)
+  |> Funx.Monad.Either.map_left(&ValidationError.new/1)
+end
+
+Funx.Monad.Either.validate(-3, [validate_positive, validate_even])
+#=> %Funx.Monad.Either.Left{
+#     left: %ValidationError{
+#       errors: ["Value must be positive: -3", "Value must be even: -3"]
+#     }
+#   }
+```
+
+## new/1
+
+Creates a `ValidationError` from a single string or list of strings.
+
+### Examples
+
+```elixir
+new("must be positive")
+```
+
+```elixir
+new(["must be positive", "must be even"])
+```
+
+## empty/0
+
+Returns an empty `ValidationError`.
+
+### Examples
+
+```elixir
+empty()
+```
+
+## merge/2
+
+Merges two `ValidationError` structs into one by concatenating their error lists.
+
+### Examples
+
+```elixir
+e1 = new("must be positive")
+e2 = new("must be even")
+merge(e1, e2)
+```
+
+## from_tagged/1
+
+Converts a tagged error tuple into a `ValidationError`.
+
+### Examples
+
+```elixir
+from_tagged({:error, ["must be positive"]})
+```

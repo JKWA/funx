@@ -1,0 +1,242 @@
+# Funx.Predicate
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+Provides utility functions for working with predicates—functions that return `true` or `false`.
+
+This module enables combining predicates in a declarative way using logical operations:
+
+- `p_and/2`: Returns `true` if **both** predicates are `true`.
+- `p_or/2`: Returns `true` if **at least one** predicate is `true`.
+- `p_not/1`: Negates a predicate.
+- `p_all/1`: Returns `true` if **all** predicates in a list are `true`.
+- `p_any/1`: Returns `true` if **any** predicate in a list is `true`.
+- `p_none/1`: Returns `true` if **none** of the predicates in a list are `true`.
+
+These functions simplify complex conditional logic.
+
+## Function Examples
+
+```elixir
+import Funx.Predicate
+```
+
+## Examples
+
+### Combining predicates with `p_and/2`:
+
+```elixir
+is_adult = fn person -> person.age >= 18 end
+has_ticket = fn person -> person.tickets > 0 end
+can_enter = p_and(is_adult, has_ticket)
+```
+
+```elixir
+can_enter.(%{age: 20, tickets: 1})
+```
+
+```elixir
+can_enter.(%{age: 16, tickets: 1})
+```
+
+### Using `p_or/2` for alternative conditions:
+
+```elixir
+is_vip = fn person -> person.vip end
+is_sponsor = fn person -> person.sponsor end
+can_access_vip_area = p_or(is_vip, is_sponsor)
+```
+
+```elixir
+can_access_vip_area.(%{vip: true, sponsor: false})
+```
+
+```elixir
+can_access_vip_area.(%{vip: false, sponsor: false})
+```
+
+### Negating predicates with `p_not/1`:
+
+```elixir
+is_minor = fn person -> person.age < 18 end
+is_adult = p_not(is_minor)
+```
+
+```elixir
+is_adult.(%{age: 20})
+```
+
+```elixir
+is_adult.(%{age: 16})
+```
+
+### Using `p_all/1` and `p_any/1` for predicate lists:
+
+```elixir
+is_adult = fn person -> person.age >= 18 end
+has_ticket = fn person -> person.tickets > 0 end
+conditions = [is_adult, has_ticket]
+must_meet_all = p_all(conditions)
+must_meet_any = p_any(conditions)
+```
+
+```elixir
+must_meet_all.(%{age: 20, tickets: 1})
+```
+
+```elixir
+must_meet_all.(%{age: 20, tickets: 0})
+```
+
+```elixir
+must_meet_any.(%{age: 20, tickets: 0})
+```
+
+```elixir
+must_meet_any.(%{age: 16, tickets: 0})
+```
+
+### Using `p_none/1` to reject multiple conditions:
+
+```elixir
+is_adult = fn person -> person.age >= 18 end
+is_vip = fn person -> person.vip end
+cannot_enter = p_none([is_adult, is_vip])
+```
+
+```elixir
+cannot_enter.(%{age: 20, vip: true})
+```
+
+```elixir
+cannot_enter.(%{age: 16, vip: false})
+```
+
+## p_and/2
+
+Combines two predicates (`pred1` and `pred2`) using logical AND.
+Returns a predicate that evaluates to `true` only if both `pred1` and `pred2` return `true`.
+
+### Examples
+
+```elixir
+is_adult = fn person -> person.age >= 18 end
+has_ticket = fn person -> person.tickets > 0 end
+can_enter = p_and(is_adult, has_ticket)
+```
+
+```elixir
+can_enter.(%{age: 20, tickets: 1})
+```
+
+```elixir
+can_enter.(%{age: 16, tickets: 1})
+```
+
+## p_or/2
+
+Combines two predicates (`pred1` and `pred2`) using logical OR.
+Returns a predicate that evaluates to `true` if either `pred1` or `pred2` return `true`.
+
+### Examples
+
+```elixir
+is_vip = fn person -> person.vip end
+is_sponsor = fn person -> person.sponsor end
+can_access_vip_area = p_or(is_vip, is_sponsor)
+```
+
+```elixir
+can_access_vip_area.(%{vip: true, sponsor: false})
+```
+
+```elixir
+can_access_vip_area.(%{vip: false, sponsor: false})
+```
+
+## p_not/1
+
+Negates a predicate (`pred`).
+Returns a predicate that evaluates to `true` when `pred` returns `false`, and vice versa.
+
+### Examples
+
+```elixir
+is_minor = fn person -> person.age < 18 end
+is_adult = p_not(is_minor)
+```
+
+```elixir
+is_adult.(%{age: 20})
+```
+
+```elixir
+is_adult.(%{age: 16})
+```
+
+## p_all/1
+
+Combines a list of predicates (`p_list`) using logical AND.
+Returns `true` only if all predicates return `true`. An empty list returns `true`.
+
+### Examples
+
+```elixir
+is_adult = fn person -> person.age >= 18 end
+has_ticket = fn person -> person.tickets > 0 end
+can_enter = p_all([is_adult, has_ticket])
+```
+
+```elixir
+can_enter.(%{age: 20, tickets: 1})
+```
+
+```elixir
+can_enter.(%{age: 16, tickets: 1})
+```
+
+## p_any/1
+
+Combines a list of predicates (`p_list`) using logical OR.
+Returns `true` if at least one predicate returns `true`. An empty list returns `false`.
+
+### Examples
+
+```elixir
+is_vip = fn person -> person.vip end
+is_sponsor = fn person -> person.sponsor end
+can_access_vip_area = p_any([is_vip, is_sponsor])
+```
+
+```elixir
+can_access_vip_area.(%{vip: true, sponsor: false})
+```
+
+```elixir
+can_access_vip_area.(%{vip: false, sponsor: false})
+```
+
+## p_none/1
+
+Combines a list of predicates (`p_list`) using logical NOR (negated OR).
+Returns `true` only if **none** of the predicates return `true`. An empty list returns `true`.
+
+### Examples
+
+```elixir
+is_adult = fn person -> person.age >= 18 end
+is_vip = fn person -> person.vip end
+cannot_enter = p_none([is_adult, is_vip])
+```
+
+```elixir
+cannot_enter.(%{age: 20, vip: true})
+```
+
+```elixir
+cannot_enter.(%{age: 16, vip: false})
+```

@@ -1,0 +1,78 @@
+# Funx.Utils
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+A collection of higher-order functions for functional programming in Elixir.
+
+This module provides utilities for working with functions in a functional
+programming style. It includes:
+
+- `curry/1`: Transforms a multi-argument function into a curried version.
+- `curry_r/1`: Transforms a multi-argument function into a curried version, but from right to left.
+- `flip/1`: Reverses the argument order of a two-argument function.
+
+## Function Examples
+
+```elixir
+import Funx.Utils
+```
+
+## curry/1
+
+Transforms a function of arity `n` into a curried version,
+allowing it to be applied one argument at a time.
+
+### Example
+
+```elixir
+add = fn a, b -> a + b end
+curried_add = curry(add)
+add_three = curried_add.(3)
+add_three.(2)
+```
+
+## curry_l/1
+
+Alias for `curry/1`, explicitly denoting left-to-right argument application.
+
+### Example
+
+```elixir
+subtract = fn a, b -> a - b end
+curried_subtract = curry_l(subtract)
+subtract_five = curried_subtract.(5)
+subtract_five.(3)
+```
+
+## curry_r/1
+
+Transforms a function of arity `n` into a right-curried version,
+applying arguments from right to left.
+
+### Example
+
+```elixir
+divide = fn a, b -> a / b end
+curried_divide = curry_r(divide)
+divide_by_two = curried_divide.(2)
+divide_by_two.(10)
+```
+
+## flip/1
+
+Reverses the argument order of a two-argument function.
+
+The `flip/1` function takes a function of arity 2 and returns a new function
+where the first and second arguments are swapped.
+
+### Examples
+
+```elixir
+divide = fn a, b -> a / b end
+flipped_divide = flip(divide)
+flipped_divide.(2, 10)
+```

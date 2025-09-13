@@ -1,0 +1,246 @@
+# Funx.Math
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+Provides mathematical operations using Monoids.
+
+This module uses the `Sum` and `Product` monoids to perform operations
+such as addition and multiplication over values or lists of values.
+
+## sum/2
+
+Sums two numbers using the `Sum` monoid.
+
+### Examples
+
+```elixir
+Funx.Math.sum(1, 2)
+```
+
+## sum/1
+
+Sums a list of numbers using the `Sum` monoid.
+
+### Examples
+
+```elixir
+Funx.Math.sum([1, 2, 3])
+```
+
+```elixir
+Funx.Math.sum([])
+```
+
+## product/2
+
+Multiplies two numbers using the `Product` monoid.
+
+### Examples
+
+```elixir
+Funx.Math.product(3, 4)
+```
+
+## product/1
+
+Multiplies a list of numbers using the `Product` monoid.
+
+### Examples
+
+```elixir
+Funx.Math.product([2, 3, 4])
+```
+
+```elixir
+Funx.Math.product([])
+```
+
+## max/2
+
+Returns the maximum of two numbers using the `Max` monoid.
+
+### Examples
+
+```elixir
+Funx.Math.max(3, 7)
+```
+
+```elixir
+Funx.Math.max(-1, -5)
+```
+
+## max/1
+
+Finds the maximum value in a list using the `Max` monoid.
+
+Returns `Float.min_finite()` if the list is empty.
+
+### Examples
+
+```elixir
+Funx.Math.max([3, 7, 2])
+```
+
+```elixir
+Funx.Math.max([])
+```
+
+## min/2
+
+Returns the minimum of two numbers using the `Min` monoid.
+
+### Examples
+
+```elixir
+Funx.Math.min(3, 7)
+```
+
+```elixir
+Funx.Math.min(-1, -5)
+```
+
+## min/1
+
+Finds the minimum value in a list using the `Min` monoid.
+
+Returns `Float.max_finite()` if the list is empty.
+
+### Examples
+
+```elixir
+Funx.Math.min([3, 7, 2])
+```
+
+```elixir
+Funx.Math.min([])
+```
+
+## mean/1
+
+Computes the arithmetic mean of a list of numbers.
+
+Returns `Nothing` if the list is empty.
+
+### Examples
+
+```elixir
+Funx.Math.mean([1, 2, 3, 4])
+```
+
+```elixir
+Funx.Math.mean([])
+```
+
+## range/1
+
+Computes the range (difference between max and min) of a list.
+
+Returns `nothing()` if the list is empty.
+
+### Examples
+
+```elixir
+Funx.Math.range([3, 7, 2])
+```
+
+```elixir
+Funx.Math.range([])
+```
+
+## square/1
+
+Computes the square of a number.
+
+### Examples
+
+```elixir
+Funx.Math.square(3)
+```
+
+```elixir
+Funx.Math.square(-4)
+```
+
+## sum_of_squares/1
+
+Computes the sum of squares of a list of numbers.
+
+Returns `0` if the list is empty.
+
+### Examples
+
+```elixir
+Funx.Math.sum_of_squares([1, 2, 3])
+```
+
+```elixir
+Funx.Math.sum_of_squares([-2, 5])
+```
+
+```elixir
+Funx.Math.sum_of_squares([])
+```
+
+## deviation/1
+
+Computes the deviations from the mean for a list of numbers.
+
+Returns `Nothing` if the list is empty.
+
+### Examples
+
+```elixir
+Funx.Math.deviation([1, 2, 3, 4])
+```
+
+```elixir
+Funx.Math.deviation([5, 5, 5])
+```
+
+```elixir
+Funx.Math.deviation([])
+```
+
+## variance/1
+
+Computes the variance of a list of numbers.
+
+Returns `Nothing` if the list is empty.
+
+### Examples
+
+```elixir
+Funx.Math.variance([1, 2, 3, 4])
+```
+
+```elixir
+Funx.Math.variance([5, 5, 5])
+```
+
+```elixir
+Funx.Math.variance([])
+```
+
+## std_dev/1
+
+Computes the standard deviation of a list of numbers.
+
+Returns `Nothing` if the list is empty.
+
+### Examples
+
+```elixir
+Funx.Math.std_dev([1, 2, 3, 4])
+```
+
+```elixir
+Funx.Math.std_dev([5, 5, 5])
+```
+
+```elixir
+Funx.Math.std_dev([])
+```

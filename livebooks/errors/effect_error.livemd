@@ -1,0 +1,37 @@
+# Funx.Errors.EffectError
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+Represents a system-level failure in an effectful computation.
+
+`EffectError` is raised or returned when a failure occurs during the execution
+of an `Effect` stage, such as `map`, `bind`, or `ap`. It is not meant for user-facing
+validation, but rather for internal tracing, telemetry, and diagnostics.
+
+## Fields
+
+  * `stage` – the name of the effect stage where the error occurred (`:map`, `:bind`, `:ap`, etc.)
+  * `reason` – the term (often an exception) that caused the failure
+
+This error implements the `Exception`, `String.Chars`, and `Funx.Summarizable` behaviours.
+
+## Function Examples
+
+```elixir
+import Funx.Errors.EffectError
+alias Funx.Errors.EffectError
+```
+
+## new/2
+
+Creates a new `EffectError` from the given stage and reason.
+
+### Examples
+
+```elixir
+new(:bind, %RuntimeError{message: "boom"})
+```

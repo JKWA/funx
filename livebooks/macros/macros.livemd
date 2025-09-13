@@ -1,0 +1,65 @@
+# Funx.Macros
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+Provides macros for automatically implementing `Funx.Eq` and `Funx.Ord` protocols
+for a given struct based on a specified field.
+
+These macros simplify the process of defining equality and ordering behaviors
+for custom structs by leveraging an existing field's comparison operations.
+
+## Function Examples
+
+```elixir
+import Funx.Macros
+alias Funx.Eq
+alias Funx.Ord
+```
+
+## eq_for/2
+
+Generates an implementation of the `Funx.Eq` protocol for the given struct,
+using the specified field as the basis for equality comparison.
+
+### Examples
+
+    defmodule Person do
+      defstruct [:name, :age]
+    end
+
+    require Funx.Macros
+    Funx.Macros.eq_for(Person, :age)
+
+```elixir
+Eq.eq?(%Person{age: 30}, %Person{age: 30})
+```
+
+```elixir
+Eq.eq?(%Person{age: 25}, %Person{age: 30})
+```
+
+## ord_for/2
+
+Generates an implementation of the `Funx.Ord` protocol for the given struct,
+using the specified field as the basis for ordering comparisons.
+
+### Examples
+
+    defmodule Person do
+      defstruct [:name, :age]
+    end
+
+    require Funx.Macros
+    Funx.Macros.ord_for(Person, :age)
+
+```elixir
+Ord.lt?(%Person{age: 25}, %Person{age: 30})
+```
+
+```elixir
+Ord.gt?(%Person{age: 35}, %Person{age: 30})
+```

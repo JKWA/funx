@@ -1,0 +1,72 @@
+# Funx.Monoid
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+A protocol defining the Monoid algebraic structure, which consists of
+an identity element and an associative binary operation for combining values.
+
+This protocol provides four key functions:
+
+- `empty/1`: Returns the identity element for the given monoid.
+- `append/2`: Combines two monoid structs.
+- `wrap/2`: Wraps a value into the monoid struct.
+- `unwrap/1`: Extracts the underlying value from the monoid struct.
+
+## Function Examples
+
+```elixir
+import Funx.Monoid
+```
+
+## empty/1
+
+Returns the identity element for the given monoid struct.
+
+The identity element is a special value that satisfies the property:
+
+    append(empty(monoid_struct), x) == x
+    append(x, empty(monoid_struct)) == x
+
+### Examples
+
+```elixir
+empty(%Funx.Monoid.Sum{})
+```
+
+## append/2
+
+Combines two monoid structs.
+
+The operation must satisfy associativity:
+
+    append(append(a, b), c) == append(a, append(b, c))
+
+### Examples
+
+```elixir
+append(%Funx.Monoid.Sum{value: 1}, %Funx.Monoid.Sum{value: 2})
+```
+
+## wrap/2
+
+Wraps a value into the given monoid struct.
+
+### Examples
+
+```elixir
+wrap(%Funx.Monoid.Sum{}, 10)
+```
+
+## unwrap/1
+
+Extracts the underlying value from the monoid struct.
+
+### Examples
+
+```elixir
+unwrap(%Funx.Monoid.Sum{value: 10})
+```

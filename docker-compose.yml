@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  livebook:
+    image: ghcr.io/livebook-dev/livebook:0.17.1
+    container_name: funx-livebook
+    ports:
+      - "8090:8080"
+      - "8091:8081"
+    environment:
+      LIVEBOOK_MULTI_USER: "false"
+      LIVEBOOK_PASSWORD: "funxlib_12char"
+      LIVEBOOK_DEFAULT_DIR: "/data/livebooks"
+      LIVEBOOK_HOME: "/data"
+    volumes:
+      - ./livebooks:/data/livebooks:ro
+      - livebook_user:/data
+    restart: unless-stopped
+
+volumes:
+  livebook_user:

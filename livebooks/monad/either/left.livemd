@@ -1,0 +1,40 @@
+# Funx.Monad.Either.Left
+
+```elixir
+Mix.install([
+  {:funx, "~> 0.1.5"}
+])
+```
+
+## Overview
+
+Represents the `Left` variant of the `Either` monad, used to model an error or failure.
+
+This module implements the following protocols:
+  - `Funx.Eq`: Defines equality checks between `Left` and other `Either` values.
+  - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Left` values.
+  - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
+  - `Funx.Ord`: Defines ordering logic for `Left` and `Right` values.
+
+The `Left` monad propagates the wrapped error through operations without executing the success logic.
+
+## Function Examples
+
+```elixir
+import Funx.Monad.Either.Left
+alias Funx.Monad.Either.Left
+```
+
+## Functions
+
+### pure/1
+
+Creates a new `Left` value.
+
+The `pure/1` function wraps a value in the `Left` monad, representing an error or failure.
+
+#### Examples
+
+```elixir
+pure("error")
+```
