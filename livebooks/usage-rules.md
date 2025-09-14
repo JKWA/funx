@@ -36,11 +36,13 @@ lib/monad/maybe/just.ex → livebooks/monad/maybe/just.livemd
 - **No source mirroring**: Structure optimizes for user browsing, not implementation organization
 - **Flat hierarchy**: All topic directories at root level (`livebooks/eq/`, `livebooks/monad/`)
 - **Concept coherence**: Each directory represents a complete functional programming concept
+- **Git-based installation**: Livebooks use `Mix.install` with git repository, not published hex package
 
 #### Final Structure
 ```
 livebooks/
-├── index.md                    # Navigation index
+├── index.md                    # Navigation index with conditional links
+├── usage-rules.md              # Process documentation
 ├── eq/                         # Equality concept
 │   ├── eq.livemd              
 │   └── utils.livemd           
@@ -56,6 +58,17 @@ livebooks/
 │       └── right.livemd       
 └── utilities/                  # General utilities only
     └── utils.livemd           
+```
+
+#### Mix.install Pattern
+Each livebook uses git-based installation for latest development version:
+```elixir
+Mix.install([
+  {:funx,
+    git: "https://github.com/JKWA/funx.git",
+    branch: "main"
+  }
+])
 ```
 
 ### 3. Documentation Extraction Rules
@@ -198,10 +211,12 @@ Before completing:
 1. Compare livebook count to `.ex` file count
 2. Spot-check random files for exact transcription
 3. Verify topic-based directory organization completed
-4. Confirm navigation index includes all files
+4. Confirm navigation index includes all files with conditional links
 5. Test that docker-compose.yml mounts correct livebooks directory
-6. Confirm no implementation code leaked in
-7. Test example code blocks are properly formatted
+6. Test custom ExDoc markdown processor converts links properly
+7. Verify Mix.install uses git repository pattern in all livebooks
+8. Confirm no implementation code leaked in
+9. Test example code blocks are properly formatted
 
 ---
 
@@ -330,4 +345,40 @@ When updating livebooks, ensure data structures match the source file's doctests
 2. **Update livebook examples**: Match the corrected source data
 3. **Test consistency**: Ensure examples would work with imported functions
 
-**Principle**: These livebooks are documentation mirrors, not documentation rewrites. Preserve the author's exact words and structure while optimizing for interactive execution and maintaining data consistency with source doctests.
+## Conditional Link System
+
+### Custom ExDoc Markdown Processor
+
+The system uses a custom markdown processor (`Funx.Docs.MarkdownProcessor`) to provide different link behavior for different contexts:
+
+**GitHub Context:**
+- Source: `livebooks/index.md` contains livebook.dev launch URLs pointing to GitHub
+- Users see: Direct launch capability via livebook.dev
+- Purpose: Latest development version, immediate interactivity
+
+**Hex Docs Context:**
+- Processed: Custom processor converts GitHub URLs to hex docs URLs
+- Users see: livebook.dev launch URLs pointing to published hex docs version
+- Purpose: Stable published version, version consistency
+
+### Implementation Details
+
+```elixir
+# In mix.exs
+docs: [
+  markdown_processor: Funx.Docs.MarkdownProcessor,
+  # livebooks directory NOT included in package files
+]
+
+# Custom processor converts:
+# FROM: https://livebook.dev/run?url=...github.com/JKWA/funx/blob/main/livebooks/eq/eq.livemd
+# TO:   https://livebook.dev/run?url=...hexdocs.pm/funx/0.1.5/livebooks/eq/eq.livemd
+```
+
+### Benefits
+- **Single source of truth**: One index.md serves both contexts
+- **Context-appropriate behavior**: GitHub = latest, Hex = stable version
+- **Universal launch capability**: Both contexts support interactive livebook launching
+- **Automatic versioning**: Hex docs links use dynamic version detection
+
+**Principle**: These livebooks are documentation mirrors, not documentation rewrites. Preserve the author's exact words and structure while optimizing for interactive execution, maintaining data consistency with source doctests, and providing context-appropriate linking behavior.
