@@ -12,13 +12,8 @@
 
 ⚠️ **Beta:** Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.
 
-## Ecosystem
-
-- **[Advanced Functional Programming with Elixir](https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir)** — a book that provides the structured learning path and theory.
-- **[Interactive Livebooks](https://github.com/JKWA/funpark_notebooks)** — notebooks for every chapter, runnable in your browser or with Docker.
-- **[Funx library](https://hex.pm/packages/funx)** — universal functional patterns in Elixir, with usage rules for LLMs.  
-- **[Learn Funx](https://github.com/JKWA/learn_funx)** — a practice environment for using your LLM as a tutor.  
-- **[Discord](https://discord.gg/mFaCAy9Sqd)** — community space to discuss *Advanced Functional Programming with Elixir* (the book), the Funx library, and Learn Funx.
+**Official website:** [https://www.funxlib.com](https://www.funxlib.com)  
+**Code and API documentation:** [https://hex.pm/packages/funx](https://hex.pm/packages/funx)
 
 ## Installation  
 
@@ -27,7 +22,7 @@ To use Funx, add it to the list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:funx, "~> 0.1.5"}
+    {:funx, "~> 0.1.6"}
   ]
 end
 ```
@@ -40,11 +35,8 @@ mix deps.get
 
 ## Usage Rules
 
-Each module includes usage rules designed for humans and LLMs:
-
-- When to use a given abstraction
-- How to compose and combine it
-- Examples of domain modeling with `Eq`, `Ord`, `Maybe`, etc.
+Funx includes embedded **usage rules** in addition to API documentation.  
+They are written for development workflows assisted by LLMs.  
 
 ➡️ [Browse Usage Rules](./lib/usage-rules.md)
 
@@ -148,7 +140,7 @@ Funx integrates with common Elixir patterns like `{:ok, value}` and `{:error, re
 
 ## Documentation  
 
-Full documentation is available on [GitHub Pages](https://jkwa.github.io/funx/readme.html).
+The authoritative API documentation is published on [HexDocs](https://hexdocs.pm/funx).
 
 ## Contributing  
 

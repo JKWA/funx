@@ -1,7 +1,7 @@
 defmodule Funx.MixProject do
   use Mix.Project
 
-  @version "0.1.5"
+  @version "0.1.6"
 
   def project do
     [
@@ -129,6 +129,7 @@ defmodule Funx.MixProject do
         maintainers: ["Joseph Koski"],
         links: %{
           "Docs" => "https://hexdocs.pm/funx",
+          "Website" => "https://www.funxlib.com",
           "GitHub" => "https://github.com/JKWA/funx",
           "Advanced FP with Elixir (Book)" =>
             "https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir"
