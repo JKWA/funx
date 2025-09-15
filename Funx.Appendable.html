@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.1.5">
+    <meta name="project" content="funx v0.1.6">
 
 
-    <title>Funx.Appendable — funx v0.1.5</title>
+    <title>Funx.Appendable — funx v0.1.6</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-FD9C8F72.js"></script>
+    <script src="dist/sidebar_items-4674174F.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -52,7 +52,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.1.5
+          v0.1.6
         </div>
       </div>
     </div>
@@ -114,13 +114,13 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/appendable.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/appendable.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
     <span translate="no">Funx.Appendable</span> <small>protocol</small>
-    <small class="app-vsn" translate="no">(funx v0.1.5)</small>
+    <small class="app-vsn" translate="no">(funx v0.1.6)</small>
 
   </h1>
 
@@ -143,21 +143,21 @@ aggregating, or accumulating values across a wide variety of domains.</p><h2 id=
 </h3>
 <p>A fallback implementation is provided for all types that do not define a specific
 <code class="inline">Appendable</code> instance. This default uses list concatenation as a universal aggregation
-strategy: all inputs are coerced into lists (if not already), and combined using <code class="inline">++</code>.</p><p>When using the default aggregation strategy, values are collected in a plain list:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3414786451-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3414786451-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="3414786451-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3414786451-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3414786451-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="3414786451-5">(</span><span class="n">v</span><span class="p" data-group-id="3414786451-5">)</span><span class="w"> </span><span class="k" data-group-id="3414786451-4">end</span><span class="p" data-group-id="3414786451-2">)</span><span class="w">
-</span><span class="k" data-group-id="3414786451-1">end</span><span class="w">
+strategy: all inputs are coerced into lists (if not already), and combined using <code class="inline">++</code>.</p><p>When using the default aggregation strategy, values are collected in a plain list:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="2780635338-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="2780635338-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="2780635338-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="2780635338-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2780635338-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="2780635338-5">(</span><span class="n">v</span><span class="p" data-group-id="2780635338-5">)</span><span class="w"> </span><span class="k" data-group-id="2780635338-4">end</span><span class="p" data-group-id="2780635338-2">)</span><span class="w">
+</span><span class="k" data-group-id="2780635338-1">end</span><span class="w">
 
-</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3414786451-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3414786451-7">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="3414786451-8">(</span><span class="n">rem</span><span class="p" data-group-id="3414786451-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3414786451-9">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3414786451-8">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3414786451-10">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="3414786451-11">(</span><span class="n">v</span><span class="p" data-group-id="3414786451-11">)</span><span class="w"> </span><span class="k" data-group-id="3414786451-10">end</span><span class="p" data-group-id="3414786451-7">)</span><span class="w">
-</span><span class="k" data-group-id="3414786451-6">end</span><span class="w">
+</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="2780635338-6">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="2780635338-7">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="2780635338-8">(</span><span class="n">rem</span><span class="p" data-group-id="2780635338-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2780635338-9">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="2780635338-8">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2780635338-10">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="2780635338-11">(</span><span class="n">v</span><span class="p" data-group-id="2780635338-11">)</span><span class="w"> </span><span class="k" data-group-id="2780635338-10">end</span><span class="p" data-group-id="2780635338-7">)</span><span class="w">
+</span><span class="k" data-group-id="2780635338-6">end</span><span class="w">
 
-</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3414786451-12">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3414786451-13">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="3414786451-13">]</span><span class="p" data-group-id="3414786451-12">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="2780635338-12">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2780635338-13">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="2780635338-13">]</span><span class="p" data-group-id="2780635338-12">)</span><span class="w">
 </span><span class="c1">#=&gt; %Funx.Monad.Either.Right{right: 4}</span><span class="w">
 
-</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3414786451-14">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3414786451-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="3414786451-15">]</span><span class="p" data-group-id="3414786451-14">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="2780635338-14">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2780635338-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="2780635338-15">]</span><span class="p" data-group-id="2780635338-14">)</span><span class="w">
 </span><span class="c1">#=&gt; %Funx.Monad.Either.Left{left: [&quot;Value must be even: 3&quot;]}</span><span class="w">
 
-</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3414786451-16">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3414786451-17">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="3414786451-17">]</span><span class="p" data-group-id="3414786451-16">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="2780635338-16">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2780635338-17">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="2780635338-17">]</span><span class="p" data-group-id="2780635338-16">)</span><span class="w">
 </span><span class="c1">#=&gt; %Funx.Monad.Either.Left{left: [&quot;Value must be positive: -3&quot;, &quot;Value must be even: -3&quot;]}</span></code></pre><h3 id="module-structured-aggregation-with-validationerror" class="section-heading">
   <a href="#module-structured-aggregation-with-validationerror" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
@@ -166,17 +166,17 @@ strategy: all inputs are coerced into lists (if not already), and combined using
 </h3>
 <p>You can also use a custom struct to hold errors. This example uses <code class="inline">ValidationError</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="w">
 
-</span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="8856293708-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="8856293708-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="8856293708-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="8856293708-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8856293708-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="8856293708-5">(</span><span class="n">v</span><span class="p" data-group-id="8856293708-5">)</span><span class="w"> </span><span class="k" data-group-id="8856293708-4">end</span><span class="p" data-group-id="8856293708-2">)</span><span class="w">
-  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="8856293708-6">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="8856293708-6">)</span><span class="w">
-</span><span class="k" data-group-id="8856293708-1">end</span><span class="w">
+</span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="9445567399-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="9445567399-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="9445567399-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="9445567399-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9445567399-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="9445567399-5">(</span><span class="n">v</span><span class="p" data-group-id="9445567399-5">)</span><span class="w"> </span><span class="k" data-group-id="9445567399-4">end</span><span class="p" data-group-id="9445567399-2">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="9445567399-6">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="9445567399-6">)</span><span class="w">
+</span><span class="k" data-group-id="9445567399-1">end</span><span class="w">
 
-</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="8856293708-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="8856293708-8">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="8856293708-9">(</span><span class="n">rem</span><span class="p" data-group-id="8856293708-10">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8856293708-10">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="8856293708-9">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="8856293708-11">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="8856293708-12">(</span><span class="n">v</span><span class="p" data-group-id="8856293708-12">)</span><span class="w"> </span><span class="k" data-group-id="8856293708-11">end</span><span class="p" data-group-id="8856293708-8">)</span><span class="w">
-  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="8856293708-13">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="8856293708-13">)</span><span class="w">
-</span><span class="k" data-group-id="8856293708-7">end</span><span class="w">
+</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="9445567399-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="9445567399-8">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="9445567399-9">(</span><span class="n">rem</span><span class="p" data-group-id="9445567399-10">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9445567399-10">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="9445567399-9">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9445567399-11">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="9445567399-12">(</span><span class="n">v</span><span class="p" data-group-id="9445567399-12">)</span><span class="w"> </span><span class="k" data-group-id="9445567399-11">end</span><span class="p" data-group-id="9445567399-8">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="9445567399-13">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="9445567399-13">)</span><span class="w">
+</span><span class="k" data-group-id="9445567399-7">end</span><span class="w">
 
-</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="8856293708-14">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8856293708-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="8856293708-15">]</span><span class="p" data-group-id="8856293708-14">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="9445567399-14">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9445567399-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="9445567399-15">]</span><span class="p" data-group-id="9445567399-14">)</span><span class="w">
 </span><span class="c1">#=&gt; %Funx.Monad.Either.Left{</span><span class="w">
 </span><span class="c1">#     left: %ValidationError{</span><span class="w">
 </span><span class="c1">#       errors: [&quot;Value must be positive: -3&quot;, &quot;Value must be even: -3&quot;]</span><span class="w">
@@ -256,7 +256,7 @@ strategy: all inputs are coerced into lists (if not already), and combined using
     </a>
     <h1 class="signature" translate="no">t()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/appendable.ex#L1" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/appendable.ex#L1" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -296,7 +296,7 @@ strategy: all inputs are coerced into lists (if not already), and combined using
     </a>
     <h1 class="signature" translate="no">append(accumulator, coerced)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/appendable.ex#L84" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/appendable.ex#L84" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -319,7 +319,7 @@ that require disambiguation or structural control, define a custom implementatio
     </a>
     <h1 class="signature" translate="no">coerce(term)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/appendable.ex#L76" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/appendable.ex#L76" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -340,9 +340,9 @@ that require disambiguation or structural control, define a custom implementatio
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.1.5" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.1.6" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/funx/0.1.5">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.1.6">Hex Preview</a>
 
           </span>
 

@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.1.5">
+    <meta name="project" content="funx v0.1.6">
 
 
-    <title>Funx.Monad.Effect.Right — funx v0.1.5</title>
+    <title>Funx.Monad.Effect.Right — funx v0.1.6</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-FD9C8F72.js"></script>
+    <script src="dist/sidebar_items-4674174F.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -52,7 +52,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.1.5
+          v0.1.6
         </div>
       </div>
     </div>
@@ -114,13 +114,13 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/monad/effect/right.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/monad/effect/right.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
     <span translate="no">Funx.Monad.Effect.Right</span> 
-    <small class="app-vsn" translate="no">(funx v0.1.5)</small>
+    <small class="app-vsn" translate="no">(funx v0.1.6)</small>
 
   </h1>
 
@@ -226,7 +226,7 @@ and capturing execution context through the <code class="inline">Effect.Context<
     </a>
     <h1 class="signature" translate="no">t()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/monad/effect/right.ex#L37" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/monad/effect/right.ex#L37" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -254,7 +254,7 @@ and capturing execution context through the <code class="inline">Effect.Context<
     </a>
     <h1 class="signature" translate="no">t(right)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/monad/effect/right.ex#L32" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/monad/effect/right.ex#L32" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -301,7 +301,7 @@ either a <code class="inline">Task.t()</code> or a plain <code class="inline">Ei
     </a>
     <h1 class="signature" translate="no">ask(opts_or_context \\ [])</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/monad/effect/right.ex#L74" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/monad/effect/right.ex#L74" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -324,10 +324,10 @@ for further computation.</p><h2 id="ask/1-example" class="section-heading">
   </a>
   <span class="text">Example</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="3853957189-1">(</span><span class="p" data-group-id="3853957189-1">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="3853957189-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="p" data-group-id="3853957189-3">[</span><span class="ss">:user</span><span class="p" data-group-id="3853957189-3">]</span><span class="p" data-group-id="3853957189-2">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3853957189-4">(</span><span class="p" data-group-id="3853957189-5">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="3853957189-5">}</span><span class="p" data-group-id="3853957189-4">)</span><span class="w">
-</span><span class="p" data-group-id="3853957189-6">%</span><span class="nc" data-group-id="3853957189-6">Funx.Monad.Either.Right</span><span class="p" data-group-id="3853957189-6">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="3853957189-6">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="4076254111-1">(</span><span class="p" data-group-id="4076254111-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="4076254111-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="p" data-group-id="4076254111-3">[</span><span class="ss">:user</span><span class="p" data-group-id="4076254111-3">]</span><span class="p" data-group-id="4076254111-2">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4076254111-4">(</span><span class="p" data-group-id="4076254111-5">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="4076254111-5">}</span><span class="p" data-group-id="4076254111-4">)</span><span class="w">
+</span><span class="p" data-group-id="4076254111-6">%</span><span class="nc" data-group-id="4076254111-6">Funx.Monad.Either.Right</span><span class="p" data-group-id="4076254111-6">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="4076254111-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="asks/2">
@@ -341,7 +341,7 @@ for further computation.</p><h2 id="ask/1-example" class="section-heading">
     </a>
     <h1 class="signature" translate="no">asks(f, opts_or_context \\ [])</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/monad/effect/right.ex#L101" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/monad/effect/right.ex#L101" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -369,10 +369,10 @@ following the Reader pattern.</p><h2 id="asks/2-example" class="section-heading"
   </a>
   <span class="text">Example</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="6959813491-1">(</span><span class="k" data-group-id="6959813491-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="6959813491-3">[</span><span class="ss">:user</span><span class="p" data-group-id="6959813491-3">]</span><span class="w"> </span><span class="k" data-group-id="6959813491-2">end</span><span class="p" data-group-id="6959813491-1">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="6959813491-4">(</span><span class="k" data-group-id="6959813491-5">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="6959813491-6">(</span><span class="n">user</span><span class="p" data-group-id="6959813491-6">)</span><span class="w"> </span><span class="k" data-group-id="6959813491-5">end</span><span class="p" data-group-id="6959813491-4">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="6959813491-7">(</span><span class="p" data-group-id="6959813491-8">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="6959813491-8">}</span><span class="p" data-group-id="6959813491-7">)</span><span class="w">
-</span><span class="p" data-group-id="6959813491-9">%</span><span class="nc" data-group-id="6959813491-9">Funx.Monad.Either.Right</span><span class="p" data-group-id="6959813491-9">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="6959813491-9">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="1724520332-1">(</span><span class="k" data-group-id="1724520332-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="1724520332-3">[</span><span class="ss">:user</span><span class="p" data-group-id="1724520332-3">]</span><span class="w"> </span><span class="k" data-group-id="1724520332-2">end</span><span class="p" data-group-id="1724520332-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="1724520332-4">(</span><span class="k" data-group-id="1724520332-5">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="1724520332-6">(</span><span class="n">user</span><span class="p" data-group-id="1724520332-6">)</span><span class="w"> </span><span class="k" data-group-id="1724520332-5">end</span><span class="p" data-group-id="1724520332-4">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1724520332-7">(</span><span class="p" data-group-id="1724520332-8">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="1724520332-8">}</span><span class="p" data-group-id="1724520332-7">)</span><span class="w">
+</span><span class="p" data-group-id="1724520332-9">%</span><span class="nc" data-group-id="1724520332-9">Funx.Monad.Either.Right</span><span class="p" data-group-id="1724520332-9">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="1724520332-9">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="pure/2">
@@ -386,7 +386,7 @@ following the Reader pattern.</p><h2 id="asks/2-example" class="section-heading"
     </a>
     <h1 class="signature" translate="no">pure(value, opts_or_context \\ [])</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.5/lib/monad/effect/right.ex#L52" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.1.6/lib/monad/effect/right.ex#L52" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -409,9 +409,9 @@ when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8410617720-1">(</span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="8410617720-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="8410617720-2">(</span><span class="n">effect</span><span class="p" data-group-id="8410617720-2">)</span><span class="w">
-</span><span class="p" data-group-id="8410617720-3">%</span><span class="nc" data-group-id="8410617720-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="8410617720-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="8410617720-3">}</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="5513716587-1">(</span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="5513716587-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="5513716587-2">(</span><span class="n">effect</span><span class="p" data-group-id="5513716587-2">)</span><span class="w">
+</span><span class="p" data-group-id="5513716587-3">%</span><span class="nc" data-group-id="5513716587-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="5513716587-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="5513716587-3">}</span></code></pre>
   </section>
 </section>
 
@@ -422,9 +422,9 @@ when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.1.5" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.1.6" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/funx/0.1.5">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.1.6">Hex Preview</a>
 
           </span>
 
