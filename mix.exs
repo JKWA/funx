@@ -134,7 +134,15 @@ defmodule Funx.MixProject do
           "Advanced FP with Elixir (Book)" =>
             "https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir"
         },
-        files: ["lib", "mix.exs", "README.md", "CHANGELOG.md", "LICENSE"]
+        files: [
+          "lib",
+          "mix.exs",
+          "README.md",
+          "CHANGELOG.md",
+          "LICENSE",
+          "usage-rules",
+          "usage-rules.md"
+        ]
       ]
     ]
   end
