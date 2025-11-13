@@ -23,89 +23,89 @@ defmodule Funx.MixProject do
           "README.md",
           "CHANGELOG.md",
           "LICENSE",
-          "lib/usage-rules.md": [
+          "usage-rules.md": [
             title: "Funx Usage Rules",
             filename: "usage-rules"
           ],
-          "lib/appendable/usage-rules.md": [
+          "usage-rules/appendable.md": [
             title: "Funx.Appendable Usage Rules",
             filename: "appendable-usage-rules"
           ],
-          "lib/eq/usage-rules.md": [
+          "usage-rules/eq.md": [
             title: "Funx.Eq Usage Rules",
             filename: "eq-usage-rules"
           ],
-          "lib/errors/validation_error/usage-rules.md": [
+          "usage-rules/errors_validation_error.md": [
             title: "Funx.Errors.ValidationError Usage Rules",
             filename: "errors-validation-error-usage-rules"
           ],
-          "lib/foldable/usage-rules.md": [
+          "usage-rules/foldable.md": [
             title: "Funx.Foldable Usage Rules",
             filename: "foldable-usage-rules"
           ],
-          "lib/list/usage-rules.md": [
+          "usage-rules/list.md": [
             title: "Funx.List Usage Rules",
             filename: "list-usage-rules"
           ],
-          "lib/monad/usage-rules.md": [
+          "usage-rules/monad.md": [
             title: "Funx.Monad Usage Rules",
             filename: "monad-usage-rules"
           ],
-          "lib/monad/either/usage-rules.md": [
+          "usage-rules/monad_either.md": [
             title: "Funx.Monad.Either Usage Rules",
             filename: "monad-either-usage-rules"
           ],
-          "lib/monad/effect/usage-rules.md": [
+          "usage-rules/monad_effect.md": [
             title: "Funx.Monad.Effect Usage Rules",
             filename: "monad-effect-usage-rules"
           ],
-          "lib/monad/identity/usage-rules.md": [
+          "usage-rules/monad_identity.md": [
             title: "Funx.Monad.Identity Usage Rules",
             filename: "monad-identity-usage-rules"
           ],
-          "lib/monad/maybe/usage-rules.md": [
+          "usage-rules/monad_maybe.md": [
             title: "Funx.Monad.Maybe Usage Rules",
             filename: "monad-maybe-usage-rules"
           ],
-          "lib/monad/reader/usage-rules.md": [
+          "usage-rules/monad_reader.md": [
             title: "Funx.Monad.Reader Usage Rules",
             filename: "monad-reader-usage-rules"
           ],
-          "lib/monoid/usage-rules.md": [
+          "usage-rules/monoid.md": [
             title: "Funx.Monoid Usage Rules",
             filename: "monoid-usage-rules"
           ],
-          "lib/ord/usage-rules.md": [
+          "usage-rules/ord.md": [
             title: "Funx.Ord Usage Rules",
             filename: "ord-usage-rules"
           ],
-          "lib/predicate/usage-rules.md": [
+          "usage-rules/predicate.md": [
             title: "Funx.Predicate Usage Rules",
             filename: "predicate-usage-rules"
           ],
-          "lib/utils/usage-rules.md": [
+          "usage-rules/utils.md": [
             title: "Funx.Utils Usage Rules",
             filename: "utils-usage-rules"
           ]
         ],
         groups_for_extras: [
           "LLM Usage Rules": [
-            "lib/usage-rules.md",
-            "lib/appendable/usage-rules.md",
-            "lib/eq/usage-rules.md",
-            "lib/errors/validation_error/usage-rules.md",
-            "lib/foldable/usage-rules.md",
-            "lib/list/usage-rules.md",
-            "lib/monad/usage-rules.md",
-            "lib/monad/either/usage-rules.md",
-            "lib/monad/effect/usage-rules.md",
-            "lib/monad/identity/usage-rules.md",
-            "lib/monad/maybe/usage-rules.md",
-            "lib/monad/reader/usage-rules.md",
-            "lib/monoid/usage-rules.md",
-            "lib/ord/usage-rules.md",
-            "lib/predicate/usage-rules.md",
-            "lib/utils/usage-rules.md"
+            "usage-rules.md",
+            "usage-rules/appendable.md",
+            "usage-rules/eq.md",
+            "usage-rules/errors_validation_error.md",
+            "usage-rules/foldable.md",
+            "usage-rules/list.md",
+            "usage-rules/monad.md",
+            "usage-rules/monad_either.md",
+            "usage-rules/monad_effect.md",
+            "usage-rules/monad_identity.md",
+            "usage-rules/monad_maybe.md",
+            "usage-rules/monad_reader.md",
+            "usage-rules/monoid.md",
+            "usage-rules/ord.md",
+            "usage-rules/predicate.md",
+            "usage-rules/utils.md"
           ]
         ],
         filter_prefix: "Examples",
