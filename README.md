@@ -38,7 +38,7 @@ mix deps.get
 Funx includes embedded **usage rules** in addition to API documentation.  
 They are written for development workflows assisted by LLMs.  
 
-➡️ [Browse Usage Rules](./lib/usage-rules.md)
+➡️ [Browse Usage Rules](./usage-rules.md)
 
 ## Equality
 
