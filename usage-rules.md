@@ -14,49 +14,49 @@ These rules provide guidance on how to effectively apply functional patterns in 
 
 ## Available Rules
 
-- Funx.Appendable Usage Rules
+- Funx.Appendable Usage Rules - **funx:appendable usage**
   Flexible aggregation for accumulating results - structured vs flat collection strategies.
-  
-- Funx.Eq Usage Rules
+
+- Funx.Eq Usage Rules - **funx:eq usage**
   Domain-specific equality and identity for comparison, deduplication, and filtering.
 
-- Funx.Errors.ValidationError Usage Rules
+- Funx.Errors.ValidationError Usage Rules - **funx:errors_validation_error usage**
   Domain validation with structured error collection, composition, and Either integration.
 
-- Funx.Foldable Usage Rules
+- Funx.Foldable Usage Rules - **funx:foldable usage**
   Conditional structure collapse with different functions for present vs absent cases—defaults and aggregation.
 
-- Funx.List Usage Rules
+- Funx.List Usage Rules - **funx:list usage**
   Equality- and order-aware set operations, deduplication, and sorting.
 
-- Funx.Monad Usage Rules
+- Funx.Monad Usage Rules - **funx:monad usage**
   Declarative control flow with `map`, `bind`, and `ap`—composing context-aware steps.
 
-- Funx.Monad.Either Usage Rules
+- Funx.Monad.Either Usage Rules - **funx:monad_either usage**
   Branching computation with error context—fail fast or accumulate validation errors.
 
-- Funx.Monad.Effect Usage Rules
+- Funx.Monad.Effect Usage Rules - **funx:monad_effect usage**
   Deferred observable async computation—Reader + Either + async execution with full telemetry.
 
-- Funx.Monad.Identity Usage Rules
+- Funx.Monad.Identity Usage Rules - **funx:monad_identity usage**
   Structure without effects—used as a baseline for composing monads.
 
-- Funx.Monad.Maybe Usage Rules
+- Funx.Monad.Maybe Usage Rules - **funx:monad_maybe usage**
   Optional computation: preserve structure, short-circuit on absence, avoid `nil`.
 
-- Funx.Monad.Reader Usage Rules
+- Funx.Monad.Reader Usage Rules - **funx:monad_reader usage**
   Deferred computation with read-only environment access—dependency injection and configuration.
 
-- Funx.Monoid Usage Rules
+- Funx.Monoid Usage Rules - **funx:monoid usage**
   Identity and associative combination, enabling folds, logs, and accumulation.
 
-- Funx.Ord Usage Rules
+- Funx.Ord Usage Rules - **funx:ord usage**
   Context-aware ordering for sorting, ranking, and prioritization.
 
-- Funx.Predicate Usage Rules
+- Funx.Predicate Usage Rules - **funx:predicate usage**
   Logical composition using `&&`/`||`, reusable combinators, and lifted conditions.
 
-- Funx.Utils Usage Rules
+- Funx.Utils Usage Rules - **funx:utils usage**
   Currying, flipping, and function transformation for point-free, pipeline-friendly composition.
 
 ## Conventions
