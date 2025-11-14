@@ -38,8 +38,6 @@ mix deps.get
 Funx includes embedded **usage rules** in addition to API documentation.  
 They are written for development workflows assisted by LLMs.  
 
-➡️ [Browse Usage Rules](./lib/usage-rules.md)
-
 ## Equality
 
 The `Eq` protocol defines how two values are compared, making equality explicit and adaptable to your domain.
@@ -152,4 +150,4 @@ The authoritative API documentation is published on [HexDocs](https://hexdocs.pm
 
 ## License  
 
-This project is licensed under the MIT License.  
+This project is licensed under the MIT License.

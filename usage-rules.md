@@ -1,9 +1,9 @@
 # Funx Usage Rules (Index)
 
-Usage rules describe how to use Funx protocols and utilities in practice.  
-They complement the module docs (which describe *what* the APIs do).  
+Usage rules describe how to use Funx protocols and utilities in practice.
+They complement the module docs (which describe *what* the APIs do).
 
-Each protocol or major module has its own `usage-rules.md`, stored next to the code.  
+Each protocol or major module has its own usage rules in `./usage-rules`.
 This index links them together.
 
 ## Approach
@@ -14,93 +14,76 @@ These rules provide guidance on how to effectively apply functional patterns in 
 
 ## Available Rules
 
-- [Funx.Appendable Usage Rules](./appendable/usage-rules.md)  
+- Funx.Appendable Usage Rules - **funx:appendable usage**
   Flexible aggregation for accumulating results - structured vs flat collection strategies.
 
-- [Funx.Eq Usage Rules](./eq/usage-rules.md)  
+- Funx.Eq Usage Rules - **funx:eq usage**
   Domain-specific equality and identity for comparison, deduplication, and filtering.
 
-- [Funx.Errors.ValidationError Usage Rules](./errors/validation_error/usage-rules.md)  
+- Funx.Errors.ValidationError Usage Rules - **funx:errors_validation_error usage**
   Domain validation with structured error collection, composition, and Either integration.
 
-- [Funx.Foldable Usage Rules](./foldable/usage-rules.md)  
+- Funx.Foldable Usage Rules - **funx:foldable usage**
   Conditional structure collapse with different functions for present vs absent cases—defaults and aggregation.
 
-- [Funx.List Usage Rules](./list/usage-rules.md)  
+- Funx.List Usage Rules - **funx:list usage**
   Equality- and order-aware set operations, deduplication, and sorting.
 
-- [Funx.Monad Usage Rules](./monad/usage-rules.md)  
+- Funx.Monad Usage Rules - **funx:monad usage**
   Declarative control flow with `map`, `bind`, and `ap`—composing context-aware steps.
 
-- [Funx.Monad.Either Usage Rules](./monad/either/usage-rules.md)  
+- Funx.Monad.Either Usage Rules - **funx:monad_either usage**
   Branching computation with error context—fail fast or accumulate validation errors.
 
-- [Funx.Monad.Effect Usage Rules](./monad/effect/usage-rules.md)  
+- Funx.Monad.Effect Usage Rules - **funx:monad_effect usage**
   Deferred observable async computation—Reader + Either + async execution with full telemetry.
 
-- [Funx.Monad.Identity Usage Rules](./monad/identity/usage-rules.md)  
+- Funx.Monad.Identity Usage Rules - **funx:monad_identity usage**
   Structure without effects—used as a baseline for composing monads.
 
-- [Funx.Monad.Maybe Usage Rules](./monad/maybe/usage-rules.md)  
+- Funx.Monad.Maybe Usage Rules - **funx:monad_maybe usage**
   Optional computation: preserve structure, short-circuit on absence, avoid `nil`.
 
-- [Funx.Monad.Reader Usage Rules](./monad/reader/usage-rules.md)  
+- Funx.Monad.Reader Usage Rules - **funx:monad_reader usage**
   Deferred computation with read-only environment access—dependency injection and configuration.
 
-- [Funx.Monoid Usage Rules](./monoid/usage-rules.md)  
+- Funx.Monoid Usage Rules - **funx:monoid usage**
   Identity and associative combination, enabling folds, logs, and accumulation.
 
-- [Funx.Ord Usage Rules](./ord/usage-rules.md)  
+- Funx.Ord Usage Rules - **funx:ord usage**
   Context-aware ordering for sorting, ranking, and prioritization.
 
-- [Funx.Predicate Usage Rules](./predicate/usage-rules.md)  
+- Funx.Predicate Usage Rules - **funx:predicate usage**
   Logical composition using `&&`/`||`, reusable combinators, and lifted conditions.
 
-- [Funx.Utils Usage Rules](./utils/usage-rules.md)  
+- Funx.Utils Usage Rules - **funx:utils usage**
   Currying, flipping, and function transformation for point-free, pipeline-friendly composition.
 
 ## Conventions
 
-- Collocation: rules live beside the code they describe.  
-- Scope: focus on *usage guidance* and best practices, not API reference.  
+- Scope: focus on *usage guidance* and best practices, not API reference.
 - LLM-friendly: small sections, explicit examples, stable links.
 
 ## Project Layout (rules only)
 
 ```text
-lib/
-  usage-rules.md            # ← index (this file)
-  appendable/
-    usage-rules.md          # ← Funx.Appendable rules
-  eq/
-    usage-rules.md          # ← Funx.Eq rules
-  errors/
-    validation_error/
-      usage-rules.md        # ← Funx.Errors.ValidationError rules
-  foldable/
-    usage-rules.md          # ← Funx.Foldable rules
-  list/
-    usage-rules.md          # ← Funx.List rules
-  monad/
-    usage-rules.md          # ← Funx.Monad rules
-    either/
-      usage-rules.md        # ← Funx.Monad.Either rules
-    effect/
-      usage-rules.md        # ← Funx.Monad.Effect rules
-    identity/
-      usage-rules.md        # ← Funx.Monad.Identity rules
-    maybe/
-      usage-rules.md        # ← Funx.Monad.Maybe rules
-    reader/
-      usage-rules.md        # ← Funx.Monad.Reader rules
-  monoid/
-    usage-rules.md          # ← Funx.Monoid rules
-  ord/
-    usage-rules.md          # ← Funx.Ord rules
-  predicate/
-    usage-rules.md          # ← Funx.Predicate rules
-  utils/
-    usage-rules.md          # ← Funx.Utils rules
+usage-rules.md                # ← index (this file)
+usage-rules/
+  appendable.md               # ← Funx.Appendable rules
+  eq.md                       # ← Funx.Eq rules
+  errors_validation_error.md  # ← Funx.Errors.ValidationError rules
+  foldable.md                 # ← Funx.Foldable rules
+  list.md                     # ← Funx.List rules
+  monad.md                    # ← Funx.Monad rules
+  monad_either.md             # ← Funx.Monad.Either rules
+  monad_effect.md             # ← Funx.Monad.Effect rules
+  monad_identity.md           # ← Funx.Monad.Identity rules
+  monad_maybe.md              # ← Funx.Monad.Maybe rules
+  monad_reader.md             # ← Funx.Monad.Reader rules
+  monoid.md                   # ← Funx.Monoid rules
+  ord.md                      # ← Funx.Ord rules
+  predicate.md                # ← Funx.Predicate rules
+  utils.md                    # ← Funx.Utils rules
 ```
 
 ## Domain Model + Repository Pattern Usage Rules
