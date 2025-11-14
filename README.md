@@ -22,7 +22,7 @@ To use Funx, add it to the list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:funx, "~> 0.1.6"}
+    {:funx, "~> 0.1.7"}
   ]
 end
 ```
