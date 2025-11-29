@@ -1052,4 +1052,62 @@ end
     end
   end
 
+  describe "whitelisted Either functions" do
+    test "allows filter_or_else/3" do
+      result =
+        either 5 do
+          filter_or_else(&(&1 > 3), fn -> "too small" end)
+        end
+
+      assert result == %Right{right: 5}
+    end
+
+    test "allows or_else/2" do
+      result =
+        either left("error") do
+          or_else(fn -> right(42) end)
+        end
+
+      assert result == %Right{right: 42}
+    end
+
+    test "allows map_left/2" do
+      result =
+        either left("error") do
+          map_left(fn e -> "wrapped: " <> e end)
+        end
+
+      assert result == %Left{left: "wrapped: error"}
+    end
+
+    test "allows get_or_else/2" do
+      result =
+        either left("error") do
+          get_or_else(0)
+        end
+
+      assert result == 0
+    end
+
+    test "allows flip/1" do
+      result =
+        either left("error") do
+          flip()
+        end
+
+      assert result == %Right{right: "error"}
+    end
+
+    test "allows validate/2" do
+      result =
+        either 4 do
+          map(&(&1 + 1))
+          validate([PositiveNumber])
+        end
+
+      # validate returns Either with original value if all pass
+      assert result == %Right{right: 5}
+    end
+  end
+
 end

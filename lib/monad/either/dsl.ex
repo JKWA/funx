@@ -8,6 +8,14 @@ defmodule Funx.Monad.Either.Dsl do
   # credo:disable-for-this-file Credo.Check.Design.AliasUsage
   alias Funx.Monad.Either
 
+  # Functions that operate on Either directly (not unwrapped)
+  @either_functions [:filter_or_else, :or_else, :map_left, :get_or_else, :flip]
+
+  # Functions that work on unwrapped values (auto-bind)
+  @bindable_functions [
+    :validate
+  ]
+
   defmacro __using__(_opts) do
     quote do
       import Funx.Monad.Either.Dsl
@@ -119,7 +127,21 @@ defmodule Funx.Monad.Either.Dsl do
 
     quote do
       (fn ->
-        import Either
+        import Either,
+          only: [
+            # Constructors (needed for callbacks and fallbacks)
+            right: 1,
+            left: 1,
+            # Either functions (work on Either directly)
+            filter_or_else: 3,
+            or_else: 2,
+            map_left: 2,
+            get_or_else: 2,
+            flip: 1,
+            # Bindable functions (work on unwrapped values)
+            validate: 2
+          ]
+
         unquote(result)
       end).()
     end
@@ -441,18 +463,36 @@ defmodule Funx.Monad.Either.Dsl do
   defp compile_either_function(previous, func_name, _meta, args, user_env) do
     transformed_args = Enum.map(args, &transform_modules_to_functions(&1, user_env))
 
-    case func_name do
-      func when func in [:filter_or_else, :or_else, :map_left, :get_or_else] ->
+    cond do
+      func_name in @either_functions ->
         quote do
           unquote(func_name)(unquote(previous), unquote_splicing(transformed_args))
         end
 
-      _ ->
+      func_name in @bindable_functions ->
         quote do
           Funx.Monad.bind(unquote(previous), fn value ->
             unquote(func_name)(value, unquote_splicing(transformed_args))
           end)
         end
+
+      true ->
+        raise CompileError,
+          description: """
+          Invalid operation: #{func_name}
+
+          This Either function cannot be used in the DSL pipeline.
+
+          Allowed functions that work on Either directly:
+            #{inspect(@either_functions)}
+
+          Allowed functions that work on unwrapped values:
+            #{inspect(@bindable_functions)}
+
+          If you need to use #{func_name}, consider:
+            - Using it outside the DSL pipeline
+            - Creating a custom module that implements the Funx.Monad.Dsl.Behaviour
+          """
     end
   end
 
