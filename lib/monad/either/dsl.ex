@@ -131,23 +131,32 @@ defmodule Funx.Monad.Either.Dsl do
 
   defp compile_first_operation(input, operation_ast, user_env, caller_env) do
     case operation_ast do
+      # bind with tuple syntax: bind {Module, opts}
+      {:bind, _, [{_, _} = tuple_op]} ->
+        {operation, opts} = tuple_op
+        compile_first_bind_operation(input, operation, opts, user_env, caller_env)
+
+      # bind with bare module or function
       {:bind, _, [operation]} ->
         compile_first_bind_operation(input, operation, [], user_env, caller_env)
 
-      {:bind, _, [operation, opts]} when is_list(opts) ->
-        compile_first_bind_operation(input, operation, opts, user_env, caller_env)
+      # map with tuple syntax: map {Module, opts}
+      {:map, _, [{_, _} = tuple_op]} ->
+        {operation, opts} = tuple_op
+        compile_first_map_operation(input, operation, opts, user_env, caller_env)
 
+      # map with bare module or function
       {:map, _, [operation]} ->
         compile_first_map_operation(input, operation, [], user_env, caller_env)
 
-      {:map, _, [operation, opts]} when is_list(opts) ->
-        compile_first_map_operation(input, operation, opts, user_env, caller_env)
+      # run with tuple syntax: run {Module, opts}
+      {:run, _, [{_, _} = tuple_op]} ->
+        {operation, opts} = tuple_op
+        compile_first_run_operation(input, operation, opts, user_env, caller_env)
 
+      # run with bare module or function
       {:run, _, [operation]} ->
         compile_first_run_operation(input, operation, [], user_env, caller_env)
-
-      {:run, _, [operation, opts]} when is_list(opts) ->
-        compile_first_run_operation(input, operation, opts, user_env, caller_env)
 
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         transformed_args = Enum.map(args, &transform_modules_to_functions(&1, user_env))
@@ -280,23 +289,32 @@ defmodule Funx.Monad.Either.Dsl do
 
   defp compile_operation(previous, operation_ast, user_env, caller_env) do
     case operation_ast do
+      # bind with tuple syntax: bind {Module, opts}
+      {:bind, _, [{_, _} = tuple_op]} ->
+        {operation, opts} = tuple_op
+        compile_bind_operation(previous, operation, opts, user_env, caller_env)
+
+      # bind with bare module or function
       {:bind, _, [operation]} ->
         compile_bind_operation(previous, operation, [], user_env, caller_env)
 
-      {:bind, _, [operation, opts]} when is_list(opts) ->
-        compile_bind_operation(previous, operation, opts, user_env, caller_env)
+      # map with tuple syntax: map {Module, opts}
+      {:map, _, [{_, _} = tuple_op]} ->
+        {operation, opts} = tuple_op
+        compile_map_operation(previous, operation, opts, user_env, caller_env)
 
+      # map with bare module or function
       {:map, _, [operation]} ->
         compile_map_operation(previous, operation, [], user_env, caller_env)
 
-      {:map, _, [operation, opts]} when is_list(opts) ->
-        compile_map_operation(previous, operation, opts, user_env, caller_env)
+      # run with tuple syntax: run {Module, opts}
+      {:run, _, [{_, _} = tuple_op]} ->
+        {operation, opts} = tuple_op
+        compile_run_operation(previous, operation, opts, user_env, caller_env)
 
+      # run with bare module or function
       {:run, _, [operation]} ->
         compile_run_operation(previous, operation, [], user_env, caller_env)
-
-      {:run, _, [operation, opts]} when is_list(opts) ->
-        compile_run_operation(previous, operation, opts, user_env, caller_env)
 
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         compile_either_function(previous, func_name, meta, args, user_env)
@@ -452,12 +470,25 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
+  # Handle {Module, opts} tuple syntax for validators with options
+  defp transform_list_item(
+         {{:__aliases__, _, _} = module_alias, opts_ast},
+         user_env
+       )
+       when is_list(opts_ast) do
+    quote do
+      fn value -> unquote(module_alias).run(value, unquote(user_env), unquote(opts_ast)) end
+    end
+  end
+
+  # Handle bare module syntax (uses empty opts)
   defp transform_list_item({:__aliases__, _, _} = module_alias, user_env) do
     quote do
       fn value -> unquote(module_alias).run(value, unquote(user_env), []) end
     end
   end
 
+  # Pass through for functions and other types
   defp transform_list_item(other, _user_env), do: other
 
   # ============================================================================

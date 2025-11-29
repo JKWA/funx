@@ -325,6 +325,89 @@ defmodule Funx.Monad.Either.DslTest do
       assert length(errors) == 2
     end
 
+    test "validate with module-specific options" do
+      result =
+        either "50" do
+          bind ParseInt
+          validate([
+            {RangeValidator, min: 0, max: 100},
+            {MinValidator, min: 10}
+          ])
+        end
+
+      assert result == %Right{right: 50}
+    end
+
+    test "validate with mixed bare and tuple syntax" do
+      result =
+        either "50" do
+          bind ParseInt
+          validate([
+            PositiveNumber,
+            {RangeValidator, min: 0, max: 100},
+            {MinValidator, min: 10}
+          ])
+        end
+
+      assert result == %Right{right: 50}
+    end
+
+    test "validate accumulates errors with options" do
+      result =
+        either "-5" do
+          bind ParseInt
+          validate([
+            PositiveNumber,
+            {RangeValidator, min: 0, max: 100},
+            {MinValidator, min: 0}
+          ])
+        end
+
+      assert %Left{left: errors} = result
+      assert is_list(errors)
+      assert length(errors) == 3
+    end
+
+    test "validate with empty options list in tuple" do
+      result =
+        either "50" do
+          bind ParseInt
+          validate([{RangeValidator, []}])
+        end
+
+      # Should use defaults (0 and 100)
+      assert result == %Right{right: 50}
+    end
+
+    test "validate options are isolated per validator" do
+      # This tests that options for one validator don't affect another
+      result =
+        either "5" do
+          bind ParseInt
+          validate([
+            {RangeValidator, min: 0, max: 10},  # passes: 5 is between 0 and 10
+            {MinValidator, min: 3}               # passes: 5 > 3
+          ])
+        end
+
+      assert result == %Right{right: 5}
+
+      # Now test with different ranges that should fail
+      result_fail =
+        either "5" do
+          bind ParseInt
+          validate([
+            {RangeValidator, min: 10, max: 20},  # fails: 5 not between 10 and 20
+            {MinValidator, min: 1}                # passes: 5 > 1
+          ])
+        end
+
+      assert %Left{left: errors} = result_fail
+      assert is_list(errors)
+      assert length(errors) == 1
+      assert hd(errors) =~ "must be between 10 and 20"
+    end
+
     test "filter_or_else passes when predicate is true" do
       result =
         either "10" do
@@ -766,7 +849,7 @@ end
     test "passes options to module run/3 function" do
       result =
         either "FF" do
-          bind ParseIntWithBase, base: 16
+          bind {ParseIntWithBase, base: 16}
         end
 
       assert result == %Right{right: 255}
@@ -784,8 +867,8 @@ end
     test "different options for different modules in pipeline" do
       result =
         either "10" do
-          bind ParseIntWithBase, base: 10
-          bind MinValidator, min: 5
+          bind {ParseIntWithBase, base: 10}
+          bind {MinValidator, min: 5}
         end
 
       assert result == %Right{right: 10}
@@ -795,7 +878,7 @@ end
       result =
         either "5" do
           bind ParseIntWithBase
-          bind MinValidator, min: 10
+          bind {MinValidator, min: 10}
         end
 
       assert %Left{left: msg} = result
@@ -812,7 +895,7 @@ end
       for {base, input, expected, name} <- test_cases do
         result =
           either input do
-            bind ParseIntWithBase, base: base
+            bind {ParseIntWithBase, base: base}
           end
 
         assert result == %Right{right: expected},
@@ -823,9 +906,9 @@ end
     test "complex pipeline with multiple module-specific options" do
       result =
         either "FF" do
-          bind ParseIntWithBase, base: 16
-          bind MinValidator, min: 100
-          bind RangeValidatorWithOpts, min: 200, max: 300
+          bind {ParseIntWithBase, base: 16}
+          bind {MinValidator, min: 100}
+          bind {RangeValidatorWithOpts, min: 200, max: 300}
         end
 
       assert result == %Right{right: 255}
@@ -834,7 +917,7 @@ end
     test "error message includes base when parsing fails" do
       result =
         either "XYZ" do
-          bind ParseIntWithBase, base: 16
+          bind {ParseIntWithBase, base: 16}
         end
 
       assert %Left{left: msg} = result
@@ -846,7 +929,7 @@ end
     test "passes options to module run/3 function" do
       result =
         either 10 do
-          map Multiplier, factor: 5
+          map {Multiplier, factor: 5}
         end
 
       assert result == %Right{right: 50}
@@ -864,8 +947,8 @@ end
     test "multiple map operations with different options" do
       result =
         either 2 do
-          map Multiplier, factor: 3
-          map Multiplier, factor: 4
+          map {Multiplier, factor: 3}
+          map {Multiplier, factor: 4}
         end
 
       assert result == %Right{right: 24}
@@ -874,9 +957,9 @@ end
     test "bind and map with options in same pipeline" do
       result =
         either "10" do
-          bind ParseIntWithBase, base: 10
-          bind MinValidator, min: 5
-          map Multiplier, factor: 10
+          bind {ParseIntWithBase, base: 10}
+          bind {MinValidator, min: 5}
+          map {Multiplier, factor: 10}
         end
 
       assert result == %Right{right: 100}
@@ -885,9 +968,9 @@ end
     test "map with options after validation" do
       result =
         either "FF" do
-          bind ParseIntWithBase, base: 16
-          bind RangeValidatorWithOpts, min: 200, max: 300
-          map Multiplier, factor: 2
+          bind {ParseIntWithBase, base: 16}
+          bind {RangeValidatorWithOpts, min: 200, max: 300}
+          map {Multiplier, factor: 2}
         end
 
       assert result == %Right{right: 510}
@@ -899,7 +982,7 @@ end
       # run passes Either directly, so we need to handle it differently
       result =
         either "42" do
-          bind ParseIntWithBase, base: 10
+          bind {ParseIntWithBase, base: 10}
         end
 
       assert result == %Right{right: 42}
@@ -910,8 +993,8 @@ end
       # This test shows it passes opts correctly
       result =
         either "FF" do
-          bind ParseIntWithBase, base: 16
-          bind MinValidator, min: 100
+          bind {ParseIntWithBase, base: 16}
+          bind {MinValidator, min: 100}
         end
 
       assert result == %Right{right: 255}
@@ -922,7 +1005,7 @@ end
     test "empty options list works" do
       result =
         either "42" do
-          bind ParseIntWithBase, []
+          bind {ParseIntWithBase, []}
         end
 
       assert result == %Right{right: 42}
@@ -931,8 +1014,8 @@ end
     test "multiple options in single call" do
       result =
         either "50" do
-          bind ParseIntWithBase, base: 10
-          bind RangeValidatorWithOpts, min: 0, max: 100
+          bind {ParseIntWithBase, base: 10}
+          bind {RangeValidatorWithOpts, min: 0, max: 100}
         end
 
       assert result == %Right{right: 50}
@@ -942,8 +1025,8 @@ end
       # This test ensures module-specific opts don't leak
       result =
         either "10" do
-          bind ParseIntWithBase, base: 16  # This should only affect ParseIntWithBase
-          bind MinValidator, min: 5         # This should not see base: 16
+          bind {ParseIntWithBase, base: 16}  # This should only affect ParseIntWithBase
+          bind {MinValidator, min: 5}         # This should not see base: 16
         end
 
       assert result == %Right{right: 16}
@@ -952,8 +1035,8 @@ end
     test "works with as: :tuple return type" do
       result =
         either "FF", as: :tuple do
-          bind ParseIntWithBase, base: 16
-          bind MinValidator, min: 100
+          bind {ParseIntWithBase, base: 16}
+          bind {MinValidator, min: 100}
         end
 
       assert result == {:ok, 255}
@@ -962,7 +1045,7 @@ end
     test "works with as: :raise return type" do
       result =
         either "A0", as: :raise do
-          bind ParseIntWithBase, base: 16
+          bind {ParseIntWithBase, base: 16}
         end
 
       assert result == 160
