@@ -105,7 +105,7 @@ defmodule Funx.Monad.Either.Dsl do
   defp compile_pipeline(input, [first | rest], return_as, opts, env) do
     wrapped_input =
       quote do
-        Either.pure(unquote(input))
+        Funx.Monad.Either.Dsl.lift_input(unquote(input))
       end
 
     initial = compile_first_operation(wrapped_input, first, opts, env)
@@ -441,6 +441,27 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   defp transform_list_item(other, _opts), do: other
+
+  # ============================================================================
+  # Lift input into Either context
+  # ============================================================================
+
+  @doc false
+  @spec lift_input(any() | Either.t() | {:ok, any()} | {:error, any()}) :: Either.t()
+  def lift_input(input) do
+    case input do
+      # Already an Either - pass through
+      %Either.Right{} = either -> either
+      %Either.Left{} = either -> either
+
+      # Result tuple - convert to Either
+      {:ok, value} -> Either.right(value)
+      {:error, reason} -> Either.left(reason)
+
+      # Plain value - wrap in Right
+      value -> Either.pure(value)
+    end
+  end
 
   # ============================================================================
   # normalize tuple/Either returns

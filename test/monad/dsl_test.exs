@@ -566,6 +566,86 @@ defmodule Funx.Monad.Either.DslTest do
   # Error Handling & Edge Cases
   # ============================================================================
 
+  describe "input lifting" do
+    test "plain value is wrapped in Right" do
+      result =
+        either 42 do
+          map &(&1 * 2)
+        end
+
+      assert result == %Right{right: 84}
+    end
+
+    test "Either Right is passed through unchanged" do
+      result =
+        either right(42) do
+          map &(&1 * 2)
+        end
+
+      assert result == %Right{right: 84}
+    end
+
+    test "Either Left is passed through and short-circuits" do
+      result =
+        either left("error") do
+          map &(&1 * 2)
+        end
+
+      assert result == %Left{left: "error"}
+    end
+
+    test "{:ok, value} tuple is converted to Right" do
+      result =
+        either {:ok, 42} do
+          map &(&1 * 2)
+        end
+
+      assert result == %Right{right: 84}
+    end
+
+    test "{:error, reason} tuple is converted to Left" do
+      result =
+        either {:error, "failed"} do
+          map &(&1 * 2)
+        end
+
+      assert result == %Left{left: "failed"}
+    end
+
+    test "can compose with function returning tuple" do
+      fetch_data = fn -> {:ok, "10"} end
+
+      result =
+        either fetch_data.() do
+          bind ParseInt
+          map Double
+        end
+
+      assert result == %Right{right: 20}
+    end
+
+    test "can compose with function returning Either" do
+      fetch_data = fn -> right(10) end
+
+      result =
+        either fetch_data.() do
+          map Double
+        end
+
+      assert result == %Right{right: 20}
+    end
+
+    test "error tuple short-circuits pipeline" do
+      result =
+        either {:error, "initial error"} do
+          bind ParseInt
+          map Double
+        end
+
+      assert result == %Left{left: "initial error"}
+    end
+  end
+
   describe "error handling" do
     test "raises on invalid return value from bind" do
       assert_raise ArgumentError, ~r/run\/1 must return/, fn ->
