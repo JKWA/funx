@@ -1110,4 +1110,119 @@ end
     end
   end
 
+  # ============================================================================
+  # Compile-Time Error Handling
+  # ============================================================================
+
+  describe "compile-time error handling" do
+    test "raises on invalid return type option" do
+      assert_raise CompileError, ~r/Invalid return type/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either "42", as: :invalid_type do
+              bind fn x -> right(x) end
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
+
+    test "raises when using non-whitelisted Either function" do
+      assert_raise CompileError, ~r/Invalid operation/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either "42" do
+              bind fn x -> right(x) end
+              non_existent_either_function()
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
+
+    test "raises on invalid operation type in first position" do
+      assert_raise CompileError, ~r/Invalid operation/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either "42" do
+              :some_random_atom
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
+
+    test "raises on invalid operation type in subsequent position" do
+      assert_raise CompileError, ~r/Invalid operation/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either "42" do
+              bind ParseInt
+              123
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
+
+    test "raises when module doesn't exist at compile time" do
+      assert_raise CompileError, ~r/is not available at compile time/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either "42" do
+              bind NonExistentModuleThatDoesNotExist
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
+
+    test "raises when module doesn't implement run/3" do
+      # Define a module without run/3 in the test environment
+      defmodule TestModuleWithoutRun do
+        def some_function(x), do: x
+      end
+
+      assert_raise CompileError, ~r/must implement run\/3/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either "42" do
+              bind TestModuleWithoutRun
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
+  end
+
 end
