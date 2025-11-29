@@ -55,12 +55,12 @@ defmodule Funx.Monad.Either.Dsl do
   defp validate_module_exports!(mod, module_alias_ast) do
     case Code.ensure_compiled(mod) do
       {:module, _} ->
-        unless function_exported?(mod, :run, 2) do
+        unless function_exported?(mod, :run, 3) do
           raise CompileError,
             description: """
             Invalid operation: #{Macro.to_string(module_alias_ast)}
 
-            Modules used with 'bind' or 'map' must implement run/2
+            Modules used with 'bind' or 'map' must implement run/3
             (for example via the Funx.Monad.Dsl.Behaviour).
             """
         end
@@ -132,13 +132,22 @@ defmodule Funx.Monad.Either.Dsl do
   defp compile_first_operation(input, operation_ast, user_env, caller_env) do
     case operation_ast do
       {:bind, _, [operation]} ->
-        compile_first_bind_operation(input, operation, user_env, caller_env)
+        compile_first_bind_operation(input, operation, [], user_env, caller_env)
+
+      {:bind, _, [operation, opts]} when is_list(opts) ->
+        compile_first_bind_operation(input, operation, opts, user_env, caller_env)
 
       {:map, _, [operation]} ->
-        compile_first_map_operation(input, operation, user_env, caller_env)
+        compile_first_map_operation(input, operation, [], user_env, caller_env)
+
+      {:map, _, [operation, opts]} when is_list(opts) ->
+        compile_first_map_operation(input, operation, opts, user_env, caller_env)
 
       {:run, _, [operation]} ->
-        compile_first_run_operation(input, operation, user_env, caller_env)
+        compile_first_run_operation(input, operation, [], user_env, caller_env)
+
+      {:run, _, [operation, opts]} when is_list(opts) ->
+        compile_first_run_operation(input, operation, opts, user_env, caller_env)
 
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         transformed_args = Enum.map(args, &transform_modules_to_functions(&1, user_env))
@@ -168,7 +177,7 @@ defmodule Funx.Monad.Either.Dsl do
   # First bind
   # ============================================================================
 
-  defp compile_first_bind_operation(input, operation, user_env, caller_env) do
+  defp compile_first_bind_operation(input, operation, opts, user_env, caller_env) do
     operation =
       case lift_call_to_unary(operation) do
         nil -> operation
@@ -182,7 +191,7 @@ defmodule Funx.Monad.Either.Dsl do
         quote do
           Funx.Monad.bind(unquote(input), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module_alias).run(value, unquote(user_env))
+              unquote(module_alias).run(value, unquote(user_env), unquote(opts))
             )
           end)
         end
@@ -191,7 +200,7 @@ defmodule Funx.Monad.Either.Dsl do
         quote do
           Funx.Monad.bind(unquote(input), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module).run(value, unquote(user_env))
+              unquote(module).run(value, unquote(user_env), unquote(opts))
             )
           end)
         end
@@ -211,7 +220,7 @@ defmodule Funx.Monad.Either.Dsl do
   # First map
   # ============================================================================
 
-  defp compile_first_map_operation(input, operation, user_env, caller_env) do
+  defp compile_first_map_operation(input, operation, opts, user_env, caller_env) do
     operation =
       case lift_call_to_unary(operation) do
         nil -> operation
@@ -224,14 +233,14 @@ defmodule Funx.Monad.Either.Dsl do
 
         quote do
           Funx.Monad.map(unquote(input), fn value ->
-            unquote(module_alias).run(value, unquote(user_env))
+            unquote(module_alias).run(value, unquote(user_env), unquote(opts))
           end)
         end
 
       module when is_atom(module) ->
         quote do
           Funx.Monad.map(unquote(input), fn value ->
-            unquote(module).run(value, unquote(user_env))
+            unquote(module).run(value, unquote(user_env), unquote(opts))
           end)
         end
 
@@ -246,16 +255,16 @@ defmodule Funx.Monad.Either.Dsl do
   # First run
   # ============================================================================
 
-  defp compile_first_run_operation(input, operation, user_env, _caller_env) do
+  defp compile_first_run_operation(input, operation, opts, user_env, _caller_env) do
     case operation do
       {:__aliases__, _, _} = module_alias ->
         quote do
-          unquote(module_alias).run(unquote(input), unquote(user_env))
+          unquote(module_alias).run(unquote(input), unquote(user_env), unquote(opts))
         end
 
       module when is_atom(module) ->
         quote do
-          unquote(module).run(unquote(input), unquote(user_env))
+          unquote(module).run(unquote(input), unquote(user_env), unquote(opts))
         end
 
       func ->
@@ -272,13 +281,22 @@ defmodule Funx.Monad.Either.Dsl do
   defp compile_operation(previous, operation_ast, user_env, caller_env) do
     case operation_ast do
       {:bind, _, [operation]} ->
-        compile_bind_operation(previous, operation, user_env, caller_env)
+        compile_bind_operation(previous, operation, [], user_env, caller_env)
+
+      {:bind, _, [operation, opts]} when is_list(opts) ->
+        compile_bind_operation(previous, operation, opts, user_env, caller_env)
 
       {:map, _, [operation]} ->
-        compile_map_operation(previous, operation, user_env, caller_env)
+        compile_map_operation(previous, operation, [], user_env, caller_env)
+
+      {:map, _, [operation, opts]} when is_list(opts) ->
+        compile_map_operation(previous, operation, opts, user_env, caller_env)
 
       {:run, _, [operation]} ->
-        compile_run_operation(previous, operation, user_env, caller_env)
+        compile_run_operation(previous, operation, [], user_env, caller_env)
+
+      {:run, _, [operation, opts]} when is_list(opts) ->
+        compile_run_operation(previous, operation, opts, user_env, caller_env)
 
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         compile_either_function(previous, func_name, meta, args, user_env)
@@ -301,7 +319,7 @@ defmodule Funx.Monad.Either.Dsl do
   # bind (subsequent)
   # ============================================================================
 
-  defp compile_bind_operation(previous, operation, user_env, caller_env) do
+  defp compile_bind_operation(previous, operation, opts, user_env, caller_env) do
     operation =
       case lift_call_to_unary(operation) do
         nil -> operation
@@ -315,7 +333,7 @@ defmodule Funx.Monad.Either.Dsl do
         quote do
           Funx.Monad.bind(unquote(previous), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module_alias).run(value, unquote(user_env))
+              unquote(module_alias).run(value, unquote(user_env), unquote(opts))
             )
           end)
         end
@@ -324,7 +342,7 @@ defmodule Funx.Monad.Either.Dsl do
         quote do
           Funx.Monad.bind(unquote(previous), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module).run(value, unquote(user_env))
+              unquote(module).run(value, unquote(user_env), unquote(opts))
             )
           end)
         end
@@ -344,7 +362,7 @@ defmodule Funx.Monad.Either.Dsl do
   # map (subsequent)
   # ============================================================================
 
-  defp compile_map_operation(previous, operation, user_env, caller_env) do
+  defp compile_map_operation(previous, operation, opts, user_env, caller_env) do
     operation =
       case lift_call_to_unary(operation) do
         nil -> operation
@@ -357,14 +375,14 @@ defmodule Funx.Monad.Either.Dsl do
 
         quote do
           Funx.Monad.map(unquote(previous), fn value ->
-            unquote(module_alias).run(value, unquote(user_env))
+            unquote(module_alias).run(value, unquote(user_env), unquote(opts))
           end)
         end
 
       module when is_atom(module) ->
         quote do
           Funx.Monad.map(unquote(previous), fn value ->
-            unquote(module).run(value, unquote(user_env))
+            unquote(module).run(value, unquote(user_env), unquote(opts))
           end)
         end
 
@@ -379,16 +397,16 @@ defmodule Funx.Monad.Either.Dsl do
   # run (subsequent)
   # ============================================================================
 
-  defp compile_run_operation(previous, operation, user_env, _caller_env) do
+  defp compile_run_operation(previous, operation, opts, user_env, _caller_env) do
     case operation do
       {:__aliases__, _, _} = module_alias ->
         quote do
-          unquote(module_alias).run(unquote(previous), unquote(user_env))
+          unquote(module_alias).run(unquote(previous), unquote(user_env), unquote(opts))
         end
 
       module when is_atom(module) ->
         quote do
-          unquote(module).run(unquote(previous), unquote(user_env))
+          unquote(module).run(unquote(previous), unquote(user_env), unquote(opts))
         end
 
       func ->
@@ -436,7 +454,7 @@ defmodule Funx.Monad.Either.Dsl do
 
   defp transform_list_item({:__aliases__, _, _} = module_alias, user_env) do
     quote do
-      fn value -> unquote(module_alias).run(value, unquote(user_env)) end
+      fn value -> unquote(module_alias).run(value, unquote(user_env), []) end
     end
   end
 
