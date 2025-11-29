@@ -2,7 +2,7 @@ defmodule Funx.Monad.Dsl.Behaviour do
   @moduledoc """
   Behaviour for modules that can be used with the Either DSL.
 
-  Modules implementing this behaviour must define `run/2` which receives a value and options.
+  Modules implementing this behaviour must define `run/2` which receives a value and environment.
   The DSL keywords (`bind`, `map`, `run`) determine how the result is handled.
 
   ## Examples
@@ -15,8 +15,8 @@ defmodule Funx.Monad.Dsl.Behaviour do
         import Funx.Monad.Either
 
         @impl true
-        def run(value, opts \\ []) when is_binary(value) do
-          base = Keyword.get(opts, :base, 10)
+        def run(value, env \\ []) when is_binary(value) do
+          base = Keyword.get(env, :base, 10)
           case Integer.parse(value, base) do
             {int, ""} -> right(int)
             _ -> left("Invalid integer")
@@ -30,12 +30,12 @@ defmodule Funx.Monad.Dsl.Behaviour do
         @behaviour Funx.Monad.Dsl.Behaviour
 
         @impl true
-        def run(value, _opts \\ []) when is_number(value) do
+        def run(value, _env \\ []) when is_number(value) do
           value * 2
         end
       end
 
-  A validator that uses options:
+  A validator that uses environment:
 
       defmodule PositiveNumber do
         @behaviour Funx.Monad.Dsl.Behaviour
@@ -43,8 +43,8 @@ defmodule Funx.Monad.Dsl.Behaviour do
         import Funx.Monad.Either
 
         @impl true
-        def run(value, opts \\ []) do
-          min = Keyword.get(opts, :min, 0)
+        def run(value, env \\ []) do
+          min = Keyword.get(env, :min, 0)
           if value > min do
             right(value)
           else
@@ -70,9 +70,11 @@ defmodule Funx.Monad.Dsl.Behaviour do
   """
 
   @doc """
-  Processes a value with options.
+  Processes a value with environment.
 
-  The second argument receives options passed to the `either` macro (minus `as:`).
+  The second argument receives read-only environment passed to the `either` macro (minus `as:`).
+  This environment acts like a Reader monad, providing configuration that is threaded through
+  the entire pipeline without mutation.
 
   The return value depends on how the module is used:
   - With `bind`: Can return Either or result tuple - will be normalized
@@ -82,8 +84,8 @@ defmodule Funx.Monad.Dsl.Behaviour do
   ## Examples
 
       # Returns Either (for use with bind)
-      def run(value, opts) do
-        if valid?(value, opts) do
+      def run(value, env) do
+        if valid?(value, env) do
           right(value)
         else
           left("invalid")
@@ -91,18 +93,18 @@ defmodule Funx.Monad.Dsl.Behaviour do
       end
 
       # Returns plain value (for use with map)
-      def run(value, opts) do
-        value * Keyword.get(opts, :multiplier, 2)
+      def run(value, env) do
+        value * Keyword.get(env, :multiplier, 2)
       end
 
       # Returns tuple (for use with bind)
-      def run(value, _opts) do
+      def run(value, _env) do
         case process(value) do
           {:ok, result} -> {:ok, result}
           error -> error
         end
       end
   """
-  @callback run(value :: any(), opts :: keyword()) ::
+  @callback run(value :: any(), env :: keyword()) ::
               any() | Funx.Monad.Either.t() | {:ok, any()} | {:error, any()}
 end

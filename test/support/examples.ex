@@ -17,9 +17,9 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     import Funx.Monad.Either
 
     @impl true
-    def run(value, opts \\ [])
+    def run(value, env \\ [])
 
-    def run(value, _opts) when is_binary(value) do
+    def run(value, _env) when is_binary(value) do
       case Integer.parse(value) do
         {int, ""} -> right(int)
         {_int, _rest} -> left("Invalid integer: contains non-numeric characters")
@@ -27,7 +27,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
       end
     end
 
-    def run(value, _opts), do: left("Expected string, got: #{inspect(value)}")
+    def run(value, _env), do: left("Expected string, got: #{inspect(value)}")
   end
 
   defmodule PositiveNumber do
@@ -41,17 +41,17 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     import Funx.Monad.Either
 
     @impl true
-    def run(value, opts \\ [])
+    def run(value, env \\ [])
 
-    def run(value, _opts) when is_number(value) and value > 0 do
+    def run(value, _env) when is_number(value) and value > 0 do
       right(value)
     end
 
-    def run(value, _opts) when is_number(value) do
+    def run(value, _env) when is_number(value) do
       left("must be positive, got: #{value}")
     end
 
-    def run(value, _opts) do
+    def run(value, _env) do
       left("expected number, got: #{inspect(value)}")
     end
   end
@@ -94,13 +94,13 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     @behaviour Funx.Monad.Dsl.Behaviour
 
     @impl true
-    def run(path, opts \\ [])
+    def run(path, env \\ [])
 
-    def run(path, _opts) when is_binary(path) do
+    def run(path, _env) when is_binary(path) do
       File.read(path)
     end
 
-    def run(path, _opts) do
+    def run(path, _env) do
       {:error, "expected string path, got: #{inspect(path)}"}
     end
   end
@@ -115,13 +115,13 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     @behaviour Funx.Monad.Dsl.Behaviour
 
     @impl true
-    def run(value, opts \\ [])
+    def run(value, env \\ [])
 
-    def run(json_string, _opts) when is_binary(json_string) do
+    def run(json_string, _env) when is_binary(json_string) do
       Jason.decode(json_string)
     end
 
-    def run(value, _opts) do
+    def run(value, _env) do
       {:error, "expected JSON string, got: #{inspect(value)}"}
     end
   end
@@ -154,10 +154,10 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     @behaviour Funx.Monad.Dsl.Behaviour
 
     @impl true
-    def run(n, opts \\ [])
-    def run(n, _opts) when is_number(n) and n > 0, do: {:ok, n}
-    def run(n, _opts) when is_number(n), do: {:error, "must be positive, got: #{n}"}
-    def run(value, _opts), do: {:error, "expected number, got: #{inspect(value)}"}
+    def run(n, env \\ [])
+    def run(n, _env) when is_number(n) and n > 0, do: {:ok, n}
+    def run(n, _env) when is_number(n), do: {:error, "must be positive, got: #{n}"}
+    def run(value, _env), do: {:error, "expected number, got: #{inspect(value)}"}
   end
 
   defmodule RangeValidator do
@@ -171,13 +171,13 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     import Funx.Monad.Either
 
     @impl true
-    def run(value, opts \\ [])
+    def run(value, env \\ [])
 
-    def run(value, _opts) when value > 0 and value < 100 do
+    def run(value, _env) when value > 0 and value < 100 do
       right(value)
     end
 
-    def run(value, _opts) do
+    def run(value, _env) do
       left("must be between 0 and 100, got: #{value}")
     end
   end
@@ -192,6 +192,6 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     @behaviour Funx.Monad.Dsl.Behaviour
 
     @impl true
-    def run(_, _opts \\ []), do: "not a valid return"
+    def run(_, _env \\ []), do: "not a valid return"
   end
 end
