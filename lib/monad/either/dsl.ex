@@ -127,23 +127,23 @@ defmodule Funx.Monad.Either.Dsl do
 
     quote do
       (fn ->
-        import Either,
-          only: [
-            # Constructors (needed for callbacks and fallbacks)
-            right: 1,
-            left: 1,
-            # Either functions (work on Either directly)
-            filter_or_else: 3,
-            or_else: 2,
-            map_left: 2,
-            get_or_else: 2,
-            flip: 1,
-            # Bindable functions (work on unwrapped values)
-            validate: 2
-          ]
+         import Either,
+           only: [
+             # Constructors (needed for callbacks and fallbacks)
+             right: 1,
+             left: 1,
+             # Either functions (work on Either directly)
+             filter_or_else: 3,
+             or_else: 2,
+             map_left: 2,
+             get_or_else: 2,
+             flip: 1,
+             # Bindable functions (work on unwrapped values)
+             validate: 2
+           ]
 
-        unquote(result)
-      end).()
+         unquote(result)
+       end).()
     end
   end
 
@@ -200,7 +200,8 @@ defmodule Funx.Monad.Either.Dsl do
 
       other ->
         raise CompileError,
-          description: "Invalid operation: #{inspect(other)}. Use 'run', 'bind', 'map', or Either functions."
+          description:
+            "Invalid operation: #{inspect(other)}. Use 'run', 'bind', 'map', or Either functions."
     end
   end
 
@@ -222,7 +223,7 @@ defmodule Funx.Monad.Either.Dsl do
         quote do
           Funx.Monad.bind(unquote(input), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module_alias).run(value, unquote(user_env), unquote(opts))
+              unquote(module_alias).run(value, unquote(opts), unquote(user_env))
             )
           end)
         end
@@ -231,7 +232,7 @@ defmodule Funx.Monad.Either.Dsl do
         quote do
           Funx.Monad.bind(unquote(input), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module).run(value, unquote(user_env), unquote(opts))
+              unquote(module).run(value, unquote(opts), unquote(user_env))
             )
           end)
         end
@@ -239,9 +240,7 @@ defmodule Funx.Monad.Either.Dsl do
       func ->
         quote do
           Funx.Monad.bind(unquote(input), fn value ->
-            Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(func).(value)
-            )
+            Funx.Monad.Either.Dsl.normalize_run_result(unquote(func).(value))
           end)
         end
     end
@@ -264,14 +263,14 @@ defmodule Funx.Monad.Either.Dsl do
 
         quote do
           Funx.Monad.map(unquote(input), fn value ->
-            unquote(module_alias).run(value, unquote(user_env), unquote(opts))
+            unquote(module_alias).run(value, unquote(opts), unquote(user_env))
           end)
         end
 
       module when is_atom(module) ->
         quote do
           Funx.Monad.map(unquote(input), fn value ->
-            unquote(module).run(value, unquote(user_env), unquote(opts))
+            unquote(module).run(value, unquote(opts), unquote(user_env))
           end)
         end
 
@@ -290,12 +289,12 @@ defmodule Funx.Monad.Either.Dsl do
     case operation do
       {:__aliases__, _, _} = module_alias ->
         quote do
-          unquote(module_alias).run(unquote(input), unquote(user_env), unquote(opts))
+          unquote(module_alias).run(unquote(input), unquote(opts), unquote(user_env))
         end
 
       module when is_atom(module) ->
         quote do
-          unquote(module).run(unquote(input), unquote(user_env), unquote(opts))
+          unquote(module).run(unquote(input), unquote(opts), unquote(user_env))
         end
 
       func ->
@@ -373,7 +372,7 @@ defmodule Funx.Monad.Either.Dsl do
         quote do
           Funx.Monad.bind(unquote(previous), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module_alias).run(value, unquote(user_env), unquote(opts))
+              unquote(module_alias).run(value, unquote(opts), unquote(user_env))
             )
           end)
         end
@@ -382,7 +381,7 @@ defmodule Funx.Monad.Either.Dsl do
         quote do
           Funx.Monad.bind(unquote(previous), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module).run(value, unquote(user_env), unquote(opts))
+              unquote(module).run(value, unquote(opts), unquote(user_env))
             )
           end)
         end
@@ -390,9 +389,7 @@ defmodule Funx.Monad.Either.Dsl do
       func ->
         quote do
           Funx.Monad.bind(unquote(previous), fn value ->
-            Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(func).(value)
-            )
+            Funx.Monad.Either.Dsl.normalize_run_result(unquote(func).(value))
           end)
         end
     end
@@ -415,14 +412,14 @@ defmodule Funx.Monad.Either.Dsl do
 
         quote do
           Funx.Monad.map(unquote(previous), fn value ->
-            unquote(module_alias).run(value, unquote(user_env), unquote(opts))
+            unquote(module_alias).run(value, unquote(opts), unquote(user_env))
           end)
         end
 
       module when is_atom(module) ->
         quote do
           Funx.Monad.map(unquote(previous), fn value ->
-            unquote(module).run(value, unquote(user_env), unquote(opts))
+            unquote(module).run(value, unquote(opts), unquote(user_env))
           end)
         end
 
@@ -441,12 +438,12 @@ defmodule Funx.Monad.Either.Dsl do
     case operation do
       {:__aliases__, _, _} = module_alias ->
         quote do
-          unquote(module_alias).run(unquote(previous), unquote(user_env), unquote(opts))
+          unquote(module_alias).run(unquote(previous), unquote(opts), unquote(user_env))
         end
 
       module when is_atom(module) ->
         quote do
-          unquote(module).run(unquote(previous), unquote(user_env), unquote(opts))
+          unquote(module).run(unquote(previous), unquote(opts), unquote(user_env))
         end
 
       func ->
@@ -517,14 +514,14 @@ defmodule Funx.Monad.Either.Dsl do
        )
        when is_list(opts_ast) do
     quote do
-      fn value -> unquote(module_alias).run(value, unquote(user_env), unquote(opts_ast)) end
+      fn value -> unquote(module_alias).run(value, unquote(opts_ast), unquote(user_env)) end
     end
   end
 
   # Handle bare module syntax (uses empty opts)
   defp transform_list_item({:__aliases__, _, _} = module_alias, user_env) do
     quote do
-      fn value -> unquote(module_alias).run(value, unquote(user_env), []) end
+      fn value -> unquote(module_alias).run(value, [], unquote(user_env)) end
     end
   end
 
@@ -542,11 +539,9 @@ defmodule Funx.Monad.Either.Dsl do
       # Already an Either - pass through
       %Either.Right{} = either -> either
       %Either.Left{} = either -> either
-
       # Result tuple - convert to Either
       {:ok, value} -> Either.right(value)
       {:error, reason} -> Either.left(reason)
-
       # Plain value - wrap in Right
       value -> Either.pure(value)
     end
@@ -560,10 +555,17 @@ defmodule Funx.Monad.Either.Dsl do
   @spec normalize_run_result(tuple() | Either.t()) :: Either.t()
   def normalize_run_result(result) do
     case result do
-      {:ok, value} -> Either.right(value)
-      {:error, reason} -> Either.left(reason)
-      %Either.Right{} = either -> either
-      %Either.Left{} = either -> either
+      {:ok, value} ->
+        Either.right(value)
+
+      {:error, reason} ->
+        Either.left(reason)
+
+      %Either.Right{} = either ->
+        either
+
+      %Either.Left{} = either ->
+        either
 
       other ->
         raise ArgumentError, """
@@ -594,7 +596,8 @@ defmodule Funx.Monad.Either.Dsl do
 
       _ ->
         raise CompileError,
-          description: "Invalid return type: #{inspect(return_as)}. Must be :either, :tuple, or :raise"
+          description:
+            "Invalid return type: #{inspect(return_as)}. Must be :either, :tuple, or :raise"
     end
   end
 end

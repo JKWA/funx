@@ -198,7 +198,7 @@ defmodule Funx.Monad.Either.DslTest do
         either "42" do
           run fn either ->
             case either do
-              %Right{right: v} -> ParseInt.run(v)
+              %Right{right: v} -> ParseInt.run(v, [], [])
               left -> left
             end
           end
@@ -279,14 +279,14 @@ defmodule Funx.Monad.Either.DslTest do
         either "42" do
           run fn either ->
             case either do
-              %Right{right: v} -> TupleParseInt.run(v)
+              %Right{right: v} -> TupleParseInt.run(v, [], [])
               %Left{left: e} -> {:error, e}
             end
           end
 
           bind fn tuple ->
             case tuple do
-              {:ok, value} -> PositiveNumber.run(value)
+              {:ok, value} -> PositiveNumber.run(value, [], [])
               {:error, reason} -> left(reason)
             end
           end
