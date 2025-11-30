@@ -4,12 +4,15 @@
 # This allows projects that add `import_deps: [:funx]` to automatically
 # format DSL functions without extra parentheses
 export_locals_without_parens = [
-  # DSL entry point
   either: 2,
-  # DSL operations
   bind: 1,
   map: 1,
-  run: 1
+  run: 1,
+  validate: 1,
+  filter_or_else: 2,
+  or_else: 1,
+  map_left: 1,
+  get_or_else: 1
 ]
 
 [

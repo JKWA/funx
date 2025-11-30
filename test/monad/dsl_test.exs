@@ -2,8 +2,8 @@ defmodule Funx.Monad.Either.DslTest do
   use Funx.TestCase, async: true
   use Funx.Monad.Either
 
-  # Import example modules
   alias Funx.Monad.Either.Dsl
+
   alias Funx.Monad.Either.Dsl.Examples.{
     Double,
     InvalidReturn,
@@ -18,20 +18,15 @@ defmodule Funx.Monad.Either.DslTest do
     TupleValidator
   }
 
-  # Shorter aliases for assertions
   alias Funx.Monad.Either.{Left, Right}
 
-  # Test helper module
   defmodule PipeTarget do
     @moduledoc "Module used to test auto-pipe function call rewriting"
 
-    # Accepts a value and produces {:ok, ...}
     def add(x, amount), do: {:ok, x + amount}
 
-    # Pure transform
     def mul(x, amount), do: x * amount
 
-    # Error case
     def check_positive(x) when x > 0, do: {:ok, x}
     def check_positive(_), do: {:error, "not positive"}
   end
@@ -186,6 +181,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "10" do
           bind ParseInt
+
           map fn x ->
             doubled = x * 2
             doubled + 10
@@ -215,6 +211,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "42" do
           bind ParseInt
+
           run fn either ->
             case either do
               %Right{right: v} -> right(v * 2)
@@ -243,7 +240,6 @@ defmodule Funx.Monad.Either.DslTest do
           end
         end
 
-      # Returns raw tuple, not Either
       assert result == {:ok, 42}
     end
 
@@ -265,6 +261,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "10" do
           bind ParseInt
+
           run fn either ->
             case either do
               %Right{right: v} when v < 50 -> right(v * 2)
@@ -286,6 +283,7 @@ defmodule Funx.Monad.Either.DslTest do
               %Left{left: e} -> {:error, e}
             end
           end
+
           bind fn tuple ->
             case tuple do
               {:ok, value} -> PositiveNumber.run(value)
@@ -307,7 +305,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "10" do
           bind ParseInt
-          validate([PositiveNumber, RangeValidator])
+          validate [PositiveNumber, RangeValidator]
         end
 
       assert result == %Right{right: 10}
@@ -317,7 +315,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "-5" do
           bind ParseInt
-          validate([PositiveNumber, RangeValidator])
+          validate [PositiveNumber, RangeValidator]
         end
 
       assert %Left{left: errors} = result
@@ -329,10 +327,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "50" do
           bind ParseInt
-          validate([
-            {RangeValidator, min: 0, max: 100},
-            {MinValidator, min: 10}
-          ])
+          validate [{RangeValidator, min: 0, max: 100}, {MinValidator, min: 10}]
         end
 
       assert result == %Right{right: 50}
@@ -342,11 +337,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "50" do
           bind ParseInt
-          validate([
-            PositiveNumber,
-            {RangeValidator, min: 0, max: 100},
-            {MinValidator, min: 10}
-          ])
+          validate [PositiveNumber, {RangeValidator, min: 0, max: 100}, {MinValidator, min: 10}]
         end
 
       assert result == %Right{right: 50}
@@ -356,11 +347,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "-5" do
           bind ParseInt
-          validate([
-            PositiveNumber,
-            {RangeValidator, min: 0, max: 100},
-            {MinValidator, min: 0}
-          ])
+          validate [PositiveNumber, {RangeValidator, min: 0, max: 100}, {MinValidator, min: 0}]
         end
 
       assert %Left{left: errors} = result
@@ -372,34 +359,33 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "50" do
           bind ParseInt
-          validate([{RangeValidator, []}])
+          validate [{RangeValidator, []}]
         end
 
-      # Should use defaults (0 and 100)
       assert result == %Right{right: 50}
     end
 
     test "validate options are isolated per validator" do
-      # This tests that options for one validator don't affect another
       result =
         either "5" do
           bind ParseInt
-          validate([
-            {RangeValidator, min: 0, max: 10},  # passes: 5 is between 0 and 10
-            {MinValidator, min: 3}               # passes: 5 > 3
-          ])
+
+          validate [
+            {RangeValidator, min: 0, max: 10},
+            {MinValidator, min: 3}
+          ]
         end
 
       assert result == %Right{right: 5}
 
-      # Now test with different ranges that should fail
       result_fail =
         either "5" do
           bind ParseInt
-          validate([
-            {RangeValidator, min: 10, max: 20},  # fails: 5 not between 10 and 20
-            {MinValidator, min: 1}                # passes: 5 > 1
-          ])
+
+          validate [
+            {RangeValidator, min: 10, max: 20},
+            {MinValidator, min: 1}
+          ]
         end
 
       assert %Left{left: errors} = result_fail
@@ -412,7 +398,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "10" do
           bind ParseInt
-          filter_or_else(&(&1 < 50), fn -> "too large" end)
+          filter_or_else &(&1 < 50), fn -> "too large" end
         end
 
       assert result == %Right{right: 10}
@@ -422,7 +408,7 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "100" do
           bind ParseInt
-          filter_or_else(&(&1 < 50), fn -> "too large" end)
+          filter_or_else &(&1 < 50), fn -> "too large" end
         end
 
       assert result == %Left{left: "too large"}
@@ -433,7 +419,7 @@ defmodule Funx.Monad.Either.DslTest do
         either "-5" do
           bind ParseInt
           bind PositiveNumber
-          or_else(fn -> right(42) end)
+          or_else fn -> right(42) end
         end
 
       assert result == %Right{right: 42}
@@ -444,7 +430,7 @@ defmodule Funx.Monad.Either.DslTest do
         either "10" do
           bind ParseInt
           bind PositiveNumber
-          or_else(fn -> right(42) end)
+          or_else fn -> right(42) end
         end
 
       assert result == %Right{right: 10}
@@ -533,7 +519,6 @@ defmodule Funx.Monad.Either.DslTest do
     end
 
     test "as: :tuple - success and failure cases" do
-      # Success case
       success =
         either "42", as: :tuple do
           bind ParseInt
@@ -542,7 +527,6 @@ defmodule Funx.Monad.Either.DslTest do
 
       assert success == {:ok, 42}
 
-      # Failure case
       failure =
         either "-5", as: :tuple do
           bind ParseInt
@@ -552,7 +536,6 @@ defmodule Funx.Monad.Either.DslTest do
       assert {:error, msg} = failure
       assert msg =~ "must be positive"
 
-      # With map operations
       with_map =
         either "10", as: :tuple do
           bind ParseInt
@@ -562,7 +545,6 @@ defmodule Funx.Monad.Either.DslTest do
 
       assert with_map == {:ok, 20}
 
-      # With tuple-returning operations
       tuple_ops =
         either "10", as: :tuple do
           bind TupleParseInt
@@ -573,7 +555,6 @@ defmodule Funx.Monad.Either.DslTest do
     end
 
     test "as: :raise - unwraps value on success and raises on failure" do
-      # Success case
       success =
         either "42", as: :raise do
           bind ParseInt
@@ -582,7 +563,6 @@ defmodule Funx.Monad.Either.DslTest do
 
       assert success == 42
 
-      # With map operations
       with_map =
         either "10", as: :raise do
           bind ParseInt
@@ -592,7 +572,6 @@ defmodule Funx.Monad.Either.DslTest do
 
       assert with_map == 20
 
-      # With tuple-returning operations
       tuple_ops =
         either "10", as: :raise do
           bind TupleParseInt
@@ -601,7 +580,6 @@ defmodule Funx.Monad.Either.DslTest do
 
       assert tuple_ops == 10
 
-      # Raises on failure
       assert_raise RuntimeError, ~r/must be positive/, fn ->
         either "-5", as: :raise do
           bind ParseInt
@@ -621,11 +599,13 @@ defmodule Funx.Monad.Either.DslTest do
         either "10" do
           bind ParseInt
           map &(&1 * 2)
+
           bind fn x ->
             if x > 15, do: right(x), else: left("too small")
           end
-          validate([PositiveNumber])
-          filter_or_else(&(&1 < 50), fn -> "too large" end)
+
+          validate [PositiveNumber]
+          filter_or_else &(&1 < 50), fn -> "too large" end
           map Double
         end
 
@@ -633,7 +613,6 @@ defmodule Funx.Monad.Either.DslTest do
     end
 
     test "real-world file reading example" do
-      # Create temp file with JSON
       path = "/tmp/test_dsl_#{:rand.uniform(10000)}.json"
       File.write!(path, ~s({"value": 42}))
 
@@ -736,9 +715,6 @@ defmodule Funx.Monad.Either.DslTest do
     end
 
     test "explicit keywords required - bare module would fail" do
-      # This verifies bind/map keywords are required
-      # Invalid: bare `ParseInt` without keyword would cause compile error
-      # Valid: using explicit keyword
       result =
         either "42" do
           bind ParseInt
@@ -750,96 +726,97 @@ defmodule Funx.Monad.Either.DslTest do
 
   describe "auto-pipe lifting for Module.function() forms" do
     test "bind lifts the pipeline value into the first argument of a module function" do
-    result =
-      either 10 do
-        bind PipeTarget.add(5)        # becomes fn x -> PipeTarget.add(x, 5) end
-      end
-
-    assert result == right(15)
-  end
-
-  test "map lifts the pipeline value into the first argument" do
-    result =
-      either 3 do
-        map PipeTarget.mul(4)         # becomes fn x -> PipeTarget.mul(x, 4) end
-      end
-
-    assert result == right(12)
-  end
-
-  test "bind with lifted call normalizes tuple return" do
-    result =
-      either -5 do
-        bind PipeTarget.check_positive()   # becomes fn x -> PipeTarget.check_positive(x) end
-      end
-
-    assert result == left("not positive")
-  end
-
-  test "map with lifted call wraps pure value in Right" do
-    result =
-      either 2 do
-        map PipeTarget.mul(10)
-      end
-
-    assert result == right(20)
-  end
-
-  test "mixed lifted bind + lifted map works correctly" do
-    result =
-      either 2 do
-        bind PipeTarget.add(3)     # 2 + 3 = 5
-        map PipeTarget.mul(4)      # 5 * 4 = 20
-      end
-
-    assert result == right(20)
-  end
-
-  test "lifted functions respect error propagation" do
-    result =
-      either -2 do
-        bind PipeTarget.check_positive()   # x < 0 → {:error, ..} → Left
-        map PipeTarget.mul(5)              # should not run
-      end
-
-    assert result == left("not positive")
-  end
-
-  test "auto-pipe does not break existing function-capture behavior" do
-    result =
-      either 5 do
-        bind &{:ok, &1 * 2}
-        map  &(&1 + 3)
-      end
-
-    assert result == right(13)
-  end
-
-  test "auto-pipe does not trigger for bare modules" do
-    quoted =
-      quote do
-        require Dsl
-        Dsl.either 5 do
-          bind PipeTarget
+      result =
+        either 10 do
+          bind PipeTarget.add(5)
         end
-      end
 
-    assert_raise CompileError, fn ->
-      Code.eval_quoted(quoted)
+      assert result == right(15)
+    end
+
+    test "map lifts the pipeline value into the first argument" do
+      result =
+        either 3 do
+          map PipeTarget.mul(4)
+        end
+
+      assert result == right(12)
+    end
+
+    test "bind with lifted call normalizes tuple return" do
+      result =
+        either -5 do
+          bind PipeTarget.check_positive()
+        end
+
+      assert result == left("not positive")
+    end
+
+    test "map with lifted call wraps pure value in Right" do
+      result =
+        either 2 do
+          map PipeTarget.mul(10)
+        end
+
+      assert result == right(20)
+    end
+
+    test "mixed lifted bind + lifted map works correctly" do
+      result =
+        either 2 do
+          bind PipeTarget.add(3)
+          map PipeTarget.mul(4)
+        end
+
+      assert result == right(20)
+    end
+
+    test "lifted functions respect error propagation" do
+      result =
+        either -2 do
+          bind PipeTarget.check_positive()
+          map PipeTarget.mul(5)
+        end
+
+      assert result == left("not positive")
+    end
+
+    test "auto-pipe does not break existing function-capture behavior" do
+      result =
+        either 5 do
+          bind &{:ok, &1 * 2}
+          map &(&1 + 3)
+        end
+
+      assert result == right(13)
+    end
+
+    test "auto-pipe does not trigger for bare modules" do
+      quoted =
+        quote do
+          require Dsl
+
+          Dsl.either 5 do
+            bind PipeTarget
+          end
+        end
+
+      assert_raise CompileError, fn ->
+        Code.eval_quoted(quoted)
+      end
+    end
+
+    test "auto-pipe works with multi-step argument forms" do
+      result =
+        either 1 do
+          bind PipeTarget.add(2)
+          bind PipeTarget.add(4)
+          map PipeTarget.mul(3)
+        end
+
+      assert result == right(21)
     end
   end
-
-  test "auto-pipe works with multi-step argument forms" do
-    result =
-      either 1 do
-        bind PipeTarget.add(2)   # -> 3
-        bind PipeTarget.add(4)   # -> 7
-        map  PipeTarget.mul(3)   # -> 21
-      end
-
-    assert result == right(21)
-  end
-end
 
   # ============================================================================
   # Module-Specific Options (opts parameter)
@@ -979,7 +956,6 @@ end
 
   describe "module-specific options with run" do
     test "passes options to module run/3 function" do
-      # run passes Either directly, so we need to handle it differently
       result =
         either "42" do
           bind {ParseIntWithBase, base: 10}
@@ -989,8 +965,6 @@ end
     end
 
     test "run with options - demonstrates escape hatch" do
-      # The `run` keyword gives direct access to Either value
-      # This test shows it passes opts correctly
       result =
         either "FF" do
           bind {ParseIntWithBase, base: 16}
@@ -1022,11 +996,10 @@ end
     end
 
     test "options do not affect global environment" do
-      # This test ensures module-specific opts don't leak
       result =
         either "10" do
-          bind {ParseIntWithBase, base: 16}  # This should only affect ParseIntWithBase
-          bind {MinValidator, min: 5}         # This should not see base: 16
+          bind {ParseIntWithBase, base: 16}
+          bind {MinValidator, min: 5}
         end
 
       assert result == %Right{right: 16}
@@ -1056,7 +1029,7 @@ end
     test "allows filter_or_else/3" do
       result =
         either 5 do
-          filter_or_else(&(&1 > 3), fn -> "too small" end)
+          filter_or_else &(&1 > 3), fn -> "too small" end
         end
 
       assert result == %Right{right: 5}
@@ -1065,7 +1038,7 @@ end
     test "allows or_else/2" do
       result =
         either left("error") do
-          or_else(fn -> right(42) end)
+          or_else fn -> right(42) end
         end
 
       assert result == %Right{right: 42}
@@ -1074,7 +1047,7 @@ end
     test "allows map_left/2" do
       result =
         either left("error") do
-          map_left(fn e -> "wrapped: " <> e end)
+          map_left fn e -> "wrapped: " <> e end
         end
 
       assert result == %Left{left: "wrapped: error"}
@@ -1083,7 +1056,7 @@ end
     test "allows get_or_else/2" do
       result =
         either left("error") do
-          get_or_else(0)
+          get_or_else 0
         end
 
       assert result == 0
@@ -1102,10 +1075,9 @@ end
       result =
         either 4 do
           map(&(&1 + 1))
-          validate([PositiveNumber])
+          validate [PositiveNumber]
         end
 
-      # validate returns Either with original value if all pass
       assert result == %Right{right: 5}
     end
   end
@@ -1203,7 +1175,6 @@ end
     end
 
     test "raises when module doesn't implement run/3" do
-      # Define a module without run/3 in the test environment
       defmodule TestModuleWithoutRun do
         def some_function(x), do: x
       end
@@ -1224,5 +1195,4 @@ end
       end
     end
   end
-
 end
