@@ -2,6 +2,7 @@ defmodule Funx.Monad.Either.DslTest do
   use Funx.TestCase, async: true
   use Funx.Monad.Either
 
+  alias Funx.Monad.Either
   alias Funx.Monad.Either.Dsl
 
   alias Funx.Monad.Either.Dsl.Examples.{
@@ -1516,7 +1517,7 @@ defmodule Funx.Monad.Either.DslTest do
               import Funx.Monad.Either.Dsl
 
               either "test" do
-                bind fn x -> Funx.Monad.Either.right(x) end
+                bind fn x -> Either.right(x) end
               end
             end,
             [],
@@ -1710,7 +1711,7 @@ defmodule Funx.Monad.Either.DslTest do
               import Funx.Monad.Either.Dsl
 
               either "test" do
-                map fn x -> Funx.Monad.Either.right(x) end
+                map fn x -> Either.right(x) end
               end
             end,
             [],
@@ -1719,7 +1720,7 @@ defmodule Funx.Monad.Either.DslTest do
         end)
 
       assert warning =~ "Potential incorrect usage of map operation"
-      assert warning =~ "Funx.Monad.Either.right"
+      assert warning =~ "Either.right"
     end
 
     test "warns when map returns :ok tuple" do

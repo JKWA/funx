@@ -26,10 +26,26 @@ defmodule Funx.Monad.Either.Dsl do
   # Helper: Auto-pipe lifting of Module.fun(args...) or fun(args...)
   # ============================================================================
 
-  # Detect a call like Module.fun(args...) and rewrite it into:
-  #   fn x -> Module.fun(x, args...) end
-  # Note: This matches patterns like String.pad_leading(3, "0") but NOT var.(args)
-  # The key is that Module.function has [module, function_name] while var.(args) has [{var, [], Elixir}]
+  # Determines if a function call should be lifted to partial application.
+  # Returns true if the function needs an extra argument prepended, false otherwise.
+  defp should_lift_function?(caller_module, fun_atom, current_arity, lifted_arity) do
+    current_arity_defined = Module.defines?(caller_module, {fun_atom, current_arity})
+    lifted_arity_defined = Module.defines?(caller_module, {fun_atom, lifted_arity})
+
+    cond do
+      # Function returns a function - don't lift
+      current_arity_defined and not lifted_arity_defined -> false
+      # Function needs partial application - lift
+      lifted_arity_defined -> true
+      # External function - lift
+      not current_arity_defined and not lifted_arity_defined -> true
+      # Default - don't lift
+      true -> false
+    end
+  end
+
+  # Lifts Module.fun(args) to fn x -> Module.fun(x, args) end
+  # Matches qualified calls like String.pad_leading(3, "0"), not variable calls
   defp lift_call_to_unary({{:., _, [mod_ast, fun_atom]}, _, args_ast}, _caller_env)
        when is_atom(fun_atom) do
     quote do
@@ -39,69 +55,42 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
-  # Detect a bare function call with arguments like check_no_other_assignments(assignment)
-  # Strategy: Check if the function is defined with the CURRENT arity (length(args)).
-  # - If fun/current_arity is defined but fun/lifted_arity isn't → don't lift (returns a function)
-  # - If fun/lifted_arity is defined → lift it (needs partial application)
-  # - Otherwise → lift it (assume it needs partial application for external functions)
+  # Lifts bare function calls with arguments: fun(args) to fn x -> fun(x, args) end
+  # Uses arity checking to avoid lifting functions that return functions
   defp lift_call_to_unary({fun_atom, _meta, args_ast}, caller_env)
        when is_atom(fun_atom) and fun_atom not in [:__aliases__, :fn, :&] and
               is_list(args_ast) and args_ast != [] do
     current_arity = length(args_ast)
     lifted_arity = current_arity + 1
-
     caller_module = caller_env.module
 
-    # Check if the function is defined in the caller's module (works during compilation)
-    current_arity_defined = Module.defines?(caller_module, {fun_atom, current_arity})
-    lifted_arity_defined = Module.defines?(caller_module, {fun_atom, lifted_arity})
-
-    cond do
-      # If current arity is defined but lifted isn't, don't lift (it likely returns a function)
-      current_arity_defined and not lifted_arity_defined ->
-        nil
-
-      # If lifted arity is defined, lift it (needs partial application)
-      lifted_arity_defined ->
-        quote do
-          fn x ->
-            unquote(fun_atom)(x, unquote_splicing(args_ast))
-          end
+    if should_lift_function?(caller_module, fun_atom, current_arity, lifted_arity) do
+      quote do
+        fn x ->
+          unquote(fun_atom)(x, unquote_splicing(args_ast))
         end
-
-      # Neither is defined - assume it's an external function and lift it
-      not current_arity_defined and not lifted_arity_defined ->
-        quote do
-          fn x ->
-            unquote(fun_atom)(x, unquote_splicing(args_ast))
-          end
-        end
-
-      # Default: don't lift
-      true ->
-        nil
+      end
+    else
+      nil
     end
   end
 
-  # Detect a bare function call like to_string() and rewrite it into:
-  #   &to_string/1
-  # Note: We need to exclude special forms: :__aliases__ (module names), :fn (anonymous functions), :& (captures)
+  # Lifts zero-arity function calls to function captures: fun() to &fun/1
   defp lift_call_to_unary({fun_atom, meta, args_ast}, _caller_env)
        when is_atom(fun_atom) and fun_atom not in [:__aliases__, :fn, :&] and
               is_list(args_ast) and args_ast == [] do
-    # Zero-arity call - lift to &fun_atom/1
     fun_tuple = {fun_atom, meta, Elixir}
     {:&, meta, [{:/, meta, [fun_tuple, 1]}]}
   end
 
-  # Not a call expression we can lift → return nil
+  # Non-liftable expressions return nil
   defp lift_call_to_unary(_other, _caller_env), do: nil
 
   # ============================================================================
   # Helper: validate bind return types at compile time
   # ============================================================================
 
-  # Validate anonymous functions used with bind to catch obvious type errors early
+  # Validates anonymous functions used with bind to catch type errors early
   defp validate_bind_return_type({:fn, _meta, clauses}, caller_env) do
     Enum.each(clauses, fn {:->, _arrow_meta, [_args, body]} ->
       check_return_value(body, caller_env)
@@ -110,10 +99,10 @@ defmodule Funx.Monad.Either.Dsl do
     :ok
   end
 
-  # Non-function expressions don't need validation (modules, named functions, etc.)
+  # Named functions and modules are validated at runtime
   defp validate_bind_return_type(_other, _caller_env), do: :ok
 
-  # Check if the return value is safe, unsafe, or unknown
+  # Classifies return values as safe, unsafe, or unknown
   defp check_return_value(ast, caller_env) do
     case classify_return_type(ast) do
       :safe -> :ok
@@ -122,13 +111,12 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
-  # Extract the actual return expression from block expressions
+  # Extracts the return value from block expressions
   defp classify_return_type({:__block__, _, exprs}) when is_list(exprs) do
-    # In a block, only the last expression is returned
     classify_return_type(List.last(exprs))
   end
 
-  # Safe: Either constructors (both local and qualified calls)
+  # Safe: Either constructors
   defp classify_return_type({:right, _, _}), do: :safe
   defp classify_return_type({:left, _, _}), do: :safe
 
@@ -138,35 +126,27 @@ defmodule Funx.Monad.Either.Dsl do
   defp classify_return_type({{:., _, [{:__aliases__, _, [:Either]}, :left]}, _, _}),
     do: :safe
 
-  # Safe: Result tuples {:ok, value} and {:error, reason}
+  # Safe: Result tuples
   defp classify_return_type({:ok, _}), do: :safe
   defp classify_return_type({:error, _}), do: :safe
-  # Handle explicit tuple syntax: {:{}, meta, [:ok, value]}
   defp classify_return_type({:{}, _, [:ok | _]}), do: :safe
   defp classify_return_type({:{}, _, [:error | _]}), do: :safe
 
-  # Unsafe: Plain string literals
+  # Unsafe: Plain literals
   defp classify_return_type(value) when is_binary(value), do: :unsafe
-
-  # Unsafe: Plain number literals
   defp classify_return_type(value) when is_number(value), do: :unsafe
 
-  # Unsafe: Plain atom literals (except nil, true, false which might be intentional)
   defp classify_return_type(value) when is_atom(value) and value not in [nil, true, false],
     do: :unsafe
 
-  # Unsafe: Plain map literals
   defp classify_return_type({:%{}, _, _}), do: :unsafe
-
-  # Unsafe: Plain list literals
   defp classify_return_type([_ | _]), do: :unsafe
   defp classify_return_type([]), do: :unsafe
 
-  # Unknown: Everything else (function calls, variables, control flow, etc.)
-  # We let runtime validation handle these cases
+  # Unknown: Function calls, variables, control flow (validated at runtime)
   defp classify_return_type(_), do: :unknown
 
-  # Emit a compile-time warning for potentially unsafe bind operations
+  # Emits compile-time warning for unsafe bind operations
   defp emit_compile_warning(ast, caller_env) do
     IO.warn(
       """
@@ -188,7 +168,7 @@ defmodule Funx.Monad.Either.Dsl do
   # Helper: validate map return types at compile time
   # ============================================================================
 
-  # Validate anonymous functions used with map to catch incorrect usage
+  # Validates anonymous functions used with map to catch incorrect usage
   defp validate_map_return_type({:fn, _meta, clauses}, caller_env) do
     Enum.each(clauses, fn {:->, _arrow_meta, [_args, body]} ->
       check_map_return_value(body, caller_env)
@@ -197,24 +177,23 @@ defmodule Funx.Monad.Either.Dsl do
     :ok
   end
 
-  # Non-function expressions don't need validation (modules, named functions, etc.)
+  # Named functions and modules are validated at runtime
   defp validate_map_return_type(_other, _caller_env), do: :ok
 
-  # Check if the return value is problematic for map operations
+  # Classifies return values as problematic or ok for map operations
   defp check_map_return_value(ast, caller_env) do
     case classify_map_return_type(ast) do
       :problematic -> emit_map_warning(ast, caller_env)
       :ok -> :ok
-      :unknown -> :ok
     end
   end
 
-  # Extract the actual return expression from block expressions
+  # Extracts the return value from block expressions
   defp classify_map_return_type({:__block__, _, exprs}) when is_list(exprs) do
     classify_map_return_type(List.last(exprs))
   end
 
-  # Problematic: Either constructors (will cause double-wrapping)
+  # Problematic: Either constructors (causes double-wrapping)
   defp classify_map_return_type({:right, _, _}), do: :problematic
   defp classify_map_return_type({:left, _, _}), do: :problematic
 
@@ -234,16 +213,16 @@ defmodule Funx.Monad.Either.Dsl do
        ),
        do: :problematic
 
-  # Problematic: Result tuples (should use bind instead)
+  # Problematic: Result tuples (use bind instead)
   defp classify_map_return_type({:ok, _}), do: :problematic
   defp classify_map_return_type({:error, _}), do: :problematic
   defp classify_map_return_type({:{}, _, [:ok | _]}), do: :problematic
   defp classify_map_return_type({:{}, _, [:error | _]}), do: :problematic
 
-  # OK: Everything else (plain values, function calls, variables, etc.)
+  # OK: Plain values, function calls, variables
   defp classify_map_return_type(_), do: :ok
 
-  # Emit a compile-time warning for incorrect map usage
+  # Emits compile-time warning for incorrect map usage
   defp emit_map_warning(ast, caller_env) do
     IO.warn(
       """
@@ -372,37 +351,30 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # ============================================================================
+  # Helper: parse operation syntax
+  # ============================================================================
+
+  # Parses operation arguments: {Module, opts} or Module -> {Module, opts}
+  defp parse_operation_args([{_, _} = tuple_op]), do: tuple_op
+  defp parse_operation_args([operation]), do: {operation, []}
+
+  # ============================================================================
   # First operation
   # ============================================================================
 
   defp compile_first_operation(input, operation_ast, user_env, caller_env) do
     case operation_ast do
-      # bind with tuple syntax: bind {Module, opts}
-      {:bind, _, [{_, _} = tuple_op]} ->
-        {operation, opts} = tuple_op
+      {:bind, _, args} ->
+        {operation, opts} = parse_operation_args(args)
         compile_first_bind_operation(input, operation, opts, user_env, caller_env)
 
-      # bind with bare module or function
-      {:bind, _, [operation]} ->
-        compile_first_bind_operation(input, operation, [], user_env, caller_env)
-
-      # map with tuple syntax: map {Module, opts}
-      {:map, _, [{_, _} = tuple_op]} ->
-        {operation, opts} = tuple_op
+      {:map, _, args} ->
+        {operation, opts} = parse_operation_args(args)
         compile_first_map_operation(input, operation, opts, user_env, caller_env)
 
-      # map with bare module or function
-      {:map, _, [operation]} ->
-        compile_first_map_operation(input, operation, [], user_env, caller_env)
-
-      # run with tuple syntax: run {Module, opts}
-      {:run, _, [{_, _} = tuple_op]} ->
-        {operation, opts} = tuple_op
+      {:run, _, args} ->
+        {operation, opts} = parse_operation_args(args)
         compile_first_run_operation(input, operation, opts, user_env, caller_env)
-
-      # run with bare module or function
-      {:run, _, [operation]} ->
-        compile_first_run_operation(input, operation, [], user_env, caller_env)
 
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         transformed_args = Enum.map(args, &transform_modules_to_functions(&1, user_env))
@@ -434,43 +406,7 @@ defmodule Funx.Monad.Either.Dsl do
   # ============================================================================
 
   defp compile_first_bind_operation(input, operation, opts, user_env, caller_env) do
-    # Validate anonymous functions at compile time before transformation
-    validate_bind_return_type(operation, caller_env)
-
-    operation =
-      case lift_call_to_unary(operation, caller_env) do
-        nil -> operation
-        lifted -> lifted
-      end
-
-    case operation do
-      {:__aliases__, _, _} = module_alias ->
-        ensure_step_module_has_run!(module_alias, caller_env)
-
-        quote do
-          Funx.Monad.bind(unquote(input), fn value ->
-            Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module_alias).run(value, unquote(opts), unquote(user_env))
-            )
-          end)
-        end
-
-      module when is_atom(module) ->
-        quote do
-          Funx.Monad.bind(unquote(input), fn value ->
-            Funx.Monad.Either.Dsl.normalize_run_result(
-              unquote(module).run(value, unquote(opts), unquote(user_env))
-            )
-          end)
-        end
-
-      func ->
-        quote do
-          Funx.Monad.bind(unquote(input), fn value ->
-            Funx.Monad.Either.Dsl.normalize_run_result(unquote(func).(value))
-          end)
-        end
-    end
+    compile_bind_operation(input, operation, opts, user_env, caller_env)
   end
 
   # ============================================================================
@@ -478,60 +414,15 @@ defmodule Funx.Monad.Either.Dsl do
   # ============================================================================
 
   defp compile_first_map_operation(input, operation, opts, user_env, caller_env) do
-    # Validate anonymous functions at compile time before transformation
-    validate_map_return_type(operation, caller_env)
-
-    operation =
-      case lift_call_to_unary(operation, caller_env) do
-        nil -> operation
-        lifted -> lifted
-      end
-
-    case operation do
-      {:__aliases__, _, _} = module_alias ->
-        ensure_step_module_has_run!(module_alias, caller_env)
-
-        quote do
-          Funx.Monad.map(unquote(input), fn value ->
-            unquote(module_alias).run(value, unquote(opts), unquote(user_env))
-          end)
-        end
-
-      module when is_atom(module) ->
-        quote do
-          Funx.Monad.map(unquote(input), fn value ->
-            unquote(module).run(value, unquote(opts), unquote(user_env))
-          end)
-        end
-
-      func ->
-        quote do
-          Funx.Monad.map(unquote(input), unquote(func))
-        end
-    end
+    compile_map_operation(input, operation, opts, user_env, caller_env)
   end
 
   # ============================================================================
   # First run
   # ============================================================================
 
-  defp compile_first_run_operation(input, operation, opts, user_env, _caller_env) do
-    case operation do
-      {:__aliases__, _, _} = module_alias ->
-        quote do
-          unquote(module_alias).run(unquote(input), unquote(opts), unquote(user_env))
-        end
-
-      module when is_atom(module) ->
-        quote do
-          unquote(module).run(unquote(input), unquote(opts), unquote(user_env))
-        end
-
-      func ->
-        quote do
-          unquote(func).(unquote(input))
-        end
-    end
+  defp compile_first_run_operation(input, operation, opts, user_env, caller_env) do
+    compile_run_operation(input, operation, opts, user_env, caller_env)
   end
 
   # ============================================================================
@@ -540,32 +431,17 @@ defmodule Funx.Monad.Either.Dsl do
 
   defp compile_operation(previous, operation_ast, user_env, caller_env) do
     case operation_ast do
-      # bind with tuple syntax: bind {Module, opts}
-      {:bind, _, [{_, _} = tuple_op]} ->
-        {operation, opts} = tuple_op
+      {:bind, _, args} ->
+        {operation, opts} = parse_operation_args(args)
         compile_bind_operation(previous, operation, opts, user_env, caller_env)
 
-      # bind with bare module or function
-      {:bind, _, [operation]} ->
-        compile_bind_operation(previous, operation, [], user_env, caller_env)
-
-      # map with tuple syntax: map {Module, opts}
-      {:map, _, [{_, _} = tuple_op]} ->
-        {operation, opts} = tuple_op
+      {:map, _, args} ->
+        {operation, opts} = parse_operation_args(args)
         compile_map_operation(previous, operation, opts, user_env, caller_env)
 
-      # map with bare module or function
-      {:map, _, [operation]} ->
-        compile_map_operation(previous, operation, [], user_env, caller_env)
-
-      # run with tuple syntax: run {Module, opts}
-      {:run, _, [{_, _} = tuple_op]} ->
-        {operation, opts} = tuple_op
+      {:run, _, args} ->
+        {operation, opts} = parse_operation_args(args)
         compile_run_operation(previous, operation, opts, user_env, caller_env)
-
-      # run with bare module or function
-      {:run, _, [operation]} ->
-        compile_run_operation(previous, operation, [], user_env, caller_env)
 
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         compile_either_function(previous, func_name, meta, args, user_env, caller_env)
@@ -585,11 +461,10 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # ============================================================================
-  # bind (subsequent)
+  # bind (unified)
   # ============================================================================
 
-  defp compile_bind_operation(previous, operation, opts, user_env, caller_env) do
-    # Validate anonymous functions at compile time before transformation
+  defp compile_bind_operation(input_or_previous, operation, opts, user_env, caller_env) do
     validate_bind_return_type(operation, caller_env)
 
     operation =
@@ -603,7 +478,7 @@ defmodule Funx.Monad.Either.Dsl do
         ensure_step_module_has_run!(module_alias, caller_env)
 
         quote do
-          Funx.Monad.bind(unquote(previous), fn value ->
+          Funx.Monad.bind(unquote(input_or_previous), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
               unquote(module_alias).run(value, unquote(opts), unquote(user_env))
             )
@@ -612,7 +487,7 @@ defmodule Funx.Monad.Either.Dsl do
 
       module when is_atom(module) ->
         quote do
-          Funx.Monad.bind(unquote(previous), fn value ->
+          Funx.Monad.bind(unquote(input_or_previous), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
               unquote(module).run(value, unquote(opts), unquote(user_env))
             )
@@ -621,7 +496,7 @@ defmodule Funx.Monad.Either.Dsl do
 
       func ->
         quote do
-          Funx.Monad.bind(unquote(previous), fn value ->
+          Funx.Monad.bind(unquote(input_or_previous), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(unquote(func).(value))
           end)
         end
@@ -629,11 +504,10 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # ============================================================================
-  # map (subsequent)
+  # map (unified)
   # ============================================================================
 
-  defp compile_map_operation(previous, operation, opts, user_env, caller_env) do
-    # Validate anonymous functions at compile time before transformation
+  defp compile_map_operation(input_or_previous, operation, opts, user_env, caller_env) do
     validate_map_return_type(operation, caller_env)
 
     operation =
@@ -647,44 +521,44 @@ defmodule Funx.Monad.Either.Dsl do
         ensure_step_module_has_run!(module_alias, caller_env)
 
         quote do
-          Funx.Monad.map(unquote(previous), fn value ->
+          Funx.Monad.map(unquote(input_or_previous), fn value ->
             unquote(module_alias).run(value, unquote(opts), unquote(user_env))
           end)
         end
 
       module when is_atom(module) ->
         quote do
-          Funx.Monad.map(unquote(previous), fn value ->
+          Funx.Monad.map(unquote(input_or_previous), fn value ->
             unquote(module).run(value, unquote(opts), unquote(user_env))
           end)
         end
 
       func ->
         quote do
-          Funx.Monad.map(unquote(previous), unquote(func))
+          Funx.Monad.map(unquote(input_or_previous), unquote(func))
         end
     end
   end
 
   # ============================================================================
-  # run (subsequent)
+  # run (unified)
   # ============================================================================
 
-  defp compile_run_operation(previous, operation, opts, user_env, _caller_env) do
+  defp compile_run_operation(input_or_previous, operation, opts, user_env, _caller_env) do
     case operation do
       {:__aliases__, _, _} = module_alias ->
         quote do
-          unquote(module_alias).run(unquote(previous), unquote(opts), unquote(user_env))
+          unquote(module_alias).run(unquote(input_or_previous), unquote(opts), unquote(user_env))
         end
 
       module when is_atom(module) ->
         quote do
-          unquote(module).run(unquote(previous), unquote(opts), unquote(user_env))
+          unquote(module).run(unquote(input_or_previous), unquote(opts), unquote(user_env))
         end
 
       func ->
         quote do
-          unquote(func).(unquote(previous))
+          unquote(func).(unquote(input_or_previous))
         end
     end
   end
@@ -752,7 +626,7 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
-  # Handle {Module, opts} tuple syntax for validators with options
+  # Transforms {Module, opts} tuple syntax to function calls
   defp transform_list_item(
          {{:__aliases__, _, _} = module_alias, opts_ast},
          user_env
@@ -763,14 +637,14 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
-  # Handle bare module syntax (uses empty opts)
+  # Transforms bare module syntax to function calls
   defp transform_list_item({:__aliases__, _, _} = module_alias, user_env) do
     quote do
       fn value -> unquote(module_alias).run(value, [], unquote(user_env)) end
     end
   end
 
-  # Pass through for functions and other types
+  # Pass-through for functions and other types
   defp transform_list_item(other, _user_env), do: other
 
   # ============================================================================
@@ -778,16 +652,14 @@ defmodule Funx.Monad.Either.Dsl do
   # ============================================================================
 
   @doc false
-  @spec lift_input(any() | Either.t() | {:ok, any()} | {:error, any()}) :: Either.t()
+  @spec lift_input(any() | Either.t(any(), any()) | {:ok, any()} | {:error, any()}) ::
+          Either.t(any(), any())
   def lift_input(input) do
     case input do
-      # Already an Either - pass through
       %Either.Right{} = either -> either
       %Either.Left{} = either -> either
-      # Result tuple - convert to Either
       {:ok, value} -> Either.right(value)
       {:error, reason} -> Either.left(reason)
-      # Plain value - wrap in Right
       value -> Either.pure(value)
     end
   end
@@ -797,7 +669,7 @@ defmodule Funx.Monad.Either.Dsl do
   # ============================================================================
 
   @doc false
-  @spec normalize_run_result(tuple() | Either.t()) :: Either.t()
+  @spec normalize_run_result(tuple() | Either.t(any(), any())) :: Either.t(any(), any())
   def normalize_run_result(result) do
     case result do
       {:ok, value} ->
