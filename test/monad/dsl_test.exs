@@ -910,6 +910,133 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  describe "auto-pipe lifting in validate lists" do
+    # Helper module with zero-arity validator function
+    defmodule ValidatorHelpers do
+      import Funx.Monad.Either
+
+      def positive?(x) do
+        if x > 0, do: right(x), else: left("must be positive: #{x}")
+      end
+
+      def even?(x) do
+        if rem(x, 2) == 0, do: right(x), else: left("must be even: #{x}")
+      end
+
+      def less_than(x, max) do
+        if x < max, do: right(x), else: left("must be less than #{max}: #{x}")
+      end
+    end
+
+    test "validate with zero-arity function calls gets auto-lifted" do
+      result =
+        either 4 do
+          validate [ValidatorHelpers.positive?(), ValidatorHelpers.even?()]
+        end
+
+      assert result == %Right{right: 4}
+    end
+
+    test "validate with zero-arity function calls accumulates errors" do
+      result =
+        either -3 do
+          validate [ValidatorHelpers.positive?(), ValidatorHelpers.even?()]
+        end
+
+      assert %Left{left: errors} = result
+      assert is_list(errors)
+      assert length(errors) == 2
+      assert Enum.any?(errors, &String.contains?(&1, "must be positive"))
+      assert Enum.any?(errors, &String.contains?(&1, "must be even"))
+    end
+
+    test "validate with function calls with args gets auto-lifted" do
+      result =
+        either 5 do
+          validate [ValidatorHelpers.positive?(), ValidatorHelpers.less_than(10)]
+        end
+
+      assert result == %Right{right: 5}
+    end
+
+    test "validate with function calls with args fails when condition not met" do
+      result =
+        either 15 do
+          validate [ValidatorHelpers.positive?(), ValidatorHelpers.less_than(10)]
+        end
+
+      assert %Left{left: errors} = result
+      assert is_list(errors)
+      assert length(errors) == 1
+      assert hd(errors) =~ "must be less than 10"
+    end
+
+    test "validate mixes modules and auto-lifted functions" do
+      result =
+        either 5 do
+          validate [ValidatorHelpers.positive?(), PositiveNumber, ValidatorHelpers.even?()]
+        end
+
+      assert %Left{left: errors} = result
+      assert is_list(errors)
+      # even? should fail
+      assert Enum.any?(errors, &String.contains?(&1, "must be even"))
+    end
+
+    test "validate with modules, tuples, and auto-lifted functions" do
+      result =
+        either 50 do
+          validate [
+            ValidatorHelpers.positive?(),
+            {RangeValidator, min: 0, max: 100},
+            ValidatorHelpers.even?()
+          ]
+        end
+
+      assert result == %Right{right: 50}
+    end
+
+    test "validate auto-lifting works with single validator" do
+      result =
+        either 10 do
+          validate ValidatorHelpers.positive?()
+        end
+
+      assert result == %Right{right: 10}
+    end
+
+    test "validate auto-lifting fails properly with single validator" do
+      result =
+        either -5 do
+          validate ValidatorHelpers.positive?()
+        end
+
+      assert %Left{left: errors} = result
+      assert is_list(errors)
+      assert hd(errors) =~ "must be positive"
+    end
+
+    test "chained validate with auto-lifted functions" do
+      result =
+        either 4 do
+          validate [ValidatorHelpers.positive?(), ValidatorHelpers.even?()]
+          validate ValidatorHelpers.less_than(10)
+        end
+
+      assert result == %Right{right: 4}
+    end
+
+    test "auto-lifted functions respect arity checking" do
+      # less_than/2 when called with one arg should be lifted to fn x -> less_than(x, 100) end
+      result =
+        either 50 do
+          validate [ValidatorHelpers.positive?(), ValidatorHelpers.less_than(100)]
+        end
+
+      assert result == %Right{right: 50}
+    end
+  end
+
   # ============================================================================
   # Module-Specific Options (opts parameter)
   # ============================================================================

@@ -143,8 +143,6 @@ defmodule Funx.Monad.Either.Dsl do
     do: :safe
 
   # Safe: Result tuples
-  defp classify_return_type({:ok, _}), do: :safe
-  defp classify_return_type({:error, _}), do: :safe
   defp classify_return_type({:{}, _, [:ok | _]}), do: :safe
   defp classify_return_type({:{}, _, [:error | _]}), do: :safe
 
@@ -393,11 +391,7 @@ defmodule Funx.Monad.Either.Dsl do
         compile_first_run_operation(input, operation, opts, user_env, caller_env)
 
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
-        transformed_args = Enum.map(args, &transform_modules_to_functions(&1, user_env))
-
-        quote do
-          unquote({func_name, meta, [input | transformed_args]})
-        end
+        compile_either_function(input, func_name, meta, args, user_env, caller_env)
 
       {:__aliases__, _, _} = module_alias ->
         raise CompileError,
@@ -560,9 +554,11 @@ defmodule Funx.Monad.Either.Dsl do
   # run (unified)
   # ============================================================================
 
-  defp compile_run_operation(input_or_previous, operation, opts, user_env, _caller_env) do
+  defp compile_run_operation(input_or_previous, operation, opts, user_env, caller_env) do
     case operation do
       {:__aliases__, _, _} = module_alias ->
+        ensure_step_module_has_run!(module_alias, caller_env)
+
         quote do
           unquote(module_alias).run(unquote(input_or_previous), unquote(opts), unquote(user_env))
         end
@@ -593,7 +589,7 @@ defmodule Funx.Monad.Either.Dsl do
         end
       end)
 
-    transformed_args = Enum.map(lifted_args, &transform_modules_to_functions(&1, user_env))
+    transformed_args = Enum.map(lifted_args, &transform_modules_to_functions(&1, user_env, caller_env))
 
     cond do
       func_name in @either_functions ->
@@ -632,10 +628,10 @@ defmodule Funx.Monad.Either.Dsl do
   # Transform modules in validator lists
   # ============================================================================
 
-  defp transform_modules_to_functions(arg, user_env) do
+  defp transform_modules_to_functions(arg, user_env, caller_env) do
     case arg do
       items when is_list(items) ->
-        Enum.map(items, &transform_list_item(&1, user_env))
+        Enum.map(items, &transform_list_item(&1, user_env, caller_env))
 
       other ->
         other
@@ -645,7 +641,8 @@ defmodule Funx.Monad.Either.Dsl do
   # Transforms {Module, opts} tuple syntax to function calls
   defp transform_list_item(
          {{:__aliases__, _, _} = module_alias, opts_ast},
-         user_env
+         user_env,
+         _caller_env
        )
        when is_list(opts_ast) do
     quote do
@@ -654,14 +651,19 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # Transforms bare module syntax to function calls
-  defp transform_list_item({:__aliases__, _, _} = module_alias, user_env) do
+  defp transform_list_item({:__aliases__, _, _} = module_alias, user_env, _caller_env) do
     quote do
       fn value -> unquote(module_alias).run(value, [], unquote(user_env)) end
     end
   end
 
-  # Pass-through for functions and other types
-  defp transform_list_item(other, _user_env), do: other
+  # Try to lift function calls before passing through
+  defp transform_list_item(other, _user_env, caller_env) do
+    case lift_call_to_unary(other, caller_env) do
+      nil -> other
+      lifted -> lifted
+    end
+  end
 
   # ============================================================================
   # Lift input into Either context
