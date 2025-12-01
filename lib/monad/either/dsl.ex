@@ -396,7 +396,7 @@ defmodule Funx.Monad.Either.Dsl do
         compile_run_operation(previous, operation, [], user_env, caller_env)
 
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
-        compile_either_function(previous, func_name, meta, args, user_env)
+        compile_either_function(previous, func_name, meta, args, user_env, caller_env)
 
       {:__aliases__, _, _} = module_alias ->
         raise CompileError,
@@ -515,8 +515,17 @@ defmodule Funx.Monad.Either.Dsl do
   # Either.function support
   # ============================================================================
 
-  defp compile_either_function(previous, func_name, _meta, args, user_env) do
-    transformed_args = Enum.map(args, &transform_modules_to_functions(&1, user_env))
+  defp compile_either_function(previous, func_name, _meta, args, user_env, caller_env) do
+    # First lift function calls, then transform modules
+    lifted_args =
+      Enum.map(args, fn arg ->
+        case lift_call_to_unary(arg, caller_env) do
+          nil -> arg
+          lifted -> lifted
+        end
+      end)
+
+    transformed_args = Enum.map(lifted_args, &transform_modules_to_functions(&1, user_env))
 
     cond do
       func_name in @either_functions ->

@@ -39,6 +39,8 @@ defmodule Funx.Monad.Either.DslTest do
 
     def check_positive(x) when x > 0, do: {:ok, x}
     def check_positive(_), do: {:error, "not positive"}
+
+    def format_error(error, context), do: "#{context}: #{error}"
   end
 
   # ============================================================================
@@ -1140,6 +1142,19 @@ defmodule Funx.Monad.Either.DslTest do
         end
 
       assert result == %Left{left: "wrapped: error"}
+    end
+
+    test "map_left with auto-lifting" do
+      # Verify that map_left receives the lifted function
+      # We use an anonymous function variable to avoid compile-time evaluation
+      format_fn = &PipeTarget.format_error(&1, "validation")
+
+      result =
+        either left("failed") do
+          map_left format_fn
+        end
+
+      assert result == %Left{left: "validation: failed"}
     end
 
     test "allows get_or_else/2" do
