@@ -1299,4 +1299,702 @@ defmodule Funx.Monad.Either.DslTest do
       end
     end
   end
+
+  describe "compile-time bind validation" do
+    import ExUnit.CaptureIO
+
+    test "warns when bind returns plain string literal" do
+      warning =
+        capture_io(:stderr, fn ->
+          # Catch the runtime error that occurs after compilation
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either "test" do
+                  bind fn _ -> "plain string" end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ "plain string"
+    end
+
+    test "warns when bind returns plain number literal" do
+      warning =
+        capture_io(:stderr, fn ->
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either "test" do
+                  bind fn _ -> 42 end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ "42"
+    end
+
+    test "warns when bind returns plain atom literal" do
+      warning =
+        capture_io(:stderr, fn ->
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either "test" do
+                  bind fn _ -> :some_atom end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ ":some_atom"
+    end
+
+    test "warns when bind returns plain map literal" do
+      warning =
+        capture_io(:stderr, fn ->
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either "test" do
+                  bind fn _ -> %{key: "value"} end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ "%{key: \"value\"}"
+    end
+
+    test "warns when bind returns plain list literal" do
+      warning =
+        capture_io(:stderr, fn ->
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either "test" do
+                  bind fn _ -> [1, 2, 3] end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ "[1, 2, 3]"
+    end
+
+    test "warns for plain return in multi-clause function" do
+      warning =
+        capture_io(:stderr, fn ->
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either 0 do
+                  bind fn
+                    0 -> "zero"
+                    x -> right(x)
+                  end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ "zero"
+    end
+
+    test "warns for plain return in block expression" do
+      warning =
+        capture_io(:stderr, fn ->
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either "test" do
+                  bind fn x ->
+                    _discarded = x
+                    "return value"
+                  end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ "return value"
+    end
+
+    test "does not warn when bind returns Either constructor (right)" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.compile_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                bind fn x -> right(x) end
+              end
+            end
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn when bind returns Either constructor (left)" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.compile_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                bind fn _ -> left("error") end
+              end
+            end
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn when bind returns qualified Funx.Monad.Either constructor" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                bind fn x -> Funx.Monad.Either.right(x) end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn when bind returns :ok tuple" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.compile_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                bind fn x -> {:ok, x} end
+              end
+            end
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn when bind returns :error tuple" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.compile_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                bind fn _ -> {:error, "reason"} end
+              end
+            end
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn for complex expressions (variables)" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              result = right("test")
+
+              either "input" do
+                bind fn _ -> result end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn for complex expressions (case statement)" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.compile_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                bind fn x ->
+                  case x do
+                    "good" -> right(x)
+                    _ -> left("bad")
+                  end
+                end
+              end
+            end
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn for modules with run/3" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.compile_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                bind ParseInt
+              end
+            end
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn for function references" do
+      warning =
+        capture_io(:stderr, fn ->
+          # Function references can't be analyzed at compile time
+          # This will fail at runtime but shouldn't emit compile-time warnings
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                defmodule TestHelper do
+                  def make_right(x), do: right(x)
+                end
+
+                either "test" do
+                  bind &TestHelper.make_right/1
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      # Should have no compile-time warnings (runtime errors are fine)
+      refute warning =~ "Potential type error in bind operation"
+    end
+  end
+
+  describe "compile-time map validation" do
+    import ExUnit.CaptureIO
+
+    test "warns when map returns Either constructor (right)" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn x -> right(x) end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning =~ "Potential incorrect usage of map operation"
+      assert warning =~ "right(x)"
+    end
+
+    test "warns when map returns Either constructor (left)" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn _ -> left("error") end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning =~ "Potential incorrect usage of map operation"
+      assert warning =~ "left"
+    end
+
+    test "warns when map returns qualified Funx.Monad.Either constructor" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn x -> Funx.Monad.Either.right(x) end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning =~ "Potential incorrect usage of map operation"
+      assert warning =~ "Funx.Monad.Either.right"
+    end
+
+    test "warns when map returns :ok tuple" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn x -> {:ok, x} end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning =~ "Potential incorrect usage of map operation"
+      assert warning =~ "{:ok, x}"
+    end
+
+    test "warns when map returns :error tuple" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn _ -> {:error, "reason"} end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning =~ "Potential incorrect usage of map operation"
+      assert warning =~ "{:error"
+    end
+
+    test "warns for Either return in multi-clause function" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either 0 do
+                map fn
+                  0 -> right("zero")
+                  x -> x
+                end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning =~ "Potential incorrect usage of map operation"
+      assert warning =~ "right"
+    end
+
+    test "warns for Either return in block expression" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn x ->
+                  _discarded = x
+                  right("wrapped")
+                end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning =~ "Potential incorrect usage of map operation"
+      assert warning =~ "right"
+    end
+
+    test "does not warn when map returns plain string" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn x -> "plain: #{x}" end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn when map returns plain number" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either 10 do
+                map fn x -> x * 2 end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn when map returns plain atom" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn _ -> :some_atom end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn when map returns plain map" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn x -> %{value: x} end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn when map returns plain list" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn x -> [x, x] end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn for complex expressions (variables)" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn x -> x end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn for complex expressions (case statement)" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map fn x ->
+                  case x do
+                    "good" -> "GOOD"
+                    _ -> "BAD"
+                  end
+                end
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn for modules with run/3" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map ParseInt
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+
+    test "does not warn for function references" do
+      warning =
+        capture_io(:stderr, fn ->
+          Code.eval_quoted(
+            quote do
+              require Funx.Monad.Either.Dsl
+              import Funx.Monad.Either.Dsl
+
+              either "test" do
+                map &String.upcase/1
+              end
+            end,
+            [],
+            __ENV__
+          )
+        end)
+
+      assert warning == ""
+    end
+  end
 end

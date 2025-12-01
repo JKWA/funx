@@ -98,6 +98,172 @@ defmodule Funx.Monad.Either.Dsl do
   defp lift_call_to_unary(_other, _caller_env), do: nil
 
   # ============================================================================
+  # Helper: validate bind return types at compile time
+  # ============================================================================
+
+  # Validate anonymous functions used with bind to catch obvious type errors early
+  defp validate_bind_return_type({:fn, _meta, clauses}, caller_env) do
+    Enum.each(clauses, fn {:->, _arrow_meta, [_args, body]} ->
+      check_return_value(body, caller_env)
+    end)
+
+    :ok
+  end
+
+  # Non-function expressions don't need validation (modules, named functions, etc.)
+  defp validate_bind_return_type(_other, _caller_env), do: :ok
+
+  # Check if the return value is safe, unsafe, or unknown
+  defp check_return_value(ast, caller_env) do
+    case classify_return_type(ast) do
+      :safe -> :ok
+      :unsafe -> emit_compile_warning(ast, caller_env)
+      :unknown -> :ok
+    end
+  end
+
+  # Extract the actual return expression from block expressions
+  defp classify_return_type({:__block__, _, exprs}) when is_list(exprs) do
+    # In a block, only the last expression is returned
+    classify_return_type(List.last(exprs))
+  end
+
+  # Safe: Either constructors (both local and qualified calls)
+  defp classify_return_type({:right, _, _}), do: :safe
+  defp classify_return_type({:left, _, _}), do: :safe
+
+  defp classify_return_type({{:., _, [{:__aliases__, _, [:Either]}, :right]}, _, _}),
+    do: :safe
+
+  defp classify_return_type({{:., _, [{:__aliases__, _, [:Either]}, :left]}, _, _}),
+    do: :safe
+
+  # Safe: Result tuples {:ok, value} and {:error, reason}
+  defp classify_return_type({:ok, _}), do: :safe
+  defp classify_return_type({:error, _}), do: :safe
+  # Handle explicit tuple syntax: {:{}, meta, [:ok, value]}
+  defp classify_return_type({:{}, _, [:ok | _]}), do: :safe
+  defp classify_return_type({:{}, _, [:error | _]}), do: :safe
+
+  # Unsafe: Plain string literals
+  defp classify_return_type(value) when is_binary(value), do: :unsafe
+
+  # Unsafe: Plain number literals
+  defp classify_return_type(value) when is_number(value), do: :unsafe
+
+  # Unsafe: Plain atom literals (except nil, true, false which might be intentional)
+  defp classify_return_type(value) when is_atom(value) and value not in [nil, true, false],
+    do: :unsafe
+
+  # Unsafe: Plain map literals
+  defp classify_return_type({:%{}, _, _}), do: :unsafe
+
+  # Unsafe: Plain list literals
+  defp classify_return_type([_ | _]), do: :unsafe
+  defp classify_return_type([]), do: :unsafe
+
+  # Unknown: Everything else (function calls, variables, control flow, etc.)
+  # We let runtime validation handle these cases
+  defp classify_return_type(_), do: :unknown
+
+  # Emit a compile-time warning for potentially unsafe bind operations
+  defp emit_compile_warning(ast, caller_env) do
+    IO.warn(
+      """
+      Potential type error in bind operation.
+
+      The function returns: #{Macro.to_string(ast)}
+
+      Functions used with 'bind' must return:
+        - An Either value: right(x) or left(y)
+        - A result tuple: {:ok, x} or {:error, y}
+
+      This will raise an ArgumentError at runtime if the return type is incorrect.
+      """,
+      Macro.Env.stacktrace(caller_env)
+    )
+  end
+
+  # ============================================================================
+  # Helper: validate map return types at compile time
+  # ============================================================================
+
+  # Validate anonymous functions used with map to catch incorrect usage
+  defp validate_map_return_type({:fn, _meta, clauses}, caller_env) do
+    Enum.each(clauses, fn {:->, _arrow_meta, [_args, body]} ->
+      check_map_return_value(body, caller_env)
+    end)
+
+    :ok
+  end
+
+  # Non-function expressions don't need validation (modules, named functions, etc.)
+  defp validate_map_return_type(_other, _caller_env), do: :ok
+
+  # Check if the return value is problematic for map operations
+  defp check_map_return_value(ast, caller_env) do
+    case classify_map_return_type(ast) do
+      :problematic -> emit_map_warning(ast, caller_env)
+      :ok -> :ok
+      :unknown -> :ok
+    end
+  end
+
+  # Extract the actual return expression from block expressions
+  defp classify_map_return_type({:__block__, _, exprs}) when is_list(exprs) do
+    classify_map_return_type(List.last(exprs))
+  end
+
+  # Problematic: Either constructors (will cause double-wrapping)
+  defp classify_map_return_type({:right, _, _}), do: :problematic
+  defp classify_map_return_type({:left, _, _}), do: :problematic
+
+  defp classify_map_return_type({{:., _, [{:__aliases__, _, [:Either]}, :right]}, _, _}),
+    do: :problematic
+
+  defp classify_map_return_type({{:., _, [{:__aliases__, _, [:Either]}, :left]}, _, _}),
+    do: :problematic
+
+  defp classify_map_return_type(
+         {{:., _, [{:__aliases__, _, [:Funx, :Monad, :Either]}, :right]}, _, _}
+       ),
+       do: :problematic
+
+  defp classify_map_return_type(
+         {{:., _, [{:__aliases__, _, [:Funx, :Monad, :Either]}, :left]}, _, _}
+       ),
+       do: :problematic
+
+  # Problematic: Result tuples (should use bind instead)
+  defp classify_map_return_type({:ok, _}), do: :problematic
+  defp classify_map_return_type({:error, _}), do: :problematic
+  defp classify_map_return_type({:{}, _, [:ok | _]}), do: :problematic
+  defp classify_map_return_type({:{}, _, [:error | _]}), do: :problematic
+
+  # OK: Everything else (plain values, function calls, variables, etc.)
+  defp classify_map_return_type(_), do: :ok
+
+  # Emit a compile-time warning for incorrect map usage
+  defp emit_map_warning(ast, caller_env) do
+    IO.warn(
+      """
+      Potential incorrect usage of map operation.
+
+      The function returns: #{Macro.to_string(ast)}
+
+      Functions used with 'map' should return plain values, not Either or result tuples.
+
+      If your function returns an Either or result tuple, use 'bind' instead of 'map':
+        - Use 'bind' when the function returns: right(x), left(y), {:ok, x}, {:error, y}
+        - Use 'map' when the function returns: plain values (strings, numbers, etc.)
+
+      Using 'map' with Either/tuple returns will cause double-wrapping.
+      """,
+      Macro.Env.stacktrace(caller_env)
+    )
+  end
+
+  # ============================================================================
   # Helper: validate bare modules used with bind/map
   # ============================================================================
 
@@ -268,6 +434,9 @@ defmodule Funx.Monad.Either.Dsl do
   # ============================================================================
 
   defp compile_first_bind_operation(input, operation, opts, user_env, caller_env) do
+    # Validate anonymous functions at compile time before transformation
+    validate_bind_return_type(operation, caller_env)
+
     operation =
       case lift_call_to_unary(operation, caller_env) do
         nil -> operation
@@ -309,6 +478,9 @@ defmodule Funx.Monad.Either.Dsl do
   # ============================================================================
 
   defp compile_first_map_operation(input, operation, opts, user_env, caller_env) do
+    # Validate anonymous functions at compile time before transformation
+    validate_map_return_type(operation, caller_env)
+
     operation =
       case lift_call_to_unary(operation, caller_env) do
         nil -> operation
@@ -417,6 +589,9 @@ defmodule Funx.Monad.Either.Dsl do
   # ============================================================================
 
   defp compile_bind_operation(previous, operation, opts, user_env, caller_env) do
+    # Validate anonymous functions at compile time before transformation
+    validate_bind_return_type(operation, caller_env)
+
     operation =
       case lift_call_to_unary(operation, caller_env) do
         nil -> operation
@@ -458,6 +633,9 @@ defmodule Funx.Monad.Either.Dsl do
   # ============================================================================
 
   defp compile_map_operation(previous, operation, opts, user_env, caller_env) do
+    # Validate anonymous functions at compile time before transformation
+    validate_map_return_type(operation, caller_env)
+
     operation =
       case lift_call_to_unary(operation, caller_env) do
         nil -> operation
