@@ -1,8 +1,24 @@
 defmodule Funx.Monad.Either.Dsl do
   @moduledoc """
-  Provides a declarative DSL for composing error-handling pipelines using Kleisli composition.
+  Provides the `either/2` macro for writing declarative pipelines in the Either context.
 
-  ... (UNCHANGED DOCSTRING, OMITTED FOR BREVITY)
+  The DSL lets you express a sequence of operations that may fail without manually
+  threading values through `bind`, `map`, or `map_left`. Input is lifted into Either
+  automatically, each step runs in order, and the pipeline stops on the first error.
+
+  The block supports `bind`, `map`, `map_left`, `run`, and selected functions from
+  `Funx.Monad.Either`. The result format is controlled by the `:as` option.
+
+  Example:
+
+      either user_id, as: :tuple do
+        bind Accounts.get_user()
+        bind Policies.ensure_active()
+        map fn user -> %{user: user} end
+      end
+
+  This module defines the public DSL entry point. The macro expansion details and
+  internal rewrite rules are not part of the public API.
   """
 
   # credo:disable-for-this-file Credo.Check.Design.AliasUsage
@@ -272,7 +288,7 @@ defmodule Funx.Monad.Either.Dsl do
             Invalid operation: #{Macro.to_string(module_alias_ast)}
 
             Modules used with 'bind' or 'map' must implement run/3
-            (for example via the Funx.Monad.Dsl.Behaviour).
+            (for example via the Funx.Monad.Either.Dsl.Behaviour).
             """
         end
 
@@ -607,7 +623,7 @@ defmodule Funx.Monad.Either.Dsl do
 
           If you need to use #{func_name}, consider:
             - Using it outside the DSL pipeline
-            - Creating a custom module that implements the Funx.Monad.Dsl.Behaviour
+            - Creating a custom module that implements the Funx.Monad.Either.Dsl.Behaviour
           """
     end
   end

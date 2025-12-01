@@ -2,7 +2,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
   @moduledoc """
   Example modules demonstrating the DSL pattern.
 
-  These modules implement `run/3` from the `Funx.Monad.Dsl.Behaviour`.
+  These modules implement `run/3` from the `Funx.Monad.Either.Dsl.Behaviour`.
   The DSL keywords (`bind`, `map`, `run`) determine how the result is handled.
   """
 
@@ -12,7 +12,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
 
     Implements `run/3` which can be used with `bind` or `map`.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     import Funx.Monad.Either
 
@@ -34,7 +34,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
 
     Implements `run/3` which can be used with `bind` or `map`.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     import Funx.Monad.Either
 
@@ -58,7 +58,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
 
     Implements `run/3` to be used with `map`.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     @impl true
     def run(value, _opts, _env) when is_number(value) do
@@ -72,7 +72,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
 
     Implements `run/3` to be used with `map`.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     @impl true
     def run(value, _opts, _env) when is_number(value) do
@@ -87,7 +87,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     Demonstrates tuple support - `run/3` returns `{:ok, content}` or
     `{:error, reason}` which is automatically converted to Either.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     @impl true
     def run(path, _opts, _env) when is_binary(path) do
@@ -106,7 +106,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     Demonstrates tuple support - `run/3` returns `{:ok, decoded}` or
     `{:error, error}` which is automatically converted to Either.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     @impl true
     def run(json_string, _opts, _env) when is_binary(json_string) do
@@ -125,7 +125,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     Demonstrates tuple support - `run/3` returns `{:ok, int}` or
     `{:error, reason}` which is automatically converted to Either.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     @impl true
     def run(value, _opts, _env) when is_binary(value) do
@@ -143,7 +143,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     Demonstrates tuple support for validation - `run/3` returns `{:ok, value}` or
     `{:error, reason}` which is automatically converted to Either.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     @impl true
     def run(n, _opts, _env) when is_number(n) and n > 0, do: {:ok, n}
@@ -158,7 +158,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     Demonstrates validation returning Either directly.
     Accepts optional min/max via opts, defaults to 0 and 100.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     import Funx.Monad.Either
 
@@ -186,7 +186,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     This module demonstrates what happens when `run/3` returns an invalid type.
     Used for testing error handling in the DSL.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     @impl true
     def run(_, _opts, _env), do: "not a valid return"
@@ -198,7 +198,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
 
     Demonstrates module-specific options - base can be passed via opts.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     import Funx.Monad.Either
 
@@ -221,7 +221,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
 
     Demonstrates module-specific options - min threshold passed via opts.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     import Funx.Monad.Either
 
@@ -245,7 +245,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
 
     Demonstrates module-specific options with map - factor passed via opts.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     @impl true
     def run(value, opts, _env) when is_number(value) do
@@ -262,7 +262,7 @@ defmodule Funx.Monad.Either.Dsl.Examples do
 
     Demonstrates module-specific options - min and max passed via opts.
     """
-    @behaviour Funx.Monad.Dsl.Behaviour
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
 
     import Funx.Monad.Either
 
