@@ -30,7 +30,7 @@ defmodule Funx.Monad.Either.Dsl do
   #   fn x -> Module.fun(x, args...) end
   # Note: This matches patterns like String.pad_leading(3, "0") but NOT var.(args)
   # The key is that Module.function has [module, function_name] while var.(args) has [{var, [], Elixir}]
-  defp lift_call_to_unary({{:., _, [mod_ast, fun_atom]}, _, args_ast})
+  defp lift_call_to_unary({{:., _, [mod_ast, fun_atom]}, _, args_ast}, _caller_env)
        when is_atom(fun_atom) do
     quote do
       fn x ->
@@ -40,22 +40,53 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # Detect a bare function call with arguments like check_no_other_assignments(assignment)
-  # and rewrite it into: fn x -> check_no_other_assignments(x, assignment) end
-  # Note: We need to exclude special forms: :__aliases__ (module names), :fn (anonymous functions), :& (captures)
-  defp lift_call_to_unary({fun_atom, _meta, args_ast})
+  # Strategy: Check if the function is defined with the CURRENT arity (length(args)).
+  # - If fun/current_arity is defined but fun/lifted_arity isn't → don't lift (returns a function)
+  # - If fun/lifted_arity is defined → lift it (needs partial application)
+  # - Otherwise → lift it (assume it needs partial application for external functions)
+  defp lift_call_to_unary({fun_atom, _meta, args_ast}, caller_env)
        when is_atom(fun_atom) and fun_atom not in [:__aliases__, :fn, :&] and
               is_list(args_ast) and args_ast != [] do
-    quote do
-      fn x ->
-        unquote(fun_atom)(x, unquote_splicing(args_ast))
-      end
+    current_arity = length(args_ast)
+    lifted_arity = current_arity + 1
+
+    caller_module = caller_env.module
+
+    # Check if the function is defined in the caller's module (works during compilation)
+    current_arity_defined = Module.defines?(caller_module, {fun_atom, current_arity})
+    lifted_arity_defined = Module.defines?(caller_module, {fun_atom, lifted_arity})
+
+    cond do
+      # If current arity is defined but lifted isn't, don't lift (it likely returns a function)
+      current_arity_defined and not lifted_arity_defined ->
+        nil
+
+      # If lifted arity is defined, lift it (needs partial application)
+      lifted_arity_defined ->
+        quote do
+          fn x ->
+            unquote(fun_atom)(x, unquote_splicing(args_ast))
+          end
+        end
+
+      # Neither is defined - assume it's an external function and lift it
+      not current_arity_defined and not lifted_arity_defined ->
+        quote do
+          fn x ->
+            unquote(fun_atom)(x, unquote_splicing(args_ast))
+          end
+        end
+
+      # Default: don't lift
+      true ->
+        nil
     end
   end
 
   # Detect a bare function call like to_string() and rewrite it into:
   #   &to_string/1
   # Note: We need to exclude special forms: :__aliases__ (module names), :fn (anonymous functions), :& (captures)
-  defp lift_call_to_unary({fun_atom, meta, args_ast})
+  defp lift_call_to_unary({fun_atom, meta, args_ast}, _caller_env)
        when is_atom(fun_atom) and fun_atom not in [:__aliases__, :fn, :&] and
               is_list(args_ast) and args_ast == [] do
     # Zero-arity call - lift to &fun_atom/1
@@ -64,7 +95,7 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # Not a call expression we can lift → return nil
-  defp lift_call_to_unary(_other), do: nil
+  defp lift_call_to_unary(_other, _caller_env), do: nil
 
   # ============================================================================
   # Helper: validate bare modules used with bind/map
@@ -238,7 +269,7 @@ defmodule Funx.Monad.Either.Dsl do
 
   defp compile_first_bind_operation(input, operation, opts, user_env, caller_env) do
     operation =
-      case lift_call_to_unary(operation) do
+      case lift_call_to_unary(operation, caller_env) do
         nil -> operation
         lifted -> lifted
       end
@@ -279,7 +310,7 @@ defmodule Funx.Monad.Either.Dsl do
 
   defp compile_first_map_operation(input, operation, opts, user_env, caller_env) do
     operation =
-      case lift_call_to_unary(operation) do
+      case lift_call_to_unary(operation, caller_env) do
         nil -> operation
         lifted -> lifted
       end
@@ -387,7 +418,7 @@ defmodule Funx.Monad.Either.Dsl do
 
   defp compile_bind_operation(previous, operation, opts, user_env, caller_env) do
     operation =
-      case lift_call_to_unary(operation) do
+      case lift_call_to_unary(operation, caller_env) do
         nil -> operation
         lifted -> lifted
       end
@@ -428,7 +459,7 @@ defmodule Funx.Monad.Either.Dsl do
 
   defp compile_map_operation(previous, operation, opts, user_env, caller_env) do
     operation =
-      case lift_call_to_unary(operation) do
+      case lift_call_to_unary(operation, caller_env) do
         nil -> operation
         lifted -> lifted
       end

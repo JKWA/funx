@@ -25,6 +25,11 @@ defmodule Funx.Monad.Either.DslTest do
     if value > threshold, do: {:ok, value}, else: {:error, "below threshold"}
   end
 
+  # Helper function that returns a function (like maybe_filter_closed pattern)
+  defp maybe_double_if(should_double) do
+    fn x -> if should_double, do: x * 2, else: x end
+  end
+
   defmodule PipeTarget do
     @moduledoc "Module used to test auto-pipe function call rewriting"
 
@@ -226,6 +231,7 @@ defmodule Funx.Monad.Either.DslTest do
     test "with named function partial application (like check_no_other_assignments pattern)" do
       # Test the pattern: bind check_value_with_threshold(10)
       # This should lift to: fn x -> check_value_with_threshold(x, 10) end
+      # because check_value_with_threshold/2 exists
       result =
         either 15 do
           bind check_value_with_threshold(10)
@@ -239,6 +245,25 @@ defmodule Funx.Monad.Either.DslTest do
         end
 
       assert result2 == %Left{left: "below threshold"}
+    end
+
+    test "with function that returns a function (like maybe_filter_closed pattern)" do
+      # Test the pattern: map maybe_double_if(true)
+      # This should NOT be lifted because maybe_double_if/1 exists but maybe_double_if/2 doesn't
+      # So it will call maybe_double_if(true) which returns a function, then use that function
+      result =
+        either 5 do
+          map maybe_double_if(true)
+        end
+
+      assert result == %Right{right: 10}
+
+      result2 =
+        either 5 do
+          map maybe_double_if(false)
+        end
+
+      assert result2 == %Right{right: 5}
     end
 
     test "with multi-line anonymous function" do
