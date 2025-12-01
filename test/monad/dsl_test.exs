@@ -157,6 +157,16 @@ defmodule Funx.Monad.Either.DslTest do
       assert result == %Right{right: "10"}
     end
 
+    test "with stdlib function and additional arguments" do
+      result =
+        either 5 do
+          map to_string()
+          map String.pad_leading(3, "0")
+        end
+
+      assert result == %Right{right: "005"}
+    end
+
     test "with capture syntax &(&1 * 2)" do
       result =
         either "10" do
