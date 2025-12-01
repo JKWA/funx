@@ -20,6 +20,11 @@ defmodule Funx.Monad.Either.DslTest do
 
   alias Funx.Monad.Either.{Left, Right}
 
+  # Helper function to test named function partial application
+  defp check_value_with_threshold(value, threshold) do
+    if value > threshold, do: {:ok, value}, else: {:error, "below threshold"}
+  end
+
   defmodule PipeTarget do
     @moduledoc "Module used to test auto-pipe function call rewriting"
 
@@ -216,6 +221,24 @@ defmodule Funx.Monad.Either.DslTest do
         end
 
       assert result2 == %Right{right: 5}
+    end
+
+    test "with named function partial application (like check_no_other_assignments pattern)" do
+      # Test the pattern: bind check_value_with_threshold(10)
+      # This should lift to: fn x -> check_value_with_threshold(x, 10) end
+      result =
+        either 15 do
+          bind check_value_with_threshold(10)
+        end
+
+      assert result == %Right{right: 15}
+
+      result2 =
+        either 5 do
+          bind check_value_with_threshold(10)
+        end
+
+      assert result2 == %Left{left: "below threshold"}
     end
 
     test "with multi-line anonymous function" do

@@ -28,7 +28,10 @@ defmodule Funx.Monad.Either.Dsl do
 
   # Detect a call like Module.fun(args...) and rewrite it into:
   #   fn x -> Module.fun(x, args...) end
-  defp lift_call_to_unary({{:., _, [mod_ast, fun_atom]}, _, args_ast}) do
+  # Note: This matches patterns like String.pad_leading(3, "0") but NOT var.(args)
+  # The key is that Module.function has [module, function_name] while var.(args) has [{var, [], Elixir}]
+  defp lift_call_to_unary({{:., _, [mod_ast, fun_atom]}, _, args_ast})
+       when is_atom(fun_atom) do
     quote do
       fn x ->
         unquote(mod_ast).unquote(fun_atom)(x, unquote_splicing(args_ast))
@@ -36,11 +39,22 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
+  # Detect a bare function call with arguments like check_no_other_assignments(assignment)
+  # and rewrite it into: fn x -> check_no_other_assignments(x, assignment) end
+  # Note: We need to exclude special forms: :__aliases__ (module names), :fn (anonymous functions), :& (captures)
+  defp lift_call_to_unary({fun_atom, _meta, args_ast})
+       when is_atom(fun_atom) and fun_atom not in [:__aliases__, :fn, :&] and
+              is_list(args_ast) and args_ast != [] do
+    quote do
+      fn x ->
+        unquote(fun_atom)(x, unquote_splicing(args_ast))
+      end
+    end
+  end
+
   # Detect a bare function call like to_string() and rewrite it into:
   #   &to_string/1
   # Note: We need to exclude special forms: :__aliases__ (module names), :fn (anonymous functions), :& (captures)
-  # IMPORTANT: Only lift zero-arity calls. Calls with args (e.g., maybe_filter(x)) should be evaluated normally
-  # since they likely return a function rather than needing to be lifted.
   defp lift_call_to_unary({fun_atom, meta, args_ast})
        when is_atom(fun_atom) and fun_atom not in [:__aliases__, :fn, :&] and
               is_list(args_ast) and args_ast == [] do
