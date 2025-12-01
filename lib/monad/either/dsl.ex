@@ -37,18 +37,16 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # Detect a bare function call like to_string() and rewrite it into:
-  #   &to_string/arity
+  #   &to_string/1
   # Note: We need to exclude special forms: :__aliases__ (module names), :fn (anonymous functions), :& (captures)
+  # IMPORTANT: Only lift zero-arity calls. Calls with args (e.g., maybe_filter(x)) should be evaluated normally
+  # since they likely return a function rather than needing to be lifted.
   defp lift_call_to_unary({fun_atom, meta, args_ast})
        when is_atom(fun_atom) and fun_atom not in [:__aliases__, :fn, :&] and
-              is_list(args_ast) do
-    # The arity is the number of additional args + 1 (for the piped value)
-    arity = length(args_ast) + 1
-
-    # Build capture AST: &fun_atom/arity
-    # The function name needs to be in tuple form for the capture to work
+              is_list(args_ast) and args_ast == [] do
+    # Zero-arity call - lift to &fun_atom/1
     fun_tuple = {fun_atom, meta, Elixir}
-    {:&, meta, [{:/, meta, [fun_tuple, arity]}]}
+    {:&, meta, [{:/, meta, [fun_tuple, 1]}]}
   end
 
   # Not a call expression we can lift → return nil

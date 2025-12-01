@@ -187,6 +187,37 @@ defmodule Funx.Monad.Either.DslTest do
       assert result == %Right{right: 20}
     end
 
+    test "with function that returns a function" do
+      make_multiplier = fn factor -> fn x -> x * factor end end
+
+      result =
+        either 5 do
+          map make_multiplier.(3)
+        end
+
+      assert result == %Right{right: 15}
+    end
+
+    test "with helper function that returns a function (like maybe_filter pattern)" do
+      maybe_double = fn should_double ->
+        fn x -> if should_double, do: x * 2, else: x end
+      end
+
+      result =
+        either 5 do
+          map maybe_double.(true)
+        end
+
+      assert result == %Right{right: 10}
+
+      result2 =
+        either 5 do
+          map maybe_double.(false)
+        end
+
+      assert result2 == %Right{right: 5}
+    end
+
     test "with multi-line anonymous function" do
       result =
         either "10" do
