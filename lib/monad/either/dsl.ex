@@ -10,6 +10,7 @@ defmodule Funx.Monad.Either.Dsl do
 
   - `bind` - for operations that return Either or result tuples
   - `map` - for transformations that return plain values
+  - `ap` - for applying a function in an Either to a value in an Either
   - Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`
   - Validation: `validate` for accumulating multiple errors
 
@@ -445,6 +446,10 @@ defmodule Funx.Monad.Either.Dsl do
         {operation, opts} = parse_operation_args(args)
         compile_first_map_operation(input, operation, opts, user_env, caller_env)
 
+      {:ap, _, args} ->
+        {operation, opts} = parse_operation_args(args)
+        compile_first_ap_operation(input, operation, opts, user_env, caller_env)
+
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         compile_either_function(input, func_name, meta, args, user_env, caller_env)
 
@@ -456,12 +461,13 @@ defmodule Funx.Monad.Either.Dsl do
           Modules must be used with a keyword:
             bind #{Macro.to_string(module_alias)}
             map #{Macro.to_string(module_alias)}
+            ap #{Macro.to_string(module_alias)}
           """
 
       other ->
         raise CompileError,
           description:
-            "Invalid operation: #{inspect(other)}. Use 'bind', 'map', or Either functions."
+            "Invalid operation: #{inspect(other)}. Use 'bind', 'map', 'ap', or Either functions."
     end
   end
 
@@ -482,6 +488,16 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # ============================================================================
+  # First ap
+  # ============================================================================
+
+  defp compile_first_ap_operation(input, operation, _opts, _user_env, _caller_env) do
+    quote do
+      Funx.Monad.ap(unquote(input), unquote(operation))
+    end
+  end
+
+  # ============================================================================
   # Subsequent operations
   # ============================================================================
 
@@ -495,6 +511,10 @@ defmodule Funx.Monad.Either.Dsl do
         {operation, opts} = parse_operation_args(args)
         compile_map_operation(previous, operation, opts, user_env, caller_env)
 
+      {:ap, _, args} ->
+        {operation, opts} = parse_operation_args(args)
+        compile_ap_operation(previous, operation, opts, user_env, caller_env)
+
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         compile_either_function(previous, func_name, meta, args, user_env, caller_env)
 
@@ -503,7 +523,7 @@ defmodule Funx.Monad.Either.Dsl do
           description: """
           Invalid operation: #{Macro.to_string(module_alias)}
 
-          Use bind/map with modules.
+          Use bind/map/ap with modules.
           """
 
       other ->
@@ -589,6 +609,16 @@ defmodule Funx.Monad.Either.Dsl do
         quote do
           Funx.Monad.map(unquote(input_or_previous), unquote(func))
         end
+    end
+  end
+
+  # ============================================================================
+  # ap (unified)
+  # ============================================================================
+
+  defp compile_ap_operation(input_or_previous, operation, _opts, _user_env, _caller_env) do
+    quote do
+      Funx.Monad.ap(unquote(input_or_previous), unquote(operation))
     end
   end
 
