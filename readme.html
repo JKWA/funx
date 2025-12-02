@@ -133,11 +133,11 @@ Pages
   </a>
   <span class="text">Installation</span>
 </h2>
-<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="2946664312-1">do</span><span class="w">
-  </span><span class="p" data-group-id="2946664312-2">[</span><span class="w">
-    </span><span class="p" data-group-id="2946664312-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.7&quot;</span><span class="p" data-group-id="2946664312-3">}</span><span class="w">
-  </span><span class="p" data-group-id="2946664312-2">]</span><span class="w">
-</span><span class="k" data-group-id="2946664312-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
+<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="4821053586-1">do</span><span class="w">
+  </span><span class="p" data-group-id="4821053586-2">[</span><span class="w">
+    </span><span class="p" data-group-id="4821053586-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.1.7&quot;</span><span class="p" data-group-id="4821053586-3">}</span><span class="w">
+  </span><span class="p" data-group-id="4821053586-2">]</span><span class="w">
+</span><span class="k" data-group-id="4821053586-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
 </span></code></pre><h2 id="usage-rules" class="section-heading">
   <a href="#usage-rules" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
@@ -162,7 +162,19 @@ Pages
   </a>
   <span class="text">Monads</span>
 </h2>
-<p>Monads encapsulate computations, allowing operations to be chained while handling concerns like optional values, failures, dependencies, or deferred effects.</p><ul><li><code class="inline">Identity</code>: Wraps a value with no additional behavior—useful for organizing transformations.</li><li><code class="inline">Maybe</code>: Represents optional data using <code class="inline">Just</code> for presence and <code class="inline">Nothing</code> for absence.</li><li><code class="inline">Either</code>: Models computations with two possibilities—<code class="inline">Left</code> and <code class="inline">Right</code>.</li><li><code class="inline">Effect</code>: Encapsulates deferred execution with error handling, similar to <a href="https://hexdocs.pm/elixir/Task.html"><code class="inline">Task</code></a>.</li><li><code class="inline">Reader</code>: Passes an immutable environment through a computation for dependency injection or configuration.</li><li><code class="inline">Writer</code>: Threads a log alongside a result using any monoid—useful for tracing, reporting, or accumulating metadata during computation.</li></ul><h2 id="monoids" class="section-heading">
+<p>Monads encapsulate computations, allowing operations to be chained while handling concerns like optional values, failures, dependencies, or deferred effects.</p><ul><li><code class="inline">Identity</code>: Wraps a value with no additional behavior—useful for organizing transformations.</li><li><code class="inline">Maybe</code>: Represents optional data using <code class="inline">Just</code> for presence and <code class="inline">Nothing</code> for absence.</li><li><code class="inline">Either</code>: Models computations with two possibilities—<code class="inline">Left</code> and <code class="inline">Right</code>.</li><li><code class="inline">Effect</code>: Encapsulates deferred execution with error handling, similar to <a href="https://hexdocs.pm/elixir/Task.html"><code class="inline">Task</code></a>.</li><li><code class="inline">Reader</code>: Passes an immutable environment through a computation for dependency injection or configuration.</li><li><code class="inline">Writer</code>: Threads a log alongside a result using any monoid—useful for tracing, reporting, or accumulating metadata during computation.</li></ul><h3 id="either-dsl" class="section-heading">
+  <a href="#either-dsl" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Either DSL</span>
+</h3>
+<p>The Either monad includes a DSL for writing declarative pipelines that handle errors gracefully:</p><pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="w">
+
+</span><span class="n">either</span><span class="w"> </span><span class="n">user_id</span><span class="w"> </span><span class="k" data-group-id="6989272374-1">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="n">fetch_user</span><span class="p" data-group-id="6989272374-2">(</span><span class="p" data-group-id="6989272374-2">)</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="n">validate_active</span><span class="p" data-group-id="6989272374-3">(</span><span class="p" data-group-id="6989272374-3">)</span><span class="w">
+  </span><span class="n">map</span><span class="w"> </span><span class="n">transform_to_dto</span><span class="p" data-group-id="6989272374-4">(</span><span class="p" data-group-id="6989272374-4">)</span><span class="w">
+</span><span class="k" data-group-id="6989272374-1">end</span></code></pre><p>Supported operations:</p><ul><li><code class="inline">bind</code> - for operations that return Either or result tuples</li><li><code class="inline">map</code> - for transformations that return plain values</li><li><code class="inline">ap</code> - for applying a function in an Either to a value in an Either</li><li><code class="inline">validate</code> - for accumulating multiple validation errors</li><li>Either functions: <code class="inline">filter_or_else</code>, <code class="inline">or_else</code>, <code class="inline">map_left</code>, <code class="inline">flip</code></li></ul><h2 id="monoids" class="section-heading">
   <a href="#monoids" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
