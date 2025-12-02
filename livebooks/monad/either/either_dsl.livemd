@@ -1,0 +1,498 @@
+# Funx.Monad.Either.Dsl
+
+```elixir
+Mix.install([
+  {:funx,
+    git: "https://github.com/JKWA/funx.git",
+    branch: "either-dsl"
+  }
+])
+```
+
+## Overview
+
+The `Funx.Monad.Either.Dsl` module provides a macro-based DSL for writing declarative pipelines that may fail. Instead of manually chaining `bind`, `map`, and other Either operations, you can express your logic in a clean, readable way.
+
+The DSL automatically:
+- Lifts input values into the Either context
+- Handles errors by short-circuiting on the first failure
+- Provides compile-time warnings for common mistakes
+- Supports multiple output formats (Either, tuple, or raise)
+
+## Setup
+
+```elixir
+use Funx.Monad.Either
+```
+
+## Basic Usage
+
+### Simple Pipeline with `bind`
+
+The `bind` operation is used when your function returns an Either or result tuple.
+
+```elixir
+# Helper functions for managing superheroes
+defmodule HeroRegistry do
+  use Funx.Monad.Either
+
+  def parse_hero_id(input) do
+    case Integer.parse(input) do
+      {id, ""} when id > 0 -> right(id)
+      _ -> left("Invalid hero ID")
+    end
+  end
+
+  def fetch_hero(id) do
+    # Simulate database lookup
+    heroes = %{
+      1 => %{id: 1, name: "Lightning Bolt", power: "super speed", active: true, level: 10},
+      2 => %{id: 2, name: "Iron Shield", power: "invulnerability", active: false, level: 8},
+      3 => %{id: 3, name: "Shadow Phantom", power: "invisibility", active: true, level: 7}
+    }
+
+    case Map.get(heroes, id) do
+      nil -> {:error, "Hero not found"}
+      hero -> {:ok, hero}
+    end
+  end
+
+  def check_active(hero) do
+    if hero.active do
+      right(hero)
+    else
+      left("Hero is retired")
+    end
+  end
+end
+```
+
+```elixir
+# Using the DSL - each step returns Either
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  bind HeroRegistry.check_active()
+end
+```
+
+```elixir
+# When any step fails, the pipeline short-circuits (hero not found)
+either "999" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  bind HeroRegistry.check_active()
+end
+```
+
+```elixir
+# Invalid input fails at the first step
+either "not-a-number" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  bind HeroRegistry.check_active()
+end
+```
+
+```elixir
+# Retired hero fails the active check
+either "2" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  bind HeroRegistry.check_active()
+end
+```
+
+### Using `map` for Transformations
+
+The `map` operation transforms a value without changing the Either context. Use it when your function returns a plain value, not an Either.
+
+```elixir
+# Transform hero to display format
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  bind HeroRegistry.check_active()
+  map fn hero -> "#{hero.name} (#{hero.power})" end
+end
+```
+
+### Inline Anonymous Functions
+
+You can use inline anonymous functions at any step:
+
+```elixir
+# Parse and validate hero ID inline
+either "1" do
+  bind fn id_str ->
+    case Integer.parse(id_str) do
+      {id, ""} when id > 0 -> right(id)
+      _ -> left("Invalid hero ID")
+    end
+  end
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+## Output Formats
+
+### Default: Either
+
+By default, the DSL returns an Either value:
+
+```elixir
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+```elixir
+either "invalid" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+### Tuple Format
+
+Use `as: :tuple` to get `{:ok, value}` or `{:error, reason}`:
+
+```elixir
+either "1", as: :tuple do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+```elixir
+either "invalid", as: :tuple do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+### Raise Format
+
+Use `as: :raise` to unwrap the value or raise an error:
+
+```elixir
+either "1", as: :raise do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+```elixir
+# This will raise a RuntimeError with the error message:
+try do
+  either "invalid", as: :raise do
+    bind HeroRegistry.parse_hero_id()
+    bind HeroRegistry.fetch_hero()
+    map fn hero -> hero.name end
+  end
+rescue
+  e in RuntimeError -> "Caught error: #{e.message}"
+end
+```
+
+## Either Functions in the DSL
+
+The DSL supports several Either functions that work on the Either value directly.
+
+### `filter_or_else/3`
+
+Filter the Right value based on a predicate. For example, only allow elite heroes:
+
+```elixir
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  filter_or_else fn hero -> hero.level >= 10 end, fn -> "Only elite heroes allowed" end
+end
+```
+
+```elixir
+either "2" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  filter_or_else fn hero -> hero.level >= 10 end, fn -> "Only elite heroes allowed" end
+end
+```
+
+```elixir
+# Hero 999 doesn't exist, so this fails at fetch
+either "999" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  filter_or_else fn hero -> hero.level >= 10 end, fn -> "Only elite heroes allowed" end
+end
+```
+
+### `or_else/2`
+
+Provide a fallback if the value is Left:
+
+```elixir
+# If hero not found, use a default sidekick
+either "999" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  or_else fn -> right(%{id: 0, name: "Rookie Sidekick", power: "enthusiasm", active: true, level: 1}) end
+end
+```
+
+### `map_left/2`
+
+Transform the error value in a Left:
+
+```elixir
+either "invalid" do
+  bind HeroRegistry.parse_hero_id()
+  map_left fn error -> "Hero registry error: #{error}" end
+end
+```
+
+### `flip/1`
+
+Swap Left and Right. This can be useful for inverting logic:
+
+```elixir
+# Flip turns success into failure
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  flip()
+end
+```
+
+```elixir
+# Flip turns failure into success
+either "invalid" do
+  bind HeroRegistry.parse_hero_id()
+  flip()
+end
+```
+
+## Validation
+
+The DSL supports validation with error accumulation using the `validate/2` function. Validators are modules that implement the `run/3` callback.
+
+**Note:** Due to Livebook's module compilation behavior, the validation examples below are commented out. These patterns work correctly in compiled Elixir code (tests, applications) but may not work reliably when modules are defined dynamically in Livebook cells.
+
+For working examples of validation, see the test suite at `test/monad/dsl_test.exs`.
+
+```elixir
+# Example validator module pattern (works in compiled code):
+#
+# defmodule PositiveNumber do
+#   @behaviour Funx.Monad.Either.Dsl.Behaviour
+#   use Funx.Monad.Either
+#
+#   def run(value, _opts, _env) when is_number(value) and value > 0 do
+#     right(value)
+#   end
+#
+#   def run(value, _opts, _env) when is_number(value) do
+#     left("Must be positive: #{value}")
+#   end
+#
+#   def run(value, _opts, _env) do
+#     left("Expected number, got: #{inspect(value)}")
+#   end
+# end
+#
+# defmodule EvenNumber do
+#   @behaviour Funx.Monad.Either.Dsl.Behaviour
+#   use Funx.Monad.Either
+#
+#   def run(value, _opts, _env) when is_number(value) and rem(value, 2) == 0 do
+#     right(value)
+#   end
+#
+#   def run(value, _opts, _env) when is_number(value) do
+#     left("Must be even: #{value}")
+#   end
+#
+#   def run(value, _opts, _env) do
+#     left("Expected number, got: #{inspect(value)}")
+#   end
+# end
+#
+# defmodule RangeValidator do
+#   @behaviour Funx.Monad.Either.Dsl.Behaviour
+#   use Funx.Monad.Either
+#
+#   def run(value, opts, _env) when is_number(value) do
+#     min = Keyword.get(opts, :min, 0)
+#     max = Keyword.get(opts, :max, 100)
+#
+#     if value > min and value < max do
+#       right(value)
+#     else
+#       left("Must be between #{min} and #{max}: #{value}")
+#     end
+#   end
+#
+#   def run(value, _opts, _env) do
+#     left("Expected number, got: #{inspect(value)}")
+#   end
+# end
+```
+
+```elixir
+# Usage examples (work in compiled code):
+#
+# # All validations pass - use bare module names
+# either 4 do
+#   validate [PositiveNumber, EvenNumber]
+# end
+#
+# # Multiple validations fail - errors are accumulated
+# either -3 do
+#   validate [PositiveNumber, EvenNumber]
+# end
+#
+# # Chain validations
+# either 4 do
+#   validate [PositiveNumber, EvenNumber]
+#   validate {RangeValidator, min: 0, max: 100}
+# end
+#
+# # Mix bare modules with modules that have options
+# either 50 do
+#   validate [PositiveNumber, {RangeValidator, min: 0, max: 100}]
+# end
+```
+
+## Input Lifting
+
+The DSL automatically lifts various input types into the Either context:
+
+### Plain Values
+
+```elixir
+# Plain values are wrapped in Right
+either 1 do
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+### Result Tuples
+
+```elixir
+# {:ok, value} becomes Right - useful when integrating with Elixir code
+either {:ok, 1} do
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+```elixir
+# {:error, reason} becomes Left
+either {:error, "Database connection failed"} do
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+### Either Values
+
+```elixir
+# Either values pass through unchanged
+either right(1) do
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+```elixir
+# Left values short-circuit immediately
+either left("Session expired") do
+  bind HeroRegistry.fetch_hero()
+  map fn hero -> hero.name end
+end
+```
+
+## Advanced: Module-Based Operations
+
+You can create reusable operations as modules that implement the `run/3` callback. This is useful for operations you'll use across many pipelines:
+
+```elixir
+defmodule FormatHeroName do
+  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  use Funx.Monad.Either
+
+  def run(hero, opts, _env) do
+    case Keyword.get(opts, :style, :normal) do
+      :uppercase -> {:ok, %{hero | name: String.upcase(hero.name)}}
+      :lowercase -> {:ok, %{hero | name: String.downcase(hero.name)}}
+      :normal -> {:ok, hero}
+    end
+  end
+end
+```
+
+```elixir
+# Use modules in the DSL with options
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  map {FormatHeroName, style: :uppercase}
+end
+```
+
+```elixir
+# Without options, uses default behavior
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  map FormatHeroName
+end
+```
+
+## Compile-Time Warnings
+
+The DSL provides helpful compile-time warnings to catch common mistakes:
+
+### Using `bind` with Non-Either Returns
+
+If you use `bind` with a function that returns a plain value instead of an Either or result tuple, you'll get a compile-time warning:
+
+```elixir
+# This will warn at compile time:
+# either 5 do
+#   bind fn x -> x * 2 end  # Should use 'map' instead
+# end
+```
+
+### Using `map` with Either Returns
+
+If you use `map` with a function that returns an Either or result tuple, you'll get a compile-time warning about double-wrapping:
+
+```elixir
+# This will warn at compile time:
+# either 5 do
+#   map fn x -> right(x * 2) end  # Should use 'bind' instead
+# end
+```
+
+## Summary
+
+The Either DSL provides a clean, declarative way to write error-handling pipelines:
+
+- **`bind`** - for operations that return Either or result tuples
+- **`map`** - for transformations that return plain values
+- **Either functions** - `filter_or_else`, `or_else`, `map_left`, `flip`
+- **Validation** - `validate` for accumulating multiple errors
+- **Output formats** - `:either`, `:tuple`, or `:raise`
+- **Auto-lifting** - automatic conversion of function calls to work in pipelines
+- **Compile-time safety** - warnings for common mistakes
+
+This makes error handling explicit, composable, and easy to reason about!

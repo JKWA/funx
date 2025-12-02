@@ -68,7 +68,7 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
 
   `bind` unwraps the current Either value, calls `run/3`, and normalizes the
   result back into Either. `map` unwraps the value, calls `run/3`, and wraps the
-  plain result. `run` calls the module's `run/3` with the Either value directly.
+  plain result back into Either.
   """
 
   @doc """
@@ -92,7 +92,6 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
 
     * With `bind`, `run/3` may return an Either or a result tuple.
     * With `map`, `run/3` should return a plain value.
-    * With `run`, any return value is passed to the next step.
 
   Examples:
 

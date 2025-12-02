@@ -707,7 +707,7 @@ defmodule Funx.Monad.Either.DslTest do
 
   describe "error handling" do
     test "raises on invalid return value from bind" do
-      assert_raise ArgumentError, ~r/run\/1 must return/, fn ->
+      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
         either "test" do
           bind InvalidReturn
         end
@@ -715,7 +715,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
 
     test "raises on invalid return value from anonymous function" do
-      assert_raise ArgumentError, ~r/run\/1 must return/, fn ->
+      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
         either "test" do
           bind fn _ -> "not an Either or tuple" end
         end
@@ -1362,6 +1362,74 @@ defmodule Funx.Monad.Either.DslTest do
         )
       end
     end
+
+    test "raises when validator list contains number literal" do
+      assert_raise CompileError, ~r/Invalid validator in list/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either 5 do
+              validate [1, 2, 3]
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
+
+    test "raises when validator list contains string literal" do
+      assert_raise CompileError, ~r/Invalid validator in list/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either 5 do
+              validate ["not", "a", "function"]
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
+
+    test "raises when validator list contains map literal" do
+      assert_raise CompileError, ~r/Invalid validator in list/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either 5 do
+              validate [%{key: :value}]
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
+
+    test "raises when bare function call used in pipeline" do
+      assert_raise CompileError, ~r/Bare function calls are not allowed/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either 5 do
+              some_function(1, 2)
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
   end
 
   describe "compile-time bind validation" do
@@ -1481,6 +1549,75 @@ defmodule Funx.Monad.Either.DslTest do
 
       assert warning =~ "Potential type error in bind operation"
       assert warning =~ "[1, 2, 3]"
+    end
+
+    test "warns when bind returns nil" do
+      warning =
+        capture_io(:stderr, fn ->
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either "test" do
+                  bind fn _ -> nil end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ "nil"
+    end
+
+    test "warns when bind returns true" do
+      warning =
+        capture_io(:stderr, fn ->
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either "test" do
+                  bind fn _ -> true end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ "true"
+    end
+
+    test "warns when bind returns false" do
+      warning =
+        capture_io(:stderr, fn ->
+          catch_error(
+            Code.eval_quoted(
+              quote do
+                require Funx.Monad.Either.Dsl
+                import Funx.Monad.Either.Dsl
+
+                either "test" do
+                  bind fn _ -> false end
+                end
+              end,
+              [],
+              __ENV__
+            )
+          )
+        end)
+
+      assert warning =~ "Potential type error in bind operation"
+      assert warning =~ "false"
     end
 
     test "warns for plain return in multi-clause function" do

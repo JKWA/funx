@@ -6,16 +6,40 @@ defmodule Funx.Monad.Either.Dsl do
   threading values through `bind`, `map`, or `map_left`. Input is lifted into Either
   automatically, each step runs in order, and the pipeline stops on the first error.
 
-  The block supports `bind`, `map`, `map_left`, `run`, and selected functions from
-  `Funx.Monad.Either`. The result format is controlled by the `:as` option.
+  ## Supported Operations
 
-  Example:
+  - `bind` - for operations that return Either or result tuples
+  - `map` - for transformations that return plain values
+  - Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`
+  - Validation: `validate` for accumulating multiple errors
+
+  The result format is controlled by the `:as` option (`:either`, `:tuple`, or `:raise`).
+
+  ## Example
 
       either user_id, as: :tuple do
         bind Accounts.get_user()
         bind Policies.ensure_active()
         map fn user -> %{user: user} end
       end
+
+  ## Auto-Lifting of Function Calls
+
+  The DSL automatically lifts certain function call patterns for convenience:
+
+  - `Module.fun()` becomes `&Module.fun/1` (zero-arity qualified calls)
+  - `fun()` becomes `&fun/1` (zero-arity bare calls)
+  - `fun(arg)` becomes `fn x -> fun(x, arg) end` (partial application)
+  - `Module.fun(arg)` becomes `fn x -> Module.fun(x, arg) end` (partial application)
+
+  This is particularly useful in validator lists:
+
+      validate [Validator.positive?(), Validator.even?()]
+      # Becomes: validate [&Validator.positive?/1, &Validator.even?/1]
+
+  If you prefer explicit syntax, you can always use function captures directly:
+
+      validate [&Validator.positive?/1, &Validator.even?/1]
 
   This module defines the public DSL entry point. The macro expansion details and
   internal rewrite rules are not part of the public API.
@@ -156,8 +180,11 @@ defmodule Funx.Monad.Either.Dsl do
   # Unsafe: Plain literals
   defp classify_return_type(value) when is_binary(value), do: :unsafe
   defp classify_return_type(value) when is_number(value), do: :unsafe
+  defp classify_return_type(nil), do: :unsafe
+  defp classify_return_type(true), do: :unsafe
+  defp classify_return_type(false), do: :unsafe
 
-  defp classify_return_type(value) when is_atom(value) and value not in [nil, true, false],
+  defp classify_return_type(value) when is_atom(value),
     do: :unsafe
 
   defp classify_return_type({:%{}, _, _}), do: :unsafe
@@ -293,8 +320,34 @@ defmodule Funx.Monad.Either.Dsl do
             Invalid operation: #{Macro.to_string(module_alias_ast)}
 
             Modules used with 'bind' or 'map' must implement run/3
-            (for example via the Funx.Monad.Either.Dsl.Behaviour).
+            via the @behaviour Funx.Monad.Either.Dsl.Behaviour.
+
+            Example:
+
+                defmodule #{inspect(mod)} do
+                  @behaviour Funx.Monad.Either.Dsl.Behaviour
+
+                  @impl true
+                  def run(value, _env, _opts) do
+                    # your logic here
+                  end
+                end
             """
+        end
+
+        # Check if module implements the behaviour (optional but recommended)
+        behaviours = mod.module_info(:attributes)[:behaviour] || []
+        either_behaviour = Funx.Monad.Either.Dsl.Behaviour
+
+        unless either_behaviour in behaviours do
+          IO.warn("""
+          Module #{inspect(mod)} implements run/3 but does not declare @behaviour #{inspect(either_behaviour)}.
+
+          This may cause issues if multiple DSLs are used in the same codebase.
+          Consider adding:
+
+              @behaviour #{inspect(either_behaviour)}
+          """)
         end
 
       _ ->
@@ -573,17 +626,19 @@ defmodule Funx.Monad.Either.Dsl do
           description: """
           Invalid operation: #{func_name}
 
-          This Either function cannot be used in the DSL pipeline.
+          Bare function calls are not allowed in the DSL pipeline.
 
-          Allowed functions that work on Either directly:
-            #{inspect(@either_functions)}
+          If you meant to call an Either function, only these are allowed:
+            #{inspect(@either_functions ++ @bindable_functions)}
 
-          Allowed functions that work on unwrapped values:
-            #{inspect(@bindable_functions)}
+          If you meant to use a custom function, you must use 'bind' or 'map':
+            bind #{func_name}(...)
+            map #{func_name}(...)
 
-          If you need to use #{func_name}, consider:
-            - Using it outside the DSL pipeline
-            - Creating a custom module that implements the Funx.Monad.Either.Dsl.Behaviour
+          Or use a function capture:
+            map &#{func_name}/1
+
+          Or create a module that implements the Funx.Monad.Either.Dsl.Behaviour.
           """
     end
   end
@@ -621,12 +676,66 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
-  # Try to lift function calls before passing through
+  # Try to lift function calls, or validate that it's a valid validator
   defp transform_list_item(other, _user_env, caller_env) do
+    # First validate - reject literals before attempting to lift
+    validate_list_item!(other)
+
     case lift_call_to_unary(other, caller_env) do
       nil -> other
       lifted -> lifted
     end
+  end
+
+  # Validates that list items are functions, not literals
+  defp validate_list_item!({:fn, _, _}), do: :ok  # Anonymous function
+  defp validate_list_item!({:&, _, _}), do: :ok   # Function capture
+  defp validate_list_item!({name, _, context}) when is_atom(name) and is_atom(context), do: :ok  # Variable or function call
+  defp validate_list_item!({:__aliases__, _, _}), do: :ok  # Module alias (handled by other clauses)
+  defp validate_list_item!({{:., _, _}, _, _}), do: :ok  # Qualified call like Module.fun()
+
+  # Reject literals
+  defp validate_list_item!(literal) when is_number(literal) do
+    raise_invalid_validator(literal)
+  end
+
+  defp validate_list_item!(literal) when is_binary(literal) do
+    raise_invalid_validator(literal)
+  end
+
+  defp validate_list_item!(literal) when is_atom(literal) do
+    raise_invalid_validator(literal)
+  end
+
+  defp validate_list_item!({:%{}, _, _}) do
+    raise_invalid_validator("map literal")
+  end
+
+  defp validate_list_item!([_ | _] = list) do
+    raise_invalid_validator(list)
+  end
+
+  defp validate_list_item!([]) do
+    raise_invalid_validator([])
+  end
+
+  # Allow other AST nodes (these will be validated at runtime)
+  defp validate_list_item!(_), do: :ok
+
+  defp raise_invalid_validator(literal) do
+    raise CompileError,
+      description: """
+      Invalid validator in list: #{inspect(literal)}
+
+      Validator lists must contain only:
+        - Module names: MyValidator
+        - Module with options: {MyValidator, opts}
+        - Function calls: my_function()
+        - Function captures: &my_function/1
+        - Anonymous functions: fn x -> ... end
+
+      Literals (numbers, strings, maps, etc.) are not allowed.
+      """
   end
 
   # ============================================================================
@@ -668,8 +777,12 @@ defmodule Funx.Monad.Either.Dsl do
 
       other ->
         raise ArgumentError, """
-        run/1 must return either an Either struct or a result tuple.
+        Module run/3 callback must return either an Either struct or a result tuple.
         Got: #{inspect(other)}
+
+        Expected return types:
+          - Either: right(value) or left(error)
+          - Result tuple: {:ok, value} or {:error, reason}
         """
     end
   end
