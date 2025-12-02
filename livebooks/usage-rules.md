@@ -32,6 +32,7 @@ lib/monad/maybe/just.ex → livebooks/monad/maybe/just.livemd
 ```
 
 **Key Principles:**
+
 - **Topic grouping**: All related content grouped in one directory (e.g., all Eq content in `eq/`)
 - **No source mirroring**: Structure optimizes for user browsing, not implementation organization
 - **Flat hierarchy**: All topic directories at root level (`livebooks/eq/`, `livebooks/monad/`)
@@ -39,6 +40,7 @@ lib/monad/maybe/just.ex → livebooks/monad/maybe/just.livemd
 - **Git-based installation**: Livebooks use `Mix.install` with git repository, not published hex package
 
 #### Final Structure
+
 ```
 livebooks/
 ├── index.md                    # Navigation index with conditional links
@@ -61,7 +63,9 @@ livebooks/
 ```
 
 #### Mix.install Pattern
+
 Each livebook uses git-based installation for latest development version:
+
 ```elixir
 Mix.install([
   {:funx,
@@ -83,6 +87,7 @@ Mix.install([
 #### Content to Extract
 
 From each `.ex` file:
+
 1. `@moduledoc """..."""` content (module-level documentation)
 2. All `@doc """..."""` content (function-level documentation)
 3. Examples within doc strings (preserve formatting)
@@ -117,13 +122,16 @@ Each livebook should follow this exact format:
 ### 5. Processing Approach
 
 #### Manual Method (Small batches)
+
 1. Read source file
 2. Extract `@moduledoc` and `@doc` strings
 3. Create livebook with template structure
 4. Transcribe exactly without changes
 
 #### Automated Method (Large batches)
+
 Use the Task tool with general-purpose agent:
+
 ```
 Process files by extracting all @moduledoc and @doc strings exactly as they appear and create livebook files with exact transcription.
 ```
@@ -131,6 +139,7 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 ## Validation Rules
 
 ### Content Validation
+
 - [ ] Every `@moduledoc` from source appears in livebook
 - [ ] Every `@doc` from source appears in livebook  
 - [ ] No content added that wasn't in original docs
@@ -138,6 +147,7 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 - [ ] Code blocks maintain proper syntax highlighting
 
 ### Structure Validation
+
 - [ ] Directory structure uses topic-based organization
 - [ ] File naming convention: `.ex` → `.livemd`
 - [ ] All related concepts grouped in single directories
@@ -146,6 +156,7 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 - [ ] No missing modules or functions
 
 ### Quality Validation
+
 - [ ] No spelling changes or "corrections"
 - [ ] No grammar modifications
 - [ ] No reorganization of content
@@ -155,22 +166,26 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 ## File Coverage
 
 ### Protocols and Main Modules
+
 - [x] `eq.ex`, `eq/utils.ex` (Equality protocol)
-- [x] `ord.ex`, `ord/utils.ex` (Ordering protocol) 
+- [x] `ord.ex`, `ord/utils.ex` (Ordering protocol)
 - [x] `predicate.ex` (Predicate combinators)
 - [x] `foldable.ex` (Folding protocol)
 - [x] `filterable.ex` (Filtering protocol)
 
 ### Monoids (13 files)
+
 - [x] `monoid.ex` (main protocol)
 - [x] All `monoid/*.ex` implementations
 
 ### Monads (15 files)
+
 - [x] `monad.ex` (main protocol)
 - [x] All `monad/*.ex` implementations
 - [x] All monad variant files (`maybe/just.ex`, `either/left.ex`, etc.)
 
 ### Utilities and Support
+
 - [x] `utils.ex`, `list.ex`, `math.ex`
 - [x] `macros.ex`, `config.ex`
 - [x] `errors/*.ex` modules
@@ -179,6 +194,7 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 ## Common Mistakes to Avoid
 
 ### ❌ Don't Do
+
 - Modify or "improve" the original documentation text
 - Add explanatory text or introductions
 - Reorganize sections or change structure
@@ -187,6 +203,7 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 - Skip functions that seem "unimportant"
 
 ### ✅ Do
+
 - Copy text character-for-character
 - Preserve all formatting and indentation
 - Include every `@moduledoc` and `@doc`
@@ -208,6 +225,7 @@ For future recreation, use this systematic approach:
 ## Quality Assurance
 
 Before completing:
+
 1. Compare livebook count to `.ex` file count
 2. Spot-check random files for exact transcription
 3. Verify topic-based directory organization completed
@@ -229,11 +247,13 @@ Before completing:
 After initial transcription, livebook examples must be optimized for interactive execution:
 
 #### 1. Remove Result Comments
+
 - **Remove all result comments** like `# true`, `# false`, `# :ok`, `# [%{name: "Alice"}]`
 - Livebook shows actual execution results, making these comments redundant and potentially misleading
 - Clean code examples let users see real output
 
 #### 2. Split Grouped Examples
+
 - **Separate grouped examples into individual code blocks**
 - Livebook only shows the result of the last expression in each block
 - Each example should run independently and show its own result
@@ -241,6 +261,7 @@ After initial transcription, livebook examples must be optimized for interactive
 - **After**: Multiple blocks, each with one example
 
 #### 3. Use Imported Function Names
+
 - **Leverage import statements** to use short function names
 - If `import Funx.Eq.Utils` is present, use `eq?()` instead of `Funx.Eq.Utils.eq?()`
 - If `import Funx.Monad.Maybe` is present, use `just()` instead of `Funx.Monad.Maybe.just()`
@@ -248,7 +269,8 @@ After initial transcription, livebook examples must be optimized for interactive
 
 ### Transformation Examples
 
-#### Before (Original):
+#### Before (Original)
+
 ```markdown
 ### Examples
 
@@ -259,6 +281,7 @@ Funx.Eq.Utils.eq?(42, 42)
 Funx.Eq.Utils.eq?("foo", "bar")
 # false
 ```
+
 ```
 
 #### After (Livebook-optimized):
@@ -272,6 +295,7 @@ eq?(42, 42)
 ```elixir
 eq?("foo", "bar")
 ```
+
 ```
 
 ### Batch Processing Approach
@@ -372,10 +396,11 @@ docs: [
 
 # Custom processor converts:
 # FROM: https://livebook.dev/run?url=...github.com/JKWA/funx/blob/main/livebooks/eq/eq.livemd
-# TO:   https://livebook.dev/run?url=...hexdocs.pm/funx/0.1.7/livebooks/eq/eq.livemd
+# TO:   https://livebook.dev/run?url=...hexdocs.pm/funx/0.1.8/livebooks/eq/eq.livemd
 ```
 
 ### Benefits
+
 - **Single source of truth**: One index.md serves both contexts
 - **Context-appropriate behavior**: GitHub = latest, Hex = stable version
 - **Universal launch capability**: Both contexts support interactive livebook launching

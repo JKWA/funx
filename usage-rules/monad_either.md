@@ -113,6 +113,339 @@
 - Import `Funx.Monad` for `map`, `bind`, `ap` and `Funx.Foldable` for `fold_l`
 - Convert from Maybe with error context using helper functions
 
+## Either DSL
+
+The Either monad includes a declarative DSL for writing error-handling pipelines without explicit `bind`, `map`, or `ap` calls.
+
+**Design Philosophy:**
+
+- **Surface intent over implementation** - Focus on what the code does, not how
+- **Declarative error handling** - Let the DSL manage branching and short-circuits
+- **Pipeline-friendly** - Works naturally with Elixir's pipeline syntax
+- **Safer than bang functions** - Handle errors explicitly without sacrificing ergonomics
+- **Kleisli composition** - Chain operations that return branching types (Either, result tuples)
+
+**Key Benefits:**
+
+- Automatic input lifting (plain values, result tuples, Either values)
+- Short-circuits on first error (fail-fast behavior)
+- Compile-time warnings for common mistakes (bind vs map usage)
+- Multiple output formats (Either, tuple, or raise)
+- Clean, readable syntax for complex error-handling flows
+- More ergonomic than manual Either operations while maintaining safety
+
+### Basic Usage
+
+```elixir
+use Funx.Monad.Either
+
+either user_id do
+  bind fetch_user()
+  bind validate_active()
+  map transform_to_dto()
+end
+```
+
+### Practical Comparison: Before and After
+
+**Traditional Elixir with bang functions (unsafe):**
+
+```elixir
+def handle_close_assignment(id) do
+  assignment = Ash.get!(Assignment, id)  # Might crash!
+
+  case close_assignment(assignment) do
+    {:ok, updated} ->
+      updated = Ash.load!(updated, [:status, :user])  # Might crash!
+      {:ok, updated}
+
+    {:error, error} ->
+      {:error, error}
+  end
+end
+```
+
+**With Either DSL (safe and ergonomic):**
+
+```elixir
+def handle_close_assignment(id) do
+  either Assignment, as: :tuple do
+    bind Ash.get(id)
+    bind close_assignment()
+    bind Ash.load([:status, :user])
+  end
+end
+```
+
+The DSL version:
+
+- ✅ Handles all errors explicitly (no hidden crashes)
+- ✅ More concise (5 lines vs 10 lines)
+- ✅ Clearer intent (declarative pipeline)
+- ✅ All operations can fail safely
+
+### Supported Operations
+
+- `bind` - Chain operations that return Either or `{:ok, value}` / `{:error, reason}` tuples
+- `map` - Transform values with functions that return plain values
+- `ap` - Apply a function wrapped in Either to a value wrapped in Either
+- `validate` - Collect all validation errors from multiple validators
+- Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`
+
+### DSL Examples
+
+**Basic pipeline with bind and map:**
+
+```elixir
+either "42" do
+  bind parse_int()
+  bind validate_positive()
+  map double()
+end
+# right(84)
+```
+
+**Using ap to apply wrapped functions:**
+
+```elixir
+either 5 do
+  map fn x -> &(&1 + x) end  # Returns Right(fn y -> y + 5 end)
+  ap right(10)               # Applies function to 10
+end
+# right(15)
+```
+
+**Validation with error collection:**
+
+```elixir
+either user_data do
+  validate [
+    validate_name(),
+    validate_email(),
+    validate_age()
+  ]
+end
+# Collects all validation errors if any fail
+```
+
+**Filter with predicate:**
+
+```elixir
+either user do
+  bind fetch_user()
+  filter_or_else fn u -> u.level >= 10 end, fn -> "Level too low" end
+end
+```
+
+**Error recovery with or_else:**
+
+```elixir
+either user_id do
+  bind fetch_user()
+  or_else fn -> right(default_user()) end
+end
+```
+
+**Transform errors with map_left:**
+
+```elixir
+either input do
+  bind parse_json()
+  map_left fn error -> "Parse failed: #{error}" end
+end
+```
+
+### Output Formats
+
+**Default - Either (default):**
+
+```elixir
+either user_id do
+  bind fetch_user()
+end
+# Returns: right(%User{}) or left("error")
+```
+
+**Tuple format (`:tuple`):**
+
+```elixir
+either user_id, as: :tuple do
+  bind fetch_user()
+  map format_response()
+end
+# Returns: {:ok, response} or {:error, reason}
+```
+
+**Raise on error (`:raise`):**
+
+```elixir
+either config_path, as: :raise do
+  bind read_file()
+  bind parse_json()
+end
+# Returns: parsed value or raises RuntimeError
+```
+
+### Function Call Lifting
+
+The DSL automatically lifts function call syntax for cleaner pipelines:
+
+```elixir
+# Zero-arity qualified calls → function capture
+either user_id do
+  bind Repo.fetch_user()  # Becomes: &Repo.fetch_user/1
+end
+
+# Zero-arity bare calls → function capture
+either user_id do
+  bind validate_user()    # Becomes: &validate_user/1
+end
+
+# Partial application with arguments
+either user_id do
+  bind Repo.fetch_user(preload: :posts)  # Becomes: fn x -> Repo.fetch_user(x, preload: :posts) end
+end
+
+# Module references
+either user_id do
+  bind ParseInt           # Calls: ParseInt.run(user_id, [], env)
+  bind {ParseInt, base: 16}  # Calls: ParseInt.run(user_id, [base: 16], env)
+end
+```
+
+**This means you write:**
+
+```elixir
+either data do
+  bind parse_json()
+  bind validate_schema()
+end
+```
+
+**Instead of:**
+
+```elixir
+Either.right(data)
+|> bind(&parse_json/1)
+|> bind(&validate_schema/1)
+```
+
+### Input Lifting
+
+The DSL automatically lifts various input types:
+
+```elixir
+# Plain values → Right
+either 42 do
+  map &(&1 * 2)
+end
+# right(84)
+
+# Result tuples → Either
+either {:ok, 42} do
+  map &(&1 * 2)
+end
+# right(84)
+
+either {:error, "fail"} do
+  map &(&1 * 2)
+end
+# left("fail") - map never runs
+
+# Either values pass through
+either right(42) do
+  map &(&1 * 2)
+end
+# right(84)
+
+either left("error") do
+  map &(&1 * 2)
+end
+# left("error") - short-circuits immediately
+```
+
+### Module-Based Operations
+
+Create reusable operations as modules with `run/3`:
+
+```elixir
+defmodule ParseInt do
+  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  use Funx.Monad.Either
+
+  def run(str, _opts, _env) do
+    case Integer.parse(str) do
+      {int, ""} -> right(int)
+      _ -> left("Invalid integer: #{str}")
+    end
+  end
+end
+
+# Use in pipelines
+either "42" do
+  bind ParseInt
+  map &(&1 * 2)
+end
+
+# With options
+defmodule ParseIntWithBase do
+  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  use Funx.Monad.Either
+
+  def run(str, opts, _env) do
+    base = Keyword.get(opts, :base, 10)
+    case Integer.parse(str, base) do
+      {int, ""} -> right(int)
+      _ -> left("Invalid integer in base #{base}: #{str}")
+    end
+  end
+end
+
+either "FF" do
+  bind {ParseIntWithBase, base: 16}
+end
+# right(255)
+```
+
+### Compile-Time Safety
+
+**Warning: bind with plain value returns:**
+
+```elixir
+# ⚠️ Compile warning - function returns plain value, should use 'map'
+either 5 do
+  bind fn x -> x * 2 end
+end
+```
+
+**Warning: map with Either returns:**
+
+```elixir
+# ⚠️ Compile warning - function returns Either, should use 'bind'
+either 5 do
+  map fn x -> right(x * 2) end
+end
+```
+
+### When to Use the DSL
+
+**✅ Use the DSL when:**
+
+- You have multiple sequential operations that may fail
+- You want declarative, readable error-handling pipelines
+- You're combining bind, map, and validation operations
+- You prefer pipeline syntax over explicit function calls
+- You need automatic input lifting and type conversions
+- You want compile-time safety checks
+
+**❌ Use direct functions when:**
+
+- You only need one or two operations
+- You need complex branching or conditionals
+- You're implementing reusable combinators
+- Performance is critical (DSL has minimal but non-zero overhead)
+- You need fine-grained control over the monad operations
+
 ## Overview
 
 `Funx.Monad.Either` handles success/failure scenarios with detailed error context.
