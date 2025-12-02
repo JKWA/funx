@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0] - Unreleased
+
+### Added
+
+- Either DSL for writing declarative error-handling pipelines with support for `bind`, `map`, `ap`, `validate`, and Either functions (`filter_or_else`, `or_else`, `map_left`, `flip`)
+
 ## Beta Status (v0.1.x)
 
 ⚠️ **Funx is in active development. APIs may change until version 1.0.**
