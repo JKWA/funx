@@ -1035,6 +1035,35 @@ defmodule Funx.Monad.Either.DslTest do
 
       assert result == %Right{right: 50}
     end
+
+    test "zero-arity qualified calls are lifted in bind" do
+      # Module.fun() should become &Module.fun/1 in bind
+      result =
+        either 5 do
+          bind PipeTarget.check_positive()
+        end
+
+      assert result == %Right{right: 5}
+    end
+
+    test "zero-arity qualified calls are lifted in map" do
+      # Module.fun() should become &Module.fun/1 in map
+      result =
+        either "hello" do
+          map String.upcase()
+        end
+
+      assert result == %Right{right: "HELLO"}
+    end
+
+    test "zero-arity qualified calls work with error cases" do
+      result =
+        either -5 do
+          bind PipeTarget.check_positive()
+        end
+
+      assert result == %Left{left: "not positive"}
+    end
   end
 
   # ============================================================================

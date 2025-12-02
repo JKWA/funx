@@ -63,12 +63,19 @@ defmodule Funx.Monad.Either.Dsl do
   # Lifts Module.fun(args) to fn x -> Module.fun(x, args) end
   # Matches qualified calls like String.pad_leading(3, "0"), not variable calls
   defp lift_call_to_unary({{:., _, [mod_ast, fun_atom]}, _, args_ast}, _caller_env)
-       when is_atom(fun_atom) do
+       when is_atom(fun_atom) and is_list(args_ast) and args_ast != [] do
     quote do
       fn x ->
         unquote(mod_ast).unquote(fun_atom)(x, unquote_splicing(args_ast))
       end
     end
+  end
+
+  # Lifts Module.fun() (zero-arity) to &Module.fun/1
+  # Matches qualified calls like Validators.positive?()
+  defp lift_call_to_unary({{:., meta, [mod_ast, fun_atom]}, _call_meta, []}, _caller_env)
+       when is_atom(fun_atom) do
+    {:&, meta, [{:/, meta, [{{:., meta, [mod_ast, fun_atom]}, meta, []}, 1]}]}
   end
 
   # Lifts bare function calls with arguments: fun(args) to fn x -> fun(x, args) end
