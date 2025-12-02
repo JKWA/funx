@@ -80,6 +80,7 @@ end
 ```
 
 Supported operations:
+
 - `bind` - for operations that return Either or result tuples
 - `map` - for transformations that return plain values
 - `ap` - for applying a function in an Either to a value in an Either
