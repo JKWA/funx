@@ -72,7 +72,26 @@ defmodule Funx.Monad.Either do
   Although these implementations are defined on each constructor (`Left` and `Right`), the behavior is consistent across the `Either` abstraction.
 
   This module helps you model failure explicitly, compose error-aware logic, and integrate cleanly with Elixir's functional idioms.
+
+  ## DSL Usage
+
+  You can use the Either DSL for clean Kleisli composition:
+
+      use Funx.Monad.Either
+
+      either input do
+        ParseInt
+        bind PositiveNumber
+        Double
+      end
   """
+
+  defmacro __using__(_opts) do
+    quote do
+      import Funx.Monad.Either
+      import Funx.Monad.Either.Dsl
+    end
+  end
 
   import Funx.Appendable, only: [append: 2, coerce: 1]
   import Funx.Monad, only: [map: 2]
