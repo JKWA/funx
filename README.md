@@ -87,6 +87,17 @@ Supported operations:
 - `validate` - for accumulating multiple validation errors
 - Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`
 
+**Formatter Configuration**: Funx exports formatter rules for clean DSL formatting. Add `:funx` to `import_deps` in your `.formatter.exs`:
+
+```elixir
+[
+  import_deps: [:funx],
+  inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"]
+]
+```
+
+See [FORMATTER_EXPORT.md](FORMATTER_EXPORT.md) for details.
+
 ## Monoids
 
 Monoids combine values using an associative operation and an identity element. They are useful for accumulation, selection, and combining logic.
@@ -158,9 +169,13 @@ Funx integrates with common Elixir patterns like `{:ok, value}` and `{:error, re
 - `from_try/1`: Wraps a function call in a monad, capturing exceptions as failures.
 - `to_try!/1`: Extracts the value from a monad or raises if it represents a failure.
 
-## Documentation  
+## Documentation
 
 The authoritative API documentation is published on [HexDocs](https://hexdocs.pm/funx).
+
+## Learning Resources
+
+- **[Funx Blog Posts](https://www.joekoski.com/categories/funx/)** - Articles and tutorials about using Funx, including deep dives into the Either DSL and functional programming patterns in Elixir
 
 ## Contributing  
 
