@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.7">
+
+
+    <title>Funx.Monad.Either.Dsl — funx v0.1.7</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Either.Dsl.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-CC2BB560.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="modules" class="page-module">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.7
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+    <span translate="no">Funx.Monad.Either.Dsl</span> 
+    <small class="app-vsn" translate="no">(funx v0.1.7)</small>
+
+  </h1>
+
+
+    <section id="moduledoc">
+<p>Provides the <a href="#either/2"><code class="inline">either/2</code></a> macro for writing declarative pipelines in the Either context.</p><p>The DSL lets you express a sequence of operations that may fail without manually
+threading values through <code class="inline">bind</code>, <code class="inline">map</code>, or <code class="inline">map_left</code>. Input is lifted into Either
+automatically, each step runs in order, and the pipeline stops on the first error.</p><h2 id="module-supported-operations" class="section-heading">
+  <a href="#module-supported-operations" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Supported Operations</span>
+</h2>
+<ul><li><code class="inline">bind</code> - for operations that return Either or result tuples</li><li><code class="inline">map</code> - for transformations that return plain values</li><li>Either functions: <code class="inline">filter_or_else</code>, <code class="inline">or_else</code>, <code class="inline">map_left</code>, <code class="inline">flip</code></li><li>Validation: <code class="inline">validate</code> for accumulating multiple errors</li></ul><p>The result format is controlled by the <code class="inline">:as</code> option (<code class="inline">:either</code>, <code class="inline">:tuple</code>, or <code class="inline">:raise</code>).</p><h2 id="module-example" class="section-heading">
+  <a href="#module-example" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Example</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="ss">as</span><span class="p">:</span><span class="w"> </span><span class="ss">:tuple</span><span class="w"> </span><span class="k" data-group-id="1725494292-1">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">Accounts</span><span class="o">.</span><span class="n">get_user</span><span class="p" data-group-id="1725494292-2">(</span><span class="p" data-group-id="1725494292-2">)</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">Policies</span><span class="o">.</span><span class="n">ensure_active</span><span class="p" data-group-id="1725494292-3">(</span><span class="p" data-group-id="1725494292-3">)</span><span class="w">
+  </span><span class="n">map</span><span class="w"> </span><span class="k" data-group-id="1725494292-4">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="1725494292-5">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="n">user</span><span class="p" data-group-id="1725494292-5">}</span><span class="w"> </span><span class="k" data-group-id="1725494292-4">end</span><span class="w">
+</span><span class="k" data-group-id="1725494292-1">end</span></code></pre><h2 id="module-auto-lifting-of-function-calls" class="section-heading">
+  <a href="#module-auto-lifting-of-function-calls" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Auto-Lifting of Function Calls</span>
+</h2>
+<p>The DSL automatically lifts certain function call patterns for convenience:</p><ul><li><code class="inline">Module.fun()</code> becomes <code class="inline">&amp;Module.fun/1</code> (zero-arity qualified calls)</li><li><code class="inline">fun()</code> becomes <code class="inline">&amp;fun/1</code> (zero-arity bare calls)</li><li><code class="inline">fun(arg)</code> becomes <code class="inline">fn x -&gt; fun(x, arg) end</code> (partial application)</li><li><code class="inline">Module.fun(arg)</code> becomes <code class="inline">fn x -&gt; Module.fun(x, arg) end</code> (partial application)</li></ul><p>This is particularly useful in validator lists:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="2349845614-1">[</span><span class="nc">Validator</span><span class="o">.</span><span class="n">positive?</span><span class="p" data-group-id="2349845614-2">(</span><span class="p" data-group-id="2349845614-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Validator</span><span class="o">.</span><span class="n">even?</span><span class="p" data-group-id="2349845614-3">(</span><span class="p" data-group-id="2349845614-3">)</span><span class="p" data-group-id="2349845614-1">]</span><span class="w">
+</span><span class="c1"># Becomes: validate [&amp;Validator.positive?/1, &amp;Validator.even?/1]</span></code></pre><p>If you prefer explicit syntax, you can always use function captures directly:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="6296537738-1">[</span><span class="o">&amp;</span><span class="nc">Validator</span><span class="o">.</span><span class="n">positive?</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">Validator</span><span class="o">.</span><span class="n">even?</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="6296537738-1">]</span></code></pre><p>This module defines the public DSL entry point. The macro expansion details and
+internal rewrite rules are not part of the public API.</p>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#either/2" data-no-tooltip translate="no">either(input, list)</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#either/3" data-no-tooltip translate="no">either(input, opts, list)</a>
+
+      </div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+    <div class="functions-list">
+<section class="detail" id="either/2">
+
+  <div class="detail-header">
+    <a href="#either/2" class="detail-link" data-no-tooltip title="Link to this macro">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this macro</span>
+    </a>
+    <h1 class="signature" translate="no">either(input, list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl.ex#L367" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+      <span class="note">(macro)</span>
+
+  </div>
+
+  <section class="docstring">
+
+
+  </section>
+</section>
+<section class="detail" id="either/3">
+
+  <div class="detail-header">
+    <a href="#either/3" class="detail-link" data-no-tooltip title="Link to this macro">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this macro</span>
+    </a>
+    <h1 class="signature" translate="no">either(input, opts, list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl.ex#L372" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+      <span class="note">(macro)</span>
+
+  </div>
+
+  <section class="docstring">
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.7" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.7">Hex Preview</a>
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>

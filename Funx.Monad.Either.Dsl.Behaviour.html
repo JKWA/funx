@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.1.7">
+
+
+    <title>Funx.Monad.Either.Dsl.Behaviour — funx v0.1.7</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Either.Dsl.Behaviour.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-CC2BB560.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="modules" class="page-behaviour">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.1.7
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+    <span translate="no">Funx.Monad.Either.Dsl.Behaviour</span> <small>behaviour</small>
+    <small class="app-vsn" translate="no">(funx v0.1.7)</small>
+
+  </h1>
+
+
+    <section id="moduledoc">
+<p>Behaviour for modules that participate in the Either DSL.</p><p>A module implementing this behaviour must define <code class="inline">run/3</code>. The DSL calls
+<code class="inline">run/3</code> with the current value, the global environment provided to the
+<code class="inline">either</code> macro, and any options given alongside the module inside the DSL.
+How the return value is treated depends on whether the module is used with
+<code class="inline">bind</code>, <code class="inline">map</code>, or <code class="inline">run</code>.</p><h2 id="module-examples" class="section-heading">
+  <a href="#module-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<p>An operation that may fail:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">ParseInt</span><span class="w"> </span><span class="k" data-group-id="2913200601-1">do</span><span class="w">
+  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Either.Dsl.Behaviour</span><span class="w">
+  </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="w">
+
+  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="2913200601-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="2913200601-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_binary</span><span class="p" data-group-id="2913200601-3">(</span><span class="n">value</span><span class="p" data-group-id="2913200601-3">)</span><span class="w"> </span><span class="k" data-group-id="2913200601-4">do</span><span class="w">
+    </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="2913200601-5">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:base</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="2913200601-5">)</span><span class="w">
+
+    </span><span class="k">case</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">parse</span><span class="p" data-group-id="2913200601-6">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">base</span><span class="p" data-group-id="2913200601-6">)</span><span class="w"> </span><span class="k" data-group-id="2913200601-7">do</span><span class="w">
+      </span><span class="p" data-group-id="2913200601-8">{</span><span class="n">int</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p" data-group-id="2913200601-8">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="2913200601-9">(</span><span class="n">int</span><span class="p" data-group-id="2913200601-9">)</span><span class="w">
+      </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">left</span><span class="p" data-group-id="2913200601-10">(</span><span class="s">&quot;Invalid integer&quot;</span><span class="p" data-group-id="2913200601-10">)</span><span class="w">
+    </span><span class="k" data-group-id="2913200601-7">end</span><span class="w">
+  </span><span class="k" data-group-id="2913200601-4">end</span><span class="w">
+</span><span class="k" data-group-id="2913200601-1">end</span></code></pre><p>A pure transformation:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Double</span><span class="w"> </span><span class="k" data-group-id="9948461470-1">do</span><span class="w">
+  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Either.Dsl.Behaviour</span><span class="w">
+
+  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="9948461470-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="9948461470-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_number</span><span class="p" data-group-id="9948461470-3">(</span><span class="n">value</span><span class="p" data-group-id="9948461470-3">)</span><span class="w"> </span><span class="k" data-group-id="9948461470-4">do</span><span class="w">
+    </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w">
+  </span><span class="k" data-group-id="9948461470-4">end</span><span class="w">
+</span><span class="k" data-group-id="9948461470-1">end</span></code></pre><p>A validator that uses options:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">PositiveNumber</span><span class="w"> </span><span class="k" data-group-id="2685112118-1">do</span><span class="w">
+  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Either.Dsl.Behaviour</span><span class="w">
+  </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="w">
+
+  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="2685112118-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="2685112118-2">)</span><span class="w"> </span><span class="k" data-group-id="2685112118-3">do</span><span class="w">
+    </span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="2685112118-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:min</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="2685112118-4">)</span><span class="w">
+
+    </span><span class="k">if</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="k" data-group-id="2685112118-5">do</span><span class="w">
+      </span><span class="n">right</span><span class="p" data-group-id="2685112118-6">(</span><span class="n">value</span><span class="p" data-group-id="2685112118-6">)</span><span class="w">
+    </span><span class="k" data-group-id="2685112118-5">else</span><span class="w">
+      </span><span class="n">left</span><span class="p" data-group-id="2685112118-7">(</span><span class="s">&quot;must be &gt; </span><span class="se">\#</span><span class="s">{min}, got: </span><span class="se">\#</span><span class="s">{value}&quot;</span><span class="p" data-group-id="2685112118-7">)</span><span class="w">
+    </span><span class="k" data-group-id="2685112118-5">end</span><span class="w">
+  </span><span class="k" data-group-id="2685112118-3">end</span><span class="w">
+</span><span class="k" data-group-id="2685112118-1">end</span></code></pre><h2 id="module-usage-in-the-dsl" class="section-heading">
+  <a href="#module-usage-in-the-dsl" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Usage in the DSL</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="w">
+
+</span><span class="n">either</span><span class="w"> </span><span class="s">&quot;FF&quot;</span><span class="w"> </span><span class="k" data-group-id="8195690123-1">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">ParseInt</span><span class="p">,</span><span class="w"> </span><span class="ss">base</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">PositiveNumber</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+  </span><span class="n">map</span><span class="w"> </span><span class="nc">Double</span><span class="w">
+</span><span class="k" data-group-id="8195690123-1">end</span></code></pre><p><code class="inline">bind</code> unwraps the current Either value, calls <code class="inline">run/3</code>, and normalizes the
+result back into Either. <code class="inline">map</code> unwraps the value, calls <code class="inline">run/3</code>, and wraps the
+plain result back into Either.</p>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-callbacks summary">
+  <h2>
+    <a href="#callbacks">Callbacks</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#c:run/3" data-no-tooltip translate="no">run(value, env, opts)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Runs a single step in an Either pipeline.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="callbacks" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#callbacks">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Callbacks</span>
+    </h1>
+    <div class="callbacks-list">
+<section class="detail" id="c:run/3">
+
+  <div class="detail-header">
+    <a href="#c:run/3" class="detail-link" data-no-tooltip title="Link to this callback">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this callback</span>
+    </a>
+    <h1 class="signature" translate="no">run(value, env, opts)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl/behaviour.ex#L116" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@callback</span> run(value :: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), env :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">keyword</a>(), opts :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">keyword</a>()) ::
+  <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() | <a href="Funx.Monad.Either.html#t:t/2">Funx.Monad.Either.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) | {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()} | {:error, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()}</pre>
+
+      </div>
+
+<p>Runs a single step in an Either pipeline.</p><p>Arguments:</p><ul><li><p>value
+The current value provided by the pipeline.</p></li><li><p>env
+The read-only environment supplied by the <code class="inline">either</code> macro. It is threaded
+through the pipeline unchanged.</p></li><li><p>opts
+Module-specific options passed in the DSL, for example:</p><pre><code class="makeup elixir" translate="no"><span class="n">bind</span><span class="w"> </span><span class="nc">ParseInt</span><span class="p">,</span><span class="w"> </span><span class="ss">base</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span></code></pre></li></ul><p>Return expectations:</p><ul><li>With <code class="inline">bind</code>, <code class="inline">run/3</code> may return an Either or a result tuple.</li><li>With <code class="inline">map</code>, <code class="inline">run/3</code> should return a plain value.</li></ul><p>Examples:</p><pre><code class="makeup elixir" translate="no"><span class="c1"># Suitable for bind</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="1184906472-1">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="1184906472-1">)</span><span class="w"> </span><span class="k" data-group-id="1184906472-2">do</span><span class="w">
+  </span><span class="k">if</span><span class="w"> </span><span class="n">valid?</span><span class="p" data-group-id="1184906472-3">(</span><span class="n">value</span><span class="p" data-group-id="1184906472-3">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="1184906472-4">(</span><span class="n">value</span><span class="p" data-group-id="1184906472-4">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="n">left</span><span class="p" data-group-id="1184906472-5">(</span><span class="s">&quot;invalid&quot;</span><span class="p" data-group-id="1184906472-5">)</span><span class="w">
+</span><span class="k" data-group-id="1184906472-2">end</span><span class="w">
+
+</span><span class="c1"># Suitable for map</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="1184906472-6">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="1184906472-6">)</span><span class="w"> </span><span class="k" data-group-id="1184906472-7">do</span><span class="w">
+  </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="1184906472-8">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:multiplier</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1184906472-8">)</span><span class="w">
+</span><span class="k" data-group-id="1184906472-7">end</span><span class="w">
+
+</span><span class="c1"># Returning a result tuple (also suitable for bind)</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="1184906472-9">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="1184906472-9">)</span><span class="w"> </span><span class="k" data-group-id="1184906472-10">do</span><span class="w">
+  </span><span class="k">case</span><span class="w"> </span><span class="n">process</span><span class="p" data-group-id="1184906472-11">(</span><span class="n">value</span><span class="p" data-group-id="1184906472-11">)</span><span class="w"> </span><span class="k" data-group-id="1184906472-12">do</span><span class="w">
+    </span><span class="p" data-group-id="1184906472-13">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="1184906472-13">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="1184906472-14">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="1184906472-14">}</span><span class="w">
+    </span><span class="n">error</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">error</span><span class="w">
+  </span><span class="k" data-group-id="1184906472-12">end</span><span class="w">
+</span><span class="k" data-group-id="1184906472-10">end</span></code></pre>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.1.7" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.1.7">Hex Preview</a>
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
