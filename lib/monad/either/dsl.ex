@@ -25,7 +25,7 @@ defmodule Funx.Monad.Either.Dsl do
   alias Funx.Monad.Either
 
   # Functions that operate on Either directly (not unwrapped)
-  @either_functions [:filter_or_else, :or_else, :map_left, :get_or_else, :flip]
+  @either_functions [:filter_or_else, :or_else, :map_left, :flip]
 
   # Functions that work on unwrapped values (auto-bind)
   @bindable_functions [
@@ -360,7 +360,6 @@ defmodule Funx.Monad.Either.Dsl do
              filter_or_else: 3,
              or_else: 2,
              map_left: 2,
-             get_or_else: 2,
              flip: 1,
              # Bindable functions (work on unwrapped values)
              validate: 2
@@ -393,10 +392,6 @@ defmodule Funx.Monad.Either.Dsl do
         {operation, opts} = parse_operation_args(args)
         compile_first_map_operation(input, operation, opts, user_env, caller_env)
 
-      {:run, _, args} ->
-        {operation, opts} = parse_operation_args(args)
-        compile_first_run_operation(input, operation, opts, user_env, caller_env)
-
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         compile_either_function(input, func_name, meta, args, user_env, caller_env)
 
@@ -406,7 +401,6 @@ defmodule Funx.Monad.Either.Dsl do
           Invalid operation: #{Macro.to_string(module_alias)}
 
           Modules must be used with a keyword:
-            run #{Macro.to_string(module_alias)}
             bind #{Macro.to_string(module_alias)}
             map #{Macro.to_string(module_alias)}
           """
@@ -414,7 +408,7 @@ defmodule Funx.Monad.Either.Dsl do
       other ->
         raise CompileError,
           description:
-            "Invalid operation: #{inspect(other)}. Use 'run', 'bind', 'map', or Either functions."
+            "Invalid operation: #{inspect(other)}. Use 'bind', 'map', or Either functions."
     end
   end
 
@@ -435,14 +429,6 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # ============================================================================
-  # First run
-  # ============================================================================
-
-  defp compile_first_run_operation(input, operation, opts, user_env, caller_env) do
-    compile_run_operation(input, operation, opts, user_env, caller_env)
-  end
-
-  # ============================================================================
   # Subsequent operations
   # ============================================================================
 
@@ -456,10 +442,6 @@ defmodule Funx.Monad.Either.Dsl do
         {operation, opts} = parse_operation_args(args)
         compile_map_operation(previous, operation, opts, user_env, caller_env)
 
-      {:run, _, args} ->
-        {operation, opts} = parse_operation_args(args)
-        compile_run_operation(previous, operation, opts, user_env, caller_env)
-
       {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
         compile_either_function(previous, func_name, meta, args, user_env, caller_env)
 
@@ -468,7 +450,7 @@ defmodule Funx.Monad.Either.Dsl do
           description: """
           Invalid operation: #{Macro.to_string(module_alias)}
 
-          Use run/bind/map with modules.
+          Use bind/map with modules.
           """
 
       other ->
@@ -553,31 +535,6 @@ defmodule Funx.Monad.Either.Dsl do
       func ->
         quote do
           Funx.Monad.map(unquote(input_or_previous), unquote(func))
-        end
-    end
-  end
-
-  # ============================================================================
-  # run (unified)
-  # ============================================================================
-
-  defp compile_run_operation(input_or_previous, operation, opts, user_env, caller_env) do
-    case operation do
-      {:__aliases__, _, _} = module_alias ->
-        ensure_step_module_has_run!(module_alias, caller_env)
-
-        quote do
-          unquote(module_alias).run(unquote(input_or_previous), unquote(opts), unquote(user_env))
-        end
-
-      module when is_atom(module) ->
-        quote do
-          unquote(module).run(unquote(input_or_previous), unquote(opts), unquote(user_env))
-        end
-
-      func ->
-        quote do
-          unquote(func).(unquote(input_or_previous))
         end
     end
   end
@@ -724,7 +681,22 @@ defmodule Funx.Monad.Either.Dsl do
   defp wrap_with_return_type(pipeline_ast, return_as) do
     case return_as do
       :either ->
-        pipeline_ast
+        quote do
+          result = unquote(pipeline_ast)
+
+          case result do
+            %Either.Right{} -> result
+            %Either.Left{} -> result
+            other ->
+              raise ArgumentError, """
+              Expected Either struct when using as: :either, but got: #{inspect(other)}
+
+              The pipeline must return an Either value (Right or Left).
+              This typically happens when a function in the pipeline returns a plain value
+              instead of an Either or result tuple.
+              """
+          end
+        end
 
       :tuple ->
         quote do

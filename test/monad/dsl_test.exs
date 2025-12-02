@@ -284,110 +284,6 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
-  describe "run keyword - escape hatch" do
-    test "gives full control - receives Either directly" do
-      result =
-        either "42" do
-          run fn either ->
-            case either do
-              %Right{right: v} -> ParseInt.run(v, [], [])
-              left -> left
-            end
-          end
-        end
-
-      assert result == %Right{right: 42}
-    end
-
-    test "after bind operation" do
-      result =
-        either "42" do
-          bind ParseInt
-
-          run fn either ->
-            case either do
-              %Right{right: v} -> right(v * 2)
-              left -> left
-            end
-          end
-        end
-
-      assert result == %Right{right: 84}
-    end
-
-    test "does not normalize return value" do
-      result =
-        either "42" do
-          run fn either ->
-            case either do
-              %Right{right: x} ->
-                case Integer.parse(x) do
-                  {int, ""} -> {:ok, int}
-                  _ -> {:error, "invalid"}
-                end
-
-              %Left{left: e} ->
-                {:error, e}
-            end
-          end
-        end
-
-      assert result == {:ok, 42}
-    end
-
-    test "can return any value" do
-      result =
-        either "10" do
-          run fn either ->
-            case either do
-              %Right{right: x} -> String.to_integer(x) * 2
-              _ -> 0
-            end
-          end
-        end
-
-      assert result == 20
-    end
-
-    test "allows conditional logic on Either value" do
-      result =
-        either "10" do
-          bind ParseInt
-
-          run fn either ->
-            case either do
-              %Right{right: v} when v < 50 -> right(v * 2)
-              %Right{right: v} -> left("too large: #{v}")
-              left -> left
-            end
-          end
-        end
-
-      assert result == %Right{right: 20}
-    end
-
-    test "followed by bind normalizes the result" do
-      result =
-        either "42" do
-          run fn either ->
-            case either do
-              %Right{right: v} -> TupleParseInt.run(v, [], [])
-              %Left{left: e} -> {:error, e}
-            end
-          end
-
-          bind fn tuple ->
-            case tuple do
-              {:ok, value} -> PositiveNumber.run(value, [], [])
-              {:error, reason} -> left(reason)
-            end
-          end
-        end
-
-      assert result == %Right{right: 42}
-    end
-  end
-
   # ============================================================================
   # Either Module Functions (auto-imported)
   # ============================================================================
@@ -678,6 +574,26 @@ defmodule Funx.Monad.Either.DslTest do
           bind PositiveNumber
         end
       end
+    end
+
+    test "as: :either validates result is an Either struct" do
+      # This should work - returns Either
+      result =
+        either "42", as: :either do
+          bind ParseInt
+          bind PositiveNumber
+        end
+
+      assert result == %Right{right: 42}
+
+      # Failure case also returns Either
+      failure =
+        either "-5", as: :either do
+          bind ParseInt
+          bind PositiveNumber
+        end
+
+      assert %Left{} = failure
     end
   end
 
@@ -1202,7 +1118,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
-  describe "module-specific options with run" do
+  describe "module-specific options" do
     test "passes options to module run/3 function" do
       result =
         either "42" do
@@ -1212,7 +1128,7 @@ defmodule Funx.Monad.Either.DslTest do
       assert result == %Right{right: 42}
     end
 
-    test "run with options - demonstrates escape hatch" do
+    test "bind with options" do
       result =
         either "FF" do
           bind {ParseIntWithBase, base: 16}
@@ -1312,15 +1228,6 @@ defmodule Funx.Monad.Either.DslTest do
         end
 
       assert result == %Left{left: "validation: failed"}
-    end
-
-    test "allows get_or_else/2" do
-      result =
-        either left("error") do
-          get_or_else 0
-        end
-
-      assert result == 0
     end
 
     test "allows flip/1" do
