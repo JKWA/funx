@@ -22,13 +22,19 @@ defmodule Funx.MixProject do
         extras: [
           "README.md",
           "CHANGELOG.md",
+          "FORMATTER_EXPORT.md",
+          "RESOURCES.md",
           "LICENSE"
         ],
         filter_prefix: "Examples",
         source_url: "https://github.com/JKWA/funx",
         source_ref: "v#{@version}",
         source_url_pattern: "https://github.com/JKWA/funx/blob/v#{@version}/%{path}#L%{line}",
-        canonical: "https://hexdocs.pm/funx"
+        canonical: "https://hexdocs.pm/funx",
+        groups_for_extras: [
+          Guides: ["README.md", "FORMATTER_EXPORT.md"],
+          Resources: ["RESOURCES.md"]
+        ]
       ],
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
@@ -47,6 +53,7 @@ defmodule Funx.MixProject do
           "Docs" => "https://hexdocs.pm/funx",
           "Website" => "https://www.funxlib.com",
           "GitHub" => "https://github.com/JKWA/funx",
+          "Blog Posts" => "https://www.joekoski.com/categories/funx/",
           "Advanced FP with Elixir (Book)" =>
             "https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir"
         },
@@ -55,6 +62,8 @@ defmodule Funx.MixProject do
           "mix.exs",
           "README.md",
           "CHANGELOG.md",
+          "FORMATTER_EXPORT.md",
+          "RESOURCES.md",
           "LICENSE",
           "usage-rules",
           "usage-rules.md"

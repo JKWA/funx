@@ -6,12 +6,18 @@ The Funx library now exports formatter rules for its Either DSL, allowing projec
 
 ## Exported Rules
 
-The following DSL functions are configured to format without parentheses:
+The following Either DSL functions are configured to format without parentheses:
 
 - `either/2` - DSL entry point
-- `bind/1` - Bind operation
-- `map/1` - Map operation
-- `run/1` - Run operation
+- `bind/1` - Chain operations that return Either or result tuples
+- `map/1` - Transform values with plain functions
+- `ap/1` - Apply function in Either to value in Either
+- `validate/1` - Collect all errors from validators
+- `filter_or_else/2` - Filter with predicate, fallback if fails
+- `or_else/1` - Provide fallback on error
+- `map_left/1` - Transform error values
+
+Note that `flip/0` - Swap Left and Right still requires parentheses.
 
 ## Usage in Dependent Projects
 
@@ -22,7 +28,7 @@ Make sure your `mix.exs` includes Funx as a dependency:
 ```elixir
 def deps do
   [
-    {:funx, "~> 0.5"}
+    {:funx, "~> 0.2"}
   ]
 end
 ```
@@ -61,7 +67,9 @@ With this configuration, your DSL code will format cleanly:
 either user_input do
   bind ParseUser
   map ValidateEmail
+  validate [CheckLength, CheckFormat]
   bind SaveToDatabase
+  or_else default_user()
 end
 ```
 
@@ -71,7 +79,9 @@ Instead of:
 either(user_input) do
   bind(ParseUser)
   map(ValidateEmail)
+  validate([CheckLength, CheckFormat])
   bind(SaveToDatabase)
+  or_else(default_user())
 end
 ```
 

@@ -446,6 +446,35 @@ end
 - Performance is critical (DSL has minimal but non-zero overhead)
 - You need fine-grained control over the monad operations
 
+### Formatter Configuration
+
+Funx exports formatter rules for clean DSL formatting without parentheses. To enable in your project:
+
+**Add to `.formatter.exs`:**
+
+```elixir
+[
+  import_deps: [:funx],
+  inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"]
+]
+```
+
+**This formats DSL code cleanly:**
+
+```elixir
+# With formatter rules (clean)
+either user_id do
+  bind fetch_user()
+  map format_response()
+end
+
+# Without formatter rules (parentheses added)
+either(user_id) do
+  bind(fetch_user())
+  map(format_response())
+end
+```
+
 ## Overview
 
 `Funx.Monad.Either` handles success/failure scenarios with detailed error context.

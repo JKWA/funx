@@ -7,12 +7,11 @@ export_locals_without_parens = [
   either: 2,
   bind: 1,
   map: 1,
-  run: 1,
+  ap: 1,
   validate: 1,
   filter_or_else: 2,
   or_else: 1,
-  map_left: 1,
-  get_or_else: 1
+  map_left: 1
 ]
 
 [
