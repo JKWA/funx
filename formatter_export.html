@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.2.0">
+
+
+    <title>Funx Formatter Configuration Export — funx v0.2.0</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/formatter_export.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-E1A398D3.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="extras" class="page-extra">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.2.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.2.0/FORMATTER_EXPORT.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+
+    <span>Funx Formatter Configuration Export</span>
+  </h1>
+
+<h2 id="what-this-does" class="section-heading">
+  <a href="#what-this-does" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">What This Does</span>
+</h2>
+<p>The Funx library now exports formatter rules for its Either DSL, allowing projects that depend on Funx to automatically format DSL code without extra parentheses.</p><h2 id="exported-rules" class="section-heading">
+  <a href="#exported-rules" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Exported Rules</span>
+</h2>
+<p>The following Either DSL functions are configured to format without parentheses:</p><ul><li><code class="inline">either/2</code> - DSL entry point</li><li><code class="inline">bind/1</code> - Chain operations that return Either or result tuples</li><li><code class="inline">map/1</code> - Transform values with plain functions</li><li><code class="inline">ap/1</code> - Apply function in Either to value in Either</li><li><code class="inline">validate/1</code> - Collect all errors from validators</li><li><code class="inline">filter_or_else/2</code> - Filter with predicate, fallback if fails</li><li><code class="inline">or_else/1</code> - Provide fallback on error</li><li><code class="inline">map_left/1</code> - Transform error values</li></ul><p>Note that <code class="inline">flip/0</code> - Swap Left and Right still requires parentheses.</p><h2 id="usage-in-dependent-projects" class="section-heading">
+  <a href="#usage-in-dependent-projects" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Usage in Dependent Projects</span>
+</h2>
+<h3 id="step-1-add-to-dependencies" class="section-heading">
+  <a href="#step-1-add-to-dependencies" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Step 1: Add to Dependencies</span>
+</h3>
+<p>Make sure your <code class="inline">mix.exs</code> includes Funx as a dependency:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="3110498867-1">do</span><span class="w">
+  </span><span class="p" data-group-id="3110498867-2">[</span><span class="w">
+    </span><span class="p" data-group-id="3110498867-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.2&quot;</span><span class="p" data-group-id="3110498867-3">}</span><span class="w">
+  </span><span class="p" data-group-id="3110498867-2">]</span><span class="w">
+</span><span class="k" data-group-id="3110498867-1">end</span></code></pre><h3 id="step-2-update-formatter-exs" class="section-heading">
+  <a href="#step-2-update-formatter-exs" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Step 2: Update .formatter.exs</span>
+</h3>
+<p>In your project's <code class="inline">.formatter.exs</code>, add <code class="inline">:funx</code> to <code class="inline">import_deps</code>:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="9417530740-1">[</span><span class="w">
+  </span><span class="ss">import_deps</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9417530740-2">[</span><span class="ss">:funx</span><span class="p" data-group-id="9417530740-2">]</span><span class="p">,</span><span class="w">
+  </span><span class="ss">inputs</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9417530740-3">[</span><span class="s">&quot;{mix,.formatter}.exs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;{config,lib,test}/**/*.{ex,exs}&quot;</span><span class="p" data-group-id="9417530740-3">]</span><span class="w">
+</span><span class="p" data-group-id="9417530740-1">]</span></code></pre><h3 id="step-3-remove-manual-configuration-if-present" class="section-heading">
+  <a href="#step-3-remove-manual-configuration-if-present" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Step 3: Remove Manual Configuration (if present)</span>
+</h3>
+<p>If you previously had manual configuration like this:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="6865878025-1">[</span><span class="w">
+  </span><span class="ss">locals_without_parens</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6865878025-2">[</span><span class="w">
+    </span><span class="ss">bind</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+    </span><span class="ss">map</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+  </span><span class="p" data-group-id="6865878025-2">]</span><span class="w">
+</span><span class="p" data-group-id="6865878025-1">]</span></code></pre><p>You can now <strong>remove it</strong> - the rules will be automatically imported from Funx.</p><h2 id="example" class="section-heading">
+  <a href="#example" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Example</span>
+</h2>
+<p>With this configuration, your DSL code will format cleanly:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">user_input</span><span class="w"> </span><span class="k" data-group-id="5260068797-1">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">ParseUser</span><span class="w">
+  </span><span class="n">map</span><span class="w"> </span><span class="nc">ValidateEmail</span><span class="w">
+  </span><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="5260068797-2">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="5260068797-2">]</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">SaveToDatabase</span><span class="w">
+  </span><span class="n">or_else</span><span class="w"> </span><span class="n">default_user</span><span class="p" data-group-id="5260068797-3">(</span><span class="p" data-group-id="5260068797-3">)</span><span class="w">
+</span><span class="k" data-group-id="5260068797-1">end</span></code></pre><p>Instead of:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="p" data-group-id="6967225475-1">(</span><span class="n">user_input</span><span class="p" data-group-id="6967225475-1">)</span><span class="w"> </span><span class="k" data-group-id="6967225475-2">do</span><span class="w">
+  </span><span class="n">bind</span><span class="p" data-group-id="6967225475-3">(</span><span class="nc">ParseUser</span><span class="p" data-group-id="6967225475-3">)</span><span class="w">
+  </span><span class="n">map</span><span class="p" data-group-id="6967225475-4">(</span><span class="nc">ValidateEmail</span><span class="p" data-group-id="6967225475-4">)</span><span class="w">
+  </span><span class="n">validate</span><span class="p" data-group-id="6967225475-5">(</span><span class="p" data-group-id="6967225475-6">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="6967225475-6">]</span><span class="p" data-group-id="6967225475-5">)</span><span class="w">
+  </span><span class="n">bind</span><span class="p" data-group-id="6967225475-7">(</span><span class="nc">SaveToDatabase</span><span class="p" data-group-id="6967225475-7">)</span><span class="w">
+  </span><span class="n">or_else</span><span class="p" data-group-id="6967225475-8">(</span><span class="n">default_user</span><span class="p" data-group-id="6967225475-9">(</span><span class="p" data-group-id="6967225475-9">)</span><span class="p" data-group-id="6967225475-8">)</span><span class="w">
+</span><span class="k" data-group-id="6967225475-2">end</span></code></pre><h2 id="verification" class="section-heading">
+  <a href="#verification" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Verification</span>
+</h2>
+<p>To verify the formatter rules are being imported correctly, you can run:</p><pre><code class="makeup bash" translate="no"><span class="">mix format --check-formatted
+</span></code></pre><p>Your DSL code should format without adding parentheses.</p>
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="readme.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+README
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+      <a href="resources.html" class="bottom-actions-button" rel="next">
+        <span class="subheader">
+          Next Page →
+        </span>
+        <span class="title">
+Learning Resources
+        </span>
+      </a>
+
+  </div>
+</div>
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.2.0" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.2.0">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/funx/0.2.0/show/FORMATTER_EXPORT.md">current file</a>)
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
