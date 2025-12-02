@@ -65,6 +65,28 @@ Monads encapsulate computations, allowing operations to be chained while handlin
 - `Reader`: Passes an immutable environment through a computation for dependency injection or configuration.
 - `Writer`: Threads a log alongside a result using any monoid—useful for tracing, reporting, or accumulating metadata during computation.
 
+### Either DSL
+
+The Either monad includes a DSL for writing declarative pipelines that handle errors gracefully:
+
+```elixir
+use Funx.Monad.Either
+
+either user_id do
+  bind fetch_user()
+  bind validate_active()
+  map transform_to_dto()
+end
+```
+
+Supported operations:
+
+- `bind` - for operations that return Either or result tuples
+- `map` - for transformations that return plain values
+- `ap` - for applying a function in an Either to a value in an Either
+- `validate` - for accumulating multiple validation errors
+- Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`
+
 ## Monoids
 
 Monoids combine values using an associative operation and an identity element. They are useful for accumulation, selection, and combining logic.

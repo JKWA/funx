@@ -149,6 +149,65 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  describe "ap keyword" do
+    test "applies a function in Right to a value in Right" do
+      result =
+        either right(&(&1 + 1)) do
+          ap right(42)
+        end
+
+      assert result == %Right{right: 43}
+    end
+
+    test "returns Left if the function is in Left" do
+      result =
+        either left("error") do
+          ap right(42)
+        end
+
+      assert result == %Left{left: "error"}
+    end
+
+    test "returns Left if the value is in Left" do
+      result =
+        either right(&(&1 + 1)) do
+          ap left("error")
+        end
+
+      assert result == %Left{left: "error"}
+    end
+
+    test "returns Left if both are Left" do
+      result =
+        either left("error1") do
+          ap left("error2")
+        end
+
+      assert result == %Left{left: "error1"}
+    end
+
+    test "chains with bind and map" do
+      result =
+        either "10" do
+          bind ParseInt
+          map fn x -> &(&1 + x) end
+          ap right(5)
+        end
+
+      assert result == %Right{right: 15}
+    end
+
+    test "applies a function from previous step" do
+      result =
+        either 5 do
+          map fn x -> &(&1 + x) end
+          ap right(10)
+        end
+
+      assert result == %Right{right: 15}
+    end
+  end
+
   describe "map keyword" do
     test "with module" do
       result =
