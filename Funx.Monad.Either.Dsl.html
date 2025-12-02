@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.1.7">
+    <meta name="project" content="funx v0.2.0">
 
 
-    <title>Funx.Monad.Either.Dsl — funx v0.1.7</title>
+    <title>Funx.Monad.Either.Dsl — funx v0.2.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-CC2BB560.js"></script>
+    <script src="dist/sidebar_items-42B38B29.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -52,7 +52,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.1.7
+          v0.2.0
         </div>
       </div>
     </div>
@@ -114,13 +114,13 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.0/lib/monad/either/dsl.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
     <span translate="no">Funx.Monad.Either.Dsl</span> 
-    <small class="app-vsn" translate="no">(funx v0.1.7)</small>
+    <small class="app-vsn" translate="no">(funx v0.2.0)</small>
 
   </h1>
 
@@ -140,18 +140,18 @@ automatically, each step runs in order, and the pipeline stops on the first erro
   </a>
   <span class="text">Example</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="ss">as</span><span class="p">:</span><span class="w"> </span><span class="ss">:tuple</span><span class="w"> </span><span class="k" data-group-id="8091213358-1">do</span><span class="w">
-  </span><span class="n">bind</span><span class="w"> </span><span class="nc">Accounts</span><span class="o">.</span><span class="n">get_user</span><span class="p" data-group-id="8091213358-2">(</span><span class="p" data-group-id="8091213358-2">)</span><span class="w">
-  </span><span class="n">bind</span><span class="w"> </span><span class="nc">Policies</span><span class="o">.</span><span class="n">ensure_active</span><span class="p" data-group-id="8091213358-3">(</span><span class="p" data-group-id="8091213358-3">)</span><span class="w">
-  </span><span class="n">map</span><span class="w"> </span><span class="k" data-group-id="8091213358-4">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="8091213358-5">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="n">user</span><span class="p" data-group-id="8091213358-5">}</span><span class="w"> </span><span class="k" data-group-id="8091213358-4">end</span><span class="w">
-</span><span class="k" data-group-id="8091213358-1">end</span></code></pre><h2 id="module-auto-lifting-of-function-calls" class="section-heading">
+<pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="ss">as</span><span class="p">:</span><span class="w"> </span><span class="ss">:tuple</span><span class="w"> </span><span class="k" data-group-id="8690959835-1">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">Accounts</span><span class="o">.</span><span class="n">get_user</span><span class="p" data-group-id="8690959835-2">(</span><span class="p" data-group-id="8690959835-2">)</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">Policies</span><span class="o">.</span><span class="n">ensure_active</span><span class="p" data-group-id="8690959835-3">(</span><span class="p" data-group-id="8690959835-3">)</span><span class="w">
+  </span><span class="n">map</span><span class="w"> </span><span class="k" data-group-id="8690959835-4">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="8690959835-5">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="n">user</span><span class="p" data-group-id="8690959835-5">}</span><span class="w"> </span><span class="k" data-group-id="8690959835-4">end</span><span class="w">
+</span><span class="k" data-group-id="8690959835-1">end</span></code></pre><h2 id="module-auto-lifting-of-function-calls" class="section-heading">
   <a href="#module-auto-lifting-of-function-calls" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Auto-Lifting of Function Calls</span>
 </h2>
-<p>The DSL automatically lifts certain function call patterns for convenience:</p><ul><li><code class="inline">Module.fun()</code> becomes <code class="inline">&amp;Module.fun/1</code> (zero-arity qualified calls)</li><li><code class="inline">fun()</code> becomes <code class="inline">&amp;fun/1</code> (zero-arity bare calls)</li><li><code class="inline">fun(arg)</code> becomes <code class="inline">fn x -&gt; fun(x, arg) end</code> (partial application)</li><li><code class="inline">Module.fun(arg)</code> becomes <code class="inline">fn x -&gt; Module.fun(x, arg) end</code> (partial application)</li></ul><p>This is particularly useful in validator lists:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="2063509831-1">[</span><span class="nc">Validator</span><span class="o">.</span><span class="n">positive?</span><span class="p" data-group-id="2063509831-2">(</span><span class="p" data-group-id="2063509831-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Validator</span><span class="o">.</span><span class="n">even?</span><span class="p" data-group-id="2063509831-3">(</span><span class="p" data-group-id="2063509831-3">)</span><span class="p" data-group-id="2063509831-1">]</span><span class="w">
-</span><span class="c1"># Becomes: validate [&amp;Validator.positive?/1, &amp;Validator.even?/1]</span></code></pre><p>If you prefer explicit syntax, you can always use function captures directly:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="4809652706-1">[</span><span class="o">&amp;</span><span class="nc">Validator</span><span class="o">.</span><span class="n">positive?</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">Validator</span><span class="o">.</span><span class="n">even?</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4809652706-1">]</span></code></pre><p>This module defines the public DSL entry point. The macro expansion details and
+<p>The DSL automatically lifts certain function call patterns for convenience:</p><ul><li><code class="inline">Module.fun()</code> becomes <code class="inline">&amp;Module.fun/1</code> (zero-arity qualified calls)</li><li><code class="inline">fun()</code> becomes <code class="inline">&amp;fun/1</code> (zero-arity bare calls)</li><li><code class="inline">fun(arg)</code> becomes <code class="inline">fn x -&gt; fun(x, arg) end</code> (partial application)</li><li><code class="inline">Module.fun(arg)</code> becomes <code class="inline">fn x -&gt; Module.fun(x, arg) end</code> (partial application)</li></ul><p>This is particularly useful in validator lists:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="2752913720-1">[</span><span class="nc">Validator</span><span class="o">.</span><span class="n">positive?</span><span class="p" data-group-id="2752913720-2">(</span><span class="p" data-group-id="2752913720-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Validator</span><span class="o">.</span><span class="n">even?</span><span class="p" data-group-id="2752913720-3">(</span><span class="p" data-group-id="2752913720-3">)</span><span class="p" data-group-id="2752913720-1">]</span><span class="w">
+</span><span class="c1"># Becomes: validate [&amp;Validator.positive?/1, &amp;Validator.even?/1]</span></code></pre><p>If you prefer explicit syntax, you can always use function captures directly:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="4001228520-1">[</span><span class="o">&amp;</span><span class="nc">Validator</span><span class="o">.</span><span class="n">positive?</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">Validator</span><span class="o">.</span><span class="n">even?</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4001228520-1">]</span></code></pre><p>This module defines the public DSL entry point. The macro expansion details and
 internal rewrite rules are not part of the public API.</p>
     </section>
 
@@ -207,7 +207,7 @@ internal rewrite rules are not part of the public API.</p>
     </a>
     <h1 class="signature" translate="no">either(input, list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl.ex#L368" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.0/lib/monad/either/dsl.ex#L368" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -231,7 +231,7 @@ internal rewrite rules are not part of the public API.</p>
     </a>
     <h1 class="signature" translate="no">either(input, opts, list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl.ex#L373" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.0/lib/monad/either/dsl.ex#L373" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -254,9 +254,9 @@ internal rewrite rules are not part of the public API.</p>
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.1.7" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.2.0" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/funx/0.1.7">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.2.0">Hex Preview</a>
 
           </span>
 

@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.1.7">
+    <meta name="project" content="funx v0.2.0">
 
 
-    <title>Funx.Monad.Either.Dsl.Behaviour — funx v0.1.7</title>
+    <title>Funx.Monad.Either.Dsl.Behaviour — funx v0.2.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-CC2BB560.js"></script>
+    <script src="dist/sidebar_items-42B38B29.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -52,7 +52,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.1.7
+          v0.2.0
         </div>
       </div>
     </div>
@@ -114,13 +114,13 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.0/lib/monad/either/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
     <span translate="no">Funx.Monad.Either.Dsl.Behaviour</span> <small>behaviour</small>
-    <small class="app-vsn" translate="no">(funx v0.1.7)</small>
+    <small class="app-vsn" translate="no">(funx v0.2.0)</small>
 
   </h1>
 
@@ -136,41 +136,41 @@ How the return value is treated depends on whether the module is used with
   </a>
   <span class="text">Examples</span>
 </h2>
-<p>An operation that may fail:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">ParseInt</span><span class="w"> </span><span class="k" data-group-id="9035498686-1">do</span><span class="w">
+<p>An operation that may fail:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">ParseInt</span><span class="w"> </span><span class="k" data-group-id="1719996142-1">do</span><span class="w">
   </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Either.Dsl.Behaviour</span><span class="w">
   </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="w">
 
   </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
-  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="9035498686-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="9035498686-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_binary</span><span class="p" data-group-id="9035498686-3">(</span><span class="n">value</span><span class="p" data-group-id="9035498686-3">)</span><span class="w"> </span><span class="k" data-group-id="9035498686-4">do</span><span class="w">
-    </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="9035498686-5">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:base</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="9035498686-5">)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="1719996142-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="1719996142-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_binary</span><span class="p" data-group-id="1719996142-3">(</span><span class="n">value</span><span class="p" data-group-id="1719996142-3">)</span><span class="w"> </span><span class="k" data-group-id="1719996142-4">do</span><span class="w">
+    </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="1719996142-5">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:base</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="1719996142-5">)</span><span class="w">
 
-    </span><span class="k">case</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">parse</span><span class="p" data-group-id="9035498686-6">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">base</span><span class="p" data-group-id="9035498686-6">)</span><span class="w"> </span><span class="k" data-group-id="9035498686-7">do</span><span class="w">
-      </span><span class="p" data-group-id="9035498686-8">{</span><span class="n">int</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p" data-group-id="9035498686-8">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="9035498686-9">(</span><span class="n">int</span><span class="p" data-group-id="9035498686-9">)</span><span class="w">
-      </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">left</span><span class="p" data-group-id="9035498686-10">(</span><span class="s">&quot;Invalid integer&quot;</span><span class="p" data-group-id="9035498686-10">)</span><span class="w">
-    </span><span class="k" data-group-id="9035498686-7">end</span><span class="w">
-  </span><span class="k" data-group-id="9035498686-4">end</span><span class="w">
-</span><span class="k" data-group-id="9035498686-1">end</span></code></pre><p>A pure transformation:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Double</span><span class="w"> </span><span class="k" data-group-id="1994777095-1">do</span><span class="w">
+    </span><span class="k">case</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">parse</span><span class="p" data-group-id="1719996142-6">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">base</span><span class="p" data-group-id="1719996142-6">)</span><span class="w"> </span><span class="k" data-group-id="1719996142-7">do</span><span class="w">
+      </span><span class="p" data-group-id="1719996142-8">{</span><span class="n">int</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p" data-group-id="1719996142-8">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="1719996142-9">(</span><span class="n">int</span><span class="p" data-group-id="1719996142-9">)</span><span class="w">
+      </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">left</span><span class="p" data-group-id="1719996142-10">(</span><span class="s">&quot;Invalid integer&quot;</span><span class="p" data-group-id="1719996142-10">)</span><span class="w">
+    </span><span class="k" data-group-id="1719996142-7">end</span><span class="w">
+  </span><span class="k" data-group-id="1719996142-4">end</span><span class="w">
+</span><span class="k" data-group-id="1719996142-1">end</span></code></pre><p>A pure transformation:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Double</span><span class="w"> </span><span class="k" data-group-id="3693205223-1">do</span><span class="w">
   </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Either.Dsl.Behaviour</span><span class="w">
 
   </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
-  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="1994777095-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="1994777095-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_number</span><span class="p" data-group-id="1994777095-3">(</span><span class="n">value</span><span class="p" data-group-id="1994777095-3">)</span><span class="w"> </span><span class="k" data-group-id="1994777095-4">do</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="3693205223-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="3693205223-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_number</span><span class="p" data-group-id="3693205223-3">(</span><span class="n">value</span><span class="p" data-group-id="3693205223-3">)</span><span class="w"> </span><span class="k" data-group-id="3693205223-4">do</span><span class="w">
     </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w">
-  </span><span class="k" data-group-id="1994777095-4">end</span><span class="w">
-</span><span class="k" data-group-id="1994777095-1">end</span></code></pre><p>A validator that uses options:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">PositiveNumber</span><span class="w"> </span><span class="k" data-group-id="4107505128-1">do</span><span class="w">
+  </span><span class="k" data-group-id="3693205223-4">end</span><span class="w">
+</span><span class="k" data-group-id="3693205223-1">end</span></code></pre><p>A validator that uses options:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">PositiveNumber</span><span class="w"> </span><span class="k" data-group-id="4856184444-1">do</span><span class="w">
   </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Either.Dsl.Behaviour</span><span class="w">
   </span><span class="kn">import</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="w">
 
   </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
-  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="4107505128-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="4107505128-2">)</span><span class="w"> </span><span class="k" data-group-id="4107505128-3">do</span><span class="w">
-    </span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="4107505128-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:min</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4107505128-4">)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="4856184444-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="4856184444-2">)</span><span class="w"> </span><span class="k" data-group-id="4856184444-3">do</span><span class="w">
+    </span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="4856184444-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:min</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4856184444-4">)</span><span class="w">
 
-    </span><span class="k">if</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="k" data-group-id="4107505128-5">do</span><span class="w">
-      </span><span class="n">right</span><span class="p" data-group-id="4107505128-6">(</span><span class="n">value</span><span class="p" data-group-id="4107505128-6">)</span><span class="w">
-    </span><span class="k" data-group-id="4107505128-5">else</span><span class="w">
-      </span><span class="n">left</span><span class="p" data-group-id="4107505128-7">(</span><span class="s">&quot;must be &gt; </span><span class="se">\#</span><span class="s">{min}, got: </span><span class="se">\#</span><span class="s">{value}&quot;</span><span class="p" data-group-id="4107505128-7">)</span><span class="w">
-    </span><span class="k" data-group-id="4107505128-5">end</span><span class="w">
-  </span><span class="k" data-group-id="4107505128-3">end</span><span class="w">
-</span><span class="k" data-group-id="4107505128-1">end</span></code></pre><h2 id="module-usage-in-the-dsl" class="section-heading">
+    </span><span class="k">if</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="k" data-group-id="4856184444-5">do</span><span class="w">
+      </span><span class="n">right</span><span class="p" data-group-id="4856184444-6">(</span><span class="n">value</span><span class="p" data-group-id="4856184444-6">)</span><span class="w">
+    </span><span class="k" data-group-id="4856184444-5">else</span><span class="w">
+      </span><span class="n">left</span><span class="p" data-group-id="4856184444-7">(</span><span class="s">&quot;must be &gt; </span><span class="se">\#</span><span class="s">{min}, got: </span><span class="se">\#</span><span class="s">{value}&quot;</span><span class="p" data-group-id="4856184444-7">)</span><span class="w">
+    </span><span class="k" data-group-id="4856184444-5">end</span><span class="w">
+  </span><span class="k" data-group-id="4856184444-3">end</span><span class="w">
+</span><span class="k" data-group-id="4856184444-1">end</span></code></pre><h2 id="module-usage-in-the-dsl" class="section-heading">
   <a href="#module-usage-in-the-dsl" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -178,11 +178,11 @@ How the return value is treated depends on whether the module is used with
 </h2>
 <pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="w">
 
-</span><span class="n">either</span><span class="w"> </span><span class="s">&quot;FF&quot;</span><span class="w"> </span><span class="k" data-group-id="9040769908-1">do</span><span class="w">
+</span><span class="n">either</span><span class="w"> </span><span class="s">&quot;FF&quot;</span><span class="w"> </span><span class="k" data-group-id="1928889908-1">do</span><span class="w">
   </span><span class="n">bind</span><span class="w"> </span><span class="nc">ParseInt</span><span class="p">,</span><span class="w"> </span><span class="ss">base</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="w">
   </span><span class="n">bind</span><span class="w"> </span><span class="nc">PositiveNumber</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
   </span><span class="n">map</span><span class="w"> </span><span class="nc">Double</span><span class="w">
-</span><span class="k" data-group-id="9040769908-1">end</span></code></pre><p><code class="inline">bind</code> unwraps the current Either value, calls <code class="inline">run/3</code>, and normalizes the
+</span><span class="k" data-group-id="1928889908-1">end</span></code></pre><p><code class="inline">bind</code> unwraps the current Either value, calls <code class="inline">run/3</code>, and normalizes the
 result back into Either. <code class="inline">map</code> unwraps the value, calls <code class="inline">run/3</code>, and wraps the
 plain result back into Either.</p>
     </section>
@@ -233,7 +233,7 @@ plain result back into Either.</p>
     </a>
     <h1 class="signature" translate="no">run(value, env, opts)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.1.7/lib/monad/either/dsl/behaviour.ex#L116" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.0/lib/monad/either/dsl/behaviour.ex#L116" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -255,22 +255,22 @@ The current value provided by the pipeline.</p></li><li><p>env
 The read-only environment supplied by the <code class="inline">either</code> macro. It is threaded
 through the pipeline unchanged.</p></li><li><p>opts
 Module-specific options passed in the DSL, for example:</p><pre><code class="makeup elixir" translate="no"><span class="n">bind</span><span class="w"> </span><span class="nc">ParseInt</span><span class="p">,</span><span class="w"> </span><span class="ss">base</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span></code></pre></li></ul><p>Return expectations:</p><ul><li>With <code class="inline">bind</code>, <code class="inline">run/3</code> may return an Either or a result tuple.</li><li>With <code class="inline">map</code>, <code class="inline">run/3</code> should return a plain value.</li></ul><p>Examples:</p><pre><code class="makeup elixir" translate="no"><span class="c1"># Suitable for bind</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="7359693116-1">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="7359693116-1">)</span><span class="w"> </span><span class="k" data-group-id="7359693116-2">do</span><span class="w">
-  </span><span class="k">if</span><span class="w"> </span><span class="n">valid?</span><span class="p" data-group-id="7359693116-3">(</span><span class="n">value</span><span class="p" data-group-id="7359693116-3">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="7359693116-4">(</span><span class="n">value</span><span class="p" data-group-id="7359693116-4">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="n">left</span><span class="p" data-group-id="7359693116-5">(</span><span class="s">&quot;invalid&quot;</span><span class="p" data-group-id="7359693116-5">)</span><span class="w">
-</span><span class="k" data-group-id="7359693116-2">end</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="8165790201-1">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="8165790201-1">)</span><span class="w"> </span><span class="k" data-group-id="8165790201-2">do</span><span class="w">
+  </span><span class="k">if</span><span class="w"> </span><span class="n">valid?</span><span class="p" data-group-id="8165790201-3">(</span><span class="n">value</span><span class="p" data-group-id="8165790201-3">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">right</span><span class="p" data-group-id="8165790201-4">(</span><span class="n">value</span><span class="p" data-group-id="8165790201-4">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="n">left</span><span class="p" data-group-id="8165790201-5">(</span><span class="s">&quot;invalid&quot;</span><span class="p" data-group-id="8165790201-5">)</span><span class="w">
+</span><span class="k" data-group-id="8165790201-2">end</span><span class="w">
 
 </span><span class="c1"># Suitable for map</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="7359693116-6">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="7359693116-6">)</span><span class="w"> </span><span class="k" data-group-id="7359693116-7">do</span><span class="w">
-  </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="7359693116-8">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:multiplier</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7359693116-8">)</span><span class="w">
-</span><span class="k" data-group-id="7359693116-7">end</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="8165790201-6">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="8165790201-6">)</span><span class="w"> </span><span class="k" data-group-id="8165790201-7">do</span><span class="w">
+  </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="8165790201-8">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:multiplier</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8165790201-8">)</span><span class="w">
+</span><span class="k" data-group-id="8165790201-7">end</span><span class="w">
 
 </span><span class="c1"># Returning a result tuple (also suitable for bind)</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="7359693116-9">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="7359693116-9">)</span><span class="w"> </span><span class="k" data-group-id="7359693116-10">do</span><span class="w">
-  </span><span class="k">case</span><span class="w"> </span><span class="n">process</span><span class="p" data-group-id="7359693116-11">(</span><span class="n">value</span><span class="p" data-group-id="7359693116-11">)</span><span class="w"> </span><span class="k" data-group-id="7359693116-12">do</span><span class="w">
-    </span><span class="p" data-group-id="7359693116-13">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="7359693116-13">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="7359693116-14">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="7359693116-14">}</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">run</span><span class="p" data-group-id="8165790201-9">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="8165790201-9">)</span><span class="w"> </span><span class="k" data-group-id="8165790201-10">do</span><span class="w">
+  </span><span class="k">case</span><span class="w"> </span><span class="n">process</span><span class="p" data-group-id="8165790201-11">(</span><span class="n">value</span><span class="p" data-group-id="8165790201-11">)</span><span class="w"> </span><span class="k" data-group-id="8165790201-12">do</span><span class="w">
+    </span><span class="p" data-group-id="8165790201-13">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="8165790201-13">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="8165790201-14">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="8165790201-14">}</span><span class="w">
     </span><span class="n">error</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">error</span><span class="w">
-  </span><span class="k" data-group-id="7359693116-12">end</span><span class="w">
-</span><span class="k" data-group-id="7359693116-10">end</span></code></pre>
+  </span><span class="k" data-group-id="8165790201-12">end</span><span class="w">
+</span><span class="k" data-group-id="8165790201-10">end</span></code></pre>
   </section>
 </section>
 
@@ -281,9 +281,9 @@ Module-specific options passed in the DSL, for example:</p><pre><code class="mak
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.1.7" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.2.0" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/funx/0.1.7">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.2.0">Hex Preview</a>
 
           </span>
 
