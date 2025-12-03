@@ -162,6 +162,106 @@ either "1" do
 end
 ```
 
+### Using Modules with `tap`, `map_left`, and `filter_or_else`
+
+Just like `bind` and `map`, you can use modules that implement the `run/3` callback with other DSL operations like `tap`, `map_left`, and `filter_or_else`. This is particularly useful for creating reusable logging, error transformation, and validation logic.
+
+**Note:** Due to Livebook's module compilation behavior, the module-based examples below are commented out. These patterns work correctly in compiled Elixir code (tests, applications) but may not work reliably when modules are defined dynamically in Livebook cells.
+
+For working examples of module-based `tap`, `map_left`, and `filter_or_else`, see the test suite at `test/monad/dsl_test.exs`.
+
+#### `tap` with Modules
+
+```elixir
+# Example module pattern (works in compiled code):
+#
+# defmodule HeroLogger do
+#   @behaviour Funx.Monad.Either.Dsl.Behaviour
+#   use Funx.Monad.Either
+#
+#   def run(hero, opts, _env) do
+#     prefix = Keyword.get(opts, :prefix, "HERO")
+#     IO.puts("#{prefix}: #{inspect(hero)}")
+#     hero  # tap returns the original value unchanged
+#   end
+# end
+#
+# # Use with bare module:
+# either "1" do
+#   bind HeroRegistry.parse_hero_id()
+#   tap HeroLogger
+#   bind HeroRegistry.fetch_hero()
+# end
+#
+# # Use with module and options:
+# either "1" do
+#   bind HeroRegistry.parse_hero_id()
+#   tap {HeroLogger, prefix: "Parsed ID"}
+#   bind HeroRegistry.fetch_hero()
+#   tap {HeroLogger, prefix: "Fetched Hero"}
+#   map fn hero -> hero.name end
+# end
+```
+
+#### `map_left` with Modules
+
+```elixir
+# Example module pattern (works in compiled code):
+#
+# defmodule ErrorFormatter do
+#   @behaviour Funx.Monad.Either.Dsl.Behaviour
+#   use Funx.Monad.Either
+#
+#   def run(error, opts, _env) do
+#     context = Keyword.get(opts, :context, "Error")
+#     severity = Keyword.get(opts, :severity, "ERROR")
+#     "[#{severity}] #{context}: #{error}"
+#   end
+# end
+#
+# # Use with bare module:
+# either "invalid" do
+#   bind HeroRegistry.parse_hero_id()
+#   map_left ErrorFormatter
+# end
+#
+# # Use with module and options:
+# either "invalid" do
+#   bind HeroRegistry.parse_hero_id()
+#   map_left {ErrorFormatter, context: "Hero ID Parsing", severity: "WARN"}
+# end
+```
+
+#### `filter_or_else` with Modules
+
+```elixir
+# Example module pattern (works in compiled code):
+#
+# defmodule IsEliteHero do
+#   @behaviour Funx.Monad.Either.Dsl.Behaviour
+#   use Funx.Monad.Either
+#
+#   def run(hero, opts, _env) do
+#     min_level = Keyword.get(opts, :min_level, 10)
+#     hero.level >= min_level
+#   end
+# end
+#
+# # Use with bare module:
+# either "1" do
+#   bind HeroRegistry.parse_hero_id()
+#   bind HeroRegistry.fetch_hero()
+#   filter_or_else IsEliteHero, fn -> "Only elite heroes allowed" end
+# end
+#
+# # Use with module and options:
+# either "1" do
+#   bind HeroRegistry.parse_hero_id()
+#   bind HeroRegistry.fetch_hero()
+#   filter_or_else {IsEliteHero, min_level: 8}, fn -> "Hero level too low" end
+# end
+```
+
 ## Output Formats
 
 ### Default: Either
@@ -519,8 +619,23 @@ The Either DSL provides a clean, declarative way to write error-handling pipelin
 - **`tap`** - for side effects without changing the value (debugging, logging)
 - **Either functions** - `filter_or_else`, `or_else`, `map_left`, `flip`
 - **Validation** - `validate` for accumulating multiple errors
+- **Module support** - use modules with `bind`, `map`, `tap`, `map_left`, and `filter_or_else` for reusable operations
+- **Options support** - pass options to modules using `{Module, opts}` syntax
 - **Output formats** - `:either`, `:tuple`, or `:raise`
 - **Auto-lifting** - automatic conversion of function calls to work in pipelines
 - **Compile-time safety** - warnings for common mistakes
+
+### Module Support Summary
+
+All these operations support modules that implement `run/3`:
+
+- **`bind Module`** - module returns Either or tuple
+- **`map Module`** - module returns plain value
+- **`tap Module`** - module performs side effect, returns value unchanged
+- **`map_left Module`** - module transforms Left value
+- **`filter_or_else Module, fallback`** - module returns boolean predicate
+- **`validate [Module1, Module2]`** - modules validate and accumulate errors
+
+Use `{Module, key: value}` syntax to pass options to any module's `run/3` function.
 
 This makes error handling explicit, composable, and easy to reason about!
