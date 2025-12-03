@@ -1,6 +1,4 @@
-# Funx Formatter Configuration Export
-
-## What This Does
+# Formatter Rules
 
 The Funx library now exports formatter rules for its Either DSL, allowing projects that depend on Funx to automatically format DSL code without extra parentheses.
 
@@ -43,21 +41,6 @@ In your project's `.formatter.exs`, add `:funx` to `import_deps`:
   inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"]
 ]
 ```
-
-### Step 3: Remove Manual Configuration (if present)
-
-If you previously had manual configuration like this:
-
-```elixir
-[
-  locals_without_parens: [
-    bind: 1,
-    map: 1
-  ]
-]
-```
-
-You can now **remove it** - the rules will be automatically imported from Funx.
 
 ## Example
 
