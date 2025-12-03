@@ -6,6 +6,7 @@ defmodule WriterTest do
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Monad.Writer
 
+  alias Funx.Monad.Writer
   alias Funx.Monoid.StringConcat
 
   test "pure wraps value with no log" do
@@ -33,6 +34,106 @@ defmodule WriterTest do
 
     assert result.value == :ok
     assert result.log == [:log1]
+  end
+
+  test "tap returns the original Writer value unchanged" do
+    result =
+      pure(5)
+      |> Writer.tap(fn x -> x * 2 end)
+      |> run()
+
+    assert result.value == 5
+    assert result.log == []
+  end
+
+  test "tap does not add to the log" do
+    result =
+      writer({42, [:initial]})
+      |> Writer.tap(fn _x -> :side_effect end)
+      |> run()
+
+    assert result.value == 42
+    assert result.log == [:initial]
+  end
+
+  test "tap executes the side effect function" do
+    test_pid = self()
+
+    result =
+      pure(42)
+      |> Writer.tap(fn x ->
+        send(test_pid, {:tapped, x})
+      end)
+      |> run()
+
+    assert result.value == 42
+    assert_received {:tapped, 42}
+  end
+
+  test "tap works in a pipeline" do
+    test_pid = self()
+
+    result =
+      pure(5)
+      |> map(&(&1 * 2))
+      |> Writer.tap(fn x -> send(test_pid, {:step1, x}) end)
+      |> map(&(&1 + 1))
+      |> Writer.tap(fn x -> send(test_pid, {:step2, x}) end)
+      |> run()
+
+    assert result.value == 11
+    assert result.log == []
+    assert_received {:step1, 10}
+    assert_received {:step2, 11}
+  end
+
+  test "tap discards the return value of the side effect function" do
+    result =
+      pure(5)
+      |> Writer.tap(fn _x ->
+        # Return value should be ignored
+        :this_should_be_discarded
+      end)
+      |> run()
+
+    assert result.value == 5
+  end
+
+  test "tap vs tell - tap does not log" do
+    tap_result =
+      pure(42)
+      |> Writer.tap(fn _x -> :side_effect end)
+      |> run()
+
+    tell_result =
+      pure(42)
+      |> bind(fn x ->
+        tell([:logged])
+        |> map(fn _ -> x end)
+      end)
+      |> run()
+
+    assert tap_result.log == []
+    assert tell_result.log == [:logged]
+  end
+
+  test "tap with bind and tell in pipeline" do
+    test_pid = self()
+
+    result =
+      pure(5)
+      |> Writer.tap(fn x -> send(test_pid, {:before_tell, x}) end)
+      |> bind(fn x ->
+        tell([:processing])
+        |> map(fn _ -> x * 2 end)
+      end)
+      |> Writer.tap(fn x -> send(test_pid, {:after_tell, x}) end)
+      |> run()
+
+    assert result.value == 10
+    assert result.log == [:processing]
+    assert_received {:before_tell, 5}
+    assert_received {:after_tell, 10}
   end
 
   test "listen returns both the result and the accumulated log" do

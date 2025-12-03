@@ -27,6 +27,7 @@ defmodule Funx.Monad.Either do
     - `map_left/2`: Transforms a `Left` using a function, leaving `Right` values unchanged.
     - `flip/1`: Swaps `Left` and `Right`, turning errors into successes and vice versa.
     - `filter_or_else/3`: Applies a predicate to the `Right` value; if false, returns a fallback `Left`.
+    - `tap/2`: Executes a side-effect function on a `Right` value, returning the original `Either` unchanged.
 
   ### List Operations
 
@@ -364,6 +365,29 @@ defmodule Funx.Monad.Either do
         when error: term(), new_error: term(), value: term()
   def map_left(%Left{left: error}, func) when is_function(func, 1), do: left(func.(error))
   def map_left(%Right{} = right, _func), do: right
+
+  @doc """
+  Executes a side-effect function on a `Right` value and returns the original `Either` unchanged.
+  If the `Either` is a `Left`, the function is not called and the `Left` is returned as-is.
+
+  Useful for debugging, logging, or performing side effects in the middle of a pipeline without changing the value.
+
+  ## Examples
+
+      iex> Funx.Monad.Either.right(5) |> Funx.Monad.Either.tap(fn x -> x * 2 end)
+      %Funx.Monad.Either.Right{right: 5}
+
+      iex> Funx.Monad.Either.left("error") |> Funx.Monad.Either.tap(fn x -> x * 2 end)
+      %Funx.Monad.Either.Left{left: "error"}
+  """
+  @spec tap(t(error, value), (value -> any())) :: t(error, value)
+        when error: term(), value: term()
+  def tap(either, func) when is_function(func, 1) do
+    map(either, fn value ->
+      func.(value)
+      value
+    end)
+  end
 
   @doc """
   Removes `Left` values from a list of `Either` and returns a list of unwrapped `Right` values.

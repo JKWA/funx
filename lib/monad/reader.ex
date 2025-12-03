@@ -9,6 +9,7 @@ defmodule Funx.Monad.Reader do
     * `run/2` – Executes the Reader with a given environment.
     * `asks/1` – Extracts and transforms a value from the environment.
     * `ask/0` – Extracts the full environment.
+    * `tap/2` – Executes a side-effect function on the computed value, returning the original `Reader` unchanged.
 
   This module implements the following protocol:
 
@@ -71,6 +72,29 @@ defmodule Funx.Monad.Reader do
   """
   @spec ask() :: t(Env, Env) when Env: var
   def ask, do: asks(fn env -> env end)
+
+  @doc """
+  Executes a side-effect function on the computed value and returns the original `Reader` unchanged.
+
+  Useful for debugging, logging, or performing side effects in the middle of a Reader pipeline
+  without changing the computed value. The side effect executes when the Reader is run.
+
+  ## Examples
+
+      iex> reader = Funx.Monad.Reader.pure(5) |> Funx.Monad.Reader.tap(fn x -> x * 2 end)
+      iex> Funx.Monad.Reader.run(reader, %{})
+      5
+  """
+  @spec tap(t(Env, A), (A -> any())) :: t(Env, A) when Env: var, A: var
+  def tap(%__MODULE__{run: f}, func) when is_function(func, 1) do
+    %__MODULE__{
+      run: fn env ->
+        value = f.(env)
+        func.(value)
+        value
+      end
+    }
+  end
 end
 
 defimpl Funx.Monad, for: Funx.Monad.Reader do

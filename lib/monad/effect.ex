@@ -36,6 +36,7 @@ defmodule Funx.Monad.Effect do
 
     * `map_left/2` – Transforms a `Left` using a function, leaving `Right` values unchanged.
     * `flip_either/1` –  Inverts the success and failure branches of an `Effect`.
+    * `tap/2` – Executes a side-effect function on a `Right` value, returning the original `Effect` unchanged.
 
   ## Lifting
 
@@ -566,6 +567,51 @@ defmodule Funx.Monad.Effect do
       end
     }
   end
+
+  @doc """
+  Executes a side-effect function on a `Right` value and returns the original `Effect` unchanged.
+  If the `Effect` is `Left`, the function is not called and the `Left` is returned as-is.
+
+  Useful for debugging, logging, telemetry, or performing side effects in the middle of an effectful
+  pipeline without changing the value.
+
+  The side effect function is executed when the effect is run, not when `tap` is called (deferred execution).
+
+  ## Examples
+
+      iex> effect = Funx.Monad.Effect.right(5)
+      iex> tapped = Funx.Monad.Effect.tap(effect, fn _x -> :ok end)
+      iex> Funx.Monad.Effect.run(tapped)
+      %Funx.Monad.Either.Right{right: 5}
+
+      iex> effect = Funx.Monad.Effect.left("error")
+      iex> tapped = Funx.Monad.Effect.tap(effect, fn _x -> :ok end)
+      iex> Funx.Monad.Effect.run(tapped)
+      %Funx.Monad.Either.Left{left: "error"}
+  """
+  @spec tap(t(error, value), (value -> any())) :: t(error, value)
+        when error: term(), value: term()
+  def tap(%Right{effect: eff, context: context}, func) when is_function(func, 1) do
+    promoted_context = Effect.Context.promote_trace(context, "tap")
+
+    %Right{
+      context: promoted_context,
+      effect: fn env ->
+        Task.async(fn ->
+          case Effect.run(%Right{effect: eff, context: context}, env) do
+            %Either.Right{right: value} = result ->
+              func.(value)
+              result
+
+            %Either.Left{} = left ->
+              left
+          end
+        end)
+      end
+    }
+  end
+
+  def tap(%Left{} = left, _func), do: left
 
   @doc """
   Inverts the success and failure branches of an `Effect`.

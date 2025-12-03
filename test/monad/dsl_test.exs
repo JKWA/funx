@@ -1298,6 +1298,49 @@ defmodule Funx.Monad.Either.DslTest do
       assert result == %Right{right: "error"}
     end
 
+    test "allows tap/2 on Right" do
+      test_pid = self()
+
+      result =
+        either 5 do
+          map(&(&1 * 2))
+          tap(fn x -> send(test_pid, {:tapped, x}) end)
+          map(&(&1 + 1))
+        end
+
+      assert result == %Right{right: 11}
+      assert_received {:tapped, 10}
+    end
+
+    test "allows tap/2 on Left" do
+      result =
+        either left("error") do
+          tap(fn x -> send(self(), {:should_not_tap, x}) end)
+        end
+
+      assert result == %Left{left: "error"}
+      refute_received {:should_not_tap, _}
+    end
+
+    test "tap/2 in a complex pipeline" do
+      test_pid = self()
+
+      result =
+        either "42" do
+          bind ParseInt
+          tap(fn x -> send(test_pid, {:after_parse, x}) end)
+          bind PositiveNumber
+          tap(fn x -> send(test_pid, {:after_validate, x}) end)
+          map(&(&1 * 2))
+          tap(fn x -> send(test_pid, {:final, x}) end)
+        end
+
+      assert result == %Right{right: 84}
+      assert_received {:after_parse, 42}
+      assert_received {:after_validate, 42}
+      assert_received {:final, 84}
+    end
+
     test "allows validate/2" do
       result =
         either 4 do

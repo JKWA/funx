@@ -11,7 +11,7 @@ defmodule Funx.Monad.Either.Dsl do
   - `bind` - for operations that return Either or result tuples
   - `map` - for transformations that return plain values
   - `ap` - for applying a function in an Either to a value in an Either
-  - Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`
+  - Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`, `tap`
   - Validation: `validate` for accumulating multiple errors
 
   The result format is controlled by the `:as` option (`:either`, `:tuple`, or `:raise`).
@@ -50,7 +50,7 @@ defmodule Funx.Monad.Either.Dsl do
   alias Funx.Monad.Either
 
   # Functions that operate on Either directly (not unwrapped)
-  @either_functions [:filter_or_else, :or_else, :map_left, :flip]
+  @either_functions [:filter_or_else, :or_else, :map_left, :flip, :tap]
 
   # Functions that work on unwrapped values (auto-bind)
   @bindable_functions [
@@ -405,6 +405,8 @@ defmodule Funx.Monad.Either.Dsl do
 
     quote do
       (fn ->
+         import Kernel, except: [tap: 2]
+
          import Either,
            only: [
              # Constructors (needed for callbacks and fallbacks)
@@ -415,6 +417,7 @@ defmodule Funx.Monad.Either.Dsl do
              or_else: 2,
              map_left: 2,
              flip: 1,
+             tap: 2,
              # Bindable functions (work on unwrapped values)
              validate: 2
            ]
