@@ -46,6 +46,7 @@ You may pass `:task_supervisor` in the `opts` to run the effect under a specific
 
 * `map_left/2` – Transforms a `Left` using a function, leaving `Right` values unchanged.
 * `flip_either/1` –  Inverts the success and failure branches of an `Effect`.
+* `tap/2` – Executes a side-effect function on a `Right` value, returning the original `Effect` unchanged.
 
 ## Lifting
 
@@ -433,6 +434,50 @@ transformed = map_left(effect, fn _ -> "should not be called" end)
 
 ```elixir
 run(transformed)
+```
+
+### tap/2
+
+Executes a side-effect function on a `Right` value and returns the original `Effect` unchanged.
+If the `Effect` is `Left`, the function is not called.
+
+The side effect is **deferred** - it executes when the Effect is run, not when `tap` is called.
+
+Useful for debugging, logging, telemetry, or performing side effects in async pipelines.
+
+```elixir
+# Side effect on Right (deferred until run)
+effect =
+  right(42)
+  |> Effect.tap(fn x -> IO.puts("Value: #{x}") end)
+```
+
+```elixir
+run(effect)  # Prints "Value: 42", returns right(42)
+```
+
+```elixir
+# No side effect on Left
+effect =
+  left("error")
+  |> Effect.tap(fn x -> IO.puts("Value: #{x}") end)
+```
+
+```elixir
+run(effect)  # Nothing printed, returns left("error")
+```
+
+```elixir
+# In an async pipeline
+effect =
+  right(5)
+  |> Funx.Monad.map(&(&1 * 2))
+  |> Effect.tap(fn x -> IO.puts("After map: #{x}") end)
+  |> Funx.Monad.map(&(&1 + 1))
+```
+
+```elixir
+run(effect)
 ```
 
 ### flip_either/1

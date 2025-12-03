@@ -35,6 +35,7 @@ This pattern is useful for eliminating `nil` checks and handling missing data ex
 
   - `get_or_else/2`: Returns the value from a `Just`, or a default if `Nothing`.
   - `or_else/2`: Returns the original `Just`, or invokes a fallback function if `Nothing`.
+  - `tap/2`: Executes a side-effect function on a `Just` value, returning the original `Maybe` unchanged.
 
 ## List Operations
 
@@ -151,6 +152,33 @@ or_else(nothing(), fn -> just(42) end)
 
 ```elixir
 or_else(just(10), fn -> just(42) end)
+```
+
+### tap/2
+
+Executes a side-effect function on a `Just` value and returns the original `Maybe` unchanged.
+If the `Maybe` is `Nothing`, the function is not called.
+
+Useful for debugging, logging, or performing side effects without changing the value.
+
+```elixir
+# Side effect on Just
+just(42)
+|> Maybe.tap(&IO.inspect(&1, label: "debug"))
+```
+
+```elixir
+# No side effect on Nothing
+nothing()
+|> Maybe.tap(&IO.inspect(&1, label: "debug"))
+```
+
+```elixir
+# In a pipeline
+just(5)
+|> Funx.Monad.map(&(&1 * 2))
+|> Maybe.tap(&IO.inspect(&1, label: "after map"))
+|> Funx.Monad.map(&(&1 + 1))
 ```
 
 ### lift_eq/1

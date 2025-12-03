@@ -20,6 +20,7 @@ Logs are accumulated using a `Monoid` implementation, injected lazily at runtime
 * `pure/1` – Wraps a result with an empty log.
 * `writer/1` – Wraps a result and an explicit log.
 * `tell/1` – Emits a log with no result.
+* `tap/2` – Executes a side-effect function on the value without affecting the Writer's value or log.
 * `listen/1` – Returns both result and log as a pair.
 * `censor/2` – Applies a function to transform the final log.
 * `pass/1` – Uses a log-transforming function returned from within the computation.
@@ -96,6 +97,47 @@ result.value
 
 ```elixir
 result.log
+```
+
+### tap/2
+
+Executes a side-effect function on the value without affecting the Writer's value or log.
+
+**Important**: `tap` does NOT add to the Writer's log. Use `tell/1` if you want to add to the log.
+
+Useful for debugging, external logging, or side effects separate from the computation's log.
+
+```elixir
+# Side effect that doesn't add to log
+writer =
+  pure(42)
+  |> Writer.tap(&IO.inspect(&1, label: "debug"))
+
+result = run(writer)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log  # Empty - tap doesn't add to log!
+```
+
+```elixir
+# Compare with tell (adds to log)
+writer =
+  pure(42)
+  |> Funx.Monad.bind(fn x ->
+    tell(["processed #{x}"])
+    |> Funx.Monad.map(fn _ -> x end)
+  end)
+
+result = run(writer)
+```
+
+```elixir
+result.log  # Contains ["processed 42"]
 ```
 
 ### listen/1
