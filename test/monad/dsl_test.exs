@@ -868,7 +868,7 @@ defmodule Funx.Monad.Either.DslTest do
           end
         end
 
-      assert_raise CompileError, fn ->
+      assert_raise UndefinedFunctionError, fn ->
         Code.eval_quoted(quoted)
       end
     end
@@ -1376,44 +1376,6 @@ defmodule Funx.Monad.Either.DslTest do
             either "42" do
               bind ParseInt
               123
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when module doesn't exist at compile time" do
-      assert_raise CompileError, ~r/is not available at compile time/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              bind NonExistentModuleThatDoesNotExist
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when module doesn't implement run/3" do
-      defmodule TestModuleWithoutRun do
-        def some_function(x), do: x
-      end
-
-      assert_raise CompileError, ~r/must implement run\/3/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              bind TestModuleWithoutRun
             end
           end,
           [],
@@ -2255,6 +2217,52 @@ defmodule Funx.Monad.Either.DslTest do
         end)
 
       assert warning == ""
+    end
+  end
+
+  # ============================================================================
+  # Run-Time Error Handling
+  # ============================================================================
+
+  describe "run-time error handling" do
+    test "raises when module doesn't exist at run time" do
+      assert_raise UndefinedFunctionError,
+                   ~r/module NonExistentModuleThatDoesNotExist is not available/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         require Dsl
+                         import Dsl
+
+                         either "42" do
+                           bind NonExistentModuleThatDoesNotExist
+                         end
+                       end,
+                       [],
+                       __ENV__
+                     )
+                   end
+    end
+
+    test "raises when module doesn't implement run/3" do
+      defmodule TestModuleWithoutRun do
+        def some_function(x), do: x
+      end
+
+      assert_raise UndefinedFunctionError, ~r/run\/3 is undefined/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either "42" do
+              bind TestModuleWithoutRun
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
     end
   end
 end

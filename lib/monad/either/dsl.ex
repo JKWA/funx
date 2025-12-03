@@ -292,76 +292,6 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # ============================================================================
-  # Helper: validate bare modules used with bind/map
-  # ============================================================================
-
-  defp ensure_step_module_has_run!(module_alias_ast, env) do
-    expanded = Macro.expand(module_alias_ast, env)
-
-    mod =
-      case expanded do
-        {:__aliases__, _, parts} -> Module.concat(parts)
-        atom when is_atom(atom) -> atom
-        other -> other
-      end
-
-    if is_atom(mod) do
-      validate_module_exports!(mod, module_alias_ast)
-    end
-
-    :ok
-  end
-
-  defp validate_module_exports!(mod, module_alias_ast) do
-    case Code.ensure_compiled(mod) do
-      {:module, _} ->
-        unless function_exported?(mod, :run, 3) do
-          raise CompileError,
-            description: """
-            Invalid operation: #{Macro.to_string(module_alias_ast)}
-
-            Modules used with 'bind' or 'map' must implement run/3
-            via the @behaviour Funx.Monad.Either.Dsl.Behaviour.
-
-            Example:
-
-                defmodule #{inspect(mod)} do
-                  @behaviour Funx.Monad.Either.Dsl.Behaviour
-
-                  @impl true
-                  def run(value, _env, _opts) do
-                    # your logic here
-                  end
-                end
-            """
-        end
-
-        # Check if module implements the behaviour (optional but recommended)
-        behaviours = mod.module_info(:attributes)[:behaviour] || []
-        either_behaviour = Funx.Monad.Either.Dsl.Behaviour
-
-        unless either_behaviour in behaviours do
-          IO.warn("""
-          Module #{inspect(mod)} implements run/3 but does not declare @behaviour #{inspect(either_behaviour)}.
-
-          This may cause issues if multiple DSLs are used in the same codebase.
-          Consider adding:
-
-              @behaviour #{inspect(either_behaviour)}
-          """)
-        end
-
-      _ ->
-        raise CompileError,
-          description: """
-          Invalid operation: #{Macro.to_string(module_alias_ast)}
-
-          Module #{inspect(mod)} is not available at compile time.
-          """
-    end
-  end
-
-  # ============================================================================
   # Entry: either(...)
   # ============================================================================
 
@@ -547,8 +477,6 @@ defmodule Funx.Monad.Either.Dsl do
 
     case operation do
       {:__aliases__, _, _} = module_alias ->
-        ensure_step_module_has_run!(module_alias, caller_env)
-
         quote do
           Funx.Monad.bind(unquote(input_or_previous), fn value ->
             Funx.Monad.Either.Dsl.normalize_run_result(
@@ -590,8 +518,6 @@ defmodule Funx.Monad.Either.Dsl do
 
     case operation do
       {:__aliases__, _, _} = module_alias ->
-        ensure_step_module_has_run!(module_alias, caller_env)
-
         quote do
           Funx.Monad.map(unquote(input_or_previous), fn value ->
             unquote(module_alias).run(value, unquote(opts), unquote(user_env))
@@ -636,7 +562,8 @@ defmodule Funx.Monad.Either.Dsl do
         end
       end)
 
-    transformed_args = Enum.map(lifted_args, &transform_modules_to_functions(&1, user_env, caller_env))
+    transformed_args =
+      Enum.map(lifted_args, &transform_modules_to_functions(&1, user_env, caller_env))
 
     cond do
       func_name in @either_functions ->
@@ -718,11 +645,16 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # Validates that list items are functions, not literals
-  defp validate_list_item!({:fn, _, _}), do: :ok  # Anonymous function
-  defp validate_list_item!({:&, _, _}), do: :ok   # Function capture
-  defp validate_list_item!({name, _, context}) when is_atom(name) and is_atom(context), do: :ok  # Variable or function call
-  defp validate_list_item!({:__aliases__, _, _}), do: :ok  # Module alias (handled by other clauses)
-  defp validate_list_item!({{:., _, _}, _, _}), do: :ok  # Qualified call like Module.fun()
+  # Anonymous function
+  defp validate_list_item!({:fn, _, _}), do: :ok
+  # Function capture
+  defp validate_list_item!({:&, _, _}), do: :ok
+  # Variable or function call
+  defp validate_list_item!({name, _, context}) when is_atom(name) and is_atom(context), do: :ok
+  # Module alias (handled by other clauses)
+  defp validate_list_item!({:__aliases__, _, _}), do: :ok
+  # Qualified call like Module.fun()
+  defp validate_list_item!({{:., _, _}, _, _}), do: :ok
 
   # Reject literals
   defp validate_list_item!(literal) when is_number(literal) do
@@ -828,8 +760,12 @@ defmodule Funx.Monad.Either.Dsl do
           result = unquote(pipeline_ast)
 
           case result do
-            %Either.Right{} -> result
-            %Either.Left{} -> result
+            %Either.Right{} ->
+              result
+
+            %Either.Left{} ->
+              result
+
             other ->
               raise ArgumentError, """
               Expected Either struct when using as: :either, but got: #{inspect(other)}
