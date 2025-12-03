@@ -85,7 +85,7 @@ Supported operations:
 - `map` - for transformations that return plain values
 - `ap` - for applying a function in an Either to a value in an Either
 - `validate` - for accumulating multiple validation errors
-- Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`
+- Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`, `tap`
 
 **Formatter Configuration**: Funx exports formatter rules for clean DSL formatting. Add `:funx` to `import_deps` in your `.formatter.exs`:
 

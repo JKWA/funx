@@ -248,6 +248,60 @@ Maybe.just(add)
 - You need all values to be present for the operation to succeed
 - You're implementing applicative patterns
 
+### `tap/2` - Side Effects Without Changing Values
+
+Executes a side-effect function on a Just value and returns the original Maybe unchanged. If the Maybe is Nothing, the function is not called:
+
+```elixir
+import Funx.Monad.Maybe
+
+# Side effect on Just
+Maybe.just(42)
+|> Maybe.tap(&IO.inspect(&1, label: "debug"))  # prints "debug: 42"
+# Returns: just(42)
+
+# No side effect on Nothing
+Maybe.nothing()
+|> Maybe.tap(&IO.inspect(&1, label: "debug"))  # nothing printed
+# Returns: nothing()
+```
+
+**Use `tap` when:**
+
+- Debugging pipelines - inspect intermediate values without breaking the chain
+- Logging - record values when present
+- Metrics/telemetry - emit events for present values
+- Side effects - perform actions (like notifications) only when value exists
+
+**Common tap patterns:**
+
+```elixir
+# Debug a chain
+find_user(user_id)
+|> Maybe.tap(&IO.inspect(&1, label: "found user"))
+|> bind(&get_profile/1)
+|> Maybe.tap(&IO.inspect(&1, label: "got profile"))
+
+# Conditional logging
+fetch_optional_config("feature_flag")
+|> Maybe.tap(fn flag -> Logger.info("Feature flag: #{flag}") end)
+|> Maybe.map(&enable_feature/1)
+
+# Analytics on optional values
+user_search_query
+|> Maybe.from_nil()
+|> Maybe.tap(fn query ->
+  :telemetry.execute([:app, :search], %{query: query})
+end)
+```
+
+**Important notes:**
+
+- The function's return value is discarded
+- Only executes on Just values (when value is present)
+- Does not affect the Maybe value
+- Nothing values pass through untouched
+
 ## Folding Maybe Values
 
 **Core Concept**: Both `Just` and `Nothing` implement the `Funx.Foldable` protocol, providing `fold_l/3` for catamorphism (breaking down data structures).

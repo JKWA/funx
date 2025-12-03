@@ -133,6 +133,54 @@ Reader.pure(4)
 - **READ-ONLY access** - Environment cannot be modified, only read
 - **NO comparison** - Reader doesn't implement Eq/Ord (no meaningful comparison of deferred computations)
 
+### `tap/2` - Side Effects Without Changing Values
+
+Executes a side-effect function on the computed value and returns the original Reader unchanged. The side effect is **deferred** - it executes when the Reader is run, not when `tap` is called:
+
+```elixir
+import Funx.Monad.Reader
+
+# Side effect on computed value (deferred until run)
+Reader.pure(42)
+|> Reader.tap(&IO.inspect(&1, label: "value"))
+|> Reader.run(%{})  # Prints "value: 42", returns 42
+
+# With environment access
+Reader.asks(&Map.get(&1, :user_id))
+|> Reader.tap(fn id -> Logger.info("Processing user: #{id}") end)
+|> Reader.run(%{user_id: 123})  # Logs, returns 123
+```
+
+**Use `tap` when:**
+
+- Debugging Reader pipelines - inspect computed values
+- Logging environment-dependent computations
+- Telemetry for configuration-driven workflows
+- Side effects based on environment data
+
+**Common tap patterns:**
+
+```elixir
+# Debug environment access
+Reader.asks(&Map.get(&1, :config))
+|> Reader.tap(&IO.inspect(&1, label: "config"))
+|> Reader.map(&process_config/1)
+|> Reader.run(env)
+
+# Logging in dependency injection
+get_service()
+|> Reader.tap(fn svc -> Logger.info("Using service: #{svc.name}") end)
+|> Reader.bind(&call_service/1)
+|> Reader.run(env)
+```
+
+**Important notes:**
+
+- The function's return value is discarded
+- **Deferred execution**: side effect runs when Reader.run() is called
+- Works with any computed value in the Reader chain
+- Useful for observing environment-dependent behavior
+
 ## Monadic Composition
 
 ### Sequential Computation (bind)
