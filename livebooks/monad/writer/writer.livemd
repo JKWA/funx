@@ -20,6 +20,7 @@ Logs are accumulated using a `Monoid` implementation, injected lazily at runtime
 * `pure/1` – Wraps a result with an empty log.
 * `writer/1` – Wraps a result and an explicit log.
 * `tell/1` – Emits a log with no result.
+* `tap/2` – Executes a side-effect function on the value without affecting the Writer's value or log.
 * `listen/1` – Returns both result and log as a pair.
 * `censor/2` – Applies a function to transform the final log.
 * `pass/1` – Uses a log-transforming function returned from within the computation.
@@ -35,6 +36,7 @@ This module also implements the `Funx.Monad` protocol.
 
 ```elixir
 import Funx.Monad.Writer
+alias Funx.Monad
 alias Funx.Monad.Writer
 ```
 
@@ -48,6 +50,95 @@ writer = pure(42)
 
 ```elixir
 result = run(writer)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### Monad.map/2
+
+Applies a function to the value inside a `Writer` monad. The log is preserved.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Writer`.
+
+```elixir
+writer = pure(5)
+```
+
+```elixir
+mapped = Monad.map(writer, fn x -> x * 2 end)
+```
+
+```elixir
+result = run(mapped)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### Monad.bind/2
+
+Applies a function that returns a `Writer` to the value inside a `Writer` monad. This is also known as "flatMap" in other languages.
+
+The logs from both Writers are combined using the monoid.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Writer`.
+
+```elixir
+writer = pure(5)
+```
+
+```elixir
+bound = Monad.bind(writer, fn x ->
+  tell([:computed, x])
+  |> Monad.bind(fn _ -> pure(x * 2) end)
+end)
+```
+
+```elixir
+result = run(bound)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log
+```
+
+### Monad.ap/2
+
+Applies a function wrapped in a `Writer` to a value wrapped in a `Writer`.
+
+The logs from both Writers are combined using the monoid.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Writer`.
+
+```elixir
+func_writer = pure(&(&1 + 10))
+```
+
+```elixir
+value_writer = writer({7, [:initial]})
+```
+
+```elixir
+applied = Monad.ap(func_writer, value_writer)
+```
+
+```elixir
+result = run(applied)
 ```
 
 ```elixir
@@ -96,6 +187,47 @@ result.value
 
 ```elixir
 result.log
+```
+
+### tap/2
+
+Executes a side-effect function on the value without affecting the Writer's value or log.
+
+**Important**: `tap` does NOT add to the Writer's log. Use `tell/1` if you want to add to the log.
+
+Useful for debugging, external logging, or side effects separate from the computation's log.
+
+```elixir
+# Side effect that doesn't add to log
+writer =
+  pure(42)
+  |> Writer.tap(&IO.inspect(&1, label: "debug"))
+
+result = run(writer)
+```
+
+```elixir
+result.value
+```
+
+```elixir
+result.log  # Empty - tap doesn't add to log!
+```
+
+```elixir
+# Compare with tell (adds to log)
+writer =
+  pure(42)
+  |> Monad.bind(fn x ->
+    tell(["processed #{x}"])
+    |> Monad.map(fn _ -> x end)
+  end)
+
+result = run(writer)
+```
+
+```elixir
+result.log  # Contains ["processed 42"]
 ```
 
 ### listen/1
@@ -207,7 +339,7 @@ Uses `ListConcat` by default.
 ```elixir
 writer =
   writer({:ok, [:step1]})
-  |> Funx.Monad.bind(fn _ -> tell([:step2]) end)
+  |> Monad.bind(fn _ -> tell([:step2]) end)
 ```
 
 ```elixir
@@ -223,9 +355,9 @@ Uses `ListConcat` by default.
 ```elixir
 writer =
   writer({10, [:init]})
-  |> Funx.Monad.bind(fn x ->
+  |> Monad.bind(fn x ->
     tell([:logged])
-    |> Funx.Monad.bind(fn _ -> pure(x * 2) end)
+    |> Monad.bind(fn _ -> pure(x * 2) end)
   end)
 ```
 
@@ -233,95 +365,22 @@ writer =
 eval(writer)
 ```
 
-### Using Monad Protocol
-
-The `Writer` monad implements the `Funx.Monad` protocol:
-
-#### map/2
-
-```elixir
-writer = pure(5)
-```
-
-```elixir
-mapped = Funx.Monad.map(writer, fn x -> x * 2 end)
-```
-
-```elixir
-result = run(mapped)
-```
-
-```elixir
-result.value
-```
-
-#### bind/2
-
-```elixir
-writer = pure(5)
-```
-
-```elixir
-bound = Funx.Monad.bind(writer, fn x -> 
-  tell([:computed, x])
-  |> Funx.Monad.bind(fn _ -> pure(x * 2) end)
-end)
-```
-
-```elixir
-result = run(bound)
-```
-
-```elixir
-result.value
-```
-
-```elixir
-result.log
-```
-
-#### ap/2
-
-```elixir
-func_writer = pure(&(&1 + 10))
-```
-
-```elixir
-value_writer = writer({7, [:initial]})
-```
-
-```elixir
-applied = Funx.Monad.ap(func_writer, value_writer)
-```
-
-```elixir
-result = run(applied)
-```
-
-```elixir
-result.value
-```
-
-```elixir
-result.log
-```
-
 ### Combining Writer Operations
 
 ```elixir
-computation = 
+computation =
   pure(1)
-  |> Funx.Monad.bind(fn x ->
+  |> Monad.bind(fn x ->
     tell([:step1, x])
-    |> Funx.Monad.bind(fn _ ->
+    |> Monad.bind(fn _ ->
       pure(x + 2)
-      |> Funx.Monad.bind(fn y ->
+      |> Monad.bind(fn y ->
         tell([:step2, y])
-        |> Funx.Monad.bind(fn _ ->
+        |> Monad.bind(fn _ ->
           pure(y * 3)
-          |> Funx.Monad.bind(fn z ->
+          |> Monad.bind(fn z ->
             tell([:final, z])
-            |> Funx.Monad.map(fn _ -> z end)
+            |> Monad.map(fn _ -> z end)
           end)
         end)
       end)
@@ -347,13 +406,13 @@ You can use different monoids with Writer by passing them to `run/2`, `eval/2`, 
 
 ```elixir
 # Using String concatenation monoid
-string_writer = 
+string_writer =
   pure("Hello")
-  |> Funx.Monad.bind(fn x ->
+  |> Monad.bind(fn x ->
     tell(" ")
-    |> Funx.Monad.bind(fn _ ->
+    |> Monad.bind(fn _ ->
       tell("World")
-      |> Funx.Monad.map(fn _ -> x end)
+      |> Monad.map(fn _ -> x end)
     end)
   end)
 ```

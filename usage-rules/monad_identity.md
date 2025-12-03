@@ -164,6 +164,59 @@ Identity.identity(concat)
 
 - Always applies function to value (no failure cases)
 - Demonstrates applicative functor pattern clearly
+
+### `tap/2` - Side Effects Without Changing Values
+
+Executes a side-effect function on the wrapped value and returns the original Identity unchanged:
+
+```elixir
+import Funx.Monad.Identity
+
+# Side effect on wrapped value
+Identity.pure(42)
+|> Identity.tap(&IO.inspect(&1, label: "value"))  # Prints "value: 42"
+# Returns: Identity(42)
+
+# In a pipeline
+Identity.pure(5)
+|> map(&(&1 * 2))
+|> Identity.tap(&IO.inspect(&1, label: "doubled"))  # Prints "doubled: 10"
+|> map(&(&1 + 1))
+# Returns: Identity(11)
+```
+
+**Use `tap` when:**
+
+- Debugging Identity pipelines - inspect values without breaking the chain
+- Logging transformations in generic monadic code
+- Side effects in monad-polymorphic functions
+- Learning/teaching - observe values flowing through Identity
+
+**Common tap patterns:**
+
+```elixir
+# Debug generic monad code
+defmodule GenericProcessor do
+  def process(monad) do  # Works with Identity, Maybe, Either, etc.
+    monad
+    |> map(&transform/1)
+    |> tap(&IO.inspect(&1, label: "after transform"))  # Generic debugging
+    |> bind(&validate/1)
+  end
+end
+
+# Logging in Identity-based computation
+Identity.pure(data)
+|> Identity.tap(fn d -> Logger.info("Processing: #{inspect(d)}") end)
+|> map(&expensive_computation/1)
+```
+
+**Important notes:**
+
+- The function's return value is discarded
+- Always executes (Identity has no failure case)
+- Less commonly needed than tap on Maybe/Either/Effect (Identity is usually for teaching/testing)
+- Useful in monad-polymorphic code that works with any monad type
 - Perfect for learning function application in context
 
 ## Testing with Identity

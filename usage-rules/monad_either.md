@@ -649,6 +649,62 @@ bind(inner_left, fn inner -> inner end)      # left("inner error")
 - You're implementing monadic operations manually
 - You're working with higher-order Either computations
 
+### `tap/2` - Side Effects Without Changing Values
+
+Executes a side-effect function on a Right value and returns the original Either unchanged. If the Either is Left, the function is not called:
+
+```elixir
+import Funx.Monad.Either
+
+# Side effect on Right
+Either.right(42)
+|> Either.tap(&IO.inspect(&1, label: "debug"))  # prints "debug: 42"
+# Returns: right(42)
+
+# No side effect on Left
+Either.left("error")
+|> Either.tap(&IO.inspect(&1, label: "debug"))  # nothing printed
+# Returns: left("error")
+```
+
+**Use `tap` when:**
+
+- Debugging pipelines - inspect intermediate values without breaking the chain
+- Logging - record values as they flow through computations
+- Metrics/telemetry - emit events based on success values
+- Side effects - perform actions (like notifications) without changing the computation result
+
+**Common tap patterns:**
+
+```elixir
+# Debug a pipeline
+Either.right(user_input)
+|> bind(&parse_user/1)
+|> Either.tap(&IO.inspect(&1, label: "after parse"))
+|> bind(&validate_user/1)
+|> Either.tap(&IO.inspect(&1, label: "after validate"))
+|> bind(&save_user/1)
+
+# Logging in business logic
+process_order(order_id)
+|> Either.tap(fn order -> Logger.info("Processing order #{order.id}") end)
+|> bind(&charge_payment/1)
+|> Either.tap(fn _ -> Logger.info("Payment successful") end)
+
+# Telemetry
+calculate_result(data)
+|> Either.tap(fn result ->
+  :telemetry.execute([:app, :calculation], %{value: result})
+end)
+```
+
+**Important notes:**
+
+- The function's return value is discarded
+- Only executes on Right values (success path)
+- Does not affect the Either value or its error state
+- In the Either DSL, you must use `Either.tap` (not `Kernel.tap`) to avoid conflicts
+
 ## List Operations
 
 ### `concat/1` - Extract All Right Values

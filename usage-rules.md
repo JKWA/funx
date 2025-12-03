@@ -47,6 +47,9 @@ These rules provide guidance on how to effectively apply functional patterns in 
 - Funx.Monad.Reader Usage Rules - **funx:monad_reader usage**
   Deferred computation with read-only environment access—dependency injection and configuration.
 
+- Funx.Monad.Writer Usage Rules - **funx:monad_writer usage**
+  Computation with accumulated log—monoid-based logging and audit trails.
+
 - Funx.Monoid Usage Rules - **funx:monoid usage**
   Identity and associative combination, enabling folds, logs, and accumulation.
 
@@ -80,6 +83,7 @@ usage-rules/
   monad_identity.md           # ← Funx.Monad.Identity rules
   monad_maybe.md              # ← Funx.Monad.Maybe rules
   monad_reader.md             # ← Funx.Monad.Reader rules
+  monad_writer.md             # ← Funx.Monad.Writer rules
   monoid.md                   # ← Funx.Monoid rules
   ord.md                      # ← Funx.Ord rules
   predicate.md                # ← Funx.Predicate rules

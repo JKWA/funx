@@ -1209,6 +1209,160 @@ defmodule EffectTest do
     end
   end
 
+  describe "Effect.tap/2" do
+    setup do
+      capture_telemetry([:funx, :effect, :run, :stop], self())
+      :ok
+    end
+
+    test "returns the original Right value unchanged" do
+      result =
+        right(5, span_name: "value")
+        |> Effect.tap(fn _x -> :ok end)
+        |> run()
+
+      assert result == Either.right(5)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: _duration},
+                      %{
+                        span_name: "value",
+                        trace_id: parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "tap -> value",
+                        parent_trace_id: ^parent_id,
+                        effect_type: :right,
+                        status: :ok
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
+    end
+
+    test "returns the original Left value unchanged" do
+      result =
+        left("error", span_name: "value")
+        |> Effect.tap(fn _x -> :ok end)
+        |> run()
+
+      assert result == Either.left("error")
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "value",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
+    end
+
+    test "executes tap on Right without changing value" do
+      result =
+        right(42, span_name: "value")
+        |> Effect.tap(fn _x -> :side_effect end)
+        |> run()
+
+      assert result == Either.right(42)
+    end
+
+    test "tap does not affect Left values" do
+      result =
+        left("error", span_name: "value")
+        |> Effect.tap(fn _x -> :side_effect end)
+        |> run()
+
+      assert result == Either.left("error")
+    end
+
+    test "works in a pipeline with multiple taps" do
+      result =
+        right(5, span_name: "initial")
+        |> map(&(&1 * 2))
+        |> Effect.tap(fn _x -> :tap1 end)
+        |> map(&(&1 + 1))
+        |> Effect.tap(fn _x -> :tap2 end)
+        |> run()
+
+      assert result == Either.right(11)
+    end
+
+    test "discards the return value of the side effect function" do
+      result =
+        right(5, span_name: "value")
+        |> Effect.tap(fn _x ->
+          # Return value should be ignored
+          :this_should_be_discarded
+        end)
+        |> run()
+
+      assert result == Either.right(5)
+    end
+
+    test "allows side effects like logging without changing the value" do
+      result =
+        right(%{user: "alice", age: 30}, span_name: "user")
+        |> Effect.tap(fn _user ->
+          # Simulate logging - actual side effect happens async
+          :logged
+        end)
+        |> run()
+
+      assert result == Either.right(%{user: "alice", age: 30})
+    end
+
+    test "tap with bind in pipeline" do
+      result =
+        right(5, span_name: "initial")
+        |> Effect.tap(fn _x -> :before_bind end)
+        |> bind(fn x -> right(x * 2, span_name: "doubled") end)
+        |> Effect.tap(fn _x -> :after_bind end)
+        |> run()
+
+      assert result == Either.right(10)
+    end
+
+    test "tap returns Left if effect unexpectedly resolves to Left" do
+      context = Effect.Context.new(span_name: "unexpected")
+
+      effect = %Effect.Right{
+        context: context,
+        effect: fn _env ->
+          Task.async(fn -> %Either.Left{left: :unexpected_error} end)
+        end
+      }
+
+      result =
+        effect
+        |> Effect.tap(fn _ -> :should_not_be_called end)
+        |> run()
+
+      assert result == Either.left(:unexpected_error)
+
+      assert_receive {:telemetry_event, [:funx, :effect, :run, :stop], %{duration: duration},
+                      %{
+                        result: telemetry_result,
+                        span_name: "unexpected",
+                        effect_type: :left,
+                        status: :error
+                      }},
+                     100
+
+      assert is_integer(duration) and duration > 0
+      assert telemetry_result == summarize(result)
+    end
+  end
+
   describe "flip_either/1" do
     setup do
       capture_telemetry([:funx, :effect, :run, :stop], self())

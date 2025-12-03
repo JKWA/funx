@@ -220,6 +220,79 @@ defmodule Funx.Monad.EitherTest do
     end
   end
 
+  describe "Either.tap/2" do
+    test "returns the original Right value unchanged" do
+      result = Either.tap(right(5), fn x -> x * 2 end)
+      assert result == right(5)
+    end
+
+    test "returns the original Left value unchanged" do
+      result = Either.tap(left("error"), fn x -> x * 2 end)
+      assert result == left("error")
+    end
+
+    test "executes the side effect function on Right" do
+      test_pid = self()
+
+      result =
+        Either.tap(right(42), fn x ->
+          send(test_pid, {:tapped, x})
+        end)
+
+      assert result == right(42)
+      assert_received {:tapped, 42}
+    end
+
+    test "does not execute the side effect function on Left" do
+      refute_receive {:tapped}
+
+      result =
+        Either.tap(left("error"), fn x ->
+          send(self(), {:tapped, x})
+        end)
+
+      assert result == left("error")
+      refute_received {:tapped}
+    end
+
+    test "works in a pipeline" do
+      test_pid = self()
+
+      result =
+        right(5)
+        |> map(&(&1 * 2))
+        |> Either.tap(fn x -> send(test_pid, {:step1, x}) end)
+        |> map(&(&1 + 1))
+        |> Either.tap(fn x -> send(test_pid, {:step2, x}) end)
+
+      assert result == right(11)
+      assert_received {:step1, 10}
+      assert_received {:step2, 11}
+    end
+
+    test "discards the return value of the side effect function" do
+      result =
+        Either.tap(right(5), fn _x ->
+          # Return value should be ignored
+          :this_should_be_discarded
+        end)
+
+      assert result == right(5)
+    end
+
+    test "allows side effects like logging without changing the value" do
+      result =
+        right(%{user: "alice", age: 30})
+        |> Either.tap(fn user ->
+          # Simulate logging
+          send(self(), {:log, "Processing user: #{user.user}"})
+        end)
+
+      assert result == right(%{user: "alice", age: 30})
+      assert_received {:log, "Processing user: alice"}
+    end
+  end
+
   describe "filter_or_else/3" do
     test "returns Right value when predicate is true" do
       either_value = right(1)

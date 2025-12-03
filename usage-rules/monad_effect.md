@@ -360,6 +360,64 @@ Effect.right(add)
 
 **Concurrency note**: `ap/2` enables applicative composition. Provided both arguments are constructed independently, effects may run concurrently. However, if Effects are constructed in dependency chains, they will run sequentially.
 
+### `tap/2` - Side Effects Without Changing Values
+
+Executes a side-effect function on a Right value and returns the original Effect unchanged. If the Effect is Left, the function is not called. The side effect is **deferred** - it executes when the Effect is run, not when `tap` is called:
+
+```elixir
+import Funx.Monad.Effect
+
+# Side effect on Right (deferred until run)
+Effect.right(42)
+|> Effect.tap(fn x -> Logger.info("Value: #{x}") end)
+|> Effect.run()  # Logs "Value: 42", returns right(42)
+
+# No side effect on Left
+Effect.left("error")
+|> Effect.tap(fn x -> Logger.info("Value: #{x}") end)
+|> Effect.run()  # Nothing logged, returns left("error")
+```
+
+**Use `tap` when:**
+
+- Debugging async pipelines - inspect values without breaking the chain
+- Logging async operations - record intermediate results
+- Telemetry for async workflows - emit events at specific points
+- Side effects in async code - perform actions without changing the computation
+
+**Common tap patterns:**
+
+```elixir
+# Debug async pipeline
+fetch_user(user_id)
+|> Effect.tap(&IO.inspect(&1, label: "fetched user"))
+|> bind(&fetch_orders/1)
+|> Effect.tap(&IO.inspect(&1, label: "fetched orders"))
+|> Effect.run(env)
+
+# Logging in async workflow
+process_payment(order)
+|> Effect.tap(fn result -> Logger.info("Payment processed: #{result.id}") end)
+|> bind(&send_confirmation/1)
+|> Effect.tap(fn _ -> Logger.info("Confirmation sent") end)
+|> Effect.run(env)
+
+# Telemetry for async operations
+calculate_analytics(data)
+|> Effect.tap(fn metrics ->
+  :telemetry.execute([:app, :analytics], metrics)
+end)
+|> Effect.run(env)
+```
+
+**Important notes:**
+
+- The function's return value is discarded
+- **Deferred execution**: side effect runs when Effect.run() is called
+- Only executes on Right values (success path)
+- Properly promotes trace context for telemetry tracking
+- Side effects execute inside async Task (may need to handle process communication carefully)
+
 ## Reader Operations
 
 ### `ask/0` - Access Full Environment

@@ -35,6 +35,7 @@ This pattern is useful for eliminating `nil` checks and handling missing data ex
 
   - `get_or_else/2`: Returns the value from a `Just`, or a default if `Nothing`.
   - `or_else/2`: Returns the original `Just`, or invokes a fallback function if `Nothing`.
+  - `tap/2`: Executes a side-effect function on a `Just` value, returning the original `Maybe` unchanged.
 
 ## List Operations
 
@@ -78,6 +79,7 @@ This module helps you represent optional data explicitly, structure conditional 
 
 ```elixir
 import Funx.Monad.Maybe
+alias Funx.Monad
 alias Funx.Monad.Maybe
 ```
 
@@ -103,6 +105,65 @@ Alias for `just/1`.
 
 ```elixir
 pure(5)
+```
+
+### Monad.map/2
+
+Applies a function to the value inside a `Just` monad. If the `Maybe` is `Nothing`, it is returned unchanged.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Maybe`.
+
+```elixir
+just(42)
+|> Monad.map(&(&1 + 1))
+```
+
+```elixir
+nothing()
+|> Monad.map(&(&1 + 1))
+```
+
+### Monad.bind/2
+
+Applies a function that returns a `Maybe` to the value inside a `Just` monad. This is also known as "flatMap" in other languages.
+
+If the `Maybe` is `Nothing`, it is returned unchanged. If the function returns `Nothing`, that `Nothing` is returned.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Maybe`.
+
+```elixir
+just(42)
+|> Monad.bind(fn x -> just(div(x, 2)) end)
+```
+
+```elixir
+nothing()
+|> Monad.bind(fn _ -> just(10) end)
+```
+
+```elixir
+just(42)
+|> Monad.bind(fn _ -> nothing() end)
+```
+
+### Monad.ap/2
+
+Applies a function wrapped in a `Maybe` to a value wrapped in a `Maybe`.
+
+If either the function or the value is `Nothing`, `Nothing` is returned.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Maybe`.
+
+```elixir
+Monad.ap(just(&(&1 + 1)), just(42))
+```
+
+```elixir
+Monad.ap(nothing(), just(42))
+```
+
+```elixir
+Monad.ap(just(&(&1 + 1)), nothing())
 ```
 
 ### just?/1
@@ -151,6 +212,33 @@ or_else(nothing(), fn -> just(42) end)
 
 ```elixir
 or_else(just(10), fn -> just(42) end)
+```
+
+### tap/2
+
+Executes a side-effect function on a `Just` value and returns the original `Maybe` unchanged.
+If the `Maybe` is `Nothing`, the function is not called.
+
+Useful for debugging, logging, or performing side effects without changing the value.
+
+```elixir
+# Side effect on Just
+just(42)
+|> Maybe.tap(&IO.inspect(&1, label: "debug"))
+```
+
+```elixir
+# No side effect on Nothing
+nothing()
+|> Maybe.tap(&IO.inspect(&1, label: "debug"))
+```
+
+```elixir
+# In a pipeline
+just(5)
+|> Monad.map(&(&1 * 2))
+|> Maybe.tap(&IO.inspect(&1, label: "after map"))
+|> Monad.map(&(&1 + 1))
 ```
 
 ### lift_eq/1

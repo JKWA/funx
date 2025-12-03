@@ -14,6 +14,14 @@ Mix.install([
 The `Funx.Monad.Identity` module represents the identity monad, where values are simply wrapped in a structure
 and operations are applied directly to those values.
 
+## Functions
+
+  - `pure/1`: Wraps a value in the `Identity` monad.
+  - `extract/1`: Extracts the wrapped value from an `Identity`.
+  - `tap/2`: Executes a side-effect function on the wrapped value, returning the original `Identity` unchanged.
+
+## Protocols
+
 This module implements the following protocols:
   - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
   - `Funx.Eq`: Defines equality checks for `Identity` values.
@@ -41,6 +49,26 @@ Extracts the value from an `Identity`.
 
 ```elixir
 extract(pure(5))
+```
+
+### tap/2
+
+Executes a side-effect function on the wrapped value and returns the original `Identity` unchanged.
+
+Useful for debugging, logging, or performing side effects without changing the value.
+
+```elixir
+# Side effect on wrapped value
+pure(42)
+|> Identity.tap(&IO.inspect(&1, label: "debug"))
+```
+
+```elixir
+# In a pipeline
+pure(5)
+|> Funx.Monad.map(&(&1 * 2))
+|> Identity.tap(&IO.inspect(&1, label: "after map"))
+|> Funx.Monad.map(&(&1 + 1))
 ```
 
 ### Using Monad Protocol

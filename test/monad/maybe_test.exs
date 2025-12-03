@@ -740,4 +740,77 @@ defmodule Funx.Monad.MaybeTest do
       assert result == just(42)
     end
   end
+
+  describe "Maybe.tap/2" do
+    test "returns the original Just value unchanged" do
+      result = Maybe.tap(just(5), fn x -> x * 2 end)
+      assert result == just(5)
+    end
+
+    test "returns the original Nothing value unchanged" do
+      result = Maybe.tap(nothing(), fn x -> x * 2 end)
+      assert result == nothing()
+    end
+
+    test "executes the side effect function on Just" do
+      test_pid = self()
+
+      result =
+        Maybe.tap(just(42), fn x ->
+          send(test_pid, {:tapped, x})
+        end)
+
+      assert result == just(42)
+      assert_received {:tapped, 42}
+    end
+
+    test "does not execute the side effect function on Nothing" do
+      refute_receive {:tapped}
+
+      result =
+        Maybe.tap(nothing(), fn x ->
+          send(self(), {:tapped, x})
+        end)
+
+      assert result == nothing()
+      refute_received {:tapped}
+    end
+
+    test "works in a pipeline" do
+      test_pid = self()
+
+      result =
+        just(5)
+        |> map(&(&1 * 2))
+        |> Maybe.tap(fn x -> send(test_pid, {:step1, x}) end)
+        |> map(&(&1 + 1))
+        |> Maybe.tap(fn x -> send(test_pid, {:step2, x}) end)
+
+      assert result == just(11)
+      assert_received {:step1, 10}
+      assert_received {:step2, 11}
+    end
+
+    test "discards the return value of the side effect function" do
+      result =
+        Maybe.tap(just(5), fn _x ->
+          # Return value should be ignored
+          :this_should_be_discarded
+        end)
+
+      assert result == just(5)
+    end
+
+    test "allows side effects like logging without changing the value" do
+      result =
+        just(%{user: "alice", age: 30})
+        |> Maybe.tap(fn user ->
+          # Simulate logging
+          send(self(), {:log, "Processing user: #{user.user}"})
+        end)
+
+      assert result == just(%{user: "alice", age: 30})
+      assert_received {:log, "Processing user: alice"}
+    end
+  end
 end

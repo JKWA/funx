@@ -22,28 +22,35 @@ This protocol is designed to be implemented by types that wrap a value and allow
 ## Function Examples
 
 ```elixir
-import Funx.Monad
+alias Funx.Monad
+alias Funx.Monad.Maybe
+import Funx.Monad.Maybe
 ```
 
-## ap/2
+## map/2
 
-Applies a monadic function to another monadic value.
+Maps a function over the value inside the monad.
 
-The function `func` is expected to be wrapped in a monadic context and is applied to the value `m` within its own monadic context.
-The result is wrapped in the same context as the original monad.
+The `map/2` function takes a monad `m` and a function `func`, applies the function to the value inside `m`, and returns a new monad
+containing the result. The original monadic context is preserved.
 
 ### Examples
 
 ```elixir
-Funx.Monad.ap(Funx.Monad.Maybe.just(fn x -> x * 2 end), Funx.Monad.Maybe.just(3))
-# %Funx.Monad.Maybe.Just{value: 6}
+Monad.map(just(2), fn x -> x + 3 end)
 ```
 
 In the case of `Nothing`:
 
 ```elixir
-Funx.Monad.ap(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(3))
-# %Funx.Monad.Maybe.Nothing{}
+Monad.map(nothing(), fn x -> x + 3 end)
+```
+
+Using the pipe operator:
+
+```elixir
+just(2)
+|> Monad.map(&(&1 + 3))
 ```
 
 ## bind/2
@@ -58,34 +65,37 @@ This is the core operation that allows chaining of computations, with the value 
 ### Examples
 
 ```elixir
-Funx.Monad.bind(Funx.Monad.Maybe.just(5), fn x -> Funx.Monad.Maybe.just(x * 2) end)
-# %Funx.Monad.Maybe.Just{value: 10}
+Monad.bind(just(5), fn x -> just(x * 2) end)
 ```
 
 In the case of `Nothing`:
 
 ```elixir
-Funx.Monad.bind(Funx.Monad.Maybe.nothing(), fn _ -> Funx.Monad.Maybe.just(5) end)
-# %Funx.Monad.Maybe.Nothing{}
+Monad.bind(nothing(), fn _ -> just(5) end)
 ```
 
-## map/2
+Using the pipe operator:
 
-Maps a function over the value inside the monad.
+```elixir
+just(5)
+|> Monad.bind(fn x -> just(x * 2) end)
+```
 
-The `map/2` function takes a monad `m` and a function `func`, applies the function to the value inside `m`, and returns a new monad
-containing the result. The original monadic context is preserved.
+## ap/2
+
+Applies a monadic function to another monadic value.
+
+The function `func` is expected to be wrapped in a monadic context and is applied to the value `m` within its own monadic context.
+The result is wrapped in the same context as the original monad.
 
 ### Examples
 
 ```elixir
-Funx.Monad.map(Funx.Monad.Maybe.just(2), fn x -> x + 3 end)
-# %Funx.Monad.Maybe.Just{value: 5}
+Monad.ap(just(fn x -> x * 2 end), just(3))
 ```
 
 In the case of `Nothing`:
 
 ```elixir
-Funx.Monad.map(Funx.Monad.Maybe.nothing(), fn x -> x + 3 end)
-# %Funx.Monad.Maybe.Nothing{}
+Monad.ap(nothing(), just(3))
 ```

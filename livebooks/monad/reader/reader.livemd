@@ -20,6 +20,7 @@ This module defines core Reader functions:
   * `run/2` – Executes the Reader with a given environment.
   * `asks/1` – Extracts and transforms a value from the environment.
   * `ask/0` – Extracts the full environment.
+  * `tap/2` – Executes a side-effect function on the computed value, returning the original `Reader` unchanged.
 
 This module implements the following protocol:
 
@@ -31,6 +32,7 @@ Note: The Reader monad does not implement `Eq` or `Ord`, since Readers are lazy�
 
 ```elixir
 import Funx.Monad.Reader
+alias Funx.Monad
 alias Funx.Monad.Reader
 ```
 
@@ -45,6 +47,85 @@ Lifts a value into the `Reader` context.
 ```elixir
 reader = pure(42)
 run(reader, %{})
+```
+
+### Monad.map/2
+
+Applies a function to the computed value inside a `Reader` monad. The transformation is deferred until the Reader is run.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Reader`.
+
+#### Examples
+
+```elixir
+reader =
+  pure(42)
+  |> Monad.map(&(&1 + 1))
+
+run(reader, %{})
+```
+
+```elixir
+reader =
+  asks(&Map.get(&1, :count))
+  |> Monad.map(&(&1 * 2))
+
+run(reader, %{count: 10})
+```
+
+### Monad.bind/2
+
+Applies a function that returns a `Reader` to the computed value inside a `Reader` monad. This is also known as "flatMap" in other languages.
+
+The function receives the computed value and can create a new Reader that may access the same environment.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Reader`.
+
+#### Examples
+
+```elixir
+reader =
+  pure(42)
+  |> Monad.bind(fn x -> pure(div(x, 2)) end)
+
+run(reader, %{})
+```
+
+```elixir
+reader =
+  asks(&Map.get(&1, :user_id))
+  |> Monad.bind(fn id ->
+    asks(fn env ->
+      user_name = Map.get(env, :user_name)
+      "User #{user_name} has ID #{id}"
+    end)
+  end)
+
+run(reader, %{user_id: 123, user_name: "Alice"})
+```
+
+### Monad.ap/2
+
+Applies a function wrapped in a `Reader` to a value wrapped in a `Reader`.
+
+Both Readers share the same environment when run.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Reader`.
+
+#### Examples
+
+```elixir
+reader_fn = pure(&(&1 + 1))
+reader_val = pure(42)
+
+run(Monad.ap(reader_fn, reader_val), %{})
+```
+
+```elixir
+reader_fn = asks(fn env -> &(&1 + Map.get(env, :offset, 0)) end)
+reader_val = pure(10)
+
+run(Monad.ap(reader_fn, reader_val), %{offset: 5})
 ```
 
 ### run/2
@@ -78,4 +159,31 @@ Extracts the value contained in the environment, making it available within the 
 ```elixir
 reader = ask()
 run(reader, %{foo: "bar"})
+```
+
+### tap/2
+
+Executes a side-effect function on the computed value and returns the original `Reader` unchanged.
+The side effect is **deferred** - it executes when the Reader is run, not when `tap` is called.
+
+Useful for debugging, logging, or performing side effects based on environment data.
+
+#### Examples
+
+```elixir
+# Side effect on computed value (deferred until run)
+reader =
+  pure(42)
+  |> Reader.tap(&IO.inspect(&1, label: "value"))
+
+run(reader, %{})
+```
+
+```elixir
+# With environment access
+reader =
+  asks(&Map.get(&1, :user_id))
+  |> Reader.tap(fn id -> IO.puts("Processing user: #{id}") end)
+
+run(reader, %{user_id: 123})
 ```

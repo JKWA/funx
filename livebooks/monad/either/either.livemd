@@ -38,6 +38,7 @@ This pattern is commonly used in place of exceptions to handle errors explicitly
   - `map_left/2`: Transforms a `Left` using a function, leaving `Right` values unchanged.
   - `flip/1`: Swaps `Left` and `Right`, turning errors into successes and vice versa.
   - `filter_or_else/3`: Applies a predicate to the `Right` value; if false, returns a fallback `Left`.
+  - `tap/2`: Executes a side-effect function on a `Right` value, returning the original `Either` unchanged.
 
 ## List Operations
 
@@ -88,7 +89,8 @@ This module helps you model failure explicitly, compose error-aware logic, and i
 
 ```elixir
 import Funx.Monad.Either
-alias Funx.Monad.Either
+alias Funx.Monad
+alias Funx.Monad.{Either, Maybe}
 ```
 
 ### right/1
@@ -113,6 +115,65 @@ Alias for `right/1`.
 
 ```elixir
 pure(2)
+```
+
+### Monad.map/2
+
+Applies a function to the value inside a `Right` monad. If the `Either` is a `Left`, it is returned unchanged.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Either`.
+
+```elixir
+right(42)
+|> Monad.map(&(&1 + 1))
+```
+
+```elixir
+left("error")
+|> Monad.map(&(&1 + 1))
+```
+
+### Monad.bind/2
+
+Applies a function that returns an `Either` to the value inside a `Right` monad. This is also known as "flatMap" in other languages.
+
+If the `Either` is a `Left`, it is returned unchanged. If the function returns a `Left`, that `Left` is returned.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Either`.
+
+```elixir
+right(42)
+|> Monad.bind(fn x -> right(div(x, 2)) end)
+```
+
+```elixir
+left("error")
+|> Monad.bind(fn _ -> right(10) end)
+```
+
+```elixir
+right(42)
+|> Monad.bind(fn _ -> left("computation failed") end)
+```
+
+### Monad.ap/2
+
+Applies a function wrapped in an `Either` to a value wrapped in an `Either`.
+
+If either the function or the value is a `Left`, the `Left` is returned.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Either`.
+
+```elixir
+Monad.ap(right(&(&1 + 1)), right(42))
+```
+
+```elixir
+Monad.ap(left("error"), right(42))
+```
+
+```elixir
+Monad.ap(right(&(&1 + 1)), left("error"))
 ```
 
 ### left?/1
@@ -270,6 +331,33 @@ map_left(left("error"), fn e -> "wrapped: " <> e end)
 map_left(right(42), fn _ -> "ignored" end)
 ```
 
+### tap/2
+
+Executes a side-effect function on a `Right` value and returns the original `Either` unchanged.
+If the `Either` is `Left`, the function is not called.
+
+Useful for debugging, logging, or performing side effects without changing the value.
+
+```elixir
+# Side effect on Right
+right(42)
+|> Either.tap(&IO.inspect(&1, label: "debug"))
+```
+
+```elixir
+# No side effect on Left
+left("error")
+|> Either.tap(&IO.inspect(&1, label: "debug"))
+```
+
+```elixir
+# In a pipeline
+right(5)
+|> Monad.map(&(&1 * 2))
+|> Either.tap(&IO.inspect(&1, label: "after map"))
+|> Monad.map(&(&1 + 1))
+```
+
 ### concat/1
 
 Removes `Left` values from a list of `Either` and returns a list of unwrapped `Right` values.
@@ -371,7 +459,7 @@ This is useful for effectful filtering, where you want to validate or transform 
 ```elixir
 filter_positive = fn x ->
   lift_predicate(x, &is_integer/1, fn v -> "not an integer: #{inspect(v)}" end)
-  |> Funx.Monad.map(fn x -> if x > 0, do: Funx.Monad.Maybe.just(x), else: Funx.Monad.Maybe.nothing() end)
+  |> Funx.Monad.map(fn x -> if x > 0, do: Maybe.just(x), else: Maybe.nothing() end)
 end
 ```
 
@@ -422,11 +510,11 @@ validate(-3, [validate_positive, validate_even])
 Converts a `Maybe` value to an `Either`. If the `Maybe` is `Nothing`, a `Left` is returned using `on_none`.
 
 ```elixir
-lift_maybe(Funx.Monad.Maybe.just(5), fn -> "error" end)
+lift_maybe(Maybe.just(5), fn -> "error" end)
 ```
 
 ```elixir
-lift_maybe(Funx.Monad.Maybe.nothing(), fn -> "error" end)
+lift_maybe(Maybe.nothing(), fn -> "error" end)
 ```
 
 ### lift_predicate/3

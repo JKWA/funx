@@ -11,7 +11,8 @@ export_locals_without_parens = [
   validate: 1,
   filter_or_else: 2,
   or_else: 1,
-  map_left: 1
+  map_left: 1,
+  tap: 1
 ]
 
 [
