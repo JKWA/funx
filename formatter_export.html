@@ -8,7 +8,7 @@
     <meta name="project" content="funx v0.2.0">
 
 
-    <title>Funx Formatter Configuration Export — funx v0.2.0</title>
+    <title>Formatter Rules — funx v0.2.0</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-E1A398D3.js"></script>
+    <script src="dist/sidebar_items-A35FACBF.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -120,15 +120,9 @@ Pages
       </a>
 
 
-    <span>Funx Formatter Configuration Export</span>
+    <span>Formatter Rules</span>
   </h1>
 
-<h2 id="what-this-does" class="section-heading">
-  <a href="#what-this-does" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">What This Does</span>
-</h2>
 <p>The Funx library now exports formatter rules for its Either DSL, allowing projects that depend on Funx to automatically format DSL code without extra parentheses.</p><h2 id="exported-rules" class="section-heading">
   <a href="#exported-rules" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
@@ -147,49 +141,38 @@ Pages
   </a>
   <span class="text">Step 1: Add to Dependencies</span>
 </h3>
-<p>Make sure your <code class="inline">mix.exs</code> includes Funx as a dependency:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="7292127912-1">do</span><span class="w">
-  </span><span class="p" data-group-id="7292127912-2">[</span><span class="w">
-    </span><span class="p" data-group-id="7292127912-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.2&quot;</span><span class="p" data-group-id="7292127912-3">}</span><span class="w">
-  </span><span class="p" data-group-id="7292127912-2">]</span><span class="w">
-</span><span class="k" data-group-id="7292127912-1">end</span></code></pre><h3 id="step-2-update-formatter-exs" class="section-heading">
+<p>Make sure your <code class="inline">mix.exs</code> includes Funx as a dependency:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="4909088072-1">do</span><span class="w">
+  </span><span class="p" data-group-id="4909088072-2">[</span><span class="w">
+    </span><span class="p" data-group-id="4909088072-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.2&quot;</span><span class="p" data-group-id="4909088072-3">}</span><span class="w">
+  </span><span class="p" data-group-id="4909088072-2">]</span><span class="w">
+</span><span class="k" data-group-id="4909088072-1">end</span></code></pre><h3 id="step-2-update-formatter-exs" class="section-heading">
   <a href="#step-2-update-formatter-exs" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Step 2: Update .formatter.exs</span>
 </h3>
-<p>In your project's <code class="inline">.formatter.exs</code>, add <code class="inline">:funx</code> to <code class="inline">import_deps</code>:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="3875009262-1">[</span><span class="w">
-  </span><span class="ss">import_deps</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3875009262-2">[</span><span class="ss">:funx</span><span class="p" data-group-id="3875009262-2">]</span><span class="p">,</span><span class="w">
-  </span><span class="ss">inputs</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3875009262-3">[</span><span class="s">&quot;{mix,.formatter}.exs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;{config,lib,test}/**/*.{ex,exs}&quot;</span><span class="p" data-group-id="3875009262-3">]</span><span class="w">
-</span><span class="p" data-group-id="3875009262-1">]</span></code></pre><h3 id="step-3-remove-manual-configuration-if-present" class="section-heading">
-  <a href="#step-3-remove-manual-configuration-if-present" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Step 3: Remove Manual Configuration (if present)</span>
-</h3>
-<p>If you previously had manual configuration like this:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="2551167980-1">[</span><span class="w">
-  </span><span class="ss">locals_without_parens</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2551167980-2">[</span><span class="w">
-    </span><span class="ss">bind</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="ss">map</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
-  </span><span class="p" data-group-id="2551167980-2">]</span><span class="w">
-</span><span class="p" data-group-id="2551167980-1">]</span></code></pre><p>You can now <strong>remove it</strong> - the rules will be automatically imported from Funx.</p><h2 id="example" class="section-heading">
+<p>In your project's <code class="inline">.formatter.exs</code>, add <code class="inline">:funx</code> to <code class="inline">import_deps</code>:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="6678630957-1">[</span><span class="w">
+  </span><span class="ss">import_deps</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6678630957-2">[</span><span class="ss">:funx</span><span class="p" data-group-id="6678630957-2">]</span><span class="p">,</span><span class="w">
+  </span><span class="ss">inputs</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6678630957-3">[</span><span class="s">&quot;{mix,.formatter}.exs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;{config,lib,test}/**/*.{ex,exs}&quot;</span><span class="p" data-group-id="6678630957-3">]</span><span class="w">
+</span><span class="p" data-group-id="6678630957-1">]</span></code></pre><h2 id="example" class="section-heading">
   <a href="#example" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
   <span class="text">Example</span>
 </h2>
-<p>With this configuration, your DSL code will format cleanly:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">user_input</span><span class="w"> </span><span class="k" data-group-id="2727370117-1">do</span><span class="w">
+<p>With this configuration, your DSL code will format cleanly:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">user_input</span><span class="w"> </span><span class="k" data-group-id="1275172833-1">do</span><span class="w">
   </span><span class="n">bind</span><span class="w"> </span><span class="nc">ParseUser</span><span class="w">
   </span><span class="n">map</span><span class="w"> </span><span class="nc">ValidateEmail</span><span class="w">
-  </span><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="2727370117-2">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="2727370117-2">]</span><span class="w">
+  </span><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="1275172833-2">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="1275172833-2">]</span><span class="w">
   </span><span class="n">bind</span><span class="w"> </span><span class="nc">SaveToDatabase</span><span class="w">
-  </span><span class="n">or_else</span><span class="w"> </span><span class="n">default_user</span><span class="p" data-group-id="2727370117-3">(</span><span class="p" data-group-id="2727370117-3">)</span><span class="w">
-</span><span class="k" data-group-id="2727370117-1">end</span></code></pre><p>Instead of:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="p" data-group-id="7143740493-1">(</span><span class="n">user_input</span><span class="p" data-group-id="7143740493-1">)</span><span class="w"> </span><span class="k" data-group-id="7143740493-2">do</span><span class="w">
-  </span><span class="n">bind</span><span class="p" data-group-id="7143740493-3">(</span><span class="nc">ParseUser</span><span class="p" data-group-id="7143740493-3">)</span><span class="w">
-  </span><span class="n">map</span><span class="p" data-group-id="7143740493-4">(</span><span class="nc">ValidateEmail</span><span class="p" data-group-id="7143740493-4">)</span><span class="w">
-  </span><span class="n">validate</span><span class="p" data-group-id="7143740493-5">(</span><span class="p" data-group-id="7143740493-6">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="7143740493-6">]</span><span class="p" data-group-id="7143740493-5">)</span><span class="w">
-  </span><span class="n">bind</span><span class="p" data-group-id="7143740493-7">(</span><span class="nc">SaveToDatabase</span><span class="p" data-group-id="7143740493-7">)</span><span class="w">
-  </span><span class="n">or_else</span><span class="p" data-group-id="7143740493-8">(</span><span class="n">default_user</span><span class="p" data-group-id="7143740493-9">(</span><span class="p" data-group-id="7143740493-9">)</span><span class="p" data-group-id="7143740493-8">)</span><span class="w">
-</span><span class="k" data-group-id="7143740493-2">end</span></code></pre><h2 id="verification" class="section-heading">
+  </span><span class="n">or_else</span><span class="w"> </span><span class="n">default_user</span><span class="p" data-group-id="1275172833-3">(</span><span class="p" data-group-id="1275172833-3">)</span><span class="w">
+</span><span class="k" data-group-id="1275172833-1">end</span></code></pre><p>Instead of:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="p" data-group-id="8847948812-1">(</span><span class="n">user_input</span><span class="p" data-group-id="8847948812-1">)</span><span class="w"> </span><span class="k" data-group-id="8847948812-2">do</span><span class="w">
+  </span><span class="n">bind</span><span class="p" data-group-id="8847948812-3">(</span><span class="nc">ParseUser</span><span class="p" data-group-id="8847948812-3">)</span><span class="w">
+  </span><span class="n">map</span><span class="p" data-group-id="8847948812-4">(</span><span class="nc">ValidateEmail</span><span class="p" data-group-id="8847948812-4">)</span><span class="w">
+  </span><span class="n">validate</span><span class="p" data-group-id="8847948812-5">(</span><span class="p" data-group-id="8847948812-6">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="8847948812-6">]</span><span class="p" data-group-id="8847948812-5">)</span><span class="w">
+  </span><span class="n">bind</span><span class="p" data-group-id="8847948812-7">(</span><span class="nc">SaveToDatabase</span><span class="p" data-group-id="8847948812-7">)</span><span class="w">
+  </span><span class="n">or_else</span><span class="p" data-group-id="8847948812-8">(</span><span class="n">default_user</span><span class="p" data-group-id="8847948812-9">(</span><span class="p" data-group-id="8847948812-9">)</span><span class="p" data-group-id="8847948812-8">)</span><span class="w">
+</span><span class="k" data-group-id="8847948812-2">end</span></code></pre><h2 id="verification" class="section-heading">
   <a href="#verification" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -219,7 +202,7 @@ README
           Next Page →
         </span>
         <span class="title">
-Learning Resources
+Learning resources
         </span>
       </a>
 
