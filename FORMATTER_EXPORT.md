@@ -14,6 +14,7 @@ The following Either DSL functions are configured to format without parentheses:
 - `filter_or_else/2` - Filter with predicate, fallback if fails
 - `or_else/1` - Provide fallback on error
 - `map_left/1` - Transform error values
+- `tap` - Run a side-effecting function inside the chain without changing the data
 
 Note that `flip/0` - Swap Left and Right still requires parentheses.
 
