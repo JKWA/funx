@@ -7,7 +7,11 @@ defmodule Funx.Monad.Either.DslTest do
 
   alias Funx.Monad.Either.Dsl.Examples.{
     Double,
+    ErrorWrapper,
+    InRange,
     InvalidReturn,
+    IsPositive,
+    Logger,
     MinValidator,
     Multiplier,
     ParseInt,
@@ -1349,6 +1353,128 @@ defmodule Funx.Monad.Either.DslTest do
         end
 
       assert result == %Right{right: 5}
+    end
+
+    test "tap with bare module on Right" do
+      test_pid = self()
+
+      result =
+        either 42 do
+          tap {Logger, test_pid: test_pid, label: :logged_value}
+          map(&(&1 * 2))
+        end
+
+      assert result == %Right{right: 84}
+      assert_received {:logged_value, 42}
+    end
+
+    test "tap with bare module on Left" do
+      result =
+        either left("error") do
+          tap {Logger, test_pid: self(), label: :should_not_log}
+        end
+
+      assert result == %Left{left: "error"}
+      refute_received {:should_not_log, _}
+    end
+
+    test "tap with module in complex pipeline" do
+      test_pid = self()
+
+      result =
+        either "42" do
+          bind ParseInt
+          tap {Logger, test_pid: test_pid, label: :after_parse}
+          bind PositiveNumber
+          tap {Logger, test_pid: test_pid, label: :after_validate}
+          map(&(&1 * 2))
+        end
+
+      assert result == %Right{right: 84}
+      assert_received {:after_parse, 42}
+      assert_received {:after_validate, 42}
+    end
+
+    test "map_left with bare module" do
+      result =
+        either left("file not found") do
+          map_left ErrorWrapper
+          map(&(&1 * 2))
+        end
+
+      assert result == %Left{left: "Error: file not found"}
+    end
+
+    test "map_left with module and options" do
+      result =
+        either left("invalid input") do
+          map_left {ErrorWrapper, prefix: "Validation Error"}
+          map(&(&1 * 2))
+        end
+
+      assert result == %Left{left: "Validation Error: invalid input"}
+    end
+
+    test "map_left with module on Right" do
+      result =
+        either right(42) do
+          map_left ErrorWrapper
+          map(&(&1 * 2))
+        end
+
+      assert result == %Right{right: 84}
+    end
+
+    test "filter_or_else with bare module predicate (passes)" do
+      result =
+        either 5 do
+          filter_or_else IsPositive, fn -> "Must be positive" end
+          map(&(&1 * 2))
+        end
+
+      assert result == %Right{right: 10}
+    end
+
+    test "filter_or_else with bare module predicate (fails)" do
+      result =
+        either -5 do
+          filter_or_else IsPositive, fn -> "Must be positive" end
+          map(&(&1 * 2))
+        end
+
+      assert result == %Left{left: "Must be positive"}
+    end
+
+    test "filter_or_else with module and options (passes)" do
+      result =
+        either 50 do
+          filter_or_else {InRange, min: 0, max: 100}, fn -> "Out of range" end
+          map(&(&1 * 2))
+        end
+
+      assert result == %Right{right: 100}
+    end
+
+    test "filter_or_else with module and options (fails)" do
+      result =
+        either 150 do
+          filter_or_else {InRange, min: 0, max: 100}, fn -> "Out of range" end
+          map(&(&1 * 2))
+        end
+
+      assert result == %Left{left: "Out of range"}
+    end
+
+    test "filter_or_else with module in complex pipeline" do
+      result =
+        either "42" do
+          bind ParseInt
+          filter_or_else IsPositive, fn -> "Must be positive" end
+          filter_or_else {InRange, min: 0, max: 100}, fn -> "Out of range" end
+          map(&(&1 * 2))
+        end
+
+      assert result == %Right{right: 84}
     end
   end
 

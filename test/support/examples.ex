@@ -280,4 +280,74 @@ defmodule Funx.Monad.Either.Dsl.Examples do
 
     def run(value, _opts, _env), do: left("Expected number, got: #{inspect(value)}")
   end
+
+  defmodule Logger do
+    @moduledoc """
+    Logs a value for side effects, used with tap.
+
+    Demonstrates tap with module - sends message to test process.
+    """
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
+
+    @impl true
+    def run(value, opts, _env) do
+      test_pid = Keyword.get(opts, :test_pid)
+      label = Keyword.get(opts, :label, :logged)
+
+      if test_pid do
+        send(test_pid, {label, value})
+      end
+
+      value
+    end
+  end
+
+  defmodule ErrorWrapper do
+    @moduledoc """
+    Wraps an error message with a prefix, used with map_left.
+
+    Demonstrates map_left with module.
+    """
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
+
+    @impl true
+    def run(error, opts, _env) do
+      prefix = Keyword.get(opts, :prefix, "Error")
+      "#{prefix}: #{error}"
+    end
+  end
+
+  defmodule IsPositive do
+    @moduledoc """
+    Predicate that checks if a number is positive.
+
+    Demonstrates filter_or_else with module predicate.
+    """
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
+
+    @impl true
+    def run(value, _opts, _env) when is_number(value) do
+      value > 0
+    end
+
+    def run(_value, _opts, _env), do: false
+  end
+
+  defmodule InRange do
+    @moduledoc """
+    Predicate that checks if a value is within a range.
+
+    Demonstrates filter_or_else with module predicate and options.
+    """
+    @behaviour Funx.Monad.Either.Dsl.Behaviour
+
+    @impl true
+    def run(value, opts, _env) when is_number(value) do
+      min = Keyword.get(opts, :min, 0)
+      max = Keyword.get(opts, :max, 100)
+      value >= min and value <= max
+    end
+
+    def run(_value, _opts, _env), do: false
+  end
 end
