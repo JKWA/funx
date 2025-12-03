@@ -89,7 +89,8 @@ This module helps you model failure explicitly, compose error-aware logic, and i
 
 ```elixir
 import Funx.Monad.Either
-alias Funx.Monad.Either
+alias Funx.Monad
+alias Funx.Monad.{Either, Maybe}
 ```
 
 ### right/1
@@ -114,6 +115,65 @@ Alias for `right/1`.
 
 ```elixir
 pure(2)
+```
+
+### Monad.map/2
+
+Applies a function to the value inside a `Right` monad. If the `Either` is a `Left`, it is returned unchanged.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Either`.
+
+```elixir
+right(42)
+|> Monad.map(&(&1 + 1))
+```
+
+```elixir
+left("error")
+|> Monad.map(&(&1 + 1))
+```
+
+### Monad.bind/2
+
+Applies a function that returns an `Either` to the value inside a `Right` monad. This is also known as "flatMap" in other languages.
+
+If the `Either` is a `Left`, it is returned unchanged. If the function returns a `Left`, that `Left` is returned.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Either`.
+
+```elixir
+right(42)
+|> Monad.bind(fn x -> right(div(x, 2)) end)
+```
+
+```elixir
+left("error")
+|> Monad.bind(fn _ -> right(10) end)
+```
+
+```elixir
+right(42)
+|> Monad.bind(fn _ -> left("computation failed") end)
+```
+
+### Monad.ap/2
+
+Applies a function wrapped in an `Either` to a value wrapped in an `Either`.
+
+If either the function or the value is a `Left`, the `Left` is returned.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Either`.
+
+```elixir
+Monad.ap(right(&(&1 + 1)), right(42))
+```
+
+```elixir
+Monad.ap(left("error"), right(42))
+```
+
+```elixir
+Monad.ap(right(&(&1 + 1)), left("error"))
 ```
 
 ### left?/1
@@ -293,9 +353,9 @@ left("error")
 ```elixir
 # In a pipeline
 right(5)
-|> Either.map(&(&1 * 2))
+|> Monad.map(&(&1 * 2))
 |> Either.tap(&IO.inspect(&1, label: "after map"))
-|> Either.map(&(&1 + 1))
+|> Monad.map(&(&1 + 1))
 ```
 
 ### concat/1
@@ -399,7 +459,7 @@ This is useful for effectful filtering, where you want to validate or transform 
 ```elixir
 filter_positive = fn x ->
   lift_predicate(x, &is_integer/1, fn v -> "not an integer: #{inspect(v)}" end)
-  |> Funx.Monad.map(fn x -> if x > 0, do: Funx.Monad.Maybe.just(x), else: Funx.Monad.Maybe.nothing() end)
+  |> Funx.Monad.map(fn x -> if x > 0, do: Maybe.just(x), else: Maybe.nothing() end)
 end
 ```
 
@@ -450,11 +510,11 @@ validate(-3, [validate_positive, validate_even])
 Converts a `Maybe` value to an `Either`. If the `Maybe` is `Nothing`, a `Left` is returned using `on_none`.
 
 ```elixir
-lift_maybe(Funx.Monad.Maybe.just(5), fn -> "error" end)
+lift_maybe(Maybe.just(5), fn -> "error" end)
 ```
 
 ```elixir
-lift_maybe(Funx.Monad.Maybe.nothing(), fn -> "error" end)
+lift_maybe(Maybe.nothing(), fn -> "error" end)
 ```
 
 ### lift_predicate/3

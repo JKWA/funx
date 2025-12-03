@@ -79,6 +79,7 @@ This module helps you represent optional data explicitly, structure conditional 
 
 ```elixir
 import Funx.Monad.Maybe
+alias Funx.Monad
 alias Funx.Monad.Maybe
 ```
 
@@ -104,6 +105,65 @@ Alias for `just/1`.
 
 ```elixir
 pure(5)
+```
+
+### Monad.map/2
+
+Applies a function to the value inside a `Just` monad. If the `Maybe` is `Nothing`, it is returned unchanged.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Maybe`.
+
+```elixir
+just(42)
+|> Monad.map(&(&1 + 1))
+```
+
+```elixir
+nothing()
+|> Monad.map(&(&1 + 1))
+```
+
+### Monad.bind/2
+
+Applies a function that returns a `Maybe` to the value inside a `Just` monad. This is also known as "flatMap" in other languages.
+
+If the `Maybe` is `Nothing`, it is returned unchanged. If the function returns `Nothing`, that `Nothing` is returned.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Maybe`.
+
+```elixir
+just(42)
+|> Monad.bind(fn x -> just(div(x, 2)) end)
+```
+
+```elixir
+nothing()
+|> Monad.bind(fn _ -> just(10) end)
+```
+
+```elixir
+just(42)
+|> Monad.bind(fn _ -> nothing() end)
+```
+
+### Monad.ap/2
+
+Applies a function wrapped in a `Maybe` to a value wrapped in a `Maybe`.
+
+If either the function or the value is `Nothing`, `Nothing` is returned.
+
+This function is from the `Funx.Monad` module, not `Funx.Monad.Maybe`.
+
+```elixir
+Monad.ap(just(&(&1 + 1)), just(42))
+```
+
+```elixir
+Monad.ap(nothing(), just(42))
+```
+
+```elixir
+Monad.ap(just(&(&1 + 1)), nothing())
 ```
 
 ### just?/1
@@ -176,9 +236,9 @@ nothing()
 ```elixir
 # In a pipeline
 just(5)
-|> Funx.Monad.map(&(&1 * 2))
+|> Monad.map(&(&1 * 2))
 |> Maybe.tap(&IO.inspect(&1, label: "after map"))
-|> Funx.Monad.map(&(&1 + 1))
+|> Monad.map(&(&1 + 1))
 ```
 
 ### lift_eq/1

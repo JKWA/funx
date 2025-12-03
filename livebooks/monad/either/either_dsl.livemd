@@ -117,6 +117,33 @@ either "1" do
 end
 ```
 
+### Using `tap` for Side Effects
+
+The `tap` operation executes a side-effect function on a Right value and returns the original Either unchanged. This is useful for debugging, logging, or performing side effects without changing the value.
+
+If the Either is Left, the tap function is not called.
+
+```elixir
+# Side effect on Right value
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  tap fn id -> IO.inspect(id, label: "hero id") end
+  bind HeroRegistry.fetch_hero()
+  tap fn hero -> IO.inspect(hero.name, label: "hero name") end
+  bind HeroRegistry.check_active()
+  map fn hero -> "#{hero.name} (#{hero.power})" end
+end
+```
+
+```elixir
+# No side effect on Left
+either "invalid" do
+  bind HeroRegistry.parse_hero_id()
+  tap fn id -> IO.inspect(id, label: "should not see this") end
+  bind HeroRegistry.fetch_hero()
+end
+```
+
 ### Inline Anonymous Functions
 
 You can use inline anonymous functions at any step:
@@ -489,6 +516,7 @@ The Either DSL provides a clean, declarative way to write error-handling pipelin
 
 - **`bind`** - for operations that return Either or result tuples
 - **`map`** - for transformations that return plain values
+- **`tap`** - for side effects without changing the value (debugging, logging)
 - **Either functions** - `filter_or_else`, `or_else`, `map_left`, `flip`
 - **Validation** - `validate` for accumulating multiple errors
 - **Output formats** - `:either`, `:tuple`, or `:raise`
