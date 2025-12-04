@@ -1,8 +1,23 @@
 defmodule Funx.Monad.Either.DslTest do
+  @moduledoc """
+  Integration tests for the Either DSL.
+
+  This file serves as the specification for the Either DSL runtime behavior.
+  It tests the DSL's execution semantics including:
+  - Core operations (bind, map, ap)
+  - Auto-lifting transformations (Module.function() forms)
+  - Tuple/Either interop and normalization
+  - Return type transformations (:either, :tuple, :raise)
+  - Either-specific functions (validate, tap, map_left, filter_or_else, flip)
+  - Module-specific options passing
+  - Error propagation through pipelines
+
+  For compile-time parsing and AST transformation tests, see parser_test.exs.
+  """
+
   use Funx.TestCase, async: true
   use Funx.Monad.Either
 
-  alias Funx.Monad.Either
   alias Funx.Monad.Either.Dsl
 
   alias Funx.Monad.Either.Dsl.Examples.{
@@ -52,6 +67,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Core DSL Keywords - bind, map, run
   # ============================================================================
 
+  # Tests bind semantics, including tuple/Either normalization and error propagation
   describe "bind keyword" do
     test "with module returning Either" do
       result =
@@ -153,6 +169,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests applicative functor semantics for applying wrapped functions
   describe "ap keyword" do
     test "applies a function in Right to a value in Right" do
       result =
@@ -212,6 +229,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests map (Functor) semantics for pure transformations
   describe "map keyword" do
     test "with module" do
       result =
@@ -352,6 +370,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Either Module Functions (auto-imported)
   # ============================================================================
 
+  # Tests Either-specific functions: validate, tap, map_left, filter_or_else, flip, or_else
   describe "Either module functions" do
     test "validate with list of validators" do
       result =
@@ -493,6 +512,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Tuple Support (interop with {:ok, value} / {:error, reason})
   # ============================================================================
 
+  # Tests automatic normalization between {:ok, _}/{:error, _} tuples and Either structs
   describe "tuple/Either interop" do
     test "normalizes {:ok, value} to Right" do
       result =
@@ -550,6 +570,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Return Type Options (as: :either | :tuple | :raise)
   # ============================================================================
 
+  # Tests return type transformations: :either (default), :tuple, :raise
   describe "return type options" do
     test "default is :either" do
       result =
@@ -659,12 +680,46 @@ defmodule Funx.Monad.Either.DslTest do
 
       assert %Left{} = failure
     end
+
+    test "as: :either raises error if pipeline returns non-Either" do
+      # This tests the error path when wrap_result gets something other than Either
+      # We can trigger this by mocking the execute_pipeline to return something invalid
+      defmodule BrokenPipeline do
+        def run do
+          # Return a non-Either value to trigger the error path in wrap_result
+          :not_an_either_struct
+        end
+      end
+
+      # The wrap_result function should raise when it gets a non-Either
+      assert_raise ArgumentError, ~r/Expected Either struct when using as: :either/, fn ->
+        Dsl.wrap_result(BrokenPipeline.run(), :either)
+      end
+    end
+
+    test "raises CompileError for invalid return type option" do
+      assert_raise CompileError, ~r/Invalid return type/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either "42", as: :invalid_type do
+              bind fn x -> right(x) end
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
   end
 
   # ============================================================================
   # Complex Pipelines & Real-World Examples
   # ============================================================================
 
+  # Tests end-to-end pipelines combining multiple DSL features
   describe "complex pipelines" do
     test "combining all DSL features" do
       result =
@@ -715,6 +770,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Error Handling & Edge Cases
   # ============================================================================
 
+  # Tests automatic lifting of various input types into Either context
   describe "input lifting" do
     test "various input types are lifted correctly" do
       test_cases = [
@@ -769,6 +825,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests runtime error handling for invalid module callbacks
   describe "error handling" do
     test "raises on invalid return value from bind" do
       assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
@@ -796,6 +853,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests auto-lifting of Module.function(args) to fn x -> Module.function(x, args) end
   describe "auto-pipe lifting for Module.function() forms" do
     test "bind lifts the pipeline value into the first argument of a module function" do
       result =
@@ -884,6 +942,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests auto-lifting of function calls within validator lists
   describe "auto-pipe lifting in validate lists" do
     # Helper module with zero-arity validator function
     defmodule ValidatorHelpers do
@@ -1044,6 +1103,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Module-Specific Options (opts parameter)
   # ============================================================================
 
+  # Tests passing custom options to modules via {Module, opts} syntax with bind
   describe "module-specific options with bind" do
     test "passes options to module run/3 function" do
       result =
@@ -1124,6 +1184,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests passing custom options to modules via {Module, opts} syntax with map
   describe "module-specific options with map" do
     test "passes options to module run/3 function" do
       result =
@@ -1176,6 +1237,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests module options with Either functions (validate, tap, map_left, etc.)
   describe "module-specific options" do
     test "passes options to module run/3 function" do
       result =
@@ -1197,6 +1259,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests edge cases for module options (empty opts, user_env propagation)
   describe "module-specific options - edge cases" do
     test "empty options list works" do
       result =
@@ -1247,6 +1310,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests that modules can be passed directly to Either functions
   describe "whitelisted Either functions" do
     test "allows filter_or_else/3" do
       result =
@@ -1473,147 +1537,4 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
-  # ============================================================================
-  # Compile-Time Error Handling (Syntax Errors Only)
-  # ============================================================================
-
-  describe "compile-time error handling" do
-    test "raises on invalid return type option" do
-      assert_raise CompileError, ~r/Invalid return type/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42", as: :invalid_type do
-              bind fn x -> right(x) end
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when using non-whitelisted Either function" do
-      assert_raise CompileError, ~r/Invalid operation/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              bind fn x -> right(x) end
-              non_existent_either_function()
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises on invalid operation type in first position" do
-      assert_raise CompileError, ~r/Invalid operation/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              :some_random_atom
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises on invalid operation type in subsequent position" do
-      assert_raise CompileError, ~r/Invalid operation/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              bind ParseInt
-              123
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when validator list contains number literal" do
-      assert_raise CompileError, ~r/Invalid validator in list/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either 5 do
-              validate [1, 2, 3]
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when validator list contains string literal" do
-      assert_raise CompileError, ~r/Invalid validator in list/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either 5 do
-              validate ["not", "a", "function"]
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when validator list contains map literal" do
-      assert_raise CompileError, ~r/Invalid validator in list/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either 5 do
-              validate [%{key: :value}]
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when bare function call used in pipeline" do
-      assert_raise CompileError, ~r/Bare function calls are not allowed/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either 5 do
-              some_function(1, 2)
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-  end
 end
