@@ -693,7 +693,7 @@ defmodule Funx.Monad.Either.DslTest do
 
       # The wrap_result function should raise when it gets a non-Either
       assert_raise ArgumentError, ~r/Expected Either struct when using as: :either/, fn ->
-        Dsl.wrap_result(BrokenPipeline.run(), :either)
+        Funx.Monad.Either.Dsl.Executor.wrap_result(BrokenPipeline.run(), :either)
       end
     end
 
