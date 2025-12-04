@@ -58,11 +58,6 @@ defmodule Funx.Monad.Either.Dsl do
     defstruct [:input, :steps, :return_as, :user_env]
   end
 
-  defmodule Step do
-    @moduledoc false
-    defstruct [:type, :operation, :opts]
-  end
-
   # ============================================================================
   # SECTION 1 — PUBLIC MACROS (ENTRY POINT)
   # ============================================================================
@@ -107,13 +102,47 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
-  # Quote a Step struct, handling functions specially
-  defp quote_step(%Step{type: type, operation: operation, opts: opts}) do
+  # Quote Step structs - each type gets its own quoted struct
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.Bind{operation: operation, opts: opts}) do
     quote do
-      %Funx.Monad.Either.Dsl.Step{
-        type: unquote(type),
+      %Funx.Monad.Either.Dsl.Step.Bind{
         operation: unquote(operation),
         opts: unquote(opts)
+      }
+    end
+  end
+
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.Map{operation: operation, opts: opts}) do
+    quote do
+      %Funx.Monad.Either.Dsl.Step.Map{
+        operation: unquote(operation),
+        opts: unquote(opts)
+      }
+    end
+  end
+
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.Ap{applicative: applicative}) do
+    quote do
+      %Funx.Monad.Either.Dsl.Step.Ap{
+        applicative: unquote(applicative)
+      }
+    end
+  end
+
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.EitherFunction{function: func_name, args: args}) do
+    quote do
+      %Funx.Monad.Either.Dsl.Step.EitherFunction{
+        function: unquote(func_name),
+        args: unquote(args)
+      }
+    end
+  end
+
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.BindableFunction{function: func_name, args: args}) do
+    quote do
+      %Funx.Monad.Either.Dsl.Step.BindableFunction{
+        function: unquote(func_name),
+        args: unquote(args)
       }
     end
   end

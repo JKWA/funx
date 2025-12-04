@@ -44,38 +44,28 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   # STEP EXECUTION
   # ============================================================================
 
-  defp execute_step(either_value, %Step{type: type} = step, user_env) do
-    case type do
-      :bind -> handle_bind(either_value, step, user_env)
-      :map -> handle_map(either_value, step, user_env)
-      :ap -> handle_ap(either_value, step)
-      :either_function -> handle_either_function(either_value, step)
-      :bindable_function -> handle_bindable_function(either_value, step)
-    end
-  end
-
-  defp handle_bind(either_value, %Step{operation: operation, opts: opts}, user_env) do
+  defp execute_step(either_value, %Step.Bind{operation: operation, opts: opts}, user_env) do
     Funx.Monad.bind(either_value, fn value ->
       result = call_operation(operation, value, opts, user_env)
       normalize_run_result(result)
     end)
   end
 
-  defp handle_map(either_value, %Step{operation: operation, opts: opts}, user_env) do
+  defp execute_step(either_value, %Step.Map{operation: operation, opts: opts}, user_env) do
     Funx.Monad.map(either_value, fn value ->
       call_operation(operation, value, opts, user_env)
     end)
   end
 
-  defp handle_ap(either_value, %Step{operation: operation}) do
-    Funx.Monad.ap(either_value, operation)
+  defp execute_step(either_value, %Step.Ap{applicative: applicative}, _user_env) do
+    Funx.Monad.ap(either_value, applicative)
   end
 
-  defp handle_either_function(either_value, %Step{operation: {func_name, args}}) do
+  defp execute_step(either_value, %Step.EitherFunction{function: func_name, args: args}, _user_env) do
     apply(Either, func_name, [either_value | args])
   end
 
-  defp handle_bindable_function(either_value, %Step{operation: {func_name, args}}) do
+  defp execute_step(either_value, %Step.BindableFunction{function: func_name, args: args}, _user_env) do
     Funx.Monad.bind(either_value, fn value ->
       apply(Either, func_name, [value | args])
     end)

@@ -4,15 +4,10 @@ defmodule Funx.Monad.Either.Dsl.Parser do
 
   alias Funx.Monad.Either.Dsl.Step
 
-  # Operation type classification
-  @operation_types %{
-    filter_or_else: :either_function,
-    or_else: :either_function,
-    map_left: :either_function,
-    flip: :either_function,
-    tap: :either_function,
-    validate: :bindable_function
-  }
+  # Operation type classification (for error messages)
+  @either_functions [:filter_or_else, :or_else, :map_left, :flip, :tap]
+  @bindable_functions [:validate]
+  @all_allowed_functions @either_functions ++ @bindable_functions
 
   # ============================================================================
   # PUBLIC API
@@ -43,8 +38,8 @@ defmodule Funx.Monad.Either.Dsl.Parser do
         parse_monad_operation(:map, args, caller_env)
 
       {:ap, _, args} ->
-        {operation, opts} = parse_operation_args(args)
-        %Step{type: :ap, operation: operation, opts: opts}
+        {operation, _opts} = parse_operation_args(args)
+        %Step.Ap{applicative: operation}
 
       {:__aliases__, _, _} = module_alias ->
         raise_bare_module_error(module_alias)
@@ -62,7 +57,11 @@ defmodule Funx.Monad.Either.Dsl.Parser do
     {operation, opts} = parse_operation_args(args)
     lifted_op = ast_lift_call_to_unary(operation, caller_env) || operation
     expanded_op = ast_expand_module_alias(lifted_op, caller_env)
-    %Step{type: type, operation: expanded_op, opts: opts}
+
+    case type do
+      :bind -> %Step.Bind{operation: expanded_op, opts: opts}
+      :map -> %Step.Map{operation: expanded_op, opts: opts}
+    end
   end
 
   defp parse_either_function_to_step(func_name, args, user_env, caller_env) do
@@ -73,12 +72,15 @@ defmodule Funx.Monad.Either.Dsl.Parser do
         ast_transform_modules_to_functions(lifted, user_env, caller_env)
       end)
 
-    case @operation_types[func_name] do
-      nil ->
-        raise_invalid_function_error(func_name)
+    cond do
+      func_name in @either_functions ->
+        %Step.EitherFunction{function: func_name, args: transformed_args}
 
-      type ->
-        %Step{type: type, operation: {func_name, transformed_args}, opts: []}
+      func_name in @bindable_functions ->
+        %Step.BindableFunction{function: func_name, args: transformed_args}
+
+      true ->
+        raise_invalid_function_error(func_name)
     end
   end
 
@@ -255,8 +257,6 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   end
 
   defp raise_invalid_function_error(func_name) do
-    allowed = Map.keys(@operation_types)
-
     raise CompileError,
       description: """
       Invalid operation: #{func_name}
@@ -264,7 +264,7 @@ defmodule Funx.Monad.Either.Dsl.Parser do
       Bare function calls are not allowed in the DSL pipeline.
 
       If you meant to call an Either function, only these are allowed:
-        #{inspect(allowed)}
+        #{inspect(@all_allowed_functions)}
 
       If you meant to use a custom function, you must use 'bind' or 'map':
         bind #{func_name}(...)

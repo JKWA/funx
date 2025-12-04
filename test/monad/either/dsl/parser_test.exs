@@ -32,7 +32,13 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
   end
 
   defp assert_type(step, type) do
-    assert %Step{type: ^type} = step
+    case type do
+      :bind -> assert %Step.Bind{} = step
+      :map -> assert %Step.Map{} = step
+      :ap -> assert %Step.Ap{} = step
+      :either_function -> assert %Step.EitherFunction{} = step
+      :bindable_function -> assert %Step.BindableFunction{} = step
+    end
   end
 
   defp assert_compile_error(block, message) do
@@ -45,20 +51,28 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
     error
   end
 
-  defp types(steps), do: Enum.map(steps, & &1.type)
+  defp types(steps) do
+    Enum.map(steps, fn
+      %Step.Bind{} -> :bind
+      %Step.Map{} -> :map
+      %Step.Ap{} -> :ap
+      %Step.EitherFunction{} -> :either_function
+      %Step.BindableFunction{} -> :bindable_function
+    end)
+  end
 
   # Tests basic operation parsing (bind, map, ap, multiple ops, options)
   describe "parse_operations/3" do
     test "parses single bind operation" do
       step = parse_one(quote do: bind(SomeModule))
 
-      assert %Step{type: :bind, operation: SomeModule, opts: []} = step
+      assert %Step.Bind{operation: SomeModule, opts: []} = step
     end
 
     test "parses single map operation" do
       step = parse_one(quote do: map(SomeModule))
 
-      assert %Step{type: :map, operation: SomeModule, opts: []} = step
+      assert %Step.Map{operation: SomeModule, opts: []} = step
     end
 
     test "parses single ap operation" do
@@ -77,15 +91,15 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
 
       [step1, step2, step3] = parse_all(block)
 
-      assert %Step{type: :bind, operation: SomeModule} = step1
-      assert %Step{type: :map, operation: AnotherModule} = step2
-      assert %Step{type: :bind, operation: ThirdModule} = step3
+      assert %Step.Bind{operation: SomeModule} = step1
+      assert %Step.Map{operation: AnotherModule} = step2
+      assert %Step.Bind{operation: ThirdModule} = step3
     end
 
     test "parses operations with options" do
       step = parse_one(quote do: bind({SomeModule, [opt: :value]}))
 
-      assert %Step{type: :bind, operation: SomeModule, opts: [opt: :value]} = step
+      assert %Step.Bind{operation: SomeModule, opts: [opt: :value]} = step
     end
 
     test "parses anonymous functions" do
@@ -120,32 +134,32 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
             :tap -> parse_one(quote do: tap(fn x -> x end))
           end
 
-        assert %Step{type: :either_function, operation: {^func_name, _args}} = step
+        assert %Step.EitherFunction{function: ^func_name, args: _args} = step
       end
     end
 
     test "parses validate as bindable_function" do
       step = parse_one(quote do: validate([SomeValidator]))
 
-      assert %Step{type: :bindable_function, operation: {:validate, _args}} = step
+      assert %Step.BindableFunction{function: :validate, args: _args} = step
     end
 
     test "parses tap with module and options" do
       step = parse_one(quote do: tap({SomeModule, opt: :value}))
 
-      assert %Step{type: :either_function, operation: {:tap, _args}} = step
+      assert %Step.EitherFunction{function: :tap, args: _args} = step
     end
 
     test "parses or_else with module and options" do
       step = parse_one(quote do: or_else({DefaultModule, default: 42}))
 
-      assert %Step{type: :either_function, operation: {:or_else, _args}} = step
+      assert %Step.EitherFunction{function: :or_else, args: _args} = step
     end
 
     test "parses tap with bare module" do
       step = parse_one(quote do: tap(SomeModule))
 
-      assert %Step{type: :either_function, operation: {:tap, _args}} = step
+      assert %Step.EitherFunction{function: :tap, args: _args} = step
     end
   end
 
@@ -199,14 +213,14 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
     test "expands module aliases to atoms" do
       step = parse_one(quote do: bind(String))
 
-      assert %Step{type: :bind, operation: String} = step
+      assert %Step.Bind{operation: String} = step
       assert is_atom(step.operation)
     end
 
     test "expands nested module aliases" do
       step = parse_one(quote do: bind(Funx.Monad.Either))
 
-      assert %Step{type: :bind, operation: Funx.Monad.Either} = step
+      assert %Step.Bind{operation: Funx.Monad.Either} = step
       assert is_atom(step.operation)
     end
   end
@@ -269,35 +283,35 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
       block = quote do: validate([SomeValidator, AnotherValidator])
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, _args}} = step
+      assert %Step.BindableFunction{function: :validate, args: _args} = step
     end
 
     test "accepts {Module, opts} tuples in validator lists" do
       block = quote do: validate([{SomeValidator, opt: :value}])
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, _args}} = step
+      assert %Step.BindableFunction{function: :validate, args: _args} = step
     end
 
     test "accepts function captures in validator lists" do
       block = quote do: validate([&positive?/1])
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, _args}} = step
+      assert %Step.BindableFunction{function: :validate, args: _args} = step
     end
 
     test "accepts anonymous functions in validator lists" do
       block = quote do: validate([fn x -> x > 0 end])
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, _args}} = step
+      assert %Step.BindableFunction{function: :validate, args: _args} = step
     end
 
     test "accepts function calls in validator lists" do
       block = quote do: validate([Validator.positive?()])
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, _args}} = step
+      assert %Step.BindableFunction{function: :validate, args: _args} = step
     end
 
     test "accepts variables in validator lists" do
@@ -305,7 +319,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
       block = quote do: validate([validator_var])
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, _args}} = step
+      assert %Step.BindableFunction{function: :validate, args: _args} = step
     end
 
     test "accepts other valid AST nodes in validator lists" do
@@ -323,7 +337,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
 
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, _args}} = step
+      assert %Step.BindableFunction{function: :validate, args: _args} = step
     end
 
     test "rejects empty list literals in validator lists" do
@@ -341,7 +355,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
       block = quote do: validate([SomeValidator])
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, [validators]}} = step
+      assert %Step.BindableFunction{function: :validate, args: [validators]} = step
       # Should be transformed to list of functions
       assert is_list(validators)
     end
@@ -350,7 +364,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
       block = quote do: validate([{SomeValidator, min: 0, max: 100}])
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, [validators]}} = step
+      assert %Step.BindableFunction{function: :validate, args: [validators]} = step
       assert is_list(validators)
     end
 
@@ -367,7 +381,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
 
       step = parse_one(block)
 
-      assert %Step{type: :bindable_function, operation: {:validate, [validators]}} = step
+      assert %Step.BindableFunction{function: :validate, args: [validators]} = step
       assert is_list(validators)
       assert length(validators) == 4
     end
@@ -379,28 +393,28 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
       block = quote do: bind({ParseInt, base: 16})
       step = parse_one(block)
 
-      assert %Step{type: :bind, operation: ParseInt, opts: [base: 16]} = step
+      assert %Step.Bind{operation: ParseInt, opts: [base: 16]} = step
     end
 
     test "parses {Module, opts} tuple for map" do
       block = quote do: map({Multiplier, factor: 5})
       step = parse_one(block)
 
-      assert %Step{type: :map, operation: Multiplier, opts: [factor: 5]} = step
+      assert %Step.Map{operation: Multiplier, opts: [factor: 5]} = step
     end
 
     test "handles empty options list" do
       block = quote do: bind({SomeModule, []})
       step = parse_one(block)
 
-      assert %Step{type: :bind, operation: SomeModule, opts: []} = step
+      assert %Step.Bind{operation: SomeModule, opts: []} = step
     end
 
     test "handles multiple options" do
       block = quote do: bind({SomeModule, [opt1: :val1, opt2: :val2, opt3: :val3]})
       step = parse_one(block)
 
-      assert %Step{type: :bind, operation: SomeModule, opts: [opt1: :val1, opt2: :val2, opt3: :val3]} = step
+      assert %Step.Bind{operation: SomeModule, opts: [opt1: :val1, opt2: :val2, opt3: :val3]} = step
     end
   end
 
