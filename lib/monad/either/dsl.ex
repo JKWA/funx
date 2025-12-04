@@ -149,18 +149,10 @@ defmodule Funx.Monad.Either.Dsl do
   defp parse_operation_to_step(operation_ast, user_env, caller_env) do
     case operation_ast do
       {:bind, _, args} ->
-        {operation, opts} = parse_operation_args(args)
-        lifted_op = lift_call_to_unary(operation, caller_env) || operation
-        # Expand module aliases to actual atoms at compile time
-        expanded_op = expand_module_alias(lifted_op, caller_env)
-        %Step{type: :bind, operation: expanded_op, opts: opts}
+        parse_monad_operation(:bind, args, caller_env)
 
       {:map, _, args} ->
-        {operation, opts} = parse_operation_args(args)
-        lifted_op = lift_call_to_unary(operation, caller_env) || operation
-        # Expand module aliases to actual atoms at compile time
-        expanded_op = expand_module_alias(lifted_op, caller_env)
-        %Step{type: :map, operation: expanded_op, opts: opts}
+        parse_monad_operation(:map, args, caller_env)
 
       {:ap, _, args} ->
         {operation, opts} = parse_operation_args(args)
@@ -170,21 +162,19 @@ defmodule Funx.Monad.Either.Dsl do
         parse_either_function_to_step(func_name, args, user_env, caller_env)
 
       {:__aliases__, _, _} = module_alias ->
-        raise CompileError,
-          description: """
-          Invalid operation: #{Macro.to_string(module_alias)}
-
-          Modules must be used with a keyword:
-            bind #{Macro.to_string(module_alias)}
-            map #{Macro.to_string(module_alias)}
-            ap #{Macro.to_string(module_alias)}
-          """
+        raise_bare_module_error(module_alias)
 
       other ->
-        raise CompileError,
-          description:
-            "Invalid operation: #{inspect(other)}. Use 'bind', 'map', 'ap', or Either functions."
+        raise_invalid_operation_error(other)
     end
+  end
+
+  # Extract common logic for bind and map operations
+  defp parse_monad_operation(type, args, caller_env) do
+    {operation, opts} = parse_operation_args(args)
+    lifted_op = lift_call_to_unary(operation, caller_env) || operation
+    expanded_op = expand_module_alias(lifted_op, caller_env)
+    %Step{type: type, operation: expanded_op, opts: opts}
   end
 
   # Expand module aliases to actual module atoms at compile time
@@ -193,6 +183,25 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   defp expand_module_alias(other, _caller_env), do: other
+
+  # Error helpers
+  defp raise_bare_module_error(module_alias) do
+    raise CompileError,
+      description: """
+      Invalid operation: #{Macro.to_string(module_alias)}
+
+      Modules must be used with a keyword:
+        bind #{Macro.to_string(module_alias)}
+        map #{Macro.to_string(module_alias)}
+        ap #{Macro.to_string(module_alias)}
+      """
+  end
+
+  defp raise_invalid_operation_error(other) do
+    raise CompileError,
+      description:
+        "Invalid operation: #{inspect(other)}. Use 'bind', 'map', 'ap', or Either functions."
+  end
 
   # ============================================================================
   # Parse Either.function calls into Step structs
@@ -448,7 +457,6 @@ defmodule Funx.Monad.Either.Dsl do
         """
     end
   end
-
 
   # ============================================================================
   # Runtime executor - interprets Pipeline data
