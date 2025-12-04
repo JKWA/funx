@@ -44,10 +44,10 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   # STEP EXECUTION
   # ============================================================================
 
-  defp execute_step(either_value, %Step.Bind{operation: operation, opts: opts}, user_env) do
+  defp execute_step(either_value, %Step.Bind{operation: operation, opts: opts, __meta__: meta}, user_env) do
     Funx.Monad.bind(either_value, fn value ->
       result = call_operation(operation, value, opts, user_env)
-      normalize_run_result(result)
+      normalize_run_result(result, meta, "bind")
     end)
   end
 
@@ -88,8 +88,8 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   # ============================================================================
 
   @doc false
-  @spec normalize_run_result(tuple() | Either.t(any(), any())) :: Either.t(any(), any())
-  def normalize_run_result(result) do
+  @spec normalize_run_result(tuple() | Either.t(any(), any()), map() | nil, String.t()) :: Either.t(any(), any())
+  def normalize_run_result(result, meta \\ nil, operation_type \\ nil) do
     case result do
       {:ok, value} ->
         Either.right(value)
@@ -104,8 +104,11 @@ defmodule Funx.Monad.Either.Dsl.Executor do
         either
 
       other ->
+        location = format_location(meta)
+        op_info = if operation_type, do: " in #{operation_type} operation", else: ""
+
         raise ArgumentError, """
-        Module run/3 callback must return either an Either struct or a result tuple.
+        Module run/3 callback must return either an Either struct or a result tuple#{op_info}.#{location}
         Got: #{inspect(other)}
 
         Expected return types:
@@ -114,6 +117,22 @@ defmodule Funx.Monad.Either.Dsl.Executor do
         """
     end
   end
+
+  # ============================================================================
+  # METADATA FORMATTING
+  # ============================================================================
+
+  defp format_location(nil), do: ""
+
+  defp format_location(%{line: line, column: column}) when not is_nil(line) and not is_nil(column) do
+    "\n  at line #{line}, column #{column}"
+  end
+
+  defp format_location(%{line: line}) when not is_nil(line) do
+    "\n  at line #{line}"
+  end
+
+  defp format_location(_), do: ""
 
   # ============================================================================
   # RESULT WRAPPING

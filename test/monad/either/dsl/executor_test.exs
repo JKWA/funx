@@ -86,6 +86,50 @@ defmodule Funx.Monad.Either.Dsl.ExecutorTest do
         Executor.normalize_run_result([1, 2, 3])
       end
     end
+
+    test "includes operation type in error message when provided" do
+      error =
+        assert_raise ArgumentError, fn ->
+          Executor.normalize_run_result(:invalid, nil, "bind")
+        end
+
+      assert error.message =~ "in bind operation"
+    end
+
+    test "includes line and column in error message when metadata provided" do
+      meta = %{line: 42, column: 10}
+
+      error =
+        assert_raise ArgumentError, fn ->
+          Executor.normalize_run_result(:invalid, meta, "map")
+        end
+
+      assert error.message =~ "at line 42, column 10"
+    end
+
+    test "includes only line in error message when column not available" do
+      meta = %{line: 99, column: nil}
+
+      error =
+        assert_raise ArgumentError, fn ->
+          Executor.normalize_run_result(:invalid, meta)
+        end
+
+      assert error.message =~ "at line 99"
+      refute error.message =~ "column"
+    end
+
+    test "handles metadata without location info" do
+      meta = %{some_other_key: "value"}
+
+      error =
+        assert_raise ArgumentError, fn ->
+          Executor.normalize_run_result(:invalid, meta)
+        end
+
+      # Should not crash, just omit location
+      refute error.message =~ "at line"
+    end
   end
 
   # Tests result wrapping for different return types

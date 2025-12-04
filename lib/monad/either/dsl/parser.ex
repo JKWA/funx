@@ -31,21 +31,21 @@ defmodule Funx.Monad.Either.Dsl.Parser do
 
   defp parse_operation_to_step(operation_ast, user_env, caller_env) do
     case operation_ast do
-      {:bind, _, args} ->
-        parse_monad_operation(:bind, args, caller_env)
+      {:bind, meta, args} ->
+        parse_monad_operation(:bind, args, meta, caller_env)
 
-      {:map, _, args} ->
-        parse_monad_operation(:map, args, caller_env)
+      {:map, meta, args} ->
+        parse_monad_operation(:map, args, meta, caller_env)
 
-      {:ap, _, args} ->
+      {:ap, meta, args} ->
         {operation, _opts} = parse_operation_args(args)
-        %Step.Ap{applicative: operation}
+        %Step.Ap{applicative: operation, __meta__: extract_meta(meta)}
 
       {:__aliases__, _, _} = module_alias ->
         raise_bare_module_error(module_alias)
 
-      {func_name, _meta, args} when is_atom(func_name) and is_list(args) ->
-        parse_either_function_to_step(func_name, args, user_env, caller_env)
+      {func_name, meta, args} when is_atom(func_name) and is_list(args) ->
+        parse_either_function_to_step(func_name, args, meta, user_env, caller_env)
 
       other ->
         raise_invalid_operation_error(other)
@@ -53,18 +53,19 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   end
 
   # Extract common logic for bind and map operations
-  defp parse_monad_operation(type, args, caller_env) do
+  defp parse_monad_operation(type, args, meta, caller_env) do
     {operation, opts} = parse_operation_args(args)
     lifted_op = ast_lift_call_to_unary(operation, caller_env) || operation
     expanded_op = ast_expand_module_alias(lifted_op, caller_env)
+    metadata = extract_meta(meta)
 
     case type do
-      :bind -> %Step.Bind{operation: expanded_op, opts: opts}
-      :map -> %Step.Map{operation: expanded_op, opts: opts}
+      :bind -> %Step.Bind{operation: expanded_op, opts: opts, __meta__: metadata}
+      :map -> %Step.Map{operation: expanded_op, opts: opts, __meta__: metadata}
     end
   end
 
-  defp parse_either_function_to_step(func_name, args, user_env, caller_env) do
+  defp parse_either_function_to_step(func_name, args, meta, user_env, caller_env) do
     # Lift function calls and transform modules in arguments
     transformed_args =
       Enum.map(args, fn arg ->
@@ -72,12 +73,14 @@ defmodule Funx.Monad.Either.Dsl.Parser do
         ast_transform_modules_to_functions(lifted, user_env, caller_env)
       end)
 
+    metadata = extract_meta(meta)
+
     cond do
       func_name in @either_functions ->
-        %Step.EitherFunction{function: func_name, args: transformed_args}
+        %Step.EitherFunction{function: func_name, args: transformed_args, __meta__: metadata}
 
       func_name in @bindable_functions ->
-        %Step.BindableFunction{function: func_name, args: transformed_args}
+        %Step.BindableFunction{function: func_name, args: transformed_args, __meta__: metadata}
 
       true ->
         raise_invalid_function_error(func_name)
@@ -87,6 +90,19 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   # Parses operation arguments: {Module, opts} or Module -> {Module, opts}
   defp parse_operation_args([{_, _} = tuple_op]), do: tuple_op
   defp parse_operation_args([operation]), do: {operation, []}
+
+  # ============================================================================
+  # METADATA EXTRACTION
+  # ============================================================================
+
+  # Extract relevant metadata from AST meta keyword list
+  # Note: Elixir AST metadata is always a keyword list, so we don't need a fallback
+  defp extract_meta(meta) when is_list(meta) do
+    %{
+      line: Keyword.get(meta, :line),
+      column: Keyword.get(meta, :column)
+    }
+  end
 
   # ============================================================================
   # AST TRANSFORMATIONS

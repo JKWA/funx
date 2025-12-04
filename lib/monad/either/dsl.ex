@@ -103,46 +103,51 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # Quote Step structs - each type gets its own quoted struct
-  defp quote_step(%Funx.Monad.Either.Dsl.Step.Bind{operation: operation, opts: opts}) do
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.Bind{operation: operation, opts: opts, __meta__: meta}) do
     quote do
       %Funx.Monad.Either.Dsl.Step.Bind{
         operation: unquote(operation),
-        opts: unquote(opts)
+        opts: unquote(opts),
+        __meta__: unquote(Macro.escape(meta))
       }
     end
   end
 
-  defp quote_step(%Funx.Monad.Either.Dsl.Step.Map{operation: operation, opts: opts}) do
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.Map{operation: operation, opts: opts, __meta__: meta}) do
     quote do
       %Funx.Monad.Either.Dsl.Step.Map{
         operation: unquote(operation),
-        opts: unquote(opts)
+        opts: unquote(opts),
+        __meta__: unquote(Macro.escape(meta))
       }
     end
   end
 
-  defp quote_step(%Funx.Monad.Either.Dsl.Step.Ap{applicative: applicative}) do
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.Ap{applicative: applicative, __meta__: meta}) do
     quote do
       %Funx.Monad.Either.Dsl.Step.Ap{
-        applicative: unquote(applicative)
+        applicative: unquote(applicative),
+        __meta__: unquote(Macro.escape(meta))
       }
     end
   end
 
-  defp quote_step(%Funx.Monad.Either.Dsl.Step.EitherFunction{function: func_name, args: args}) do
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.EitherFunction{function: func_name, args: args, __meta__: meta}) do
     quote do
       %Funx.Monad.Either.Dsl.Step.EitherFunction{
         function: unquote(func_name),
-        args: unquote(args)
+        args: unquote(args),
+        __meta__: unquote(Macro.escape(meta))
       }
     end
   end
 
-  defp quote_step(%Funx.Monad.Either.Dsl.Step.BindableFunction{function: func_name, args: args}) do
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.BindableFunction{function: func_name, args: args, __meta__: meta}) do
     quote do
       %Funx.Monad.Either.Dsl.Step.BindableFunction{
         function: unquote(func_name),
-        args: unquote(args)
+        args: unquote(args),
+        __meta__: unquote(Macro.escape(meta))
       }
     end
   end

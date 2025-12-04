@@ -16,11 +16,12 @@ defmodule Funx.Monad.Either.Dsl.Step do
     """
 
     @enforce_keys [:operation]
-    defstruct [:operation, opts: []]
+    defstruct [:operation, :__meta__, opts: []]
 
     @type t :: %__MODULE__{
             operation: module() | function(),
-            opts: keyword()
+            opts: keyword(),
+            __meta__: map() | nil
           }
   end
 
@@ -32,11 +33,12 @@ defmodule Funx.Monad.Either.Dsl.Step do
     """
 
     @enforce_keys [:operation]
-    defstruct [:operation, opts: []]
+    defstruct [:operation, :__meta__, opts: []]
 
     @type t :: %__MODULE__{
             operation: module() | function(),
-            opts: keyword()
+            opts: keyword(),
+            __meta__: map() | nil
           }
   end
 
@@ -48,10 +50,11 @@ defmodule Funx.Monad.Either.Dsl.Step do
     """
 
     @enforce_keys [:applicative]
-    defstruct [:applicative]
+    defstruct [:applicative, :__meta__]
 
     @type t :: %__MODULE__{
-            applicative: term()
+            applicative: term(),
+            __meta__: map() | nil
           }
   end
 
@@ -63,11 +66,12 @@ defmodule Funx.Monad.Either.Dsl.Step do
     """
 
     @enforce_keys [:function, :args]
-    defstruct [:function, :args]
+    defstruct [:function, :args, :__meta__]
 
     @type t :: %__MODULE__{
             function: atom(),
-            args: list()
+            args: list(),
+            __meta__: map() | nil
           }
   end
 
@@ -79,11 +83,12 @@ defmodule Funx.Monad.Either.Dsl.Step do
     """
 
     @enforce_keys [:function, :args]
-    defstruct [:function, :args]
+    defstruct [:function, :args, :__meta__]
 
     @type t :: %__MODULE__{
             function: atom(),
-            args: list()
+            args: list(),
+            __meta__: map() | nil
           }
   end
 
