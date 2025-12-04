@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.2.1">
+    <meta name="project" content="funx v0.2.2">
 
 
-    <title>README — funx v0.2.1</title>
+    <title>README — funx v0.2.2</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-3D1523F3.js"></script>
+    <script src="dist/sidebar_items-63EC4D5E.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -52,7 +52,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.2.1
+          v0.2.2
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.2.1/README.md#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.2/README.md#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -133,11 +133,11 @@ Pages
   </a>
   <span class="text">Installation</span>
 </h2>
-<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="5413932878-1">do</span><span class="w">
-  </span><span class="p" data-group-id="5413932878-2">[</span><span class="w">
-    </span><span class="p" data-group-id="5413932878-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.2&quot;</span><span class="p" data-group-id="5413932878-3">}</span><span class="w">
-  </span><span class="p" data-group-id="5413932878-2">]</span><span class="w">
-</span><span class="k" data-group-id="5413932878-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
+<p>To use Funx, add it to the list of dependencies in <code class="inline">mix.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="0669537899-1">do</span><span class="w">
+  </span><span class="p" data-group-id="0669537899-2">[</span><span class="w">
+    </span><span class="p" data-group-id="0669537899-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.2&quot;</span><span class="p" data-group-id="0669537899-3">}</span><span class="w">
+  </span><span class="p" data-group-id="0669537899-2">]</span><span class="w">
+</span><span class="k" data-group-id="0669537899-1">end</span></code></pre><p>Then, run the following command to fetch the dependencies:</p><pre><code class="makeup bash" translate="no"><span class="">mix deps.get
 </span></code></pre><h2 id="usage-rules" class="section-heading">
   <a href="#usage-rules" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
@@ -170,14 +170,14 @@ Pages
 </h3>
 <p>The Either monad includes a DSL for writing declarative pipelines that handle errors gracefully:</p><pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="w">
 
-</span><span class="n">either</span><span class="w"> </span><span class="n">user_id</span><span class="w"> </span><span class="k" data-group-id="3793954511-1">do</span><span class="w">
-  </span><span class="n">bind</span><span class="w"> </span><span class="n">fetch_user</span><span class="p" data-group-id="3793954511-2">(</span><span class="p" data-group-id="3793954511-2">)</span><span class="w">
-  </span><span class="n">bind</span><span class="w"> </span><span class="n">validate_active</span><span class="p" data-group-id="3793954511-3">(</span><span class="p" data-group-id="3793954511-3">)</span><span class="w">
-  </span><span class="n">map</span><span class="w"> </span><span class="n">transform_to_dto</span><span class="p" data-group-id="3793954511-4">(</span><span class="p" data-group-id="3793954511-4">)</span><span class="w">
-</span><span class="k" data-group-id="3793954511-1">end</span></code></pre><p>Supported operations:</p><ul><li><code class="inline">bind</code> - for operations that return Either or result tuples</li><li><code class="inline">map</code> - for transformations that return plain values</li><li><code class="inline">ap</code> - for applying a function in an Either to a value in an Either</li><li><code class="inline">validate</code> - for accumulating multiple validation errors</li><li>Either functions: <code class="inline">filter_or_else</code>, <code class="inline">or_else</code>, <code class="inline">map_left</code>, <code class="inline">flip</code>, <code class="inline">tap</code></li></ul><p><strong>Formatter Configuration</strong>: Funx exports formatter rules for clean DSL formatting. Add <code class="inline">:funx</code> to <code class="inline">import_deps</code> in your <code class="inline">.formatter.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="6968603239-1">[</span><span class="w">
-  </span><span class="ss">import_deps</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6968603239-2">[</span><span class="ss">:funx</span><span class="p" data-group-id="6968603239-2">]</span><span class="p">,</span><span class="w">
-  </span><span class="ss">inputs</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6968603239-3">[</span><span class="s">&quot;{mix,.formatter}.exs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;{config,lib,test}/**/*.{ex,exs}&quot;</span><span class="p" data-group-id="6968603239-3">]</span><span class="w">
-</span><span class="p" data-group-id="6968603239-1">]</span></code></pre><p>See <a href="formatter_export.html">FORMATTER_EXPORT.md</a> for details.</p><h2 id="monoids" class="section-heading">
+</span><span class="n">either</span><span class="w"> </span><span class="n">user_id</span><span class="w"> </span><span class="k" data-group-id="1468753507-1">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="n">fetch_user</span><span class="p" data-group-id="1468753507-2">(</span><span class="p" data-group-id="1468753507-2">)</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="n">validate_active</span><span class="p" data-group-id="1468753507-3">(</span><span class="p" data-group-id="1468753507-3">)</span><span class="w">
+  </span><span class="n">map</span><span class="w"> </span><span class="n">transform_to_dto</span><span class="p" data-group-id="1468753507-4">(</span><span class="p" data-group-id="1468753507-4">)</span><span class="w">
+</span><span class="k" data-group-id="1468753507-1">end</span></code></pre><p>Supported operations:</p><ul><li><code class="inline">bind</code> - for operations that return Either or result tuples</li><li><code class="inline">map</code> - for transformations that return plain values</li><li><code class="inline">ap</code> - for applying a function in an Either to a value in an Either</li><li><code class="inline">validate</code> - for accumulating multiple validation errors</li><li>Either functions: <code class="inline">filter_or_else</code>, <code class="inline">or_else</code>, <code class="inline">map_left</code>, <code class="inline">flip</code>, <code class="inline">tap</code></li></ul><p><strong>Formatter Configuration</strong>: Funx exports formatter rules for clean DSL formatting. Add <code class="inline">:funx</code> to <code class="inline">import_deps</code> in your <code class="inline">.formatter.exs</code>:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="3526016852-1">[</span><span class="w">
+  </span><span class="ss">import_deps</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3526016852-2">[</span><span class="ss">:funx</span><span class="p" data-group-id="3526016852-2">]</span><span class="p">,</span><span class="w">
+  </span><span class="ss">inputs</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3526016852-3">[</span><span class="s">&quot;{mix,.formatter}.exs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;{config,lib,test}/**/*.{ex,exs}&quot;</span><span class="p" data-group-id="3526016852-3">]</span><span class="w">
+</span><span class="p" data-group-id="3526016852-1">]</span></code></pre><p>See <a href="formatter_export.html">FORMATTER_EXPORT.md</a> for details.</p><h2 id="monoids" class="section-heading">
   <a href="#monoids" class="hover-link">
     <i class="ri-link-m" aria-hidden="true"></i>
   </a>
@@ -276,11 +276,11 @@ Formatter Rules
       <p>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.2.1" class="footer-hex-package">Hex Package</a>
+            <a href="https://hex.pm/packages/funx/0.2.2" class="footer-hex-package">Hex Package</a>
 
-            <a href="https://preview.hex.pm/preview/funx/0.2.1">Hex Preview</a>
+            <a href="https://preview.hex.pm/preview/funx/0.2.2">Hex Preview</a>
 
-              (<a href="https://preview.hex.pm/preview/funx/0.2.1/show/README.md">current file</a>)
+              (<a href="https://preview.hex.pm/preview/funx/0.2.2/show/README.md">current file</a>)
 
           </span>
 
