@@ -3,7 +3,7 @@ defmodule Funx.Monad.Either.Dsl.Step do
   Step types for the Either DSL pipeline.
 
   Following Spark's Entity pattern, each step type is a distinct struct.
-  This provides strong typing and clearer pattern matching in the executor.
+  This provides strong typing, clearer pattern matching, and compile-time guarantees.
 
   These are internal implementation details - the user-facing API remains unchanged.
   """
@@ -18,6 +18,7 @@ defmodule Funx.Monad.Either.Dsl.Step do
     @enforce_keys [:operation]
     defstruct [:operation, :__meta__, opts: []]
 
+    @typedoc "A bind step that chains operations returning Either or result tuples"
     @type t :: %__MODULE__{
             operation: module() | function(),
             opts: keyword(),
@@ -35,6 +36,7 @@ defmodule Funx.Monad.Either.Dsl.Step do
     @enforce_keys [:operation]
     defstruct [:operation, :__meta__, opts: []]
 
+    @typedoc "A map step that transforms values with pure functions"
     @type t :: %__MODULE__{
             operation: module() | function(),
             opts: keyword(),
@@ -52,6 +54,7 @@ defmodule Funx.Monad.Either.Dsl.Step do
     @enforce_keys [:applicative]
     defstruct [:applicative, :__meta__]
 
+    @typedoc "An applicative step that applies wrapped functions to wrapped values"
     @type t :: %__MODULE__{
             applicative: term(),
             __meta__: map() | nil
@@ -68,6 +71,7 @@ defmodule Funx.Monad.Either.Dsl.Step do
     @enforce_keys [:function, :args]
     defstruct [:function, :args, :__meta__]
 
+    @typedoc "A step calling an Either-specific function (filter_or_else, or_else, map_left, flip, tap)"
     @type t :: %__MODULE__{
             function: atom(),
             args: list(),
@@ -85,6 +89,7 @@ defmodule Funx.Monad.Either.Dsl.Step do
     @enforce_keys [:function, :args]
     defstruct [:function, :args, :__meta__]
 
+    @typedoc "A step calling a function that returns Either and needs bind wrapping (validate)"
     @type t :: %__MODULE__{
             function: atom(),
             args: list(),
@@ -92,6 +97,11 @@ defmodule Funx.Monad.Either.Dsl.Step do
           }
   end
 
+  @typedoc """
+  Union type representing any Step type in the Either DSL pipeline.
+
+  Each step type is a distinct struct with enforced fields and type checking.
+  """
   @type t ::
           Bind.t()
           | Map.t()
