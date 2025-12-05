@@ -16,6 +16,10 @@ defmodule Funx.Monad.Either.DslTest do
   """
 
   use Funx.TestCase, async: true
+
+  doctest Funx.Monad.Either.Dsl
+  doctest Funx.Monad.Either.Dsl.Behaviour
+
   use Funx.Monad.Either
 
   alias Funx.Monad.Either.Dsl

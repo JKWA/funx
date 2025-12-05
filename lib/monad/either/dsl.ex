@@ -22,21 +22,43 @@ defmodule Funx.Monad.Either.Dsl do
   a `Left` value or `{:error, reason}` tuple, the pipeline **stops immediately** and
   returns that error. Subsequent steps are never executed.
 
-      either user_id do
-        bind GetUser           # Returns Left("not found")
-        bind CheckPermissions  # Never runs
-        map FormatUser         # Never runs
-      end
-      # => Left("not found")
+  Example:
+
+      iex> defmodule GetUser do
+      ...>   use Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   def run(_value, _env, _opts), do: left("not found")
+      ...> end
+      iex> defmodule CheckPermissions do
+      ...>   use Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   def run(value, _env, _opts), do: right(value)
+      ...> end
+      iex> defmodule FormatUser do
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   def run(value, _env, _opts), do: "formatted: \#{value}"
+      ...> end
+      iex> use Funx.Monad.Either
+      iex> either 123 do
+      ...>   bind GetUser           # Returns Left("not found")
+      ...>   bind CheckPermissions  # Never runs
+      ...>   map FormatUser         # Never runs
+      ...> end
+      %Funx.Monad.Either.Left{left: "not found"}
 
   **Exception:** The `validate` operation uses applicative semantics and accumulates
   **all** validation errors before returning:
 
-      either data do
-        validate [&positive?/1, &even?/1, &less_than_100?/1]
-        # Runs all validators, collects failures
-      end
-      # => Left([ValidationError, ValidationError, ...])
+  Example:
+
+      iex> use Funx.Monad.Either
+      iex> positive? = fn x -> if x > 0, do: right(x), else: left("not positive") end
+      iex> even? = fn x -> if rem(x, 2) == 0, do: right(x), else: left("not even") end
+      iex> less_than_100? = fn x -> if x < 100, do: right(x), else: left("too large") end
+      iex> either -5 do
+      ...>   validate [positive?, even?, less_than_100?]
+      ...> end
+      %Funx.Monad.Either.Left{left: ["not positive", "not even"]}
 
   ## Performance
 
@@ -44,16 +66,28 @@ defmodule Funx.Monad.Either.Dsl do
   overhead for the DSL itself - it expands into the same code you would write manually
   with `bind`, `map`, etc.
 
-      # This DSL code:
-      either value do
-        bind ParseInt
-        map Double
-      end
+  Example showing compile-time expansion:
 
-      # Expands at compile time to roughly:
-      Either.lift(value)
-      |> Either.bind(&ParseInt.run(&1, [], []))
-      |> Either.map(&Double.run(&1, [], []))
+      iex> defmodule ParseInt do
+      ...>   use Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   def run(value, _env, _opts) when is_binary(value) do
+      ...>     case Integer.parse(value) do
+      ...>       {int, ""} -> right(int)
+      ...>       _ -> left("invalid integer")
+      ...>     end
+      ...>   end
+      ...> end
+      iex> defmodule Double do
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   def run(value, _env, _opts), do: value * 2
+      ...> end
+      iex> use Funx.Monad.Either
+      iex> either "42" do
+      ...>   bind ParseInt
+      ...>   map Double
+      ...> end
+      %Funx.Monad.Either.Right{right: 84}
 
   Auto-lifting creates anonymous functions, but these are created at compile time,
   not runtime. For performance-critical hot paths, you may prefer direct combinator
