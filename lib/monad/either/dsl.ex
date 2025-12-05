@@ -16,6 +16,19 @@ defmodule Funx.Monad.Either.Dsl do
 
   The result format is controlled by the `:as` option (`:either`, `:tuple`, or `:raise`).
 
+  ## Transformers
+
+  Transformers allow post-parse optimization and validation of pipelines:
+
+      either user_id, transformers: [OptimizeConsecutiveTaps] do
+        bind GetUser
+        tap &Logger.info/1
+        tap &IO.inspect/1  # Redundant - will be optimized
+        map Transform
+      end
+
+  See `Funx.Monad.Either.Dsl.Transformer` for details on creating custom transformers.
+
   ## Example
 
       either user_id, as: :tuple do
@@ -42,6 +55,7 @@ defmodule Funx.Monad.Either.Dsl do
 
   # credo:disable-for-this-file Credo.Check.Design.AliasUsage
   alias Funx.Monad.Either.Dsl.Parser
+  alias Funx.Monad.Either.Dsl.Transformer
 
   defmacro __using__(_opts) do
     quote do
@@ -63,11 +77,12 @@ defmodule Funx.Monad.Either.Dsl do
   # ============================================================================
 
   defmacro either(input, do: block) do
-    compile_pipeline(input, block, :either, [], __CALLER__)
+    compile_pipeline(input, block, :either, [], [], __CALLER__)
   end
 
   defmacro either(input, opts, do: block) when is_list(opts) do
     return_as = Keyword.get(opts, :as, :either)
+    transformers_ast = Keyword.get(opts, :transformers, [])
 
     # Validate return_as at compile time
     unless return_as in [:either, :tuple, :raise] do
@@ -75,20 +90,42 @@ defmodule Funx.Monad.Either.Dsl do
         description: "Invalid return type: #{inspect(return_as)}. Must be :either, :tuple, or :raise"
     end
 
-    user_opts = Keyword.delete(opts, :as)
-    compile_pipeline(input, block, return_as, user_opts, __CALLER__)
+    # Validate transformers list (will be evaluated at compile time)
+    unless is_list(transformers_ast) do
+      raise CompileError,
+        description: "Invalid transformers: #{inspect(transformers_ast)}. Must be a list of modules."
+    end
+
+    # Expand module aliases at compile time
+    transformers = Enum.map(transformers_ast, &Macro.expand(&1, __CALLER__))
+
+    user_opts = opts |> Keyword.delete(:as) |> Keyword.delete(:transformers)
+    compile_pipeline(input, block, return_as, transformers, user_opts, __CALLER__)
   end
 
   # ============================================================================
   # SECTION 2 — PIPELINE CONSTRUCTION (COMPILE-TIME STRUCTURE)
   # ============================================================================
 
-  defp compile_pipeline(input, block, return_as, user_env, caller_env) do
-    # Parse operations into Step structs (as quoted AST)
-    steps_ast =
-      block
-      |> Parser.parse_operations(caller_env, user_env)
-      |> Enum.map(&quote_step/1)
+  defp compile_pipeline(input, block, return_as, transformers, user_env, caller_env) do
+    # Parse operations into Step structs
+    steps = Parser.parse_operations(block, caller_env, user_env)
+
+    # Apply transformers
+    transformed_steps =
+      case Transformer.apply_transformers(steps, transformers, user_env) do
+        {:ok, result_steps} ->
+          result_steps
+
+        {:error, message} when is_binary(message) ->
+          raise CompileError, description: message
+
+        {:error, %{__exception__: true} = exception} ->
+          raise exception
+      end
+
+    # Quote the transformed steps
+    steps_ast = Enum.map(transformed_steps, &quote_step/1)
 
     # Build Pipeline struct (at compile time, this becomes quoted AST)
     quote do
