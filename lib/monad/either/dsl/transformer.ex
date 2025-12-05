@@ -5,6 +5,27 @@ defmodule Funx.Monad.Either.Dsl.Transformer do
   Transformers allow post-parse optimization and validation of the pipeline.
   They receive a list of Step structs and can modify, validate, or optimize them.
 
+  ## Compile-Time Dependencies
+
+  ⚠️ Transformers run at **compile time** and create compile-time dependencies.
+
+  When you use a transformer:
+
+      either user_id, transformers: [MyTransformer] do
+        bind GetUser
+      end
+
+  The `MyTransformer.transform/2` function is called during macro expansion.
+  This means:
+
+  - The transformer output is baked into the compiled code
+  - Changes to the transformer may require recompiling modules that use it
+  - Run `mix clean && mix compile` if transformer changes aren't reflected
+
+  This is intentional and allows for compile-time optimization. The DSL
+  uses `Code.ensure_compiled!/1` to track these dependencies, so most changes
+  will trigger automatic recompilation.
+
   ## Example
 
       defmodule OptimizeConsecutiveTaps do
