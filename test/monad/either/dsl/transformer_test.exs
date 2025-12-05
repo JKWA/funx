@@ -8,7 +8,6 @@ defmodule Funx.Monad.Either.Dsl.TransformerTest do
 
   alias Funx.Monad.Either.Dsl.Step
   alias Funx.Monad.Either.Dsl.Transformer
-  alias Funx.Monad.Either.Dsl.Transformers.OptimizeConsecutiveTaps
 
   describe "Transformer.apply_transformers/3" do
     test "returns steps unchanged when no transformers provided" do
@@ -98,78 +97,6 @@ defmodule Funx.Monad.Either.Dsl.TransformerTest do
     end
   end
 
-  describe "OptimizeConsecutiveTaps" do
-    test "removes consecutive taps, keeping only the last" do
-      steps = [
-        %Step.Bind{operation: String, opts: []},
-        %Step.EitherFunction{function: :tap, args: [fn x -> send(self(), {:tap1, x}) end]},
-        %Step.EitherFunction{function: :tap, args: [fn x -> send(self(), {:tap2, x}) end]},
-        %Step.EitherFunction{function: :tap, args: [fn x -> send(self(), {:tap3, x}) end]},
-        %Step.Map{operation: String, opts: []}
-      ]
-
-      assert {:ok, result} = OptimizeConsecutiveTaps.transform(steps, [])
-      assert length(result) == 3
-      assert match?(%Step.Bind{}, Enum.at(result, 0))
-      assert match?(%Step.EitherFunction{function: :tap}, Enum.at(result, 1))
-      assert match?(%Step.Map{}, Enum.at(result, 2))
-    end
-
-    test "keeps single tap" do
-      steps = [
-        %Step.Bind{operation: String, opts: []},
-        %Step.EitherFunction{function: :tap, args: [fn x -> x end]},
-        %Step.Map{operation: String, opts: []}
-      ]
-
-      assert {:ok, result} = OptimizeConsecutiveTaps.transform(steps, [])
-      assert length(result) == 3
-    end
-
-    test "keeps taps separated by other operations" do
-      steps = [
-        %Step.EitherFunction{function: :tap, args: [fn x -> x end]},
-        %Step.Map{operation: String, opts: []},
-        %Step.EitherFunction{function: :tap, args: [fn x -> x end]}
-      ]
-
-      assert {:ok, result} = OptimizeConsecutiveTaps.transform(steps, [])
-      assert length(result) == 3
-    end
-
-    test "handles pipeline with only taps" do
-      steps = [
-        %Step.EitherFunction{function: :tap, args: [fn x -> x end]},
-        %Step.EitherFunction{function: :tap, args: [fn x -> x end]}
-      ]
-
-      assert {:ok, result} = OptimizeConsecutiveTaps.transform(steps, [])
-      assert length(result) == 1
-      assert match?(%Step.EitherFunction{function: :tap}, hd(result))
-    end
-
-    test "handles pipeline with no taps" do
-      steps = [
-        %Step.Bind{operation: String, opts: []},
-        %Step.Map{operation: String, opts: []}
-      ]
-
-      assert {:ok, result} = OptimizeConsecutiveTaps.transform(steps, [])
-      assert result == steps
-    end
-
-    test "preserves other either functions" do
-      steps = [
-        %Step.EitherFunction{function: :or_else, args: [fn -> right(42) end]},
-        %Step.EitherFunction{function: :tap, args: [fn x -> x end]},
-        %Step.EitherFunction{function: :map_left, args: [fn e -> e end]}
-      ]
-
-      assert {:ok, result} = OptimizeConsecutiveTaps.transform(steps, [])
-      assert length(result) == 3
-    end
-  end
-
   describe "Integration with DSL" do
     defmodule TestTransformer do
       @behaviour Transformer
@@ -193,26 +120,6 @@ defmodule Funx.Monad.Either.Dsl.TransformerTest do
 
       # Should have applied both the explicit map and the transformer's map
       assert {:ok, {:transformed, 84}} = result
-    end
-
-    test "works with OptimizeConsecutiveTaps" do
-      log_fn = fn x ->
-        send(self(), {:logged, x})
-        x
-      end
-
-      result =
-        either 42, transformers: [OptimizeConsecutiveTaps], as: :tuple do
-          tap log_fn
-          tap log_fn
-          tap log_fn
-          map &(&1 * 2)
-        end
-
-      # Should only receive one log message (from the last tap)
-      assert_received {:logged, 42}
-      refute_received {:logged, 42}
-      assert {:ok, 84} = result
     end
 
     test "raises CompileError when transformers is not a list" do

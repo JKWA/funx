@@ -28,44 +28,33 @@ defmodule Funx.Monad.Either.Dsl.Transformer do
 
   ## Example
 
-      defmodule OptimizeConsecutiveTaps do
+      defmodule ValidateNoBareModules do
         @behaviour Funx.Monad.Either.Dsl.Transformer
+
+        alias Funx.Monad.Either.Dsl.Step
 
         @impl true
         def transform(steps, _opts) do
-          # Optimize consecutive tap operations
-          optimized_steps = optimize_taps(steps, [])
-          {:ok, optimized_steps}
-        end
-
-        defp optimize_taps([], acc), do: Enum.reverse(acc)
-
-        defp optimize_taps([step | rest], acc) do
-          case step do
-            %Step.EitherFunction{function: :tap} ->
-              {taps, remaining} = collect_consecutive_taps([step | rest])
-              last_tap = List.last(taps)
-              optimize_taps(remaining, [last_tap | acc])
-
-            other_step ->
-              optimize_taps(rest, [other_step | acc])
+          # Validate that no steps use bare module atoms without options
+          case find_bare_module(steps) do
+            nil -> {:ok, steps}
+            bad_step -> {:error, "Step \#{inspect(bad_step)} should use {Module, opts} syntax"}
           end
         end
 
-        defp collect_consecutive_taps(steps) do
-          Enum.split_while(steps, &match?(%Step.EitherFunction{function: :tap}, &1))
+        defp find_bare_module(steps) do
+          Enum.find(steps, fn
+            %Step.Bind{operation: op} when is_atom(op) -> true
+            %Step.Map{operation: op} when is_atom(op) -> true
+            _ -> false
+          end)
         end
       end
 
   ## Built-in Transformers
 
-  Funx provides example transformers you can use:
-
-  - `Funx.Monad.Either.Dsl.Transformers.OptimizeConsecutiveTaps` - Removes redundant
-    consecutive `tap` operations, keeping only the last one. Useful for cleaning up
-    debugging code or reducing side effects in pipelines.
-
-  Transformers are opt-in - you must explicitly include them in the `:transformers` option.
+  Currently, no built-in transformers are provided. Transformers are opt-in and can
+  be created for project-specific optimizations or validations.
 
   ## Usage
 

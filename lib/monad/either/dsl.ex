@@ -63,18 +63,13 @@ defmodule Funx.Monad.Either.Dsl do
 
   Transformers allow post-parse optimization and validation of pipelines:
 
-      alias Funx.Monad.Either.Dsl.Transformers.OptimizeConsecutiveTaps
-
-      either user_id, transformers: [OptimizeConsecutiveTaps] do
+      either user_id, transformers: [MyCustomTransformer] do
         bind GetUser
-        tap &Logger.info/1
-        tap &IO.inspect/1  # Redundant - will be optimized away
         map Transform
       end
 
   Transformers run at compile time and create compile-time dependencies.
-  See `Funx.Monad.Either.Dsl.Transformer` for details on creating custom transformers
-  and a list of built-in transformers.
+  See `Funx.Monad.Either.Dsl.Transformer` for details on creating custom transformers.
 
   ## Example
 
