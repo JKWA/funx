@@ -24,7 +24,9 @@ defmodule Funx.MixProject do
           "CHANGELOG.md",
           "FORMATTER_EXPORT.md",
           "RESOURCES.md",
-          "LICENSE"
+          "LICENSE",
+          "guides/dsl/overview.md",
+          "guides/dsl/either.md"
         ],
         filter_prefix: "Examples",
         source_url: "https://github.com/JKWA/funx",
@@ -32,8 +34,12 @@ defmodule Funx.MixProject do
         source_url_pattern: "https://github.com/JKWA/funx/blob/v#{@version}/%{path}#L%{line}",
         canonical: "https://hexdocs.pm/funx",
         groups_for_extras: [
+          Resources: ["RESOURCES.md"],
           Guides: ["README.md", "FORMATTER_EXPORT.md"],
-          Resources: ["RESOURCES.md"]
+          DSL: [
+            "guides/dsl/overview.md",
+            "guides/dsl/either.md"
+          ]
         ]
       ],
       test_coverage: [tool: ExCoveralls],

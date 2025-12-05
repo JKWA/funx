@@ -166,100 +166,96 @@ end
 
 Just like `bind` and `map`, you can use modules that implement the `run/3` callback with other DSL operations like `tap`, `map_left`, and `filter_or_else`. This is particularly useful for creating reusable logging, error transformation, and validation logic.
 
-**Note:** Due to Livebook's module compilation behavior, the module-based examples below are commented out. These patterns work correctly in compiled Elixir code (tests, applications) but may not work reliably when modules are defined dynamically in Livebook cells.
-
-For working examples of module-based `tap`, `map_left`, and `filter_or_else`, see the test suite at `test/monad/dsl_test.exs`.
-
 #### `tap` with Modules
 
 ```elixir
 # Example module pattern (works in compiled code):
-#
-# defmodule HeroLogger do
-#   @behaviour Funx.Monad.Either.Dsl.Behaviour
-#   use Funx.Monad.Either
-#
-#   def run(hero, opts, _env) do
-#     prefix = Keyword.get(opts, :prefix, "HERO")
-#     IO.puts("#{prefix}: #{inspect(hero)}")
-#     hero  # tap returns the original value unchanged
-#   end
-# end
-#
-# # Use with bare module:
-# either "1" do
-#   bind HeroRegistry.parse_hero_id()
-#   tap HeroLogger
-#   bind HeroRegistry.fetch_hero()
-# end
-#
-# # Use with module and options:
-# either "1" do
-#   bind HeroRegistry.parse_hero_id()
-#   tap {HeroLogger, prefix: "Parsed ID"}
-#   bind HeroRegistry.fetch_hero()
-#   tap {HeroLogger, prefix: "Fetched Hero"}
-#   map fn hero -> hero.name end
-# end
+
+defmodule HeroLogger do
+  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  use Funx.Monad.Either
+
+  def run(hero, opts, _env) do
+    prefix = Keyword.get(opts, :prefix, "HERO")
+    IO.puts("#{prefix}: #{inspect(hero)}")
+    hero  # tap returns the original value unchanged
+  end
+end
+
+# Use with bare module:
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  tap HeroLogger
+  bind HeroRegistry.fetch_hero()
+end
+
+# Use with module and options:
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  tap {HeroLogger, prefix: "Parsed ID"}
+  bind HeroRegistry.fetch_hero()
+  tap {HeroLogger, prefix: "Fetched Hero"}
+  map fn hero -> hero.name end
+end
 ```
 
 #### `map_left` with Modules
 
 ```elixir
 # Example module pattern (works in compiled code):
-#
-# defmodule ErrorFormatter do
-#   @behaviour Funx.Monad.Either.Dsl.Behaviour
-#   use Funx.Monad.Either
-#
-#   def run(error, opts, _env) do
-#     context = Keyword.get(opts, :context, "Error")
-#     severity = Keyword.get(opts, :severity, "ERROR")
-#     "[#{severity}] #{context}: #{error}"
-#   end
-# end
-#
-# # Use with bare module:
-# either "invalid" do
-#   bind HeroRegistry.parse_hero_id()
-#   map_left ErrorFormatter
-# end
-#
-# # Use with module and options:
-# either "invalid" do
-#   bind HeroRegistry.parse_hero_id()
-#   map_left {ErrorFormatter, context: "Hero ID Parsing", severity: "WARN"}
-# end
+
+defmodule ErrorFormatter do
+  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  use Funx.Monad.Either
+
+  def run(error, opts, _env) do
+    context = Keyword.get(opts, :context, "Error")
+    severity = Keyword.get(opts, :severity, "ERROR")
+    "[#{severity}] #{context}: #{error}"
+  end
+end
+
+# Use with bare module:
+either "invalid" do
+  bind HeroRegistry.parse_hero_id()
+  map_left ErrorFormatter
+end
+
+# Use with module and options:
+either "invalid" do
+  bind HeroRegistry.parse_hero_id()
+  map_left {ErrorFormatter, context: "Hero ID Parsing", severity: "WARN"}
+end
 ```
 
 #### `filter_or_else` with Modules
 
 ```elixir
 # Example module pattern (works in compiled code):
-#
-# defmodule IsEliteHero do
-#   @behaviour Funx.Monad.Either.Dsl.Behaviour
-#   use Funx.Monad.Either
-#
-#   def run(hero, opts, _env) do
-#     min_level = Keyword.get(opts, :min_level, 10)
-#     hero.level >= min_level
-#   end
-# end
-#
-# # Use with bare module:
-# either "1" do
-#   bind HeroRegistry.parse_hero_id()
-#   bind HeroRegistry.fetch_hero()
-#   filter_or_else IsEliteHero, fn -> "Only elite heroes allowed" end
-# end
-#
-# # Use with module and options:
-# either "1" do
-#   bind HeroRegistry.parse_hero_id()
-#   bind HeroRegistry.fetch_hero()
-#   filter_or_else {IsEliteHero, min_level: 8}, fn -> "Hero level too low" end
-# end
+
+defmodule IsEliteHero do
+  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  use Funx.Monad.Either
+
+  def run(hero, opts, _env) do
+    min_level = Keyword.get(opts, :min_level, 10)
+    hero.level >= min_level
+  end
+end
+
+# Use with bare module:
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  filter_or_else IsEliteHero, fn -> "Only elite heroes allowed" end
+end
+
+# Use with module and options:
+either "1" do
+  bind HeroRegistry.parse_hero_id()
+  bind HeroRegistry.fetch_hero()
+  filter_or_else {IsEliteHero, min_level: 8}, fn -> "Hero level too low" end
+end
 ```
 
 ## Output Formats
@@ -410,91 +406,87 @@ end
 
 The DSL supports validation with error accumulation using the `validate/2` function. Validators are modules that implement the `run/3` callback.
 
-**Note:** Due to Livebook's module compilation behavior, the validation examples below are commented out. These patterns work correctly in compiled Elixir code (tests, applications) but may not work reliably when modules are defined dynamically in Livebook cells.
-
-For working examples of validation, see the test suite at `test/monad/dsl_test.exs`.
-
 ```elixir
 # Example validator module pattern (works in compiled code):
-#
-# defmodule PositiveNumber do
-#   @behaviour Funx.Monad.Either.Dsl.Behaviour
-#   use Funx.Monad.Either
-#
-#   def run(value, _opts, _env) when is_number(value) and value > 0 do
-#     right(value)
-#   end
-#
-#   def run(value, _opts, _env) when is_number(value) do
-#     left("Must be positive: #{value}")
-#   end
-#
-#   def run(value, _opts, _env) do
-#     left("Expected number, got: #{inspect(value)}")
-#   end
-# end
-#
-# defmodule EvenNumber do
-#   @behaviour Funx.Monad.Either.Dsl.Behaviour
-#   use Funx.Monad.Either
-#
-#   def run(value, _opts, _env) when is_number(value) and rem(value, 2) == 0 do
-#     right(value)
-#   end
-#
-#   def run(value, _opts, _env) when is_number(value) do
-#     left("Must be even: #{value}")
-#   end
-#
-#   def run(value, _opts, _env) do
-#     left("Expected number, got: #{inspect(value)}")
-#   end
-# end
-#
-# defmodule RangeValidator do
-#   @behaviour Funx.Monad.Either.Dsl.Behaviour
-#   use Funx.Monad.Either
-#
-#   def run(value, opts, _env) when is_number(value) do
-#     min = Keyword.get(opts, :min, 0)
-#     max = Keyword.get(opts, :max, 100)
-#
-#     if value > min and value < max do
-#       right(value)
-#     else
-#       left("Must be between #{min} and #{max}: #{value}")
-#     end
-#   end
-#
-#   def run(value, _opts, _env) do
-#     left("Expected number, got: #{inspect(value)}")
-#   end
-# end
+
+defmodule PositiveNumber do
+  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  use Funx.Monad.Either
+
+  def run(value, _opts, _env) when is_number(value) and value > 0 do
+    right(value)
+  end
+
+  def run(value, _opts, _env) when is_number(value) do
+    left("Must be positive: #{value}")
+  end
+
+  def run(value, _opts, _env) do
+    left("Expected number, got: #{inspect(value)}")
+  end
+end
+
+defmodule EvenNumber do
+  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  use Funx.Monad.Either
+
+  def run(value, _opts, _env) when is_number(value) and rem(value, 2) == 0 do
+    right(value)
+  end
+
+  def run(value, _opts, _env) when is_number(value) do
+    left("Must be even: #{value}")
+  end
+
+  def run(value, _opts, _env) do
+    left("Expected number, got: #{inspect(value)}")
+  end
+end
+
+defmodule RangeValidator do
+  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  use Funx.Monad.Either
+
+  def run(value, opts, _env) when is_number(value) do
+    min = Keyword.get(opts, :min, 0)
+    max = Keyword.get(opts, :max, 100)
+
+    if value > min and value < max do
+      right(value)
+    else
+      left("Must be between #{min} and #{max}: #{value}")
+    end
+  end
+
+  def run(value, _opts, _env) do
+    left("Expected number, got: #{inspect(value)}")
+  end
+end
 ```
 
 ```elixir
 # Usage examples (work in compiled code):
-#
-# # All validations pass - use bare module names
-# either 4 do
-#   validate [PositiveNumber, EvenNumber]
-# end
-#
-# # Multiple validations fail - errors are accumulated
-# either -3 do
-#   validate [PositiveNumber, EvenNumber]
-# end
-#
-# # Chain validations
-# either 4 do
-#   validate [PositiveNumber, EvenNumber]
-#   validate {RangeValidator, min: 0, max: 100}
-# end
-#
-# # Mix bare modules with modules that have options
-# either 50 do
-#   validate [PositiveNumber, {RangeValidator, min: 0, max: 100}]
-# end
+
+# All validations pass - use bare module names
+either 4 do
+  validate [PositiveNumber, EvenNumber]
+end
+
+# Multiple validations fail - errors are accumulated
+either -3 do
+  validate [PositiveNumber, EvenNumber]
+end
+
+# Chain validations
+either 4 do
+  validate [PositiveNumber, EvenNumber]
+  validate {RangeValidator, min: 0, max: 100}
+end
+
+# Mix bare modules with modules that have options
+either 50 do
+  validate [PositiveNumber, {RangeValidator, min: 0, max: 100}]
+end
 ```
 
 ## Input Lifting
@@ -582,32 +574,6 @@ either "1" do
   bind HeroRegistry.fetch_hero()
   map FormatHeroName
 end
-```
-
-## Compile-Time Warnings
-
-The DSL provides helpful compile-time warnings to catch common mistakes:
-
-### Using `bind` with Non-Either Returns
-
-If you use `bind` with a function that returns a plain value instead of an Either or result tuple, you'll get a compile-time warning:
-
-```elixir
-# This will warn at compile time:
-# either 5 do
-#   bind fn x -> x * 2 end  # Should use 'map' instead
-# end
-```
-
-### Using `map` with Either Returns
-
-If you use `map` with a function that returns an Either or result tuple, you'll get a compile-time warning about double-wrapping:
-
-```elixir
-# This will warn at compile time:
-# either 5 do
-#   map fn x -> right(x * 2) end  # Should use 'bind' instead
-# end
 ```
 
 ## Summary

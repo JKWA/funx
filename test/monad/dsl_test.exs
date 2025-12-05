@@ -1,9 +1,29 @@
 defmodule Funx.Monad.Either.DslTest do
+  @moduledoc """
+  Integration tests for the Either DSL.
+
+  This file serves as the specification for the Either DSL runtime behavior.
+  It tests the DSL's execution semantics including:
+  - Core operations (bind, map, ap)
+  - Auto-lifting transformations (Module.function() forms)
+  - Tuple/Either interop and normalization
+  - Return type transformations (:either, :tuple, :raise)
+  - Either-specific functions (validate, tap, map_left, filter_or_else, flip)
+  - Module-specific options passing
+  - Error propagation through pipelines
+
+  For compile-time parsing and AST transformation tests, see parser_test.exs.
+  """
+
   use Funx.TestCase, async: true
+
+  doctest Funx.Monad.Either.Dsl
+  doctest Funx.Monad.Either.Dsl.Behaviour
+
   use Funx.Monad.Either
 
-  alias Funx.Monad.Either
   alias Funx.Monad.Either.Dsl
+  alias Funx.Monad.Either.Dsl.Executor
 
   alias Funx.Monad.Either.Dsl.Examples.{
     Double,
@@ -52,6 +72,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Core DSL Keywords - bind, map, run
   # ============================================================================
 
+  # Tests bind semantics, including tuple/Either normalization and error propagation
   describe "bind keyword" do
     test "with module returning Either" do
       result =
@@ -153,6 +174,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests applicative functor semantics for applying wrapped functions
   describe "ap keyword" do
     test "applies a function in Right to a value in Right" do
       result =
@@ -212,6 +234,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests map (Functor) semantics for pure transformations
   describe "map keyword" do
     test "with module" do
       result =
@@ -314,19 +337,20 @@ defmodule Funx.Monad.Either.DslTest do
     end
 
     test "with function that returns a function (like maybe_filter_closed pattern)" do
-      # Test the pattern: map maybe_double_if(true)
-      # This should NOT be lifted because maybe_double_if/1 exists but maybe_double_if/2 doesn't
-      # So it will call maybe_double_if(true) which returns a function, then use that function
+      # When a function returns a function, use a variable to avoid auto-lifting
+      double_fn = maybe_double_if(true)
+      no_double_fn = maybe_double_if(false)
+
       result =
         either 5 do
-          map maybe_double_if(true)
+          map double_fn
         end
 
       assert result == %Right{right: 10}
 
       result2 =
         either 5 do
-          map maybe_double_if(false)
+          map no_double_fn
         end
 
       assert result2 == %Right{right: 5}
@@ -351,6 +375,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Either Module Functions (auto-imported)
   # ============================================================================
 
+  # Tests Either-specific functions: validate, tap, map_left, filter_or_else, flip, or_else
   describe "Either module functions" do
     test "validate with list of validators" do
       result =
@@ -492,6 +517,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Tuple Support (interop with {:ok, value} / {:error, reason})
   # ============================================================================
 
+  # Tests automatic normalization between {:ok, _}/{:error, _} tuples and Either structs
   describe "tuple/Either interop" do
     test "normalizes {:ok, value} to Right" do
       result =
@@ -549,6 +575,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Return Type Options (as: :either | :tuple | :raise)
   # ============================================================================
 
+  # Tests return type transformations: :either (default), :tuple, :raise
   describe "return type options" do
     test "default is :either" do
       result =
@@ -658,12 +685,46 @@ defmodule Funx.Monad.Either.DslTest do
 
       assert %Left{} = failure
     end
+
+    test "as: :either raises error if pipeline returns non-Either" do
+      # This tests the error path when wrap_result gets something other than Either
+      # We can trigger this by mocking the execute_pipeline to return something invalid
+      defmodule BrokenPipeline do
+        def run do
+          # Return a non-Either value to trigger the error path in wrap_result
+          :not_an_either_struct
+        end
+      end
+
+      # The wrap_result function should raise when it gets a non-Either
+      assert_raise ArgumentError, ~r/Expected Either struct when using as: :either/, fn ->
+        Executor.wrap_result(BrokenPipeline.run(), :either)
+      end
+    end
+
+    test "raises CompileError for invalid return type option" do
+      assert_raise CompileError, ~r/Invalid return type/, fn ->
+        Code.eval_quoted(
+          quote do
+            require Dsl
+            import Dsl
+
+            either "42", as: :invalid_type do
+              bind fn x -> right(x) end
+            end
+          end,
+          [],
+          __ENV__
+        )
+      end
+    end
   end
 
   # ============================================================================
   # Complex Pipelines & Real-World Examples
   # ============================================================================
 
+  # Tests end-to-end pipelines combining multiple DSL features
   describe "complex pipelines" do
     test "combining all DSL features" do
       result =
@@ -714,6 +775,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Error Handling & Edge Cases
   # ============================================================================
 
+  # Tests automatic lifting of various input types into Either context
   describe "input lifting" do
     test "various input types are lifted correctly" do
       test_cases = [
@@ -768,6 +830,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests runtime error handling for invalid module callbacks
   describe "error handling" do
     test "raises on invalid return value from bind" do
       assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
@@ -795,6 +858,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests auto-lifting of Module.function(args) to fn x -> Module.function(x, args) end
   describe "auto-pipe lifting for Module.function() forms" do
     test "bind lifts the pipeline value into the first argument of a module function" do
       result =
@@ -862,18 +926,12 @@ defmodule Funx.Monad.Either.DslTest do
       assert result == right(13)
     end
 
-    test "auto-pipe does not trigger for bare modules" do
-      quoted =
-        quote do
-          require Dsl
-
-          Dsl.either 5 do
-            bind PipeTarget
-          end
+    test "bare modules without run/3 raise runtime error" do
+      # Without compile-time checks, invalid modules raise at runtime
+      assert_raise UndefinedFunctionError, ~r/PipeTarget.run\/3/, fn ->
+        either 5 do
+          bind PipeTarget
         end
-
-      assert_raise CompileError, fn ->
-        Code.eval_quoted(quoted)
       end
     end
 
@@ -889,6 +947,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests auto-lifting of function calls within validator lists
   describe "auto-pipe lifting in validate lists" do
     # Helper module with zero-arity validator function
     defmodule ValidatorHelpers do
@@ -1049,6 +1108,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Module-Specific Options (opts parameter)
   # ============================================================================
 
+  # Tests passing custom options to modules via {Module, opts} syntax with bind
   describe "module-specific options with bind" do
     test "passes options to module run/3 function" do
       result =
@@ -1129,6 +1189,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests passing custom options to modules via {Module, opts} syntax with map
   describe "module-specific options with map" do
     test "passes options to module run/3 function" do
       result =
@@ -1181,6 +1242,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests module options with Either functions (validate, tap, map_left, etc.)
   describe "module-specific options" do
     test "passes options to module run/3 function" do
       result =
@@ -1202,6 +1264,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests edge cases for module options (empty opts, user_env propagation)
   describe "module-specific options - edge cases" do
     test "empty options list works" do
       result =
@@ -1252,6 +1315,7 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
+  # Tests that modules can be passed directly to Either functions
   describe "whitelisted Either functions" do
     test "allows filter_or_else/3" do
       result =
@@ -1478,952 +1542,4 @@ defmodule Funx.Monad.Either.DslTest do
     end
   end
 
-  # ============================================================================
-  # Compile-Time Error Handling
-  # ============================================================================
-
-  describe "compile-time error handling" do
-    test "raises on invalid return type option" do
-      assert_raise CompileError, ~r/Invalid return type/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42", as: :invalid_type do
-              bind fn x -> right(x) end
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when using non-whitelisted Either function" do
-      assert_raise CompileError, ~r/Invalid operation/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              bind fn x -> right(x) end
-              non_existent_either_function()
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises on invalid operation type in first position" do
-      assert_raise CompileError, ~r/Invalid operation/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              :some_random_atom
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises on invalid operation type in subsequent position" do
-      assert_raise CompileError, ~r/Invalid operation/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              bind ParseInt
-              123
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when module doesn't exist at compile time" do
-      assert_raise CompileError, ~r/is not available at compile time/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              bind NonExistentModuleThatDoesNotExist
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when module doesn't implement run/3" do
-      defmodule TestModuleWithoutRun do
-        def some_function(x), do: x
-      end
-
-      assert_raise CompileError, ~r/must implement run\/3/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either "42" do
-              bind TestModuleWithoutRun
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when validator list contains number literal" do
-      assert_raise CompileError, ~r/Invalid validator in list/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either 5 do
-              validate [1, 2, 3]
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when validator list contains string literal" do
-      assert_raise CompileError, ~r/Invalid validator in list/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either 5 do
-              validate ["not", "a", "function"]
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when validator list contains map literal" do
-      assert_raise CompileError, ~r/Invalid validator in list/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either 5 do
-              validate [%{key: :value}]
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-
-    test "raises when bare function call used in pipeline" do
-      assert_raise CompileError, ~r/Bare function calls are not allowed/, fn ->
-        Code.eval_quoted(
-          quote do
-            require Dsl
-            import Dsl
-
-            either 5 do
-              some_function(1, 2)
-            end
-          end,
-          [],
-          __ENV__
-        )
-      end
-    end
-  end
-
-  describe "compile-time bind validation" do
-    import ExUnit.CaptureIO
-
-    test "warns when bind returns plain string literal" do
-      warning =
-        capture_io(:stderr, fn ->
-          # Catch the runtime error that occurs after compilation
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either "test" do
-                  bind fn _ -> "plain string" end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ "plain string"
-    end
-
-    test "warns when bind returns plain number literal" do
-      warning =
-        capture_io(:stderr, fn ->
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either "test" do
-                  bind fn _ -> 42 end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ "42"
-    end
-
-    test "warns when bind returns plain atom literal" do
-      warning =
-        capture_io(:stderr, fn ->
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either "test" do
-                  bind fn _ -> :some_atom end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ ":some_atom"
-    end
-
-    test "warns when bind returns plain map literal" do
-      warning =
-        capture_io(:stderr, fn ->
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either "test" do
-                  bind fn _ -> %{key: "value"} end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ "%{key: \"value\"}"
-    end
-
-    test "warns when bind returns plain list literal" do
-      warning =
-        capture_io(:stderr, fn ->
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either "test" do
-                  bind fn _ -> [1, 2, 3] end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ "[1, 2, 3]"
-    end
-
-    test "warns when bind returns nil" do
-      warning =
-        capture_io(:stderr, fn ->
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either "test" do
-                  bind fn _ -> nil end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ "nil"
-    end
-
-    test "warns when bind returns true" do
-      warning =
-        capture_io(:stderr, fn ->
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either "test" do
-                  bind fn _ -> true end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ "true"
-    end
-
-    test "warns when bind returns false" do
-      warning =
-        capture_io(:stderr, fn ->
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either "test" do
-                  bind fn _ -> false end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ "false"
-    end
-
-    test "warns for plain return in multi-clause function" do
-      warning =
-        capture_io(:stderr, fn ->
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either 0 do
-                  bind fn
-                    0 -> "zero"
-                    x -> right(x)
-                  end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ "zero"
-    end
-
-    test "warns for plain return in block expression" do
-      warning =
-        capture_io(:stderr, fn ->
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                either "test" do
-                  bind fn x ->
-                    _discarded = x
-                    "return value"
-                  end
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      assert warning =~ "Potential type error in bind operation"
-      assert warning =~ "return value"
-    end
-
-    test "does not warn when bind returns Either constructor (right)" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.compile_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                bind fn x -> right(x) end
-              end
-            end
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn when bind returns Either constructor (left)" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.compile_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                bind fn _ -> left("error") end
-              end
-            end
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn when bind returns qualified Funx.Monad.Either constructor" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                bind fn x -> Either.right(x) end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn when bind returns :ok tuple" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.compile_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                bind fn x -> {:ok, x} end
-              end
-            end
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn when bind returns :error tuple" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.compile_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                bind fn _ -> {:error, "reason"} end
-              end
-            end
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn for complex expressions (variables)" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              result = right("test")
-
-              either "input" do
-                bind fn _ -> result end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn for complex expressions (case statement)" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.compile_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                bind fn x ->
-                  case x do
-                    "good" -> right(x)
-                    _ -> left("bad")
-                  end
-                end
-              end
-            end
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn for modules with run/3" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.compile_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                bind ParseInt
-              end
-            end
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn for function references" do
-      warning =
-        capture_io(:stderr, fn ->
-          # Function references can't be analyzed at compile time
-          # This will fail at runtime but shouldn't emit compile-time warnings
-          catch_error(
-            Code.eval_quoted(
-              quote do
-                require Funx.Monad.Either.Dsl
-                import Funx.Monad.Either.Dsl
-
-                defmodule TestHelper do
-                  def make_right(x), do: right(x)
-                end
-
-                either "test" do
-                  bind &TestHelper.make_right/1
-                end
-              end,
-              [],
-              __ENV__
-            )
-          )
-        end)
-
-      # Should have no compile-time warnings (runtime errors are fine)
-      refute warning =~ "Potential type error in bind operation"
-    end
-  end
-
-  describe "compile-time map validation" do
-    import ExUnit.CaptureIO
-
-    test "warns when map returns Either constructor (right)" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn x -> right(x) end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning =~ "Potential incorrect usage of map operation"
-      assert warning =~ "right(x)"
-    end
-
-    test "warns when map returns Either constructor (left)" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn _ -> left("error") end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning =~ "Potential incorrect usage of map operation"
-      assert warning =~ "left"
-    end
-
-    test "warns when map returns qualified Funx.Monad.Either constructor" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn x -> Either.right(x) end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning =~ "Potential incorrect usage of map operation"
-      assert warning =~ "Either.right"
-    end
-
-    test "warns when map returns :ok tuple" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn x -> {:ok, x} end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning =~ "Potential incorrect usage of map operation"
-      assert warning =~ "{:ok, x}"
-    end
-
-    test "warns when map returns :error tuple" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn _ -> {:error, "reason"} end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning =~ "Potential incorrect usage of map operation"
-      assert warning =~ "{:error"
-    end
-
-    test "warns for Either return in multi-clause function" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either 0 do
-                map fn
-                  0 -> right("zero")
-                  x -> x
-                end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning =~ "Potential incorrect usage of map operation"
-      assert warning =~ "right"
-    end
-
-    test "warns for Either return in block expression" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn x ->
-                  _discarded = x
-                  right("wrapped")
-                end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning =~ "Potential incorrect usage of map operation"
-      assert warning =~ "right"
-    end
-
-    test "does not warn when map returns plain string" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn x -> "plain: #{x}" end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn when map returns plain number" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either 10 do
-                map fn x -> x * 2 end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn when map returns plain atom" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn _ -> :some_atom end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn when map returns plain map" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn x -> %{value: x} end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn when map returns plain list" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn x -> [x, x] end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn for complex expressions (variables)" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn x -> x end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn for complex expressions (case statement)" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map fn x ->
-                  case x do
-                    "good" -> "GOOD"
-                    _ -> "BAD"
-                  end
-                end
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn for modules with run/3" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map ParseInt
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-
-    test "does not warn for function references" do
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              require Funx.Monad.Either.Dsl
-              import Funx.Monad.Either.Dsl
-
-              either "test" do
-                map &String.upcase/1
-              end
-            end,
-            [],
-            __ENV__
-          )
-        end)
-
-      assert warning == ""
-    end
-  end
 end

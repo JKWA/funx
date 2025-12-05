@@ -12,59 +12,98 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
 
   An operation that may fail:
 
-      defmodule ParseInt do
-        @behaviour Funx.Monad.Either.Dsl.Behaviour
-        import Funx.Monad.Either
-
-        @impl true
-        def run(value, _env, opts) when is_binary(value) do
-          base = Keyword.get(opts, :base, 10)
-
-          case Integer.parse(value, base) do
-            {int, ""} -> right(int)
-            _ -> left("Invalid integer")
-          end
-        end
-      end
+      iex> defmodule MyParseInt do
+      ...>   use Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>
+      ...>   @impl true
+      ...>   def run(value, _env, opts) when is_binary(value) do
+      ...>     base = Keyword.get(opts, :base, 10)
+      ...>
+      ...>     case Integer.parse(value, base) do
+      ...>       {int, ""} -> right(int)
+      ...>       _ -> left("Invalid integer")
+      ...>     end
+      ...>   end
+      ...> end
+      iex> MyParseInt.run("42", [], [])
+      %Funx.Monad.Either.Right{right: 42}
+      iex> MyParseInt.run("FF", [], [base: 16])
+      %Funx.Monad.Either.Right{right: 255}
+      iex> MyParseInt.run("invalid", [], [])
+      %Funx.Monad.Either.Left{left: "Invalid integer"}
 
   A pure transformation:
 
-      defmodule Double do
-        @behaviour Funx.Monad.Either.Dsl.Behaviour
-
-        @impl true
-        def run(value, _env, _opts) when is_number(value) do
-          value * 2
-        end
-      end
+      iex> defmodule MyDouble do
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>
+      ...>   @impl true
+      ...>   def run(value, _env, _opts) when is_number(value) do
+      ...>     value * 2
+      ...>   end
+      ...> end
+      iex> MyDouble.run(21, [], [])
+      42
 
   A validator that uses options:
 
-      defmodule PositiveNumber do
-        @behaviour Funx.Monad.Either.Dsl.Behaviour
-        import Funx.Monad.Either
-
-        @impl true
-        def run(value, _env, opts) do
-          min = Keyword.get(opts, :min, 0)
-
-          if value > min do
-            right(value)
-          else
-            left("must be > \\\#{min}, got: \\\#{value}")
-          end
-        end
-      end
+      iex> defmodule MyPositiveNumber do
+      ...>   use Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>
+      ...>   @impl true
+      ...>   def run(value, _env, opts) do
+      ...>     min = Keyword.get(opts, :min, 0)
+      ...>
+      ...>     if value > min do
+      ...>       right(value)
+      ...>     else
+      ...>       left("must be > \#{min}, got: \#{value}")
+      ...>     end
+      ...>   end
+      ...> end
+      iex> MyPositiveNumber.run(10, [], [])
+      %Funx.Monad.Either.Right{right: 10}
+      iex> MyPositiveNumber.run(100, [], [min: 50])
+      %Funx.Monad.Either.Right{right: 100}
+      iex> MyPositiveNumber.run(-5, [], [min: 0])
+      %Funx.Monad.Either.Left{left: "must be > 0, got: -5"}
 
   ## Usage in the DSL
 
-      use Funx.Monad.Either
-
-      either "FF" do
-        bind ParseInt, base: 16
-        bind PositiveNumber, min: 10
-        map Double
-      end
+      iex> defmodule DslParseInt do
+      ...>   use Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   @impl true
+      ...>   def run(value, _env, _opts) when is_binary(value) do
+      ...>     case Integer.parse(value) do
+      ...>       {int, ""} -> right(int)
+      ...>       _ -> left("Invalid integer")
+      ...>     end
+      ...>   end
+      ...> end
+      iex> defmodule DslPositive do
+      ...>   use Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   @impl true
+      ...>   def run(value, _env, opts) do
+      ...>     min = Keyword.get(opts, :min, 0)
+      ...>     if value > min, do: right(value), else: left("too small")
+      ...>   end
+      ...> end
+      iex> defmodule DslDouble do
+      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   @impl true
+      ...>   def run(value, _env, _opts), do: value * 2
+      ...> end
+      iex> use Funx.Monad.Either
+      iex> either "42" do
+      ...>   bind DslParseInt
+      ...>   bind {DslPositive, min: 10}
+      ...>   map DslDouble
+      ...> end
+      %Funx.Monad.Either.Right{right: 84}
 
   `bind` unwraps the current Either value, calls `run/3`, and normalizes the
   result back into Either. `map` unwraps the value, calls `run/3`, and wraps the
