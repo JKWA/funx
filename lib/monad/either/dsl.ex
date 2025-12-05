@@ -16,19 +16,65 @@ defmodule Funx.Monad.Either.Dsl do
 
   The result format is controlled by the `:as` option (`:either`, `:tuple`, or `:raise`).
 
+  ## Error Handling Strategy
+
+  **Short-Circuit Behavior:** The DSL uses fail-fast semantics. When any step returns
+  a `Left` value or `{:error, reason}` tuple, the pipeline **stops immediately** and
+  returns that error. Subsequent steps are never executed.
+
+      either user_id do
+        bind GetUser           # Returns Left("not found")
+        bind CheckPermissions  # Never runs
+        map FormatUser         # Never runs
+      end
+      # => Left("not found")
+
+  **Exception:** The `validate` operation uses applicative semantics and accumulates
+  **all** validation errors before returning:
+
+      either data do
+        validate [&positive?/1, &even?/1, &less_than_100?/1]
+        # Runs all validators, collects failures
+      end
+      # => Left([ValidationError, ValidationError, ...])
+
+  ## Performance
+
+  The DSL compiles to direct function calls at **compile time**. There is no runtime
+  overhead for the DSL itself - it expands into the same code you would write manually
+  with `bind`, `map`, etc.
+
+      # This DSL code:
+      either value do
+        bind ParseInt
+        map Double
+      end
+
+      # Expands at compile time to roughly:
+      Either.lift(value)
+      |> Either.bind(&ParseInt.run(&1, [], []))
+      |> Either.map(&Double.run(&1, [], []))
+
+  Auto-lifting creates anonymous functions, but these are created at compile time,
+  not runtime. For performance-critical hot paths, you may prefer direct combinator
+  calls, but the difference is typically negligible.
+
   ## Transformers
 
   Transformers allow post-parse optimization and validation of pipelines:
 
+      alias Funx.Monad.Either.Dsl.Transformers.OptimizeConsecutiveTaps
+
       either user_id, transformers: [OptimizeConsecutiveTaps] do
         bind GetUser
         tap &Logger.info/1
-        tap &IO.inspect/1  # Redundant - will be optimized
+        tap &IO.inspect/1  # Redundant - will be optimized away
         map Transform
       end
 
   Transformers run at compile time and create compile-time dependencies.
-  See `Funx.Monad.Either.Dsl.Transformer` for details on creating custom transformers.
+  See `Funx.Monad.Either.Dsl.Transformer` for details on creating custom transformers
+  and a list of built-in transformers.
 
   ## Example
 

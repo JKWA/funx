@@ -59,8 +59,13 @@ defmodule Funx.Monad.Either.Dsl.Transformer do
 
   ## Built-in Transformers
 
-  The DSL includes some built-in transformers:
-  - None yet - transformers are opt-in
+  Funx provides example transformers you can use:
+
+  - `Funx.Monad.Either.Dsl.Transformers.OptimizeConsecutiveTaps` - Removes redundant
+    consecutive `tap` operations, keeping only the last one. Useful for cleaning up
+    debugging code or reducing side effects in pipelines.
+
+  Transformers are opt-in - you must explicitly include them in the `:transformers` option.
 
   ## Usage
 
