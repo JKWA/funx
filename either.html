@@ -8,11 +8,11 @@
     <meta name="project" content="funx v0.2.2">
 
 
-    <title>LICENSE — funx v0.2.2</title>
+    <title>Either — funx v0.2.2</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
-      <link rel="canonical" href="https://hexdocs.pm/funx/license.html" />
+      <link rel="canonical" href="https://hexdocs.pm/funx/either.html" />
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
@@ -114,63 +114,72 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.2.2/LICENSE#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.2/guides/dsl/either.md#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
 
-    <span>LICENSE</span>
+    <span>Either</span>
   </h1>
 
-<pre>
-# MIT License
-
-Copyright (c) 2024 Joseph Koski
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-</pre>
+<h2 id="structure" class="section-heading">
+  <a href="#structure" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Structure</span>
+</h2>
+<p>An <code class="inline">either</code> block compiles to a struct containing the pipeline input, ordered steps, return mode (<code class="inline">:either</code>, <code class="inline">:tuple</code>, or <code class="inline">:raise</code>), and user-supplied options. This struct is the complete representation of the DSL expression and is what the executor receives at runtime.</p><h2 id="steps" class="section-heading">
+  <a href="#steps" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Steps</span>
+</h2>
+<p>The Either DSL uses a small set of step types, each represented by its own struct:</p><ul><li><code class="inline">Step.Bind</code></li><li><code class="inline">Step.Map</code></li><li><code class="inline">Step.Ap</code></li><li><code class="inline">Step.EitherFunction</code></li><li><code class="inline">Step.BindableFunction</code> (used by <code class="inline">validate</code>)</li></ul><p>Each step describes a single operation. The executor pattern-matches on these structs to determine how the pipeline proceeds.</p><pre><code class="text">Pipeline
+    ├── Step.Bind
+    ├── Step.Map
+    ├── Step.EitherFunction
+    └── Step.Ap</code></pre><h2 id="parser" class="section-heading">
+  <a href="#parser" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Parser</span>
+</h2>
+<p>The parser converts the DSL block into a step list. It applies the Either DSL’s lifting rules (turning call forms into unary functions), expands module aliases, validates operations, and raises compile-time errors for unsupported syntax. The parser produces the final step list that appears in the compiled struct.</p><h2 id="transformers" class="section-heading">
+  <a href="#transformers" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Transformers</span>
+</h2>
+<p>Transformers run during compilation and may rewrite the step list before it is finalized. They can add, remove, or rearrange steps. A transformer must return a valid list of Either step structs and introduces a compile-time dependency for modules that use it.</p><h2 id="execution" class="section-heading">
+  <a href="#execution" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Execution</span>
+</h2>
+<p>The executor evaluates steps in order:</p><ul><li><code class="inline">Step.Bind</code> unpacks the current Either value, calls the operation, and normalizes its return into Either.</li><li><code class="inline">Step.Map</code> applies a pure function to the inner value.</li><li><code class="inline">Step.Ap</code> applies an applicative function contained in an Either.</li><li><code class="inline">Step.EitherFunction</code> calls a built-in Either operation such as <code class="inline">filter_or_else</code>, <code class="inline">or_else</code>, <code class="inline">map_left</code>, <code class="inline">flip</code>, or <code class="inline">tap</code>.</li><li><code class="inline">Step.BindableFunction</code> wraps functions like <code class="inline">validate</code>, which accumulate errors instead of short-circuiting.</li></ul><p>Except for validation, a <code class="inline">Left</code> value stops the pipeline immediately. The return mode controls how the final result is wrapped.</p><h2 id="behaviours" class="section-heading">
+  <a href="#behaviours" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Behaviours</span>
+</h2>
+<p>Modules participating in the Either DSL implement <a href="Funx.Monad.Either.Dsl.Behaviour.html"><code class="inline">Funx.Monad.Either.Dsl.Behaviour</code></a>. The executor calls <code class="inline">run/3</code> on these modules. The DSL determines whether the result is interpreted as a bindable value, a mapped value, or a result to be normalized. The executor only invokes the callback and applies the step semantics.</p>
 </div>
 
 <div class="bottom-actions" id="bottom-actions">
   <div class="bottom-actions-item">
 
-      <a href="changelog.html" class="bottom-actions-button" rel="prev">
+      <a href="overview.html" class="bottom-actions-button" rel="prev">
         <span class="subheader">
           ← Previous Page
         </span>
         <span class="title">
-Changelog
+Overview
         </span>
       </a>
 
   </div>
   <div class="bottom-actions-item">
-
-      <a href="resources.html" class="bottom-actions-button" rel="next">
-        <span class="subheader">
-          Next Page →
-        </span>
-        <span class="title">
-Learning resources
-        </span>
-      </a>
 
   </div>
 </div>
@@ -182,7 +191,7 @@ Learning resources
 
             <a href="https://preview.hex.pm/preview/funx/0.2.2">Hex Preview</a>
 
-              (<a href="https://preview.hex.pm/preview/funx/0.2.2/show/LICENSE">current file</a>)
+              (<a href="https://preview.hex.pm/preview/funx/0.2.2/show/guides/dsl/either.md">current file</a>)
 
           </span>
 

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.34.2">
+    <meta name="project" content="funx v0.2.2">
+
+
+    <title>Funx.Monad.Either.Dsl.Transformer — funx v0.2.2</title>
+    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Either.Dsl.Transformer.html" />
+
+    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
+    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
+    <script src="dist/sidebar_items-AFB19462.js"></script>
+    <script src="docs_config.js"></script>
+    <script async src="dist/html-YIPIRHGU.js"></script>
+
+  </head>
+  <body data-type="modules" class="page-behaviour">
+    <script>
+
+      try {
+        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
+
+        if (settings.theme === 'dark' ||
+           ((settings.theme === 'system' || settings.theme == null) &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches)
+           ) {
+          document.body.classList.add('dark')
+        }
+      } catch (error) { }
+    </script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.2.2
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
+      <li>
+        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
+Pages
+        </button>
+      </li>
+
+        <li>
+          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
+            Modules
+          </button>
+        </li>
+
+
+    </ul>
+  </div>
+
+  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
+    <ul id="extras-full-list" class="full-list"></ul>
+  </div>
+
+    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
+      <ul id="modules-full-list" class="full-list"></ul>
+    </div>
+
+
+</nav>
+
+<main class="content">
+  <output role="status" id="toast"></output>
+
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+          </label>
+          <button type="submit" class="search-button" aria-label="Submit Search">
+            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
+          </button>
+          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+            <i class="ri-close-line ri-lg" title="Cancel search"></i>
+          </button>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.2.2/lib/monad/either/dsl/transformer.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+    <span translate="no">Funx.Monad.Either.Dsl.Transformer</span> <small>behaviour</small>
+    <small class="app-vsn" translate="no">(funx v0.2.2)</small>
+
+  </h1>
+
+
+    <section id="moduledoc">
+<p>Behaviour for transforming Either DSL pipelines after parsing.</p><p>Transformers allow post-parse optimization and validation of the pipeline.
+They receive a list of Step structs and can modify, validate, or optimize them.</p><h2 id="module-compile-time-dependencies" class="section-heading">
+  <a href="#module-compile-time-dependencies" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Compile-Time Dependencies</span>
+</h2>
+<p>⚠️ Transformers run at <strong>compile time</strong> and create compile-time dependencies.</p><p>When you use a transformer:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="ss">transformers</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2727401700-1">[</span><span class="nc">MyTransformer</span><span class="p" data-group-id="2727401700-1">]</span><span class="w"> </span><span class="k" data-group-id="2727401700-2">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">GetUser</span><span class="w">
+</span><span class="k" data-group-id="2727401700-2">end</span></code></pre><p>The <code class="inline">MyTransformer.transform/2</code> function is called during macro expansion.
+This means:</p><ul><li>The transformer output is baked into the compiled code</li><li>Changes to the transformer may require recompiling modules that use it</li><li>Run <code class="inline">mix clean &amp;&amp; mix compile</code> if transformer changes aren't reflected</li></ul><p>This is intentional and allows for compile-time optimization. The DSL
+uses <a href="https://hexdocs.pm/elixir/Code.html#ensure_compiled!/1"><code class="inline">Code.ensure_compiled!/1</code></a> to track these dependencies, so most changes
+will trigger automatic recompilation.</p><h2 id="module-example" class="section-heading">
+  <a href="#module-example" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Example</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">ValidateNoBareModules</span><span class="w"> </span><span class="k" data-group-id="0263948928-1">do</span><span class="w">
+  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Either.Dsl.Transformer</span><span class="w">
+
+  </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monad.Either.Dsl.Step</span><span class="w">
+
+  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">transform</span><span class="p" data-group-id="0263948928-2">(</span><span class="n">steps</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="0263948928-2">)</span><span class="w"> </span><span class="k" data-group-id="0263948928-3">do</span><span class="w">
+    </span><span class="c1"># Validate that no steps use bare module atoms without options</span><span class="w">
+    </span><span class="k">case</span><span class="w"> </span><span class="n">find_bare_module</span><span class="p" data-group-id="0263948928-4">(</span><span class="n">steps</span><span class="p" data-group-id="0263948928-4">)</span><span class="w"> </span><span class="k" data-group-id="0263948928-5">do</span><span class="w">
+      </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="0263948928-6">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">steps</span><span class="p" data-group-id="0263948928-6">}</span><span class="w">
+      </span><span class="n">bad_step</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="0263948928-7">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Step </span><span class="si" data-group-id="0263948928-8">#{</span><span class="n">inspect</span><span class="p" data-group-id="0263948928-9">(</span><span class="n">bad_step</span><span class="p" data-group-id="0263948928-9">)</span><span class="si" data-group-id="0263948928-8">}</span><span class="s"> should use {Module, opts} syntax&quot;</span><span class="p" data-group-id="0263948928-7">}</span><span class="w">
+    </span><span class="k" data-group-id="0263948928-5">end</span><span class="w">
+  </span><span class="k" data-group-id="0263948928-3">end</span><span class="w">
+
+  </span><span class="kd">defp</span><span class="w"> </span><span class="nf">find_bare_module</span><span class="p" data-group-id="0263948928-10">(</span><span class="n">steps</span><span class="p" data-group-id="0263948928-10">)</span><span class="w"> </span><span class="k" data-group-id="0263948928-11">do</span><span class="w">
+    </span><span class="nc">Enum</span><span class="o">.</span><span class="n">find</span><span class="p" data-group-id="0263948928-12">(</span><span class="n">steps</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0263948928-13">fn</span><span class="w">
+      </span><span class="p" data-group-id="0263948928-14">%</span><span class="nc" data-group-id="0263948928-14">Step.Bind</span><span class="p" data-group-id="0263948928-14">{</span><span class="ss">operation</span><span class="p">:</span><span class="w"> </span><span class="n">op</span><span class="p" data-group-id="0263948928-14">}</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_atom</span><span class="p" data-group-id="0263948928-15">(</span><span class="n">op</span><span class="p" data-group-id="0263948928-15">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">true</span><span class="w">
+      </span><span class="p" data-group-id="0263948928-16">%</span><span class="nc" data-group-id="0263948928-16">Step.Map</span><span class="p" data-group-id="0263948928-16">{</span><span class="ss">operation</span><span class="p">:</span><span class="w"> </span><span class="n">op</span><span class="p" data-group-id="0263948928-16">}</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_atom</span><span class="p" data-group-id="0263948928-17">(</span><span class="n">op</span><span class="p" data-group-id="0263948928-17">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">true</span><span class="w">
+      </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="no">false</span><span class="w">
+    </span><span class="k" data-group-id="0263948928-13">end</span><span class="p" data-group-id="0263948928-12">)</span><span class="w">
+  </span><span class="k" data-group-id="0263948928-11">end</span><span class="w">
+</span><span class="k" data-group-id="0263948928-1">end</span></code></pre><h2 id="module-built-in-transformers" class="section-heading">
+  <a href="#module-built-in-transformers" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Built-in Transformers</span>
+</h2>
+<p>Currently, no built-in transformers are provided. Transformers are opt-in and can
+be created for project-specific optimizations or validations.</p><h2 id="module-usage" class="section-heading">
+  <a href="#module-usage" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Usage</span>
+</h2>
+<p>Transformers are applied automatically during pipeline compilation.
+They can be configured via the <code class="inline">:transformers</code> option:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="ss">transformers</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9681234381-1">[</span><span class="nc">MyTransformer</span><span class="p" data-group-id="9681234381-1">]</span><span class="w"> </span><span class="k" data-group-id="9681234381-2">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">SomeModule</span><span class="w">
+</span><span class="k" data-group-id="9681234381-2">end</span></code></pre>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:error/0" data-no-tooltip translate="no">error()</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:opts/0" data-no-tooltip translate="no">opts()</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:steps/0" data-no-tooltip translate="no">steps()</a>
+
+      </div>
+
+    </div>
+
+</div>
+<div class="summary-callbacks summary">
+  <h2>
+    <a href="#callbacks">Callbacks</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#c:transform/2" data-no-tooltip translate="no">transform(steps, opts)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Transform a list of Step structs.</p></div>
+
+    </div>
+
+</div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#apply_transformers/3" data-no-tooltip translate="no">apply_transformers(steps, transformers, opts \\ [])</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Apply a list of transformers to steps in order.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+    <div class="types-list">
+<section class="detail" id="t:error/0">
+
+  <div class="detail-header">
+    <a href="#t:error/0" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">error()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.2.2/lib/monad/either/dsl/transformer.ex#L73" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> error() :: {:error, <a href="https://hexdocs.pm/elixir/String.html#t:t/0">String.t</a>() | <a href="https://hexdocs.pm/elixir/Exception.html#t:t/0">Exception.t</a>()}</pre>
+
+      </div>
+
+
+  </section>
+</section>
+<section class="detail" id="t:opts/0">
+
+  <div class="detail-header">
+    <a href="#t:opts/0" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">opts()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.2.2/lib/monad/either/dsl/transformer.ex#L72" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> opts() :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">keyword</a>()</pre>
+
+      </div>
+
+
+  </section>
+</section>
+<section class="detail" id="t:steps/0">
+
+  <div class="detail-header">
+    <a href="#t:steps/0" class="detail-link" data-no-tooltip title="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this type</span>
+    </a>
+    <h1 class="signature" translate="no">steps()</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.2.2/lib/monad/either/dsl/transformer.ex#L71" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> steps() :: [<a href="Funx.Monad.Either.Dsl.Step.html#t:t/0">Funx.Monad.Either.Dsl.Step.t</a>()]</pre>
+
+      </div>
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="callbacks" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#callbacks">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Callbacks</span>
+    </h1>
+    <div class="callbacks-list">
+<section class="detail" id="c:transform/2">
+
+  <div class="detail-header">
+    <a href="#c:transform/2" class="detail-link" data-no-tooltip title="Link to this callback">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this callback</span>
+    </a>
+    <h1 class="signature" translate="no">transform(steps, opts)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.2.2/lib/monad/either/dsl/transformer.ex#L88" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@callback</span> transform(<a href="#t:steps/0">steps</a>(), <a href="#t:opts/0">opts</a>()) :: {:ok, <a href="#t:steps/0">steps</a>()} | <a href="#t:error/0">error</a>()</pre>
+
+      </div>
+
+<p>Transform a list of Step structs.</p><p>Receives the parsed steps and any user options, and returns either:</p><ul><li><code class="inline">{:ok, transformed_steps}</code> - Modified steps</li><li><code class="inline">{:error, message}</code> - Validation error (raises CompileError)</li></ul><p>The transformer can:</p><ul><li>Optimize steps (remove redundant operations)</li><li>Validate cross-step constraints</li><li>Add implicit steps</li><li>Rewrite patterns into more efficient forms</li></ul>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+    <div class="functions-list">
+<section class="detail" id="apply_transformers/3">
+
+    <span id="apply_transformers/2"></span>
+
+  <div class="detail-header">
+    <a href="#apply_transformers/3" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">apply_transformers(steps, transformers, opts \\ [])</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.2.2/lib/monad/either/dsl/transformer.ex#L96" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> apply_transformers(<a href="#t:steps/0">steps</a>(), [<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">module</a>()], <a href="#t:opts/0">opts</a>()) :: {:ok, <a href="#t:steps/0">steps</a>()} | <a href="#t:error/0">error</a>()</pre>
+
+      </div>
+
+<p>Apply a list of transformers to steps in order.</p><p>Returns <code class="inline">{:ok, steps}</code> if all transformers succeed, or the first error.</p>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+      <p>
+
+          <span class="line">
+            <a href="https://hex.pm/packages/funx/0.2.2" class="footer-hex-package">Hex Package</a>
+
+            <a href="https://preview.hex.pm/preview/funx/0.2.2">Hex Preview</a>
+
+          </span>
+
+        <span class="line">
+          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
+            Search HexDocs
+          </button>
+
+            <a href="funx.epub" title="ePub version">
+              Download ePub version
+            </a>
+
+        </span>
+      </p>
+
+      <p class="built-using">
+        Built using
+        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
+
+          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+      </p>
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>

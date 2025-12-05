@@ -8,11 +8,11 @@
     <meta name="project" content="funx v0.2.2">
 
 
-    <title>Funx.Monoid.Sum — funx v0.2.2</title>
+    <title>Overview — funx v0.2.2</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
-      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monoid.Sum.html" />
+      <link rel="canonical" href="https://hexdocs.pm/funx/overview.html" />
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
@@ -21,7 +21,7 @@
     <script async src="dist/html-YIPIRHGU.js"></script>
 
   </head>
-  <body data-type="modules" class="page-module">
+  <body data-type="extras" class="page-extra">
     <script>
 
       try {
@@ -114,89 +114,92 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.2.2/lib/monoid/sum.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.2/guides/dsl/overview.md#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Monoid.Sum</span> 
-    <small class="app-vsn" translate="no">(funx v0.2.2)</small>
 
+    <span>Overview</span>
   </h1>
 
-
-    <section id="moduledoc">
-<p>A Monoid implementation for sums.</p><p>This monoid uses addition as its associative operation
-and <code class="inline">0</code> as the identity element.</p>
-    </section>
-
+<h2 id="structure" class="section-heading">
+  <a href="#structure" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Structure</span>
+</h2>
+<p>A Funx DSL block compiles to a single struct that contains an ordered list of steps. This struct is the complete representation of the DSL expression and is what the executor receives at runtime.</p><pre><code class="text">Compilation
+    ├── DSL Block (AST)
+    ├── Parser
+    │     └── Builds step list
+    ├── Transformers
+    │     └── Optional rewrites
+    ├── Compiled Struct
+    └── Executor
+          └── Runs the steps</code></pre><h2 id="steps" class="section-heading">
+  <a href="#steps" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Steps</span>
+</h2>
+<p>Each DSL defines its own set of step types. Every step is a struct that describes one operation in the pipeline. The executor pattern-matches on these structs to determine how each step should run.</p><pre><code class="text">Pipeline
+    ├── Step
+    ├── Step
+    ├── Step
+    └── Step</code></pre><h2 id="parser" class="section-heading">
+  <a href="#parser" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Parser</span>
+</h2>
+<p>Each DSL provides its own parser. The parser converts the DSL block into a list of steps, applies lifting and alias-expansion rules, and raises compile-time errors for invalid or unsupported forms.</p><h2 id="transformers" class="section-heading">
+  <a href="#transformers" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Transformers</span>
+</h2>
+<p>Transformers run during compilation and may rewrite the step list before it is finalized. They can insert, remove, or modify steps. A transformer must return a valid list of steps for that DSL and introduces a compile-time dependency.</p><h2 id="execution" class="section-heading">
+  <a href="#execution" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Execution</span>
+</h2>
+<p>Each DSL has a dedicated executor. The executor receives the compiled struct and evaluates the steps in order. It does not inspect source code; it operates only on the compiled representation.</p><h2 id="behaviours" class="section-heading">
+  <a href="#behaviours" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Behaviours</span>
+</h2>
+<p>Each DSL defines a behaviour for modules that participate in the DSL. Modules implementing this behaviour supply the callback the executor invokes for a step. The DSL determines how the callback’s return value is interpreted.</p>
 </div>
 
-  <section id="summary" class="details-list">
-    <h1 class="section-heading">
-      <a class="hover-link" href="#summary">
-        <i class="ri-link-m" aria-hidden="true"></i>
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="formatter_export.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Formatter Rules
+        </span>
       </a>
-      <span class="text">Summary</span>
-    </h1>
-<div class="summary-types summary">
-  <h2>
-    <a href="#types">Types</a>
-  </h2>
-
-    <div class="summary-row">
-      <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
-
-      </div>
-
-    </div>
-
-</div>
-
-  </section>
-
-
-  <section id="types" class="details-list">
-    <h1 class="section-heading">
-      <a class="hover-link" href="#types">
-        <i class="ri-link-m" aria-hidden="true"></i>
-      </a>
-      <span class="text">Types</span>
-    </h1>
-    <div class="types-list">
-<section class="detail" id="t:t/0">
-
-  <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
-      <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
-    </a>
-    <h1 class="signature" translate="no">t()</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.2.2/lib/monoid/sum.ex#L9" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
-
 
   </div>
+  <div class="bottom-actions-item">
 
-  <section class="docstring">
+      <a href="either.html" class="bottom-actions-button" rel="next">
+        <span class="subheader">
+          Next Page →
+        </span>
+        <span class="title">
+Either
+        </span>
+      </a>
 
-      <div class="specs">
-
-          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Monoid.Sum{value: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">number</a>()}</pre>
-
-      </div>
-
-
-  </section>
-</section>
-
-    </div>
-  </section>
-
+  </div>
+</div>
     <footer class="footer">
       <p>
 
@@ -204,6 +207,8 @@ and <code class="inline">0</code> as the identity element.</p>
             <a href="https://hex.pm/packages/funx/0.2.2" class="footer-hex-package">Hex Package</a>
 
             <a href="https://preview.hex.pm/preview/funx/0.2.2">Hex Preview</a>
+
+              (<a href="https://preview.hex.pm/preview/funx/0.2.2/show/guides/dsl/overview.md">current file</a>)
 
           </span>
 
