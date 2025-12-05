@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.3] - Unreleased
+
+### Updated
+
+* Refactored the Either DSL implementation to make it safer and easier to maintain.
+
 ## [0.2.2] - Unreleased
 
 ### Added
