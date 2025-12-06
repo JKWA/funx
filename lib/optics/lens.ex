@@ -16,9 +16,9 @@ defmodule Funx.Optics.Lens do
 
       iex> alias Funx.Optics.Lens
       iex> lens = Lens.key(:age)
-      iex> Lens.get(lens, %{age: 40})
+      iex> %{age: 40} |> Lens.get(lens)
       40
-      iex> Lens.set(lens, 50, %{age: 40})
+      iex> %{age: 40} |> Lens.set(50, lens)
       %{age: 50}
 
   Composing lenses:
@@ -27,18 +27,18 @@ defmodule Funx.Optics.Lens do
       iex> outer = Lens.key(:profile)
       iex> inner = Lens.key(:score)
       iex> lens = Lens.compose(outer, inner)
-      iex> Lens.get(lens, %{profile: %{score: 12}})
+      iex> %{profile: %{score: 12}} |> Lens.get(lens)
       12
-      iex> Lens.set(lens, 99, %{profile: %{score: 12}})
+      iex> %{profile: %{score: 12}} |> Lens.set(99, lens)
       %{profile: %{score: 99}}
 
   Nested path lens:
 
       iex> alias Funx.Optics.Lens
       iex> lens = Lens.path([:stats, :wins])
-      iex> Lens.get(lens, %{stats: %{wins: 7}})
+      iex> %{stats: %{wins: 7}} |> Lens.get(lens)
       7
-      iex> Lens.set(lens, 8, %{stats: %{wins: 7}})
+      iex> %{stats: %{wins: 7}} |> Lens.set(8, lens)
       %{stats: %{wins: 8}}
   """
 
@@ -61,16 +61,16 @@ defmodule Funx.Optics.Lens do
     %__MODULE__{get: getter, set: setter}
   end
 
-  @spec get(t(s, a), s) :: a
+  @spec get(s, t(s, a)) :: a
         when s: term(), a: term()
-  def get(%__MODULE__{get: g}, s) do
+  def get(s, %__MODULE__{get: g}) do
     g.(s)
   end
 
-  @spec set(t(s, a), a, s) :: s
+  @spec set(s, a, t(s, a)) :: s
         when s: term(), a: term()
-  def set(%__MODULE__{set: sfun}, a, s) do
-    sfun.(a, s)
+  def set(s, a, %__MODULE__{set: setter}) do
+    setter.(s, a)
   end
 
   @spec compose(t(s, i), t(i, a)) :: t(s, a)
@@ -78,12 +78,12 @@ defmodule Funx.Optics.Lens do
   def compose(%__MODULE__{} = outer, %__MODULE__{} = inner) do
     make(
       fn s ->
-        inner.get.(outer.get.(s))
+        s |> get(outer) |> get(inner)
       end,
-      fn a, s ->
-        inner_value = outer.get.(s)
-        updated_inner = inner.set.(a, inner_value)
-        outer.set.(updated_inner, s)
+      fn s, a ->
+        inner_struct = get(s, outer)
+        updated_inner = set(inner_struct, a, inner)
+        set(s, updated_inner, outer)
       end
     )
   end
@@ -92,7 +92,7 @@ defmodule Funx.Optics.Lens do
   def key(k) when is_atom(k) do
     make(
       fn m -> Map.get(m, k) end,
-      fn v, m -> Map.put(m, k, v) end
+      fn m, v -> Map.put(m, k, v) end
     )
   end
 
@@ -100,7 +100,7 @@ defmodule Funx.Optics.Lens do
   def path(keys) when is_list(keys) do
     make(
       fn m -> get_in(m, keys) end,
-      fn v, m -> put_in(m, keys, v) end
+      fn m, v -> put_in(m, keys, v) end
     )
   end
 end

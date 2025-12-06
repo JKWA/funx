@@ -8,12 +8,12 @@ defmodule Funx.Optics.LensTest do
 
   test "get/2 retrieves the focused value" do
     lens = Lens.key(:name)
-    assert Lens.get(lens, %{name: "Alice"}) == "Alice"
+    assert %{name: "Alice"} |> Lens.get(lens) == "Alice"
   end
 
   test "set/3 replaces the focused value" do
     lens = Lens.key(:count)
-    result = Lens.set(lens, 10, %{count: 3})
+    result = %{count: 3} |> Lens.set(10, lens)
     assert result == %{count: 10}
   end
 
@@ -23,20 +23,25 @@ defmodule Funx.Optics.LensTest do
     lens = Lens.compose(outer, inner)
 
     data = %{profile: %{score: 5}}
-    assert Lens.get(lens, data) == 5
 
-    updated = Lens.set(lens, 9, data)
+    assert data |> Lens.get(lens) == 5
+
+    updated = data |> Lens.set(9, lens)
     assert updated == %{profile: %{score: 9}}
   end
 
   test "path/1 gets nested values" do
     lens = Lens.path([:stats, :wins])
-    assert Lens.get(lens, %{stats: %{wins: 2}}) == 2
+    assert %{stats: %{wins: 2}} |> Lens.get(lens) == 2
   end
 
   test "path/1 sets nested values" do
     lens = Lens.path([:stats, :losses])
-    updated = Lens.set(lens, 4, %{stats: %{losses: 1}})
+
+    updated =
+      %{stats: %{losses: 1}}
+      |> Lens.set(4, lens)
+
     assert updated == %{stats: %{losses: 4}}
   end
 
@@ -49,10 +54,10 @@ defmodule Funx.Optics.LensTest do
 
     data = %{outer: %{inner: 7}}
 
-    assert Lens.get(composed, data) == Lens.get(path_lens, data)
+    assert data |> Lens.get(composed) == data |> Lens.get(path_lens)
 
-    updated1 = Lens.set(composed, 9, data)
-    updated2 = Lens.set(path_lens, 9, data)
+    updated1 = data |> Lens.set(9, composed)
+    updated2 = data |> Lens.set(9, path_lens)
 
     assert updated1 == updated2
   end

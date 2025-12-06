@@ -26,7 +26,8 @@ defmodule Funx.Eq.Utils do
       The projection is applied directly.
 
     * a `Lens`
-      The lens’s `get/2` function is used as the projection.
+      The lens’s `get/2` function is used as the projection, meaning the
+      structure is passed as the first argument and the lens as the second.
 
     * an atom
       Treated as a key and converted into a lens with `Lens.key/1`.
@@ -36,7 +37,7 @@ defmodule Funx.Eq.Utils do
 
   The `eq` parameter may be an `Eq` module or a custom comparator map
   with `:eq?` and `:not_eq?` functions. The projection is applied to both
-  values before invoking the underlying comparator.
+  inputs before invoking the underlying comparator.
 
   ## Examples
 
@@ -67,6 +68,7 @@ defmodule Funx.Eq.Utils do
       iex> eq.eq?.(%{score: 10}, %{score: 10})
       true
   """
+
   @spec contramap(
           (a -> b)
           | Lens.t()
@@ -79,7 +81,7 @@ defmodule Funx.Eq.Utils do
 
   # Lens
   def contramap(%Lens{} = lens, eq) do
-    contramap(fn a -> Lens.get(lens, a) end, eq)
+    contramap(fn a -> Lens.get(a, lens) end, eq)
   end
 
   # Atom key → lens
@@ -163,7 +165,7 @@ defmodule Funx.Eq.Utils do
 
   # Lens
   def eq_by?(%Lens{} = lens, a, b, eq) do
-    eq_by?(fn x -> Lens.get(lens, x) end, a, b, eq)
+    eq_by?(fn x -> Lens.get(x, lens) end, a, b, eq)
   end
 
   # Atom key → lens
@@ -178,7 +180,7 @@ defmodule Funx.Eq.Utils do
     eq_by?(lens, a, b, eq)
   end
 
-  # Function (original)
+  # Function
   def eq_by?(f, a, b, eq) when is_function(f, 1) do
     eq = to_eq_map(eq)
     eq.eq?.(f.(a), f.(b))
