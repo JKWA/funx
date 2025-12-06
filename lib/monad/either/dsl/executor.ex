@@ -100,7 +100,14 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   # ============================================================================
 
   @doc false
-  @spec normalize_run_result(tuple() | Either.t(any(), any()), map() | nil, String.t()) ::
+  @spec normalize_run_result(tuple() | Either.t(any(), any())) :: Either.t(any(), any())
+  @spec normalize_run_result(tuple() | Either.t(any(), any()), map() | nil) ::
+          Either.t(any(), any())
+  @spec normalize_run_result(
+          tuple() | Either.t(any(), any()),
+          map() | nil,
+          String.t() | nil
+        ) ::
           Either.t(any(), any())
   def normalize_run_result(result, meta \\ nil, operation_type \\ nil) do
     case result do
