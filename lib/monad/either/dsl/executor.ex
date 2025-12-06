@@ -44,7 +44,11 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   # STEP EXECUTION
   # ============================================================================
 
-  defp execute_step(either_value, %Step.Bind{operation: operation, opts: opts, __meta__: meta}, user_env) do
+  defp execute_step(
+         either_value,
+         %Step.Bind{operation: operation, opts: opts, __meta__: meta},
+         user_env
+       ) do
     Funx.Monad.bind(either_value, fn value ->
       result = call_operation(operation, value, opts, user_env)
       normalize_run_result(result, meta, "bind")
@@ -61,11 +65,19 @@ defmodule Funx.Monad.Either.Dsl.Executor do
     Funx.Monad.ap(either_value, applicative)
   end
 
-  defp execute_step(either_value, %Step.EitherFunction{function: func_name, args: args}, _user_env) do
+  defp execute_step(
+         either_value,
+         %Step.EitherFunction{function: func_name, args: args},
+         _user_env
+       ) do
     apply(Either, func_name, [either_value | args])
   end
 
-  defp execute_step(either_value, %Step.BindableFunction{function: func_name, args: args}, _user_env) do
+  defp execute_step(
+         either_value,
+         %Step.BindableFunction{function: func_name, args: args},
+         _user_env
+       ) do
     Funx.Monad.bind(either_value, fn value ->
       apply(Either, func_name, [value | args])
     end)
@@ -88,7 +100,8 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   # ============================================================================
 
   @doc false
-  @spec normalize_run_result(tuple() | Either.t(any(), any()), map() | nil, String.t()) :: Either.t(any(), any())
+  @spec normalize_run_result(tuple() | Either.t(any(), any()), map() | nil, String.t()) ::
+          Either.t(any(), any())
   def normalize_run_result(result, meta \\ nil, operation_type \\ nil) do
     case result do
       {:ok, value} ->
@@ -124,7 +137,8 @@ defmodule Funx.Monad.Either.Dsl.Executor do
 
   defp format_location(nil), do: ""
 
-  defp format_location(%{line: line, column: column}) when not is_nil(line) and not is_nil(column) do
+  defp format_location(%{line: line, column: column})
+       when not is_nil(line) and not is_nil(column) do
     "\n  at line #{line}, column #{column}"
   end
 
@@ -141,8 +155,12 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   @doc false
   def wrap_result(result, :either) do
     case result do
-      %Either.Right{} -> result
-      %Either.Left{} -> result
+      %Either.Right{} ->
+        result
+
+      %Either.Left{} ->
+        result
+
       other ->
         raise ArgumentError, """
         Expected Either struct when using as: :either, but got: #{inspect(other)}

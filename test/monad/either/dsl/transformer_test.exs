@@ -52,7 +52,9 @@ defmodule Funx.Monad.Either.Dsl.TransformerTest do
         end
       end
 
-      assert {:ok, result} = Transformer.apply_transformers(steps, [FirstTransformer, SecondTransformer], [])
+      assert {:ok, result} =
+               Transformer.apply_transformers(steps, [FirstTransformer, SecondTransformer], [])
+
       assert length(result) == 3
       assert Enum.at(result, 1).__meta__.order == 1
       assert Enum.at(result, 2).__meta__.order == 2
@@ -89,10 +91,14 @@ defmodule Funx.Monad.Either.Dsl.TransformerTest do
         end
       end
 
-      assert {:ok, result1} = Transformer.apply_transformers(steps, [OptsTransformer], should_add: true)
+      assert {:ok, result1} =
+               Transformer.apply_transformers(steps, [OptsTransformer], should_add: true)
+
       assert length(result1) == 2
 
-      assert {:ok, result2} = Transformer.apply_transformers(steps, [OptsTransformer], should_add: false)
+      assert {:ok, result2} =
+               Transformer.apply_transformers(steps, [OptsTransformer], should_add: false)
+
       assert length(result2) == 1
     end
   end

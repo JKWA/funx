@@ -217,8 +217,10 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   # Validates that list items are functions, not literals
   # Note: Module aliases ({:__aliases__, _, _}) are transformed before validation,
   # so they never reach this function
-  defp validate_list_item!({:fn, _, _}), do: :ok  # Anonymous function
-  defp validate_list_item!({:&, _, _}), do: :ok   # Function capture
+  # Anonymous function
+  defp validate_list_item!({:fn, _, _}), do: :ok
+  # Function capture
+  defp validate_list_item!({:&, _, _}), do: :ok
   defp validate_list_item!({name, _, context}) when is_atom(name) and is_atom(context), do: :ok
   defp validate_list_item!({{:., _, _}, _, _}), do: :ok
 
