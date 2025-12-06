@@ -15,25 +15,87 @@ defmodule Funx.Eq.Utils do
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
   alias Funx.Eq
   alias Funx.Monoid
+  alias Funx.Optics.Lens
 
   @doc """
-  Transforms an equality check by applying a function `f` to values before comparison.
+  Transforms an equality check by applying a projection before comparison.
 
-  The `eq` parameter can be an `Eq` module or a custom comparator map with an `:eq?` function.
-  If an `Eq` module is provided, it wraps the module’s function to apply `f` to each value before invoking the equality check.
-  If a custom comparator map is provided, it wraps the function in the map to apply `f` to each value.
+  The `projection` can take several forms:
+
+    * a function `(a -> b)`
+      The projection is applied directly.
+
+    * a `Lens`
+      The lens’s `get/2` function is used as the projection.
+
+    * an atom
+      Treated as a key and converted into a lens with `Lens.key/1`.
+
+    * a list of keys
+      Treated as a nested path and converted into a lens with `Lens.path/1`.
+
+  The `eq` parameter may be an `Eq` module or a custom comparator map
+  with `:eq?` and `:not_eq?` functions. The projection is applied to both
+  values before invoking the underlying comparator.
 
   ## Examples
+
+  Using a projection function:
 
       iex> eq = Funx.Eq.Utils.contramap(& &1.age)
       iex> eq.eq?.(%{age: 30}, %{age: 30})
       true
       iex> eq.eq?.(%{age: 30}, %{age: 25})
       false
+
+  Using a key (automatically lifted into a lens):
+
+      iex> eq = Funx.Eq.Utils.contramap(:age)
+      iex> eq.eq?.(%{age: 40}, %{age: 40})
+      true
+
+  Using a path (nested access):
+
+      iex> eq = Funx.Eq.Utils.contramap([:stats, :wins])
+      iex> eq.eq?.(%{stats: %{wins: 2}}, %{stats: %{wins: 2}})
+      true
+
+  Using a lens explicitly:
+
+      iex> lens = Funx.Optics.Lens.key(:score)
+      iex> eq = Funx.Eq.Utils.contramap(lens)
+      iex> eq.eq?.(%{score: 10}, %{score: 10})
+      true
   """
-  @spec contramap((a -> b), eq_t()) :: eq_map()
+  @spec contramap(
+          (a -> b)
+          | Lens.t()
+          | atom
+          | [term],
+          eq_t()
+        ) :: eq_map()
         when a: any, b: any
-  def contramap(f, eq \\ Eq) do
+  def contramap(projection, eq \\ Eq)
+
+  # Lens
+  def contramap(%Lens{} = lens, eq) do
+    contramap(fn a -> Lens.get(lens, a) end, eq)
+  end
+
+  # Atom key → lens
+  def contramap(key, eq) when is_atom(key) do
+    lens = Lens.key(key)
+    contramap(lens, eq)
+  end
+
+  # Path → lens
+  def contramap(path, eq) when is_list(path) do
+    lens = Lens.path(path)
+    contramap(lens, eq)
+  end
+
+  # Function
+  def contramap(f, eq) when is_function(f, 1) do
     eq = to_eq_map(eq)
 
     %{
@@ -43,26 +105,91 @@ defmodule Funx.Eq.Utils do
   end
 
   @doc """
-  Checks equality of values by applying a projection function, using a specified or default `Eq`.
+  Checks equality of two values by applying a projection before comparison.
 
-  The `eq` parameter can be an `Eq` module or a custom comparator map with an `:eq?` function.
+  The `projection` may be:
+
+    * a function `(a -> b)`
+      Applied directly to each value.
+
+    * a `Funx.Optics.Lens`
+      Its `get/2` function is used as the projection.
+
+    * an atom
+      Treated as a key and converted into a lens with `Lens.key/1`.
+
+    * a list of keys
+      Treated as a nested path and converted into a lens with `Lens.path/1`.
+
+  The `eq` parameter may be an `Eq` module or a custom comparator map.
+  The projection is applied to both arguments before invoking the comparator.
 
   ## Examples
+
+  Using a projection function:
 
       iex> Funx.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 30})
       true
       iex> Funx.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 25})
       false
+
+  Using a key (auto-lensed):
+
+      iex> Funx.Eq.Utils.eq_by?(:age, %{age: 40}, %{age: 40})
+      true
+
+  Using a nested path:
+
+      iex> Funx.Eq.Utils.eq_by?([:stats, :wins], %{stats: %{wins: 2}}, %{stats: %{wins: 2}})
+      true
+
+  Using a lens explicitly:
+
+      iex> lens = Funx.Optics.Lens.key(:score)
+      iex> Funx.Eq.Utils.eq_by?(lens, %{score: 10}, %{score: 10})
+      true
   """
-  @spec eq_by?((a -> b), a, a, eq_t()) :: boolean()
+  @spec eq_by?(
+          (a -> b)
+          | Lens.t()
+          | atom
+          | [term],
+          a,
+          a,
+          eq_t()
+        ) :: boolean()
         when a: any, b: any
-  def eq_by?(f, a, b, eq \\ Eq) do
+  def eq_by?(projection, a, b, eq \\ Eq)
+
+  # Lens
+  def eq_by?(%Lens{} = lens, a, b, eq) do
+    eq_by?(fn x -> Lens.get(lens, x) end, a, b, eq)
+  end
+
+  # Atom key → lens
+  def eq_by?(key, a, b, eq) when is_atom(key) do
+    lens = Lens.key(key)
+    eq_by?(lens, a, b, eq)
+  end
+
+  # Path → lens
+  def eq_by?(path, a, b, eq) when is_list(path) do
+    lens = Lens.path(path)
+    eq_by?(lens, a, b, eq)
+  end
+
+  # Function (original)
+  def eq_by?(f, a, b, eq) when is_function(f, 1) do
     eq = to_eq_map(eq)
     eq.eq?.(f.(a), f.(b))
   end
 
   @doc """
   Returns true if two values are equal, using a specified or default `Eq`.
+
+  This function compares the values *directly*, without applying any projection.
+  For comparisons that require projecting or focusing on part of a structure,
+  use `Funx.Eq.Utils.eq_by?/4` or `Funx.Eq.Utils.contramap/2`.
 
   ## Examples
 
@@ -80,6 +207,10 @@ defmodule Funx.Eq.Utils do
 
   @doc """
   Returns false if two values are not equal, using a specified or default `Eq`.
+
+  This function compares the values directly, without applying any projection.
+  For comparisons based on a projection, lens, key, or path,
+  use `Funx.Eq.Utils.eq_by?/4` or a comparator produced by `Funx.Eq.Utils.contramap/2`.
 
   ## Examples
 

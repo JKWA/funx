@@ -5,6 +5,7 @@ defmodule Funx.Eq.UtilsTest do
   import Funx.Filterable, only: [filter: 2]
   alias Funx.Eq.Utils
   alias Funx.Monad.Maybe
+  alias Funx.Optics.Lens
   alias Funx.Test.Person
 
   doctest Funx.Eq.Utils
@@ -15,6 +16,34 @@ defmodule Funx.Eq.UtilsTest do
 
       assert eq_by_length.eq?.("short_a", "short_b") == true
       assert eq_by_length.eq?.("short", "longer") == false
+    end
+  end
+
+  describe "contramap/2 with lens" do
+    test "uses lens.get as the projection" do
+      lens = Lens.key(:age)
+      eq = Utils.contramap(lens)
+
+      assert eq.eq?.(%{age: 20}, %{age: 20})
+      refute eq.eq?.(%{age: 20}, %{age: 21})
+    end
+  end
+
+  describe "contramap/2 with atom (auto-lensed)" do
+    test "treats atom as Lens.key/1" do
+      eq = Utils.contramap(:age)
+
+      assert eq.eq?.(%{age: 30}, %{age: 30})
+      refute eq.eq?.(%{age: 30}, %{age: 31})
+    end
+  end
+
+  describe "contramap/2 with path (auto-lensed)" do
+    test "treats list as Lens.path/1" do
+      eq = Utils.contramap([:stats, :wins])
+
+      assert eq.eq?.(%{stats: %{wins: 2}}, %{stats: %{wins: 2}})
+      refute eq.eq?.(%{stats: %{wins: 2}}, %{stats: %{wins: 3}})
     end
   end
 
@@ -79,6 +108,40 @@ defmodule Funx.Eq.UtilsTest do
 
       assert Utils.eq_by?(& &1.name, person1, person2, custom_eq) == true
       assert Utils.eq_by?(& &1.name, person1, person3, custom_eq) == false
+    end
+  end
+
+  describe "eq_by?/4 with lens" do
+    test "applies lens.get for comparison" do
+      lens = Lens.key(:score)
+      a = %{score: 5}
+      b = %{score: 5}
+      c = %{score: 7}
+
+      assert Utils.eq_by?(lens, a, b)
+      refute Utils.eq_by?(lens, a, c)
+    end
+  end
+
+  describe "eq_by?/4 with atom (auto-lensed)" do
+    test "treats atom as Lens.key/1" do
+      a = %{age: 40}
+      b = %{age: 40}
+      c = %{age: 41}
+
+      assert Utils.eq_by?(:age, a, b)
+      refute Utils.eq_by?(:age, a, c)
+    end
+  end
+
+  describe "eq_by?/4 with path (auto-lensed)" do
+    test "treats list as Lens.path/1" do
+      a = %{stats: %{wins: 2}}
+      b = %{stats: %{wins: 2}}
+      c = %{stats: %{wins: 3}}
+
+      assert Utils.eq_by?([:stats, :wins], a, b)
+      refute Utils.eq_by?([:stats, :wins], a, c)
     end
   end
 
