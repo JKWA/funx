@@ -1541,5 +1541,4 @@ defmodule Funx.Monad.Either.DslTest do
       assert result == %Right{right: 84}
     end
   end
-
 end

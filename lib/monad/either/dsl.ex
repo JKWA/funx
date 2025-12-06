@@ -163,13 +163,15 @@ defmodule Funx.Monad.Either.Dsl do
     # Validate return_as at compile time
     unless return_as in [:either, :tuple, :raise] do
       raise CompileError,
-        description: "Invalid return type: #{inspect(return_as)}. Must be :either, :tuple, or :raise"
+        description:
+          "Invalid return type: #{inspect(return_as)}. Must be :either, :tuple, or :raise"
     end
 
     # Validate transformers list (will be evaluated at compile time)
     unless is_list(transformers_ast) do
       raise CompileError,
-        description: "Invalid transformers: #{inspect(transformers_ast)}. Must be a list of modules."
+        description:
+          "Invalid transformers: #{inspect(transformers_ast)}. Must be a list of modules."
     end
 
     # Expand module aliases at compile time
@@ -222,7 +224,11 @@ defmodule Funx.Monad.Either.Dsl do
   end
 
   # Quote Step structs - each type gets its own quoted struct
-  defp quote_step(%Funx.Monad.Either.Dsl.Step.Bind{operation: operation, opts: opts, __meta__: meta}) do
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.Bind{
+         operation: operation,
+         opts: opts,
+         __meta__: meta
+       }) do
     quote do
       %Funx.Monad.Either.Dsl.Step.Bind{
         operation: unquote(operation),
@@ -232,7 +238,11 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
-  defp quote_step(%Funx.Monad.Either.Dsl.Step.Map{operation: operation, opts: opts, __meta__: meta}) do
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.Map{
+         operation: operation,
+         opts: opts,
+         __meta__: meta
+       }) do
     quote do
       %Funx.Monad.Either.Dsl.Step.Map{
         operation: unquote(operation),
@@ -251,7 +261,11 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
-  defp quote_step(%Funx.Monad.Either.Dsl.Step.EitherFunction{function: func_name, args: args, __meta__: meta}) do
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.EitherFunction{
+         function: func_name,
+         args: args,
+         __meta__: meta
+       }) do
     quote do
       %Funx.Monad.Either.Dsl.Step.EitherFunction{
         function: unquote(func_name),
@@ -261,7 +275,11 @@ defmodule Funx.Monad.Either.Dsl do
     end
   end
 
-  defp quote_step(%Funx.Monad.Either.Dsl.Step.BindableFunction{function: func_name, args: args, __meta__: meta}) do
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.BindableFunction{
+         function: func_name,
+         args: args,
+         __meta__: meta
+       }) do
     quote do
       %Funx.Monad.Either.Dsl.Step.BindableFunction{
         function: unquote(func_name),
@@ -270,5 +288,4 @@ defmodule Funx.Monad.Either.Dsl do
       }
     end
   end
-
 end

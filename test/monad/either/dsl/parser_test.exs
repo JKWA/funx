@@ -240,7 +240,11 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
     end
 
     test "raises CompileError with helpful message for unknown function" do
-      error = assert_compile_error(quote(do: custom_function(42)), "Bare function calls are not allowed")
+      error =
+        assert_compile_error(
+          quote(do: custom_function(42)),
+          "Bare function calls are not allowed"
+        )
 
       assert error.description =~ "bind custom_function(...)"
       assert error.description =~ "map custom_function(...)"
@@ -255,7 +259,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
     end
 
     test "raises CompileError for bare module alias in pipeline" do
-      module_alias = {:__aliases__, [line: 1], [:Elixir, :SomeModule]}
+      module_alias = {:__aliases__, [line: 1], [:"Elixir", :SomeModule]}
 
       assert_compile_error(module_alias, "Modules must be used with a keyword")
     end
@@ -414,7 +418,8 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
       block = quote do: bind({SomeModule, [opt1: :val1, opt2: :val2, opt3: :val3]})
       step = parse_one(block)
 
-      assert %Step.Bind{operation: SomeModule, opts: [opt1: :val1, opt2: :val2, opt3: :val3]} = step
+      assert %Step.Bind{operation: SomeModule, opts: [opt1: :val1, opt2: :val2, opt3: :val3]} =
+               step
     end
   end
 
