@@ -38,7 +38,7 @@ defmodule Funx.Ord.Utils do
 
   The `ord` parameter may be an `Ord` module or a custom comparator map
   with `:lt?`, `:le?`, `:gt?`, and `:ge?` functions. The projection is applied
-  to both values before invoking the underlying comparator.
+  to both inputs before invoking the underlying comparator.
 
   ## Examples
 
@@ -47,17 +47,23 @@ defmodule Funx.Ord.Utils do
       iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
       iex> ord.lt?.("cat", "zebra")
       true
+      iex> ord.gt?.("zebra", "cat")
+      true
 
   Using a key (automatically lifted into a lens):
 
       iex> ord = Funx.Ord.Utils.contramap(:age)
       iex> ord.gt?.(%{age: 40}, %{age: 30})
       true
+      iex> ord.lt?.(%{age: 30}, %{age: 40})
+      true
 
   Using a path (nested access):
 
       iex> ord = Funx.Ord.Utils.contramap([:stats, :wins])
       iex> ord.lt?.(%{stats: %{wins: 2}}, %{stats: %{wins: 5}})
+      true
+      iex> ord.gt?.(%{stats: %{wins: 5}}, %{stats: %{wins: 2}})
       true
 
   Using a lens explicitly:
@@ -66,12 +72,15 @@ defmodule Funx.Ord.Utils do
       iex> ord = Funx.Ord.Utils.contramap(lens)
       iex> ord.gt?.(%{score: 10}, %{score: 3})
       true
+      iex> ord.lt?.(%{score: 3}, %{score: 10})
+      true
   """
+
   @spec contramap(
           (a -> b)
           | Lens.t()
           | atom
-          | [term],
+          | [term()],
           ord_t()
         ) :: ord_map()
         when a: any, b: any
@@ -79,7 +88,7 @@ defmodule Funx.Ord.Utils do
 
   # Lens
   def contramap(%Lens{} = lens, ord) do
-    contramap(fn a -> Lens.get(lens, a) end, ord)
+    contramap(fn a -> Lens.get(a, lens) end, ord)
   end
 
   # Atom key → lens
