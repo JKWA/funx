@@ -43,12 +43,14 @@ defmodule Funx.Optics.Lens do
   """
 
   @type getter(s, a) :: (s -> a)
-  @type setter(s, a) :: (a, s -> s)
+  @type setter(s, a) :: (s, a -> s)
 
   @type t(s, a) :: %__MODULE__{
           get: getter(s, a),
           set: setter(s, a)
         }
+
+  @type t :: t(any, any)
 
   defstruct [:get, :set]
 

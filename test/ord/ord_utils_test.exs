@@ -7,6 +7,7 @@ defmodule Funx.Ord.UtilsTest do
   import Funx.Ord.Utils
 
   alias Funx.Monad.{Either, Identity, Maybe}
+  alias Funx.Optics.Lens
   alias Funx.Ord.Any
   alias Funx.Test.Person
   doctest Funx.Ord.Utils
@@ -239,6 +240,48 @@ defmodule Funx.Ord.UtilsTest do
       assert to_eq().not_eq?.(:apple, :banana)
       assert to_eq().not_eq?.(1, 2)
       assert to_eq().not_eq?.("test", "different")
+    end
+  end
+
+  describe "contramap/2 with lens" do
+    test "compares maps using a lens for a single key" do
+      lens = Lens.key(:age)
+      ord = contramap(lens)
+
+      assert ord.lt?.(%{age: 30}, %{age: 40}) == true
+      assert ord.gt?.(%{age: 50}, %{age: 20}) == true
+      assert ord.le?.(%{age: 25}, %{age: 25}) == true
+      assert ord.ge?.(%{age: 25}, %{age: 25}) == true
+    end
+
+    test "compares maps using a nested lens path" do
+      lens = Lens.path([:stats, :wins])
+      ord = contramap(lens)
+
+      assert ord.lt?.(%{stats: %{wins: 2}}, %{stats: %{wins: 5}}) == true
+      assert ord.gt?.(%{stats: %{wins: 7}}, %{stats: %{wins: 3}}) == true
+      assert ord.le?.(%{stats: %{wins: 4}}, %{stats: %{wins: 4}}) == true
+    end
+  end
+
+  describe "contramap/2 with key" do
+    test "compares maps using atom key auto-lifted to lens" do
+      ord = contramap(:age)
+
+      assert ord.lt?.(%{age: 10}, %{age: 20}) == true
+      assert ord.gt?.(%{age: 50}, %{age: 10}) == true
+      assert ord.le?.(%{age: 30}, %{age: 30}) == true
+      assert ord.ge?.(%{age: 30}, %{age: 30}) == true
+    end
+  end
+
+  describe "contramap/2 with path" do
+    test "compares maps using nested path auto-lifted to lens" do
+      ord = contramap([:profile, :score])
+
+      assert ord.lt?.(%{profile: %{score: 5}}, %{profile: %{score: 9}}) == true
+      assert ord.gt?.(%{profile: %{score: 10}}, %{profile: %{score: 3}}) == true
+      assert ord.le?.(%{profile: %{score: 7}}, %{profile: %{score: 7}}) == true
     end
   end
 
