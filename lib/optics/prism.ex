@@ -1,15 +1,32 @@
 defmodule Funx.Optics.Prism do
   @moduledoc """
-  A prism focuses on a *branch* of a data structure. Unlike a lens, a prism
-  is *partial*: the focus may or may not be present.
+  A prism focuses on a branch of a data structure.
 
-  A prism exposes two core operations:
+  Unlike a lens, a prism is *partial*: the focus may or may not be present.
+  This makes prisms ideal for working with optional values, variants, and
+  conditional structures.
 
-    preview: attempts to extract the focused part, returning a `Maybe`
-    review:  rebuilds the whole value from the focused part
+  ## Core Operations
 
-  Prisms compose. Composing two prisms yields a new prism that attempts both
-  matches in sequence.
+    * `preview/2` - Attempts to extract the focused part, returning `Maybe`
+    * `review/2` - Rebuilds the whole value from the focused part
+
+  ## Prisms vs Lenses
+
+  **Prisms** are for *partial* access (the value may not be present):
+  - `preview` may fail (returns `Maybe`)
+  - `review` *reconstructs* from scratch (cannot preserve other fields)
+  - Use for: optional values, variants, filtered data
+
+  **Lenses** are for *total* access (the value is always present):
+  - `view` always succeeds
+  - `set` *updates* while preserving the rest of the structure
+  - Use for: record fields, map keys that always exist
+
+  ## Composition
+
+  Prisms compose naturally. Composing two prisms yields a new prism that
+  attempts both matches in sequence.
 
   ## Examples
 
@@ -78,8 +95,13 @@ defmodule Funx.Optics.Prism do
   @doc """
   Reconstructs the whole structure from the focused part.
 
-  Review reverses the prism, injecting the focused value back into
-  the outer structure.
+  Review reverses the prism, injecting the focused value back into the outer
+  structure. **Important**: `review` constructs a fresh structure from the
+  focused value alone - it does not merge with or patch an existing structure.
+  This is the lawful behaviour of prisms.
+
+  If you need to update a field while preserving other fields, you need a lens,
+  not a prism.
 
       iex> p = Funx.Optics.Prism.some()
       iex> Funx.Optics.Prism.review(10, p)
@@ -188,15 +210,16 @@ defmodule Funx.Optics.Prism do
   @doc """
   Builds a prism that focuses on a single key inside a map.
 
-  `preview` succeeds only when:
+  ## Preview
 
-    * the input is a map
-    * the key exists
-    * the value is not nil
+  Succeeds when the input is a map, the key exists, and the value is non-nil.
+  Returns `Nothing` otherwise.
 
-  Otherwise it returns `Nothing`.
+  ## Review
 
-  `review` returns a new map containing just that key.
+  Creates a map with the single key-value pair.
+
+  ## Examples
 
       iex> p = Funx.Optics.Prism.key(:age)
       iex> Funx.Optics.Prism.preview(%{age: 40}, p)
@@ -206,109 +229,153 @@ defmodule Funx.Optics.Prism do
       iex> Funx.Optics.Prism.review(50, p)
       %{age: 50}
   """
-
   @spec key(atom) :: t(map(), any)
   def key(k) when is_atom(k) do
-    matcher = fn
-      %{} = m ->
-        m
-        |> Map.get(k)
-        |> Maybe.from_nil()
-
-      _ ->
-        Maybe.nothing()
-    end
-
-    builder = fn value ->
-      %{k => value}
-    end
-
-    make(matcher, builder)
+    make(
+      fn
+        %{} = m -> m |> Map.get(k) |> Maybe.from_nil()
+        _ -> Maybe.nothing()
+      end,
+      fn value -> %{k => value} end
+    )
   end
 
   @doc """
-  Builds a prism that focuses on a nested path inside a map.
+  Builds a prism that focuses on a nested path inside a map or struct.
 
-  `preview` attempts to traverse the path safely:
+  ## Preview
 
-    * returns `Just(value)` if the entire path exists and the value is non-nil
-    * returns `Nothing` if any key is missing, an intermediate structure
-      is not a map, or the final value is nil
+  Traverses the path safely, returning `Just(value)` if the entire path exists
+  and the value is non-nil. Returns `Nothing` if any key is missing, an
+  intermediate value is not a map, or the final value is nil.
 
-  `review` reconstructs a nested map containing the given value.
-  All missing intermediate maps are created automatically.
+  **Note**: `nil` is treated as absence. If `nil` is a valid value in your domain,
+  consider using a different optic.
+
+  ## Review
+
+  Constructs a fresh nested structure from the focused value. **Does not merge**
+  with or preserve fields from an existing structure - this is lawful prism
+  behaviour. Only the path specified is built; all other fields will be `nil`
+  in structs or absent in maps.
+
+  For updating existing structures while preserving other fields, use a lens
+  instead.
+
+  ## Options
+
+    * `:structs` - List of struct modules for each path level. When provided,
+      `review` creates struct instances instead of plain maps. The list length
+      should match the path depth (one module per key). If struct validation
+      fails, falls back to creating plain maps.
+
+  ## Examples
 
       iex> p = Funx.Optics.Prism.path([:a, :b])
       iex> Funx.Optics.Prism.preview(%{a: %{b: 5}}, p)
       %Funx.Monad.Maybe.Just{value: 5}
       iex> Funx.Optics.Prism.review(7, p)
       %{a: %{b: 7}}
+
+  With structs (constructs fresh struct, does not preserve other fields):
+
+      defmodule User, do: defstruct [:name, :profile]
+      defmodule Profile, do: defstruct [:age, :score]
+
+      p = Funx.Optics.Prism.path([:profile, :age], structs: [User, Profile])
+      Funx.Optics.Prism.review(30, p)
+      #=> %User{name: nil, profile: %Profile{age: 30, score: nil}}
   """
-  @spec path([atom]) :: t(map(), any)
-  def path(keys) when is_list(keys) do
-    matcher = fn s ->
-      case safe_get_path(s, keys) do
-        {:ok, value} -> Maybe.just(value)
-        :error -> Maybe.nothing()
+  @spec path([atom], keyword()) :: t(map(), any)
+  def path(keys, opts \\ []) when is_list(keys) do
+    structs = Keyword.get(opts, :structs, [])
+
+    make(
+      fn s -> safe_get_path(s, keys) end,
+      fn value ->
+        if Enum.empty?(structs) do
+          safe_put_path(%{}, keys, value)
+        else
+          build_struct_path_safe(keys, value, structs)
+        end
       end
-    end
-
-    # Safe review / reconstruction
-    builder = fn value ->
-      safe_put_path(%{}, keys, value)
-    end
-
-    make(matcher, builder)
+    )
   end
 
-  # -------------------------------------
-  # Internal helpers
-  # -------------------------------------
+  ## Helpers for struct-aware path building
 
-  # No keys → cannot match
-  defp safe_get_path(_s, []), do: :error
+  defp build_struct_path_safe(keys, value, structs) do
+    case build_struct_path_maybe(keys, value, structs) do
+      {:ok, result} -> result
+      :error -> safe_put_path(%{}, keys, value)
+    end
+  end
 
-  # Single key
-  defp safe_get_path(s, [k]) when is_map(s) do
-    case Map.fetch(s, k) do
-      {:ok, value} when not is_nil(value) ->
-        {:ok, value}
+  defp build_struct_path_maybe([], value, _structs), do: {:ok, value}
 
-      _ ->
+  defp build_struct_path_maybe([k], value, [struct_mod | _]) do
+    if Map.has_key?(struct_mod.__struct__(), k) do
+      {:ok, struct(struct_mod, [{k, value}])}
+    else
+      :error
+    end
+  end
+
+  defp build_struct_path_maybe([k], value, []), do: {:ok, %{k => value}}
+
+  defp build_struct_path_maybe([k | rest], value, [struct_mod | rest_structs]) do
+    cond do
+      not Map.has_key?(struct_mod.__struct__(), k) ->
         :error
-    end
-  end
 
-  # Single key but s is not a map → fail
-  defp safe_get_path(_s, [_k]), do: :error
-
-  # Nested path: continue if map and key exists
-  defp safe_get_path(s, [k | rest]) when is_map(s) do
-    case Map.fetch(s, k) do
-      {:ok, next} ->
-        safe_get_path(next, rest)
-
-      :error ->
+      Enum.empty?(rest_structs) and not Enum.empty?(rest) ->
         :error
+
+      true ->
+        with {:ok, child} <- build_struct_path_maybe(rest, value, rest_structs) do
+          {:ok, struct(struct_mod, [{k, child}])}
+        end
     end
   end
 
-  # Nested path but s is not a map → fail
-  defp safe_get_path(_s, _path), do: :error
-
-  # No keys: replace entire structure
-  defp safe_put_path(_s, [], value), do: value
-
-  # Single key: put into map; treat nil as empty map
-  defp safe_put_path(s, [k], value) do
-    Map.put(s || %{}, k, value)
+  defp build_struct_path_maybe([k | rest], value, []) do
+    with {:ok, child} <- build_struct_path_maybe(rest, value, []) do
+      {:ok, %{k => child}}
+    end
   end
 
-  # Nested path: ensure intermediate maps exist
-  defp safe_put_path(s, [k | rest], value) do
-    s = s || %{}
+  ## Helpers for safe path traversal
 
-    child = Map.get(s, k, %{})
-    Map.put(s, k, safe_put_path(child, rest, value))
+  defp safe_get(m, k) when is_map(m) do
+    case Map.fetch(m, k) do
+      {:ok, v} -> Maybe.from_nil(v)
+      :error -> Maybe.nothing()
+    end
+  end
+
+  defp safe_get(_m, _k), do: Maybe.nothing()
+
+  defp safe_get_path(_s, []), do: Maybe.nothing()
+
+  defp safe_get_path(s, [k]), do: safe_get(s, k)
+
+  defp safe_get_path(s, [k | rest]) do
+    safe_get(s, k) |> bind(&safe_get_path(&1, rest))
+  end
+
+  ## Helpers for map-based path building
+  ##
+  ## Note: These functions are only called with plain maps (not structs),
+  ## starting from an empty map %{}.
+
+  defp safe_put_path(_map, [], value), do: value
+
+  defp safe_put_path(map, [k], value) when is_map(map) do
+    Map.put(map, k, value)
+  end
+
+  defp safe_put_path(map, [k | rest], value) when is_map(map) do
+    child = Map.get(map, k, %{})
+    Map.put(map, k, safe_put_path(child, rest, value))
   end
 end
