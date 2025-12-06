@@ -16,24 +16,86 @@ defmodule Funx.Ord.Utils do
 
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
 
+  alias Funx.Optics.Lens
   alias Funx.Ord
 
   @doc """
-  Transforms an ordering by applying a function `f` to values before comparison.
+  Transforms an ordering by applying a projection before comparison.
 
-  The `ord` parameter can be an `Ord` module or a custom comparator map with comparison functions (`:lt?`, `:le?`, `:gt?`, and `:ge?`).
-  When an `Ord` module is provided, it wraps the module’s functions to apply `f` to each value before invoking the comparison.
-  If a custom comparator map is provided, it wraps the functions in the map to apply `f` to each value.
+  The `projection` can take several forms:
+
+    * a function `(a -> b)`
+      The projection is applied directly.
+
+    * a `Lens`
+      The lens’s `get/2` function is used as the projection.
+
+    * an atom
+      Treated as a key and converted into a lens with `Lens.key/1`.
+
+    * a list of keys
+      Treated as a nested path and converted into a lens with `Lens.path/1`.
+
+  The `ord` parameter may be an `Ord` module or a custom comparator map
+  with `:lt?`, `:le?`, `:gt?`, and `:ge?` functions. The projection is applied
+  to both values before invoking the underlying comparator.
 
   ## Examples
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1, Funx.Ord.Any)
+  Using a projection function:
+
+      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
       iex> ord.lt?.("cat", "zebra")
       true
+
+  Using a key (automatically lifted into a lens):
+
+      iex> ord = Funx.Ord.Utils.contramap(:age)
+      iex> ord.gt?.(%{age: 40}, %{age: 30})
+      true
+
+  Using a path (nested access):
+
+      iex> ord = Funx.Ord.Utils.contramap([:stats, :wins])
+      iex> ord.lt?.(%{stats: %{wins: 2}}, %{stats: %{wins: 5}})
+      true
+
+  Using a lens explicitly:
+
+      iex> lens = Funx.Optics.Lens.key(:score)
+      iex> ord = Funx.Ord.Utils.contramap(lens)
+      iex> ord.gt?.(%{score: 10}, %{score: 3})
+      true
   """
-  @spec contramap((a -> b), ord_t()) :: ord_map()
+  @spec contramap(
+          (a -> b)
+          | Lens.t()
+          | atom
+          | [term],
+          ord_t()
+        ) :: ord_map()
         when a: any, b: any
-  def contramap(f, ord \\ Ord) do
+  def contramap(projection, ord \\ Ord)
+
+  # Lens
+  def contramap(%Lens{} = lens, ord) do
+    contramap(fn a -> Lens.get(lens, a) end, ord)
+  end
+
+  # Atom key → lens
+  def contramap(key, ord) when is_atom(key) do
+    lens = Lens.key(key)
+    contramap(lens, ord)
+  end
+
+  # Path → lens
+  def contramap(path, ord) when is_list(path) do
+    lens = Lens.path(path)
+    contramap(lens, ord)
+  end
+
+  # Function
+  def contramap(f, ord) when is_function(f, 1) do
     ord = to_ord_map(ord)
 
     %{
