@@ -292,9 +292,11 @@ defmodule Funx.Optics.Prism do
     end
   end
 
+  # Base case: no more keys, return the value
   defp build_struct_path_maybe([], value, _structs),
     do: Maybe.just(value)
 
+  # Single key with struct: validate and build
   defp build_struct_path_maybe([k], value, [struct_mod | _]) do
     if Map.has_key?(struct_mod.__struct__(), k) do
       Maybe.just(struct(struct_mod, [{k, value}]))
@@ -303,17 +305,16 @@ defmodule Funx.Optics.Prism do
     end
   end
 
-  defp build_struct_path_maybe([k], value, []),
-    do: Maybe.just(%{k => value})
-
+  # Multiple keys with struct: validate, recurse, and build
   defp build_struct_path_maybe([k | rest], value, [struct_mod | rest_structs]) do
     cond do
       not Map.has_key?(struct_mod.__struct__(), k) ->
-        # Key doesn't exist in struct
+        # Key doesn't exist in struct - abort struct building
         Maybe.nothing()
 
       Enum.empty?(rest_structs) and not Enum.empty?(rest) ->
-        # We have more keys but no more struct definitions - fall back
+        # We have more keys but no more struct definitions - abort and fall back
+        # to safe_put_path at the top level
         Maybe.nothing()
 
       true ->
@@ -323,11 +324,6 @@ defmodule Funx.Optics.Prism do
           Maybe.just(struct(struct_mod, [{k, child}]))
         end)
     end
-  end
-
-  defp build_struct_path_maybe([k | rest], value, []) do
-    build_struct_path_maybe(rest, value, [])
-    |> bind(fn child -> Maybe.just(%{k => child}) end)
   end
 
   defp safe_get(m, k) when is_map(m) do

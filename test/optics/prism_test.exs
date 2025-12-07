@@ -308,19 +308,6 @@ defmodule Funx.Optics.PrismTest do
       assert result == %{profile: %{details: %{age: 30}}}
     end
 
-    test "review uses map-building bind when structs are exhausted before path is complete" do
-      p =
-        Prism.path(
-          [:a, :b, :c],
-          # only one struct, but three keys
-          structs: [User]
-        )
-
-      result = Prism.review(42, p)
-
-      assert result == %{a: %{b: %{c: 42}}}
-    end
-
     test "path handles struct with nil nested value" do
       u = %User{name: "Charlie", profile: nil}
       p = Prism.path([:profile, :age])
