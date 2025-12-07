@@ -29,21 +29,23 @@ defmodule Funx.Eq.UtilsTest do
     end
   end
 
-  describe "contramap/2 with atom (auto-lensed)" do
-    test "treats atom as Lens.key/1" do
-      eq = Utils.contramap(Lens.key(:age))
+  describe "contramap/2 with prism and default" do
+    test "uses prism with default for partial access" do
+      alias Funx.Optics.Prism
 
-      assert eq.eq?.(%{age: 30}, %{age: 30})
-      refute eq.eq?.(%{age: 30}, %{age: 31})
-    end
-  end
+      prism = Prism.key(:score)
+      eq = Utils.contramap({prism, 0})
 
-  describe "contramap/2 with path (auto-lensed)" do
-    test "treats list as lawful lens composition" do
-      eq = Utils.contramap(Lens.path([:stats, :wins]))
+      # Both have score
+      assert eq.eq?.(%{score: 10}, %{score: 10})
+      refute eq.eq?.(%{score: 10}, %{score: 20})
 
-      assert eq.eq?.(%{stats: %{wins: 2}}, %{stats: %{wins: 2}})
-      refute eq.eq?.(%{stats: %{wins: 2}}, %{stats: %{wins: 3}})
+      # One missing, uses default
+      assert eq.eq?.(%{}, %{score: 0})
+      assert eq.eq?.(%{score: 0}, %{})
+
+      # Both missing, both use default
+      assert eq.eq?.(%{}, %{})
     end
   end
 
@@ -123,6 +125,30 @@ defmodule Funx.Eq.UtilsTest do
     end
   end
 
+  describe "eq_by?/4 with prism and default (projection)" do
+    test "applies Prism.preview with default for comparison" do
+      alias Funx.Optics.Prism
+
+      prism = Prism.key(:score)
+
+      a = %{score: 5}
+      b = %{score: 5}
+      c = %{score: 7}
+      d = %{}
+
+      # Both present
+      assert Utils.eq_by?({prism, 0}, a, b)
+      refute Utils.eq_by?({prism, 0}, a, c)
+
+      # One missing, uses default
+      refute Utils.eq_by?({prism, 0}, a, d)
+      refute Utils.eq_by?({prism, 0}, d, a)
+
+      # Both missing, both use default
+      assert Utils.eq_by?({prism, 0}, d, %{})
+    end
+  end
+
   describe "eq_by?/4 with atom (auto-lensed)" do
     test "treats atom as Lens.key/1" do
       a = %{age: 40}
@@ -142,6 +168,25 @@ defmodule Funx.Eq.UtilsTest do
 
       assert Utils.eq_by?(Lens.path([:stats, :wins]), a, b)
       refute Utils.eq_by?(Lens.path([:stats, :wins]), a, c)
+    end
+  end
+
+  describe "eq_by?/4 with prism and default" do
+    test "uses prism with default for partial access" do
+      alias Funx.Optics.Prism
+
+      prism = Prism.key(:score)
+
+      # Both have score
+      assert Utils.eq_by?({prism, 0}, %{score: 10}, %{score: 10})
+      refute Utils.eq_by?({prism, 0}, %{score: 10}, %{score: 20})
+
+      # One missing, uses default
+      assert Utils.eq_by?({prism, 0}, %{}, %{score: 0})
+      assert Utils.eq_by?({prism, 0}, %{score: 0}, %{})
+
+      # Both missing, both use default
+      assert Utils.eq_by?({prism, 0}, %{}, %{})
     end
   end
 

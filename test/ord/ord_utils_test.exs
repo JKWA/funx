@@ -242,24 +242,28 @@ defmodule Funx.Ord.UtilsTest do
     end
   end
 
-  describe "contramap/2 with key" do
-    test "compares maps using atom key auto-lifted to lens" do
-      ord = contramap(Lens.key(:age))
+  describe "contramap/2 with prism and default (Ord)" do
+    test "orders values using prism with default for partial access" do
+      alias Funx.Optics.Prism
 
-      assert ord.lt?.(%{age: 10}, %{age: 20})
-      assert ord.gt?.(%{age: 50}, %{age: 10})
-      assert ord.le?.(%{age: 30}, %{age: 30})
-      assert ord.ge?.(%{age: 30}, %{age: 30})
-    end
-  end
+      prism = Prism.key(:score)
+      ord = contramap({prism, 0})
 
-  describe "contramap/2 with path" do
-    test "compares maps using nested path auto-lifted to lens" do
-      ord = contramap(Lens.path([:profile, :score]))
+      # Both have score
+      assert ord.lt?.(%{score: 10}, %{score: 20})
+      assert ord.gt?.(%{score: 50}, %{score: 30})
+      assert ord.le?.(%{score: 25}, %{score: 25})
+      assert ord.ge?.(%{score: 25}, %{score: 25})
 
-      assert ord.lt?.(%{profile: %{score: 5}}, %{profile: %{score: 9}})
-      assert ord.gt?.(%{profile: %{score: 10}}, %{profile: %{score: 3}})
-      assert ord.le?.(%{profile: %{score: 7}}, %{profile: %{score: 7}})
+      # One missing, uses default (0)
+      # 0 <= 5
+      assert ord.le?.(%{}, %{score: 5})
+      # 10 >= 0
+      assert ord.ge?.(%{score: 10}, %{})
+
+      # Both missing, both use default (0 vs 0)
+      assert ord.le?.(%{}, %{})
+      assert ord.ge?.(%{}, %{})
     end
   end
 

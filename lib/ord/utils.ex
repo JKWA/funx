@@ -16,16 +16,19 @@ defmodule Funx.Ord.Utils do
 
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
 
+  alias Funx.Monad.Maybe
   alias Funx.Optics.Lens
+  alias Funx.Optics.Prism
   alias Funx.Ord
 
   @doc """
   Transforms an ordering by applying a projection before comparison.
 
-  The `projection` must be either:
+  The `projection` must be one of:
 
     * a function `(a -> b)` - Applied directly to extract the comparison value
-    * a `Lens` - Uses `view!/2` to extract the focused value
+    * a `Lens` - Uses `view!/2` to extract the focused value (raises on missing)
+    * a tuple `{Prism, default}` - Uses `preview/2`, falling back to `default` on `Nothing`
 
   The `ord` parameter may be an `Ord` module or a custom comparator map
   with `:lt?`, `:le?`, `:gt?`, and `:ge?` functions. The projection is applied
@@ -49,18 +52,20 @@ defmodule Funx.Ord.Utils do
       iex> ord.lt?.(%{age: 30}, %{age: 40})
       true
 
-  Using a lens for nested access:
+  Using a prism with a default value:
 
-      iex> lens = Funx.Optics.Lens.path([:stats, :wins])
-      iex> ord = Funx.Ord.Utils.contramap(lens)
-      iex> ord.lt?.(%{stats: %{wins: 2}}, %{stats: %{wins: 5}})
+      iex> prism = Funx.Optics.Prism.key(:score)
+      iex> ord = Funx.Ord.Utils.contramap({prism, 0})
+      iex> ord.lt?.(%{score: 10}, %{score: 20})
       true
-      iex> ord.gt?.(%{stats: %{wins: 5}}, %{stats: %{wins: 2}})
+      iex> ord.lt?.(%{}, %{score: 20})
+      true
+      iex> ord.gt?.(%{score: 30}, %{})
       true
   """
 
   @spec contramap(
-          (a -> b) | Lens.t(),
+          (a -> b) | Lens.t() | {Prism.t(), b},
           ord_t()
         ) :: ord_map()
         when a: any, b: any
@@ -69,6 +74,13 @@ defmodule Funx.Ord.Utils do
   # Lens
   def contramap(%Lens{} = lens, ord) do
     contramap(fn a -> Lens.view!(a, lens) end, ord)
+  end
+
+  # Prism with default
+  def contramap({%Prism{} = prism, default}, ord) do
+    contramap(fn a ->
+      a |> Prism.preview(prism) |> Maybe.get_or_else(default)
+    end, ord)
   end
 
   # Function

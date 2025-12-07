@@ -14,16 +14,19 @@ defmodule Funx.Eq.Utils do
 
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
   alias Funx.Eq
+  alias Funx.Monad.Maybe
   alias Funx.Monoid
   alias Funx.Optics.Lens
+  alias Funx.Optics.Prism
 
   @doc """
   Transforms an equality check by applying a projection before comparison.
 
-  The `projection` must be either:
+  The `projection` must be one of:
 
     * a function `(a -> b)` - Applied directly to extract the comparison value
-    * a `Lens` - Uses `view!/2` to extract the focused value
+    * a `Lens` - Uses `view!/2` to extract the focused value (raises on missing)
+    * a tuple `{Prism, default}` - Uses `preview/2`, falling back to `default` on `Nothing`
 
   The `eq` parameter may be an `Eq` module or a custom comparator map
   with `:eq?` and `:not_eq?` functions. The projection is applied to both
@@ -45,16 +48,18 @@ defmodule Funx.Eq.Utils do
       iex> eq.eq?.(%{age: 40}, %{age: 40})
       true
 
-  Using a lens for nested access:
+  Using a prism with a default value:
 
-      iex> lens = Funx.Optics.Lens.path([:stats, :wins])
-      iex> eq = Funx.Eq.Utils.contramap(lens)
-      iex> eq.eq?.(%{stats: %{wins: 2}}, %{stats: %{wins: 2}})
+      iex> prism = Funx.Optics.Prism.key(:score)
+      iex> eq = Funx.Eq.Utils.contramap({prism, 0})
+      iex> eq.eq?.(%{score: 10}, %{score: 10})
+      true
+      iex> eq.eq?.(%{}, %{score: 0})
       true
   """
 
   @spec contramap(
-          (a -> b) | Lens.t(),
+          (a -> b) | Lens.t() | {Prism.t(), b},
           eq_t()
         ) :: eq_map()
         when a: any, b: any
@@ -63,6 +68,13 @@ defmodule Funx.Eq.Utils do
   # Lens
   def contramap(%Lens{} = lens, eq) do
     contramap(fn a -> Lens.view!(a, lens) end, eq)
+  end
+
+  # Prism with default
+  def contramap({%Prism{} = prism, default}, eq) do
+    contramap(fn a ->
+      a |> Prism.preview(prism) |> Maybe.get_or_else(default)
+    end, eq)
   end
 
   # Function
@@ -78,10 +90,11 @@ defmodule Funx.Eq.Utils do
   @doc """
   Checks equality of two values by applying a projection before comparison.
 
-  The `projection` must be either:
+  The `projection` must be one of:
 
     * a function `(a -> b)` - Applied directly to extract the comparison value
-    * a `Lens` - Uses `view!/2` to extract the focused value
+    * a `Lens` - Uses `view!/2` to extract the focused value (raises on missing)
+    * a tuple `{Prism, default}` - Uses `preview/2`, falling back to `default` on `Nothing`
 
   The `eq` parameter may be an `Eq` module or a custom comparator map.
   The projection is applied to both arguments before invoking the comparator.
@@ -100,14 +113,16 @@ defmodule Funx.Eq.Utils do
       iex> Funx.Eq.Utils.eq_by?(Funx.Optics.Lens.key(:age), %{age: 40}, %{age: 40})
       true
 
-  Using a lens for nested access:
+  Using a prism with a default value:
 
-      iex> lens = Funx.Optics.Lens.path([:stats, :wins])
-      iex> Funx.Eq.Utils.eq_by?(lens, %{stats: %{wins: 2}}, %{stats: %{wins: 2}})
+      iex> prism = Funx.Optics.Prism.key(:score)
+      iex> Funx.Eq.Utils.eq_by?({prism, 0}, %{score: 10}, %{score: 10})
+      true
+      iex> Funx.Eq.Utils.eq_by?({prism, 0}, %{}, %{score: 0})
       true
   """
   @spec eq_by?(
-          (a -> b) | Lens.t(),
+          (a -> b) | Lens.t() | {Prism.t(), b},
           a,
           a,
           eq_t()
@@ -118,6 +133,13 @@ defmodule Funx.Eq.Utils do
   # Lens
   def eq_by?(%Lens{} = lens, a, b, eq) do
     eq_by?(fn x -> Lens.view!(x, lens) end, a, b, eq)
+  end
+
+  # Prism with default
+  def eq_by?({%Prism{} = prism, default}, a, b, eq) do
+    eq_by?(fn x ->
+      x |> Prism.preview(prism) |> Maybe.get_or_else(default)
+    end, a, b, eq)
   end
 
   # Function
