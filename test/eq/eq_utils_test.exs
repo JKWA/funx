@@ -112,7 +112,7 @@ defmodule Funx.Eq.UtilsTest do
   end
 
   describe "eq_by?/4 with lens" do
-    test "applies Lens.get(struct, lens) for comparison" do
+    test "applies Lens.view(struct, lens) for comparison" do
       lens = Lens.key(:score)
       a = %{score: 5}
       b = %{score: 5}

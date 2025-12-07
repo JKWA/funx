@@ -28,6 +28,36 @@ defmodule Funx.Optics.Prism do
   Prisms compose naturally. Composing two prisms yields a new prism that
   attempts both matches in sequence.
 
+  ## Monoid Structure
+
+  Prisms form a monoid under composition **for a fixed outer type `s`**.
+
+  Without this constraint, `t(s, i)` and `t(i, a)` do not live in the same
+  carrier set. The monoid exists within `{ t(s, x) for all x }`.
+
+  The monoid structure is provided via `Funx.Monoid.PrismCompose`, which wraps
+  prisms for use with generic monoid operations:
+
+  - **Identity**: `filter(fn _ -> true end)` - accepts all values, `review` is identity
+  - **Annihilator**: `none()` - rejects all values on `preview`, `review` returns `nil`
+  - **Operation**: `compose/2` - sequential Kleisli composition on `preview`,
+    function composition on `review`
+
+  Note: This is not a symmetric monoid like numbers. The annihilator `none()`
+  behaves asymmetrically: `preview` always fails, but `review` constructs `nil`.
+
+  You can use `concat/1` to compose multiple prisms sequentially, or work
+  directly with `Funx.Monoid.PrismCompose` for more control:
+
+      iex> alias Funx.Optics.Prism
+      iex> alias Funx.Monoid.PrismCompose
+      iex> import Funx.Monoid
+      iex> p1 = PrismCompose.new(Prism.filter(&(&1 > 0)))
+      iex> p2 = PrismCompose.new(Prism.filter(&(rem(&1, 2) == 0)))
+      iex> composed = append(p1, p2)
+      iex> Prism.preview(4, PrismCompose.unwrap(composed))
+      %Funx.Monad.Maybe.Just{value: 4}
+
   ## Examples
 
       iex> p = Funx.Optics.Prism.filter(&(&1 > 10))
@@ -39,26 +69,29 @@ defmodule Funx.Optics.Prism do
       20
   """
 
-  alias Funx.Monad.Maybe
   import Funx.Monad, only: [bind: 2]
+  import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
 
-  @type matcher(s, a) :: (s -> Maybe.t(a))
-  @type builder(s, a) :: (a -> s)
+  alias Funx.Monad.Maybe
+  alias Funx.Monoid.PrismCompose
+
+  @type previewer(s, a) :: (s -> Maybe.t(a))
+  @type reviewer(s, a) :: (a -> s)
 
   @type t(s, a) :: %__MODULE__{
-          match: matcher(s, a),
-          build: builder(s, a)
+          preview: previewer(s, a),
+          review: reviewer(s, a)
         }
 
   @type t :: t(any, any)
 
-  defstruct [:match, :build]
+  defstruct [:preview, :review]
 
   @doc """
-  Creates a new prism from a matcher and a builder.
+  Creates a new prism from a previewer and a reviewer.
 
-  The matcher attempts to extract the focused part, returning a `Maybe`.
-  The builder reconstructs the whole structure from the focused part.
+  The previewer attempts to extract the focused part, returning a `Maybe`.
+  The reviewer reconstructs the whole structure from the focused part.
 
       iex> p =
       ...>   Funx.Optics.Prism.make(
@@ -68,11 +101,11 @@ defmodule Funx.Optics.Prism do
       iex> Funx.Optics.Prism.preview(5, p)
       %Funx.Monad.Maybe.Just{value: 5}
   """
-  @spec make(matcher(s, a), builder(s, a)) :: t(s, a)
+  @spec make(previewer(s, a), reviewer(s, a)) :: t(s, a)
         when s: term(), a: term()
-  def make(match, build)
-      when is_function(match, 1) and is_function(build, 1) do
-    %__MODULE__{match: match, build: build}
+  def make(preview, review)
+      when is_function(preview, 1) and is_function(review, 1) do
+    %__MODULE__{preview: preview, review: review}
   end
 
   @doc """
@@ -89,8 +122,8 @@ defmodule Funx.Optics.Prism do
   """
   @spec preview(s, t(s, a)) :: Maybe.t(a)
         when s: term(), a: term()
-  def preview(s, %__MODULE__{match: match}),
-    do: match.(s)
+  def preview(s, %__MODULE__{preview: preview}),
+    do: preview.(s)
 
   @doc """
   Reconstructs the whole structure from the focused part.
@@ -109,12 +142,15 @@ defmodule Funx.Optics.Prism do
   """
   @spec review(a, t(s, a)) :: s
         when s: term(), a: term()
-  def review(a, %__MODULE__{build: build}),
-    do: build.(a)
+  def review(a, %__MODULE__{review: review}),
+    do: review.(a)
 
   @doc """
   Composes two prisms. The outer prism runs first; if it succeeds,
   the inner prism runs next.
+
+  This delegates to the monoid append operation, which contains the
+  canonical composition logic.
 
       iex> p1 = Funx.Optics.Prism.filter(& &1 > 0)
       iex> p2 = Funx.Optics.Prism.filter(&(rem(&1, 2) == 0))
@@ -125,16 +161,37 @@ defmodule Funx.Optics.Prism do
   @spec compose(t(s, i), t(i, a)) :: t(s, a)
         when s: term(), i: term(), a: term()
   def compose(%__MODULE__{} = outer, %__MODULE__{} = inner) do
-    make(
-      fn s ->
-        outer.match.(s)
-        |> bind(fn i -> inner.match.(i) end)
-      end,
-      fn a ->
-        inner_value = inner.build.(a)
-        outer.build.(inner_value)
-      end
-    )
+    m_append(%PrismCompose{}, outer, inner)
+  end
+
+  @doc """
+  Composes a list of prisms into a single prism using sequential composition.
+
+  Uses `Funx.Monoid.PrismCompose` to leverage the generic monoid machinery,
+  similar to `Funx.Ord.Utils.concat/1` for comparators.
+
+  **Sequential semantics:**
+  - On `preview`: Applies each prism's matcher in sequence (Kleisli composition),
+    stopping at the first `Nothing`
+  - On `review`: Applies each prism's builder in reverse order (function composition)
+
+  This is **not** a union or choice operator. It does not "try all branches."
+  It is strict sequential matching and construction.
+
+      iex> prisms = [
+      ...>   Funx.Optics.Prism.filter(&(&1 > 0)),
+      ...>   Funx.Optics.Prism.filter(&(rem(&1, 2) == 0)),
+      ...>   Funx.Optics.Prism.filter(&(&1 < 100))
+      ...> ]
+      iex> p = Funx.Optics.Prism.concat(prisms)
+      iex> Funx.Optics.Prism.preview(4, p)
+      %Funx.Monad.Maybe.Just{value: 4}
+      iex> Funx.Optics.Prism.preview(3, p)
+      %Funx.Monad.Maybe.Nothing{}
+  """
+  @spec concat([t()]) :: t()
+  def concat(prisms) when is_list(prisms) do
+    m_concat(%PrismCompose{}, prisms)
   end
 
   @doc """
@@ -161,10 +218,7 @@ defmodule Funx.Optics.Prism do
   @spec some() :: t([a], a) when a: term()
   def some do
     make(
-      fn
-        [head | _] -> Maybe.just(head)
-        _ -> Maybe.nothing()
-      end,
+      &Funx.List.maybe_head/1,
       fn a -> [a] end
     )
   end
@@ -192,12 +246,6 @@ defmodule Funx.Optics.Prism do
 
   `preview` uses `Maybe.lift_predicate/2`.
   `review` returns the value unchanged.
-
-      iex> p = Funx.Optics.Prism.filter(& &1 > 10)
-      iex> Funx.Optics.Prism.preview(12, p)
-      %Funx.Monad.Maybe.Just{value: 12}
-      iex> Funx.Optics.Prism.preview(5, p)
-      %Funx.Monad.Maybe.Nothing{}
   """
   @spec filter((a -> boolean())) :: t(a, a) when a: term()
   def filter(predicate) when is_function(predicate, 1) do
@@ -209,25 +257,6 @@ defmodule Funx.Optics.Prism do
 
   @doc """
   Builds a prism that focuses on a single key inside a map.
-
-  ## Preview
-
-  Succeeds when the input is a map, the key exists, and the value is non-nil.
-  Returns `Nothing` otherwise.
-
-  ## Review
-
-  Creates a map with the single key-value pair.
-
-  ## Examples
-
-      iex> p = Funx.Optics.Prism.key(:age)
-      iex> Funx.Optics.Prism.preview(%{age: 40}, p)
-      %Funx.Monad.Maybe.Just{value: 40}
-      iex> Funx.Optics.Prism.preview(%{age: nil}, p)
-      %Funx.Monad.Maybe.Nothing{}
-      iex> Funx.Optics.Prism.review(50, p)
-      %{age: 50}
   """
   @spec key(atom) :: t(map(), any)
   def key(k) when is_atom(k) do
@@ -240,52 +269,6 @@ defmodule Funx.Optics.Prism do
     )
   end
 
-  @doc """
-  Builds a prism that focuses on a nested path inside a map or struct.
-
-  ## Preview
-
-  Traverses the path safely, returning `Just(value)` if the entire path exists
-  and the value is non-nil. Returns `Nothing` if any key is missing, an
-  intermediate value is not a map, or the final value is nil.
-
-  **Note**: `nil` is treated as absence. If `nil` is a valid value in your domain,
-  consider using a different optic.
-
-  ## Review
-
-  Constructs a fresh nested structure from the focused value. **Does not merge**
-  with or preserve fields from an existing structure - this is lawful prism
-  behaviour. Only the path specified is built; all other fields will be `nil`
-  in structs or absent in maps.
-
-  For updating existing structures while preserving other fields, use a lens
-  instead.
-
-  ## Options
-
-    * `:structs` - List of struct modules for each path level. When provided,
-      `review` creates struct instances instead of plain maps. The list length
-      should match the path depth (one module per key). If struct validation
-      fails, falls back to creating plain maps.
-
-  ## Examples
-
-      iex> p = Funx.Optics.Prism.path([:a, :b])
-      iex> Funx.Optics.Prism.preview(%{a: %{b: 5}}, p)
-      %Funx.Monad.Maybe.Just{value: 5}
-      iex> Funx.Optics.Prism.review(7, p)
-      %{a: %{b: 7}}
-
-  With structs (constructs fresh struct, does not preserve other fields):
-
-      defmodule User, do: defstruct [:name, :profile]
-      defmodule Profile, do: defstruct [:age, :score]
-
-      p = Funx.Optics.Prism.path([:profile, :age], structs: [User, Profile])
-      Funx.Optics.Prism.review(30, p)
-      #=> %User{name: nil, profile: %Profile{age: 30, score: nil}}
-  """
   @spec path([atom], keyword()) :: t(map(), any)
   def path(keys, opts \\ []) when is_list(keys) do
     structs = Keyword.get(opts, :structs, [])
@@ -302,49 +285,50 @@ defmodule Funx.Optics.Prism do
     )
   end
 
-  ## Helpers for struct-aware path building
-
   defp build_struct_path_safe(keys, value, structs) do
     case build_struct_path_maybe(keys, value, structs) do
-      {:ok, result} -> result
-      :error -> safe_put_path(%{}, keys, value)
+      %Maybe.Just{value: result} -> result
+      %Maybe.Nothing{} -> safe_put_path(%{}, keys, value)
     end
   end
 
-  defp build_struct_path_maybe([], value, _structs), do: {:ok, value}
+  defp build_struct_path_maybe([], value, _structs),
+    do: Maybe.just(value)
 
   defp build_struct_path_maybe([k], value, [struct_mod | _]) do
     if Map.has_key?(struct_mod.__struct__(), k) do
-      {:ok, struct(struct_mod, [{k, value}])}
+      Maybe.just(struct(struct_mod, [{k, value}]))
     else
-      :error
+      Maybe.nothing()
     end
   end
 
-  defp build_struct_path_maybe([k], value, []), do: {:ok, %{k => value}}
+  defp build_struct_path_maybe([k], value, []),
+    do: Maybe.just(%{k => value})
 
   defp build_struct_path_maybe([k | rest], value, [struct_mod | rest_structs]) do
     cond do
       not Map.has_key?(struct_mod.__struct__(), k) ->
-        :error
+        # Key doesn't exist in struct
+        Maybe.nothing()
 
       Enum.empty?(rest_structs) and not Enum.empty?(rest) ->
-        :error
+        # We have more keys but no more struct definitions - fall back
+        Maybe.nothing()
 
       true ->
-        with {:ok, child} <- build_struct_path_maybe(rest, value, rest_structs) do
-          {:ok, struct(struct_mod, [{k, child}])}
-        end
+        # Valid struct field, continue building
+        build_struct_path_maybe(rest, value, rest_structs)
+        |> bind(fn child ->
+          Maybe.just(struct(struct_mod, [{k, child}]))
+        end)
     end
   end
 
   defp build_struct_path_maybe([k | rest], value, []) do
-    with {:ok, child} <- build_struct_path_maybe(rest, value, []) do
-      {:ok, %{k => child}}
-    end
+    build_struct_path_maybe(rest, value, [])
+    |> bind(fn child -> Maybe.just(%{k => child}) end)
   end
-
-  ## Helpers for safe path traversal
 
   defp safe_get(m, k) when is_map(m) do
     case Map.fetch(m, k) do
@@ -362,11 +346,6 @@ defmodule Funx.Optics.Prism do
   defp safe_get_path(s, [k | rest]) do
     safe_get(s, k) |> bind(&safe_get_path(&1, rest))
   end
-
-  ## Helpers for map-based path building
-  ##
-  ## Note: These functions are only called with plain maps (not structs),
-  ## starting from an empty map %{}.
 
   defp safe_put_path(_map, [], value), do: value
 

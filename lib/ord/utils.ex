@@ -88,7 +88,7 @@ defmodule Funx.Ord.Utils do
 
   # Lens
   def contramap(%Lens{} = lens, ord) do
-    contramap(fn a -> Lens.get(a, lens) end, ord)
+    contramap(fn a -> Lens.view(a, lens) end, ord)
   end
 
   # Atom key → lens

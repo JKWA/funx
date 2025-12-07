@@ -308,6 +308,19 @@ defmodule Funx.Optics.PrismTest do
       assert result == %{profile: %{details: %{age: 30}}}
     end
 
+    test "review uses map-building bind when structs are exhausted before path is complete" do
+      p =
+        Prism.path(
+          [:a, :b, :c],
+          # only one struct, but three keys
+          structs: [User]
+        )
+
+      result = Prism.review(42, p)
+
+      assert result == %{a: %{b: %{c: 42}}}
+    end
+
     test "path handles struct with nil nested value" do
       u = %User{name: "Charlie", profile: nil}
       p = Prism.path([:profile, :age])
@@ -342,6 +355,116 @@ defmodule Funx.Optics.PrismTest do
       # Should fall back to plain map since field doesn't exist
       assert result == %{nonexistent: "test"}
     end
+  end
 
+  describe "Monoid structure via PrismCompose" do
+    alias Funx.Monoid.PrismCompose
+
+    test "prisms form a monoid under composition via PrismCompose" do
+      import Funx.Monoid
+
+      p1 = PrismCompose.new(Prism.filter(&(&1 > 0)))
+      p2 = PrismCompose.new(Prism.filter(&(rem(&1, 2) == 0)))
+
+      # Composition via Monoid.append
+      composed = append(p1, p2) |> PrismCompose.unwrap()
+      assert %Maybe.Just{value: 4} = Prism.preview(4, composed)
+      assert %Maybe.Nothing{} = Prism.preview(3, composed)
+      assert %Maybe.Nothing{} = Prism.preview(-2, composed)
+    end
+
+    test "identity prism preserves values" do
+      import Funx.Monoid
+
+      id = empty(%PrismCompose{})
+      p = PrismCompose.new(Prism.filter(&(&1 > 10)))
+
+      # Left identity: append(id, p) == p
+      left = append(id, p) |> PrismCompose.unwrap()
+      assert %Maybe.Just{value: 15} = Prism.preview(15, left)
+      assert %Maybe.Nothing{} = Prism.preview(5, left)
+
+      # Right identity: append(p, id) == p
+      right = append(p, id) |> PrismCompose.unwrap()
+      assert %Maybe.Just{value: 15} = Prism.preview(15, right)
+      assert %Maybe.Nothing{} = Prism.preview(5, right)
+    end
+
+    test "composition is associative" do
+      import Funx.Monoid
+
+      p1 = PrismCompose.new(Prism.filter(&(&1 > 0)))
+      p2 = PrismCompose.new(Prism.filter(&(rem(&1, 2) == 0)))
+      p3 = PrismCompose.new(Prism.filter(&(&1 < 100)))
+
+      # (p1 . p2) . p3 == p1 . (p2 . p3)
+      left_assoc = append(append(p1, p2), p3) |> PrismCompose.unwrap()
+      right_assoc = append(p1, append(p2, p3)) |> PrismCompose.unwrap()
+
+      # Test with a value that should match all filters
+      assert %Maybe.Just{value: 4} = Prism.preview(4, left_assoc)
+      assert %Maybe.Just{value: 4} = Prism.preview(4, right_assoc)
+
+      # Test with a value that should fail first filter
+      assert %Maybe.Nothing{} = Prism.preview(-2, left_assoc)
+      assert %Maybe.Nothing{} = Prism.preview(-2, right_assoc)
+
+      # Test with a value that should fail second filter
+      assert %Maybe.Nothing{} = Prism.preview(3, left_assoc)
+      assert %Maybe.Nothing{} = Prism.preview(3, right_assoc)
+
+      # Test with a value that should fail third filter
+      assert %Maybe.Nothing{} = Prism.preview(200, left_assoc)
+      assert %Maybe.Nothing{} = Prism.preview(200, right_assoc)
+    end
+
+    test "none is a zero/annihilator for composition" do
+      p = Prism.filter(&(&1 > 10))
+      zero = Prism.none()
+
+      # Composing with none annihilates
+      left_zero = Prism.compose(zero, p)
+      right_zero = Prism.compose(p, zero)
+
+      assert %Maybe.Nothing{} = Prism.preview(15, left_zero)
+      assert %Maybe.Nothing{} = Prism.preview(15, right_zero)
+    end
+
+    test "concat composes multiple prisms like m_concat for Ord" do
+      prisms = [
+        Prism.filter(&(&1 > 0)),
+        Prism.filter(&(rem(&1, 2) == 0)),
+        Prism.filter(&(&1 < 100))
+      ]
+
+      composed = Prism.concat(prisms)
+
+      # All filters pass
+      assert %Maybe.Just{value: 4} = Prism.preview(4, composed)
+
+      # Fails first filter
+      assert %Maybe.Nothing{} = Prism.preview(-2, composed)
+
+      # Fails second filter
+      assert %Maybe.Nothing{} = Prism.preview(3, composed)
+
+      # Fails third filter
+      assert %Maybe.Nothing{} = Prism.preview(200, composed)
+    end
+
+    test "concat with empty list returns identity prism" do
+      identity = Prism.concat([])
+
+      assert %Maybe.Just{value: 42} = Prism.preview(42, identity)
+      assert Prism.review(42, identity) == 42
+    end
+
+    test "concat with single prism returns that prism" do
+      p = Prism.filter(&(&1 > 10))
+      composed = Prism.concat([p])
+
+      assert %Maybe.Just{value: 15} = Prism.preview(15, composed)
+      assert %Maybe.Nothing{} = Prism.preview(5, composed)
+    end
   end
 end

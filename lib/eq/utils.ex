@@ -81,7 +81,7 @@ defmodule Funx.Eq.Utils do
 
   # Lens
   def contramap(%Lens{} = lens, eq) do
-    contramap(fn a -> Lens.get(a, lens) end, eq)
+    contramap(fn a -> Lens.view(a, lens) end, eq)
   end
 
   # Atom key → lens
@@ -165,7 +165,7 @@ defmodule Funx.Eq.Utils do
 
   # Lens
   def eq_by?(%Lens{} = lens, a, b, eq) do
-    eq_by?(fn x -> Lens.get(x, lens) end, a, b, eq)
+    eq_by?(fn x -> Lens.view(x, lens) end, a, b, eq)
   end
 
   # Atom key → lens
