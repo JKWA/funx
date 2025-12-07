@@ -10,12 +10,12 @@ defmodule Funx.Monoid.LensCompose do
       iex> alias Funx.Monoid.LensCompose
       iex> alias Funx.Optics.Lens
       iex> lenses = [
-      ...>   Lens.key(:profile),
-      ...>   Lens.key(:score)
+      ...>   Lens.key!(:profile),
+      ...>   Lens.key!(:score)
       ...> ]
       iex> wrapped = Enum.map(lenses, &LensCompose.new/1)
       iex> composed = Funx.Monoid.Utils.m_concat(%LensCompose{}, lenses)
-      iex> %{profile: %{score: 42}} |> Lens.view(composed)
+      iex> %{profile: %{score: 42}} |> Lens.view!(composed)
       42
   """
 
@@ -60,12 +60,12 @@ defimpl Funx.Monoid, for: Funx.Monoid.LensCompose do
   def append(%LensCompose{lens: outer}, %LensCompose{lens: inner}) do
     composed = Lens.make(
       fn s ->
-        s |> Lens.view(outer) |> Lens.view(inner)
+        s |> Lens.view!(outer) |> Lens.view!(inner)
       end,
       fn s, a ->
-        inner_struct = Lens.view(s, outer)
-        updated_inner = Lens.set(inner_struct, a, inner)
-        Lens.set(s, updated_inner, outer)
+        inner_struct = Lens.view!(s, outer)
+        updated_inner = Lens.set!(inner_struct, a, inner)
+        Lens.set!(s, updated_inner, outer)
       end
     )
 

@@ -8,7 +8,7 @@ defmodule Funx.Optics.Lens do
   exists within the valid domain. This is a *contract*, not a runtime guarantee.
 
   When the contract is violated (focus doesn't exist):
-  - **Structs**: Both `view` and `set` raise (strict contract enforcement)
+  - **Structs**: Both `view!` and `set!` raise (strict contract enforcement)
   - **Maps**: Both return/accept missing keys (permissive, for convenience)
 
   **The struct behavior is correct lens semantics**: Both operations enforce
@@ -18,14 +18,14 @@ defmodule Funx.Optics.Lens do
 
   ## Core Operations
 
-    * `view/2` - Extracts the focused part (total within domain)
-    * `set/3` - Updates the focused part while preserving the rest (total within domain)
+    * `view!/2` - Extracts the focused part (total within domain)
+    * `set!/3` - Updates the focused part while preserving the rest (total within domain)
 
   ## Lenses vs Prisms
 
   **Lenses** are for *total* access with domain contracts:
   - **Contract**: The focus must exist
-  - **On violation**: `set` raises (enforcing totality)
+  - **On violation**: `set!` raises (enforcing totality)
   - **Domain**: Struct fields, map keys guaranteed to exist
   - **Semantics**: Update in place, preserve structure
 
@@ -39,13 +39,13 @@ defmodule Funx.Optics.Lens do
 
   For any lens in its valid domain, these laws must hold:
 
-  1. **Get-Put**: `set(s, view(s, lens), lens) == s`
+  1. **Get-Put**: `set!(s, view!(s, lens), lens) == s`
      *(You get back what you put)*
 
-  2. **Put-Get**: `view(set(s, a, lens), lens) == a`
+  2. **Put-Get**: `view!(set!(s, a, lens), lens) == a`
      *(You can view what you just set)*
 
-  3. **Put-Put**: `set(set(s, a1, lens), a2, lens) == set(s, a2, lens)`
+  3. **Put-Put**: `set!(set!(s, a1, lens), a2, lens) == set!(s, a2, lens)`
      *(Second set wins)*
 
   These laws define what it means to be a lens. If your data violates the
@@ -73,30 +73,30 @@ defmodule Funx.Optics.Lens do
   ## Examples
 
       iex> alias Funx.Optics.Lens
-      iex> lens = Lens.key(:age)
-      iex> %{age: 40} |> Lens.view(lens)
+      iex> lens = Lens.key!(:age)
+      iex> %{age: 40} |> Lens.view!(lens)
       40
-      iex> %{age: 40} |> Lens.set(50, lens)
+      iex> %{age: 40} |> Lens.set!(50, lens)
       %{age: 50}
 
   Composing lenses:
 
       iex> alias Funx.Optics.Lens
-      iex> outer = Lens.key(:profile)
-      iex> inner = Lens.key(:score)
+      iex> outer = Lens.key!(:profile)
+      iex> inner = Lens.key!(:score)
       iex> lens = Lens.compose(outer, inner)
-      iex> %{profile: %{score: 12}} |> Lens.view(lens)
+      iex> %{profile: %{score: 12}} |> Lens.view!(lens)
       12
-      iex> %{profile: %{score: 12}} |> Lens.set(99, lens)
+      iex> %{profile: %{score: 12}} |> Lens.set!(99, lens)
       %{profile: %{score: 99}}
 
   Nested path lens:
 
       iex> alias Funx.Optics.Lens
       iex> lens = Lens.path([:stats, :wins])
-      iex> %{stats: %{wins: 7}} |> Lens.view(lens)
+      iex> %{stats: %{wins: 7}} |> Lens.view!(lens)
       7
-      iex> %{stats: %{wins: 7}} |> Lens.set(8, lens)
+      iex> %{stats: %{wins: 7}} |> Lens.set!(8, lens)
       %{stats: %{wins: 8}}
   """
 
@@ -123,15 +123,15 @@ defmodule Funx.Optics.Lens do
     %__MODULE__{view: viewer, update: updater}
   end
 
-  @spec view(s, t(s, a)) :: a
+  @spec view!(s, t(s, a)) :: a
         when s: term(), a: term()
-  def view(s, %__MODULE__{view: v}) do
+  def view!(s, %__MODULE__{view: v}) do
     v.(s)
   end
 
-  @spec set(s, a, t(s, a)) :: s
+  @spec set!(s, a, t(s, a)) :: s
         when s: term(), a: term()
-  def set(s, a, %__MODULE__{update: updater}) do
+  def set!(s, a, %__MODULE__{update: updater}) do
     updater.(s, a)
   end
 
@@ -143,10 +143,10 @@ defmodule Funx.Optics.Lens do
   canonical composition logic.
 
       iex> alias Funx.Optics.Lens
-      iex> outer = Lens.key(:profile)
-      iex> inner = Lens.key(:age)
+      iex> outer = Lens.key!(:profile)
+      iex> inner = Lens.key!(:age)
       iex> lens = Lens.compose(outer, inner)
-      iex> %{profile: %{age: 30}} |> Lens.view(lens)
+      iex> %{profile: %{age: 30}} |> Lens.view!(lens)
       30
   """
   @spec compose(t(s, i), t(i, a)) :: t(s, a)
@@ -162,18 +162,18 @@ defmodule Funx.Optics.Lens do
   similar to `Funx.Optics.Prism.concat/1` for prisms.
 
   **Sequential semantics:**
-  - On `view`: Applies each lens's viewer in sequence (function composition)
-  - On `set`: Updates through each lens in reverse order to maintain structure
+  - On `view!`: Applies each lens's viewer in sequence (function composition)
+  - On `set!`: Updates through each lens in reverse order to maintain structure
 
   This is sequential focusing through nested structures.
 
       iex> lenses = [
-      ...>   Funx.Optics.Lens.key(:user),
-      ...>   Funx.Optics.Lens.key(:profile),
-      ...>   Funx.Optics.Lens.key(:age)
+      ...>   Funx.Optics.Lens.key!(:user),
+      ...>   Funx.Optics.Lens.key!(:profile),
+      ...>   Funx.Optics.Lens.key!(:age)
       ...> ]
       iex> lens = Funx.Optics.Lens.concat(lenses)
-      iex> %{user: %{profile: %{age: 25}}} |> Funx.Optics.Lens.view(lens)
+      iex> %{user: %{profile: %{age: 25}}} |> Funx.Optics.Lens.view!(lens)
       25
   """
   @spec concat([t()]) :: t()
@@ -196,19 +196,19 @@ defmodule Funx.Optics.Lens do
   ## Contract Enforcement
 
   **Structs** (strict, lawful lens):
-  - `view`: Uses `Map.fetch!/2` - **raises `KeyError`** if field missing
-  - `set`: Uses `Map.replace!/3` - **raises `KeyError`** if field missing
+  - `view!`: Uses `Map.fetch!/2` - **raises `KeyError`** if field missing
+  - `set!`: Uses `Map.replace!/3` - **raises `KeyError`** if field missing
   - Both operations enforce the totality contract symmetrically
 
   **Maps** (permissive, for convenience):
-  - `view`: Uses `Map.get/2` - returns value or `nil`
-  - `set`: Uses `Map.put/3` - allows new keys
+  - `view!`: Uses `Map.get/2` - returns value or `nil`
+  - `set!`: Uses `Map.put/3` - allows new keys
   - This is lawful only if the key is guaranteed to exist
 
   ## Why Structs Raise
 
   This is **not a bug**. A lens is total: it assumes the focus exists. When
-  you use `view` or `set` on a missing struct field, you're violating the
+  you use `view!` or `set!` on a missing struct field, you're violating the
   lens contract. The raise enforces that contract symmetrically on both
   operations. This is the correct behavior for a total optic.
 
@@ -216,35 +216,33 @@ defmodule Funx.Optics.Lens do
 
   ## Examples
 
-      iex> lens = Funx.Optics.Lens.key(:name)
-      iex> %{name: "Alice"} |> Funx.Optics.Lens.view(lens)
+      iex> lens = Funx.Optics.Lens.key!(:name)
+      iex> %{name: "Alice"} |> Funx.Optics.Lens.view!(lens)
       "Alice"
-      iex> %{name: "Alice"} |> Funx.Optics.Lens.set("Bob", lens)
+      iex> %{name: "Alice"} |> Funx.Optics.Lens.set!("Bob", lens)
       %{name: "Bob"}
 
   With structs (preserves type, enforces totality):
 
       defmodule User, do: defstruct [:name, :age]
-      lens = Funx.Optics.Lens.key(:name)
+      lens = Funx.Optics.Lens.key!(:name)
       user = %User{name: "Alice", age: 30}
-      Funx.Optics.Lens.view(user, lens) #=> "Alice"
-      Funx.Optics.Lens.set(user, "Bob", lens) #=> %User{name: "Bob", age: 30}
+      Funx.Optics.Lens.view!(user, lens) #=> "Alice"
+      Funx.Optics.Lens.set!(user, "Bob", lens) #=> %User{name: "Bob", age: 30}
 
       # Using a non-existent field raises (correct lens behavior):
-      # Funx.Optics.Lens.set(user, "x", Lens.key(:missing)) #=> ** (KeyError)
+      # Funx.Optics.Lens.set!(user, "x", Lens.key!(:missing)) #=> ** (KeyError)
   """
-  @spec key(atom) :: t(map(), term())
-  def key(k) when is_atom(k) do
+  @spec key!(atom) :: t(map(), term())
+  def key!(k) when is_atom(k) do
     make(
       fn m ->
-        # Strict contract enforcement for structs, permissive for maps
         case m do
           %{__struct__: _} -> Map.fetch!(m, k)
           _ -> Map.get(m, k)
         end
       end,
       fn m, v ->
-        # Preserve struct type and enforce totality
         case m do
           %{__struct__: _} -> Map.replace!(m, k, v)
           _ -> Map.put(m, k, v)
@@ -260,16 +258,16 @@ defmodule Funx.Optics.Lens do
 
   ## Behavior
 
-  - `view`: Uses `get_in/2`, returns `nil` if any key in the path is missing
-  - `set`: Uses `put_in/3`, which auto-vivifies intermediate maps
+  - `view!`: Uses `get_in/2`, returns `nil` if any key in the path is missing
+  - `set!`: Uses `put_in/3`, which auto-vivifies intermediate maps
 
   ## Lawfulness Constraint
 
   This lens is only lawful when the complete path exists in the structure.
   If intermediate keys are missing:
 
-  - `view` returns `nil`
-  - `set` creates intermediate maps, which may not preserve the original structure
+  - `view!` returns `nil`
+  - `set!` creates intermediate maps, which may not preserve the original structure
 
   This auto-vivification means `path/1` behaves more like a **traversal with
   default construction** than a pure total lens.
@@ -278,20 +276,20 @@ defmodule Funx.Optics.Lens do
 
   Use `path/1` for:
   - Nested maps where the path is guaranteed to exist
-  - Convenience when you want auto-vivification on `set`
+  - Convenience when you want auto-vivification on `set!`
 
   Avoid when:
   - You need strict lens laws
   - You want to distinguish "missing key" from "nil value"
-  - You're working with structs (use composed `key/1` lenses instead)
+  - You're working with structs (use composed `key!/1` lenses instead)
 
   ## Examples
 
       iex> lens = Funx.Optics.Lens.path([:user, :profile, :name])
       iex> data = %{user: %{profile: %{name: "Alice"}}}
-      iex> Funx.Optics.Lens.view(data, lens)
+      iex> Funx.Optics.Lens.view!(data, lens)
       "Alice"
-      iex> Funx.Optics.Lens.set(data, "Bob", lens)
+      iex> Funx.Optics.Lens.set!(data, "Bob", lens)
       %{user: %{profile: %{name: "Bob"}}}
   """
   @spec path([term()]) :: t(map(), term())

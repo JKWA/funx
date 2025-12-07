@@ -68,7 +68,7 @@ defmodule Funx.Ord.Utils do
 
   Using a lens explicitly:
 
-      iex> lens = Funx.Optics.Lens.key(:score)
+      iex> lens = Funx.Optics.Lens.key!(:score)
       iex> ord = Funx.Ord.Utils.contramap(lens)
       iex> ord.gt?.(%{score: 10}, %{score: 3})
       true
@@ -88,12 +88,12 @@ defmodule Funx.Ord.Utils do
 
   # Lens
   def contramap(%Lens{} = lens, ord) do
-    contramap(fn a -> Lens.view(a, lens) end, ord)
+    contramap(fn a -> Lens.view!(a, lens) end, ord)
   end
 
   # Atom key → lens
   def contramap(key, ord) when is_atom(key) do
-    lens = Lens.key(key)
+    lens = Lens.key!(key)
     contramap(lens, ord)
   end
 

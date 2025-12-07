@@ -63,7 +63,7 @@ defmodule Funx.Eq.Utils do
 
   Using a lens explicitly:
 
-      iex> lens = Funx.Optics.Lens.key(:score)
+      iex> lens = Funx.Optics.Lens.key!(:score)
       iex> eq = Funx.Eq.Utils.contramap(lens)
       iex> eq.eq?.(%{score: 10}, %{score: 10})
       true
@@ -81,12 +81,12 @@ defmodule Funx.Eq.Utils do
 
   # Lens
   def contramap(%Lens{} = lens, eq) do
-    contramap(fn a -> Lens.view(a, lens) end, eq)
+    contramap(fn a -> Lens.view!(a, lens) end, eq)
   end
 
   # Atom key → lens
   def contramap(key, eq) when is_atom(key) do
-    lens = Lens.key(key)
+    lens = Lens.key!(key)
     contramap(lens, eq)
   end
 
@@ -147,7 +147,7 @@ defmodule Funx.Eq.Utils do
 
   Using a lens explicitly:
 
-      iex> lens = Funx.Optics.Lens.key(:score)
+      iex> lens = Funx.Optics.Lens.key!(:score)
       iex> Funx.Eq.Utils.eq_by?(lens, %{score: 10}, %{score: 10})
       true
   """
@@ -165,12 +165,12 @@ defmodule Funx.Eq.Utils do
 
   # Lens
   def eq_by?(%Lens{} = lens, a, b, eq) do
-    eq_by?(fn x -> Lens.view(x, lens) end, a, b, eq)
+    eq_by?(fn x -> Lens.view!(x, lens) end, a, b, eq)
   end
 
   # Atom key → lens
   def eq_by?(key, a, b, eq) when is_atom(key) do
-    lens = Lens.key(key)
+    lens = Lens.key!(key)
     eq_by?(lens, a, b, eq)
   end
 

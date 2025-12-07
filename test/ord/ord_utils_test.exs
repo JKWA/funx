@@ -223,7 +223,7 @@ defmodule Funx.Ord.UtilsTest do
 
   describe "contramap/2 with lens" do
     test "compares maps using a lens for a single key" do
-      lens = Lens.key(:age)
+      lens = Lens.key!(:age)
       ord = contramap(lens)
 
       assert ord.lt?.(%{age: 30}, %{age: 40})

@@ -21,7 +21,7 @@ defmodule Funx.Eq.UtilsTest do
 
   describe "contramap/2 with lens" do
     test "uses lens.get as the projection" do
-      lens = Lens.key(:age)
+      lens = Lens.key!(:age)
       eq = Utils.contramap(lens)
 
       assert eq.eq?.(%{age: 20}, %{age: 20})
@@ -112,8 +112,8 @@ defmodule Funx.Eq.UtilsTest do
   end
 
   describe "eq_by?/4 with lens" do
-    test "applies Lens.view(struct, lens) for comparison" do
-      lens = Lens.key(:score)
+    test "applies Lens.view!(struct, lens) for comparison" do
+      lens = Lens.key!(:score)
       a = %{score: 5}
       b = %{score: 5}
       c = %{score: 7}

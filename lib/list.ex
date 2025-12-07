@@ -222,7 +222,7 @@ defmodule Funx.List do
       iex> Funx.List.maybe_head("not a list")
       %Funx.Monad.Maybe.Nothing{}
   """
-  @spec maybe_head(term()) :: Maybe.t()
+  @spec maybe_head([a]) :: Maybe.t(a) when a: term()
   def maybe_head(list) do
     case list do
       [head | _] -> Maybe.just(head)
