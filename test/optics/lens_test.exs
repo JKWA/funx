@@ -27,19 +27,19 @@ defmodule Funx.Optics.LensTest do
   end
 
   test "get/2 retrieves the focused value" do
-    lens = Lens.key!(:name)
+    lens = Lens.key(:name)
     assert %{name: "Alice"} |> Lens.view!(lens) == "Alice"
   end
 
   test "set/3 replaces the focused value" do
-    lens = Lens.key!(:count)
+    lens = Lens.key(:count)
     result = %{count: 3} |> Lens.set!(10, lens)
     assert result == %{count: 10}
   end
 
   test "compose/2 focuses through nested structures" do
-    outer = Lens.key!(:profile)
-    inner = Lens.key!(:score)
+    outer = Lens.key(:profile)
+    inner = Lens.key(:score)
     lens = Lens.compose(outer, inner)
 
     data = %{profile: %{score: 5}}
@@ -66,8 +66,8 @@ defmodule Funx.Optics.LensTest do
   end
 
   test "compose/2 behaves identically to nested path when structure matches" do
-    a = Lens.key!(:outer)
-    b = Lens.key!(:inner)
+    a = Lens.key(:outer)
+    b = Lens.key(:inner)
     composed = Lens.compose(a, b)
 
     path_lens = Lens.path([:outer, :inner])
@@ -84,13 +84,13 @@ defmodule Funx.Optics.LensTest do
 
   describe "struct support" do
     test "key/1 views a struct field" do
-      lens = Lens.key!(:name)
+      lens = Lens.key(:name)
       user = %User{name: "Alice", age: 30, email: "alice@example.com"}
       assert Lens.view!(user, lens) == "Alice"
     end
 
     test "key/1 sets a struct field while preserving struct type" do
-      lens = Lens.key!(:name)
+      lens = Lens.key(:name)
       user = %User{name: "Alice", age: 30, email: "alice@example.com"}
       updated = Lens.set!(user, "Bob", lens)
 
@@ -99,7 +99,7 @@ defmodule Funx.Optics.LensTest do
     end
 
     test "key/1 preserves other struct fields when updating" do
-      lens = Lens.key!(:age)
+      lens = Lens.key(:age)
       user = %User{name: "Alice", age: 30, email: "alice@example.com"}
       updated = Lens.set!(user, 31, lens)
 
@@ -109,8 +109,8 @@ defmodule Funx.Optics.LensTest do
     end
 
     test "compose/2 works with nested structs" do
-      user_lens = Lens.key!(:user)
-      name_lens = Lens.key!(:name)
+      user_lens = Lens.key(:user)
+      name_lens = Lens.key(:name)
       lens = Lens.compose(user_lens, name_lens)
 
       profile = %Profile{
@@ -128,8 +128,8 @@ defmodule Funx.Optics.LensTest do
     end
 
     test "compose/2 preserves all struct types in nested update" do
-      user_lens = Lens.key!(:user)
-      email_lens = Lens.key!(:email)
+      user_lens = Lens.key(:user)
+      email_lens = Lens.key(:email)
       lens = Lens.compose(user_lens, email_lens)
 
       profile = %Profile{
@@ -152,9 +152,9 @@ defmodule Funx.Optics.LensTest do
 
     test "concat/1 composes multiple lenses through nested structs" do
       lenses = [
-        Lens.key!(:company),
-        Lens.key!(:address),
-        Lens.key!(:city)
+        Lens.key(:company),
+        Lens.key(:address),
+        Lens.key(:city)
       ]
       lens = Lens.concat(lenses)
 
@@ -191,9 +191,9 @@ defmodule Funx.Optics.LensTest do
 
     test "compose/2 can be chained multiple times with structs" do
       lens =
-        Lens.key!(:company)
-        |> Lens.compose(Lens.key!(:address))
-        |> Lens.compose(Lens.key!(:street))
+        Lens.key(:company)
+        |> Lens.compose(Lens.key(:address))
+        |> Lens.compose(Lens.key(:street))
 
       employee = %Employee{
         user: %User{name: "Bob", age: 25, email: "bob@example.com"},
@@ -229,9 +229,9 @@ defmodule Funx.Optics.LensTest do
 
       # Compose through map -> struct -> struct field
       lens =
-        Lens.key!(:profile)
-        |> Lens.compose(Lens.key!(:user))
-        |> Lens.compose(Lens.key!(:name))
+        Lens.key(:profile)
+        |> Lens.compose(Lens.key(:user))
+        |> Lens.compose(Lens.key(:name))
 
       assert Lens.view!(profile_with_meta, lens) == "Charlie"
 
@@ -249,7 +249,7 @@ defmodule Funx.Optics.LensTest do
 
     test "compose identity lens with key lens on struct" do
       identity = Lens.make(fn s -> s end, fn _s, a -> a end)
-      name_lens = Lens.key!(:name)
+      name_lens = Lens.key(:name)
       lens = Lens.compose(identity, name_lens)
 
       user = %User{name: "Eve", age: 28, email: "eve@example.com"}
@@ -265,9 +265,9 @@ defmodule Funx.Optics.LensTest do
     test "multiple independent lens updates preserve struct" do
       user = %User{name: "Grace", age: 40, email: "grace@example.com"}
 
-      name_lens = Lens.key!(:name)
-      age_lens = Lens.key!(:age)
-      email_lens = Lens.key!(:email)
+      name_lens = Lens.key(:name)
+      age_lens = Lens.key(:age)
+      email_lens = Lens.key(:email)
 
       # Apply multiple updates
       updated =
@@ -294,7 +294,7 @@ defmodule Funx.Optics.LensTest do
       }
 
       # Compose to the deepest level
-      zip_lens = Lens.concat([Lens.key!(:company), Lens.key!(:address), Lens.key!(:zip)])
+      zip_lens = Lens.concat([Lens.key(:company), Lens.key(:address), Lens.key(:zip)])
 
       assert Lens.view!(employee, zip_lens) == "02101"
 
@@ -320,8 +320,8 @@ defmodule Funx.Optics.LensTest do
     test "lenses form a monoid under composition via LensCompose" do
       import Funx.Monoid
 
-      l1 = LensCompose.new(Lens.key!(:profile))
-      l2 = LensCompose.new(Lens.key!(:score))
+      l1 = LensCompose.new(Lens.key(:profile))
+      l2 = LensCompose.new(Lens.key(:score))
 
       # Composition via Monoid.append
       composed = append(l1, l2) |> LensCompose.unwrap()
@@ -337,7 +337,7 @@ defmodule Funx.Optics.LensTest do
       import Funx.Monoid
 
       id = empty(%LensCompose{})
-      l = LensCompose.new(Lens.key!(:name))
+      l = LensCompose.new(Lens.key(:name))
 
       data = %{name: "Alice", age: 30}
 
@@ -355,9 +355,9 @@ defmodule Funx.Optics.LensTest do
     test "composition is associative" do
       import Funx.Monoid
 
-      l1 = LensCompose.new(Lens.key!(:company))
-      l2 = LensCompose.new(Lens.key!(:address))
-      l3 = LensCompose.new(Lens.key!(:city))
+      l1 = LensCompose.new(Lens.key(:company))
+      l2 = LensCompose.new(Lens.key(:address))
+      l3 = LensCompose.new(Lens.key(:city))
 
       # (l1 . l2) . l3 == l1 . (l2 . l3)
       left_assoc = append(append(l1, l2), l3) |> LensCompose.unwrap()
@@ -382,9 +382,9 @@ defmodule Funx.Optics.LensTest do
 
     test "concat composes multiple lenses" do
       lenses = [
-        Lens.key!(:user),
-        Lens.key!(:profile),
-        Lens.key!(:age)
+        Lens.key(:user),
+        Lens.key(:profile),
+        Lens.key(:age)
       ]
 
       composed = Lens.concat(lenses)
@@ -412,7 +412,7 @@ defmodule Funx.Optics.LensTest do
     end
 
     test "concat with single lens returns that lens" do
-      l = Lens.key!(:name)
+      l = Lens.key(:name)
       composed = Lens.concat([l])
 
       data = %{name: "Alice", age: 30}
@@ -424,8 +424,8 @@ defmodule Funx.Optics.LensTest do
     test "monoid laws hold with struct composition" do
       import Funx.Monoid
 
-      l1 = LensCompose.new(Lens.key!(:user))
-      l2 = LensCompose.new(Lens.key!(:name))
+      l1 = LensCompose.new(Lens.key(:user))
+      l2 = LensCompose.new(Lens.key(:name))
 
       user = %User{name: "Alice", age: 30, email: "alice@example.com"}
       profile = %Profile{user: user, score: 100}

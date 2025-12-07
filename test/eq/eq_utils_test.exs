@@ -21,7 +21,7 @@ defmodule Funx.Eq.UtilsTest do
 
   describe "contramap/2 with lens" do
     test "uses lens.get as the projection" do
-      lens = Lens.key!(:age)
+      lens = Lens.key(:age)
       eq = Utils.contramap(lens)
 
       assert eq.eq?.(%{age: 20}, %{age: 20})
@@ -31,7 +31,7 @@ defmodule Funx.Eq.UtilsTest do
 
   describe "contramap/2 with atom (auto-lensed)" do
     test "treats atom as Lens.key/1" do
-      eq = Utils.contramap(:age)
+      eq = Utils.contramap(Lens.key(:age))
 
       assert eq.eq?.(%{age: 30}, %{age: 30})
       refute eq.eq?.(%{age: 30}, %{age: 31})
@@ -39,8 +39,8 @@ defmodule Funx.Eq.UtilsTest do
   end
 
   describe "contramap/2 with path (auto-lensed)" do
-    test "treats list as Lens.path/1" do
-      eq = Utils.contramap([:stats, :wins])
+    test "treats list as lawful lens composition" do
+      eq = Utils.contramap(Lens.path([:stats, :wins]))
 
       assert eq.eq?.(%{stats: %{wins: 2}}, %{stats: %{wins: 2}})
       refute eq.eq?.(%{stats: %{wins: 2}}, %{stats: %{wins: 3}})
@@ -113,7 +113,7 @@ defmodule Funx.Eq.UtilsTest do
 
   describe "eq_by?/4 with lens" do
     test "applies Lens.view!(struct, lens) for comparison" do
-      lens = Lens.key!(:score)
+      lens = Lens.key(:score)
       a = %{score: 5}
       b = %{score: 5}
       c = %{score: 7}
@@ -129,19 +129,19 @@ defmodule Funx.Eq.UtilsTest do
       b = %{age: 40}
       c = %{age: 41}
 
-      assert Utils.eq_by?(:age, a, b)
-      refute Utils.eq_by?(:age, a, c)
+      assert Utils.eq_by?(Lens.key(:age), a, b)
+      refute Utils.eq_by?(Lens.key(:age), a, c)
     end
   end
 
   describe "eq_by?/4 with path (auto-lensed)" do
-    test "treats list as Lens.path/1" do
+    test "treats list as lawful lens composition" do
       a = %{stats: %{wins: 2}}
       b = %{stats: %{wins: 2}}
       c = %{stats: %{wins: 3}}
 
-      assert Utils.eq_by?([:stats, :wins], a, b)
-      refute Utils.eq_by?([:stats, :wins], a, c)
+      assert Utils.eq_by?(Lens.path([:stats, :wins]), a, b)
+      refute Utils.eq_by?(Lens.path([:stats, :wins]), a, c)
     end
   end
 

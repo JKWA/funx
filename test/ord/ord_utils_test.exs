@@ -223,7 +223,7 @@ defmodule Funx.Ord.UtilsTest do
 
   describe "contramap/2 with lens" do
     test "compares maps using a lens for a single key" do
-      lens = Lens.key!(:age)
+      lens = Lens.key(:age)
       ord = contramap(lens)
 
       assert ord.lt?.(%{age: 30}, %{age: 40})
@@ -233,7 +233,7 @@ defmodule Funx.Ord.UtilsTest do
     end
 
     test "compares maps using a nested lens path" do
-      lens = Lens.path([:stats, :wins])
+      lens = Lens.concat([Lens.key(:stats), Lens.key(:wins)])
       ord = contramap(lens)
 
       assert ord.lt?.(%{stats: %{wins: 2}}, %{stats: %{wins: 5}})
@@ -244,7 +244,7 @@ defmodule Funx.Ord.UtilsTest do
 
   describe "contramap/2 with key" do
     test "compares maps using atom key auto-lifted to lens" do
-      ord = contramap(:age)
+      ord = contramap(Lens.key(:age))
 
       assert ord.lt?.(%{age: 10}, %{age: 20})
       assert ord.gt?.(%{age: 50}, %{age: 10})
@@ -255,7 +255,7 @@ defmodule Funx.Ord.UtilsTest do
 
   describe "contramap/2 with path" do
     test "compares maps using nested path auto-lifted to lens" do
-      ord = contramap([:profile, :score])
+      ord = contramap(Lens.path([:profile, :score]))
 
       assert ord.lt?.(%{profile: %{score: 5}}, %{profile: %{score: 9}})
       assert ord.gt?.(%{profile: %{score: 10}}, %{profile: %{score: 3}})

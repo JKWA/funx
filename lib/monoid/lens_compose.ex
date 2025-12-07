@@ -10,8 +10,8 @@ defmodule Funx.Monoid.LensCompose do
       iex> alias Funx.Monoid.LensCompose
       iex> alias Funx.Optics.Lens
       iex> lenses = [
-      ...>   Lens.key!(:profile),
-      ...>   Lens.key!(:score)
+      ...>   Lens.key(:profile),
+      ...>   Lens.key(:score)
       ...> ]
       iex> wrapped = Enum.map(lenses, &LensCompose.new/1)
       iex> composed = Funx.Monoid.Utils.m_concat(%LensCompose{}, lenses)
