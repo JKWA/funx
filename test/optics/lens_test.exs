@@ -156,6 +156,7 @@ defmodule Funx.Optics.LensTest do
         Lens.key(:address),
         Lens.key(:city)
       ]
+
       lens = Lens.concat(lenses)
 
       employee = %Employee{
@@ -439,6 +440,111 @@ defmodule Funx.Optics.LensTest do
       assert updated.user.name == "Bob"
       assert updated.__struct__ == Profile
       assert updated.user.__struct__ == User
+    end
+  end
+
+  describe "over!/3" do
+    test "updates the focused value with a function" do
+      lens = Lens.key(:age)
+
+      data = %{age: 40}
+
+      updated =
+        data
+        |> Lens.over!(fn a -> a + 1 end, lens)
+
+      assert updated == %{age: 41}
+    end
+
+    test "works through composed lenses" do
+      outer = Lens.key(:profile)
+      inner = Lens.key(:score)
+      lens = Lens.compose(outer, inner)
+
+      data = %{profile: %{score: 10}}
+
+      updated =
+        data
+        |> Lens.over!(fn n -> n * 2 end, lens)
+
+      assert updated == %{profile: %{score: 20}}
+    end
+
+    test "works through path/1" do
+      lens = Lens.path([:stats, :wins])
+
+      data = %{stats: %{wins: 3}}
+
+      updated =
+        data
+        |> Lens.over!(fn n -> n + 5 end, lens)
+
+      assert updated == %{stats: %{wins: 8}}
+    end
+
+    test "preserves struct type when updating a struct field" do
+      lens = Lens.key(:age)
+
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      updated =
+        user
+        |> Lens.over!(fn a -> a + 1 end, lens)
+
+      assert updated.__struct__ == User
+      assert updated.age == 31
+      assert updated.name == "Alice"
+      assert updated.email == "alice@example.com"
+    end
+
+    test "works through nested structs with compose/2" do
+      user_lens = Lens.key(:user)
+      age_lens = Lens.key(:age)
+      lens = Lens.compose(user_lens, age_lens)
+
+      profile = %Profile{
+        user: %User{name: "Bob", age: 25, email: "bob@example.com"},
+        score: 100
+      }
+
+      updated =
+        profile
+        |> Lens.over!(fn a -> a + 10 end, lens)
+
+      assert updated.__struct__ == Profile
+      assert updated.user.__struct__ == User
+      assert updated.user.age == 35
+      assert updated.user.name == "Bob"
+      assert updated.score == 100
+    end
+
+    test "deeply nested struct update with concat/1" do
+      lens =
+        Lens.concat([
+          Lens.key(:company),
+          Lens.key(:address),
+          Lens.key(:zip)
+        ])
+
+      employee = %Employee{
+        user: %User{name: "Ian", age: 45, email: "ian@example.com"},
+        company: %Company{
+          name: "Deep Corp",
+          address: %Address{street: "999 Deep Ln", city: "Boston", zip: "02101"}
+        },
+        salary: 120_000
+      }
+
+      updated =
+        employee
+        |> Lens.over!(fn _ -> "99999" end, lens)
+
+      assert updated.company.address.zip == "99999"
+      assert updated.__struct__ == Employee
+      assert updated.company.__struct__ == Company
+      assert updated.company.address.__struct__ == Address
+      assert updated.user == employee.user
+      assert updated.salary == 120_000
     end
   end
 end
