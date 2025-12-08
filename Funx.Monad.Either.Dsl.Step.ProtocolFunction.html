@@ -8,11 +8,11 @@
     <meta name="project" content="funx v0.2.3">
 
 
-    <title>Funx.Monad.Either.Dsl.Step.Ap — funx v0.2.3</title>
+    <title>Funx.Monad.Either.Dsl.Step.ProtocolFunction — funx v0.2.3</title>
     <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
 
 
-      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Either.Dsl.Step.Ap.html" />
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Either.Dsl.Step.ProtocolFunction.html" />
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
@@ -114,19 +114,21 @@ Pages
 <div id="top-content">
   <h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.2.3/lib/monad/either/dsl/step.ex#L47" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.3/lib/monad/either/dsl/step.ex#L100" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Monad.Either.Dsl.Step.Ap</span> 
+    <span translate="no">Funx.Monad.Either.Dsl.Step.ProtocolFunction</span> 
     <small class="app-vsn" translate="no">(funx v0.2.3)</small>
 
   </h1>
 
 
     <section id="moduledoc">
-<p>Represents an applicative functor operation.</p><p>Ap applies a function wrapped in an Either to a value wrapped in an Either.</p>
+<p>Represents a call to a Funx protocol function.</p><p>Protocol functions are operations implemented via Elixir protocols rather than
+module functions. This allows the operation to work polymorphically across
+different types while maintaining a clean API.</p><p>Examples:</p><ul><li>tap (Funx.Tappable) - Execute side effects without changing the value</li></ul>
     </section>
 
 </div>
@@ -149,7 +151,7 @@ Pages
 
       </div>
 
-        <div class="summary-synopsis"><p>An applicative step that applies wrapped functions to wrapped values</p></div>
+        <div class="summary-synopsis"><p>A step calling a protocol function.</p></div>
 
     </div>
 
@@ -175,7 +177,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">t()</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.2.3/lib/monad/either/dsl/step.ex#L58" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.2.3/lib/monad/either/dsl/step.ex#L121" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -187,14 +189,17 @@ Pages
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Monad.Either.Dsl.Step.Ap{
+          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Monad.Either.Dsl.Step.ProtocolFunction{
   __meta__: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">map</a>() | nil,
-  applicative: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()
+  args: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">list</a>(),
+  function: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">atom</a>(),
+  protocol: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">module</a>()
 }</pre>
 
       </div>
 
-<p>An applicative step that applies wrapped functions to wrapped values</p>
+<p>A step calling a protocol function.</p><p>The protocol module (e.g., Funx.Tappable) is stored explicitly so the executor
+can dispatch to the correct protocol implementation.</p>
   </section>
 </section>
 
