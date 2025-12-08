@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0] - Unreleased
+
+### Added
+
+Introduced a Funx.Tap protocol and migrated all monads to use protocol-based tap.
+
+## Changed
+
+tap implementations for Identity, Maybe, Either, Reader, and Effect now delegate through the Funx.Tap protocol.
+
+## Breaking
+
+Existing direct tap/2 implementations have been removed. Code relying on the previous module-specific tap implementations require updates.
+
 ## [0.2.3] - Unreleased
 
 ### Updated
