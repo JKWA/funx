@@ -11,6 +11,7 @@ defmodule Funx.Monad.Maybe.Nothing do
     - `Funx.Filterable`: Supports filtering operations, which always return `Nothing`.
     - `Funx.Eq`: Enables equality checks between `Nothing` and other `Maybe` values.
     - `Funx.Ord`: Defines ordering behavior between `Nothing` and `Just`.
+    - `Funx.Tappable`: Returns `Nothing` unchanged without executing the tap function.
 
   These implementations ensure that `Nothing` behaves consistently in functional composition, filtering, and comparison, treating absence as a stable and composable case.
   """
@@ -104,4 +105,11 @@ end
 
 defimpl Funx.Summarizable, for: Funx.Monad.Maybe.Nothing do
   def summarize(_), do: {:maybe_nothing, Funx.Summarizable.summarize(nil)}
+end
+
+defimpl Funx.Tappable, for: Funx.Monad.Maybe.Nothing do
+  alias Funx.Monad.Maybe.Nothing
+
+  @spec tap(Nothing.t(), (term() -> any())) :: Nothing.t()
+  def tap(%Nothing{} = nothing, _func), do: nothing
 end

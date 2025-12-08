@@ -5,9 +5,10 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   alias Funx.Monad.Either.Dsl.Step
 
   # Operation type classification (for error messages)
-  @either_functions [:filter_or_else, :or_else, :map_left, :flip, :tap]
+  @either_functions [:filter_or_else, :or_else, :map_left, :flip]
+  @protocol_functions %{tap: Funx.Tappable}
   @bindable_functions [:validate]
-  @all_allowed_functions @either_functions ++ @bindable_functions
+  @all_allowed_functions @either_functions ++ Map.keys(@protocol_functions) ++ @bindable_functions
 
   # ============================================================================
   # PUBLIC API
@@ -78,6 +79,14 @@ defmodule Funx.Monad.Either.Dsl.Parser do
     cond do
       func_name in @either_functions ->
         %Step.EitherFunction{function: func_name, args: transformed_args, __meta__: metadata}
+
+      protocol = Map.get(@protocol_functions, func_name) ->
+        %Step.ProtocolFunction{
+          protocol: protocol,
+          function: func_name,
+          args: transformed_args,
+          __meta__: metadata
+        }
 
       func_name in @bindable_functions ->
         %Step.BindableFunction{function: func_name, args: transformed_args, __meta__: metadata}

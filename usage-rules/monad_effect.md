@@ -369,12 +369,12 @@ import Funx.Monad.Effect
 
 # Side effect on Right (deferred until run)
 Effect.right(42)
-|> Effect.tap(fn x -> Logger.info("Value: #{x}") end)
+|> Tappable.tap(fn x -> Logger.info("Value: #{x}") end)
 |> Effect.run()  # Logs "Value: 42", returns right(42)
 
 # No side effect on Left
 Effect.left("error")
-|> Effect.tap(fn x -> Logger.info("Value: #{x}") end)
+|> Tappable.tap(fn x -> Logger.info("Value: #{x}") end)
 |> Effect.run()  # Nothing logged, returns left("error")
 ```
 
@@ -390,21 +390,21 @@ Effect.left("error")
 ```elixir
 # Debug async pipeline
 fetch_user(user_id)
-|> Effect.tap(&IO.inspect(&1, label: "fetched user"))
+|> Tappable.tap(&IO.inspect(&1, label: "fetched user"))
 |> bind(&fetch_orders/1)
-|> Effect.tap(&IO.inspect(&1, label: "fetched orders"))
+|> Tappable.tap(&IO.inspect(&1, label: "fetched orders"))
 |> Effect.run(env)
 
 # Logging in async workflow
 process_payment(order)
-|> Effect.tap(fn result -> Logger.info("Payment processed: #{result.id}") end)
+|> Tappable.tap(fn result -> Logger.info("Payment processed: #{result.id}") end)
 |> bind(&send_confirmation/1)
-|> Effect.tap(fn _ -> Logger.info("Confirmation sent") end)
+|> Tappable.tap(fn _ -> Logger.info("Confirmation sent") end)
 |> Effect.run(env)
 
 # Telemetry for async operations
 calculate_analytics(data)
-|> Effect.tap(fn metrics ->
+|> Tappable.tap(fn metrics ->
   :telemetry.execute([:app, :analytics], metrics)
 end)
 |> Effect.run(env)

@@ -24,7 +24,6 @@ defmodule Funx.Monad.Maybe do
 
     - `get_or_else/2`: Returns the value from a `Just`, or a default if `Nothing`.
     - `or_else/2`: Returns the original `Just`, or invokes a fallback function if `Nothing`.
-    - `tap/2`: Executes a side-effect function on a `Just` value, returning the original `Maybe` unchanged.
 
   ### List Operations
 
@@ -59,6 +58,7 @@ defmodule Funx.Monad.Maybe do
     - `Funx.Filterable`: Supports conditional retention with `filter/2`, `guard/2`, and `filter_map/2`.
     - `Funx.Monad`: Provides `map/2`, `ap/2`, and `bind/2` for monadic composition.
     - `Funx.Ord`: Defines ordering behavior between `Just` and `Nothing` values.
+    - `Funx.Tappable`: Executes side effects on `Just` values via `Funx.Tappable.tap/2`, leaving `Nothing` unchanged.
 
   Although these implementations are defined per constructor (`Just` and `Nothing`), the behavior is consistent across the `Maybe` abstraction.
 
@@ -168,28 +168,6 @@ defmodule Funx.Monad.Maybe do
   @spec or_else(t(value), (-> t(value))) :: t(value) when value: var
   def or_else(%Nothing{}, fallback_fun) when is_function(fallback_fun, 0), do: fallback_fun.()
   def or_else(%Just{} = just, _fallback_fun), do: just
-
-  @doc """
-  Executes a side-effect function on a `Just` value and returns the original `Maybe` unchanged.
-  If the `Maybe` is `Nothing`, the function is not called and `Nothing` is returned as-is.
-
-  Useful for debugging, logging, or performing side effects in the middle of a pipeline without changing the value.
-
-  ## Examples
-
-      iex> Funx.Monad.Maybe.just(5) |> Funx.Monad.Maybe.tap(fn x -> x * 2 end)
-      %Funx.Monad.Maybe.Just{value: 5}
-
-      iex> Funx.Monad.Maybe.nothing() |> Funx.Monad.Maybe.tap(fn x -> x * 2 end)
-      %Funx.Monad.Maybe.Nothing{}
-  """
-  @spec tap(t(value), (value -> any())) :: t(value) when value: var
-  def tap(maybe, func) when is_function(func, 1) do
-    map(maybe, fn value ->
-      func.(value)
-      value
-    end)
-  end
 
   @doc """
   Lifts an equality function to compare `Maybe` values:

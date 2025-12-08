@@ -57,6 +57,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
       %Step.Map{} -> :map
       %Step.Ap{} -> :ap
       %Step.EitherFunction{} -> :either_function
+      %Step.ProtocolFunction{} -> :protocol_function
       %Step.BindableFunction{} -> :bindable_function
     end)
   end
@@ -119,7 +120,8 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
   # Tests parsing of Either-specific functions (filter_or_else, or_else, map_left, flip, tap, validate)
   describe "Either function operations" do
     # Table-driven tests for either_function operations
-    @either_functions [:filter_or_else, :or_else, :map_left, :flip, :tap]
+    @either_functions [:filter_or_else, :or_else, :map_left, :flip]
+    @protocol_functions [:tap]
 
     for func <- @either_functions do
       test "parses #{func} as either_function" do
@@ -131,10 +133,22 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
             :or_else -> parse_one(quote do: or_else(fn -> right(42) end))
             :map_left -> parse_one(quote do: map_left(fn e -> "Error: #{e}" end))
             :flip -> parse_one(quote do: flip())
-            :tap -> parse_one(quote do: tap(fn x -> x end))
           end
 
         assert %Step.EitherFunction{function: ^func_name, args: _args} = step
+      end
+    end
+
+    for func <- @protocol_functions do
+      test "parses #{func} as protocol_function" do
+        func_name = unquote(func)
+
+        step =
+          case func_name do
+            :tap -> parse_one(quote do: tap(fn x -> x end))
+          end
+
+        assert %Step.ProtocolFunction{function: ^func_name, protocol: Funx.Tappable, args: _args} = step
       end
     end
 
@@ -147,7 +161,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
     test "parses tap with module and options" do
       step = parse_one(quote do: tap({SomeModule, opt: :value}))
 
-      assert %Step.EitherFunction{function: :tap, args: _args} = step
+      assert %Step.ProtocolFunction{function: :tap, protocol: Funx.Tappable, args: _args} = step
     end
 
     test "parses or_else with module and options" do
@@ -159,7 +173,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
     test "parses tap with bare module" do
       step = parse_one(quote do: tap(SomeModule))
 
-      assert %Step.EitherFunction{function: :tap, args: _args} = step
+      assert %Step.ProtocolFunction{function: :tap, protocol: Funx.Tappable, args: _args} = step
     end
   end
 
@@ -446,7 +460,7 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
                :bindable_function,
                :either_function,
                :either_function,
-               :either_function
+               :protocol_function
              ]
     end
 

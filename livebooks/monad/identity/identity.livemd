@@ -30,6 +30,7 @@ This module implements the following protocols:
 ```elixir
 import Funx.Monad.Identity
 alias Funx.Monad.Identity
+alias Funx.Tappable
 ```
 
 ### pure/1
@@ -57,14 +58,14 @@ Useful for debugging, logging, or performing side effects without changing the v
 ```elixir
 # Side effect on wrapped value
 pure(42)
-|> Identity.tap(&IO.inspect(&1, label: "debug"))
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))
 ```
 
 ```elixir
 # In a pipeline
 pure(5)
 |> Funx.Monad.map(&(&1 * 2))
-|> Identity.tap(&IO.inspect(&1, label: "after map"))
+|> Tappable.tap(&IO.inspect(&1, label: "after map"))
 |> Funx.Monad.map(&(&1 + 1))
 ```
 

@@ -11,6 +11,7 @@ defmodule Funx.Monad.Maybe.Just do
     - `Funx.Filterable`: Supports filtering with `filter/2`, `filter_map/2`, and `guard/2`.
     - `Funx.Eq`: Enables equality checks between `Just` and other `Maybe` values.
     - `Funx.Ord`: Defines ordering behavior between `Just` and `Nothing`.
+    - `Funx.Tappable`: Executes side effects on the wrapped value via `Funx.Tappable.tap/2`.
 
   These protocol implementations allow `Just` to participate in structured computation, validation, filtering, and comparison within the `Maybe` context.
   """
@@ -146,4 +147,14 @@ end
 
 defimpl Funx.Summarizable, for: Funx.Monad.Maybe.Just do
   def summarize(%{value: value}), do: {:maybe_just, Funx.Summarizable.summarize(value)}
+end
+
+defimpl Funx.Tappable, for: Funx.Monad.Maybe.Just do
+  alias Funx.Monad.Maybe.Just
+
+  @spec tap(Just.t(value), (value -> any())) :: Just.t(value) when value: term()
+  def tap(%Just{value: value} = just, func) when is_function(func, 1) do
+    func.(value)
+    just
+  end
 end

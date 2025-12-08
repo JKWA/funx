@@ -88,6 +88,7 @@ This module helps you model failure explicitly, compose error-aware logic, and i
 import Funx.Monad.Either
 alias Funx.Monad
 alias Funx.Monad.{Either, Maybe}
+alias Funx.Tappable
 ```
 
 ### right/1
@@ -338,20 +339,20 @@ Useful for debugging, logging, or performing side effects without changing the v
 ```elixir
 # Side effect on Right
 right(42)
-|> Either.tap(&IO.inspect(&1, label: "debug"))
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))
 ```
 
 ```elixir
 # No side effect on Left
 left("error")
-|> Either.tap(&IO.inspect(&1, label: "debug"))
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))
 ```
 
 ```elixir
 # In a pipeline
 right(5)
 |> Monad.map(&(&1 * 2))
-|> Either.tap(&IO.inspect(&1, label: "after map"))
+|> Tappable.tap(&IO.inspect(&1, label: "after map"))
 |> Monad.map(&(&1 + 1))
 ```
 

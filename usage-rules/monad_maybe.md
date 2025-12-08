@@ -257,12 +257,12 @@ import Funx.Monad.Maybe
 
 # Side effect on Just
 Maybe.just(42)
-|> Maybe.tap(&IO.inspect(&1, label: "debug"))  # prints "debug: 42"
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))  # prints "debug: 42"
 # Returns: just(42)
 
 # No side effect on Nothing
 Maybe.nothing()
-|> Maybe.tap(&IO.inspect(&1, label: "debug"))  # nothing printed
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))  # nothing printed
 # Returns: nothing()
 ```
 
@@ -278,19 +278,19 @@ Maybe.nothing()
 ```elixir
 # Debug a chain
 find_user(user_id)
-|> Maybe.tap(&IO.inspect(&1, label: "found user"))
+|> Tappable.tap(&IO.inspect(&1, label: "found user"))
 |> bind(&get_profile/1)
-|> Maybe.tap(&IO.inspect(&1, label: "got profile"))
+|> Tappable.tap(&IO.inspect(&1, label: "got profile"))
 
 # Conditional logging
 fetch_optional_config("feature_flag")
-|> Maybe.tap(fn flag -> Logger.info("Feature flag: #{flag}") end)
+|> Tappable.tap(fn flag -> Logger.info("Feature flag: #{flag}") end)
 |> Maybe.map(&enable_feature/1)
 
 # Analytics on optional values
 user_search_query
 |> Maybe.from_nil()
-|> Maybe.tap(fn query ->
+|> Tappable.tap(fn query ->
   :telemetry.execute([:app, :search], %{query: query})
 end)
 ```

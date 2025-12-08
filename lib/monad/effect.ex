@@ -1,74 +1,75 @@
 defmodule Funx.Monad.Effect do
   @moduledoc """
-  The `Funx.Monad.Effect` module defines the `Effect` monad, which represents asynchronous computations
-  that may succeed (`Right`) or fail (`Left`). Execution is deferred until explicitly run, making
-  `Effect` useful for structuring lazy, asynchronous workflows.
+  The `Funx.Monad.Effect` module provides an implementation of the `Effect` monad, which represents deferred asynchronous computations that may succeed or fail.
 
-  This module integrates tracing and telemetry, making it suitable for observability in concurrent
-  Elixir systems. All effects carry a `Effect.Context`, which links operations and records spans
-  when `run/2` is called.
+  An `Effect` represents one of two possibilities:
 
-  ## Constructors
+    - `Right(value)`: a successful asynchronous computation
+    - `Left(error)`: a failed asynchronous computation
 
-    * `right/1` – Wraps a value in a successful `Right` effect.
-    * `left/1` – Wraps a value in a failing `Left` effect.
-    * `pure/1` – Alias for `right/1`.
+  Effects are lazy—execution is deferred until `run/2` is explicitly called. This makes `Effect` ideal for structuring asynchronous workflows with built-in observability via telemetry and tracing.
 
-  ## Execution
+  All effects carry an `Effect.Context`, which propagates trace IDs and span names through the computation graph, enabling distributed tracing and performance monitoring in concurrent Elixir systems.
 
-  * `run/2` – Executes the deferred effect and returns an `Either` result (`Right` or `Left`).
+  ### Constructors
 
-  You may pass `:task_supervisor` in the `opts` to run the effect under a specific `Task.Supervisor`. This supervises the top-level task, any internal tasks spawned within the effect function are not supervised.
+    - `right/2`: Wraps a value in a successful `Right` effect with optional context.
+    - `left/2`: Wraps an error in a failing `Left` effect with optional context.
+    - `pure/2`: Alias for `right/2`.
 
+  ### Execution
 
-  ## Sequencing
+    - `run/2`: Executes the deferred effect and returns an `Either` result.
 
-    * `sequence/1` – Runs a list of effects, stopping at the first `Left`.
-    * `traverse/2` – Applies a function returning an `Effect` to each element of a list, sequencing results.
-    * `sequence_a/2` – Runs a list of effects, collecting all `Left` errors instead of short-circuiting.
-    * `traverse_a/3` – Like `traverse/2`, but accumulates errors across the list.
+  You may pass `:task_supervisor` in the options to run the effect under a specific `Task.Supervisor`. This supervises only the top-level task; any internal tasks spawned within the effect function are not supervised.
 
-  ## Validation
+  ### Error Handling
 
-    * `validate/2` – Validates a value using one or more effectful validators.
+    - `map_left/2`: Transforms a `Left` using a function, leaving `Right` values unchanged.
+    - `flip_either/1`: Inverts the success and failure branches of an `Effect`.
 
-  ## Error Handling
+  ### List Operations
 
-    * `map_left/2` – Transforms a `Left` using a function, leaving `Right` values unchanged.
-    * `flip_either/1` –  Inverts the success and failure branches of an `Effect`.
-    * `tap/2` – Executes a side-effect function on a `Right` value, returning the original `Effect` unchanged.
+    - `sequence/1`: Runs a list of effects, stopping at the first `Left`.
+    - `traverse/2`: Applies a function returning an `Effect` to each element in a list and sequences the results.
+    - `sequence_a/1`: Like `sequence/1`, but accumulates all errors from `Left` values.
+    - `traverse_a/2`: Like `traverse/2`, but accumulates all `Left` values instead of short-circuiting.
 
-  ## Lifting
+  ### Validation
 
-    * `lift_func/2` – Lifts a thunk that returns any value into an `Effect`, wrapping it in `Right`. If the thunk raises, the error is captured as a `Left(EffectError)`.
-    * `lift_either/2` – Lifts a thunk that returns an `Either` into an `Effect`. Evaluation is deferred until the effect is run. Errors are also captured and wrapped in `Left(EffectError)`.
-    * `lift_maybe/3` – Lifts a `Maybe` into an `Effect`, using a fallback error if the value is `Nothing`.
-    * `lift_predicate/3` – Lifts a predicate check into an `Effect`. Returns `Right(value)` if the predicate passes; otherwise returns `Left(fallback)`.
+    - `validate/2`: Validates a value using one or more effectful validators, collecting all errors.
 
-  ## Reader Operations
+  ### Lifting
 
-    * `ask/0` – Returns the environment passed to `run/2` as a `Right`.
-    * `asks/1` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Right`.
-    * `fail/0` – Returns the environment passed to `run/2` as a `Left`.
-    * `fails/1` – Applies a function to the environment passed to `run/2`, wrapping the result in a `Left`.
+    - `lift_func/2`: Lifts a thunk into an `Effect`, capturing exceptions as `Left(EffectError)`.
+    - `lift_either/2`: Lifts a thunk returning an `Either` into an `Effect`, deferring evaluation.
+    - `lift_maybe/3`: Converts a `Maybe` to an `Effect` using a fallback error for `Nothing`.
+    - `lift_predicate/3`: Turns a predicate into an `Effect`, returning `Right` on `true` and `Left` on `false`.
 
-  ## Elixir Interop
+  ### Reader Operations
 
-    * `from_result/2` – Converts a `{:ok, _}` or `{:error, _}` tuple into an `Effect`.
-    * `to_result/1` – Converts an `Effect` to `{:ok, _}` or `{:error, _}`.
-    * `from_try/2` – Wraps a function that may raise, returning Right on success, or Left if an exception is raised.
-    * `to_try!/1` – Extracts the value from a `Right`, or raises an exception if `Left`.
+    - `ask/0`: Returns the environment passed to `run/2` as a `Right`.
+    - `asks/1`: Applies a function to the environment passed to `run/2`, wrapping the result in `Right`.
+    - `fail/0`: Returns the environment passed to `run/2` as a `Left`.
+    - `fails/1`: Applies a function to the environment passed to `run/2`, wrapping the result in `Left`.
+
+  ### Elixir Interoperability
+
+    - `from_result/2`: Converts `{:ok, val}` or `{:error, err}` into an `Effect`.
+    - `to_result/1`: Converts an `Effect` into a result tuple.
+    - `from_try/2`: Runs a function and returns `Right` on success or `Left(EffectError)` on exception.
+    - `to_try!/1`: Unwraps a `Right`, or raises an error from a `Left`.
 
   ## Protocols
-    The Left and Right structs implement the following protocols:
 
-     * Funx.Monad – Provides map/2, ap/2, and bind/2 for compositional workflows.
+  The `Left` and `Right` structs implement the following protocols, making the `Effect` abstraction composable and extensible:
 
-    Although protocol implementations are defined on Left and Right individually, the behavior
-    is unified under the Effect abstraction.
+    - `Funx.Monad`: Provides `map/2`, `ap/2`, and `bind/2` for monadic composition.
+    - `Funx.Tappable`: Executes side effects on `Right` values via `Funx.Tappable.tap/2`, leaving `Left` values unchanged.
 
-    This module enables structured concurrency, error handling, and observability in
-    asynchronous workflows.
+  Although these implementations are defined on each constructor (`Left` and `Right`), the behavior is consistent across the `Effect` abstraction.
+
+  This module enables structured concurrency, error handling, and observability in asynchronous workflows.
 
   ## Telemetry
 
@@ -567,51 +568,6 @@ defmodule Funx.Monad.Effect do
       end
     }
   end
-
-  @doc """
-  Executes a side-effect function on a `Right` value and returns the original `Effect` unchanged.
-  If the `Effect` is `Left`, the function is not called and the `Left` is returned as-is.
-
-  Useful for debugging, logging, telemetry, or performing side effects in the middle of an effectful
-  pipeline without changing the value.
-
-  The side effect function is executed when the effect is run, not when `tap` is called (deferred execution).
-
-  ## Examples
-
-      iex> effect = Funx.Monad.Effect.right(5)
-      iex> tapped = Funx.Monad.Effect.tap(effect, fn _x -> :ok end)
-      iex> Funx.Monad.Effect.run(tapped)
-      %Funx.Monad.Either.Right{right: 5}
-
-      iex> effect = Funx.Monad.Effect.left("error")
-      iex> tapped = Funx.Monad.Effect.tap(effect, fn _x -> :ok end)
-      iex> Funx.Monad.Effect.run(tapped)
-      %Funx.Monad.Either.Left{left: "error"}
-  """
-  @spec tap(t(error, value), (value -> any())) :: t(error, value)
-        when error: term(), value: term()
-  def tap(%Right{effect: eff, context: context}, func) when is_function(func, 1) do
-    promoted_context = Effect.Context.promote_trace(context, "tap")
-
-    %Right{
-      context: promoted_context,
-      effect: fn env ->
-        Task.async(fn ->
-          case Effect.run(%Right{effect: eff, context: context}, env) do
-            %Either.Right{right: value} = result ->
-              func.(value)
-              result
-
-            %Either.Left{} = left ->
-              left
-          end
-        end)
-      end
-    }
-  end
-
-  def tap(%Left{} = left, _func), do: left
 
   @doc """
   Inverts the success and failure branches of an `Effect`.

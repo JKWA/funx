@@ -78,6 +78,7 @@ This module helps you represent optional data explicitly, structure conditional 
 import Funx.Monad.Maybe
 alias Funx.Monad
 alias Funx.Monad.Maybe
+alias Funx.Tappable
 ```
 
 ### just/1
@@ -221,20 +222,20 @@ Useful for debugging, logging, or performing side effects without changing the v
 ```elixir
 # Side effect on Just
 just(42)
-|> Maybe.tap(&IO.inspect(&1, label: "debug"))
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))
 ```
 
 ```elixir
 # No side effect on Nothing
 nothing()
-|> Maybe.tap(&IO.inspect(&1, label: "debug"))
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))
 ```
 
 ```elixir
 # In a pipeline
 just(5)
 |> Monad.map(&(&1 * 2))
-|> Maybe.tap(&IO.inspect(&1, label: "after map"))
+|> Tappable.tap(&IO.inspect(&1, label: "after map"))
 |> Monad.map(&(&1 + 1))
 ```
 

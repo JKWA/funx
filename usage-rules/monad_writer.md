@@ -35,7 +35,7 @@ import Funx.Monad.Writer
 
 # Side effect that doesn't add to log
 Writer.pure(42)
-|> Writer.tap(&IO.inspect(&1, label: "debug"))  # Prints "debug: 42"
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))  # Prints "debug: 42"
 |> Writer.run()
 # Returns: %Result{value: 42, log: []}  # No log entry!
 
@@ -61,20 +61,20 @@ end)
 ```elixir
 # Debug without adding to log
 Writer.pure(data)
-|> Writer.tap(&IO.inspect(&1, label: "before processing"))
+|> Tappable.tap(&IO.inspect(&1, label: "before processing"))
 |> Writer.bind(&process_with_logging/1)  # This adds to log
-|> Writer.tap(&IO.inspect(&1, label: "after processing"))
+|> Tappable.tap(&IO.inspect(&1, label: "after processing"))
 |> Writer.run()
 
 # External logging (not in Writer log)
 Writer.writer({order, ["created"]})
-|> Writer.tap(fn o -> Logger.info("Processing order #{o.id}") end)
+|> Tappable.tap(fn o -> Logger.info("Processing order #{o.id}") end)
 |> Writer.bind(&charge_payment/1)  # Adds to Writer log
 |> Writer.run()
 
 # Telemetry (separate from Writer log)
 Writer.pure(calculation_result)
-|> Writer.tap(fn result ->
+|> Tappable.tap(fn result ->
   :telemetry.execute([:app, :calc], %{value: result})
 end)
 |> Writer.run()
@@ -92,7 +92,7 @@ end)
 ```elixir
 # tap - side effect, NO log entry
 Writer.pure(42)
-|> Writer.tap(fn x -> IO.puts("Value: #{x}") end)  # Prints, but...
+|> Tappable.tap(fn x -> IO.puts("Value: #{x}") end)  # Prints, but...
 |> Writer.run()
 # %Result{value: 42, log: []}  # ...no log entry
 

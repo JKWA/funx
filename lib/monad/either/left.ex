@@ -95,3 +95,7 @@ end
 defimpl Funx.Summarizable, for: Funx.Monad.Either.Left do
   def summarize(%{left: value}), do: {:either_left, Funx.Summarizable.summarize(value)}
 end
+
+defimpl Funx.Tappable, for: Funx.Monad.Either.Left do
+  def tap(left, _fun), do: left
+end

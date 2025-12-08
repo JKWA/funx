@@ -174,13 +174,13 @@ import Funx.Monad.Identity
 
 # Side effect on wrapped value
 Identity.pure(42)
-|> Identity.tap(&IO.inspect(&1, label: "value"))  # Prints "value: 42"
+|> Tappable.tap(&IO.inspect(&1, label: "value"))  # Prints "value: 42"
 # Returns: Identity(42)
 
 # In a pipeline
 Identity.pure(5)
 |> map(&(&1 * 2))
-|> Identity.tap(&IO.inspect(&1, label: "doubled"))  # Prints "doubled: 10"
+|> Tappable.tap(&IO.inspect(&1, label: "doubled"))  # Prints "doubled: 10"
 |> map(&(&1 + 1))
 # Returns: Identity(11)
 ```
@@ -207,7 +207,7 @@ end
 
 # Logging in Identity-based computation
 Identity.pure(data)
-|> Identity.tap(fn d -> Logger.info("Processing: #{inspect(d)}") end)
+|> Tappable.tap(fn d -> Logger.info("Processing: #{inspect(d)}") end)
 |> map(&expensive_computation/1)
 ```
 

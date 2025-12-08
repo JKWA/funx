@@ -7,7 +7,6 @@ defmodule Funx.Monad.Identity do
 
     - `pure/1`: Wraps a value in the `Identity` monad.
     - `extract/1`: Extracts the wrapped value from an `Identity`.
-    - `tap/2`: Executes a side-effect function on the wrapped value, returning the original `Identity` unchanged.
 
   ## Protocols
 
@@ -15,6 +14,7 @@ defmodule Funx.Monad.Identity do
     - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
     - `Funx.Eq`: Defines equality checks for `Identity` values.
     - `Funx.Ord`: Defines ordering logic for `Identity` values.
+    - `Funx.Tappable`: Executes side effects on the wrapped value via `Funx.Tappable.tap/2`.
     - `String.Chars`: Converts an `Identity` value into a string representation.
   """
 
@@ -47,22 +47,6 @@ defmodule Funx.Monad.Identity do
   """
   @spec extract(t(value)) :: value when value: term()
   def extract(%__MODULE__{value: value}), do: value
-
-  @doc """
-  Executes a side-effect function on the wrapped value and returns the original `Identity` unchanged.
-
-  Useful for debugging, logging, or performing side effects in the middle of a pipeline without changing the value.
-
-  ## Examples
-
-      iex> Funx.Monad.Identity.pure(5) |> Funx.Monad.Identity.tap(fn x -> x * 2 end)
-      %Funx.Monad.Identity{value: 5}
-  """
-  @spec tap(t(value), (value -> any())) :: t(value) when value: term()
-  def tap(%__MODULE__{value: value} = identity, func) when is_function(func, 1) do
-    func.(value)
-    identity
-  end
 
   @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
   def lift_eq(custom_eq) do
@@ -158,4 +142,14 @@ end
 
 defimpl Funx.Summarizable, for: Funx.Monad.Identity do
   def summarize(%{value: value}), do: {:identity, Funx.Summarizable.summarize(value)}
+end
+
+defimpl Funx.Tappable, for: Funx.Monad.Identity do
+  alias Funx.Monad.Identity
+
+  @spec tap(Identity.t(value), (value -> any())) :: Identity.t(value) when value: term()
+  def tap(%Identity{value: value} = identity, func) when is_function(func, 1) do
+    func.(value)
+    identity
+  end
 end

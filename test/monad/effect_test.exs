@@ -14,6 +14,7 @@ defmodule EffectTest do
 
   alias Funx.Errors.{EffectError, ValidationError}
   alias Funx.Monad.{Effect, Either, Maybe}
+  alias Funx.Tappable
 
   setup [:with_telemetry_config]
 
@@ -1209,7 +1210,7 @@ defmodule EffectTest do
     end
   end
 
-  describe "Effect.tap/2" do
+  describe "Tappable.tap/2" do
     setup do
       capture_telemetry([:funx, :effect, :run, :stop], self())
       :ok
@@ -1218,7 +1219,7 @@ defmodule EffectTest do
     test "returns the original Right value unchanged" do
       result =
         right(5, span_name: "value")
-        |> Effect.tap(fn _x -> :ok end)
+        |> Tappable.tap(fn _x -> :ok end)
         |> run()
 
       assert result == Either.right(5)
@@ -1249,7 +1250,7 @@ defmodule EffectTest do
     test "returns the original Left value unchanged" do
       result =
         left("error", span_name: "value")
-        |> Effect.tap(fn _x -> :ok end)
+        |> Tappable.tap(fn _x -> :ok end)
         |> run()
 
       assert result == Either.left("error")
@@ -1270,7 +1271,7 @@ defmodule EffectTest do
     test "executes tap on Right without changing value" do
       result =
         right(42, span_name: "value")
-        |> Effect.tap(fn _x -> :side_effect end)
+        |> Tappable.tap(fn _x -> :side_effect end)
         |> run()
 
       assert result == Either.right(42)
@@ -1279,7 +1280,7 @@ defmodule EffectTest do
     test "tap does not affect Left values" do
       result =
         left("error", span_name: "value")
-        |> Effect.tap(fn _x -> :side_effect end)
+        |> Tappable.tap(fn _x -> :side_effect end)
         |> run()
 
       assert result == Either.left("error")
@@ -1289,9 +1290,9 @@ defmodule EffectTest do
       result =
         right(5, span_name: "initial")
         |> map(&(&1 * 2))
-        |> Effect.tap(fn _x -> :tap1 end)
+        |> Tappable.tap(fn _x -> :tap1 end)
         |> map(&(&1 + 1))
-        |> Effect.tap(fn _x -> :tap2 end)
+        |> Tappable.tap(fn _x -> :tap2 end)
         |> run()
 
       assert result == Either.right(11)
@@ -1300,7 +1301,7 @@ defmodule EffectTest do
     test "discards the return value of the side effect function" do
       result =
         right(5, span_name: "value")
-        |> Effect.tap(fn _x ->
+        |> Tappable.tap(fn _x ->
           # Return value should be ignored
           :this_should_be_discarded
         end)
@@ -1312,7 +1313,7 @@ defmodule EffectTest do
     test "allows side effects like logging without changing the value" do
       result =
         right(%{user: "alice", age: 30}, span_name: "user")
-        |> Effect.tap(fn _user ->
+        |> Tappable.tap(fn _user ->
           # Simulate logging - actual side effect happens async
           :logged
         end)
@@ -1324,9 +1325,9 @@ defmodule EffectTest do
     test "tap with bind in pipeline" do
       result =
         right(5, span_name: "initial")
-        |> Effect.tap(fn _x -> :before_bind end)
+        |> Tappable.tap(fn _x -> :before_bind end)
         |> bind(fn x -> right(x * 2, span_name: "doubled") end)
-        |> Effect.tap(fn _x -> :after_bind end)
+        |> Tappable.tap(fn _x -> :after_bind end)
         |> run()
 
       assert result == Either.right(10)
@@ -1344,7 +1345,7 @@ defmodule EffectTest do
 
       result =
         effect
-        |> Effect.tap(fn _ -> :should_not_be_called end)
+        |> Tappable.tap(fn _ -> :should_not_be_called end)
         |> run()
 
       assert result == Either.left(:unexpected_error)

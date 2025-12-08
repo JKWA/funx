@@ -7,6 +7,7 @@ defmodule Funx.Monad.Either.Right do
     - `Funx.Foldable`: Provides `fold_l/3` and `fold_r/3` to handle folding for `Right` values.
     - `Funx.Monad`: Implements the `bind/2`, `map/2`, and `ap/2` functions for monadic operations.
     - `Funx.Ord`: Defines ordering logic for `Right` and `Left` values.
+    - `Funx.Tappable`: Executes side effects on the contained value without modifying it.
 
   The `Right` monad represents a valid result, and the contained value is propagated through operations.
   """
@@ -98,4 +99,15 @@ end
 
 defimpl Funx.Summarizable, for: Funx.Monad.Either.Right do
   def summarize(%{right: value}), do: {:either_right, Funx.Summarizable.summarize(value)}
+end
+
+defimpl Funx.Tappable, for: Funx.Monad.Either.Right do
+  alias Funx.Monad.Either.Right
+
+  @spec tap(Right.t(value), (value -> any())) :: Right.t(value)
+        when value: term()
+  def tap(%Right{right: value} = right, fun) do
+    fun.(value)
+    right
+  end
 end

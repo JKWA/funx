@@ -65,13 +65,13 @@ defmodule Funx.Monad.Either.Dsl.Step do
     @moduledoc """
     Represents a call to an Either-specific function.
 
-    Either functions: filter_or_else, or_else, map_left, flip, tap.
+    Either functions: filter_or_else, or_else, map_left, flip.
     """
 
     @enforce_keys [:function, :args]
     defstruct [:function, :args, :__meta__]
 
-    @typedoc "A step calling an Either-specific function (filter_or_else, or_else, map_left, flip, tap)"
+    @typedoc "A step calling an Either-specific function (filter_or_else, or_else, map_left, flip)"
     @type t :: %__MODULE__{
             function: atom(),
             args: list(),
@@ -97,6 +97,35 @@ defmodule Funx.Monad.Either.Dsl.Step do
           }
   end
 
+  defmodule ProtocolFunction do
+    @moduledoc """
+    Represents a call to a Funx protocol function.
+
+    Protocol functions are operations implemented via Elixir protocols rather than
+    module functions. This allows the operation to work polymorphically across
+    different types while maintaining a clean API.
+
+    Examples:
+      - tap (Funx.Tappable) - Execute side effects without changing the value
+    """
+
+    @enforce_keys [:protocol, :function, :args]
+    defstruct [:protocol, :function, :args, :__meta__]
+
+    @typedoc """
+    A step calling a protocol function.
+
+    The protocol module (e.g., Funx.Tappable) is stored explicitly so the executor
+    can dispatch to the correct protocol implementation.
+    """
+    @type t :: %__MODULE__{
+            protocol: module(),
+            function: atom(),
+            args: list(),
+            __meta__: map() | nil
+          }
+  end
+
   @typedoc """
   Union type representing any Step type in the Either DSL pipeline.
 
@@ -108,4 +137,5 @@ defmodule Funx.Monad.Either.Dsl.Step do
           | Ap.t()
           | EitherFunction.t()
           | BindableFunction.t()
+          | ProtocolFunction.t()
 end

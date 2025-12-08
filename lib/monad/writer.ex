@@ -9,7 +9,6 @@ defmodule Funx.Monad.Writer do
     * `pure/1` – Wraps a result with an empty log.
     * `writer/1` – Wraps a result and an explicit log.
     * `tell/1` – Emits a log with no result.
-    * `tap/2` – Executes a side-effect function on the value without affecting the Writer's value or log.
     * `listen/1` – Returns both result and log as a pair.
     * `censor/2` – Applies a function to transform the final log.
     * `pass/1` – Uses a log-transforming function returned from within the computation.
@@ -19,7 +18,10 @@ defmodule Funx.Monad.Writer do
 
   By default, the `ListConcat` monoid is used unless a different monoid is passed to `run`, `eval`, or `exec`.
 
-  This module also implements the `Funx.Monad` protocol.
+  This module implements the following protocols:
+
+    * `Funx.Monad`: Implements `bind/2`, `map/2`, and `ap/2` for monadic composition.
+    * `Funx.Tappable`: Executes side effects on the computed value via `Funx.Tappable.tap/2`.
   """
 
   import Funx.Monoid, only: [wrap: 2, append: 2, unwrap: 1]
@@ -103,35 +105,6 @@ defmodule Funx.Monad.Writer do
         wrapped = wrap(monoid, raw_log)
         combined = append(monoid, wrapped)
         {:ok, combined}
-      end
-    }
-  end
-
-  @doc """
-  Executes a side-effect function on the computed value and returns the original `Writer` unchanged.
-
-  Useful for debugging, logging outside the Writer log, or performing side effects without
-  affecting the Writer's value or accumulated log. The side effect executes when the Writer is run.
-
-  Note: This performs side effects that do NOT become part of the Writer's log. If you want to
-  add to the log, use `tell/1` instead.
-
-  ## Example
-
-      iex> writer = Funx.Monad.Writer.pure(5) |> Funx.Monad.Writer.tap(fn x -> x * 2 end)
-      iex> result = Funx.Monad.Writer.run(writer)
-      iex> result.value
-      5
-      iex> result.log
-      []
-  """
-  @spec tap(t(a), (a -> any())) :: t(a) when a: term()
-  def tap(%__MODULE__{writer: writer_fn}, func) when is_function(func, 1) do
-    %__MODULE__{
-      writer: fn monoid ->
-        {value, new_monoid} = writer_fn.(monoid)
-        func.(value)
-        {value, new_monoid}
       end
     }
   end
@@ -314,6 +287,21 @@ defimpl Funx.Monad, for: Funx.Monad.Writer do
         {f, monoid1} = wf.(monoid)
         {x, monoid2} = wx.(monoid1)
         {f.(x), monoid2}
+      end
+    }
+  end
+end
+
+defimpl Funx.Tappable, for: Funx.Monad.Writer do
+  alias Funx.Monad.Writer
+
+  @spec tap(Writer.t(a), (a -> any())) :: Writer.t(a) when a: term()
+  def tap(%Writer{writer: writer_fn}, func) when is_function(func, 1) do
+    %Writer{
+      writer: fn monoid ->
+        {value, new_monoid} = writer_fn.(monoid)
+        func.(value)
+        {value, new_monoid}
       end
     }
   end
