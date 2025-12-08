@@ -34,6 +34,7 @@ This module also implements the `Funx.Monad` protocol.
 ```elixir
 import Funx.Monad.Writer
 alias Funx.Monad
+alias Funx.Tappable
 alias Funx.Monad.Writer
 ```
 
@@ -198,7 +199,7 @@ Useful for debugging, external logging, or side effects separate from the comput
 # Side effect that doesn't add to log
 writer =
   pure(42)
-  |> Writer.tap(&IO.inspect(&1, label: "debug"))
+  |> Tappable.tap(&IO.inspect(&1, label: "debug"))
 
 result = run(writer)
 ```

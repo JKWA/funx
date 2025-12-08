@@ -120,6 +120,7 @@ The `run/2` function emits telemetry using `:telemetry.span/3`.
 ```elixir
 import Funx.Monad.Effect
 alias Funx.Monad.Effect
+alias Funx.Tappable
 ```
 
 ### right/2
@@ -446,7 +447,7 @@ Useful for debugging, logging, telemetry, or performing side effects in async pi
 # Side effect on Right (deferred until run)
 effect =
   right(42)
-  |> Effect.tap(fn x -> IO.puts("Value: #{x}") end)
+  |> Tappable.tap(fn x -> IO.puts("Value: #{x}") end)
 ```
 
 ```elixir
@@ -457,7 +458,7 @@ run(effect)  # Prints "Value: 42", returns right(42)
 # No side effect on Left
 effect =
   left("error")
-  |> Effect.tap(fn x -> IO.puts("Value: #{x}") end)
+  |> Tappable.tap(fn x -> IO.puts("Value: #{x}") end)
 ```
 
 ```elixir
@@ -469,7 +470,7 @@ run(effect)  # Nothing printed, returns left("error")
 effect =
   right(5)
   |> Funx.Monad.map(&(&1 * 2))
-  |> Effect.tap(fn x -> IO.puts("After map: #{x}") end)
+  |> Tappable.tap(fn x -> IO.puts("After map: #{x}") end)
   |> Funx.Monad.map(&(&1 + 1))
 ```
 
