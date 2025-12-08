@@ -142,12 +142,12 @@ import Funx.Monad.Reader
 
 # Side effect on computed value (deferred until run)
 Reader.pure(42)
-|> Reader.tap(&IO.inspect(&1, label: "value"))
+|> Tappable.tap(&IO.inspect(&1, label: "value"))
 |> Reader.run(%{})  # Prints "value: 42", returns 42
 
 # With environment access
 Reader.asks(&Map.get(&1, :user_id))
-|> Reader.tap(fn id -> Logger.info("Processing user: #{id}") end)
+|> Tappable.tap(fn id -> Logger.info("Processing user: #{id}") end)
 |> Reader.run(%{user_id: 123})  # Logs, returns 123
 ```
 
@@ -163,13 +163,13 @@ Reader.asks(&Map.get(&1, :user_id))
 ```elixir
 # Debug environment access
 Reader.asks(&Map.get(&1, :config))
-|> Reader.tap(&IO.inspect(&1, label: "config"))
+|> Tappable.tap(&IO.inspect(&1, label: "config"))
 |> Reader.map(&process_config/1)
 |> Reader.run(env)
 
 # Logging in dependency injection
 get_service()
-|> Reader.tap(fn svc -> Logger.info("Using service: #{svc.name}") end)
+|> Tappable.tap(fn svc -> Logger.info("Using service: #{svc.name}") end)
 |> Reader.bind(&call_service/1)
 |> Reader.run(env)
 ```

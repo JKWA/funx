@@ -658,12 +658,12 @@ import Funx.Monad.Either
 
 # Side effect on Right
 Either.right(42)
-|> Either.tap(&IO.inspect(&1, label: "debug"))  # prints "debug: 42"
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))  # prints "debug: 42"
 # Returns: right(42)
 
 # No side effect on Left
 Either.left("error")
-|> Either.tap(&IO.inspect(&1, label: "debug"))  # nothing printed
+|> Tappable.tap(&IO.inspect(&1, label: "debug"))  # nothing printed
 # Returns: left("error")
 ```
 
@@ -680,20 +680,20 @@ Either.left("error")
 # Debug a pipeline
 Either.right(user_input)
 |> bind(&parse_user/1)
-|> Either.tap(&IO.inspect(&1, label: "after parse"))
+|> Tappable.tap(&IO.inspect(&1, label: "after parse"))
 |> bind(&validate_user/1)
-|> Either.tap(&IO.inspect(&1, label: "after validate"))
+|> Tappable.tap(&IO.inspect(&1, label: "after validate"))
 |> bind(&save_user/1)
 
 # Logging in business logic
 process_order(order_id)
-|> Either.tap(fn order -> Logger.info("Processing order #{order.id}") end)
+|> Tappable.tap(fn order -> Logger.info("Processing order #{order.id}") end)
 |> bind(&charge_payment/1)
-|> Either.tap(fn _ -> Logger.info("Payment successful") end)
+|> Tappable.tap(fn _ -> Logger.info("Payment successful") end)
 
 # Telemetry
 calculate_result(data)
-|> Either.tap(fn result ->
+|> Tappable.tap(fn result ->
   :telemetry.execute([:app, :calculation], %{value: result})
 end)
 ```
@@ -703,7 +703,7 @@ end)
 - The function's return value is discarded
 - Only executes on Right values (success path)
 - Does not affect the Either value or its error state
-- In the Either DSL, you must use `Either.tap` (not `Kernel.tap`) to avoid conflicts
+- In the Either DSL, you must use `Tappable.tap` (not `Kernel.tap`) to avoid conflicts
 
 ## List Operations
 
