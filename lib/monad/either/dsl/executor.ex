@@ -75,6 +75,14 @@ defmodule Funx.Monad.Either.Dsl.Executor do
 
   defp execute_step(
          either_value,
+         %Step.ProtocolFunction{protocol: protocol, function: func_name, args: args},
+         _user_env
+       ) do
+    apply(protocol, func_name, [either_value | args])
+  end
+
+  defp execute_step(
+         either_value,
          %Step.BindableFunction{function: func_name, args: args},
          _user_env
        ) do

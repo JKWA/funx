@@ -5,7 +5,7 @@ defmodule Funx.Monad.ReaderTest do
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Monad.Reader
 
-  alias Funx.Monad.Reader
+  alias Funx.Tappable
 
   describe "pure/1" do
     test "wraps a value in the Reader monad" do
@@ -36,11 +36,11 @@ defmodule Funx.Monad.ReaderTest do
     end
   end
 
-  describe "Reader.tap/2" do
+  describe "Tappable.tap/2" do
     test "returns the original Reader value unchanged" do
       reader =
         pure(5)
-        |> Reader.tap(fn x -> x * 2 end)
+        |> Tappable.tap(fn x -> x * 2 end)
 
       assert run(reader, %{}) == 5
     end
@@ -50,7 +50,7 @@ defmodule Funx.Monad.ReaderTest do
 
       reader =
         pure(42)
-        |> Reader.tap(fn x ->
+        |> Tappable.tap(fn x ->
           send(test_pid, {:tapped, x})
         end)
 
@@ -65,9 +65,9 @@ defmodule Funx.Monad.ReaderTest do
       reader =
         pure(5)
         |> map(&(&1 * 2))
-        |> Reader.tap(fn x -> send(test_pid, {:step1, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:step1, x}) end)
         |> map(&(&1 + 1))
-        |> Reader.tap(fn x -> send(test_pid, {:step2, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:step2, x}) end)
 
       result = run(reader, %{})
       assert result == 11
@@ -78,7 +78,7 @@ defmodule Funx.Monad.ReaderTest do
     test "discards the return value of the side effect function" do
       reader =
         pure(5)
-        |> Reader.tap(fn _x ->
+        |> Tappable.tap(fn _x ->
           # Return value should be ignored
           :this_should_be_discarded
         end)
@@ -91,7 +91,7 @@ defmodule Funx.Monad.ReaderTest do
 
       reader =
         asks(& &1[:user_id])
-        |> Reader.tap(fn id -> send(test_pid, {:user_id, id}) end)
+        |> Tappable.tap(fn id -> send(test_pid, {:user_id, id}) end)
         |> map(&(&1 * 100))
 
       result = run(reader, %{user_id: 42})
@@ -104,9 +104,9 @@ defmodule Funx.Monad.ReaderTest do
 
       reader =
         pure(5)
-        |> Reader.tap(fn x -> send(test_pid, {:before_bind, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:before_bind, x}) end)
         |> bind(fn x -> pure(x * 2) end)
-        |> Reader.tap(fn x -> send(test_pid, {:after_bind, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:after_bind, x}) end)
 
       result = run(reader, %{})
       assert result == 10

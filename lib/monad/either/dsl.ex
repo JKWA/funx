@@ -11,7 +11,8 @@ defmodule Funx.Monad.Either.Dsl do
   - `bind` - for operations that return Either or result tuples
   - `map` - for transformations that return plain values
   - `ap` - for applying a function in an Either to a value in an Either
-  - Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`, `tap`
+  - Either functions: `filter_or_else`, `or_else`, `map_left`, `flip`
+  - Protocol functions: `tap` (via Funx.Tappable)
   - Validation: `validate` for accumulating multiple errors
 
   The result format is controlled by the `:as` option (`:either`, `:tuple`, or `:raise`).
@@ -282,6 +283,22 @@ defmodule Funx.Monad.Either.Dsl do
        }) do
     quote do
       %Funx.Monad.Either.Dsl.Step.BindableFunction{
+        function: unquote(func_name),
+        args: unquote(args),
+        __meta__: unquote(Macro.escape(meta))
+      }
+    end
+  end
+
+  defp quote_step(%Funx.Monad.Either.Dsl.Step.ProtocolFunction{
+         protocol: protocol,
+         function: func_name,
+         args: args,
+         __meta__: meta
+       }) do
+    quote do
+      %Funx.Monad.Either.Dsl.Step.ProtocolFunction{
+        protocol: unquote(protocol),
         function: unquote(func_name),
         args: unquote(args),
         __meta__: unquote(Macro.escape(meta))

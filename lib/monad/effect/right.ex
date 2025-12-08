@@ -207,15 +207,30 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
       effect: fn env -> eff.(env) end
     }
   end
+end
 
-  defimpl Funx.Tappable, for: Funx.Monad.Either.Right do
-    alias Funx.Monad.Either.Right
+defimpl Funx.Tappable, for: Funx.Monad.Effect.Right do
+  alias Funx.Monad.{Effect, Either}
+  alias Effect.Right
 
-    @spec tap(Right.t(value), (value -> any())) :: Right.t(value)
-          when value: term()
-    def tap(%{right: value} = right, fun) do
-      fun.(value)
-      right
-    end
+  @spec tap(Right.t(value), (value -> any())) :: Right.t(value) when value: term()
+  def tap(%Right{effect: eff, context: context}, func) when is_function(func, 1) do
+    promoted_context = Effect.Context.promote_trace(context, "tap")
+
+    %Right{
+      context: promoted_context,
+      effect: fn env ->
+        Task.async(fn ->
+          case Effect.run(%Right{effect: eff, context: context}, env) do
+            %Either.Right{right: value} = result ->
+              func.(value)
+              result
+
+            %Either.Left{} = left ->
+              left
+          end
+        end)
+      end
+    }
   end
 end

@@ -9,6 +9,7 @@ defmodule Funx.Monad.IdentityTest do
 
   alias Funx.{Eq, Ord}
   alias Funx.Monad.Identity
+  alias Funx.Tappable
 
   doctest Funx.Monad.Identity
 
@@ -28,9 +29,9 @@ defmodule Funx.Monad.IdentityTest do
     end
   end
 
-  describe "Identity.tap/2" do
+  describe "Tappable.tap/2" do
     test "returns the original Identity value unchanged" do
-      result = Identity.tap(pure(5), fn x -> x * 2 end)
+      result = Tappable.tap(pure(5), fn x -> x * 2 end)
       assert result == pure(5)
     end
 
@@ -38,7 +39,7 @@ defmodule Funx.Monad.IdentityTest do
       test_pid = self()
 
       result =
-        Identity.tap(pure(42), fn x ->
+        Tappable.tap(pure(42), fn x ->
           send(test_pid, {:tapped, x})
         end)
 
@@ -52,9 +53,9 @@ defmodule Funx.Monad.IdentityTest do
       result =
         pure(5)
         |> map(&(&1 * 2))
-        |> Identity.tap(fn x -> send(test_pid, {:step1, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:step1, x}) end)
         |> map(&(&1 + 1))
-        |> Identity.tap(fn x -> send(test_pid, {:step2, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:step2, x}) end)
 
       assert result == pure(11)
       assert_received {:step1, 10}
@@ -63,7 +64,7 @@ defmodule Funx.Monad.IdentityTest do
 
     test "discards the return value of the side effect function" do
       result =
-        Identity.tap(pure(5), fn _x ->
+        Tappable.tap(pure(5), fn _x ->
           # Return value should be ignored
           :this_should_be_discarded
         end)
@@ -74,7 +75,7 @@ defmodule Funx.Monad.IdentityTest do
     test "allows side effects like logging without changing the value" do
       result =
         pure(%{user: "alice", age: 30})
-        |> Identity.tap(fn user ->
+        |> Tappable.tap(fn user ->
           # Simulate logging
           send(self(), {:log, "Processing user: #{user.user}"})
         end)
@@ -88,9 +89,9 @@ defmodule Funx.Monad.IdentityTest do
 
       result =
         pure(5)
-        |> Identity.tap(fn x -> send(test_pid, {:before_bind, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:before_bind, x}) end)
         |> bind(fn x -> pure(x * 2) end)
-        |> Identity.tap(fn x -> send(test_pid, {:after_bind, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:after_bind, x}) end)
 
       assert result == pure(10)
       assert_received {:before_bind, 5}

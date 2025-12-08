@@ -14,8 +14,9 @@ defmodule Funx.Monad.MaybeTest do
   import Funx.Summarizable, only: [summarize: 1]
 
   alias Funx.{Eq, Ord}
-  alias Funx.Monad.{Either, Identity, Maybe}
-  alias Maybe.{Just, Nothing}
+  alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Monad.{Either, Identity}
+  alias Funx.Tappable
 
   describe "Just.pure/1" do
     test "wraps a non-nil value in a Just monad" do
@@ -741,14 +742,14 @@ defmodule Funx.Monad.MaybeTest do
     end
   end
 
-  describe "Maybe.tap/2" do
+  describe "Tappable.tap/2" do
     test "returns the original Just value unchanged" do
-      result = Maybe.tap(just(5), fn x -> x * 2 end)
+      result = Tappable.tap(just(5), fn x -> x * 2 end)
       assert result == just(5)
     end
 
     test "returns the original Nothing value unchanged" do
-      result = Maybe.tap(nothing(), fn x -> x * 2 end)
+      result = Tappable.tap(nothing(), fn x -> x * 2 end)
       assert result == nothing()
     end
 
@@ -756,7 +757,7 @@ defmodule Funx.Monad.MaybeTest do
       test_pid = self()
 
       result =
-        Maybe.tap(just(42), fn x ->
+        Tappable.tap(just(42), fn x ->
           send(test_pid, {:tapped, x})
         end)
 
@@ -768,7 +769,7 @@ defmodule Funx.Monad.MaybeTest do
       refute_receive {:tapped}
 
       result =
-        Maybe.tap(nothing(), fn x ->
+        Tappable.tap(nothing(), fn x ->
           send(self(), {:tapped, x})
         end)
 
@@ -782,9 +783,9 @@ defmodule Funx.Monad.MaybeTest do
       result =
         just(5)
         |> map(&(&1 * 2))
-        |> Maybe.tap(fn x -> send(test_pid, {:step1, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:step1, x}) end)
         |> map(&(&1 + 1))
-        |> Maybe.tap(fn x -> send(test_pid, {:step2, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:step2, x}) end)
 
       assert result == just(11)
       assert_received {:step1, 10}
@@ -793,7 +794,7 @@ defmodule Funx.Monad.MaybeTest do
 
     test "discards the return value of the side effect function" do
       result =
-        Maybe.tap(just(5), fn _x ->
+        Tappable.tap(just(5), fn _x ->
           # Return value should be ignored
           :this_should_be_discarded
         end)
@@ -804,7 +805,7 @@ defmodule Funx.Monad.MaybeTest do
     test "allows side effects like logging without changing the value" do
       result =
         just(%{user: "alice", age: 30})
-        |> Maybe.tap(fn user ->
+        |> Tappable.tap(fn user ->
           # Simulate logging
           send(self(), {:log, "Processing user: #{user.user}"})
         end)

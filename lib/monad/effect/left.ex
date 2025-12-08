@@ -126,3 +126,10 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Left do
         when left: term()
   def ap(%Left{} = left, _func), do: left
 end
+
+defimpl Funx.Tappable, for: Funx.Monad.Effect.Left do
+  alias Funx.Monad.Effect.Left
+
+  @spec tap(Left.t(left), (term() -> any())) :: Left.t(left) when left: term()
+  def tap(%Left{} = left, _func), do: left
+end

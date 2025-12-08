@@ -6,8 +6,8 @@ defmodule WriterTest do
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Monad.Writer
 
-  alias Funx.Monad.Writer
   alias Funx.Monoid.StringConcat
+  alias Funx.Tappable
 
   test "pure wraps value with no log" do
     result =
@@ -39,7 +39,7 @@ defmodule WriterTest do
   test "tap returns the original Writer value unchanged" do
     result =
       pure(5)
-      |> Writer.tap(fn x -> x * 2 end)
+      |> Tappable.tap(fn x -> x * 2 end)
       |> run()
 
     assert result.value == 5
@@ -49,7 +49,7 @@ defmodule WriterTest do
   test "tap does not add to the log" do
     result =
       writer({42, [:initial]})
-      |> Writer.tap(fn _x -> :side_effect end)
+      |> Tappable.tap(fn _x -> :side_effect end)
       |> run()
 
     assert result.value == 42
@@ -61,7 +61,7 @@ defmodule WriterTest do
 
     result =
       pure(42)
-      |> Writer.tap(fn x ->
+      |> Tappable.tap(fn x ->
         send(test_pid, {:tapped, x})
       end)
       |> run()
@@ -76,9 +76,9 @@ defmodule WriterTest do
     result =
       pure(5)
       |> map(&(&1 * 2))
-      |> Writer.tap(fn x -> send(test_pid, {:step1, x}) end)
+      |> Tappable.tap(fn x -> send(test_pid, {:step1, x}) end)
       |> map(&(&1 + 1))
-      |> Writer.tap(fn x -> send(test_pid, {:step2, x}) end)
+      |> Tappable.tap(fn x -> send(test_pid, {:step2, x}) end)
       |> run()
 
     assert result.value == 11
@@ -90,7 +90,7 @@ defmodule WriterTest do
   test "tap discards the return value of the side effect function" do
     result =
       pure(5)
-      |> Writer.tap(fn _x ->
+      |> Tappable.tap(fn _x ->
         # Return value should be ignored
         :this_should_be_discarded
       end)
@@ -102,7 +102,7 @@ defmodule WriterTest do
   test "tap vs tell - tap does not log" do
     tap_result =
       pure(42)
-      |> Writer.tap(fn _x -> :side_effect end)
+      |> Tappable.tap(fn _x -> :side_effect end)
       |> run()
 
     tell_result =
@@ -122,12 +122,12 @@ defmodule WriterTest do
 
     result =
       pure(5)
-      |> Writer.tap(fn x -> send(test_pid, {:before_tell, x}) end)
+      |> Tappable.tap(fn x -> send(test_pid, {:before_tell, x}) end)
       |> bind(fn x ->
         tell([:processing])
         |> map(fn _ -> x * 2 end)
       end)
-      |> Writer.tap(fn x -> send(test_pid, {:after_tell, x}) end)
+      |> Tappable.tap(fn x -> send(test_pid, {:after_tell, x}) end)
       |> run()
 
     assert result.value == 10
