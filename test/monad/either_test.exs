@@ -16,6 +16,7 @@ defmodule Funx.Monad.EitherTest do
   alias Funx.{Eq, Ord}
   alias Funx.Monad.{Either, Maybe}
   alias Either.{Left, Right}
+  alias Funx.Tappable
 
   describe "pure/1" do
     test "wraps a value in a Right monad" do
@@ -220,14 +221,14 @@ defmodule Funx.Monad.EitherTest do
     end
   end
 
-  describe "Either.tap/2" do
+  describe "Tappable.tap/2" do
     test "returns the original Right value unchanged" do
-      result = Either.tap(right(5), fn x -> x * 2 end)
+      result = Tappable.tap(right(5), fn x -> x * 2 end)
       assert result == right(5)
     end
 
     test "returns the original Left value unchanged" do
-      result = Either.tap(left("error"), fn x -> x * 2 end)
+      result = Tappable.tap(left("error"), fn x -> x * 2 end)
       assert result == left("error")
     end
 
@@ -235,7 +236,7 @@ defmodule Funx.Monad.EitherTest do
       test_pid = self()
 
       result =
-        Either.tap(right(42), fn x ->
+        Tappable.tap(right(42), fn x ->
           send(test_pid, {:tapped, x})
         end)
 
@@ -247,7 +248,7 @@ defmodule Funx.Monad.EitherTest do
       refute_receive {:tapped}
 
       result =
-        Either.tap(left("error"), fn x ->
+        Tappable.tap(left("error"), fn x ->
           send(self(), {:tapped, x})
         end)
 
@@ -261,9 +262,9 @@ defmodule Funx.Monad.EitherTest do
       result =
         right(5)
         |> map(&(&1 * 2))
-        |> Either.tap(fn x -> send(test_pid, {:step1, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:step1, x}) end)
         |> map(&(&1 + 1))
-        |> Either.tap(fn x -> send(test_pid, {:step2, x}) end)
+        |> Tappable.tap(fn x -> send(test_pid, {:step2, x}) end)
 
       assert result == right(11)
       assert_received {:step1, 10}
@@ -272,7 +273,7 @@ defmodule Funx.Monad.EitherTest do
 
     test "discards the return value of the side effect function" do
       result =
-        Either.tap(right(5), fn _x ->
+        Tappable.tap(right(5), fn _x ->
           # Return value should be ignored
           :this_should_be_discarded
         end)
@@ -283,7 +284,7 @@ defmodule Funx.Monad.EitherTest do
     test "allows side effects like logging without changing the value" do
       result =
         right(%{user: "alice", age: 30})
-        |> Either.tap(fn user ->
+        |> Tappable.tap(fn user ->
           # Simulate logging
           send(self(), {:log, "Processing user: #{user.user}"})
         end)

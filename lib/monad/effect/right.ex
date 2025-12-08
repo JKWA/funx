@@ -207,4 +207,15 @@ defimpl Funx.Monad, for: Funx.Monad.Effect.Right do
       effect: fn env -> eff.(env) end
     }
   end
+
+  defimpl Funx.Tappable, for: Funx.Monad.Either.Right do
+    alias Funx.Monad.Either.Right
+
+    @spec tap(Right.t(value), (value -> any())) :: Right.t(value)
+          when value: term()
+    def tap(%{right: value} = right, fun) do
+      fun.(value)
+      right
+    end
+  end
 end
