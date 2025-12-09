@@ -64,8 +64,8 @@ defimpl Funx.Monoid, for: Funx.Monoid.LensCompose do
       end,
       fn s, a ->
         inner_struct = Lens.view!(s, outer)
-        updated_inner = Lens.set!(inner_struct, a, inner)
-        Lens.set!(s, updated_inner, outer)
+        updated_inner = Lens.set!(inner_struct, inner, a)
+        Lens.set!(s, outer, updated_inner)
       end
     )
 

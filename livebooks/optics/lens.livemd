@@ -176,7 +176,7 @@ Lens.view!(iron_man, Lens.key(:name))
 ```
 
 ```elixir
-Lens.set!(iron_man, "The Invincible Iron Man", Lens.key(:alias))
+Lens.set!(iron_man, Lens.key(:alias), "The Invincible Iron Man")
 ```
 
 ```elixir
@@ -191,7 +191,7 @@ Now that we can view, set, and transform individual fields, the next step is com
 
 ```elixir
 avengers
-|> Lens.set!("Cap", Lens.compose(Lens.key(:leader), Lens.key(:alias)))
+|> Lens.set!(Lens.compose(Lens.key(:leader), Lens.key(:alias)), "Cap")
 ```
 
 ```elixir
@@ -207,7 +207,7 @@ For deep paths, use `path/1` as shorthand.
 ```elixir
 updated =
   avengers
-  |> Lens.set!(95, Lens.path([:leader, :powers, :intelligence]))
+  |> Lens.set!(Lens.path([:leader, :powers, :intelligence]), 95)
 
 Powers.total(updated.leader.powers)
 ```
@@ -233,14 +233,14 @@ relocate_lens = Lens.make(
   end
 )
 
-relocated = Lens.set!(avengers, "Los Angeles", relocate_lens)
+relocated = Lens.set!(avengers, relocate_lens, "Los Angeles")
 relocated.base
 ```
 
 ```elixir
 avengers
-|> Lens.set!("San Francisco", relocate_lens)
-|> Lens.set!("West Coast Avengers", Lens.key(:name))
+|> Lens.set!(relocate_lens, "San Francisco")
+|> Lens.set!(Lens.key(:name), "West Coast Avengers")
 ```
 
 Custom lenses turn coordinated multi-field updates into single atomic operations.
@@ -271,7 +271,7 @@ Lens.view!(iron_man, power_level_lens)
 ```
 
 ```elixir
-balanced = Lens.set!(iron_man, 240, power_level_lens)
+balanced = Lens.set!(iron_man, power_level_lens, 240)
 Powers.total(balanced.powers)
 ```
 
@@ -282,11 +282,11 @@ Derived values now behave like regular fields.
 ```elixir
 upgraded =
   avengers
-  |> Lens.set!("New Avengers", Lens.key(:name))
+  |> Lens.set!(Lens.key(:name), "New Avengers")
   |> Lens.over!(fn s -> s + 10 end, Lens.path([:leader, :powers, :strength]))
   |> Lens.over!(fn s -> s + 10 end, Lens.path([:leader, :powers, :speed]))
   |> Lens.over!(fn s -> s + 10 end, Lens.path([:leader, :powers, :intelligence]))
-  |> Lens.set!("San Francisco", relocate_lens)
+  |> Lens.set!(relocate_lens, "San Francisco")
 
 Powers.total(upgraded.leader.powers)
 ```
@@ -312,12 +312,12 @@ iron_man.__struct__
 ```
 
 ```elixir
-updated = Lens.set!(iron_man, "Shellhead", Lens.key(:alias))
+updated = Lens.set!(iron_man, Lens.key(:alias), "Shellhead")
 updated.__struct__
 ```
 
 ```elixir
-updated_team = Lens.set!(avengers, "First Avenger", Lens.path([:leader, :alias]))
+updated_team = Lens.set!(avengers, Lens.path([:leader, :alias]), "First Avenger")
 {updated_team.__struct__, updated_team.leader.__struct__, updated_team.base.__struct__}
 ```
 
@@ -396,22 +396,22 @@ GetPut:
 
 ```elixir
 current = Lens.view!(iron_man, Lens.key(:alias))
-Lens.set!(iron_man, current, Lens.key(:alias)) == iron_man
+Lens.set!(iron_man, Lens.key(:alias), current) == iron_man
 ```
 
 PutGet:
 
 ```elixir
-updated = Lens.set!(iron_man, "Shellhead", Lens.key(:alias))
+updated = Lens.set!(iron_man, Lens.key(:alias), "Shellhead")
 Lens.view!(updated, Lens.key(:alias))
 ```
 
 PutPut:
 
 ```elixir
-a = Lens.set!(iron_man, "Shellhead", Lens.key(:alias))
-b = Lens.set!(a, "The Invincible Iron Man", Lens.key(:alias))
-Lens.set!(iron_man, "The Invincible Iron Man", Lens.key(:alias)) == b
+a = Lens.set!(iron_man, Lens.key(:alias), "Shellhead")
+b = Lens.set!(a, Lens.key(:alias), "The Invincible Iron Man")
+Lens.set!(iron_man, Lens.key(:alias), "The Invincible Iron Man") == b
 ```
 
 ## When to Use Lenses

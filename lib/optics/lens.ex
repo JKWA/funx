@@ -42,7 +42,7 @@ defmodule Funx.Optics.Lens do
       iex> lens = Lens.key(:age)
       iex> %{age: 40} |> Lens.view!(lens)
       40
-      iex> %{age: 40} |> Lens.set!(50, lens)
+      iex> %{age: 40} |> Lens.set!(lens, 50)
       %{age: 50}
 
   Composing lenses for nested access:
@@ -53,7 +53,7 @@ defmodule Funx.Optics.Lens do
       iex> lens = Lens.compose(outer, inner)
       iex> %{profile: %{score: 12}} |> Lens.view!(lens)
       12
-      iex> %{profile: %{score: 12}} |> Lens.set!(99, lens)
+      iex> %{profile: %{score: 12}} |> Lens.set!(lens, 99)
       %{profile: %{score: 99}}
 
   Deeply nested composition with `concat/1`:
@@ -62,7 +62,7 @@ defmodule Funx.Optics.Lens do
       iex> lens = Lens.concat([Lens.key(:stats), Lens.key(:wins)])
       iex> %{stats: %{wins: 7}} |> Lens.view!(lens)
       7
-      iex> %{stats: %{wins: 7}} |> Lens.set!(8, lens)
+      iex> %{stats: %{wins: 7}} |> Lens.set!(lens, 8)
       %{stats: %{wins: 8}}
   """
 
@@ -95,9 +95,9 @@ defmodule Funx.Optics.Lens do
     v.(s)
   end
 
-  @spec set!(s, a, t(s, a)) :: s
+  @spec set!(s, t(s, a), a) :: s
         when s: term(), a: term()
-  def set!(s, a, %__MODULE__{update: updater}) do
+  def set!(s, %__MODULE__{update: updater}, a) do
     updater.(s, a)
   end
 
@@ -163,7 +163,7 @@ defmodule Funx.Optics.Lens do
       iex> lens = Funx.Optics.Lens.key(:name)
       iex> %{name: "Alice"} |> Funx.Optics.Lens.view!(lens)
       "Alice"
-      iex> %{name: "Alice"} |> Funx.Optics.Lens.set!("Bob", lens)
+      iex> %{name: "Alice"} |> Funx.Optics.Lens.set!(lens, "Bob")
       %{name: "Bob"}
 
   With structs (preserves type):
@@ -172,7 +172,7 @@ defmodule Funx.Optics.Lens do
       lens = Funx.Optics.Lens.key(:name)
       user = %User{name: "Alice", age: 30}
       Funx.Optics.Lens.view!(user, lens) #=> "Alice"
-      Funx.Optics.Lens.set!(user, "Bob", lens) #=> %User{name: "Bob", age: 30}
+      Funx.Optics.Lens.set!(user, lens, "Bob") #=> %User{name: "Bob", age: 30}
   """
   @spec key(atom) :: t(map(), term())
   def key(k) when is_atom(k) do
@@ -195,7 +195,7 @@ defmodule Funx.Optics.Lens do
       iex> data = %{user: %{profile: %{name: "Alice"}}}
       iex> Funx.Optics.Lens.view!(data, lens)
       "Alice"
-      iex> Funx.Optics.Lens.set!(data, "Bob", lens)
+      iex> Funx.Optics.Lens.set!(data, lens, "Bob")
       %{user: %{profile: %{name: "Bob"}}}
 
   Raises on missing keys when accessed:
@@ -228,7 +228,7 @@ defmodule Funx.Optics.Lens do
 
       iex> lens = Funx.Optics.Lens.key(:age)
       iex> data = %{age: 40}
-      iex> Funx.Optics.Lens.over!(data, fn a -> a + 1 end, lens)
+      iex> Funx.Optics.Lens.over!(data, lens, fn a -> a + 1 end)
       %{age: 41}
 
   Works through composed lenses:
@@ -237,22 +237,22 @@ defmodule Funx.Optics.Lens do
       iex> inner = Funx.Optics.Lens.key(:score)
       iex> lens = Funx.Optics.Lens.compose(outer, inner)
       iex> data = %{profile: %{score: 10}}
-      iex> Funx.Optics.Lens.over!(data, fn s -> s * 2 end, lens)
+      iex> Funx.Optics.Lens.over!(data, lens, fn s -> s * 2 end)
       %{profile: %{score: 20}}
 
   Works through `path/1`:
 
       iex> lens = Funx.Optics.Lens.path([:stats, :wins])
       iex> data = %{stats: %{wins: 3}}
-      iex> Funx.Optics.Lens.over!(data, fn n -> n + 5 end, lens)
+      iex> Funx.Optics.Lens.over!(data, lens, fn n -> n + 5 end)
       %{stats: %{wins: 8}}
   """
 
-  @spec over!(s, (a -> a), t(s, a)) :: s
+  @spec over!(s, t(s, a), (a -> a)) :: s
         when s: term(), a: term()
-  def over!(s, f, %__MODULE__{} = lens) when is_function(f, 1) do
+  def over!(s, %__MODULE__{} = lens, f) when is_function(f, 1) do
     current = view!(s, lens)
     updated = f.(current)
-    set!(s, updated, lens)
+    set!(s, lens, updated)
   end
 end
