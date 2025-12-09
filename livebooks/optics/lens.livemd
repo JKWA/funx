@@ -180,7 +180,7 @@ Lens.set!(iron_man, Lens.key(:alias), "The Invincible Iron Man")
 ```
 
 ```elixir
-Lens.over!(avengers, fn year -> year + 1 end, Lens.key(:founded))
+Lens.over!(avengers, Lens.key(:founded), fn year -> year + 1 end)
 ```
 
 Much cleaner, and predictable - both operations make the same promise about the focus.
@@ -197,8 +197,8 @@ avengers
 ```elixir
 avengers
 |> Lens.over!(
-  fn s -> s + 10 end,
-  Lens.key(:leader) |> Lens.compose(Lens.key(:powers)) |> Lens.compose(Lens.key(:strength))
+  Lens.key(:leader) |> Lens.compose(Lens.key(:powers)) |> Lens.compose(Lens.key(:strength)),
+  fn s -> s + 10 end
 )
 ```
 
@@ -283,9 +283,9 @@ Derived values now behave like regular fields.
 upgraded =
   avengers
   |> Lens.set!(Lens.key(:name), "New Avengers")
-  |> Lens.over!(fn s -> s + 10 end, Lens.path([:leader, :powers, :strength]))
-  |> Lens.over!(fn s -> s + 10 end, Lens.path([:leader, :powers, :speed]))
-  |> Lens.over!(fn s -> s + 10 end, Lens.path([:leader, :powers, :intelligence]))
+  |> Lens.over!(Lens.path([:leader, :powers, :strength]), fn s -> s + 10 end)
+  |> Lens.over!(Lens.path([:leader, :powers, :speed]), fn s -> s + 10 end)
+  |> Lens.over!(Lens.path([:leader, :powers, :intelligence]), fn s -> s + 10 end)
   |> Lens.set!(relocate_lens, "San Francisco")
 
 Powers.total(upgraded.leader.powers)
@@ -300,7 +300,7 @@ speed_lens = Lens.concat([
   Lens.key(:speed)
 ])
 
-Lens.over!(avengers, fn s -> s * 2 end, speed_lens)
+Lens.over!(avengers, speed_lens, fn s -> s * 2 end)
 ```
 
 Each lens focuses on exactly one concern.
