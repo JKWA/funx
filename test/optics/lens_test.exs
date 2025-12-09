@@ -547,4 +547,256 @@ defmodule Funx.Optics.LensTest do
       assert updated.salary == 120_000
     end
   end
+
+  describe "safe view/3" do
+    test "returns Right on success with default :either mode" do
+      lens = Lens.key(:name)
+      result = Lens.view(%{name: "Alice"}, lens)
+
+      assert %Funx.Monad.Either.Right{right: "Alice"} = result
+    end
+
+    test "returns Left on error with default :either mode" do
+      lens = Lens.key(:name)
+      result = Lens.view(%{}, lens)
+
+      assert %Funx.Monad.Either.Left{left: %KeyError{}} = result
+    end
+
+    test "returns Right on success with explicit :either mode" do
+      lens = Lens.key(:age)
+      result = Lens.view(%{age: 30}, lens, as: :either)
+
+      assert %Funx.Monad.Either.Right{right: 30} = result
+    end
+
+    test "returns {:ok, value} on success with :tuple mode" do
+      lens = Lens.key(:name)
+      result = Lens.view(%{name: "Bob"}, lens, as: :tuple)
+
+      assert {:ok, "Bob"} = result
+    end
+
+    test "returns {:error, exception} on error with :tuple mode" do
+      lens = Lens.key(:name)
+      result = Lens.view(%{}, lens, as: :tuple)
+
+      assert {:error, %KeyError{key: :name}} = result
+    end
+
+    test "raises on error with :raise mode" do
+      lens = Lens.key(:name)
+
+      assert_raise KeyError, fn ->
+        Lens.view(%{}, lens, as: :raise)
+      end
+    end
+
+    test "returns value directly on success with :raise mode" do
+      lens = Lens.key(:name)
+      result = Lens.view(%{name: "Charlie"}, lens, as: :raise)
+
+      assert result == "Charlie"
+    end
+
+    test "works with composed lenses" do
+      outer = Lens.key(:profile)
+      inner = Lens.key(:score)
+      lens = Lens.compose(outer, inner)
+
+      result = Lens.view(%{profile: %{score: 100}}, lens)
+      assert %Funx.Monad.Either.Right{right: 100} = result
+
+      result = Lens.view(%{}, lens)
+      assert %Funx.Monad.Either.Left{} = result
+    end
+
+    test "works with path lenses" do
+      lens = Lens.path([:user, :name])
+
+      result = Lens.view(%{user: %{name: "Dave"}}, lens)
+      assert %Funx.Monad.Either.Right{right: "Dave"} = result
+
+      result = Lens.view(%{}, lens)
+      assert %Funx.Monad.Either.Left{} = result
+    end
+  end
+
+  describe "safe set/4" do
+    test "returns Right on success with default :either mode" do
+      lens = Lens.key(:age)
+      result = Lens.set(%{age: 30}, lens, 31)
+
+      assert %Funx.Monad.Either.Right{right: %{age: 31}} = result
+    end
+
+    test "returns Left on error with default :either mode" do
+      lens = Lens.key(:age)
+      result = Lens.set(%{}, lens, 31)
+
+      assert %Funx.Monad.Either.Left{left: %KeyError{}} = result
+    end
+
+    test "returns Right on success with explicit :either mode" do
+      lens = Lens.key(:name)
+      result = Lens.set(%{name: "Alice"}, lens, "Bob", as: :either)
+
+      assert %Funx.Monad.Either.Right{right: %{name: "Bob"}} = result
+    end
+
+    test "returns {:ok, updated} on success with :tuple mode" do
+      lens = Lens.key(:count)
+      result = Lens.set(%{count: 5}, lens, 10, as: :tuple)
+
+      assert {:ok, %{count: 10}} = result
+    end
+
+    test "returns {:error, exception} on error with :tuple mode" do
+      lens = Lens.key(:count)
+      result = Lens.set(%{}, lens, 10, as: :tuple)
+
+      assert {:error, %KeyError{key: :count}} = result
+    end
+
+    test "raises on error with :raise mode" do
+      lens = Lens.key(:name)
+
+      assert_raise KeyError, fn ->
+        Lens.set(%{}, lens, "Alice", as: :raise)
+      end
+    end
+
+    test "returns value directly on success with :raise mode" do
+      lens = Lens.key(:name)
+      result = Lens.set(%{name: "Alice"}, lens, "Bob", as: :raise)
+
+      assert result == %{name: "Bob"}
+    end
+
+    test "works with composed lenses" do
+      outer = Lens.key(:profile)
+      inner = Lens.key(:score)
+      lens = Lens.compose(outer, inner)
+
+      result = Lens.set(%{profile: %{score: 50}}, lens, 100)
+      assert %Funx.Monad.Either.Right{right: %{profile: %{score: 100}}} = result
+
+      result = Lens.set(%{}, lens, 100)
+      assert %Funx.Monad.Either.Left{} = result
+    end
+
+    test "works with path lenses" do
+      lens = Lens.path([:stats, :wins])
+
+      result = Lens.set(%{stats: %{wins: 5}}, lens, 10)
+      assert %Funx.Monad.Either.Right{right: %{stats: %{wins: 10}}} = result
+
+      result = Lens.set(%{}, lens, 10)
+      assert %Funx.Monad.Either.Left{} = result
+    end
+
+    test "preserves struct types on success" do
+      lens = Lens.key(:name)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      result = Lens.set(user, lens, "Bob")
+      assert %Funx.Monad.Either.Right{right: updated} = result
+      assert updated.__struct__ == User
+      assert updated.name == "Bob"
+    end
+  end
+
+  describe "safe over/4" do
+    test "returns Right on success with default :either mode" do
+      lens = Lens.key(:age)
+      result = Lens.over(%{age: 30}, lens, fn a -> a + 1 end)
+
+      assert %Funx.Monad.Either.Right{right: %{age: 31}} = result
+    end
+
+    test "returns Left on error with default :either mode" do
+      lens = Lens.key(:age)
+      result = Lens.over(%{}, lens, fn a -> a + 1 end)
+
+      assert %Funx.Monad.Either.Left{left: %KeyError{}} = result
+    end
+
+    test "returns Right on success with explicit :either mode" do
+      lens = Lens.key(:count)
+      result = Lens.over(%{count: 5}, lens, fn c -> c * 2 end, as: :either)
+
+      assert %Funx.Monad.Either.Right{right: %{count: 10}} = result
+    end
+
+    test "returns {:ok, updated} on success with :tuple mode" do
+      lens = Lens.key(:score)
+      result = Lens.over(%{score: 10}, lens, fn s -> s + 5 end, as: :tuple)
+
+      assert {:ok, %{score: 15}} = result
+    end
+
+    test "returns {:error, exception} on error with :tuple mode" do
+      lens = Lens.key(:score)
+      result = Lens.over(%{}, lens, fn s -> s + 5 end, as: :tuple)
+
+      assert {:error, %KeyError{key: :score}} = result
+    end
+
+    test "raises on error with :raise mode" do
+      lens = Lens.key(:value)
+
+      assert_raise KeyError, fn ->
+        Lens.over(%{}, lens, fn v -> v + 1 end, as: :raise)
+      end
+    end
+
+    test "returns value directly on success with :raise mode" do
+      lens = Lens.key(:value)
+      result = Lens.over(%{value: 10}, lens, fn v -> v * 2 end, as: :raise)
+
+      assert result == %{value: 20}
+    end
+
+    test "works with composed lenses" do
+      outer = Lens.key(:profile)
+      inner = Lens.key(:score)
+      lens = Lens.compose(outer, inner)
+
+      result = Lens.over(%{profile: %{score: 50}}, lens, fn s -> s * 2 end)
+      assert %Funx.Monad.Either.Right{right: %{profile: %{score: 100}}} = result
+
+      result = Lens.over(%{}, lens, fn s -> s * 2 end)
+      assert %Funx.Monad.Either.Left{} = result
+    end
+
+    test "works with path lenses" do
+      lens = Lens.path([:stats, :wins])
+
+      result = Lens.over(%{stats: %{wins: 5}}, lens, fn w -> w + 3 end)
+      assert %Funx.Monad.Either.Right{right: %{stats: %{wins: 8}}} = result
+
+      result = Lens.over(%{}, lens, fn w -> w + 3 end)
+      assert %Funx.Monad.Either.Left{} = result
+    end
+
+    test "preserves struct types on success" do
+      lens = Lens.key(:age)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      result = Lens.over(user, lens, fn a -> a + 1 end)
+      assert %Funx.Monad.Either.Right{right: updated} = result
+      assert updated.__struct__ == User
+      assert updated.age == 31
+    end
+
+    test "applies function correctly through nested structures" do
+      lens = Lens.path([:user, :age])
+      data = %{user: %{name: "Bob", age: 25}}
+
+      result = Lens.over(data, lens, fn age -> age + 10 end)
+      assert %Funx.Monad.Either.Right{right: updated} = result
+      assert updated.user.age == 35
+      assert updated.user.name == "Bob"
+    end
+  end
 end
