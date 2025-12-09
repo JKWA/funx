@@ -102,6 +102,53 @@ defmodule Funx.Optics.Lens do
   end
 
   @doc """
+  Updates the focused part of a structure by applying a function to it.
+
+  This is the derived transformation operation for a lens. It is implemented
+  as:
+
+  - `view!/2` to extract the focused part
+  - Application of the given function
+  - `set!/3` to write the result back
+
+  Because lenses are **total**, `over!/3` is also total. If the focus does not
+  exist, a `KeyError` is raised by `view!/2` or `set!/3`.
+
+  Only the focused part is changed. All other structure and data is preserved.
+
+  ## Examples
+
+      iex> lens = Funx.Optics.Lens.key(:age)
+      iex> data = %{age: 40}
+      iex> Funx.Optics.Lens.over!(data, lens, fn a -> a + 1 end)
+      %{age: 41}
+
+  Works through composed lenses:
+
+      iex> outer = Funx.Optics.Lens.key(:profile)
+      iex> inner = Funx.Optics.Lens.key(:score)
+      iex> lens = Funx.Optics.Lens.compose(outer, inner)
+      iex> data = %{profile: %{score: 10}}
+      iex> Funx.Optics.Lens.over!(data, lens, fn s -> s * 2 end)
+      %{profile: %{score: 20}}
+
+  Works through `path/1`:
+
+      iex> lens = Funx.Optics.Lens.path([:stats, :wins])
+      iex> data = %{stats: %{wins: 3}}
+      iex> Funx.Optics.Lens.over!(data, lens, fn n -> n + 5 end)
+      %{stats: %{wins: 8}}
+  """
+
+  @spec over!(s, t(s, a), (a -> a)) :: s
+        when s: term(), a: term()
+  def over!(s, %__MODULE__{} = lens, f) when is_function(f, 1) do
+    current = view!(s, lens)
+    updated = f.(current)
+    set!(s, lens, updated)
+  end
+
+  @doc """
   Composes two lenses. The outer lens focuses first, then the inner lens
   focuses within the result.
 
@@ -207,52 +254,5 @@ defmodule Funx.Optics.Lens do
   @spec path([term()]) :: t(map(), term())
   def path(keys) when is_list(keys) do
     concat(Enum.map(keys, &key/1))
-  end
-
-  @doc """
-  Updates the focused part of a structure by applying a function to it.
-
-  This is the derived transformation operation for a lens. It is implemented
-  as:
-
-  - `view!/2` to extract the focused part
-  - Application of the given function
-  - `set!/3` to write the result back
-
-  Because lenses are **total**, `over!/3` is also total. If the focus does not
-  exist, a `KeyError` is raised by `view!/2` or `set!/3`.
-
-  Only the focused part is changed. All other structure and data is preserved.
-
-  ## Examples
-
-      iex> lens = Funx.Optics.Lens.key(:age)
-      iex> data = %{age: 40}
-      iex> Funx.Optics.Lens.over!(data, lens, fn a -> a + 1 end)
-      %{age: 41}
-
-  Works through composed lenses:
-
-      iex> outer = Funx.Optics.Lens.key(:profile)
-      iex> inner = Funx.Optics.Lens.key(:score)
-      iex> lens = Funx.Optics.Lens.compose(outer, inner)
-      iex> data = %{profile: %{score: 10}}
-      iex> Funx.Optics.Lens.over!(data, lens, fn s -> s * 2 end)
-      %{profile: %{score: 20}}
-
-  Works through `path/1`:
-
-      iex> lens = Funx.Optics.Lens.path([:stats, :wins])
-      iex> data = %{stats: %{wins: 3}}
-      iex> Funx.Optics.Lens.over!(data, lens, fn n -> n + 5 end)
-      %{stats: %{wins: 8}}
-  """
-
-  @spec over!(s, t(s, a), (a -> a)) :: s
-        when s: term(), a: term()
-  def over!(s, %__MODULE__{} = lens, f) when is_function(f, 1) do
-    current = view!(s, lens)
-    updated = f.(current)
-    set!(s, lens, updated)
   end
 end
