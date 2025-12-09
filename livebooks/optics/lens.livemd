@@ -1,0 +1,437 @@
+# Funx.Optics.Lens
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", branch: "optic-lens"}
+])
+```
+
+## Elixir's built-in path accessors
+
+Elixir provides `get_in/2`, `put_in/3`, and `update_in/3` which operate on paths - lists like `[:owner, :name]` that describe how to navigate into a structure. These aren't true lenses (which package get/set logic), but runtime path interpreters.
+
+Let’s start with some data:
+
+```elixir
+garfield = %{
+  name: "Garfield",
+  weight: 20,
+  owner: %{
+    name: "Jon"
+  }
+}
+```
+
+Here is our path into the owner's name:
+
+```elixir
+path = [:owner, :name]
+```
+
+We can read through the path:
+
+```elixir
+get_in(garfield, path)
+```
+
+We can write through the path:
+
+```elixir
+put_in(garfield, path, "Jonathon")
+```
+
+And we can update through the path:
+
+```elixir
+update_in(garfield, path, fn name -> String.upcase(name) end)
+```
+
+Now consider an invalid path:
+
+```elixir
+invalid_path = [:owner, :age]
+```
+
+If we read:
+
+```elixir
+get_in(garfield, invalid_path)
+```
+
+We get `nil`. That `nil` is ambiguous. It could mean the `:owner` key is missing. It could mean the `:age` key is missing. It could mean both keys exist and the value is actually `nil`. From the result alone, there is no way to know.
+
+Now we write:
+
+```elixir
+put_in(garfield, invalid_path, 40)
+```
+
+This succeeds. Even though the path does not actually point to a valid location in the original structure, Elixir treats the write as a create and silently changes the shape of the data.
+
+Now we try to update:
+
+```elixir
+update_in(garfield, invalid_path, fn curr -> curr + 1 end)
+```
+
+Here the fallback breaks down completely, because `curr` is `nil` and the function crashes.
+
+At this point the same path has produced three different behaviors depending on which operation you chose: read returns `nil`, write creates new structure, update crashes. None of that behavior is visible from the path itself. It is determined entirely by runtime shape and fallback rules.
+
+So, although Elixir has path-based accessors, they aren't lawful lenses.
+
+## Lawful Lenses: Symmetric, Explicit Contracts
+
+A lawful lens is a data structure that packages both viewer and updater logic with guaranteed behavior. The lens makes one simple promise: the focus exists, or you get an explicit error.
+
+If the focus is valid, you can read it, write it, and update it. If not valid, all operations fail explicitly. There is no fallback, no auto-creation, and no silent fixing.
+
+This is what makes composition safe and refactoring predictable. Behavior depends only on the lens itself, not the runtime shape of the data. Everyone on the team makes the same assumptions, and errors stop exactly where an assumption breaks instead of being “cured” into a different, harder-to-find bug downstream.
+
+## Funx.Optics.Lens
+
+Funx provides lawful lenses that:
+
+* Package viewer and updater logic together
+* Enforce symmetric contracts (read and write have same requirements)
+* Work uniformly on both maps and structs
+
+```elixir
+import Funx.Optics.Lens
+alias Funx.Optics.Lens
+```
+
+## Setup: Superhero Data
+
+We’ll use a superhero domain where some updates must stay in sync.
+
+```elixir
+defmodule Powers do
+  defstruct [:strength, :speed, :intelligence]
+
+  def total(%Powers{} = p), do: p.strength + p.speed + p.intelligence
+end
+
+defmodule Hero do
+  defstruct [:name, :alias, :powers]
+end
+
+defmodule Headquarters do
+  @cities %{
+    "New York" => {40.7128, -74.0060},
+    "Los Angeles" => {34.0522, -118.2437},
+    "San Francisco" => {37.7749, -122.4194}
+  }
+
+  defstruct [:city, :latitude, :longitude]
+
+  def relocate(city) when is_map_key(@cities, city) do
+    {lat, lon} = Map.fetch!(@cities, city)
+    %Headquarters{city: city, latitude: lat, longitude: lon}
+  end
+end
+
+defmodule Team do
+  defstruct [:name, :leader, :base, :founded]
+end
+```
+
+```elixir
+iron_man = %Hero{
+  name: "Tony Stark",
+  alias: "Iron Man",
+  powers: %Powers{
+    strength: 85,
+    speed: 70,
+    intelligence: 100
+  }
+}
+
+avengers = %Team{
+  name: "Avengers",
+  leader: %Hero{
+    name: "Steve Rogers",
+    alias: "Captain America",
+    powers: %Powers{
+      strength: 90,
+      speed: 75,
+      intelligence: 80
+    }
+  },
+  base: %Headquarters{
+    city: "New York",
+    latitude: 40.7128,
+    longitude: -74.0060
+  },
+  founded: 1963
+}
+```
+
+## Basic Operations
+
+Lenses give you three operations that work uniformly across any field.
+
+```elixir
+Lens.view!(iron_man, Lens.key(:name))
+```
+
+```elixir
+Lens.set!(iron_man, "The Invincible Iron Man", Lens.key(:alias))
+```
+
+```elixir
+Lens.over!(avengers, fn year -> year + 1 end, Lens.key(:founded))
+```
+
+Much cleaner, and predictable - both operations make the same promise about the focus.
+
+## Composition: Reaching Through Layers
+
+Now that we can view, set, and transform individual fields, the next step is composition.
+
+```elixir
+avengers
+|> Lens.set!("Cap", Lens.compose(Lens.key(:leader), Lens.key(:alias)))
+```
+
+```elixir
+avengers
+|> Lens.over!(
+  fn s -> s + 10 end,
+  Lens.key(:leader) |> Lens.compose(Lens.key(:powers)) |> Lens.compose(Lens.key(:strength))
+)
+```
+
+For deep paths, use `path/1` as shorthand.
+
+```elixir
+updated =
+  avengers
+  |> Lens.set!(95, Lens.path([:leader, :powers, :intelligence]))
+
+Powers.total(updated.leader.powers)
+```
+
+No manual destructuring. Compose to any depth.
+
+## Custom Lenses: Coordinated Updates
+
+Some updates must change multiple fields together.
+
+```elixir
+broken = %{avengers | base: %{avengers.base | city: "Los Angeles"}}
+broken.base
+```
+
+Create a custom lens that performs the update atomically.
+
+```elixir
+relocate_lens = Lens.make(
+  fn team -> team.base.city end,
+  fn team, new_city ->
+    %{team | base: Headquarters.relocate(new_city)}
+  end
+)
+
+relocated = Lens.set!(avengers, "Los Angeles", relocate_lens)
+relocated.base
+```
+
+```elixir
+avengers
+|> Lens.set!("San Francisco", relocate_lens)
+|> Lens.set!("West Coast Avengers", Lens.key(:name))
+```
+
+Custom lenses turn coordinated multi-field updates into single atomic operations.
+
+### Derived Values as Fields
+
+Derived values can also be treated as first-class fields.
+
+```elixir
+power_level_lens = Lens.make(
+  fn hero ->
+    p = hero.powers
+    p.strength + p.speed + p.intelligence
+  end,
+  fn hero, new_total ->
+    avg = div(new_total, 3)
+    remainder = rem(new_total, 3)
+
+    %{hero | powers: %Powers{
+      strength: avg + remainder,
+      speed: avg,
+      intelligence: avg
+    }}
+  end
+)
+
+Lens.view!(iron_man, power_level_lens)
+```
+
+```elixir
+balanced = Lens.set!(iron_man, 240, power_level_lens)
+Powers.total(balanced.powers)
+```
+
+Derived values now behave like regular fields.
+
+## Pipelines and Composition
+
+```elixir
+upgraded =
+  avengers
+  |> Lens.set!("New Avengers", Lens.key(:name))
+  |> Lens.over!(fn s -> s + 10 end, Lens.path([:leader, :powers, :strength]))
+  |> Lens.over!(fn s -> s + 10 end, Lens.path([:leader, :powers, :speed]))
+  |> Lens.over!(fn s -> s + 10 end, Lens.path([:leader, :powers, :intelligence]))
+  |> Lens.set!("San Francisco", relocate_lens)
+
+Powers.total(upgraded.leader.powers)
+```
+
+Reusable compositions from lists:
+
+```elixir
+speed_lens = Lens.concat([
+  Lens.key(:leader),
+  Lens.key(:powers),
+  Lens.key(:speed)
+])
+
+Lens.over!(avengers, fn s -> s * 2 end, speed_lens)
+```
+
+Each lens focuses on exactly one concern.
+
+## Type Preservation
+
+```elixir
+iron_man.__struct__
+```
+
+```elixir
+updated = Lens.set!(iron_man, "Shellhead", Lens.key(:alias))
+updated.__struct__
+```
+
+```elixir
+updated_team = Lens.set!(avengers, "First Avenger", Lens.path([:leader, :alias]))
+{updated_team.__struct__, updated_team.leader.__struct__, updated_team.base.__struct__}
+```
+
+No manual struct reconstruction. Types are preserved through any depth.
+
+## How It Works
+
+A lens is a data structure with two functions.
+
+* viewer: structure -> focused value
+* updater: structure, new value -> updated structure
+
+From these:
+
+* view! calls the viewer
+* set! calls the updater
+* over! uses both
+
+### Composition
+
+When you compose two lenses:
+
+* viewers run in sequence
+* updaters rebuild from the inside out
+
+This is why `compose/2` and `path/1` work at any depth.
+
+### Key Constructors
+
+* key/1
+* path/1
+* make/2
+* concat/1
+
+## What Total Means
+
+A lens assumes the focused value always exists.
+
+```elixir
+# Lens.view!(%{}, Lens.key(:missing))
+```
+
+This fails immediately and explicitly.
+
+By contrast:
+
+```elixir
+get_in(%{}, [:missing])
+```
+
+Lenses fail fast and clearly.
+
+## Monoid Structure
+
+This matters when you need to build lenses dynamically from config or runtime data.
+
+* Identity: `Lens.concat([])`
+* Operation: `compose/2`
+
+```elixir
+identity = Lens.concat([])
+Lens.view!(iron_man, identity) == iron_man
+```
+
+```elixir
+config_path = [:leader, :powers, :strength]
+dynamic_lens = Lens.concat(Enum.map(config_path, &Lens.key/1))
+Lens.view!(avengers, dynamic_lens)
+```
+
+Monoid laws guarantee predictable composition.
+
+## Lens Laws
+
+GetPut:
+
+```elixir
+current = Lens.view!(iron_man, Lens.key(:alias))
+Lens.set!(iron_man, current, Lens.key(:alias)) == iron_man
+```
+
+PutGet:
+
+```elixir
+updated = Lens.set!(iron_man, "Shellhead", Lens.key(:alias))
+Lens.view!(updated, Lens.key(:alias))
+```
+
+PutPut:
+
+```elixir
+a = Lens.set!(iron_man, "Shellhead", Lens.key(:alias))
+b = Lens.set!(a, "The Invincible Iron Man", Lens.key(:alias))
+Lens.set!(iron_man, "The Invincible Iron Man", Lens.key(:alias)) == b
+```
+
+## When to Use Lenses
+
+Use lenses when:
+
+* The focus always exists
+* You need clean composition
+* You want type preservation
+* You are building reusable accessors
+
+Use prisms when the focus might not exist.
+
+## Summary
+
+Lenses give you:
+
+* Clean nested updates
+* Composable accessors at any depth
+* Type-preserving immutable updates
+* Lawful behavior you can rely on
+
+Three operations, three constructors, and composition give you everything you need to work with deeply nested immutable data.

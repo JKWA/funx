@@ -9,7 +9,7 @@ defmodule Funx.Optics.Lens do
 
   Both `view!` and `set!` enforce totality symmetrically for all data types (maps,
   structs, etc.). If either operation can succeed when the focus is missing, you
-  no longer have a lens - you have a prism, traversal, or optional.
+  no longer have a lens: you have a prism, traversal, or optional.
 
   **If the focus might not exist, use a prism instead.**
 
