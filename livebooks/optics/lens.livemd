@@ -50,7 +50,7 @@ The purpose of lensing is not convenience. It is legality.
 
 ## Elixir's Built-in Accessors
 
-Elixir provides `get_in/2`, `put_in/3`, and `update_in/3` which operate on paths - lists like `[:owner, :name]` that describe how to navigate into a structure.
+Elixir provides `get_in/2`, `put_in/3`, and `update_in/3` which operate on paths that describe how to navigate into a structure.
 
 First, we'll start with some data:
 
@@ -178,7 +178,7 @@ Let's write to an invalid focus:
 Lens.set!(garfield, invalid_lens, "Jonathon")
 ```
 
-Again, a `KeyError`. A legal lens will not write to an invalid focus.
+Again, a `KeyError`. A lawful lens will not write to an invalid focus.
 
 And if we view:
 
@@ -186,7 +186,7 @@ And if we view:
 Lens.view!(garfield, invalid_lens)
 ```
 
-You guessed it, a `KeyError`. A legal lens will not allow us to read an invalid focus.
+You guessed it, a `KeyError`. A lawful lens will not even allow us to read an invalid focus.
 
 ### A Lens is Lawful
 
@@ -194,7 +194,7 @@ If the focus is valid, you can read it, write it, and update it. If not valid, a
 
 This is what makes composition safe and refactoring predictable. Behavior depends only on the lens itself, not the runtime shape of the data. Everything makes the same assumptions, and errors stop exactly where an assumption breaks instead of being "cured" into a hard-to-find downstream bug.
 
-Structs have a fixed schema. The asymmetric behavior of `put_in` (creating keys on write) is fundamentally incompatible with that constraint. Lawful lenses enforce symmetric contracts, so they work uniformly on both maps and structs.
+Structs have a fixed schema. The asymmetric behavior of `put_in` (creating keys on write) is fundamentally incompatible with that constraint. Lawful lenses enforce symmetric contracts, so they will work on structs.
 
 ## Yes, We Can Lens a Struct
 
@@ -233,7 +233,7 @@ Lens.set!(sylvester, valid_lens, "Gramps")
 Lens.over!(sylvester, valid_lens, fn name -> String.upcase(name) end)
 ```
 
-In a legal Lens, an invalid focus will always fail:
+In a lawful Lens, an invalid focus will always fail:
 
 ```elixir
 Lens.view!(sylvester, invalid_lens)
@@ -273,17 +273,23 @@ We want lenses to solve this problem:
 put_in(garfield, [:owner, :nane], "Dave")
 ```
 
-There's your downstream bug.
+There's a downstream bug.
 
 ```elixir
-Lens.set!(sylvester, Lens.path([:owner, :nane]), "Dave")
+struct(sylvester, %{oner: %Owner{name: "Dave"}})
 ```
 
-You're code is wrong, and here's the error.
+There's a different bug.
+
+```elixir
+Lens.set!(garfield, Lens.path([:owner, :nane]), "Dave")
+```
+
+Under the Lens contract, your code is wrong, so here's the error.
 
 ## More Complex Examples
 
-We'll use a superhero domain where some updates must stay in sync.
+Let's make a Superhero domain.
 
 ```elixir
 defmodule Powers do
@@ -431,7 +437,7 @@ avengers
 |> Lens.view!(headquarters_lens)
 ```
 
-Structurally, this works, but it is semantically wrong. The city is updated, while the latitude and longitude still point to New York. We have violated one of our domain invariants with a perfectly legal structural operation.
+Structurally, this works, but it is semantically wrong. The city is updated, while the latitude and longitude still point to New York. We have violated one of our domain invariants with a lawful structural operation.
 
 We need a lens which *focuses* the city, but *atomically* sets the entire headquarters.
 
@@ -471,9 +477,29 @@ avengers
 |> Lens.set!(Lens.key(:name), "West Coast Avengers")
 ```
 
-At this point, coordinated multi-field updates behave exactly like simple field updates. The difference is not at the call site. The difference is that the invariant is now enforced by construction.
+And we can even use Either's DSL to create a safe pipe:
 
-Custom lenses turn coordinated rewrites into single, lawful operations.
+```elixir
+use Funx.Monad.Either
+
+either avengers, as: :tuple do
+  bind Lens.set(relocate_lens, "San Francisco")
+  bind Lens.set(Lens.key(:name), "West Coast Avengers")
+  bind Lens.set(leader_intelligence, 195)
+  bind Lens.set(Lens.path([:leader, :alias]), "Cap")
+end
+```
+
+Which will report its first error:
+
+```elixir
+either avengers, as: :tuple do
+  bind Lens.set(relocate_lens, "San Francisco")
+  bind Lens.set(Lens.key(:nane), "West Coast Avengers")
+  bind Lens.set(leader_intelligence, 195)
+  bind Lens.set(Lens.path([:leader, :alias]), "Cap")
+end
+```
 
 ### Derived Values as Fields
 
@@ -532,7 +558,7 @@ power_level_lens =
   )
 ```
 
-This lens now behaves like a real field:
+This lens now behaves like a field:
 
 * the viewer derives a value
 * the setter performs a coordinated multi-field rewrite
@@ -562,3 +588,7 @@ garfield
 ```
 
 We get that `KeyError`.
+
+## Conclusion
+
+Elixir makes nested updates convenient. Funx makes them correct. The difference is lawfulness: symmetric contracts that catch bugs at the call site instead of downstream, work uniformly on maps and structs, and compose without surprises. As your codebase grows, that predictability compounds.
