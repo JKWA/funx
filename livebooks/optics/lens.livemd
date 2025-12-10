@@ -1,14 +1,60 @@
 # Funx.Optics.Lens
 
+## Section
+
 ```elixir
 Mix.install([
-  {:funx, github: "JKWA/funx", branch: "optic-lens"}
+  {:funx, github: "JKWA/funx", ref: "bbde4c4", force: true}
 ])
 ```
 
+## Reason
+
+If you read through technical papers on lensing, they explain why it is "interesting", but they don't make a case for why we might want to adopt it.
+
+But there are lots of blog posts out there which do try to make the case for why we might want to bring lensing into our code.
+
+### It's tedious
+
+A typical argument for lensing is that manipulating nested data is difficult.
+
+* [Manipulating fields can be tedious.](https://richashworth.com/blog/functional-patterns-in-scala-lenses)
+
+* [Nested data structures are a pain to inspect and change.](https://rockthejvm.com/articles/lenses-prisms-and-optics-in-scala)
+
+* [They can reduce the amount of code we have to write significantly.](https://medium.com/@gcanti/introduction-to-optics-lenses-and-prisms-3230e73bfcfe)
+
+Note, this is certainly true in Scala, but it would be hard to say lensing in Elixir is hard.
+
+* [Lens only exists because the native type system makes that work too hard.](https://elixirforum.com/t/the-complexity-of-haskell-vs-elixirs-simplicity/16366)
+
+And even Haskell devs are not so sure.
+
+* [More trouble than they’re worth.](https://reasonablypolymorphic.com/blog/code-lenses/)
+
+### Composability
+
+Another pitch is that lenses are composable.
+
+* [What makes lenses useful, however, is the fact that they can be composed!](https://medium.com/@heytherewill/functional-programming-optics-in-net-7e1998bfb47e)
+
+But although Lens's are composable, so typically are any sort of projection functions, makeing it hard to say we should bother.
+
+### Helpful For Hard Problems
+
+Or, yes, they can be a pain, but they are helpful for some specific problems:
+
+* [Optics as proxies.](https://medium.com/%40wigahluk/another-look-through-optics-ffd253336e9c)
+
+Yes, but this suggests you only reach for lensing when you really really need it.
+
+Honestly, these are just incidental "nice to have" arguments, not the real reason you want lensing.
+
+The purpose of lensing isn't convenience, it's legality.
+
 ## Elixir's built-in path accessors
 
-Elixir provides `get_in/2`, `put_in/3`, and `update_in/3` which operate on paths - lists like `[:owner, :name]` that describe how to navigate into a structure. These aren't true lenses (which package get/set logic), but runtime path interpreters.
+Elixir provides `get_in/2`, `put_in/3`, and `update_in/3` which operate on paths - lists like `[:owner, :name]` that describe how to navigate into a structure.
 
 Let’s start with some data:
 
@@ -22,7 +68,7 @@ garfield = %{
 }
 ```
 
-Here is our path into the owner's name:
+Here is the path into the owner's name:
 
 ```elixir
 path = [:owner, :name]
@@ -46,7 +92,7 @@ And we can update through the path:
 update_in(garfield, path, fn name -> String.upcase(name) end)
 ```
 
-Now consider an invalid path:
+Now let's consider an invalid path:
 
 ```elixir
 invalid_path = [:owner, :age]
@@ -58,9 +104,9 @@ If we read:
 get_in(garfield, invalid_path)
 ```
 
-We get `nil`. That `nil` is ambiguous. It could mean the `:owner` key is missing. It could mean the `:age` key is missing. It could mean both keys exist and the value is actually `nil`. From the result alone, there is no way to know.
+We get an ambiguous `nil`. It could mean the `:owner` key is missing or the `:age` key is missing. It could mean both keys exist and the value is `nil`.
 
-Now we write:
+When we write:
 
 ```elixir
 put_in(garfield, invalid_path, 40)
@@ -68,27 +114,159 @@ put_in(garfield, invalid_path, 40)
 
 This succeeds. Even though the path does not actually point to a valid location in the original structure, Elixir treats the write as a create and silently changes the shape of the data.
 
-Now we try to update:
+And when we update:
 
 ```elixir
 update_in(garfield, invalid_path, fn curr -> curr + 1 end)
 ```
 
-Here the fallback breaks down completely, because `curr` is `nil` and the function crashes.
+Here the fallback breaks down completely, because `curr` is `nil` and the function crashes with an `ArithmeticError`.
 
-At this point the same path has produced three different behaviors depending on which operation you chose: read returns `nil`, write creates new structure, update crashes. None of that behavior is visible from the path itself. It is determined entirely by runtime shape and fallback rules.
+At this point the same path has produced three different behaviors depending on which operation you chose: read returns `nil`, write creates new structure, update crashes.
 
-So, although Elixir has path-based accessors, they aren't lawful lenses.
+This is convient, but is not a lawful lens, where our read, write, and change logic needs behave the same way for the same lens.
 
 ## Lawful Lenses: Symmetric, Explicit Contracts
 
-A lawful lens is a data structure that packages both viewer and updater logic with guaranteed behavior. The lens makes one simple promise: the focus exists, or you get an explicit error.
+Funx's has a lawful Lens.
+
+```elixir
+import Funx.Optics.Lens
+alias Funx.Optics.Lens
+```
+
+First, we can use the `path/1` to lift our valid path:
+
+```elixir
+valid_lens = Lens.path(path)
+```
+
+We *view* to read:
+
+```elixir
+Lens.view!(garfield, valid_lens)
+```
+
+*Set* to write:
+
+```elixir
+Lens.set!(garfield, valid_lens, "Jonathon")
+```
+
+And *over* to update:
+
+```elixir
+Lens.over!(garfield, valid_lens, fn name -> String.upcase(name) end)
+```
+
+Elixir doesn't have a type system to prove whether a lens is valid, so we need two paths. In these cases we have "success" or "raise an error".
+
+Let's start with an invalid path:
+
+```elixir
+invalid_lens = Lens.path(invalid_path)
+```
+
+Now, like Elixir's `update_in/3` accessor, our update raises an error:
+
+```elixir
+Lens.over!(garfield, invalid_lens, fn curr -> curr + 1 end)
+```
+
+But instead of an arithmetic error, we get a key error. The lens doesn't apply a function to an invalid focus.
+
+Lets write to an invalid focus:
+
+```elixir
+Lens.set!(garfield, invalid_lens, "Jonathon")
+```
+
+Again, we get a key error. We cannot write to an invalid focus.
+
+And even if we view:
+
+```elixir
+Lens.view!(garfield, invalid_lens)
+```
+
+We get a key error.
+
+### Summary
 
 If the focus is valid, you can read it, write it, and update it. If not valid, all operations fail explicitly. There is no fallback, no auto-creation, and no silent fixing.
 
-This is what makes composition safe and refactoring predictable. Behavior depends only on the lens itself, not the runtime shape of the data. Everyone on the team makes the same assumptions, and errors stop exactly where an assumption breaks instead of being “cured” into a different, harder-to-find bug downstream.
+This is what makes composition safe and refactoring predictable. Behavior depends only on the lens itself, not the runtime shape of the data. Everything makes the same assumptions, and errors stop exactly where an assumption breaks instead of being “cured” into a different, harder-to-find bug downstream.
 
-## Funx.Optics.Lens
+And now that we have a legal lens, we can do something that Elixir cannot, we can apply it to structs!
+
+## Struct
+
+```elixir
+defmodule Owner do
+  defstruct [:name]
+end
+
+defmodule Cat do
+  defstruct [:name, :owner, :weight]
+end
+```
+
+```elixir
+granny = %Owner{name: "Granny"}
+sylvester = %Cat{name: "Sylvester", owner: granny, weight: 15}
+```
+
+Elixir's accessor cannot lens a struct, even if it is a valid focus:
+
+```elixir
+get_in(sylvester, path)
+```
+
+But Funx can:
+
+```elixir
+Lens.view!(sylvester, valid_lens)
+```
+
+```elixir
+Lens.set!(sylvester, valid_lens, "Gramps")
+```
+
+```elixir
+Lens.over!(sylvester, valid_lens, fn name -> String.upcase(name) end)
+```
+
+In a legal Lens, an invalid focus will always fail:
+
+```elixir
+Lens.view!(sylvester, invalid_lens)
+```
+
+```elixir
+Lens.set!(sylvester, invalid_lens, "Jonathon")
+```
+
+```elixir
+Lens.over!(sylvester, invalid_lens, fn name -> String.upcase(name) end)
+```
+
+But we don't always have to raise an error, we can return both paths:
+
+```elixir
+Lens.over(sylvester, invalid_lens, fn name -> String.upcase(name) end)
+```
+
+Our safe read, set, and over functions return Funx's Either.
+
+But we can elect to use Elixir's tuple:
+
+```elixir
+Lens.view(sylvester, invalid_lens, as: :tuple)
+```
+
+Now we get the typical `{:ok, value}` or `{:error, reason}` tuple.
+
+## Funx.Optics.Lens,
 
 Funx provides lawful lenses that:
 
@@ -96,10 +274,24 @@ Funx provides lawful lenses that:
 * Enforce symmetric contracts (read and write have same requirements)
 * Work uniformly on both maps and structs
 
+A symmetric contract means we can avoid common bugs:
+
+With Elixir's `put_in/3` we get:
+
 ```elixir
-import Funx.Optics.Lens
-alias Funx.Optics.Lens
+put_in(garfield, [:owner, :nane], "Dave")
 ```
+
+A bug.
+
+But with a Lens we get:
+
+```elixir
+Lens.set!(sylvester, Lens.path([:owner, :nane]), "Dave")
+```
+
+A clear error
+
 
 ## Setup: Superhero Data
 
@@ -190,52 +382,95 @@ Much cleaner, and predictable - both operations make the same promise about the 
 Now that we can view, set, and transform individual fields, the next step is composition.
 
 ```elixir
-avengers
-|> Lens.set!(Lens.compose(Lens.key(:leader), Lens.key(:alias)), "Cap")
+leader_lens = Lens.key(:leader)
+leader_alias_lens = Lens.compose(leader_lens, Lens.key(:alias))
 ```
+
+```elixir
+avengers
+|> Lens.set!(leader_alias_lens, "Cap")
+```
+
+Let's make lenses for the leader's powers:
+
+```elixir
+powers_lens = Lens.key(:powers)
+strength_lens = Lens.compose(powers_lens, Lens.key(:strength))
+speed_lens = Lens.compose(powers_lens, Lens.key(:speed))
+intelligence_lens = Lens.compose(powers_lens, Lens.key(:intelligence))
+```
+
+We can add 100 points to our leader's strength with `over/3`:
 
 ```elixir
 avengers
 |> Lens.over!(
-  Lens.key(:leader) |> Lens.compose(Lens.key(:powers)) |> Lens.compose(Lens.key(:strength)),
-  fn s -> s + 10 end
+  Lens.compose(leader_lens, strength_lens),
+  fn s -> s + 100 end
 )
 ```
 
-For deep paths, use `path/1` as shorthand.
+Sometimes it's easier to use the `path/1` shorthand:
 
 ```elixir
-updated =
-  avengers
-  |> Lens.set!(Lens.path([:leader, :powers, :intelligence]), 95)
 
-Powers.total(updated.leader.powers)
+avengers
+|> Lens.set!(Lens.path([:leader, :powers, :intelligence]), 195)
+|> Lens.view!(Lens.path([:leader, :powers])) 
 ```
 
-No manual destructuring. Compose to any depth.
+Summerize...
 
-## Custom Lenses: Coordinated Updates
+## Advanced Lenses
 
-Some updates must change multiple fields together.
+So far we've used the `key/1` and `path/1` constructors. Behind the scenes these call `make/2` to generate simple lenses. But sometimes we need more complex lensing. For that, we need to use `make/2` directly.
+
+What happens if we need to update multiple fields together?
+
+Let's start by defining some basic lenses:
 
 ```elixir
-broken = %{avengers | base: %{avengers.base | city: "Los Angeles"}}
-broken.base
+base_lens = Lens.key(:base)
+city_lens = Lens.compose(base_lens, Lens.key(:city))
 ```
 
-Create a custom lens that performs the update atomically.
+With this, we can we can change the city:
 
 ```elixir
-relocate_lens = Lens.make(
-  fn team -> team.base.city end,
+avengers 
+|> Lens.set!(city_lens, "Los Angeles") 
+|> Lens.view!(base_lens)
+```
+
+But this change does not fit our domain rules. Yes, the city is updated, but the location still points to New York!
+
+Instead, we need a lens that performs an *atomic* set:
+
+```elixir
+relocate_lens =
+Lens.make(
+  fn team ->
+    Lens.view!(team, city_lens)
+  end,
   fn team, new_city ->
-    %{team | base: Headquarters.relocate(new_city)}
+    Lens.set!(team, base_lens, Headquarters.relocate(new_city))
   end
 )
-
-relocated = Lens.set!(avengers, relocate_lens, "Los Angeles")
-relocated.base
 ```
+
+`make/2` is the core of Lens. It takes two functions, one to view and one to set.
+
+A make should read and set on the same value, in this case, the city.
+
+```elixir
+avengers
+|> Lens.set!(relocate_lens, "Los Angeles")
+
+```
+
+With our relocation lens we are able to codify how we change the base, which includes the name and location.
+
+We can also compose mutiple `set/2` in a pipe:
 
 ```elixir
 avengers
@@ -250,29 +485,55 @@ Custom lenses turn coordinated multi-field updates into single atomic operations
 Derived values can also be treated as first-class fields.
 
 ```elixir
-power_level_lens = Lens.make(
-  fn hero ->
-    p = hero.powers
-    p.strength + p.speed + p.intelligence
-  end,
-  fn hero, new_total ->
-    avg = div(new_total, 3)
-    remainder = rem(new_total, 3)
+power_level = fn powers ->
+  Lens.view!(powers, strength_lens) +
+  Lens.view!(powers, speed_lens) +
+  Lens.view!(powers, intelligence_lens)
+end
 
-    %{hero | powers: %Powers{
-      strength: avg + remainder,
-      speed: avg,
-      intelligence: avg
-    }}
-  end
-)
+```
 
+```elixir
+rebalance = fn level ->
+  avg = div(level, 3)
+  rem = rem(level, 3)
+
+  %Powers{}
+  |> Lens.set!(Lens.key(:strength), avg + rem)
+  |> Lens.set!(Lens.key(:speed), avg)
+  |> Lens.set!(Lens.key(:intelligence), avg)
+end
+
+```
+
+```elixir
+power_level_lens =
+  Lens.make(
+    fn hero -> power_level.(hero)
+    end,
+    fn hero, new_level ->
+      Lens.set!(
+        hero,
+        powers_lens,
+        rebalance.(new_level)
+      )
+    end
+  )
+```
+
+```elixir
 Lens.view!(iron_man, power_level_lens)
 ```
 
 ```elixir
-balanced = Lens.set!(iron_man, power_level_lens, 240)
-Powers.total(balanced.powers)
+iron_man
+|> Lens.set!(power_level_lens, 50)
+|> Lens.view!(power_level_lens)
+```
+
+```elixir
+:cat
+|> Lens.set!(power_level_lens, 50)
 ```
 
 Derived values now behave like regular fields.
@@ -282,13 +543,13 @@ Derived values now behave like regular fields.
 ```elixir
 upgraded =
   avengers
-  |> Lens.set!(Lens.key(:name), "New Avengers")
-  |> Lens.over!(Lens.path([:leader, :powers, :strength]), fn s -> s + 10 end)
-  |> Lens.over!(Lens.path([:leader, :powers, :speed]), fn s -> s + 10 end)
-  |> Lens.over!(Lens.path([:leader, :powers, :intelligence]), fn s -> s + 10 end)
+  |> Lens.set!(Lens.key(:name), "Super Avengers")
+  |> Lens.over!(Lens.path([:leader, :powers, :strength]), fn s -> s + 1000 end)
+  |> Lens.over!(Lens.path([:leader, :powers, :speed]), fn s -> s + 1000 end)
+  |> Lens.over!(Lens.path([:leader, :powers, :intelligence]), fn s -> s + 1000 end)
   |> Lens.set!(relocate_lens, "San Francisco")
 
-Powers.total(upgraded.leader.powers)
+# Powers.total(upgraded.leader.powers)
 ```
 
 Reusable compositions from lists:
