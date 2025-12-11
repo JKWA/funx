@@ -101,6 +101,21 @@ defmodule Funx.Optics.PrismTest do
 
       assert 10 |> Prism.review(p) == [10]
     end
+
+    test "review composes in reverse order (inner first, then outer)" do
+      # Compose list head prism with even filter
+      list_even = Prism.compose(Prism.some(), Prism.filter(&(rem(&1, 2) == 0)))
+
+      # Review applies inner prism first (even: 10 -> 10),
+      # then outer prism (some: 10 -> [10])
+      assert Prism.review(10, list_even) == [10]
+
+      # Filter prisms don't validate on review, so odd numbers work too
+      assert Prism.review(9, list_even) == [9]
+
+      # The key point: result is always wrapped in a list by some/0's review
+      assert Prism.review(42, list_even) == [42]
+    end
   end
 
   #

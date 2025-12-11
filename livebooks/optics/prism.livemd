@@ -1,0 +1,638 @@
+# Funx.Optics.Prism
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", ref: "bbde4c4", force: true}
+])
+```
+
+## Overview
+
+The `Funx.Optics.Prism` module provides a strictly lawful partial optic for focusing on branches of data structures.
+
+A prism is partial: the focus may or may not be present within the structure. This makes prisms ideal for working with optional values, variants, filtered data, and conditional structures.
+
+Unlike Lens, Prisms never raise on failure, instead returning the `Maybe` monad's `Just(value)` or `Nothing`.
+
+If you're just learning functional-programming, it makes sense to learn the `Prism` after you have a handle on `Maybe`.
+
+### Core semantics
+
+The typical function is `preview/2`. It is similar to `Lens.view!/2`, but instead of retrieving the focus, it returns "maybe" the focus.
+
+Lawful optics must support isomorphism, which for a prism means it must be able to produce the minimum structure that will produce the results of `preview/2`. Lens has `set/3` and prism has `review/2`.
+
+Preview extracts the branch when it exists; review constructs the branch when you only have the focus. Without review, you do not have a prism — only a Maybe lookup.
+
+Honestly, it's unlikely you'll use `review/3`, but it's there if you need it.
+
+## When to Use Prisms
+
+Reach for prisms when absence or failure is a normal, expected outcome in your domain.
+
+* Prisms: Failure is normal and should not raise
+* Lenses: Absence would be a bug and should raise loudly
+
+## Quick Reference
+
+### Constructors
+
+* `filter/1`: Creates a prism that succeeds only when a predicate returns true.
+* `some/0`: Creates a prism focusing on the first element of a non-empty list.
+* `none/0`: Creates a prism that never matches (monoid annihilator).
+* `key/1`: Creates a prism focusing on a single key in a map (fails if missing or nil).
+* `path/1`: Creates a prism for nested map and struct access that fails if any step is missing or nil.
+* `make/2`: Creates a custom prism from previewer and reviewer functions.
+
+### Core Operations
+
+* `preview/2`: Attempts to extract the focus, returning `Maybe.Just` on success or `Maybe.Nothing` on failure.
+* `review/2`: Reconstructs the whole structure from the focused part alone.
+
+### Composition
+
+* `compose/2`: Composes two prisms sequentially (outer runs first, then inner).
+* `concat/1`: Composes a list of prisms into a single prism.
+
+## Building Prisms
+
+```elixir
+alias Funx.Optics.Prism
+alias Funx.Monad.Maybe
+alias Maybe.{Just, Nothing}
+alias Funx.Monad
+```
+
+Let's create some prisms.
+
+Prism's `key/1` constructor works like Lens, build a simple focus using an atom to represent the key.
+
+```elixir
+leader_prism = Prism.key(:leader)
+name_prism = Prism.key(:name)
+age_prism = Prism.key(:age)
+powers_prism = Prism.key(:powers)
+strength_prism = Prism.key(:strength)
+```
+
+Like Lens, we can compose Prisms with `compose/2` or `concat/2`
+
+```elixir
+leader_name_prism = Prism.compose(leader_prism, name_prism)
+leader_strength_prism = Prism.concat([leader_prism, powers_prism, strength_prism])
+```
+
+Prism also has the Lens `path/2` shorthand:
+
+```elixir
+leader_name_prism = Prism.path([:leader, :name])
+leader_strength_prism = Prism.path([:leader, :powers, :strength])
+```
+
+## Using Prisms with Maps
+
+First, we need some data:
+
+```elixir
+hero_map = %{
+  name: "Tony Stark",
+  alias: "Iron Man",
+  powers: %{strength: 85, speed: 70, intelligence: 100}
+}
+
+team_map = %{
+  name: "Avengers",
+  leader: %{
+    name: "Steve Rogers",
+    alias: "Captain America",
+    powers: %{strength: 90, speed: 75, intelligence: 80}
+  }
+}
+
+incomplete_hero = %{
+  alias: "Mysterious Hero"
+  # Note: no :name key
+}
+```
+
+### Preview vs Review
+
+Preview attempts to extract the focused value:
+
+```elixir
+Prism.preview(hero_map, name_prism)
+```
+
+In this case, we have `just` Tony Stark.
+
+But look what we get with `review/2`:
+
+```elixir
+Prism.review("Tony Stark", name_prism)
+```
+
+This is the opposite, it is just enough of a data structure to represent what `preview/2` would need to generate its result.
+
+Together, `preview/2` and `review/2` are what make Prism isomorphic.
+
+<!-- livebook:{"break_markdown":true} -->
+
+Preview returns `Nothing` when key is missing:
+
+```elixir
+Prism.preview(incomplete_hero, name_prism)
+```
+
+And the value being `nil` is the same as a missing key:
+
+```elixir
+Prism.preview(%{name: nil}, name_prism)
+```
+
+We could use `review/2` to create a fallback:
+
+```elixir
+Prism.review("Fallback Name", name_prism)
+```
+
+Take a minute here, it's not a the same as a Maybe fold, instead it is backfilling the minimum structure to produce just "Fallback Name". It's NOT a default, it is an isomorphism.
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Nested Prisms
+
+Preview extracts nested values when they exist:
+
+```elixir
+Prism.preview(team_map, leader_name_prism)
+```
+
+Preview fails when intermediate key is missing:
+
+```elixir
+Prism.preview(hero_map, leader_name_prism)
+```
+
+Review builds the minimum nested structure:
+
+```elixir
+Prism.review("Natasha Romanoff", leader_name_prism)
+```
+
+### Why can't review just use original data structure and repair the broken field?
+
+Unlike Lens, Prism has no contract about what it receives.
+
+For instance, what if our caller sends us a `:cat`?
+
+```elixir
+Prism.preview(:cat, leader_name_prism)
+```
+
+Here, a cat does not produce a focus, so the result is `Nothing`. But notice that we have zero information by which to make a new leader name. This is why `review` can only create the minimum structure by which to satisfy the `preview/2`.
+
+## Filter Prisms
+
+Unlike Lens, prism has  `filter/1`:
+
+```elixir
+positive = Prism.filter(&(&1 > 0))
+even = Prism.filter(&(rem(&1, 2) == 0))
+small = Prism.filter(&(&1 < 100))
+```
+
+Filter prisms succeed only when a predicate returns true.
+
+Preview with matching value:
+
+```elixir
+Prism.preview(100, positive)
+```
+
+```elixir
+Prism.preview(-5, positive)
+```
+
+For a filter, review returns the focus with the included value:
+
+```elixir
+Prism.review(42, positive)
+```
+
+So, what should this return?
+
+```elixir
+Prism.review(-7, positive)
+```
+
+Surprised? A prism does not have context to return a result that satisfies the filters. Instead, it provides the fallback value (-7) in the correct structure for the lens.
+
+And we can compose filters conjunctively (`and`).
+
+```elixir
+positive_even_small = Prism.concat([positive, even, small])
+```
+
+```elixir
+Prism.preview(4, positive_even_small)
+```
+
+```elixir
+Prism.preview(3, positive_even_small)
+```
+
+```elixir
+Prism.preview(-2, positive_even_small)
+```
+
+```elixir
+Prism.preview(101, positive_even_small)
+```
+
+And we can add our filters to the end of our focus:
+
+```elixir
+leader_healthy_prism = Prism.compose(leader_strength_prism, Prism.filter(&(&1 > 100)))
+```
+
+What is the strength of our leader?
+
+```elixir
+Prism.preview(team_map, leader_strength_prism)
+```
+
+Is the leader healthy?
+
+```elixir
+Prism.preview(team_map, leader_healthy_prism)
+```
+
+No, but we can update with a Lens:
+
+```elixir
+alias Funx.Optics.Lens
+
+strength_lens = Lens.path([:leader, :powers, :strength])
+
+updated_team = Lens.set!(team_map, strength_lens, 120)
+```
+
+```elixir
+Prism.preview(updated_team, leader_healthy_prism)
+```
+
+Our leader, strength value is now healthy!
+
+Again, if we `review/2` our prism:
+
+```elixir
+Prism.review(80, leader_healthy_prism)
+```
+
+Prism builds the minimum structure to fulfil the focus, ignoring the filter:
+
+## Using Prisms with Structs
+
+Prisms work with structs similarly to maps. By default, nested reconstruction uses plain maps; the `structs:` option lets you rebuild typed structs along a path. Let's define some structs:
+
+```elixir
+defmodule Powers do
+  defstruct strength: 50,
+            speed: 40,
+            intelligence: 60
+end
+
+defmodule Hero do
+  defstruct [:name, :alias, powers: %Powers{}]
+end
+
+defmodule Team do
+  defstruct [:name, founded: nil, leader: %Hero{}]
+end
+```
+
+```elixir
+hero_struct = %Hero{
+  name: "Tony Stark",
+  alias: "Iron Man",
+  powers: %Powers{strength: 85, speed: 70, intelligence: 100}
+}
+```
+
+```elixir
+team_struct = %Team{
+  name: "Avengers",
+  leader: %Hero{
+    name: "Steve Rogers",
+    alias: "Captain America",
+    powers: %Powers{strength: 90, speed: 75, intelligence: 80}
+  },
+  founded: 1963
+}
+```
+
+```elixir
+incomplete_hero_struct = %Hero{
+  alias: "Mysterious Hero"
+}
+```
+
+Like Lens, our Prisms also work with structs:
+
+```elixir
+Prism.preview(hero_struct, name_prism)
+```
+
+```elixir
+Prism.preview(incomplete_hero_struct, name_prism)
+```
+
+```elixir
+Prism.preview(team_struct, leader_strength_prism)
+```
+
+Is the leader healthy?
+
+```elixir
+Prism.preview(team_struct, leader_healthy_prism)
+```
+
+No, but we can update with our Lens:
+
+```elixir
+updated_team_struct = Lens.set!(team_struct, strength_lens, 120)
+```
+
+```elixir
+Prism.preview(updated_team_struct, leader_healthy_prism)
+```
+
+Our leader is now healthy.
+
+Again, if we `review/2` our prism:
+
+Elixir does not have a type system at runtime where we can discover this is a struct, so by default the best we can do to construct the focus with `review/2` is a plain map:
+
+```elixir
+Prism.review(80, leader_healthy_prism)
+```
+
+The struct information is domain-specific information, so it doesn't really belong in a lawful Prism. However, sometimes it is helpful to return the actual domain-specific focus. So for that, we have a special optional value in `path/2`, where we can inject our prism with our domain-specific struct information.
+
+Let's review the problem:
+
+```elixir
+Prism.review("Bruce Banner", name_prism)
+```
+
+This fulfills the contract, but it would be helpful to explain this should be a Hero struct:
+
+```elixir
+hero_name_prism = Prism.path([:name], structs: [Hero])
+```
+
+Here, we added our domain context: "This is a Hero struct":
+
+```elixir
+Prism.preview(hero_struct, hero_name_prism)
+```
+
+The `preview/2` is unaffected.
+
+But now the `review/2` knows this belongs in a Hero:
+
+```elixir
+
+Prism.review("Bruce Banner", hero_name_prism)
+```
+
+Notice we get back a Hero struct, including it's defaults.
+
+We can compose these `path/2` prisms
+
+```elixir
+
+leader_prism = Prism.path([:leader], structs: [Team])
+power_prism = Prism.path([:powers], structs: [Hero])
+speed_prism = Prism.path([:speed], structs: [Powers])
+
+leader_speed_prism = Prism.concat([leader_prism, power_prism, speed_prism])
+```
+
+Again, the `preview/2` works the same:
+
+```elixir
+Prism.preview(team_struct, leader_speed_prism)
+```
+
+But the `review/2` now returns our expected domain Structs with their defaults:
+
+```elixir
+Prism.review(100, leader_speed_prism)
+```
+
+## Lists
+
+```elixir
+list_head = Prism.some()
+```
+
+Prism also has it has a special `some/1`, which extracts the head from a non-empty list:
+
+```elixir
+Prism.preview([1, 2, 3], list_head)
+```
+
+It fails on an empty list:
+
+```elixir
+Prism.preview([], list_head)
+```
+
+Review constructs the minimum focus with the included value:
+
+```elixir
+Prism.review(:cat, list_head)
+```
+
+In this case, a singleton list.
+
+We can compose the list prism with filter:
+
+```elixir
+list_even = Prism.compose(list_head, even)
+```
+
+Here, we're asking if the value in the head is even:
+
+```elixir
+Prism.preview([2, 3, 4], list_even)
+```
+
+```elixir
+Prism.preview([3, 4, 5], list_even)
+```
+
+Review rebuilds via both prisms (inner even first, then outer list wrapping):
+
+```elixir
+Prism.review(-23, list_even)
+```
+
+Again, review writes the minimum structure with the value, ignoring the filter.
+
+## The none/0 Prism
+
+The `none/0` prism never matches. It serves as the monoid annihilator.
+
+Preview always returns `Nothing`:
+
+```elixir
+never = Prism.none()
+
+Prism.preview(42, never)
+```
+
+```elixir
+Prism.preview("anything", never)
+```
+
+Review returns a constant value because the prism represents a branch that never exists:
+
+```elixir
+Prism.review(:value, never)
+```
+
+Composing with `none/0` annihilates:
+
+```elixir
+left_zero = Prism.compose(never, positive)
+
+Prism.preview(100, left_zero)
+```
+
+```elixir
+right_zero = Prism.compose(positive, never)
+
+Prism.preview(100, right_zero)
+```
+
+## make/2
+
+Create custom prisms. The previewer extracts (returning `Maybe`), the reviewer reconstructs:
+
+```elixir
+# A prism for tuples that only matches when first element is positive
+positive_tuple_first = Prism.make(
+  fn
+    {first, _} when first > 0 -> Maybe.just(first)
+    _ -> Maybe.nothing()
+  end,
+  fn new_first -> {new_first, 0} end
+)
+```
+
+Preview succeeds when predicate matches:
+
+```elixir
+Prism.preview({5, 100}, positive_tuple_first)
+```
+
+Preview fails when predicate doesn't match:
+
+```elixir
+Prism.preview({-3, 100}, positive_tuple_first)
+```
+
+Review reconstructs the tuple structure:
+
+```elixir
+Prism.review(42, positive_tuple_first)
+```
+
+For prisms built with `make/2`, it is your responsibility to ensure the preview and review functions obey the prism laws; Funx does not enforce them for you.
+
+## Prisms vs Lenses
+
+**Decision rule: If "this field is missing" is a bug, reach for a lens. If "this field might not be there" is expected, reach for a prism.**
+
+**When to use Prisms:**
+
+* The value may not be present (optional fields, filtered data)
+* Failure is a normal outcome and should not raise
+* You're working with variants or branches
+* Example: Extracting a value only if it passes validation
+
+**When to use Lenses:**
+
+* The value is always present
+* Absence would be a bug and should raise loudly
+* You need to update while preserving the rest of the structure
+* Example: Updating a user's email while keeping other profile data intact
+
+Key difference in behavior:
+
+```elixir
+# Prism: preview may fail
+Prism.preview(%{alias: "Hero"}, name_prism)
+```
+
+```elixir
+# Prism: review builds from scratch
+prism_result = Prism.review("New Name", Prism.path([:name]))
+```
+
+The prism creates only what it needs. Compare to a lens which would preserve all other fields in the original structure while updating just the focused field.
+
+Use prisms for optional or conditional data where failure is expected and represented as `Maybe`; use lenses when the focus is required and you must preserve the rest of the structure.
+
+### Pattern 1: Optional Nested Fields
+
+Your structure may or may not contain a field, and you want safe access without raising:
+
+```elixir
+%{name: "Avengers", founded: 1963}
+|> Prism.preview(leader_name_prism)
+|> Maybe.get_or_else("No Leader Assigned")
+```
+
+```elixir
+%{name: "Avengers", leader: %{name: "Iron Man"}, founded: 1963}
+|> Prism.preview(leader_name_prism)
+|> Maybe.get_or_else("No Team Assigned")
+```
+
+Use a prism when a nested field is optional or can be missing. Preview gives you a `Maybe` instead of raising.
+
+### Pattern 2: Filtered Views
+
+Apply prisms when you want to treat "passes this predicate" as a branch of your domain:
+
+```elixir
+# # Only process accounts that are active, premium, and within limit
+# active_premium_prism = Prism.concat([
+#   Prism.filter(&Account.active?/1),
+#   Prism.filter(&Account.premium?/1),
+#   Prism.filter(&Account.within_limit?/1)
+# ])
+
+# case Prism.preview(account, active_premium_prism) do
+#   Just(account) -> process_premium(account)
+#   Nothing -> :skip
+# end
+```
+
+Think of `positive`, `even`, `small` in the examples as filters like `active_account`, `premium_customer`, `within_credit_limit` in a real system.
+
+### Pattern 3: Composing with Maybe
+
+Because `preview` returns `Maybe`, you can compose it with `Maybe.map`, `Maybe.bind`, etc., to build fail-safe pipelines over optional branches:
+
+```elixir
+%{name: "Avengers", founded: 1963}
+|> Prism.preview(leader_name_prism)
+|> Monad.map(&String.upcase/1)
+|> Maybe.get_or_else("NO LEADER")
+```
+
+This lets you safely transform optional values without explicit case-matching at every step.
