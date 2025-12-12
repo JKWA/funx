@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:funx, github: "JKWA/funx", ref: "bbde4c4", force: true}
+  {:funx, github: "JKWA/funx", ref: "375dfab", force: true}
 ])
 ```
 
@@ -37,12 +37,13 @@ Reach for prisms when absence or failure is a normal, expected outcome in your d
 
 ### Constructors
 
-* `filter/1`: Creates a prism that succeeds only when a predicate returns true.
+* `filter/1`: Creates a prism that succeeds only when a predicate returns true. Useful for narrowing a focus when failure is expected.
 * `some/0`: Creates a prism focusing on the first element of a non-empty list.
-* `none/0`: Creates a prism that never matches (monoid annihilator).
-* `key/1`: Creates a prism focusing on a single key in a map (fails if missing or nil).
-* `path/1`: Creates a prism for nested map and struct access that fails if any step is missing or nil.
-* `make/2`: Creates a custom prism from previewer and reviewer functions.
+* `none/0`: Creates a prism that never matches. Acts as the monoid annihilator under prism composition.
+* `key/1`: Creates a prism focusing on a single key in a map or struct. Fails if the key is missing or the value is `nil`.
+* `struct/1`: Creates a prism that matches a specific struct type. Succeeds only when the input is that struct and reconstructs the minimal struct on `review/2`.
+* `path/1`: Creates a prism for nested access. Keys and struct markers may be mixed to focus through maps and structs, failing if any step is missing or mismatched.
+* `make/2`: Creates a custom prism from explicit preview and review functions. Use only when you can uphold the prism laws manually.
 
 ### Core Operations
 
@@ -63,6 +64,133 @@ alias Maybe.{Just, Nothing}
 alias Funx.Monad
 alias Funx.Traversable
 ```
+
+Let’s start with a couple structs:
+
+```elixir
+defmodule CreditCard do
+  defstruct [:name, :number, :expiry]
+end
+
+defmodule Check do
+  defstruct [:name, :routing_number, :account_number]
+end
+```
+
+And some example payments:
+
+```elixir
+cc_transaction = %CreditCard{name: "John", number: "1234", expiry: "12/26"}
+check_transaction = %Check{name: "Dave", routing_number: "111000025", account_number: "987654"}
+```
+
+We’d like to extract the `name` field from either structure:
+
+```elixir
+name_prism = Prism.key(:name)
+```
+
+We can preview the name from a credit card transaction:
+
+```elixir
+Prism.preview(cc_transaction, name_prism)
+```
+
+And we can do the same for a check transaction:
+
+```elixir
+Prism.preview(check_transaction, name_prism)
+```
+
+At this point, both values succeed. `Prism.key/1` doesn’t distinguish *which* kind of payment we’re dealing with — it only focuses on a key that may or may not exist.
+
+But what if we need to tell the difference between a `CreditCard` and a `Check`?
+
+For that, we use `struct/1`:
+
+```elixir
+cc_prism = Prism.struct(CreditCard)
+check_prism = Prism.struct(Check)
+```
+
+Now we can distinguish between payment variants.
+
+Previewing a credit card with a credit card prism succeeds:
+
+```elixir
+Prism.preview(cc_transaction, cc_prism)
+```
+
+A `Check` transaction is `Nothing` in the context of a `CreditCard` prism:
+
+```elixir
+Prism.preview(cc_transaction, check_prism)
+```
+
+But previewing a check with a check prism succeeds:
+
+```elixir
+Prism.preview(check_transaction, check_prism)
+```
+
+And `review/2` reconstructs a `Check` structure:
+
+```elixir
+Prism.review(%Check{}, check_prism)
+```
+
+Now we can *compose* prisms.
+
+Let’s build a prism that focuses on the `name` of a credit card:
+
+```elixir
+cc_name_prism = Prism.compose(cc_prism, name_prism)
+```
+
+Previewing works as expected:
+
+```elixir
+Prism.preview(cc_transaction, cc_name_prism)
+```
+
+And fails cleanly for the wrong variant:
+
+```elixir
+Prism.preview(check_transaction, cc_name_prism)
+```
+
+Now look at `review/2`.
+
+Because composition runs `review` from the inside out, `review/2` takes a string and constructs the **minimum `CreditCard` structure** needed to satisfy the focus:
+
+```elixir
+Prism.review("Sarah", cc_name_prism)
+```
+
+This is not a default value and not a merge — it is lawful reconstruction.
+
+Finally, there’s a convenience shortcut for this common pattern.
+You can express the same prism using `path/2` with an explicit struct focus:
+
+```elixir
+cc_name_prism = Prism.path([{CreditCard, :name}])
+```
+
+This behaves the same as composing `Prism.struct(CreditCard)` and `Prism.key(:name)`.
+
+Preview still succeeds for credit cards:
+
+```elixir
+Prism.preview(cc_transaction, cc_name_prism)
+```
+
+And still fails for checks:
+
+```elixir
+Prism.preview(check_transaction, cc_name_prism)
+```
+
+This is the core prism use case: selecting and reconstructing *variants* — not filtering values, but choosing which branch of a sum type you’re working with.
 
 Let's create some prisms.
 
