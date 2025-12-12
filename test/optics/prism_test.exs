@@ -217,11 +217,12 @@ defmodule Funx.Optics.PrismTest do
       assert Prism.review("new", p) == "new"
     end
 
-    test "preview with empty path always returns Nothing" do
+    test "preview with empty path is identity (returns Just)" do
       p = Prism.path([])
 
-      assert %Nothing{} = Prism.preview(%{a: 1}, p)
-      assert %Nothing{} = Prism.preview(:anything, p)
+      # Empty path = concat([]) = identity prism
+      assert %Just{value: %{a: 1}} = Prism.preview(%{a: 1}, p)
+      assert %Just{value: :anything} = Prism.preview(:anything, p)
     end
   end
 
@@ -259,7 +260,7 @@ defmodule Funx.Optics.PrismTest do
 
   describe "path/1 prism with structs (review)" do
     test "review constructs fresh nested struct (lawful prism behavior)" do
-      p = Prism.path([:profile, :age], structs: [User, Profile])
+      p = Prism.path([{User, :profile}, {Profile, :age}])
 
       # Prisms rebuild from scratch - they do not merge or preserve other fields
       # This is lawful prism behavior: review : a -> s has no access to original s
@@ -274,22 +275,21 @@ defmodule Funx.Optics.PrismTest do
       assert Prism.review(40, p) == %{profile: %{age: 40}}
     end
 
-    test "review falls back to maps when struct path is invalid" do
+    test "review constructs struct with nested map value" do
       u = %User{name: "A", profile: %Profile{age: 20}}
 
-      # :foo is NOT valid for struct User
-      # User.name is not a nested struct, so [:name, :foo] is invalid
-      p = Prism.path([:name, :foo], structs: [User])
+      # User.name is a simple field, but we can nest further with plain keys
+      p = Prism.path([{User, :name}, :foo])
 
-      # Should fall back to Nothing on preview
+      # Preview fails because name is not a map in the actual data
       assert %Maybe.Nothing{} = Prism.preview(u, p)
 
-      # On review, falls back to creating plain maps instead of raising
-      assert Prism.review("value", p) == %{name: %{foo: "value"}}
+      # Review constructs User with nested map in name field
+      assert Prism.review("value", p) == %User{name: %{foo: "value"}, profile: nil}
     end
 
     test "review constructs deeply nested structs from focused value" do
-      p = Prism.path([:profile, :score], structs: [User, Profile])
+      p = Prism.path([{User, :profile}, {Profile, :score}])
 
       # Constructs fresh nested structs - other fields are nil
       result = Prism.review(10, p)
@@ -299,8 +299,8 @@ defmodule Funx.Optics.PrismTest do
       assert result == %User{name: nil, profile: %Profile{age: nil, score: 10}}
     end
 
-    test "review with empty path and structs returns the value directly" do
-      p = Prism.path([], structs: [User])
+    test "review with empty path returns the value directly" do
+      p = Prism.path([])
       assert Prism.review(42, p) == 42
     end
 
@@ -314,13 +314,13 @@ defmodule Funx.Optics.PrismTest do
       assert Prism.review("value", p) == %{a: %{b: %{c: "value"}}}
     end
 
-    test "review falls back to maps when struct has missing intermediate field" do
-      # Profile doesn't have a :details field
-      p = Prism.path([:profile, :details, :age], structs: [User, Profile])
+    test "review constructs nested structs with valid fields" do
+      # Both User and Profile are constructed as structs
+      p = Prism.path([{User, :profile}, {Profile, :age}])
       result = Prism.review(30, p)
 
-      # Should fall back to creating plain maps
-      assert result == %{profile: %{details: %{age: 30}}}
+      # Constructs nested structs
+      assert result == %User{profile: %Profile{age: 30, score: nil}, name: nil}
     end
 
     test "path handles struct with nil nested value" do
@@ -334,28 +334,28 @@ defmodule Funx.Optics.PrismTest do
 
   describe "path/1 edge cases" do
     test "path with single-element list and struct" do
-      p = Prism.path([:name], structs: [User])
+      p = Prism.path([{User, :name}])
       result = Prism.review("David", p)
       assert result == %User{name: "David", profile: nil}
     end
 
-    test "path with mismatched struct count (more keys than structs)" do
-      # When we have more path keys than struct modules,
-      # it should use structs for what it can and fall back to maps
-      p = Prism.path([:profile, :age, :extra], structs: [User])
+    test "path with mixed struct and plain keys" do
+      # When we mix struct-annotated and plain keys,
+      # it constructs the struct at the specified level
+      p = Prism.path([{User, :profile}, :age, :extra])
       result = Prism.review("value", p)
 
-      # Should fall back to maps because User.profile isn't defined in struct list
-      assert result == %{profile: %{age: %{extra: "value"}}}
+      # Constructs User struct with nested maps
+      assert result == %User{profile: %{age: %{extra: "value"}}, name: nil}
     end
 
-    test "path with struct but trying to access non-existent field" do
-      # This tests the error case in build_struct_path_maybe for missing key
-      p = Prism.path([:nonexistent], structs: [User])
-      result = Prism.review("test", p)
+    test "path with struct and valid field" do
+      # Struct prism constructs the specified struct type
+      p = Prism.path([{User, :name}])
+      result = Prism.review("Alice", p)
 
-      # Should fall back to plain map since field doesn't exist
-      assert result == %{nonexistent: "test"}
+      # Constructs User struct with the field
+      assert result == %User{name: "Alice", profile: nil}
     end
   end
 

@@ -1,4 +1,6 @@
 defmodule Funx.Optics.Prism do
+  import Kernel, except: [struct: 1]
+
   @moduledoc """
   A prism focuses on a branch of a data structure.
 
@@ -69,7 +71,6 @@ defmodule Funx.Optics.Prism do
       20
   """
 
-  import Funx.Monad, only: [bind: 2]
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
 
   alias Funx.Monad.Maybe
@@ -275,6 +276,39 @@ defmodule Funx.Optics.Prism do
   This prism succeeds only when the input value is a struct of the given module.
   It models a *sum-type constructor*: selecting one structural variant from a
   set of possible variants.
+
+  On `review`, this prism can promote a plain map to the specified struct type,
+  filling in defaults for missing fields.
+
+  ## Examples
+
+      # Given a struct module:
+      defmodule Account do
+        defstruct [:name, :email]
+      end
+
+      # Create a prism for that struct type
+      p = Prism.struct(Account)
+
+      # Preview succeeds for matching struct
+      Prism.preview(%Account{name: "Alice"}, p)
+      #=> %Just{value: %Account{name: "Alice", email: nil}}
+
+      # Preview fails for non-matching types
+      Prism.preview(%{name: "Bob"}, p)
+      #=> %Nothing{}
+
+      # Review promotes a map to the struct type
+      Prism.review(%{name: "Charlie"}, p)
+      #=> %Account{name: "Charlie", email: nil}
+
+  ## Composition
+
+  The `struct/1` prism is commonly composed with `key/1` to focus on struct fields:
+
+      user_name = Prism.compose(Prism.struct(Account), Prism.key(:name))
+      Prism.review("Alice", user_name)
+      #=> %Account{name: "Alice", email: nil}
   """
   @spec struct(module()) :: t(struct(), struct())
 
@@ -286,93 +320,74 @@ defmodule Funx.Optics.Prism do
       end,
       fn
         %^mod{} = s -> s
-        %{} = attrs -> struct(mod, attrs)
+        %{} = attrs -> Kernel.struct(mod, attrs)
       end
     )
   end
 
-  @spec path([atom], keyword()) :: t(map(), any)
-  def path(keys, opts \\ []) when is_list(keys) do
-    structs = Keyword.get(opts, :structs, [])
+  @doc """
+  Builds a prism that focuses on a nested path through maps and structs.
 
-    make(
-      fn s -> safe_get_path(s, keys) end,
-      fn value ->
-        if Enum.empty?(structs) do
-          safe_put_path(%{}, keys, value)
-        else
-          build_struct_path_safe(keys, value, structs)
-        end
+  Each element in the path can be:
+  - `:atom` - A plain key access (works with maps and structs)
+  - `{Module, :atom}` - A struct-typed key access (verifies struct type and accesses key)
+
+  The `{Module, :atom}` syntax expands to `compose(struct(Module), key(:atom))`,
+  which means:
+  - On `preview`: verify the value is a `Module` struct, then extract the key
+  - On `review`: construct a `Module` struct containing the nested value
+
+  ## Examples
+
+      # Plain map path
+      p1 = Prism.path([:person, :bio, :age])
+      Prism.review(30, p1)
+      #=> %{person: %{bio: %{age: 30}}}
+
+      # Given struct modules:
+      defmodule Bio do
+        defstruct [:age, :location]
       end
-    )
-  end
 
-  defp build_struct_path_safe(keys, value, structs) do
-    case build_struct_path_maybe(keys, value, structs) do
-      %Maybe.Just{value: result} -> result
-      %Maybe.Nothing{} -> safe_put_path(%{}, keys, value)
-    end
-  end
+      defmodule Person do
+        defstruct [:name, :bio]
+      end
 
-  # Base case: no more keys, return the value
-  defp build_struct_path_maybe([], value, _structs),
-    do: Maybe.just(value)
+      # Struct-typed path
+      p2 = Prism.path([{Person, :bio}, {Bio, :age}])
+      Prism.review(30, p2)
+      #=> %Person{bio: %Bio{age: 30, location: nil}, name: nil}
 
-  # Single key with struct: validate and build
-  defp build_struct_path_maybe([k], value, [struct_mod | _]) do
-    if Map.has_key?(struct_mod.__struct__(), k) do
-      Maybe.just(struct(struct_mod, [{k, value}]))
-    else
-      Maybe.nothing()
-    end
-  end
+      # Mixed: struct at first level, plain key after
+      p3 = Prism.path([{Person, :name}])
+      Prism.review("Alice", p3)
+      #=> %Person{name: "Alice", bio: nil}
 
-  # Multiple keys with struct: validate, recurse, and build
-  defp build_struct_path_maybe([k | rest], value, [struct_mod | rest_structs]) do
-    cond do
-      not Map.has_key?(struct_mod.__struct__(), k) ->
-        # Key doesn't exist in struct - abort struct building
-        Maybe.nothing()
+  ## Implementation
 
-      Enum.empty?(rest_structs) and not Enum.empty?(rest) ->
-        # We have more keys but no more struct definitions - abort and fall back
-        # to safe_put_path at the top level
-        Maybe.nothing()
+  The `path/1` function composes prisms using `concat/1`:
+  - `:key` → `[key(:key)]`
+  - `{Mod, :key}` → `[struct(Mod), key(:key)]`
 
-      true ->
-        # Valid struct field, continue building
-        build_struct_path_maybe(rest, value, rest_structs)
-        |> bind(fn child ->
-          Maybe.just(struct(struct_mod, [{k, child}]))
-        end)
-    end
-  end
+  This means `path` is just syntactic sugar for prism composition.
 
-  defp safe_get(m, k) when is_map(m) do
-    case Map.fetch(m, k) do
-      {:ok, v} -> Maybe.from_nil(v)
-      :error -> Maybe.nothing()
-    end
-  end
+  ## Important
 
-  defp safe_get(_m, _k), do: Maybe.nothing()
+  When using `{Module, :field}`, ensure `:field` exists in `Module`.
+  Using non-existent fields may violate prism laws due to how `Kernel.struct/2`
+  silently drops invalid keys.
+  """
+  @spec path([atom | {module, atom}]) :: t(map(), any)
+  def path(keys) when is_list(keys) do
+    prisms =
+      Enum.flat_map(keys, fn
+        atom when is_atom(atom) ->
+          [key(atom)]
 
-  defp safe_get_path(_s, []), do: Maybe.nothing()
+        {mod, atom} when is_atom(mod) and is_atom(atom) ->
+          [struct(mod), key(atom)]
+      end)
 
-  defp safe_get_path(s, [k]), do: safe_get(s, k)
-
-  defp safe_get_path(s, [k | rest]) do
-    safe_get(s, k) |> bind(&safe_get_path(&1, rest))
-  end
-
-  defp safe_put_path(_map, [], value), do: value
-
-  defp safe_put_path(map, [k], value) when is_map(map) do
-    Map.put(map, k, value)
-  end
-
-  defp safe_put_path(map, [k | rest], value) when is_map(map) do
-    child = Map.get(map, k, %{})
-    Map.put(map, k, safe_put_path(child, rest, value))
+    concat(prisms)
   end
 end
