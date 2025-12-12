@@ -469,4 +469,78 @@ defmodule Funx.Optics.PrismTest do
       assert %Maybe.Nothing{} = Prism.preview(5, composed)
     end
   end
+
+  defmodule CreditCard do
+    defstruct [:number, :expiry]
+  end
+
+  defmodule Check do
+    defstruct [:routing_number, :account_number]
+  end
+
+  describe "struct constructor prism" do
+    setup do
+      %{
+        cc_prism: Prism.struct(CreditCard),
+        check_prism: Prism.struct(Check),
+        cc: %CreditCard{number: "1234", expiry: "12/26"},
+        check: %Check{routing_number: "111000025", account_number: "987654"}
+      }
+    end
+
+    test "preview succeeds for matching struct", %{cc_prism: p, cc: cc} do
+      assert Prism.preview(cc, p) == Maybe.just(cc)
+    end
+
+    test "preview fails for non-matching struct", %{cc_prism: p, check: check} do
+      assert Prism.preview(check, p) == Maybe.nothing()
+    end
+
+    test "preview fails for non-struct input", %{cc_prism: p} do
+      assert Prism.preview(:not_a_struct, p) == Maybe.nothing()
+    end
+
+    test "review returns the struct unchanged", %{cc_prism: p, cc: cc} do
+      assert Prism.review(cc, p) == cc
+    end
+
+    test "review does not construct or wrap", %{check_prism: p, check: check} do
+      assert Prism.review(check, p) == check
+    end
+
+    test "prism law: preview(review(x)) == Just(x)", %{cc_prism: p, cc: cc} do
+      assert Prism.preview(Prism.review(cc, p), p) == Maybe.just(cc)
+    end
+
+    test "composed with key: preview extracts nested value", %{cc_prism: cc_p, cc: cc} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+      assert Prism.preview(cc, cc_number_prism) == Maybe.just("1234")
+    end
+
+    test "composed with key: preview fails on wrong struct", %{cc_prism: cc_p, check: check} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+      assert Prism.preview(check, cc_number_prism) == Maybe.nothing()
+    end
+
+    test "composed with key: review constructs struct from map", %{cc_prism: cc_p} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+      result = Prism.review("5678", cc_number_prism)
+      assert result == %CreditCard{number: "5678", expiry: nil}
+    end
+
+    test "composed with key: law preview(review(x)) == Just(x)", %{cc_prism: cc_p} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+      reviewed = Prism.review("5678", cc_number_prism)
+      assert Prism.preview(reviewed, cc_number_prism) == Maybe.just("5678")
+    end
+
+    test "composed with key: law preserves focus through round-trip", %{cc_prism: cc_p, cc: cc} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+
+      assert Prism.preview(cc, cc_number_prism) == Maybe.just("1234")
+
+      reviewed = Prism.review("1234", cc_number_prism)
+      assert Prism.preview(reviewed, cc_number_prism) == Maybe.just("1234")
+    end
+  end
 end

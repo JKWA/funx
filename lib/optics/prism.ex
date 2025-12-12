@@ -269,6 +269,28 @@ defmodule Funx.Optics.Prism do
     )
   end
 
+  @doc """
+  Builds a prism that focuses on a specific struct constructor.
+
+  This prism succeeds only when the input value is a struct of the given module.
+  It models a *sum-type constructor*: selecting one structural variant from a
+  set of possible variants.
+  """
+  @spec struct(module()) :: t(struct(), struct())
+
+  def struct(mod) when is_atom(mod) do
+    make(
+      fn
+        %^mod{} = s -> Maybe.just(s)
+        _ -> Maybe.nothing()
+      end,
+      fn
+        %^mod{} = s -> s
+        %{} = attrs -> struct(mod, attrs)
+      end
+    )
+  end
+
   @spec path([atom], keyword()) :: t(map(), any)
   def path(keys, opts \\ []) when is_list(keys) do
     structs = Keyword.get(opts, :structs, [])
