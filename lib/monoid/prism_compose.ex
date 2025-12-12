@@ -60,16 +60,17 @@ defimpl Funx.Monoid, for: Funx.Monoid.PrismCompose do
   def append(%PrismCompose{prism: outer}, %PrismCompose{prism: inner}) do
     import Funx.Monad, only: [bind: 2]
 
-    composed = Prism.make(
-      fn s ->
-        outer.preview.(s)
-        |> bind(fn i -> inner.preview.(i) end)
-      end,
-      fn a ->
-        inner_value = inner.review.(a)
-        outer.review.(inner_value)
-      end
-    )
+    composed =
+      Prism.make(
+        fn s ->
+          outer.preview.(s)
+          |> bind(fn i -> inner.preview.(i) end)
+        end,
+        fn a ->
+          inner_value = inner.review.(a)
+          outer.review.(inner_value)
+        end
+      )
 
     PrismCompose.new(composed)
   end

@@ -148,7 +148,8 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
             :tap -> parse_one(quote do: tap(fn x -> x end))
           end
 
-        assert %Step.ProtocolFunction{function: ^func_name, protocol: Funx.Tappable, args: _args} = step
+        assert %Step.ProtocolFunction{function: ^func_name, protocol: Funx.Tappable, args: _args} =
+                 step
       end
     end
 

@@ -78,9 +78,12 @@ defmodule Funx.Ord.Utils do
 
   # Prism with default
   def contramap({%Prism{} = prism, default}, ord) do
-    contramap(fn a ->
-      a |> Prism.preview(prism) |> Maybe.get_or_else(default)
-    end, ord)
+    contramap(
+      fn a ->
+        a |> Prism.preview(prism) |> Maybe.get_or_else(default)
+      end,
+      ord
+    )
   end
 
   # Function

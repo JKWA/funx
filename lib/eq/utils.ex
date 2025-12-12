@@ -72,9 +72,12 @@ defmodule Funx.Eq.Utils do
 
   # Prism with default
   def contramap({%Prism{} = prism, default}, eq) do
-    contramap(fn a ->
-      a |> Prism.preview(prism) |> Maybe.get_or_else(default)
-    end, eq)
+    contramap(
+      fn a ->
+        a |> Prism.preview(prism) |> Maybe.get_or_else(default)
+      end,
+      eq
+    )
   end
 
   # Function
@@ -137,9 +140,14 @@ defmodule Funx.Eq.Utils do
 
   # Prism with default
   def eq_by?({%Prism{} = prism, default}, a, b, eq) do
-    eq_by?(fn x ->
-      x |> Prism.preview(prism) |> Maybe.get_or_else(default)
-    end, a, b, eq)
+    eq_by?(
+      fn x ->
+        x |> Prism.preview(prism) |> Maybe.get_or_else(default)
+      end,
+      a,
+      b,
+      eq
+    )
   end
 
   # Function

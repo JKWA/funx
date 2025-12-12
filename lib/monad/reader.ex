@@ -72,7 +72,6 @@ defmodule Funx.Monad.Reader do
   """
   @spec ask() :: t(Env, Env) when Env: var
   def ask, do: asks(fn env -> env end)
-
 end
 
 defimpl Funx.Monad, for: Funx.Monad.Reader do

@@ -58,16 +58,17 @@ defimpl Funx.Monoid, for: Funx.Monoid.LensCompose do
   This is the canonical implementation of lens composition.
   """
   def append(%LensCompose{lens: outer}, %LensCompose{lens: inner}) do
-    composed = Lens.make(
-      fn s ->
-        s |> Lens.view!(outer) |> Lens.view!(inner)
-      end,
-      fn s, a ->
-        inner_struct = Lens.view!(s, outer)
-        updated_inner = Lens.set!(inner_struct, inner, a)
-        Lens.set!(s, outer, updated_inner)
-      end
-    )
+    composed =
+      Lens.make(
+        fn s ->
+          s |> Lens.view!(outer) |> Lens.view!(inner)
+        end,
+        fn s, a ->
+          inner_struct = Lens.view!(s, outer)
+          updated_inner = Lens.set!(inner_struct, inner, a)
+          Lens.set!(s, outer, updated_inner)
+        end
+      )
 
     LensCompose.new(composed)
   end
