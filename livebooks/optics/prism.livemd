@@ -22,9 +22,9 @@ The typical function is `preview/2`. It is similar to `Lens.view!/2`, but instea
 
 Lawful optics must support isomorphism, which for a prism means it must be able to produce the minimum structure that will produce the results of `preview/2`. Lens has `set/3` and prism has `review/2`.
 
-Preview extracts the branch when it exists; review constructs the branch when you only have the focus. Without review, you do not have a prism — only a Maybe lookup.
+Preview extracts the branch when it exists; review constructs the branch when you only have the focus. Without review, we have a only a Maybe lookup, not a legal prism.
 
-Honestly, it's unlikely you'll use `review/3`, but it's there if you need it.
+You won't call `review/2` often, but it must exist for the prism to be lawful.
 
 ## When to Use Prisms
 
@@ -61,6 +61,7 @@ alias Funx.Optics.Prism
 alias Funx.Monad.Maybe
 alias Maybe.{Just, Nothing}
 alias Funx.Monad
+alias Funx.Traversable
 ```
 
 Let's create some prisms.
@@ -149,13 +150,13 @@ And the value being `nil` is the same as a missing key:
 Prism.preview(%{name: nil}, name_prism)
 ```
 
-We could use `review/2` to create a fallback:
+Review constructs the minimum structure needed:
 
 ```elixir
 Prism.review("Fallback Name", name_prism)
 ```
 
-Take a minute here, it's not a the same as a Maybe fold, instead it is backfilling the minimum structure to produce just "Fallback Name". It's NOT a default, it is an isomorphism.
+Take a minute here. This isn't a Maybe fold or a default value. Review constructs the minimal structure that `preview/2` would need to produce Just "Fallback Name". It's reification, not recovery.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -227,7 +228,7 @@ Prism.review(-7, positive)
 
 Surprised? A prism does not have context to return a result that satisfies the filters. Instead, it provides the fallback value (-7) in the correct structure for the lens.
 
-And we can compose filters conjunctively (`and`).
+We can compose our filters conjunctively (`and`).
 
 ```elixir
 positive_even_small = Prism.concat([positive, even, small])
@@ -267,7 +268,9 @@ Is the leader healthy?
 Prism.preview(team_map, leader_healthy_prism)
 ```
 
-No, but we can update with a Lens:
+No.
+
+But we can use a Lens to update the structure:
 
 ```elixir
 alias Funx.Optics.Lens
@@ -293,7 +296,9 @@ Prism builds the minimum structure to fulfil the focus, ignoring the filter:
 
 ## Using Prisms with Structs
 
-Prisms work with structs similarly to maps. By default, nested reconstruction uses plain maps; the `structs:` option lets you rebuild typed structs along a path. Let's define some structs:
+Prisms work with structs similarly to maps. By default, nested reconstruction uses plain maps. This is lawful—prisms don't carry domain context. But sometimes you want typed output anyway. For that, the `structs:` option exists as an opt-in escape hatch.
+
+Let's define some structs:
 
 ```elixir
 defmodule Powers do
@@ -357,7 +362,9 @@ Is the leader healthy?
 Prism.preview(team_struct, leader_healthy_prism)
 ```
 
-No, but we can update with our Lens:
+No.
+
+Again, we can use our Lens to change the strength:
 
 ```elixir
 healthy_team_struct = Lens.set!(team_struct, strength_lens, 257)
@@ -533,7 +540,7 @@ first_is_greater_prism =
 
 ```
 
-*For prisms built with* `make/2`*, it is your responsibility to ensure the preview and review functions obey the prism laws; Funx does not enforce them for you.*
+*For prisms built with* `make/2`*, it is your responsibility to ensure the preview and review functions obey the prism laws. Specifically: preview and review must round-trip appropriately. Funx does not enforce this for you.*
 
 ```elixir
 Prism.preview({5, 100}, first_is_greater_prism)
@@ -659,4 +666,3 @@ Or we can use a Prism to select
 #   Nothing -> :skip
 # end
 ```
-
