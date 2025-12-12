@@ -330,12 +330,15 @@ defmodule Funx.Optics.Prism do
 
   Each element in the path can be:
   - `:atom` - A plain key access (works with maps and structs)
+  - `Module` - A naked struct verification (checks type, no key access)
   - `{Module, :atom}` - A struct-typed key access (verifies struct type and accesses key)
 
-  The `{Module, :atom}` syntax expands to `compose(struct(Module), key(:atom))`,
-  which means:
-  - On `preview`: verify the value is a `Module` struct, then extract the key
-  - On `review`: construct a `Module` struct containing the nested value
+  The syntax expands as follows:
+  - `:key` → `key(:key)` - plain key access
+  - `Module` → `struct(Module)` - struct type verification
+  - `{Module, :key}` → `compose(struct(Module), key(:key))` - typed field access
+
+  Modules are distinguished from plain keys using `function_exported?(atom, :__struct__, 0)`.
 
   ## Examples
 
@@ -353,39 +356,69 @@ defmodule Funx.Optics.Prism do
         defstruct [:name, :bio]
       end
 
-      # Struct-typed path
+      # Struct-typed path using {Module, :key} syntax
       p2 = Prism.path([{Person, :bio}, {Bio, :age}])
       Prism.review(30, p2)
       #=> %Person{bio: %Bio{age: 30, location: nil}, name: nil}
 
-      # Mixed: struct at first level, plain key after
-      p3 = Prism.path([{Person, :name}])
-      Prism.review("Alice", p3)
+      # Naked struct at end verifies final type
+      p3 = Prism.path([:profile, Bio])
+      Prism.preview(%{profile: %Bio{age: 30}}, p3)
+      #=> Just(%Bio{age: 30, location: nil})
+
+      # Naked struct at beginning verifies root type
+      p4 = Prism.path([Person, :name])
+      Prism.review("Alice", p4)
       #=> %Person{name: "Alice", bio: nil}
+
+      # Mix naked structs with typed field syntax
+      p5 = Prism.path([{Person, :bio}, Bio, :age])
+      Prism.review(25, p5)
+      #=> %Person{bio: %Bio{age: 25, location: nil}, name: nil}
+
+      # Naked struct only (just type verification)
+      p6 = Prism.path([Person])
+      Prism.preview(%Person{name: "Bob"}, p6)
+      #=> Just(%Person{name: "Bob", bio: nil})
 
   ## Implementation
 
   The `path/1` function composes prisms using `concat/1`:
   - `:key` → `[key(:key)]`
+  - `Module` → `[struct(Module)]`
   - `{Mod, :key}` → `[struct(Mod), key(:key)]`
 
   This means `path` is just syntactic sugar for prism composition.
 
   ## Important
 
-  When using `{Module, :field}`, ensure `:field` exists in `Module`.
-  Using non-existent fields may violate prism laws due to how `Kernel.struct/2`
-  silently drops invalid keys.
+  - When using `{Module, :field}`, ensure `:field` exists in `Module`
+  - Using non-existent fields may violate prism laws (Kernel.struct/2 silently drops invalid keys)
+  - The tuple form `{Module, :key}` requires `Module` to be a struct module (raises otherwise)
+  - Plain lowercase atoms like `:user` are always treated as keys, not struct modules
   """
   @spec path([atom | {module, atom}]) :: t(map(), any)
-  def path(keys) when is_list(keys) do
+  def path(path) when is_list(path) do
     prisms =
-      Enum.flat_map(keys, fn
-        atom when is_atom(atom) ->
-          [key(atom)]
+      Enum.flat_map(path, fn
+        {mod, key} when is_atom(mod) and is_atom(key) ->
+          if function_exported?(mod, :__struct__, 0) do
+            [struct(mod), key(key)]
+          else
+            raise ArgumentError,
+                  "#{inspect(mod)} in {#{inspect(mod)}, #{inspect(key)}} is not a struct module"
+          end
 
-        {mod, atom} when is_atom(mod) and is_atom(atom) ->
-          [struct(mod), key(atom)]
+        atom when is_atom(atom) ->
+          if function_exported?(atom, :__struct__, 0) do
+            [struct(atom)]
+          else
+            [key(atom)]
+          end
+
+        invalid ->
+          raise ArgumentError,
+                "path/1 expects atoms or {Module, :key} tuples, got: #{inspect(invalid)}"
       end)
 
     concat(prisms)

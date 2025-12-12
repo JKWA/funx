@@ -20,8 +20,14 @@
 **Key Path Syntax:**
 
 - `:atom` - Plain key access (works with maps and structs)
-- `{Module, :atom}` - Struct-typed access (verifies struct type, then accesses key)
-- `path([{User, :profile}, {Profile, :age}])` expands to composition of struct and key prisms
+- `Module` - Naked struct verification (checks type, no key access)
+- `{Module, :atom}` - Struct-typed field access (verifies struct type, then accesses key)
+- Modules are distinguished from keys using `function_exported?(atom, :__struct__, 0)`
+- Examples:
+  - `path([:user, :profile])` - plain keys only
+  - `path([User, :profile])` - verify root is User, then get :profile
+  - `path([{User, :profile}, Profile])` - typed field access, then verify Profile
+  - `path([Person])` - just verify type (no field access)
 
 **Prism Laws:**
 
@@ -54,6 +60,8 @@
 - **Simple key access**: `Prism.key(:name)` for single map/struct field
 - **Nested paths**: `Prism.path([:user, :profile, :email])` for plain maps
 - **Struct-typed paths**: `Prism.path([{User, :profile}, {Profile, :email}])` for typed reconstruction
+- **Naked struct verification**: `Prism.path([User, :field])` or `Prism.path([:field, User])` to verify types
+- **Type-only check**: `Prism.path([User])` to just verify struct type with no field access
 - **Filtering**: `Prism.filter(&(&1 > 0))` for conditional matching
 - **List head**: `Prism.some()` for non-empty list access
 - **Struct variants**: `Prism.struct(User)` for selecting specific struct types
@@ -72,6 +80,9 @@
 
 - "optional user profile" → `Prism.path([{User, :profile}])`
 - "get email if present" → `Prism.preview(user, Prism.key(:email))`
+- "verify it's a User struct" → `Prism.path([User])` or `Prism.struct(User)`
+- "only if profile is Profile struct" → `Prism.path([:profile, Profile])`
+- "check User then get name" → `Prism.path([User, :name])`
 - "only process positive numbers" → `Prism.filter(&(&1 > 0))`
 - "first item if list not empty" → `Prism.some()`
 - "access nested optional field" → `Prism.path([:data, :config, :timeout])`
@@ -85,8 +96,11 @@
 - Chain prisms with `compose/2` - failures propagate automatically
 - Plain path: `path([:a, :b, :c])` for maps
 - Typed path: `path([{User, :profile}, {Profile, :age}])` for structs
+- Naked struct: `path([User, :field])` or `path([:field, User])` to verify types
+- Type-only: `path([User])` just verifies struct type
 - Filter: `filter(&predicate/1)` for conditional matching
 - **IMPORTANT**: `{Module, :field}` requires `:field` exists in `Module` for lawfulness
+- Modules vs keys: Distinguished by `function_exported?(atom, :__struct__, 0)`
 - Prisms return Maybe - use `Monad.bind/2`, `Monad.map/2`, or pattern match
 - Review loses data outside focus - this is expected and lawful
 
@@ -141,7 +155,7 @@ p1 = Prism.path([:user, :profile, :email])
 Prism.review("alice@example.com", p1)
 #=> %{user: %{profile: %{email: "alice@example.com"}}}
 
-# Struct-typed path
+# Struct-typed path using {Module, :key} syntax
 defmodule Profile, do: defstruct [:email, :age]
 defmodule User, do: defstruct [:name, :profile]
 
@@ -149,15 +163,38 @@ p2 = Prism.path([{User, :profile}, {Profile, :email}])
 Prism.review("alice@example.com", p2)
 #=> %User{profile: %Profile{email: "alice@example.com", age: nil}, name: nil}
 
-# Mixed: struct then plain
-p3 = Prism.path([{User, :name}])
-Prism.review("Alice", p3)
+# Naked struct at end verifies final type
+p3 = Prism.path([:profile, Profile])
+Prism.preview(%{profile: %Profile{email: "alice@example.com"}}, p3)
+#=> Just(%Profile{email: "alice@example.com", age: nil})
+
+# Naked struct at beginning verifies root type
+p4 = Prism.path([User, :name])
+Prism.review("Alice", p4)
 #=> %User{name: "Alice", profile: nil}
+
+# Type-only verification (no field access)
+p5 = Prism.path([User])
+Prism.preview(%User{name: "Bob"}, p5)
+#=> Just(%User{name: "Bob", profile: nil})
+
+# Mix all three forms
+p6 = Prism.path([{User, :profile}, Profile, :email])
+Prism.review("alice@example.com", p6)
+#=> %User{profile: %Profile{email: "alice@example.com", age: nil}, name: nil}
 ```
 
 **Syntax:**
+
 - `:atom` - Plain key access
-- `{Module, :atom}` - Expands to `compose(struct(Module), key(:atom))`
+- `Module` - Naked struct verification (just type check, no field access)
+- `{Module, :atom}` - Typed field access (struct check + key access)
+
+**How it works:**
+
+- `:key` → `key(:key)`
+- `Module` → `struct(Module)` (when Module has `__struct__/0`)
+- `{Module, :key}` → `compose(struct(Module), key(:key))`
 
 **IMPORTANT**: Only use `{Module, :field}` when `:field` exists in `Module`. Using non-existent fields may violate prism laws.
 

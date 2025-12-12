@@ -359,6 +359,171 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
+  describe "path/1 with naked struct syntax" do
+    test "naked struct at end verifies final type" do
+      p = Prism.path([:profile, Profile])
+
+      # Preview succeeds when value is correct struct
+      user = %User{profile: %Profile{age: 30, score: 100}}
+      assert Prism.preview(user, p) == Maybe.just(%Profile{age: 30, score: 100})
+
+      # Preview fails when value is not the struct
+      user_with_map = %User{profile: %{age: 30}}
+      assert Prism.preview(user_with_map, p) == Maybe.nothing()
+
+      # Review constructs with struct type
+      result = Prism.review(%Profile{age: 25, score: 50}, p)
+      assert result == %{profile: %Profile{age: 25, score: 50}}
+    end
+
+    test "naked struct at beginning verifies root type" do
+      p = Prism.path([User, :name])
+
+      # Preview succeeds when root is User struct
+      user = %User{name: "Alice", profile: nil}
+      assert Prism.preview(user, p) == Maybe.just("Alice")
+
+      # Preview fails when root is not User struct
+      plain_map = %{name: "Bob"}
+      assert Prism.preview(plain_map, p) == Maybe.nothing()
+
+      # Review constructs User struct
+      result = Prism.review("Charlie", p)
+      assert result == %User{name: "Charlie", profile: nil}
+    end
+
+    test "naked struct in middle verifies intermediate type" do
+      p = Prism.path([:user, User, :profile, :age])
+
+      # Preview succeeds when user value is User struct
+      data = %{user: %User{name: "Alice", profile: %{age: 30}}}
+      assert Prism.preview(data, p) == Maybe.just(30)
+
+      # Preview fails when user value is plain map
+      data_with_map = %{user: %{name: "Bob", profile: %{age: 25}}}
+      assert Prism.preview(data_with_map, p) == Maybe.nothing()
+
+      # Review constructs with User struct at correct level
+      result = Prism.review(35, p)
+      assert result == %{user: %User{name: nil, profile: %{age: 35}}}
+    end
+
+    test "multiple naked structs verify types at each level" do
+      p = Prism.path([User, :profile, Profile, :age])
+
+      # Preview succeeds when both types match
+      user = %User{
+        name: "Alice",
+        profile: %Profile{age: 30, score: 100}
+      }
+
+      assert Prism.preview(user, p) == Maybe.just(30)
+
+      # Preview fails when root is wrong type
+      assert Prism.preview(%{profile: %Profile{age: 30}}, p) == Maybe.nothing()
+
+      # Preview fails when intermediate is wrong type
+      user_wrong_profile = %User{name: "Bob", profile: %{age: 25}}
+      assert Prism.preview(user_wrong_profile, p) == Maybe.nothing()
+
+      # Review constructs both struct types
+      result = Prism.review(40, p)
+
+      assert result == %User{
+               name: nil,
+               profile: %Profile{age: 40, score: nil}
+             }
+    end
+
+    test "mix naked structs with typed field syntax" do
+      p = Prism.path([{User, :profile}, Profile, :age])
+
+      # Preview succeeds when types match
+      user = %User{
+        name: "Alice",
+        profile: %Profile{age: 30, score: 100}
+      }
+
+      assert Prism.preview(user, p) == Maybe.just(30)
+
+      # Preview fails when profile is not Profile struct
+      user_map_profile = %User{name: "Bob", profile: %{age: 25}}
+      assert Prism.preview(user_map_profile, p) == Maybe.nothing()
+
+      # Review constructs with both struct types
+      result = Prism.review(50, p)
+
+      assert result == %User{
+               name: nil,
+               profile: %Profile{age: 50, score: nil}
+             }
+    end
+
+    test "naked struct only (no keys)" do
+      p = Prism.path([User])
+
+      # Preview succeeds for User struct
+      user = %User{name: "Alice", profile: nil}
+      assert Prism.preview(user, p) == Maybe.just(user)
+
+      # Preview fails for non-User
+      assert Prism.preview(%{name: "Bob"}, p) == Maybe.nothing()
+      assert Prism.preview(%Profile{age: 30}, p) == Maybe.nothing()
+
+      # Review passes through User struct
+      input = %User{name: "Charlie", profile: %Profile{age: 25}}
+      assert Prism.review(input, p) == input
+
+      # Review constructs User from map
+      result = Prism.review(%{name: "Dave"}, p)
+      assert result == %User{name: "Dave", profile: nil}
+    end
+
+    test "plain keys are not confused with struct modules" do
+      # :user and :profile are plain keys, not struct modules
+      p = Prism.path([:user, :profile, :age])
+
+      data = %{user: %{profile: %{age: 30}}}
+      assert Prism.preview(data, p) == Maybe.just(30)
+
+      # Review creates plain maps
+      result = Prism.review(40, p)
+      assert result == %{user: %{profile: %{age: 40}}}
+    end
+
+    test "raises when tuple has non-struct module" do
+      assert_raise ArgumentError, ~r/:not_a_module.*is not a struct module/, fn ->
+        Prism.path([{:not_a_module, :key}])
+      end
+    end
+
+    test "raises when path contains invalid element" do
+      assert_raise ArgumentError,
+                   ~r/path\/1 expects atoms or \{Module, :key\} tuples, got: "string"/,
+                   fn ->
+                     Prism.path(["string"])
+                   end
+
+      assert_raise ArgumentError,
+                   ~r/path\/1 expects atoms or \{Module, :key\} tuples, got: 123/,
+                   fn ->
+                     Prism.path([123])
+                   end
+
+      assert_raise ArgumentError,
+                   ~r/path\/1 expects atoms or \{Module, :key\} tuples, got: %\{\}/,
+                   fn ->
+                     Prism.path([%{}])
+                   end
+    end
+
+    test "raises when tuple has non-atom key" do
+      assert_raise ArgumentError, ~r/path\/1 expects atoms or \{Module, :key\} tuples/, fn ->
+        Prism.path([{User, "name"}])
+      end
+    end
+  end
+
   describe "Monoid structure via PrismCompose" do
     alias Funx.Monoid.PrismCompose
 
