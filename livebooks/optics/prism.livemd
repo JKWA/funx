@@ -360,11 +360,11 @@ Prism.preview(team_struct, leader_healthy_prism)
 No, but we can update with our Lens:
 
 ```elixir
-updated_team_struct = Lens.set!(team_struct, strength_lens, 120)
+healthy_team_struct = Lens.set!(team_struct, strength_lens, 257)
 ```
 
 ```elixir
-Prism.preview(updated_team_struct, leader_healthy_prism)
+Prism.preview(healthy_team_struct, leader_healthy_prism)
 ```
 
 Our leader is now healthy.
@@ -517,96 +517,134 @@ right_zero = Prism.compose(positive, never)
 Prism.preview(100, right_zero)
 ```
 
-## make/2
+## Advanced
 
-Create custom prisms. The previewer extracts (returning `Maybe`), the reviewer reconstructs:
+Until now we have used the constructors to make simple prisms, but with `make/2` we can implement custom logic.
 
 ```elixir
-# A prism for tuples that only matches when first element is positive
-positive_tuple_first = Prism.make(
-  fn
-    {first, _} when first > 0 -> Maybe.just(first)
-    _ -> Maybe.nothing()
-  end,
-  fn new_first -> {new_first, 0} end
+first_is_greater_prism =
+  Prism.make(
+    fn
+      {a, b} when a > b -> Maybe.just(a)
+      _ -> Maybe.nothing()
+    end,
+    fn new_a -> {new_a, 0} end
+  )
+
+```
+
+*For prisms built with* `make/2`*, it is your responsibility to ensure the preview and review functions obey the prism laws; Funx does not enforce them for you.*
+
+```elixir
+Prism.preview({5, 100}, first_is_greater_prism)
+```
+
+```elixir
+Prism.preview({200, 100}, first_is_greater_prism)
+```
+
+Review reconstructs the tuple structure, placing our value in the first postion:
+
+```elixir
+Prism.review(-4, first_is_greater_prism)
+```
+
+## Patterns with Maybe
+
+A Prism returns `Maybe`, so we can leverage the `Maybe` monad to solve commmon patterns.
+
+Such as adding a default value:
+
+```elixir
+hero_struct
+|> Prism.preview(name_prism)
+|> Maybe.get_or_else("Missing Name")
+```
+
+```elixir
+incomplete_hero_struct
+|> Prism.preview(name_prism)
+|> Maybe.get_or_else("Missing Name")
+```
+
+Or folding the `Maybe` value into a single value:
+
+```elixir
+alias Funx.Foldable
+
+team_struct
+|> Prism.preview(leader_healthy_prism)
+|>Foldable.fold_l(
+  fn _v -> :healthy end,  # called if Just(value)
+  fn -> :unhealthy end       # called if Nothing
 )
-```
 
-Preview succeeds when predicate matches:
-
-```elixir
-Prism.preview({5, 100}, positive_tuple_first)
-```
-
-Preview fails when predicate doesn't match:
-
-```elixir
-Prism.preview({-3, 100}, positive_tuple_first)
-```
-
-Review reconstructs the tuple structure:
-
-```elixir
-Prism.review(42, positive_tuple_first)
-```
-
-For prisms built with `make/2`, it is your responsibility to ensure the preview and review functions obey the prism laws; Funx does not enforce them for you.
-
-## Prisms vs Lenses
-
-**Decision rule: If "this field is missing" is a bug, reach for a lens. If "this field might not be there" is expected, reach for a prism.**
-
-**When to use Prisms:**
-
-* The value may not be present (optional fields, filtered data)
-* Failure is a normal outcome and should not raise
-* You're working with variants or branches
-* Example: Extracting a value only if it passes validation
-
-**When to use Lenses:**
-
-* The value is always present
-* Absence would be a bug and should raise loudly
-* You need to update while preserving the rest of the structure
-* Example: Updating a user's email while keeping other profile data intact
-
-Key difference in behavior:
-
-```elixir
-# Prism: preview may fail
-Prism.preview(%{alias: "Hero"}, name_prism)
 ```
 
 ```elixir
-# Prism: review builds from scratch
-prism_result = Prism.review("New Name", Prism.path([:name]))
+healthy_team_struct
+|> Prism.preview(leader_healthy_prism)
+|>Foldable.fold_l(
+  fn _v -> :healthy end,  # called if Just(value)
+  fn -> :unhealthy end       # called if Nothing
+)
+
 ```
 
-The prism creates only what it needs. Compare to a lens which would preserve all other fields in the original structure while updating just the focused field.
-
-Use prisms for optional or conditional data where failure is expected and represented as `Maybe`; use lenses when the focus is required and you must preserve the rest of the structure.
-
-### Pattern 1: Optional Nested Fields
-
-Your structure may or may not contain a field, and you want safe access without raising:
+Or we can use `map/2` to transform and `tap/2` to run a side-effect, but only when the result is `Just`:
 
 ```elixir
-%{name: "Avengers", founded: 1963}
-|> Prism.preview(leader_name_prism)
-|> Maybe.get_or_else("No Leader Assigned")
+hero_struct
+|> Prism.preview(name_prism)
+|> Monad.map(&String.upcase/1)
+|> Funx.Tappable.tap(fn v ->
+  IO.puts("HELLO #{inspect(v)}!")
+end)
+```
+
+And Maybe skips the tap and map when the Prism filters out our Hero:
+
+```elixir
+incomplete_hero_struct
+|> Prism.preview(name_prism)
+|> Monad.map(&String.upcase/1)
+|> Funx.Tappable.tap(fn v ->
+  IO.puts("HELLO #{inspect(v)}!")
+end)
 ```
 
 ```elixir
-%{name: "Avengers", leader: %{name: "Iron Man"}, founded: 1963}
-|> Prism.preview(leader_name_prism)
-|> Maybe.get_or_else("No Team Assigned")
+hero_struct
+|> Prism.preview(name_prism)
+|> Monad.map(&String.upcase/1)
+|> Funx.Tappable.tap(fn v ->
+  IO.puts("HELLO #{inspect(v)}!")
+end)
 ```
 
-Use a prism when a nested field is optional or can be missing. Preview gives you a `Maybe` instead of raising.
+We can just return the healthy strength values:
 
-### Pattern 2: Filtered Views
+```elixir
+[team_struct, healthy_team_struct]
+|> Enum.map(&Prism.preview(&1, leader_healthy_prism))
+|> Maybe.concat()
+```
 
-Apply prisms when you want to treat "passes this predicate" as a branch of your domain:
+Or we can skip the extra loop through `Enum`:
+
+```elixir
+[team_struct, healthy_team_struct]
+|> Maybe.concat_map(&Prism.preview(&1,leader_healthy_prism))
+```
+
+And we can ask whether all teams have healthy leaders:
+
+```elixir
+[team_struct, healthy_team_struct]
+|> Maybe.traverse(&Prism.preview(&1,leader_healthy_prism))
+```
+
+Or we can use a Prism to select
 
 ```elixir
 # # Only process accounts that are active, premium, and within limit
@@ -622,17 +660,3 @@ Apply prisms when you want to treat "passes this predicate" as a branch of your 
 # end
 ```
 
-Think of `positive`, `even`, `small` in the examples as filters like `active_account`, `premium_customer`, `within_credit_limit` in a real system.
-
-### Pattern 3: Composing with Maybe
-
-Because `preview` returns `Maybe`, you can compose it with `Maybe.map`, `Maybe.bind`, etc., to build fail-safe pipelines over optional branches:
-
-```elixir
-%{name: "Avengers", founded: 1963}
-|> Prism.preview(leader_name_prism)
-|> Monad.map(&String.upcase/1)
-|> Maybe.get_or_else("NO LEADER")
-```
-
-This lets you safely transform optional values without explicit case-matching at every step.
