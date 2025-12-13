@@ -28,6 +28,16 @@ defmodule Funx.Optics.PrismTest do
       p = Prism.key(:name)
       assert %Nothing{} = %{age: 30} |> Prism.preview(p)
     end
+
+    test "returns Nothing for nil" do
+      p = Prism.key(:name)
+      assert %Nothing{} = nil |> Prism.preview(p)
+    end
+
+    test "returns Nothing for empty list" do
+      p = Prism.key(:name)
+      assert %Nothing{} = [] |> Prism.preview(p)
+    end
   end
 
   #
@@ -206,6 +216,18 @@ defmodule Funx.Optics.PrismTest do
       p = Prism.path([:profile, :age])
 
       assert %Maybe.Just{value: 30} = Prism.preview(u, p)
+    end
+
+    test "preview reads a nil" do
+      p = Prism.path([:profile, :age])
+
+      assert %Maybe.Nothing{} = Prism.preview(nil, p)
+    end
+
+    test "preview reads an empty list" do
+      p = Prism.path([:profile, :age])
+
+      assert %Maybe.Nothing{} = Prism.preview([], p)
     end
 
     test "preview returns Nothing when key is missing in a struct" do
@@ -602,6 +624,60 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
+  describe "malformed prism construction" do
+    test "key/1 raises for non-atom" do
+      assert_raise FunctionClauseError, fn ->
+        Prism.key("not_an_atom")
+      end
+
+      assert_raise FunctionClauseError, fn ->
+        Prism.key(123)
+      end
+    end
+
+    test "struct/1 raises for non-struct module" do
+      assert_raise ArgumentError,
+                   ~r/String is not a struct module/,
+                   fn ->
+                     Prism.struct(String)
+                   end
+
+      assert_raise ArgumentError,
+                   ~r/Enum is not a struct module/,
+                   fn ->
+                     Prism.struct(Enum)
+                   end
+    end
+
+    test "struct/1 raises for non-module atom" do
+      assert_raise ArgumentError,
+                   ~r/:not_a_module is not a struct module/,
+                   fn ->
+                     Prism.struct(:not_a_module)
+                   end
+    end
+
+    test "make/2 raises for non-function arguments" do
+      assert_raise FunctionClauseError, fn ->
+        Prism.make("not a function", fn x -> x end)
+      end
+
+      assert_raise FunctionClauseError, fn ->
+        Prism.make(fn x -> x end, "not a function")
+      end
+    end
+
+    test "make/2 raises for wrong arity" do
+      assert_raise FunctionClauseError, fn ->
+        Prism.make(fn -> nil end, fn x -> x end)  # preview arity 0, should be 1
+      end
+
+      assert_raise FunctionClauseError, fn ->
+        Prism.make(fn x -> x end, fn -> nil end)  # review arity 0, should be 1
+      end
+    end
+  end
+
   defmodule CreditCard do
     defstruct [:number, :expiry]
   end
@@ -630,6 +706,14 @@ defmodule Funx.Optics.PrismTest do
 
     test "preview fails for non-struct input", %{cc_prism: p} do
       assert Prism.preview(:not_a_struct, p) == Maybe.nothing()
+    end
+
+    test "preview fails for nil input", %{cc_prism: p} do
+      assert Prism.preview(nil, p) == Maybe.nothing()
+    end
+
+    test "preview fails for empty list input", %{cc_prism: p} do
+      assert Prism.preview([], p) == Maybe.nothing()
     end
 
     test "review returns the struct unchanged", %{cc_prism: p, cc: cc} do

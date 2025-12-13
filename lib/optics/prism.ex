@@ -96,7 +96,7 @@ defmodule Funx.Optics.Prism do
   @doc false
   def identity do
     make(
-      fn x -> Maybe.just(x) end,
+      fn x -> Maybe.from_nil(x) end,
       fn x -> x end
     )
   end
@@ -243,6 +243,12 @@ defmodule Funx.Optics.Prism do
   @spec struct(module()) :: t(struct(), struct())
 
   def struct(mod) when is_atom(mod) do
+    unless function_exported?(mod, :__struct__, 0) do
+      raise ArgumentError,
+            "#{inspect(mod)} is not a struct module. " <>
+              "Prism.struct/1 requires a module with defstruct."
+    end
+
     make(
       fn
         %^mod{} = s -> Maybe.just(s)
