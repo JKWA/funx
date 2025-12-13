@@ -129,12 +129,23 @@ defmodule Funx.Optics.Prism do
   If you need to update a field while preserving other fields, you need a lens,
   not a prism.
 
+  **Note**: Cannot review with `nil` as it would violate prism laws (since
+  `Just(nil)` is invalid).
+
       iex> p = Funx.Optics.Prism.key(:name)
       iex> Funx.Optics.Prism.review("Alice", p)
       %{name: "Alice"}
   """
   @spec review(a, t(s, a)) :: s
         when s: term(), a: term()
+
+  def review(nil, %__MODULE__{}) do
+    raise ArgumentError,
+          "Cannot review with nil. " <>
+            "Prisms use Maybe, which doesn't allow nil values. " <>
+            "This would violate prism laws: preview(review(nil)) should equal Just(nil), but Just(nil) is invalid."
+  end
+
   def review(a, %__MODULE__{review: review}),
     do: review.(a)
 

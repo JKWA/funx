@@ -48,6 +48,34 @@ defmodule Funx.Optics.PrismTest do
       p = Prism.key(:name)
       assert "Alice" |> Prism.review(p) == %{name: "Alice"}
     end
+
+    test "raises ArgumentError for nil value" do
+      p = Prism.key(:name)
+
+      assert_raise ArgumentError,
+                   ~r/Cannot review with nil.*prism laws/,
+                   fn ->
+                     Prism.review(nil, p)
+                   end
+    end
+
+    test "raises ArgumentError for nil with struct prism" do
+      p = Prism.struct(Account)
+
+      assert_raise ArgumentError,
+                   ~r/Cannot review with nil.*Just\(nil\) is invalid/,
+                   fn ->
+                     Prism.review(nil, p)
+                   end
+    end
+
+    test "raises ArgumentError for nil with path prism" do
+      p = Prism.path([:a, :b])
+
+      assert_raise ArgumentError, fn ->
+        Prism.review(nil, p)
+      end
+    end
   end
 
   #
@@ -669,11 +697,13 @@ defmodule Funx.Optics.PrismTest do
 
     test "make/2 raises for wrong arity" do
       assert_raise FunctionClauseError, fn ->
-        Prism.make(fn -> nil end, fn x -> x end)  # preview arity 0, should be 1
+        # preview arity 0, should be 1
+        Prism.make(fn -> nil end, fn x -> x end)
       end
 
       assert_raise FunctionClauseError, fn ->
-        Prism.make(fn x -> x end, fn -> nil end)  # review arity 0, should be 1
+        # review arity 0, should be 1
+        Prism.make(fn x -> x end, fn -> nil end)
       end
     end
   end
