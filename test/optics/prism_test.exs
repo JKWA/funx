@@ -7,18 +7,26 @@ defmodule Funx.Optics.PrismTest do
   alias Funx.Optics.Prism
   alias Maybe.{Just, Nothing}
 
+  defmodule Account do
+    defstruct [:name, :type]
+  end
+
+  defmodule Payment do
+    defstruct [:amount, :account]
+  end
+
   #
   # Basic preview
   #
   describe "preview/2" do
-    test "returns Just for matching value via filter prism" do
-      p = Prism.filter(&(&1 > 10))
-      assert %Just{value: 12} = 12 |> Prism.preview(p)
+    test "returns Just for matching value via key prism" do
+      p = Prism.key(:name)
+      assert %Just{value: "Alice"} = %{name: "Alice"} |> Prism.preview(p)
     end
 
-    test "returns Nothing for non-matching value via filter prism" do
-      p = Prism.filter(&(&1 > 10))
-      assert %Nothing{} = 5 |> Prism.preview(p)
+    test "returns Nothing for missing key via key prism" do
+      p = Prism.key(:name)
+      assert %Nothing{} = %{age: 30} |> Prism.preview(p)
     end
   end
 
@@ -26,47 +34,9 @@ defmodule Funx.Optics.PrismTest do
   # Basic review
   #
   describe "review/2" do
-    test "rebuilds a value using filter prism" do
-      p = Prism.filter(&(&1 > 10))
-      assert 20 |> Prism.review(p) == 20
-    end
-  end
-
-  #
-  # Prism.some/0
-  #
-  describe "some/0" do
-    test "extracts head from non-empty list" do
-      p = Prism.some()
-      assert %Just{value: 1} = [1, 2, 3] |> Prism.preview(p)
-    end
-
-    test "fails to extract head from empty list or nil" do
-      p = Prism.some()
-      assert %Nothing{} = [] |> Prism.preview(p)
-      assert %Nothing{} = nil |> Prism.preview(p)
-    end
-
-    test "review wraps a value in a singleton list" do
-      p = Prism.some()
-      assert :x |> Prism.review(p) == [:x]
-    end
-  end
-
-  #
-  # Prism.none/0
-  #
-  describe "none/0" do
-    test "preview always returns Nothing" do
-      p = Prism.none()
-      assert %Nothing{} = 123 |> Prism.preview(p)
-      assert %Nothing{} = "hello" |> Prism.preview(p)
-      assert %Nothing{} = %{} |> Prism.preview(p)
-    end
-
-    test "review always returns nil" do
-      p = Prism.none()
-      assert :x |> Prism.review(p) == nil
+    test "rebuilds a value using key prism" do
+      p = Prism.key(:name)
+      assert "Alice" |> Prism.review(p) == %{name: "Alice"}
     end
   end
 
@@ -74,47 +44,41 @@ defmodule Funx.Optics.PrismTest do
   # Composition
   #
   describe "compose/2" do
-    test "composing two filter prisms" do
-      p1 = Prism.filter(&(&1 > 0))
-      p2 = Prism.filter(&(rem(&1, 2) == 0))
+    test "composing struct and key prisms" do
+      p1 = Prism.struct(Account)
+      p2 = Prism.key(:name)
       p = Prism.compose(p1, p2)
 
-      assert %Just{value: 4} = 4 |> Prism.preview(p)
-      assert %Nothing{} = -2 |> Prism.preview(p)
-      assert %Nothing{} = 3 |> Prism.preview(p)
+      assert %Just{value: "Alice"} = %Account{name: "Alice"} |> Prism.preview(p)
+      assert %Nothing{} = %{name: "Bob"} |> Prism.preview(p)
+      assert %Nothing{} = %Account{type: "checking"} |> Prism.preview(p)
     end
 
-    test "compose some/0 and filter/1" do
-      some = Prism.some()
-      even = Prism.filter(&(rem(&1, 2) == 0))
-      p = Prism.compose(some, even)
+    test "composing nested key prisms" do
+      p1 = Prism.key(:account)
+      p2 = Prism.key(:name)
+      p = Prism.compose(p1, p2)
 
-      assert %Just{value: 2} = [2, 3, 4] |> Prism.preview(p)
-      assert %Nothing{} = [3, 4] |> Prism.preview(p)
-      assert %Nothing{} = [] |> Prism.preview(p)
+      assert %Just{value: "Alice"} = %{account: %{name: "Alice"}} |> Prism.preview(p)
+      assert %Nothing{} = %{account: %{type: "checking"}} |> Prism.preview(p)
+      assert %Nothing{} = %{other: "value"} |> Prism.preview(p)
     end
 
     test "review rebuilds via both prisms" do
-      some = Prism.some()
-      inc = Prism.filter(&(&1 > 5))
-      p = Prism.compose(some, inc)
+      struct_prism = Prism.struct(Account)
+      name_prism = Prism.key(:name)
+      p = Prism.compose(struct_prism, name_prism)
 
-      assert 10 |> Prism.review(p) == [10]
+      assert "Alice" |> Prism.review(p) == %Account{name: "Alice", type: nil}
     end
 
     test "review composes in reverse order (inner first, then outer)" do
-      # Compose list head prism with even filter
-      list_even = Prism.compose(Prism.some(), Prism.filter(&(rem(&1, 2) == 0)))
+      # Compose struct prism with key prism
+      account_name = Prism.compose(Prism.struct(Account), Prism.key(:name))
 
-      # Review applies inner prism first (even: 10 -> 10),
-      # then outer prism (some: 10 -> [10])
-      assert Prism.review(10, list_even) == [10]
-
-      # Filter prisms don't validate on review, so odd numbers work too
-      assert Prism.review(9, list_even) == [9]
-
-      # The key point: result is always wrapped in a list by some/0's review
-      assert Prism.review(42, list_even) == [42]
+      # Review applies inner prism first (key: "Alice" -> %{name: "Alice"}),
+      # then outer prism (struct: %{name: "Alice"} -> %Account{name: "Alice"})
+      assert Prism.review("Alice", account_name) == %Account{name: "Alice", type: nil}
     end
   end
 
@@ -196,13 +160,15 @@ defmodule Funx.Optics.PrismTest do
       assert Prism.review(7, p) == %{a: %{b: %{c: 7}}}
     end
 
-    test "path prism composes with another prism" do
+    test "path prism composes with struct prism" do
       outer = Prism.path([:a, :b])
-      inner = Prism.filter(&(rem(&1, 2) == 0))
+      inner = Prism.struct(Account)
       p = Prism.compose(outer, inner)
 
-      assert %Just{value: 4} = Prism.preview(%{a: %{b: 4}}, p)
-      assert %Nothing{} = Prism.preview(%{a: %{b: 3}}, p)
+      assert %Just{value: %Account{name: "Alice"}} =
+               Prism.preview(%{a: %{b: %Account{name: "Alice"}}}, p)
+
+      assert %Nothing{} = Prism.preview(%{a: %{b: %{name: "Bob"}}}, p)
       assert %Nothing{} = Prism.preview(%{a: %{b: nil}}, p)
     end
 
@@ -530,93 +496,94 @@ defmodule Funx.Optics.PrismTest do
     test "prisms form a monoid under composition via PrismCompose" do
       import Funx.Monoid
 
-      p1 = PrismCompose.new(Prism.filter(&(&1 > 0)))
-      p2 = PrismCompose.new(Prism.filter(&(rem(&1, 2) == 0)))
+      p1 = PrismCompose.new(Prism.struct(Account))
+      p2 = PrismCompose.new(Prism.key(:name))
 
       # Composition via Monoid.append
       composed = append(p1, p2) |> PrismCompose.unwrap()
-      assert %Maybe.Just{value: 4} = Prism.preview(4, composed)
-      assert %Maybe.Nothing{} = Prism.preview(3, composed)
-      assert %Maybe.Nothing{} = Prism.preview(-2, composed)
+      assert %Maybe.Just{value: "Alice"} = Prism.preview(%Account{name: "Alice"}, composed)
+      assert %Maybe.Nothing{} = Prism.preview(%{name: "Bob"}, composed)
+      assert %Maybe.Nothing{} = Prism.preview(%Account{type: "checking"}, composed)
     end
 
     test "identity prism preserves values" do
       import Funx.Monoid
 
       id = empty(%PrismCompose{})
-      p = PrismCompose.new(Prism.filter(&(&1 > 10)))
+      p = PrismCompose.new(Prism.key(:name))
 
       # Left identity: append(id, p) == p
       left = append(id, p) |> PrismCompose.unwrap()
-      assert %Maybe.Just{value: 15} = Prism.preview(15, left)
-      assert %Maybe.Nothing{} = Prism.preview(5, left)
+      assert %Maybe.Just{value: "Alice"} = Prism.preview(%{name: "Alice"}, left)
+      assert %Maybe.Nothing{} = Prism.preview(%{age: 30}, left)
 
       # Right identity: append(p, id) == p
       right = append(p, id) |> PrismCompose.unwrap()
-      assert %Maybe.Just{value: 15} = Prism.preview(15, right)
-      assert %Maybe.Nothing{} = Prism.preview(5, right)
+      assert %Maybe.Just{value: "Alice"} = Prism.preview(%{name: "Alice"}, right)
+      assert %Maybe.Nothing{} = Prism.preview(%{age: 30}, right)
     end
 
     test "composition is associative" do
       import Funx.Monoid
 
-      p1 = PrismCompose.new(Prism.filter(&(&1 > 0)))
-      p2 = PrismCompose.new(Prism.filter(&(rem(&1, 2) == 0)))
-      p3 = PrismCompose.new(Prism.filter(&(&1 < 100)))
+      p1 = PrismCompose.new(Prism.key(:payment))
+      p2 = PrismCompose.new(Prism.key(:account))
+      p3 = PrismCompose.new(Prism.key(:name))
 
       # (p1 . p2) . p3 == p1 . (p2 . p3)
       left_assoc = append(append(p1, p2), p3) |> PrismCompose.unwrap()
       right_assoc = append(p1, append(p2, p3)) |> PrismCompose.unwrap()
 
-      # Test with a value that should match all filters
-      assert %Maybe.Just{value: 4} = Prism.preview(4, left_assoc)
-      assert %Maybe.Just{value: 4} = Prism.preview(4, right_assoc)
+      data = %{payment: %{account: %{name: "Alice"}}}
 
-      # Test with a value that should fail first filter
-      assert %Maybe.Nothing{} = Prism.preview(-2, left_assoc)
-      assert %Maybe.Nothing{} = Prism.preview(-2, right_assoc)
+      # Test with matching data
+      assert %Maybe.Just{value: "Alice"} = Prism.preview(data, left_assoc)
+      assert %Maybe.Just{value: "Alice"} = Prism.preview(data, right_assoc)
 
-      # Test with a value that should fail second filter
-      assert %Maybe.Nothing{} = Prism.preview(3, left_assoc)
-      assert %Maybe.Nothing{} = Prism.preview(3, right_assoc)
+      # Test with data missing first key
+      assert %Maybe.Nothing{} = Prism.preview(%{other: "value"}, left_assoc)
+      assert %Maybe.Nothing{} = Prism.preview(%{other: "value"}, right_assoc)
 
-      # Test with a value that should fail third filter
-      assert %Maybe.Nothing{} = Prism.preview(200, left_assoc)
-      assert %Maybe.Nothing{} = Prism.preview(200, right_assoc)
-    end
+      # Test with data missing second key
+      assert %Maybe.Nothing{} = Prism.preview(%{payment: %{other: "value"}}, left_assoc)
+      assert %Maybe.Nothing{} = Prism.preview(%{payment: %{other: "value"}}, right_assoc)
 
-    test "none is a zero/annihilator for composition" do
-      p = Prism.filter(&(&1 > 10))
-      zero = Prism.none()
+      # Test with data missing third key
+      assert %Maybe.Nothing{} =
+               Prism.preview(%{payment: %{account: %{other: "value"}}}, left_assoc)
 
-      # Composing with none annihilates
-      left_zero = Prism.compose(zero, p)
-      right_zero = Prism.compose(p, zero)
-
-      assert %Maybe.Nothing{} = Prism.preview(15, left_zero)
-      assert %Maybe.Nothing{} = Prism.preview(15, right_zero)
+      assert %Maybe.Nothing{} =
+               Prism.preview(%{payment: %{account: %{other: "value"}}}, right_assoc)
     end
 
     test "concat composes multiple prisms like m_concat for Ord" do
       prisms = [
-        Prism.filter(&(&1 > 0)),
-        Prism.filter(&(rem(&1, 2) == 0)),
-        Prism.filter(&(&1 < 100))
+        Prism.struct(Payment),
+        Prism.key(:account),
+        Prism.struct(Account),
+        Prism.key(:name)
       ]
 
       composed = Prism.concat(prisms)
 
-      # All filters pass
-      assert %Maybe.Just{value: 4} = Prism.preview(4, composed)
+      payment = %Payment{
+        amount: 100,
+        account: %Account{name: "Alice", type: "checking"}
+      }
 
-      # Fails first filter
-      assert %Maybe.Nothing{} = Prism.preview(-2, composed)
+      # All prisms match
+      assert %Maybe.Just{value: "Alice"} = Prism.preview(payment, composed)
 
-      # Fails second filter
-      assert %Maybe.Nothing{} = Prism.preview(3, composed)
+      # Fails first prism (not a Payment struct)
+      assert %Maybe.Nothing{} = Prism.preview(%{account: %Account{name: "Bob"}}, composed)
 
-      # Fails third filter
-      assert %Maybe.Nothing{} = Prism.preview(200, composed)
+      # Fails struct prism (account is not an Account struct)
+      payment_with_map = %Payment{amount: 100, account: %{name: "Charlie"}}
+      assert %Maybe.Nothing{} = Prism.preview(payment_with_map, composed)
+
+      # Fails key prism (name is nil)
+      payment_no_name = %Payment{amount: 100, account: %Account{type: "savings"}}
+      assert %Maybe.Nothing{} = Prism.preview(payment_no_name, composed)
     end
 
     test "concat with empty list returns identity prism" do
@@ -627,11 +594,11 @@ defmodule Funx.Optics.PrismTest do
     end
 
     test "concat with single prism returns that prism" do
-      p = Prism.filter(&(&1 > 10))
+      p = Prism.key(:name)
       composed = Prism.concat([p])
 
-      assert %Maybe.Just{value: 15} = Prism.preview(15, composed)
-      assert %Maybe.Nothing{} = Prism.preview(5, composed)
+      assert %Maybe.Just{value: "Alice"} = Prism.preview(%{name: "Alice"}, composed)
+      assert %Maybe.Nothing{} = Prism.preview(%{age: 30}, composed)
     end
   end
 

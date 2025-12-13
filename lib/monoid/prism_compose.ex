@@ -10,13 +10,13 @@ defmodule Funx.Monoid.PrismCompose do
       iex> alias Funx.Monoid.PrismCompose
       iex> alias Funx.Optics.Prism
       iex> prisms = [
-      ...>   Prism.filter(&(&1 > 0)),
-      ...>   Prism.filter(&(rem(&1, 2) == 0))
+      ...>   Prism.struct(CreditCard),
+      ...>   Prism.key(:name)
       ...> ]
       iex> wrapped = Enum.map(prisms, &PrismCompose.new/1)
       iex> composed = Funx.Monoid.Utils.m_concat(%PrismCompose{}, wrapped)
-      iex> Prism.preview(4, composed.prism)
-      %Funx.Monad.Maybe.Just{value: 4}
+      iex> Prism.preview(%CreditCard{name: "Alice"}, composed.prism)
+      %Funx.Monad.Maybe.Just{value: "Alice"}
   """
 
   alias Funx.Optics.Prism
@@ -48,7 +48,7 @@ defimpl Funx.Monoid, for: Funx.Monoid.PrismCompose do
   Returns the identity prism (accepts all values).
   """
   def empty(_) do
-    PrismCompose.new(Prism.filter(fn _ -> true end))
+    PrismCompose.new(Prism.identity())
   end
 
   @doc """
