@@ -138,6 +138,7 @@ Lens.view!(%{age: 30}, name_lens)
 ```
 
 **Works with:**
+
 - Atom keys: `Lens.key(:name)`
 - String keys: `Lens.key("name")`
 - Structs (preserves type): `Lens.set!(%User{name: "Alice"}, Lens.key(:name), "Bob")`
@@ -314,6 +315,7 @@ Lens.view(user, name_lens, as: :raise)
 ```
 
 **Modes:**
+
 - `:either` (default) - `Right(value)` or `Left(exception)`
 - `:tuple` - `{:ok, value}` or `{:error, exception}`
 - `:raise` - raises exceptions like `view!/2`

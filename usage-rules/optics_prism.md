@@ -34,7 +34,11 @@
 1. **Review-Preview**: `preview(review(b, p), p) = Just(b)` (round-trip from value)
 2. **Preview-Review**: If `preview(s, p) = Just(a)`, then `preview(review(a, p), p) = Just(a)` (round-trip preserves focus)
 
-**Important**: Review constructs the *minimal* structure needed for preview, not the original structure. Other fields are lost.
+**Important Constraints:**
+
+- Review constructs the *minimal* structure needed for preview, not the original structure. Other fields are lost.
+- **Cannot review with `nil`**: `review(nil, prism)` raises `ArgumentError` because `Just(nil)` is invalid in the Maybe monad, which would violate prism laws.
+- Preview treats `nil` values as `Nothing` (absence), not as a present value.
 
 ## LLM Decision Guide: When to Use Prisms
 
@@ -42,10 +46,10 @@
 
 - Accessing optional/nullable fields (user profile, config value)
 - Working with variants or sum types (selecting one case from many)
-- Filtering data (only process values matching a predicate)
+- Selecting specific struct types from mixed data
 - Absence is normal and expected in the domain
 - Need to compose partial accessors
-- User says: "optional", "might not have", "filter", "only if", "when present"
+- User says: "optional", "might not have", "only if", "when present", "extract from type"
 
 **❌ Use Lens when:**
 
@@ -62,15 +66,14 @@
 - **Struct-typed paths**: `Prism.path([{User, :profile}, {Profile, :email}])` for typed reconstruction
 - **Naked struct verification**: `Prism.path([User, :field])` or `Prism.path([:field, User])` to verify types
 - **Type-only check**: `Prism.path([User])` to just verify struct type with no field access
-- **Filtering**: `Prism.filter(&(&1 > 0))` for conditional matching
-- **List head**: `Prism.some()` for non-empty list access
 - **Struct variants**: `Prism.struct(User)` for selecting specific struct types
 - **Composition**: `Prism.compose(p1, p2)` or `Prism.concat([p1, p2, p3])`
+- **Custom prisms**: `Prism.make/2` for custom preview/review logic
 
 **⚙️ Function Choice Guide:**
 
-- **Extract value**: `preview/2` returns `Just(value)` or `Nothing`
-- **Reconstruct**: `review/2` builds minimal structure from focus
+- **Extract value**: `preview/2` returns `Just(value)` or `Nothing` (treats `nil` as `Nothing`)
+- **Reconstruct**: `review/2` builds minimal structure from focus (raises if value is `nil`)
 - **Compose prisms**: `compose/2` for two, `concat/1` for multiple
 - **Custom prisms**: `make/2` with preview and review functions
 
@@ -83,8 +86,6 @@
 - "verify it's a User struct" → `Prism.path([User])` or `Prism.struct(User)`
 - "only if profile is Profile struct" → `Prism.path([:profile, Profile])`
 - "check User then get name" → `Prism.path([User, :name])`
-- "only process positive numbers" → `Prism.filter(&(&1 > 0))`
-- "first item if list not empty" → `Prism.some()`
 - "access nested optional field" → `Prism.path([:data, :config, :timeout])`
 - "extract from specific struct type" → `Prism.struct(Account)`
 - "chain optional lookups" → `Prism.compose(outer_prism, inner_prism)`
@@ -93,16 +94,18 @@
 
 - Use `preview/2` to extract - returns `Just(value)` or `Nothing`
 - Use `review/2` to reconstruct minimal structure from focus
+- **CRITICAL**: `review(nil, prism)` raises `ArgumentError` - cannot review with `nil`
+- Preview treats `nil` values as `Nothing` (absence)
 - Chain prisms with `compose/2` - failures propagate automatically
 - Plain path: `path([:a, :b, :c])` for maps
 - Typed path: `path([{User, :profile}, {Profile, :age}])` for structs
 - Naked struct: `path([User, :field])` or `path([:field, User])` to verify types
 - Type-only: `path([User])` just verifies struct type
-- Filter: `filter(&predicate/1)` for conditional matching
 - **IMPORTANT**: `{Module, :field}` requires `:field` exists in `Module` for lawfulness
 - Modules vs keys: Distinguished by `function_exported?(atom, :__struct__, 0)`
 - Prisms return Maybe - use `Monad.bind/2`, `Monad.map/2`, or pattern match
 - Review loses data outside focus - this is expected and lawful
+- Custom logic: Use `make/2` with custom preview and review functions
 
 ## Overview
 
@@ -143,6 +146,10 @@ Prism.preview(%{name: nil}, p)
 # Review constructs minimal structure
 Prism.review("Alice", p)
 #=> %{name: "Alice"}
+
+# IMPORTANT: Cannot review with nil
+Prism.review(nil, p)
+#=> ** (ArgumentError) Cannot review with nil. Prisms use Maybe, which doesn't allow nil values.
 ```
 
 ### `path/1` - Focus on Nested Path
@@ -221,65 +228,6 @@ Prism.review(%{id: 2, balance: 200}, p)
 
 **Use case**: Modeling sum types - selecting one variant from multiple possibilities.
 
-### `filter/1` - Focus on Matching Values
-
-Creates a prism that succeeds only when predicate returns true:
-
-```elixir
-positive = Prism.filter(&(&1 > 0))
-
-# Preview succeeds when predicate matches
-Prism.preview(42, positive)
-#=> Just(42)
-
-Prism.preview(-5, positive)
-#=> Nothing
-
-# Review returns value unchanged (filters don't validate on review)
-Prism.review(100, positive)
-#=> 100
-
-Prism.review(-10, positive)
-#=> -10 (filter doesn't validate on review)
-```
-
-**Note**: Filters don't validate during review - they only check during preview.
-
-### `some/0` - Focus on List Head
-
-Creates a prism focusing on the first element of a non-empty list:
-
-```elixir
-head = Prism.some()
-
-# Preview extracts first element
-Prism.preview([1, 2, 3], head)
-#=> Just(1)
-
-Prism.preview([], head)
-#=> Nothing
-
-# Review creates singleton list
-Prism.review(:value, head)
-#=> [:value]
-```
-
-### `none/0` - Never Matches
-
-Creates a prism that always fails (monoid annihilator):
-
-```elixir
-never = Prism.none()
-
-Prism.preview(anything, never)
-#=> Nothing (always fails)
-
-Prism.review(value, never)
-#=> nil
-```
-
-**Use case**: Identity element for prism composition algebra.
-
 ### `make/2` - Custom Prisms
 
 Creates a prism from preview and review functions:
@@ -342,12 +290,15 @@ p = Prism.path([{User, :profile}, {Profile, :age}])
 
 Prism.review(30, p)
 #=> %User{
-#     profile: %Profile{age: 30, age: nil},
+#     profile: %Profile{age: 30, email: nil},
 #     name: nil
 #   }
 ```
 
-**Important**: Review constructs the *minimal* structure. Other fields get default values. Original data is lost.
+**Important**:
+
+- Review constructs the *minimal* structure. Other fields get default values. Original data is lost.
+- **Cannot review with `nil`**: Raises `ArgumentError` because `Just(nil)` is invalid in the Maybe monad, which would violate prism laws.
 
 ## Composition
 
@@ -375,23 +326,29 @@ Prism.review("Bob", user_name)
 
 ### `concat/1` - Compose Multiple Prisms
 
-Composes a list of prisms:
+Composes a list of prisms into a single prism:
 
 ```elixir
-positive = Prism.filter(&(&1 > 0))
-even = Prism.filter(&(rem(&1, 2) == 0))
-small = Prism.filter(&(&1 < 100))
+# Compose multiple key prisms for nested access
+prisms = [
+  Prism.key(:user),
+  Prism.key(:profile),
+  Prism.key(:age)
+]
 
-composed = Prism.concat([positive, even, small])
+composed = Prism.concat(prisms)
 
-Prism.preview(4, composed)
-#=> Just(4)
+data = %{user: %{profile: %{age: 25, name: "Alice"}}}
 
-Prism.preview(-2, composed)
-#=> Nothing (fails first filter)
+Prism.preview(data, composed)
+#=> Just(25)
+
+Prism.preview(%{}, composed)
+#=> Nothing (missing keys)
 ```
 
 **Equivalent to**: `compose(compose(p1, p2), p3)`
+**Note**: `path/1` is syntactic sugar for `concat` with key/struct prisms
 
 ## Working with Maybe Results
 
@@ -450,17 +407,6 @@ Prism.preview(payment, cc_prism)
 #=> Just(%CreditCard{number: "1234"})
 ```
 
-### Filtering Data
-
-```elixir
-# Process only values matching criteria
-active_user = Prism.filter(&(&1.active == true))
-
-users
-|> Enum.map(&Prism.preview(&1, active_user))
-|> Maybe.concat()  # Extract all Just values
-```
-
 ### Nested Struct Access with Type Safety
 
 ```elixir
@@ -479,6 +425,19 @@ Prism.review("San Francisco", city_prism)
 ```
 
 ## Anti-Patterns
+
+**❌ Don't review with nil:**
+
+```elixir
+# BAD: Trying to review with nil
+p = Prism.key(:name)
+Prism.review(nil, p)
+# Raises: ArgumentError - Cannot review with nil
+
+# GOOD: Use a non-nil value
+Prism.review("Alice", p)
+#=> %{name: "Alice"}
+```
 
 **❌ Don't use invalid struct fields:**
 
@@ -505,7 +464,7 @@ Prism.review("Bob", p)
 ```elixir
 # BAD: Use Lens instead when field should always exist
 required_field_prism = Prism.key(:id)
-# If :id should always be present, use Lens.key!(:id) instead
+# If :id should always be present, use Lens.key(:id) instead
 ```
 
 **✅ Do use valid struct fields:**
