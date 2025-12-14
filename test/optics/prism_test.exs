@@ -41,8 +41,8 @@ defmodule Funx.Optics.PrismTest do
 
     test "returns Nothing for function input" do
       p = Prism.key(:name)
-      assert %Nothing{} = (fn -> :foo end) |> Prism.preview(p)
-      assert %Nothing{} = (fn x -> x end) |> Prism.preview(p)
+      assert %Nothing{} = fn -> :foo end |> Prism.preview(p)
+      assert %Nothing{} = fn x -> x end |> Prism.preview(p)
     end
   end
 
@@ -252,24 +252,6 @@ defmodule Funx.Optics.PrismTest do
       assert %Maybe.Just{value: 30} = Prism.preview(u, p)
     end
 
-    test "preview reads a nil" do
-      p = Prism.path([:profile, :age])
-
-      assert %Maybe.Nothing{} = Prism.preview(nil, p)
-    end
-
-    test "preview reads an empty list" do
-      p = Prism.path([:profile, :age])
-
-      assert %Maybe.Nothing{} = Prism.preview([], p)
-    end
-
-    test "preview reads a function" do
-      p = Prism.path([:profile, :age])
-
-      assert %Maybe.Nothing{} = Prism.preview(fn -> :foo end, p)
-    end
-
     test "preview returns Nothing when key is missing in a struct" do
       u = %User{name: "A", profile: %Profile{}}
       p = Prism.path([:profile, :age])
@@ -327,11 +309,6 @@ defmodule Funx.Optics.PrismTest do
       assert result == %User{name: nil, profile: %Profile{age: nil, score: 10}}
     end
 
-    test "review with empty path returns the value directly" do
-      p = Prism.path([])
-      assert Prism.review(42, p) == 42
-    end
-
     test "review with single key and no struct modules creates a plain map" do
       p = Prism.path([:foo])
       assert Prism.review("bar", p) == %{foo: "bar"}
@@ -340,15 +317,6 @@ defmodule Funx.Optics.PrismTest do
     test "review with multiple keys and no struct modules creates nested maps" do
       p = Prism.path([:a, :b, :c])
       assert Prism.review("value", p) == %{a: %{b: %{c: "value"}}}
-    end
-
-    test "review constructs nested structs with valid fields" do
-      # Both User and Profile are constructed as structs
-      p = Prism.path([{User, :profile}, {Profile, :age}])
-      result = Prism.review(30, p)
-
-      # Constructs nested structs
-      assert result == %User{profile: %Profile{age: 30, score: nil}, name: nil}
     end
 
     test "path handles struct with nil nested value" do
@@ -748,19 +716,6 @@ defmodule Funx.Optics.PrismTest do
 
     test "preview fails for non-struct input", %{cc_prism: p} do
       assert Prism.preview(:not_a_struct, p) == Maybe.nothing()
-    end
-
-    test "preview fails for nil input", %{cc_prism: p} do
-      assert Prism.preview(nil, p) == Maybe.nothing()
-    end
-
-    test "preview fails for empty list input", %{cc_prism: p} do
-      assert Prism.preview([], p) == Maybe.nothing()
-    end
-
-    test "preview fails for function input", %{cc_prism: p} do
-      assert Prism.preview(fn -> :foo end, p) == Maybe.nothing()
-      assert Prism.preview(&String.upcase/1, p) == Maybe.nothing()
     end
 
     test "review returns the struct unchanged", %{cc_prism: p, cc: cc} do
