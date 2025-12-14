@@ -2,8 +2,7 @@ defmodule Funx.Monoid.LensCompose do
   @moduledoc """
   A monoid for composing lenses sequentially.
 
-  This wrapper allows lenses to be used with generic monoid operations like
-  `m_concat`, similar to how `Funx.Monoid.PrismCompose` works for prisms.
+  This wrapper allows lenses to be used with generic monoid operations.
 
   ## Examples
 
@@ -48,7 +47,7 @@ defimpl Funx.Monoid, for: Funx.Monoid.LensCompose do
   Returns the identity lens (views and updates the whole structure unchanged).
   """
   def empty(_) do
-    LensCompose.new(Lens.make(fn s -> s end, fn _s, a -> a end))
+    LensCompose.new(Funx.Optics.Lens.identity())
   end
 
   @doc """

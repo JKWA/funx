@@ -2,8 +2,7 @@ defmodule Funx.Monoid.PrismCompose do
   @moduledoc """
   A monoid for composing prisms sequentially.
 
-  This wrapper allows prisms to be used with generic monoid operations like
-  `m_concat`, similar to how `Funx.Monoid.Ord` works for comparators.
+  This wrapper allows prisms to be used with generic monoid operations.
 
   ## Examples
 

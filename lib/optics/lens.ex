@@ -215,6 +215,15 @@ defmodule Funx.Optics.Lens do
     %__MODULE__{view: viewer, update: updater}
   end
 
+  @doc false
+  @spec identity() :: t()
+  def identity do
+    make(
+      fn s -> s end,
+      fn _s, a -> a end
+    )
+  end
+
   # ============================================================================
   # Core Operations (raise on error)
   # ============================================================================
