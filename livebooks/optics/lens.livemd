@@ -41,7 +41,7 @@ All safe functions accept the same `:as` option (`:either`, `:tuple`, or `:raise
 **Composition:**
 
 * `compose/2`: Composes two lenses sequentially.
-* `concat/1`: Composes a list of lenses into a single lens.
+* `compose/1`: Composes a list of lenses into a single lens.
 
 ## Function Examples
 
@@ -287,19 +287,19 @@ Lens.over(hero_map, cat_lens, &String.upcase/1)
 
 ## Composition Patterns
 
-### concat/1
+### compose/1
 
 Build complex lenses from a list. This is equivalent to chaining `compose/2`:
 
 ```elixir
-concat_lens = Lens.concat([Lens.key(:leader), Lens.key(:powers), Lens.key(:intelligence)])
-Lens.view!(team_map, concat_lens)
+composed_lens = Lens.compose([Lens.key(:leader), Lens.key(:powers), Lens.key(:intelligence)])
+Lens.view!(team_map, composed_lens)
 ```
 
 Empty list returns identity lens:
 
 ```elixir
-identity = Lens.concat([])
+identity = Lens.compose([])
 Lens.view!(hero_map, identity)
 ```
 

@@ -150,29 +150,25 @@ defmodule Funx.Optics.Prism do
     do: review.(a)
 
   @doc """
-  Composes two prisms. The outer prism runs first; if it succeeds,
-  the inner prism runs next.
+  Composes prisms into a single prism using sequential composition.
 
   This delegates to the monoid append operation, which contains the
   canonical composition logic.
+
+  ## Binary composition
+
+  Composes two prisms. The outer prism runs first; if it succeeds,
+  the inner prism runs next.
 
       iex> outer = Funx.Optics.Prism.key(:account)
       iex> inner = Funx.Optics.Prism.key(:name)
       iex> p = Funx.Optics.Prism.compose(outer, inner)
       iex> Funx.Optics.Prism.preview(%{account: %{name: "Alice"}}, p)
       %Funx.Monad.Maybe.Just{value: "Alice"}
-  """
-  @spec compose(t(s, i), t(i, a)) :: t(s, a)
-        when s: term(), i: term(), a: term()
-  def compose(%__MODULE__{} = outer, %__MODULE__{} = inner) do
-    m_append(%PrismCompose{}, outer, inner)
-  end
 
-  @doc """
+  ## List composition
+
   Composes a list of prisms into a single prism using sequential composition.
-
-  Uses `Funx.Monoid.PrismCompose` to leverage the generic monoid machinery,
-  similar to `Funx.Ord.Utils.concat/1` for comparators.
 
   **Sequential semantics:**
   - On `preview`: Applies each prism's matcher in sequence (Kleisli composition),
@@ -186,14 +182,20 @@ defmodule Funx.Optics.Prism do
       ...>   Funx.Optics.Prism.key(:account),
       ...>   Funx.Optics.Prism.key(:name)
       ...> ]
-      iex> p = Funx.Optics.Prism.concat(prisms)
+      iex> p = Funx.Optics.Prism.compose(prisms)
       iex> Funx.Optics.Prism.preview(%{account: %{name: "Alice"}}, p)
       %Funx.Monad.Maybe.Just{value: "Alice"}
       iex> Funx.Optics.Prism.preview(%{other: %{name: "Bob"}}, p)
       %Funx.Monad.Maybe.Nothing{}
   """
-  @spec concat([t()]) :: t()
-  def concat(prisms) when is_list(prisms) do
+  @spec compose(t(s, i), t(i, a)) :: t(s, a)
+        when s: term(), i: term(), a: term()
+  def compose(%__MODULE__{} = outer, %__MODULE__{} = inner) do
+    m_append(%PrismCompose{}, outer, inner)
+  end
+
+  @spec compose([t()]) :: t()
+  def compose(prisms) when is_list(prisms) do
     m_concat(%PrismCompose{}, prisms)
   end
 
@@ -330,7 +332,7 @@ defmodule Funx.Optics.Prism do
 
   ## Implementation
 
-  The `path/1` function composes prisms using `concat/1`:
+  The `path/1` function composes prisms using `compose/1`:
   - `:key` → `[key(:key)]`
   - `Module` → `[struct(Module)]`
   - `{Mod, :key}` → `[struct(Mod), key(:key)]`
@@ -368,6 +370,6 @@ defmodule Funx.Optics.Prism do
                 "path/1 expects atoms or {Module, :key} tuples, got: #{inspect(invalid)}"
       end)
 
-    concat(prisms)
+    compose(prisms)
   end
 end

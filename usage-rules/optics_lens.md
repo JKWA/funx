@@ -10,7 +10,7 @@
 - **Three operations**: `view!/2` (extract), `set!/3` (update), `over!/3` (transform)
 - **Safe variants**: `view/3`, `set/4`, `over/4` (return Either or tuples instead of raising)
 - **Lawful**: Must satisfy get-put, put-get, and put-put laws
-- **Compositional**: Lenses compose via `compose/2` or `concat/1`
+- **Compositional**: Lenses compose via `compose/2` or `compose/1`
 - **Structure-preserving**: Updates maintain all other fields and struct types
 
 **Lens vs Prism:**
@@ -59,7 +59,7 @@
 - **Extract value**: `view!/2` raises on error, `view/3` for safe Either/tuple return
 - **Update value**: `set!/3` raises on error, `set/4` for safe return
 - **Transform value**: `over!/3` applies function, `over/4` for safe return
-- **Compose lenses**: `compose/2` for two, `concat/1` for multiple
+- **Compose lenses**: `compose/2` for two, `compose/1` for multiple
 - **Custom lenses**: `make/2` with viewer and updater functions
 
 **⚙️ Function Choice Guide:**
@@ -89,7 +89,7 @@
 - Use `set!/3` to replace - raises `KeyError` if missing
 - Use `over!/3` to transform - raises `KeyError` if missing
 - Safe versions (`view/3`, `set/4`, `over/4`) return Either or tuples
-- Chain with `compose/2` or `concat/1`
+- Chain with `compose/2` or `compose/1`
 - Path shorthand: `path([:a, :b, :c])` = `concat([key(:a), key(:b), key(:c)])`
 - Lenses preserve structure type (structs stay structs)
 - **IMPORTANT**: Only use Lens when focus must exist - absence is a bug
@@ -402,13 +402,13 @@ Lens.set!(data, user_profile_name, "Bob")
 
 **Note**: Composition is associative: `compose(compose(a, b), c) = compose(a, compose(b, c))`
 
-### `concat/1` - Compose Multiple Lenses
+### `compose/1` - Compose Multiple Lenses
 
 Composes a list of lenses:
 
 ```elixir
 # These are equivalent:
-path_lens = Lens.concat([
+path_lens = Lens.compose([
   Lens.key(:user),
   Lens.key(:profile),
   Lens.key(:name)
@@ -629,7 +629,7 @@ Lenses are lawful and total:
 
 - **Total**: Focus must always exist (enforced by raising `KeyError`)
 - **Lawful**: Satisfies get-put, put-get, and put-put laws
-- **Compositional**: `compose/2` and `concat/1` preserve laws
+- **Compositional**: `compose/2` and `compose/1` preserve laws
 - **Structure-preserving**: Updates maintain all other fields and types
 
 The `key/1` lens uses `Map.fetch!/2` for viewing and `Map.replace!/3` for updating, ensuring symmetric totality enforcement.

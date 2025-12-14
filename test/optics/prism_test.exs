@@ -238,7 +238,7 @@ defmodule Funx.Optics.PrismTest do
     test "preview with empty path is identity (returns Just)" do
       p = Prism.path([])
 
-      # Empty path = concat([]) = identity prism
+      # Empty path = compose([]) = identity prism
       assert %Just{value: %{a: 1}} = Prism.preview(%{a: 1}, p)
       assert %Just{value: :anything} = Prism.preview(:anything, p)
     end
@@ -592,7 +592,7 @@ defmodule Funx.Optics.PrismTest do
         Prism.key(:name)
       ]
 
-      composed = Prism.concat(prisms)
+      composed = Prism.compose(prisms)
 
       payment = %Payment{
         amount: 100,
@@ -614,16 +614,16 @@ defmodule Funx.Optics.PrismTest do
       assert %Maybe.Nothing{} = Prism.preview(payment_no_name, composed)
     end
 
-    test "concat with empty list returns identity prism" do
-      identity = Prism.concat([])
+    test "compose/1 with empty list returns identity prism" do
+      identity = Prism.compose([])
 
       assert %Maybe.Just{value: 42} = Prism.preview(42, identity)
       assert Prism.review(42, identity) == 42
     end
 
-    test "concat with single prism returns that prism" do
+    test "compose/1 with single prism returns that prism" do
       p = Prism.key(:name)
-      composed = Prism.concat([p])
+      composed = Prism.compose([p])
 
       assert %Maybe.Just{value: "Alice"} = Prism.preview(%{name: "Alice"}, composed)
       assert %Maybe.Nothing{} = Prism.preview(%{age: 30}, composed)

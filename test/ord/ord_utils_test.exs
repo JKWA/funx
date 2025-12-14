@@ -233,7 +233,7 @@ defmodule Funx.Ord.UtilsTest do
     end
 
     test "compares maps using a nested lens path" do
-      lens = Lens.concat([Lens.key(:stats), Lens.key(:wins)])
+      lens = Lens.compose([Lens.key(:stats), Lens.key(:wins)])
       ord = contramap(lens)
 
       assert ord.lt?.(%{stats: %{wins: 2}}, %{stats: %{wins: 5}})

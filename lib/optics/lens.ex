@@ -81,10 +81,10 @@ defmodule Funx.Optics.Lens do
       iex> %{profile: %{score: 12}} |> Lens.set!(lens, 99)
       %{profile: %{score: 99}}
 
-  Deeply nested composition with `concat/1`:
+  Deeply nested composition with `compose/1`:
 
       iex> alias Funx.Optics.Lens
-      iex> lens = Lens.concat([Lens.key(:stats), Lens.key(:wins)])
+      iex> lens = Lens.compose([Lens.key(:stats), Lens.key(:wins)])
       iex> %{stats: %{wins: 7}} |> Lens.view!(lens)
       7
       iex> %{stats: %{wins: 7}} |> Lens.set!(lens, 8)
@@ -161,7 +161,7 @@ defmodule Funx.Optics.Lens do
   @doc """
   Builds a lawful lens for nested map access by composing `key/1` lenses.
 
-  This is equivalent to `concat(Enum.map(keys, &key/1))` and enforces totality
+  This is equivalent to `compose(Enum.map(keys, &key/1))` and enforces totality
   at every level - raising `KeyError` when used with `view!` or `set!` if any
   intermediate key is missing.
 
@@ -187,7 +187,7 @@ defmodule Funx.Optics.Lens do
   """
   @spec path([term()]) :: t(map(), term())
   def path(keys) when is_list(keys) do
-    concat(Enum.map(keys, &key/1))
+    compose(Enum.map(keys, &key/1))
   end
 
   @doc """
@@ -448,11 +448,15 @@ defmodule Funx.Optics.Lens do
   # ============================================================================
 
   @doc """
-  Composes two lenses. The outer lens focuses first, then the inner lens
-  focuses within the result.
+  Composes lenses into a single lens using sequential composition.
 
   This delegates to the monoid append operation, which contains the
   canonical composition logic.
+
+  ## Binary composition
+
+  Composes two lenses. The outer lens focuses first, then the inner lens
+  focuses within the result.
 
       iex> alias Funx.Optics.Lens
       iex> outer = Lens.key(:profile)
@@ -460,18 +464,10 @@ defmodule Funx.Optics.Lens do
       iex> lens = Lens.compose(outer, inner)
       iex> %{profile: %{age: 30}} |> Lens.view!(lens)
       30
-  """
-  @spec compose(t(s, i), t(i, a)) :: t(s, a)
-        when s: term(), i: term(), a: term()
-  def compose(%__MODULE__{} = outer, %__MODULE__{} = inner) do
-    m_append(%LensCompose{}, outer, inner)
-  end
 
-  @doc """
+  ## List composition
+
   Composes a list of lenses into a single lens using sequential composition.
-
-  Uses `Funx.Monoid.LensCompose` to leverage the generic monoid machinery,
-  similar to `Funx.Optics.Prism.concat/1` for prisms.
 
   **Sequential semantics:**
   - On `view!`: Applies each lens's viewer in sequence (function composition)
@@ -484,12 +480,18 @@ defmodule Funx.Optics.Lens do
       ...>   Funx.Optics.Lens.key(:profile),
       ...>   Funx.Optics.Lens.key(:age)
       ...> ]
-      iex> lens = Funx.Optics.Lens.concat(lenses)
+      iex> lens = Funx.Optics.Lens.compose(lenses)
       iex> %{user: %{profile: %{age: 25}}} |> Funx.Optics.Lens.view!(lens)
       25
   """
-  @spec concat([t()]) :: t()
-  def concat(lenses) when is_list(lenses) do
+  @spec compose(t(s, i), t(i, a)) :: t(s, a)
+        when s: term(), i: term(), a: term()
+  def compose(%__MODULE__{} = outer, %__MODULE__{} = inner) do
+    m_append(%LensCompose{}, outer, inner)
+  end
+
+  @spec compose([t()]) :: t()
+  def compose(lenses) when is_list(lenses) do
     m_concat(%LensCompose{}, lenses)
   end
 end

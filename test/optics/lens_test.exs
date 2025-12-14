@@ -150,14 +150,14 @@ defmodule Funx.Optics.LensTest do
       assert updated.score == 100
     end
 
-    test "concat/1 composes multiple lenses through nested structs" do
+    test "compose/1 composes multiple lenses through nested structs" do
       lenses = [
         Lens.key(:company),
         Lens.key(:address),
         Lens.key(:city)
       ]
 
-      lens = Lens.concat(lenses)
+      lens = Lens.compose(lenses)
 
       employee = %Employee{
         user: %User{name: "Alice", age: 30, email: "alice@example.com"},
@@ -283,7 +283,7 @@ defmodule Funx.Optics.LensTest do
       assert updated.email == "hannah@example.com"
     end
 
-    test "deeply nested struct composition with concat" do
+    test "deeply nested struct composition with compose/1" do
       # Test 4-level deep nesting
       employee = %Employee{
         user: %User{name: "Ian", age: 45, email: "ian@example.com"},
@@ -295,7 +295,7 @@ defmodule Funx.Optics.LensTest do
       }
 
       # Compose to the deepest level
-      zip_lens = Lens.concat([Lens.key(:company), Lens.key(:address), Lens.key(:zip)])
+      zip_lens = Lens.compose([Lens.key(:company), Lens.key(:address), Lens.key(:zip)])
 
       assert Lens.view!(employee, zip_lens) == "02101"
 
@@ -381,14 +381,14 @@ defmodule Funx.Optics.LensTest do
       assert updated_left.company.address.city == "SF"
     end
 
-    test "concat composes multiple lenses" do
+    test "compose/1 composes multiple lenses" do
       lenses = [
         Lens.key(:user),
         Lens.key(:profile),
         Lens.key(:age)
       ]
 
-      composed = Lens.concat(lenses)
+      composed = Lens.compose(lenses)
 
       data = %{user: %{profile: %{age: 25, name: "Alice"}}}
 
@@ -399,8 +399,8 @@ defmodule Funx.Optics.LensTest do
       assert updated.user.profile.name == "Alice"
     end
 
-    test "concat with empty list returns identity lens" do
-      identity = Lens.concat([])
+    test "compose/1 with empty list returns identity lens" do
+      identity = Lens.compose([])
 
       data = %{name: "Alice", age: 30}
 
@@ -412,9 +412,9 @@ defmodule Funx.Optics.LensTest do
       assert Lens.set!(data, identity, new_data) == new_data
     end
 
-    test "concat with single lens returns that lens" do
+    test "compose/1 with single lens returns that lens" do
       l = Lens.key(:name)
-      composed = Lens.concat([l])
+      composed = Lens.compose([l])
 
       data = %{name: "Alice", age: 30}
 
@@ -518,9 +518,9 @@ defmodule Funx.Optics.LensTest do
       assert updated.score == 100
     end
 
-    test "deeply nested struct update with concat/1" do
+    test "deeply nested struct update with compose/1" do
       lens =
-        Lens.concat([
+        Lens.compose([
           Lens.key(:company),
           Lens.key(:address),
           Lens.key(:zip)
@@ -747,9 +747,9 @@ defmodule Funx.Optics.LensTest do
       assert result == %{count: 10}
     end
 
-    test "concat([]) returns identity lens" do
+    test "compose([]) returns identity lens" do
       # Already tested in monoid section, but verify behavior
-      identity = Lens.concat([])
+      identity = Lens.compose([])
       data = %{x: 1, y: 2}
 
       assert Lens.view!(data, identity) == data
@@ -1102,7 +1102,7 @@ defmodule Funx.Optics.LensTest do
         }
 
       lens =
-        Lens.concat([
+        Lens.compose([
           Lens.key(:l1),
           Lens.key(:l2),
           Lens.key(:l3),

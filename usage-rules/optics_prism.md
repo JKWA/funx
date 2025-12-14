@@ -9,7 +9,7 @@
 - **Partial access**: The focus may or may not be present (unlike Lens which is total)
 - **Two operations**: `preview/2` (extract, returns Maybe) and `review/2` (reconstruct from focus)
 - **Lawful**: Must satisfy round-trip laws for preview/review
-- **Compositional**: Prisms compose via `compose/2` or `concat/1`
+- **Compositional**: Prisms compose via `compose/2` or `compose/1`
 
 **Prism vs Lens:**
 
@@ -67,14 +67,14 @@
 - **Naked struct verification**: `Prism.path([User, :field])` or `Prism.path([:field, User])` to verify types
 - **Type-only check**: `Prism.path([User])` to just verify struct type with no field access
 - **Struct variants**: `Prism.struct(User)` for selecting specific struct types
-- **Composition**: `Prism.compose(p1, p2)` or `Prism.concat([p1, p2, p3])`
+- **Composition**: `Prism.compose(p1, p2)` for two, `Prism.compose([p1, p2, p3])` for multiple
 - **Custom prisms**: `Prism.make/2` for custom preview/review logic
 
 **⚙️ Function Choice Guide:**
 
 - **Extract value**: `preview/2` returns `Just(value)` or `Nothing` (treats `nil` as `Nothing`)
 - **Reconstruct**: `review/2` builds minimal structure from focus (raises if value is `nil`)
-- **Compose prisms**: `compose/2` for two, `concat/1` for multiple
+- **Compose prisms**: `compose/2` for two, `compose/1` for multiple
 - **Custom prisms**: `make/2` with preview and review functions
 
 ## LLM Context Clues
@@ -324,7 +324,7 @@ Prism.review("Bob", user_name)
 **Preview direction**: left to right (outer → inner)
 **Review direction**: right to left (inner → outer)
 
-### `concat/1` - Compose Multiple Prisms
+### `compose/1` - Compose Multiple Prisms
 
 Composes a list of prisms into a single prism:
 
@@ -336,7 +336,7 @@ prisms = [
   Prism.key(:age)
 ]
 
-composed = Prism.concat(prisms)
+composed = Prism.compose(prisms)
 
 data = %{user: %{profile: %{age: 25, name: "Alice"}}}
 
@@ -348,7 +348,7 @@ Prism.preview(%{}, composed)
 ```
 
 **Equivalent to**: `compose(compose(p1, p2), p3)`
-**Note**: `path/1` is syntactic sugar for `concat` with key/struct prisms
+**Note**: `path/1` is syntactic sugar for `compose/1` with key/struct prisms
 
 ## Working with Maybe Results
 
@@ -495,13 +495,13 @@ Prism.preview(data, optional_email)
 
 ## Implementation Note
 
-The `path/1` function is syntactic sugar for `concat`:
+The `path/1` function is syntactic sugar for `compose/1`:
 
 ```elixir
 # These are equivalent:
 Prism.path([{User, :profile}, {Profile, :age}])
 
-Prism.concat([
+Prism.compose([
   Prism.struct(User),
   Prism.key(:profile),
   Prism.struct(Profile),

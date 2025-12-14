@@ -31,7 +31,7 @@ The main value of prisms is handling optional or variant data elegantly without 
 **Composition:**
 
 * `compose/2`: Composes two prisms sequentially.
-* `concat/1`: Composes a list of prisms into a single prism.
+* `compose/1`: Composes a list of prisms into a single prism.
 
 ## Function Examples
 
@@ -271,7 +271,7 @@ cc_payment_prism = Prism.path([{Transaction, :payment}, CreditCard])
 
 transactions
 |> Enum.map(&Prism.preview(&1, cc_payment_prism))
-|> Maybe.concat()
+|> Maybe.compose()
 ```
 
 Use `concat_map/2` to combine mapping and concatenation:
@@ -354,24 +354,24 @@ Prism.review(42, first_is_greater_prism)
 
 ## Composition Patterns
 
-### concat/1
+### compose/1
 
 Build complex prisms from a list:
 
 ```elixir
-concat_prism = Prism.concat([
+composed_prism = Prism.compose([
   Prism.key(:payment),
   Prism.struct(CreditCard),
   Prism.key(:name)
 ])
 
-Prism.preview(cc_transaction, concat_prism)
+Prism.preview(cc_transaction, composed_prism)
 ```
 
 Empty list returns identity prism:
 
 ```elixir
-identity = Prism.concat([])
+identity = Prism.compose([])
 Prism.preview(hero_map, identity)
 ```
 
