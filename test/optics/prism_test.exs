@@ -38,6 +38,12 @@ defmodule Funx.Optics.PrismTest do
       p = Prism.key(:name)
       assert %Nothing{} = [] |> Prism.preview(p)
     end
+
+    test "returns Nothing for function input" do
+      p = Prism.key(:name)
+      assert %Nothing{} = (fn -> :foo end) |> Prism.preview(p)
+      assert %Nothing{} = (fn x -> x end) |> Prism.preview(p)
+    end
   end
 
   #
@@ -256,6 +262,12 @@ defmodule Funx.Optics.PrismTest do
       p = Prism.path([:profile, :age])
 
       assert %Maybe.Nothing{} = Prism.preview([], p)
+    end
+
+    test "preview reads a function" do
+      p = Prism.path([:profile, :age])
+
+      assert %Maybe.Nothing{} = Prism.preview(fn -> :foo end, p)
     end
 
     test "preview returns Nothing when key is missing in a struct" do
@@ -744,6 +756,11 @@ defmodule Funx.Optics.PrismTest do
 
     test "preview fails for empty list input", %{cc_prism: p} do
       assert Prism.preview([], p) == Maybe.nothing()
+    end
+
+    test "preview fails for function input", %{cc_prism: p} do
+      assert Prism.preview(fn -> :foo end, p) == Maybe.nothing()
+      assert Prism.preview(&String.upcase/1, p) == Maybe.nothing()
     end
 
     test "review returns the struct unchanged", %{cc_prism: p, cc: cc} do
