@@ -168,10 +168,18 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
+  defmodule Profile do
+    defstruct [:age, :score]
+  end
+
+  defmodule User do
+    defstruct [:name, :profile]
+  end
+
   #
-  # Path prisms
+  # Path prisms - consolidated from 5 separate describe blocks
   #
-  describe "path/1 prism" do
+  describe "path/1 - basic operations" do
     test "extracts nested value when full path exists" do
       p = Prism.path([:a, :b, :c])
 
@@ -236,15 +244,7 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
-  defmodule Profile do
-    defstruct [:age, :score]
-  end
-
-  defmodule User do
-    defstruct [:name, :profile]
-  end
-
-  describe "path/1 prism with structs (preview)" do
+  describe "path/1 - with structs" do
     test "preview reads an existing struct field" do
       u = %User{name: "A", profile: %Profile{age: 30}}
       p = Prism.path([:profile, :age])
@@ -266,9 +266,7 @@ defmodule Funx.Optics.PrismTest do
 
       assert %Maybe.Nothing{} = Prism.preview(u, p)
     end
-  end
 
-  describe "path/1 prism with structs (review)" do
     test "review constructs fresh nested struct (lawful prism behavior)" do
       p = Prism.path([{User, :profile}, {Profile, :age}])
 
@@ -328,34 +326,7 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
-  describe "path/1 edge cases" do
-    test "path with single-element list and struct" do
-      p = Prism.path([{User, :name}])
-      result = Prism.review("David", p)
-      assert result == %User{name: "David", profile: nil}
-    end
-
-    test "path with mixed struct and plain keys" do
-      # When we mix struct-annotated and plain keys,
-      # it constructs the struct at the specified level
-      p = Prism.path([{User, :profile}, :age, :extra])
-      result = Prism.review("value", p)
-
-      # Constructs User struct with nested maps
-      assert result == %User{profile: %{age: %{extra: "value"}}, name: nil}
-    end
-
-    test "path with struct and valid field" do
-      # Struct prism constructs the specified struct type
-      p = Prism.path([{User, :name}])
-      result = Prism.review("Alice", p)
-
-      # Constructs User struct with the field
-      assert result == %User{name: "Alice", profile: nil}
-    end
-  end
-
-  describe "path/1 with naked struct syntax" do
+  describe "path/1 - naked struct syntax" do
     test "naked struct at end verifies final type" do
       p = Prism.path([:profile, Profile])
 
@@ -485,6 +456,33 @@ defmodule Funx.Optics.PrismTest do
       # Review creates plain maps
       result = Prism.review(40, p)
       assert result == %{user: %{profile: %{age: 40}}}
+    end
+  end
+
+  describe "path/1 - edge cases and validation" do
+    test "path with single-element list and struct" do
+      p = Prism.path([{User, :name}])
+      result = Prism.review("David", p)
+      assert result == %User{name: "David", profile: nil}
+    end
+
+    test "path with mixed struct and plain keys" do
+      # When we mix struct-annotated and plain keys,
+      # it constructs the struct at the specified level
+      p = Prism.path([{User, :profile}, :age, :extra])
+      result = Prism.review("value", p)
+
+      # Constructs User struct with nested maps
+      assert result == %User{profile: %{age: %{extra: "value"}}, name: nil}
+    end
+
+    test "path with struct and valid field" do
+      # Struct prism constructs the specified struct type
+      p = Prism.path([{User, :name}])
+      result = Prism.review("Alice", p)
+
+      # Constructs User struct with the field
+      assert result == %User{name: "Alice", profile: nil}
     end
 
     test "raises when tuple has non-struct module" do

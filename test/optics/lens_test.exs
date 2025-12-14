@@ -549,54 +549,28 @@ defmodule Funx.Optics.LensTest do
   end
 
   describe "safe view/3" do
-    test "returns Right on success with default :either mode" do
+    test ":either mode returns Right on success, Left on error" do
       lens = Lens.key(:name)
-      result = Lens.view(%{name: "Alice"}, lens)
 
-      assert %Funx.Monad.Either.Right{right: "Alice"} = result
+      assert %Funx.Monad.Either.Right{right: "Alice"} = Lens.view(%{name: "Alice"}, lens)
+      assert %Funx.Monad.Either.Left{left: %KeyError{}} = Lens.view(%{}, lens)
     end
 
-    test "returns Left on error with default :either mode" do
+    test ":tuple mode returns {:ok, value} on success, {:error, exception} on error" do
       lens = Lens.key(:name)
-      result = Lens.view(%{}, lens)
 
-      assert %Funx.Monad.Either.Left{left: %KeyError{}} = result
+      assert {:ok, "Bob"} = Lens.view(%{name: "Bob"}, lens, as: :tuple)
+      assert {:error, %KeyError{key: :name}} = Lens.view(%{}, lens, as: :tuple)
     end
 
-    test "returns Right on success with explicit :either mode" do
-      lens = Lens.key(:age)
-      result = Lens.view(%{age: 30}, lens, as: :either)
-
-      assert %Funx.Monad.Either.Right{right: 30} = result
-    end
-
-    test "returns {:ok, value} on success with :tuple mode" do
+    test ":raise mode returns value on success, raises on error" do
       lens = Lens.key(:name)
-      result = Lens.view(%{name: "Bob"}, lens, as: :tuple)
 
-      assert {:ok, "Bob"} = result
-    end
-
-    test "returns {:error, exception} on error with :tuple mode" do
-      lens = Lens.key(:name)
-      result = Lens.view(%{}, lens, as: :tuple)
-
-      assert {:error, %KeyError{key: :name}} = result
-    end
-
-    test "raises on error with :raise mode" do
-      lens = Lens.key(:name)
+      assert "Charlie" = Lens.view(%{name: "Charlie"}, lens, as: :raise)
 
       assert_raise KeyError, fn ->
         Lens.view(%{}, lens, as: :raise)
       end
-    end
-
-    test "returns value directly on success with :raise mode" do
-      lens = Lens.key(:name)
-      result = Lens.view(%{name: "Charlie"}, lens, as: :raise)
-
-      assert result == "Charlie"
     end
 
     test "works with composed lenses" do
@@ -623,54 +597,28 @@ defmodule Funx.Optics.LensTest do
   end
 
   describe "safe set/4" do
-    test "returns Right on success with default :either mode" do
+    test ":either mode returns Right on success, Left on error" do
       lens = Lens.key(:age)
-      result = Lens.set(%{age: 30}, lens, 31)
 
-      assert %Funx.Monad.Either.Right{right: %{age: 31}} = result
+      assert %Funx.Monad.Either.Right{right: %{age: 31}} = Lens.set(%{age: 30}, lens, 31)
+      assert %Funx.Monad.Either.Left{left: %KeyError{}} = Lens.set(%{}, lens, 31)
     end
 
-    test "returns Left on error with default :either mode" do
-      lens = Lens.key(:age)
-      result = Lens.set(%{}, lens, 31)
-
-      assert %Funx.Monad.Either.Left{left: %KeyError{}} = result
-    end
-
-    test "returns Right on success with explicit :either mode" do
-      lens = Lens.key(:name)
-      result = Lens.set(%{name: "Alice"}, lens, "Bob", as: :either)
-
-      assert %Funx.Monad.Either.Right{right: %{name: "Bob"}} = result
-    end
-
-    test "returns {:ok, updated} on success with :tuple mode" do
+    test ":tuple mode returns {:ok, updated} on success, {:error, exception} on error" do
       lens = Lens.key(:count)
-      result = Lens.set(%{count: 5}, lens, 10, as: :tuple)
 
-      assert {:ok, %{count: 10}} = result
+      assert {:ok, %{count: 10}} = Lens.set(%{count: 5}, lens, 10, as: :tuple)
+      assert {:error, %KeyError{key: :count}} = Lens.set(%{}, lens, 10, as: :tuple)
     end
 
-    test "returns {:error, exception} on error with :tuple mode" do
-      lens = Lens.key(:count)
-      result = Lens.set(%{}, lens, 10, as: :tuple)
-
-      assert {:error, %KeyError{key: :count}} = result
-    end
-
-    test "raises on error with :raise mode" do
+    test ":raise mode returns updated value on success, raises on error" do
       lens = Lens.key(:name)
+
+      assert %{name: "Bob"} = Lens.set(%{name: "Alice"}, lens, "Bob", as: :raise)
 
       assert_raise KeyError, fn ->
         Lens.set(%{}, lens, "Alice", as: :raise)
       end
-    end
-
-    test "returns value directly on success with :raise mode" do
-      lens = Lens.key(:name)
-      result = Lens.set(%{name: "Alice"}, lens, "Bob", as: :raise)
-
-      assert result == %{name: "Bob"}
     end
 
     test "works with composed lenses" do
@@ -707,54 +655,32 @@ defmodule Funx.Optics.LensTest do
   end
 
   describe "safe over/4" do
-    test "returns Right on success with default :either mode" do
+    test ":either mode returns Right on success, Left on error" do
       lens = Lens.key(:age)
-      result = Lens.over(%{age: 30}, lens, fn a -> a + 1 end)
 
-      assert %Funx.Monad.Either.Right{right: %{age: 31}} = result
+      assert %Funx.Monad.Either.Right{right: %{age: 31}} =
+               Lens.over(%{age: 30}, lens, fn a -> a + 1 end)
+
+      assert %Funx.Monad.Either.Left{left: %KeyError{}} = Lens.over(%{}, lens, fn a -> a + 1 end)
     end
 
-    test "returns Left on error with default :either mode" do
-      lens = Lens.key(:age)
-      result = Lens.over(%{}, lens, fn a -> a + 1 end)
-
-      assert %Funx.Monad.Either.Left{left: %KeyError{}} = result
-    end
-
-    test "returns Right on success with explicit :either mode" do
-      lens = Lens.key(:count)
-      result = Lens.over(%{count: 5}, lens, fn c -> c * 2 end, as: :either)
-
-      assert %Funx.Monad.Either.Right{right: %{count: 10}} = result
-    end
-
-    test "returns {:ok, updated} on success with :tuple mode" do
+    test ":tuple mode returns {:ok, updated} on success, {:error, exception} on error" do
       lens = Lens.key(:score)
-      result = Lens.over(%{score: 10}, lens, fn s -> s + 5 end, as: :tuple)
 
-      assert {:ok, %{score: 15}} = result
+      assert {:ok, %{score: 15}} = Lens.over(%{score: 10}, lens, fn s -> s + 5 end, as: :tuple)
+
+      assert {:error, %KeyError{key: :score}} =
+               Lens.over(%{}, lens, fn s -> s + 5 end, as: :tuple)
     end
 
-    test "returns {:error, exception} on error with :tuple mode" do
-      lens = Lens.key(:score)
-      result = Lens.over(%{}, lens, fn s -> s + 5 end, as: :tuple)
-
-      assert {:error, %KeyError{key: :score}} = result
-    end
-
-    test "raises on error with :raise mode" do
+    test ":raise mode returns updated value on success, raises on error" do
       lens = Lens.key(:value)
+
+      assert %{value: 20} = Lens.over(%{value: 10}, lens, fn v -> v * 2 end, as: :raise)
 
       assert_raise KeyError, fn ->
         Lens.over(%{}, lens, fn v -> v + 1 end, as: :raise)
       end
-    end
-
-    test "returns value directly on success with :raise mode" do
-      lens = Lens.key(:value)
-      result = Lens.over(%{value: 10}, lens, fn v -> v * 2 end, as: :raise)
-
-      assert result == %{value: 20}
     end
 
     test "works with composed lenses" do
@@ -797,6 +723,473 @@ defmodule Funx.Optics.LensTest do
       assert %Funx.Monad.Either.Right{right: updated} = result
       assert updated.user.age == 35
       assert updated.user.name == "Bob"
+    end
+  end
+
+  describe "empty path edge case" do
+    test "path([]) behaves as identity lens" do
+      lens = Lens.path([])
+      data = %{name: "Alice", age: 30}
+
+      # Views the whole structure
+      assert Lens.view!(data, lens) == data
+
+      # Sets the whole structure
+      new_data = %{name: "Bob", age: 25}
+      assert Lens.set!(data, lens, new_data) == new_data
+    end
+
+    test "path([]) with over!/3 replaces entire structure" do
+      lens = Lens.path([])
+      data = %{count: 5}
+
+      result = Lens.over!(data, lens, fn d -> Map.update!(d, :count, &(&1 * 2)) end)
+      assert result == %{count: 10}
+    end
+
+    test "concat([]) returns identity lens" do
+      # Already tested in monoid section, but verify behavior
+      identity = Lens.concat([])
+      data = %{x: 1, y: 2}
+
+      assert Lens.view!(data, identity) == data
+      assert Lens.set!(data, identity, %{x: 10}) == %{x: 10}
+    end
+  end
+
+  describe "nil value handling" do
+    test "viewing a field that contains nil" do
+      lens = Lens.key(:value)
+      data = %{value: nil, other: "data"}
+
+      assert Lens.view!(data, lens) == nil
+    end
+
+    test "setting a field to nil" do
+      lens = Lens.key(:age)
+      data = %{age: 30, name: "Alice"}
+
+      result = Lens.set!(data, lens, nil)
+      assert result == %{age: nil, name: "Alice"}
+    end
+
+    test "over!/3 with nil value" do
+      lens = Lens.key(:value)
+      data = %{value: nil}
+
+      # Function receives nil and can handle it
+      result = Lens.over!(data, lens, fn v -> v || "default" end)
+      assert result == %{value: "default"}
+    end
+
+    test "nested path with nil intermediate value" do
+      lens = Lens.key(:data)
+      data = %{data: nil}
+
+      # Viewing nil is fine
+      assert Lens.view!(data, lens) == nil
+
+      # Setting nil is fine
+      result = Lens.set!(data, lens, %{inner: "value"})
+      assert result == %{data: %{inner: "value"}}
+    end
+
+    test "struct field set to nil preserves struct type" do
+      lens = Lens.key(:name)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      result = Lens.set!(user, lens, nil)
+      assert result.__struct__ == User
+      assert result.name == nil
+      assert result.age == 30
+    end
+  end
+
+  describe "string keys" do
+    test "key/1 works with string keys on maps" do
+      lens = Lens.key("count")
+      data = %{"count" => 5, "name" => "test"}
+
+      assert Lens.view!(data, lens) == 5
+
+      result = Lens.set!(data, lens, 10)
+      assert result == %{"count" => 10, "name" => "test"}
+    end
+
+    test "path/1 works with mixed string and atom keys" do
+      lens = Lens.path(["user", :name])
+      data = %{"user" => %{name: "Alice", age: 30}}
+
+      assert Lens.view!(data, lens) == "Alice"
+
+      result = Lens.set!(data, lens, "Bob")
+      assert result == %{"user" => %{name: "Bob", age: 30}}
+    end
+
+    test "compose with string and atom key lenses" do
+      outer = Lens.key("profile")
+      inner = Lens.key(:score)
+      lens = Lens.compose(outer, inner)
+
+      data = %{"profile" => %{score: 100, level: 5}}
+
+      assert Lens.view!(data, lens) == 100
+
+      result = Lens.set!(data, lens, 200)
+      assert result == %{"profile" => %{score: 200, level: 5}}
+    end
+
+    test "string key on missing key raises KeyError" do
+      lens = Lens.key("missing")
+
+      assert_raise KeyError, fn ->
+        Lens.view!(%{}, lens)
+      end
+
+      assert_raise KeyError, fn ->
+        Lens.set!(%{}, lens, "value")
+      end
+    end
+  end
+
+  describe "function errors in over/4" do
+    test "over/4 catches exceptions from user function with :either mode" do
+      lens = Lens.key(:value)
+      data = %{value: 10}
+
+      result = Lens.over(data, lens, fn _v -> raise "oops!" end)
+      assert %Funx.Monad.Either.Left{left: %RuntimeError{message: "oops!"}} = result
+    end
+
+    test "over/4 catches exceptions from user function with :tuple mode" do
+      lens = Lens.key(:value)
+      data = %{value: 10}
+
+      result = Lens.over(data, lens, fn _v -> raise ArgumentError, "bad arg" end, as: :tuple)
+      assert {:error, %ArgumentError{message: "bad arg"}} = result
+    end
+
+    test "over!/3 propagates exceptions from user function" do
+      lens = Lens.key(:value)
+      data = %{value: 10}
+
+      assert_raise RuntimeError, "user error", fn ->
+        Lens.over!(data, lens, fn _v -> raise "user error" end)
+      end
+    end
+
+    test "over/4 with :raise mode propagates exceptions from user function" do
+      lens = Lens.key(:value)
+      data = %{value: 10}
+
+      assert_raise ArithmeticError, fn ->
+        Lens.over(data, lens, fn v -> v / 0 end, as: :raise)
+      end
+    end
+
+    test "over/4 catches exceptions in composed lenses" do
+      lens = Lens.path([:a, :b, :c])
+      data = %{a: %{b: %{c: 5}}}
+
+      result = Lens.over(data, lens, fn _v -> raise "nested error" end)
+      assert %Funx.Monad.Either.Left{left: %RuntimeError{}} = result
+    end
+  end
+
+  describe "lens laws verification" do
+    test "get-put law: set(s, lens, view(s, lens)) == s" do
+      lens = Lens.key(:age)
+      data = %{age: 30, name: "Alice"}
+
+      # Setting to the current value should return equivalent structure
+      current = Lens.view!(data, lens)
+      result = Lens.set!(data, lens, current)
+
+      assert result == data
+    end
+
+    test "get-put law with nested lens" do
+      lens = Lens.path([:user, :profile, :score])
+      data = %{user: %{profile: %{score: 100, level: 5}}}
+
+      current = Lens.view!(data, lens)
+      result = Lens.set!(data, lens, current)
+
+      assert result == data
+    end
+
+    test "get-put law with struct" do
+      lens = Lens.key(:name)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      current = Lens.view!(user, lens)
+      result = Lens.set!(user, lens, current)
+
+      assert result == user
+      assert result.__struct__ == User
+    end
+
+    test "put-get law: view(set(s, lens, a), lens) == a" do
+      lens = Lens.key(:count)
+      data = %{count: 5}
+      new_value = 10
+
+      updated = Lens.set!(data, lens, new_value)
+      retrieved = Lens.view!(updated, lens)
+
+      assert retrieved == new_value
+    end
+
+    test "put-get law with nested lens" do
+      lens = Lens.path([:stats, :wins])
+      data = %{stats: %{wins: 3, losses: 2}}
+      new_value = 7
+
+      updated = Lens.set!(data, lens, new_value)
+      retrieved = Lens.view!(updated, lens)
+
+      assert retrieved == new_value
+    end
+
+    test "put-get law with struct" do
+      lens = Lens.key(:age)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+      new_age = 31
+
+      updated = Lens.set!(user, lens, new_age)
+      retrieved = Lens.view!(updated, lens)
+
+      assert retrieved == new_age
+    end
+
+    test "put-put law: set(set(s, lens, a), lens, b) == set(s, lens, b)" do
+      lens = Lens.key(:value)
+      data = %{value: 1}
+
+      # Setting twice should only keep the last value
+      result1 = data |> Lens.set!(lens, 10) |> Lens.set!(lens, 20)
+      result2 = data |> Lens.set!(lens, 20)
+
+      assert result1 == result2
+    end
+
+    test "put-put law with nested lens" do
+      lens = Lens.path([:a, :b])
+      data = %{a: %{b: "original"}}
+
+      result1 = data |> Lens.set!(lens, "first") |> Lens.set!(lens, "second")
+      result2 = data |> Lens.set!(lens, "second")
+
+      assert result1 == result2
+    end
+
+    test "put-put law with struct" do
+      lens = Lens.key(:email)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      result1 =
+        user |> Lens.set!(lens, "bob@example.com") |> Lens.set!(lens, "charlie@example.com")
+
+      result2 = user |> Lens.set!(lens, "charlie@example.com")
+
+      assert result1 == result2
+      assert result1.__struct__ == User
+    end
+  end
+
+  describe "custom lenses" do
+    test "custom lens for first element of tuple" do
+      lens =
+        Lens.make(
+          fn {first, _second} -> first end,
+          fn {_first, second}, new_first -> {new_first, second} end
+        )
+
+      data = {"hello", "world"}
+
+      assert Lens.view!(data, lens) == "hello"
+
+      result = Lens.set!(data, lens, "goodbye")
+      assert result == {"goodbye", "world"}
+    end
+
+    test "custom lens for list head" do
+      lens =
+        Lens.make(
+          fn [head | _tail] -> head end,
+          fn [_head | tail], new_head -> [new_head | tail] end
+        )
+
+      data = [1, 2, 3, 4]
+
+      assert Lens.view!(data, lens) == 1
+
+      result = Lens.set!(data, lens, 10)
+      assert result == [10, 2, 3, 4]
+    end
+
+    test "custom lens composition" do
+      first_elem =
+        Lens.make(
+          fn {first, _} -> first end,
+          fn {_, second}, new_first -> {new_first, second} end
+        )
+
+      key_lens = Lens.key(:value)
+      composed = Lens.compose(first_elem, key_lens)
+
+      data = {%{value: 42}, %{other: "data"}}
+
+      assert Lens.view!(data, composed) == 42
+
+      result = Lens.set!(data, composed, 100)
+      assert result == {%{value: 100}, %{other: "data"}}
+    end
+
+    test "custom lens with over!/3" do
+      lens =
+        Lens.make(
+          fn %{count: c} -> c end,
+          fn m, new_count -> %{m | count: new_count} end
+        )
+
+      data = %{count: 5, other: "field"}
+
+      result = Lens.over!(data, lens, fn c -> c * 2 end)
+      assert result == %{count: 10, other: "field"}
+    end
+  end
+
+  describe "struct edge cases" do
+    test "setting non-existent field on struct raises KeyError" do
+      lens = Lens.key(:nonexistent)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      assert_raise KeyError, fn ->
+        Lens.set!(user, lens, "value")
+      end
+    end
+
+    test "viewing non-existent field on struct raises KeyError" do
+      lens = Lens.key(:missing)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      assert_raise KeyError, fn ->
+        Lens.view!(user, lens)
+      end
+    end
+
+    test "safe operations with non-existent struct field" do
+      lens = Lens.key(:invalid)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      result = Lens.view(user, lens)
+      assert %Funx.Monad.Either.Left{left: %KeyError{key: :invalid}} = result
+
+      result = Lens.set(user, lens, "value")
+      assert %Funx.Monad.Either.Left{left: %KeyError{key: :invalid}} = result
+    end
+  end
+
+  describe "composition extremes" do
+    test "very deep nesting (10+ levels)" do
+      # Build a 12-level deep structure
+      data =
+        %{
+          l1: %{
+            l2: %{l3: %{l4: %{l5: %{l6: %{l7: %{l8: %{l9: %{l10: %{l11: %{l12: "deep"}}}}}}}}}}
+          }
+        }
+
+      lens =
+        Lens.concat([
+          Lens.key(:l1),
+          Lens.key(:l2),
+          Lens.key(:l3),
+          Lens.key(:l4),
+          Lens.key(:l5),
+          Lens.key(:l6),
+          Lens.key(:l7),
+          Lens.key(:l8),
+          Lens.key(:l9),
+          Lens.key(:l10),
+          Lens.key(:l11),
+          Lens.key(:l12)
+        ])
+
+      assert Lens.view!(data, lens) == "deep"
+
+      result = Lens.set!(data, lens, "very deep")
+
+      assert get_in(result, [:l1, :l2, :l3, :l4, :l5, :l6, :l7, :l8, :l9, :l10, :l11, :l12]) ==
+               "very deep"
+    end
+
+    test "composing many identity lenses has no effect" do
+      import Funx.Monoid
+      alias Funx.Monoid.LensCompose
+
+      id = empty(%LensCompose{})
+
+      # Compose 5 identity lenses
+      many_ids =
+        [id, id, id, id, id]
+        |> Enum.reduce(fn lens, acc -> append(acc, lens) end)
+        |> LensCompose.unwrap()
+
+      data = %{x: 1, y: 2}
+
+      assert Lens.view!(data, many_ids) == data
+      assert Lens.set!(data, many_ids, %{x: 10, y: 20}) == %{x: 10, y: 20}
+    end
+
+    test "composing same lens multiple times" do
+      # This doesn't make practical sense but should work
+      key_lens = Lens.key(:nested)
+
+      # Create a structure where the same key exists at multiple levels
+      data = %{nested: %{nested: %{nested: "value"}}}
+
+      lens = Lens.compose(Lens.compose(key_lens, key_lens), key_lens)
+
+      assert Lens.view!(data, lens) == "value"
+
+      result = Lens.set!(data, lens, "updated")
+      assert result.nested.nested.nested == "updated"
+    end
+  end
+
+  describe "reference equality and performance" do
+    test "setting to the same value creates equal structure" do
+      lens = Lens.key(:name)
+      data = %{name: "Alice", age: 30}
+
+      current = Lens.view!(data, lens)
+      result = Lens.set!(data, lens, current)
+
+      # Should be equal (though not necessarily the same reference in Elixir)
+      assert result == data
+    end
+
+    test "setting to same value in struct preserves equality" do
+      lens = Lens.key(:age)
+      user = %User{name: "Alice", age: 30, email: "alice@example.com"}
+
+      current = Lens.view!(user, lens)
+      result = Lens.set!(user, lens, current)
+
+      assert result == user
+      assert result.__struct__ == User
+    end
+
+    test "nested set with same value preserves structure" do
+      lens = Lens.path([:a, :b, :c])
+      data = %{a: %{b: %{c: "value", d: "other"}}}
+
+      current = Lens.view!(data, lens)
+      result = Lens.set!(data, lens, current)
+
+      assert result == data
     end
   end
 end
