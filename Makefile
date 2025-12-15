@@ -12,7 +12,9 @@ lint:
 	@echo "Running Credo..."
 	MIX_ENV=dev mix credo --strict
 
-pre_push:
+pre_push:	
+	@echo "Running Format..."
+	MIX_ENV=dev mix format
 	@echo "Running Credo..."
 	MIX_ENV=dev mix credo --strict
 	@echo "Running tests..."

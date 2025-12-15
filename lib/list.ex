@@ -52,6 +52,7 @@ defmodule Funx.List do
   import Funx.Monoid.Utils, only: [m_concat: 2]
 
   alias Funx.Eq
+  alias Funx.Monad.Maybe
   alias Funx.Monoid.ListConcat
   alias Funx.Ord
 
@@ -203,6 +204,30 @@ defmodule Funx.List do
   @spec concat([[term()]]) :: [term()]
   def concat(list) when is_list(list) do
     m_concat(%ListConcat{}, list)
+  end
+
+  @doc """
+  Returns the head of a list wrapped in `Maybe.Just`, or `Maybe.Nothing` if empty.
+
+  This is a safe version of `hd/1` that returns `Maybe` instead of raising.
+
+  ## Examples
+
+      iex> Funx.List.maybe_head([1, 2, 3])
+      %Funx.Monad.Maybe.Just{value: 1}
+
+      iex> Funx.List.maybe_head([])
+      %Funx.Monad.Maybe.Nothing{}
+
+      iex> Funx.List.maybe_head("not a list")
+      %Funx.Monad.Maybe.Nothing{}
+  """
+  @spec maybe_head([a]) :: Maybe.t(a) when a: term()
+  def maybe_head(list) do
+    case list do
+      [head | _] -> Maybe.just(head)
+      _ -> Maybe.nothing()
+    end
   end
 end
 

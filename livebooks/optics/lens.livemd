@@ -1,0 +1,369 @@
+# Funx.Optics.Lens
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", ref: "bbde4c4", force: true}
+])
+```
+
+## Overview
+
+The `Funx.Optics.Lens` module provides a strictly lawful total optic for focusing on and transforming parts of data structures.
+
+A lens is total: it assumes the focus always exists within the valid domain. This contract is enforced at runtime by raising `KeyError` when it is violated. For the built-in `key/1` and `path/1` constructors, the bang operations `view!/2`, `set!/3`, and `over!/3` all enforce totality symmetrically and are designed to satisfy the standard lens laws; custom lenses created with `make/2` must uphold those laws themselves.
+
+The same behavior applies uniformly to maps and structs. Struct types are preserved across all operations.
+
+The main value of lenses here is preventing subtle bugs by enforcing lawful behavior, not shaving a few characters off updates.
+
+## Quick Reference
+
+**Constructors:**
+
+* `key/1`: Creates a lens focusing on a single key in a map or struct.
+* `path/1`: Creates a lens for nested map and struct access by composing key lenses.
+* `make/2`: Creates a custom lens from viewer and updater functions. Lawfulness of lenses created with `make/2` is the caller's responsibility; Funx only enforces totality via `KeyError` when the focus is missing.
+
+**Core Operations (raising):**
+
+* `view!/2`: Extracts the focus (raises `KeyError` if missing).
+* `set!/3`: Updates the focus (raises `KeyError` if missing).
+* `over!/3`: Applies a function to the focus part (raises `KeyError` if missing).
+
+**Safe Operations:**
+
+* `view/3`: Safe version of `view!/2` returning `Either` or tuples.
+* `set/4`: Safe version of `set!/3` returning `Either` or tuples.
+* `over/4`: Safe version of `over!/3` returning `Either` or tuples.
+
+All safe functions accept the same `:as` option (`:either`, `:tuple`, or `:raise`). See Error Handling Modes below for details.
+
+**Composition:**
+
+* `compose/2`: Composes two lenses sequentially.
+* `compose/1`: Composes a list of lenses into a single lens.
+
+## Function Examples
+
+```elixir
+alias Funx.Optics.Lens
+```
+
+## Building Lenses
+
+First, let's create some lenses. We use `key/1` for single fields, `path/1` for nested paths, and `compose/2` to build complex lenses.
+
+We'll also create an invalid lens (`:cat`) to demonstrate how lenses fail explicitly.
+
+```elixir
+# Simple field lenses
+alias_lens = Lens.key(:alias)
+name_lens = Lens.key(:name)
+leader_lens = Lens.key(:leader)
+powers_lens = Lens.key(:powers)
+
+# Invalid lens - :cat won't exist in our data
+cat_lens = Lens.key(:cat)
+
+# Nested path lenses
+leader_name_lens = Lens.path([:leader, :name])
+leader_strength_lens = Lens.path([:leader, :powers, :strength])
+
+# Composed lenses - building block by block
+hero_strength_lens = Lens.compose(powers_lens, Lens.key(:strength))
+leader_powers_lens = Lens.compose(leader_lens, powers_lens)
+leader_intelligence_lens = Lens.compose(leader_powers_lens, Lens.key(:intelligence))
+```
+
+## Using Lenses with Maps
+
+Now let's create some map data and use our lenses.
+
+```elixir
+hero_map = %{
+  name: "Tony Stark",
+  alias: "Iron Man",
+  powers: %{strength: 85, speed: 70, intelligence: 100}
+}
+
+team_map = %{
+  name: "Avengers",
+  leader: %{
+    name: "Steve Rogers",
+    alias: "Captain America",
+    powers: %{strength: 90, speed: 75, intelligence: 80}
+  }
+}
+```
+
+### view!/2
+
+Extract values using lenses:
+
+```elixir
+Lens.view!(hero_map, alias_lens)
+```
+
+```elixir
+Lens.view!(team_map, leader_name_lens)
+```
+
+```elixir
+Lens.view!(team_map, leader_intelligence_lens)
+```
+
+Invalid lens raises `KeyError`:
+
+```elixir
+Lens.view!(hero_map, cat_lens)
+```
+
+### set!/3
+
+Update values, preserving all other fields:
+
+```elixir
+Lens.set!(hero_map, alias_lens, "War Machine")
+```
+
+```elixir
+Lens.set!(team_map, leader_name_lens, "Carol Danvers")
+```
+
+Invalid lens raises `KeyError`:
+
+```elixir
+Lens.set!(hero_map, cat_lens, "Garfield")
+```
+
+### over!/3
+
+Apply functions to transform values:
+
+```elixir
+Lens.over!(hero_map, hero_strength_lens, fn s -> s + 10 end)
+```
+
+```elixir
+Lens.over!(team_map, leader_strength_lens, fn s -> s + 5 end)
+```
+
+```elixir
+Lens.over!(team_map, leader_name_lens, &String.upcase/1)
+```
+
+Invalid lens raises `KeyError`:
+
+```elixir
+Lens.over!(hero_map, cat_lens, &String.upcase/1)
+```
+
+## Using Lenses with Structs
+
+The same lenses work with structs. Struct types are preserved through all operations.
+
+```elixir
+defmodule Powers do
+  defstruct [:strength, :speed, :intelligence]
+end
+
+defmodule Hero do
+  defstruct [:name, :alias, :powers]
+end
+
+defmodule Headquarters do
+  defstruct [:city, :latitude, :longitude]
+end
+
+defmodule Team do
+  defstruct [:name, :leader, :headquarters, :founded]
+end
+```
+
+```elixir
+hero_struct = %Hero{
+  name: "Tony Stark",
+  alias: "Iron Man",
+  powers: %Powers{strength: 85, speed: 70, intelligence: 100}
+}
+
+team_struct = %Team{
+  name: "Avengers",
+  leader: %Hero{
+    name: "Steve Rogers",
+    alias: "Captain America",
+    powers: %Powers{strength: 90, speed: 75, intelligence: 80}
+  },
+  headquarters: %Headquarters{city: "New York", latitude: 40.7128, longitude: -74.0060},
+  founded: 1963
+}
+```
+
+Same lenses, struct data:
+
+```elixir
+Lens.view!(hero_struct, alias_lens)
+```
+
+```elixir
+Lens.view!(team_struct, leader_name_lens)
+```
+
+Still raises on invalid lens:
+
+```elixir
+Lens.view!(hero_struct, cat_lens)
+```
+
+Struct types are preserved:
+
+```elixir
+updated_hero = Lens.set!(hero_struct, alias_lens, "War Machine")
+```
+
+```elixir
+updated_team = Lens.set!(team_struct, leader_name_lens, "Carol Danvers")
+```
+
+Apply functions to transform:
+
+```elixir
+Lens.over!(hero_struct, hero_strength_lens, fn s -> s + 10 end)
+```
+
+```elixir
+Lens.over!(team_struct, leader_strength_lens, fn s -> s * 2 end)
+```
+
+## Safe Operations
+
+Safe operations return `Either` or tuples instead of raising.
+
+### view/3
+
+Returns `Right` on success, `Left` on error:
+
+```elixir
+Lens.view(hero_map, alias_lens)
+```
+
+```elixir
+Lens.view(hero_map, cat_lens)
+```
+
+Use `:tuple` mode for Elixir idioms:
+
+```elixir
+Lens.view(hero_map, alias_lens, as: :tuple)
+```
+
+```elixir
+Lens.view(hero_map, cat_lens, as: :tuple)
+```
+
+### set/4
+
+By default, `set/4` returns a `Right(updated)` or `Left(exception)`, just like `view/3`.
+
+```elixir
+Lens.set(hero_map, alias_lens, "War Machine")
+```
+
+```elixir
+Lens.set(hero_map, cat_lens, "Garfield")
+```
+
+### over/4
+
+By default, `over/4` returns a `Right(updated)` or `Left(exception)`, just like `view/3`.
+
+```elixir
+Lens.over(hero_map, hero_strength_lens, fn s -> s + 10 end)
+```
+
+```elixir
+Lens.over(hero_map, cat_lens, &String.upcase/1)
+```
+
+## Composition Patterns
+
+### compose/1
+
+Build complex lenses from a list. This is equivalent to chaining `compose/2`:
+
+```elixir
+composed_lens = Lens.compose([Lens.key(:leader), Lens.key(:powers), Lens.key(:intelligence)])
+Lens.view!(team_map, composed_lens)
+```
+
+Empty list returns identity lens:
+
+```elixir
+identity = Lens.compose([])
+Lens.view!(hero_map, identity)
+```
+
+The identity lens focuses on the entire structure: `view!/2` returns the full structure, and `set!/3` replaces it entirely with the new value.
+
+### make/2
+
+Create custom lenses. The viewer extracts the focus, the updater applies changes:
+
+```elixir
+tuple_first = Lens.make(
+  fn {first, _} -> first end,
+  fn {_, second}, new_first -> {new_first, second} end
+)
+
+Lens.view!({1, 2}, tuple_first)
+```
+
+```elixir
+Lens.set!({1, 2}, tuple_first, 10)
+```
+
+For lenses built with `make/2`, it is your responsibility to ensure the get and set functions obey the lens laws (get–set, set–get, set–set). Funx still enforces totality by raising if your viewer fails.
+
+## Error Handling Modes
+
+All safe operations (`view/3`, `set/4`, `over/4`) accept an `:as` parameter to control return format:
+
+| Mode                | Success        | Error                 | Use Case                               |
+| ------------------- | -------------- | --------------------- | -------------------------------------- |
+| `:either` (default) | `Right(value)` | `Left(exception)`     | Functional pipelines with Either monad |
+| `:tuple`            | `{:ok, value}` | `{:error, exception}` | Elixir idioms and pattern matching     |
+| `:raise`            | `value`        | raises exception      | Same behavior as `!` variants          |
+
+## Safe Pipes with Either DSL
+
+Because the safe lens functions return Either by default, you can use Either's DSL to create safe pipelines that short-circuit on the first error. Any failure becomes a `Left` and short-circuits the pipeline.
+
+When called without the first argument (the structure), `view/3`, `set/4`, and `over/4` return a function that expects the structure. This makes them convenient to use in pipes and with the Either DSL.
+
+First, import the DSL:
+
+```elixir
+use Funx.Monad.Either
+```
+
+Now you can chain multiple lens operations. This succeeds because all lenses are valid:
+
+```elixir
+either team_struct, as: :tuple do
+  bind Lens.set(leader_name_lens, "Carol Danvers")
+  bind Lens.set(leader_strength_lens, 150)
+  bind Lens.set(Lens.key(:name), "Alpha Flight")
+end
+```
+
+This fails at the first invalid lens:
+
+```elixir
+either team_struct, as: :tuple do
+  bind Lens.set(leader_name_lens, "Carol Danvers")
+  bind Lens.set(cat_lens, "Meow")
+  bind Lens.set(leader_strength_lens, 150)
+end
+```
+
+The pipeline stops at `:cat` with a `Left(KeyError)` and never attempts to set `:strength`.

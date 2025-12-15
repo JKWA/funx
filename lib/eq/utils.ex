@@ -14,26 +14,74 @@ defmodule Funx.Eq.Utils do
 
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
   alias Funx.Eq
+  alias Funx.Monad.Maybe
   alias Funx.Monoid
+  alias Funx.Optics.Lens
+  alias Funx.Optics.Prism
 
   @doc """
-  Transforms an equality check by applying a function `f` to values before comparison.
+  Transforms an equality check by applying a projection before comparison.
 
-  The `eq` parameter can be an `Eq` module or a custom comparator map with an `:eq?` function.
-  If an `Eq` module is provided, it wraps the module’s function to apply `f` to each value before invoking the equality check.
-  If a custom comparator map is provided, it wraps the function in the map to apply `f` to each value.
+  The `projection` must be one of:
+
+    * a function `(a -> b)` - Applied directly to extract the comparison value
+    * a `Lens` - Uses `view!/2` to extract the focused value (raises on missing)
+    * a tuple `{Prism, default}` - Uses `preview/2`, falling back to `default` on `Nothing`
+
+  The `eq` parameter may be an `Eq` module or a custom comparator map
+  with `:eq?` and `:not_eq?` functions. The projection is applied to both
+  inputs before invoking the underlying comparator.
 
   ## Examples
+
+  Using a projection function:
 
       iex> eq = Funx.Eq.Utils.contramap(& &1.age)
       iex> eq.eq?.(%{age: 30}, %{age: 30})
       true
       iex> eq.eq?.(%{age: 30}, %{age: 25})
       false
+
+  Using a lens for single key access:
+
+      iex> eq = Funx.Eq.Utils.contramap(Funx.Optics.Lens.key(:age))
+      iex> eq.eq?.(%{age: 40}, %{age: 40})
+      true
+
+  Using a prism with a default value:
+
+      iex> prism = Funx.Optics.Prism.key(:score)
+      iex> eq = Funx.Eq.Utils.contramap({prism, 0})
+      iex> eq.eq?.(%{score: 10}, %{score: 10})
+      true
+      iex> eq.eq?.(%{}, %{score: 0})
+      true
   """
-  @spec contramap((a -> b), eq_t()) :: eq_map()
+
+  @spec contramap(
+          (a -> b) | Lens.t() | {Prism.t(), b},
+          eq_t()
+        ) :: eq_map()
         when a: any, b: any
-  def contramap(f, eq \\ Eq) do
+  def contramap(projection, eq \\ Eq)
+
+  # Lens
+  def contramap(%Lens{} = lens, eq) do
+    contramap(fn a -> Lens.view!(a, lens) end, eq)
+  end
+
+  # Prism with default
+  def contramap({%Prism{} = prism, default}, eq) do
+    contramap(
+      fn a ->
+        a |> Prism.preview(prism) |> Maybe.get_or_else(default)
+      end,
+      eq
+    )
+  end
+
+  # Function
+  def contramap(f, eq) when is_function(f, 1) do
     eq = to_eq_map(eq)
 
     %{
@@ -43,26 +91,77 @@ defmodule Funx.Eq.Utils do
   end
 
   @doc """
-  Checks equality of values by applying a projection function, using a specified or default `Eq`.
+  Checks equality of two values by applying a projection before comparison.
 
-  The `eq` parameter can be an `Eq` module or a custom comparator map with an `:eq?` function.
+  The `projection` must be one of:
+
+    * a function `(a -> b)` - Applied directly to extract the comparison value
+    * a `Lens` - Uses `view!/2` to extract the focused value (raises on missing)
+    * a tuple `{Prism, default}` - Uses `preview/2`, falling back to `default` on `Nothing`
+
+  The `eq` parameter may be an `Eq` module or a custom comparator map.
+  The projection is applied to both arguments before invoking the comparator.
 
   ## Examples
+
+  Using a projection function:
 
       iex> Funx.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 30})
       true
       iex> Funx.Eq.Utils.eq_by?(& &1.age, %{age: 30}, %{age: 25})
       false
+
+  Using a lens for single key access:
+
+      iex> Funx.Eq.Utils.eq_by?(Funx.Optics.Lens.key(:age), %{age: 40}, %{age: 40})
+      true
+
+  Using a prism with a default value:
+
+      iex> prism = Funx.Optics.Prism.key(:score)
+      iex> Funx.Eq.Utils.eq_by?({prism, 0}, %{score: 10}, %{score: 10})
+      true
+      iex> Funx.Eq.Utils.eq_by?({prism, 0}, %{}, %{score: 0})
+      true
   """
-  @spec eq_by?((a -> b), a, a, eq_t()) :: boolean()
+  @spec eq_by?(
+          (a -> b) | Lens.t() | {Prism.t(), b},
+          a,
+          a,
+          eq_t()
+        ) :: boolean()
         when a: any, b: any
-  def eq_by?(f, a, b, eq \\ Eq) do
+  def eq_by?(projection, a, b, eq \\ Eq)
+
+  # Lens
+  def eq_by?(%Lens{} = lens, a, b, eq) do
+    eq_by?(fn x -> Lens.view!(x, lens) end, a, b, eq)
+  end
+
+  # Prism with default
+  def eq_by?({%Prism{} = prism, default}, a, b, eq) do
+    eq_by?(
+      fn x ->
+        x |> Prism.preview(prism) |> Maybe.get_or_else(default)
+      end,
+      a,
+      b,
+      eq
+    )
+  end
+
+  # Function
+  def eq_by?(f, a, b, eq) when is_function(f, 1) do
     eq = to_eq_map(eq)
     eq.eq?.(f.(a), f.(b))
   end
 
   @doc """
   Returns true if two values are equal, using a specified or default `Eq`.
+
+  This function compares the values *directly*, without applying any projection.
+  For comparisons that require projecting or focusing on part of a structure,
+  use `Funx.Eq.Utils.eq_by?/4` or `Funx.Eq.Utils.contramap/2`.
 
   ## Examples
 
@@ -80,6 +179,10 @@ defmodule Funx.Eq.Utils do
 
   @doc """
   Returns false if two values are not equal, using a specified or default `Eq`.
+
+  This function compares the values directly, without applying any projection.
+  For comparisons based on a projection, lens, key, or path,
+  use `Funx.Eq.Utils.eq_by?/4` or a comparator produced by `Funx.Eq.Utils.contramap/2`.
 
   ## Examples
 

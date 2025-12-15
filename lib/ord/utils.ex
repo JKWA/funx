@@ -16,24 +16,78 @@ defmodule Funx.Ord.Utils do
 
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
 
+  alias Funx.Monad.Maybe
+  alias Funx.Optics.Lens
+  alias Funx.Optics.Prism
   alias Funx.Ord
 
   @doc """
-  Transforms an ordering by applying a function `f` to values before comparison.
+  Transforms an ordering by applying a projection before comparison.
 
-  The `ord` parameter can be an `Ord` module or a custom comparator map with comparison functions (`:lt?`, `:le?`, `:gt?`, and `:ge?`).
-  When an `Ord` module is provided, it wraps the module’s functions to apply `f` to each value before invoking the comparison.
-  If a custom comparator map is provided, it wraps the functions in the map to apply `f` to each value.
+  The `projection` must be one of:
+
+    * a function `(a -> b)` - Applied directly to extract the comparison value
+    * a `Lens` - Uses `view!/2` to extract the focused value (raises on missing)
+    * a tuple `{Prism, default}` - Uses `preview/2`, falling back to `default` on `Nothing`
+
+  The `ord` parameter may be an `Ord` module or a custom comparator map
+  with `:lt?`, `:le?`, `:gt?`, and `:ge?` functions. The projection is applied
+  to both inputs before invoking the underlying comparator.
 
   ## Examples
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1, Funx.Ord.Any)
+  Using a projection function:
+
+      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
       iex> ord.lt?.("cat", "zebra")
       true
+      iex> ord.gt?.("zebra", "cat")
+      true
+
+  Using a lens for single key access:
+
+      iex> ord = Funx.Ord.Utils.contramap(Funx.Optics.Lens.key(:age))
+      iex> ord.gt?.(%{age: 40}, %{age: 30})
+      true
+      iex> ord.lt?.(%{age: 30}, %{age: 40})
+      true
+
+  Using a prism with a default value:
+
+      iex> prism = Funx.Optics.Prism.key(:score)
+      iex> ord = Funx.Ord.Utils.contramap({prism, 0})
+      iex> ord.lt?.(%{score: 10}, %{score: 20})
+      true
+      iex> ord.lt?.(%{}, %{score: 20})
+      true
+      iex> ord.gt?.(%{score: 30}, %{})
+      true
   """
-  @spec contramap((a -> b), ord_t()) :: ord_map()
+
+  @spec contramap(
+          (a -> b) | Lens.t() | {Prism.t(), b},
+          ord_t()
+        ) :: ord_map()
         when a: any, b: any
-  def contramap(f, ord \\ Ord) do
+  def contramap(projection, ord \\ Ord)
+
+  # Lens
+  def contramap(%Lens{} = lens, ord) do
+    contramap(fn a -> Lens.view!(a, lens) end, ord)
+  end
+
+  # Prism with default
+  def contramap({%Prism{} = prism, default}, ord) do
+    contramap(
+      fn a ->
+        a |> Prism.preview(prism) |> Maybe.get_or_else(default)
+      end,
+      ord
+    )
+  end
+
+  # Function
+  def contramap(f, ord) when is_function(f, 1) do
     ord = to_ord_map(ord)
 
     %{

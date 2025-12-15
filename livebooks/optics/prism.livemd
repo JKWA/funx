@@ -1,0 +1,394 @@
+# Funx.Optics.Prism
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", ref: "2af0443", force: true}
+])
+```
+
+## Overview
+
+The `Funx.Optics.Prism` module provides a lawful partial optic for focusing on branches of data structures.
+
+A prism is partial: the focus may or may not be present. This makes prisms ideal for working with optional values, variants, and sum types. Unlike a lens, a prism never raises on failure—it returns `Maybe`.
+
+The main value of prisms is handling optional or variant data elegantly without defensive coding (nil checks, nested conditionals).
+
+## Quick Reference
+
+**Constructors:**
+
+* `key/1`: Creates a prism focusing on an optional key in a map or struct.
+* `struct/1`: Creates a prism focusing on a specific struct type (for sum types).
+* `path/1`: Creates a prism for nested access by composing prisms.
+* `make/2`: Creates a custom prism from preview and review functions. Lawfulness is the caller's responsibility.
+
+**Core Operations:**
+
+* `preview/2`: Attempts to extract the focus, returning `Just(value)` or `Nothing`.
+* `review/2`: Reconstructs the minimum structure from the focused value.
+
+**Composition:**
+
+* `compose/2`: Composes two prisms sequentially.
+* `compose/1`: Composes a list of prisms into a single prism.
+
+## Function Examples
+
+```elixir
+alias Funx.Optics.Prism
+alias Funx.Monad.Maybe
+```
+
+## Building Prisms
+
+First, let's create some prisms. We use `key/1` for optional fields and `path/1` for nested paths.
+
+```elixir
+name_prism = Prism.key(:name)
+alias_prism = Prism.key(:alias)
+amount_prism = Prism.key(:amount)
+payment_prism = Prism.key(:payment)
+
+payment_name_prism = Prism.path([:payment, :name])
+```
+
+## Using Prisms with Maps
+
+Prisms handle optional keys gracefully, returning `Maybe` instead of crashing.
+
+```elixir
+hero_map = %{
+  name: "Tony Stark",
+  alias: "Iron Man",
+  powers: %{strength: 85, speed: 70, intelligence: 100}
+}
+
+incomplete_hero = %{
+  alias: "Mysterious"
+}
+```
+
+### preview/2
+
+Extract values when they exist:
+
+```elixir
+Prism.preview(hero_map, name_prism)
+```
+
+```elixir
+Prism.preview(hero_map, alias_prism)
+```
+
+Returns `Nothing` when the key is missing:
+
+```elixir
+Prism.preview(incomplete_hero, name_prism)
+```
+
+```elixir
+Prism.preview(incomplete_hero, alias_prism)
+```
+
+Works with nested paths:
+
+```elixir
+powers_prism = Prism.key(:powers)
+strength_prism = Prism.compose(powers_prism, Prism.key(:strength))
+
+Prism.preview(hero_map, strength_prism)
+```
+
+```elixir
+Prism.preview(incomplete_hero, strength_prism)
+```
+
+### review/2
+
+Rebuilds the minimum structure from a value:
+
+```elixir
+Prism.review("Bruce Wayne", name_prism)
+```
+
+```elixir
+Prism.review(95, strength_prism)
+```
+
+Note: `review/2` creates the *minimum* structure to satisfy the prism's focus, not a complete record.
+
+## Working with Sum Types
+
+Prisms excel at working with variant data (sum types). Let's model payment methods:
+
+```elixir
+defmodule CreditCard do
+  defstruct [:name, :number, :expiry]
+end
+
+defmodule Check do
+  defstruct [:name, :routing_number, :account_number]
+end
+
+defmodule Transaction do
+  defstruct [:amount, :payment]
+end
+```
+
+```elixir
+cc_payment = %CreditCard{name: "John", number: "4532-1111", expiry: "12/26"}
+check_payment = %Check{name: "Dave", routing_number: "111000025", account_number: "987654"}
+
+cc_transaction = %Transaction{amount: 100, payment: cc_payment}
+check_transaction = %Transaction{amount: 250, payment: check_payment}
+```
+
+### struct/1
+
+Focus on a specific struct type:
+
+```elixir
+cc_prism = Prism.struct(CreditCard)
+check_prism = Prism.struct(Check)
+```
+
+Returns `Just` when the type matches:
+
+```elixir
+Prism.preview(cc_payment, cc_prism)
+```
+
+Returns `Nothing` when the type doesn't match:
+
+```elixir
+Prism.preview(check_payment, cc_prism)
+```
+
+```elixir
+Prism.preview(check_payment, check_prism)
+```
+
+### Composing with path/1
+
+Use `path/1` to compose struct and key prisms. This focuses on CreditCard payments within transactions:
+
+```elixir
+cc_transaction_prism = Prism.path([:payment, CreditCard])
+
+Prism.preview(cc_transaction, cc_transaction_prism)
+```
+
+```elixir
+Prism.preview(check_transaction, cc_transaction_prism)
+```
+
+Extend to focus on specific fields. This gets the name, but only for CreditCard payments:
+
+```elixir
+cc_name_prism = Prism.path([:payment, CreditCard, :name])
+
+Prism.preview(cc_transaction, cc_name_prism)
+```
+
+```elixir
+Prism.preview(check_transaction, cc_name_prism)
+```
+
+Type-safe focusing with tuples ensures we're working with Transaction structs:
+
+```elixir
+payment_cc_name_prism = Prism.path([{Transaction, :payment}, {CreditCard, :name}])
+
+Prism.preview(cc_transaction, payment_cc_name_prism)
+```
+
+Plain maps won't match:
+
+```elixir
+Prism.preview(%{payment: cc_payment}, payment_cc_name_prism)
+```
+
+## Patterns with Maybe
+
+Prisms return `Maybe`, so we can leverage the `Maybe` monad for common patterns.
+
+### Default Values
+
+Use `get_or_else/2` to provide a fallback:
+
+```elixir
+hero_map
+|> Prism.preview(name_prism)
+|> Maybe.get_or_else("Unknown Hero")
+```
+
+```elixir
+incomplete_hero
+|> Prism.preview(name_prism)
+|> Maybe.get_or_else("Unknown Hero")
+```
+
+### Transforming Success Cases
+
+Use `map/2` to transform only successful previews:
+
+```elixir
+alias Funx.Monad
+
+hero_map
+|> Prism.preview(name_prism)
+|> Monad.map(&String.upcase/1)
+```
+
+When the prism fails, map is skipped:
+
+```elixir
+incomplete_hero
+|> Prism.preview(name_prism)
+|> Monad.map(&String.upcase/1)
+```
+
+### Collecting Successes from Lists
+
+Create a batch of transactions:
+
+```elixir
+transactions = [
+  %Transaction{amount: 100, payment: %CreditCard{name: "John", number: "4532-1111", expiry: "12/26"}},
+  %Transaction{amount: 250, payment: %Check{name: "Dave", routing_number: "111000025", account_number: "987654"}},
+  %Transaction{amount: nil, payment: %CreditCard{name: "Sarah", number: "5425-2222", expiry: "03/27"}},
+  %Transaction{amount: 500, payment: %Check{name: "Alice", routing_number: "021000021", account_number: "123456"}},
+  %Transaction{amount: 150, payment: %CreditCard{name: "Bob", number: "3782-3333", expiry: "08/25"}},
+  %Transaction{amount: 300, payment: %CreditCard{name: "Carol", number: "6011-4444", expiry: "11/28"}}
+]
+```
+
+Collect only credit card payments:
+
+```elixir
+cc_payment_prism = Prism.path([{Transaction, :payment}, CreditCard])
+
+transactions
+|> Enum.map(&Prism.preview(&1, cc_payment_prism))
+|> Maybe.compose()
+```
+
+Use `concat_map/2` to combine mapping and concatenation:
+
+```elixir
+transactions
+|> Maybe.concat_map(&Prism.preview(&1, cc_payment_prism))
+```
+
+Collect and sum amounts, skipping nils:
+
+```elixir
+alias Funx.Math
+
+transaction_amount_prism = Prism.path([{Transaction, :amount}])
+
+transactions
+|> Maybe.concat_map(&Prism.preview(&1, transaction_amount_prism))
+|> Math.sum()
+```
+
+### Requiring All Successes
+
+Use `traverse/2` when you need all previews to succeed. This returns `Nothing` because one transaction has a nil amount:
+
+```elixir
+transactions
+|> Maybe.traverse(&Prism.preview(&1, transaction_amount_prism))
+```
+
+When all values are present, traverse succeeds:
+
+```elixir
+valid_transactions = [
+  %Transaction{amount: 100, payment: %CreditCard{name: "John", number: "4532-1111", expiry: "12/26"}},
+  %Transaction{amount: 123, payment: %CreditCard{name: "Sarah", number: "5425-2222", expiry: "03/27"}},
+  %Transaction{amount: 150, payment: %CreditCard{name: "Bob", number: "3782-3333", expiry: "08/25"}}
+]
+
+valid_transactions
+|> Maybe.traverse(&Prism.preview(&1, transaction_amount_prism))
+```
+
+## Advanced Prisms
+
+### make/2
+
+Create custom prisms with your own logic. This prism focuses on the first element of a tuple, but only when it's greater than the second:
+
+```elixir
+first_is_greater_prism =
+  Prism.make(
+    fn
+      {a, b} when a > b -> Maybe.just(a)
+      _ -> Maybe.nothing()
+    end,
+    fn new_a -> {new_a, 0} end
+  )
+```
+
+Preview succeeds when condition is met:
+
+```elixir
+Prism.preview({200, 100}, first_is_greater_prism)
+```
+
+Preview fails when condition is not met:
+
+```elixir
+Prism.preview({5, 100}, first_is_greater_prism)
+```
+
+Review reconstructs the structure:
+
+```elixir
+Prism.review(42, first_is_greater_prism)
+```
+
+**Note:** For prisms built with `make/2`, it is your responsibility to ensure the preview and review functions obey the prism laws. Funx does not enforce this for you.
+
+## Composition Patterns
+
+### compose/1
+
+Build complex prisms from a list:
+
+```elixir
+composed_prism = Prism.compose([
+  Prism.key(:payment),
+  Prism.struct(CreditCard),
+  Prism.key(:name)
+])
+
+Prism.preview(cc_transaction, composed_prism)
+```
+
+Empty list returns identity prism:
+
+```elixir
+identity = Prism.compose([])
+Prism.preview(hero_map, identity)
+```
+
+### Never Crashes
+
+Prisms handle any input gracefully:
+
+```elixir
+Prism.preview(:cat, cc_name_prism)
+```
+
+```elixir
+Prism.preview(nil, cc_name_prism)
+```
+
+```elixir
+Prism.preview(42, cc_name_prism)
+```
+
+No matter what you send it, a prism returns `Just` or `Nothing`—never an exception.

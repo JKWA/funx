@@ -7,6 +7,7 @@ defmodule Funx.Ord.UtilsTest do
   import Funx.Ord.Utils
 
   alias Funx.Monad.{Either, Identity, Maybe}
+  alias Funx.Optics.Lens
   alias Funx.Ord.Any
   alias Funx.Test.Person
   doctest Funx.Ord.Utils
@@ -217,6 +218,52 @@ defmodule Funx.Ord.UtilsTest do
       assert compare("banana", "apple", string_length) == :gt
       assert compare("apple", "banana", string_length) == :lt
       assert compare("pear", "bear", string_length) == :eq
+    end
+  end
+
+  describe "contramap/2 with lens" do
+    test "compares maps using a lens for a single key" do
+      lens = Lens.key(:age)
+      ord = contramap(lens)
+
+      assert ord.lt?.(%{age: 30}, %{age: 40})
+      assert ord.gt?.(%{age: 50}, %{age: 20})
+      assert ord.le?.(%{age: 25}, %{age: 25})
+      assert ord.ge?.(%{age: 25}, %{age: 25})
+    end
+
+    test "compares maps using a nested lens path" do
+      lens = Lens.compose([Lens.key(:stats), Lens.key(:wins)])
+      ord = contramap(lens)
+
+      assert ord.lt?.(%{stats: %{wins: 2}}, %{stats: %{wins: 5}})
+      assert ord.gt?.(%{stats: %{wins: 7}}, %{stats: %{wins: 3}})
+      assert ord.le?.(%{stats: %{wins: 4}}, %{stats: %{wins: 4}})
+    end
+  end
+
+  describe "contramap/2 with prism and default (Ord)" do
+    test "orders values using prism with default for partial access" do
+      alias Funx.Optics.Prism
+
+      prism = Prism.key(:score)
+      ord = contramap({prism, 0})
+
+      # Both have score
+      assert ord.lt?.(%{score: 10}, %{score: 20})
+      assert ord.gt?.(%{score: 50}, %{score: 30})
+      assert ord.le?.(%{score: 25}, %{score: 25})
+      assert ord.ge?.(%{score: 25}, %{score: 25})
+
+      # One missing, uses default (0)
+      # 0 <= 5
+      assert ord.le?.(%{}, %{score: 5})
+      # 10 >= 0
+      assert ord.ge?.(%{score: 10}, %{})
+
+      # Both missing, both use default (0 vs 0)
+      assert ord.le?.(%{}, %{})
+      assert ord.ge?.(%{}, %{})
     end
   end
 
