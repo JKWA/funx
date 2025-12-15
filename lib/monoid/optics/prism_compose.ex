@@ -1,20 +1,32 @@
-defmodule Funx.Monoid.PrismCompose do
+defmodule Funx.Monoid.Optics.PrismCompose do
   @moduledoc """
-  A monoid for composing prisms sequentially.
+  The `Funx.Monoid.Optics.PrismCompose` module provides a monoid wrapper for sequential prism composition.
 
-  This wrapper allows prisms to be used with generic monoid operations.
+  This wrapper allows prisms to be used with generic monoid operations like `m_concat/2` and `m_append/3`,
+  enabling functional composition of multiple prisms into a single partial focusing operation.
+
+  ### Wrapping and Unwrapping
+
+    - `new/1`: Wraps a prism in a `PrismCompose` monoid.
+    - `unwrap/1`: Extracts the prism from a `PrismCompose` wrapper.
+
+  ### Monoid Operations (via protocol)
+
+    - `empty/1`: Returns the identity prism (accepts all values).
+    - `append/2`: Composes two prisms sequentially (outer then inner).
+    - `wrap/2`: Wraps a prism value into the monoid.
 
   ## Examples
 
-      iex> alias Funx.Monoid.PrismCompose
+      iex> alias Funx.Monoid.Optics.PrismCompose
       iex> alias Funx.Optics.Prism
       iex> prisms = [
-      ...>   Prism.struct(CreditCard),
+      ...>   Prism.key(:account),
       ...>   Prism.key(:name)
       ...> ]
       iex> wrapped = Enum.map(prisms, &PrismCompose.new/1)
-      iex> composed = Funx.Monoid.Utils.m_concat(%PrismCompose{}, wrapped)
-      iex> Prism.preview(%CreditCard{name: "Alice"}, composed.prism)
+      iex> composed = Funx.Monoid.Utils.m_concat(%PrismCompose{}, prisms)
+      iex> Prism.preview(%{account: %{name: "Alice"}}, composed)
       %Funx.Monad.Maybe.Just{value: "Alice"}
   """
 
@@ -39,8 +51,8 @@ defmodule Funx.Monoid.PrismCompose do
   def unwrap(%__MODULE__{prism: prism}), do: prism
 end
 
-defimpl Funx.Monoid, for: Funx.Monoid.PrismCompose do
-  alias Funx.Monoid.PrismCompose
+defimpl Funx.Monoid, for: Funx.Monoid.Optics.PrismCompose do
+  alias Funx.Monoid.Optics.PrismCompose
   alias Funx.Optics.Prism
 
   @doc """
@@ -62,12 +74,12 @@ defimpl Funx.Monoid, for: Funx.Monoid.PrismCompose do
     composed =
       Prism.make(
         fn s ->
-          outer.preview.(s)
-          |> bind(fn i -> inner.preview.(i) end)
+          Prism.preview(s, outer)
+          |> bind(fn i -> Prism.preview(i, inner) end)
         end,
         fn a ->
-          inner_value = inner.review.(a)
-          outer.review.(inner_value)
+          inner_value = Prism.review(a, inner)
+          Prism.review(inner_value, outer)
         end
       )
 

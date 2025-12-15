@@ -316,7 +316,7 @@ defmodule Funx.Optics.LensTest do
   end
 
   describe "Monoid structure via LensCompose" do
-    alias Funx.Monoid.LensCompose
+    alias Funx.Monoid.Optics.LensCompose
 
     test "lenses form a monoid under composition via LensCompose" do
       import Funx.Monoid
@@ -1127,7 +1127,7 @@ defmodule Funx.Optics.LensTest do
 
     test "composing many identity lenses has no effect" do
       import Funx.Monoid
-      alias Funx.Monoid.LensCompose
+      alias Funx.Monoid.Optics.LensCompose
 
       id = empty(%LensCompose{})
 

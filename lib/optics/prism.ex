@@ -2,32 +2,56 @@ defmodule Funx.Optics.Prism do
   import Kernel, except: [struct: 1]
 
   @moduledoc """
-  A prism focuses on a branch of a data structure.
+  The `Funx.Optics.Prism` module provides a lawful partial optic for focusing on a branch of a data structure.
 
-  Unlike a lens, a prism is *partial*: the focus may or may not be present.
-  This makes prisms ideal for working with optional values, variants, and
-  sum types.
+  A prism is **partial**: the focus may or may not be present. This makes prisms ideal for working with
+  optional values, variants, and sum types. Unlike lenses, prisms never raise—they return `Maybe` instead.
 
-  ## Core Operations
+  **When to use prisms vs lenses:**
 
-    * `preview/2` - Attempts to extract the focused part, returning `Maybe`
-    * `review/2` - Rebuilds the whole value from the focused part
+    - **Prisms** (partial): Use for optional values, variants, sum types, missing map keys.
+    - **Lenses** (total): Use for record fields, map keys that always exist.
 
-  ## Prisms vs Lenses
+  ### Constructors
 
-  **Prisms** are for *partial* access (the value may not be present):
-  - `preview` may fail (returns `Maybe`)
-  - `review` *reconstructs* from scratch (cannot preserve other fields)
-  - Use for: optional values, variants, sum types, missing map keys
+    - `key/1`: Focuses on an optional key in a map.
+    - `struct/1`: Focuses on a specific struct type (for sum types).
+    - `path/1`: Focuses on nested paths through maps and structs.
+    - `make/2`: Creates a custom prism from preview and review functions.
 
-  **Lenses** are for *total* access (the value is always present):
-  - `view` always succeeds
-  - `set` *updates* while preserving the rest of the structure
-  - Use for: record fields, map keys that always exist
+  ### Core Operations
 
-  ## Working with Map Keys
+    - `preview/2`: Attempts to extract the focus, returning `Just(value)` or `Nothing`.
+    - `review/2`: Reconstructs the whole structure from the focused value.
 
-  Prisms can focus on optional map keys:
+  **Important:** `review` constructs a fresh structure from the focused value alone—it does not merge
+  or preserve other fields. This is lawful prism behavior. If you need to update while preserving other
+  fields, use a lens instead.
+
+  ### Composition
+
+    - `compose/2`: Composes two prisms sequentially (outer then inner).
+    - `compose/1`: Composes a list of prisms into a single prism.
+
+  Prisms compose naturally. Composing two prisms yields a new prism that attempts both matches in sequence,
+  stopping at the first `Nothing`.
+
+  ## Monoid Structure
+
+  Prisms form a monoid under composition **for a fixed outer type `s`**.
+
+  The monoid structure is provided via `Funx.Monoid.Optics.PrismCompose`, which wraps prisms
+  for use with generic monoid operations:
+
+    - **Identity**: `make(fn x -> Maybe.from_nil(x) end, fn x -> x end)` - the identity prism
+    - **Operation**: `compose/2` - sequential composition
+
+  You can use `compose/1` to compose multiple prisms sequentially, or work directly
+  with `Funx.Monoid.Optics.PrismCompose` for more control.
+
+  ## Examples
+
+  Working with optional map keys:
 
       iex> name_prism = Funx.Optics.Prism.key(:name)
       iex> Funx.Optics.Prism.preview(%{name: "Alice"}, name_prism)
@@ -35,10 +59,7 @@ defmodule Funx.Optics.Prism do
       iex> Funx.Optics.Prism.preview(%{age: 30}, name_prism)
       %Funx.Monad.Maybe.Nothing{}
 
-  ## Composition
-
-  Prisms compose naturally. Composing two prisms yields a new prism that
-  attempts both matches in sequence:
+  Composing prisms for nested access:
 
       iex> outer = Funx.Optics.Prism.key(:person)
       iex> inner = Funx.Optics.Prism.key(:name)
@@ -48,7 +69,7 @@ defmodule Funx.Optics.Prism do
       iex> Funx.Optics.Prism.preview(%{person: %{age: 30}}, composed)
       %Funx.Monad.Maybe.Nothing{}
 
-  Or use `path/1` for convenient nested access:
+  Using `path/1` for convenient nested access:
 
       iex> person_name = Funx.Optics.Prism.path([:person, :name])
       iex> Funx.Optics.Prism.preview(%{person: %{name: "Alice"}}, person_name)
@@ -58,7 +79,7 @@ defmodule Funx.Optics.Prism do
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
 
   alias Funx.Monad.Maybe
-  alias Funx.Monoid.PrismCompose
+  alias Funx.Monoid.Optics.PrismCompose
 
   @type previewer(s, a) :: (s -> Maybe.t(a))
   @type reviewer(s, a) :: (a -> s)
@@ -72,135 +93,20 @@ defmodule Funx.Optics.Prism do
 
   defstruct [:preview, :review]
 
-  @doc """
-  Creates a new prism from a previewer and a reviewer.
-
-  The previewer attempts to extract the focused part, returning a `Maybe`.
-  The reviewer reconstructs the whole structure from the focused part.
-
-      iex> p =
-      ...>   Funx.Optics.Prism.make(
-      ...>     fn x -> Funx.Monad.Maybe.just(x) end,
-      ...>     fn x -> x end
-      ...>   )
-      iex> Funx.Optics.Prism.preview(5, p)
-      %Funx.Monad.Maybe.Just{value: 5}
-  """
-  @spec make(previewer(s, a), reviewer(s, a)) :: t(s, a)
-        when s: term(), a: term()
-  def make(preview, review)
-      when is_function(preview, 1) and is_function(review, 1) do
-    %__MODULE__{preview: preview, review: review}
-  end
-
-  @doc false
-  def identity do
-    make(
-      fn x -> Maybe.from_nil(x) end,
-      fn x -> x end
-    )
-  end
+  # ============================================================================
+  # Constructors
+  # ============================================================================
 
   @doc """
-  Attempts to extract the focus from a structure using the prism.
+  Builds a prism that focuses on a single key inside a map.
 
-  Returns a `Funx.Monad.Maybe.Just` on success or `Funx.Monad.Maybe.Nothing`
-  if the branch does not match.
+  ## Examples
 
       iex> p = Funx.Optics.Prism.key(:name)
       iex> Funx.Optics.Prism.preview(%{name: "Alice"}, p)
       %Funx.Monad.Maybe.Just{value: "Alice"}
       iex> Funx.Optics.Prism.preview(%{age: 30}, p)
       %Funx.Monad.Maybe.Nothing{}
-  """
-  @spec preview(s, t(s, a)) :: Maybe.t(a)
-        when s: term(), a: term()
-  def preview(s, %__MODULE__{preview: preview}),
-    do: preview.(s)
-
-  @doc """
-  Reconstructs the whole structure from the focused part.
-
-  Review reverses the prism, injecting the focused value back into the outer
-  structure. **Important**: `review` constructs a fresh structure from the
-  focused value alone - it does not merge with or patch an existing structure.
-  This is the lawful behaviour of prisms.
-
-  If you need to update a field while preserving other fields, you need a lens,
-  not a prism.
-
-  **Note**: Cannot review with `nil` as it would violate prism laws (since
-  `Just(nil)` is invalid).
-
-      iex> p = Funx.Optics.Prism.key(:name)
-      iex> Funx.Optics.Prism.review("Alice", p)
-      %{name: "Alice"}
-  """
-  @spec review(a, t(s, a)) :: s
-        when s: term(), a: term()
-
-  def review(nil, %__MODULE__{}) do
-    raise ArgumentError,
-          "Cannot review with nil. " <>
-            "Prisms use Maybe, which doesn't allow nil values. " <>
-            "This would violate prism laws: preview(review(nil)) should equal Just(nil), but Just(nil) is invalid."
-  end
-
-  def review(a, %__MODULE__{review: review}),
-    do: review.(a)
-
-  @doc """
-  Composes prisms into a single prism using sequential composition.
-
-  This delegates to the monoid append operation, which contains the
-  canonical composition logic.
-
-  ## Binary composition
-
-  Composes two prisms. The outer prism runs first; if it succeeds,
-  the inner prism runs next.
-
-      iex> outer = Funx.Optics.Prism.key(:account)
-      iex> inner = Funx.Optics.Prism.key(:name)
-      iex> p = Funx.Optics.Prism.compose(outer, inner)
-      iex> Funx.Optics.Prism.preview(%{account: %{name: "Alice"}}, p)
-      %Funx.Monad.Maybe.Just{value: "Alice"}
-
-  ## List composition
-
-  Composes a list of prisms into a single prism using sequential composition.
-
-  **Sequential semantics:**
-  - On `preview`: Applies each prism's matcher in sequence (Kleisli composition),
-    stopping at the first `Nothing`
-  - On `review`: Applies each prism's builder in reverse order (function composition)
-
-  This is **not** a union or choice operator. It does not "try all branches."
-  It is strict sequential matching and construction.
-
-      iex> prisms = [
-      ...>   Funx.Optics.Prism.key(:account),
-      ...>   Funx.Optics.Prism.key(:name)
-      ...> ]
-      iex> p = Funx.Optics.Prism.compose(prisms)
-      iex> Funx.Optics.Prism.preview(%{account: %{name: "Alice"}}, p)
-      %Funx.Monad.Maybe.Just{value: "Alice"}
-      iex> Funx.Optics.Prism.preview(%{other: %{name: "Bob"}}, p)
-      %Funx.Monad.Maybe.Nothing{}
-  """
-  @spec compose(t(s, i), t(i, a)) :: t(s, a)
-        when s: term(), i: term(), a: term()
-  def compose(%__MODULE__{} = outer, %__MODULE__{} = inner) do
-    m_append(%PrismCompose{}, outer, inner)
-  end
-
-  @spec compose([t()]) :: t()
-  def compose(prisms) when is_list(prisms) do
-    m_concat(%PrismCompose{}, prisms)
-  end
-
-  @doc """
-  Builds a prism that focuses on a single key inside a map.
   """
   @spec key(atom) :: t(map(), any)
   def key(k) when is_atom(k) do
@@ -254,7 +160,6 @@ defmodule Funx.Optics.Prism do
       #=> %Account{name: "Alice", email: nil}
   """
   @spec struct(module()) :: t(struct(), struct())
-
   def struct(mod) when is_atom(mod) do
     unless function_exported?(mod, :__struct__, 0) do
       raise ArgumentError,
@@ -371,5 +276,148 @@ defmodule Funx.Optics.Prism do
       end)
 
     compose(prisms)
+  end
+
+  @doc """
+  Creates a custom prism from previewer and reviewer functions.
+
+  The previewer attempts to extract the focused part, returning a `Maybe`.
+  The reviewer reconstructs the whole structure from the focused part.
+
+  Both functions must maintain the prism laws for the result to be lawful.
+
+  ## Examples
+
+      iex> p =
+      ...>   Funx.Optics.Prism.make(
+      ...>     fn x -> Funx.Monad.Maybe.just(x) end,
+      ...>     fn x -> x end
+      ...>   )
+      iex> Funx.Optics.Prism.preview(5, p)
+      %Funx.Monad.Maybe.Just{value: 5}
+  """
+  @spec make(previewer(s, a), reviewer(s, a)) :: t(s, a)
+        when s: term(), a: term()
+  def make(preview, review)
+      when is_function(preview, 1) and is_function(review, 1) do
+    %__MODULE__{preview: preview, review: review}
+  end
+
+  @doc false
+  @spec identity() :: t()
+  def identity do
+    make(
+      fn x -> Maybe.from_nil(x) end,
+      fn x -> x end
+    )
+  end
+
+  # ============================================================================
+  # Core Operations
+  # ============================================================================
+
+  @doc """
+  Attempts to extract the focus from a structure using the prism.
+
+  Returns a `Funx.Monad.Maybe.Just` on success or `Funx.Monad.Maybe.Nothing`
+  if the branch does not match.
+
+  ## Examples
+
+      iex> p = Funx.Optics.Prism.key(:name)
+      iex> Funx.Optics.Prism.preview(%{name: "Alice"}, p)
+      %Funx.Monad.Maybe.Just{value: "Alice"}
+      iex> Funx.Optics.Prism.preview(%{age: 30}, p)
+      %Funx.Monad.Maybe.Nothing{}
+  """
+  @spec preview(s, t(s, a)) :: Maybe.t(a)
+        when s: term(), a: term()
+  def preview(s, %__MODULE__{preview: preview}),
+    do: preview.(s)
+
+  @doc """
+  Reconstructs the whole structure from the focused part.
+
+  Review reverses the prism, injecting the focused value back into the outer
+  structure. **Important**: `review` constructs a fresh structure from the
+  focused value alone - it does not merge with or patch an existing structure.
+  This is the lawful behaviour of prisms.
+
+  If you need to update a field while preserving other fields, you need a lens,
+  not a prism.
+
+  **Note**: Cannot review with `nil` as it would violate prism laws (since
+  `Just(nil)` is invalid).
+
+  ## Examples
+
+      iex> p = Funx.Optics.Prism.key(:name)
+      iex> Funx.Optics.Prism.review("Alice", p)
+      %{name: "Alice"}
+  """
+  @spec review(a, t(s, a)) :: s
+        when s: term(), a: term()
+  def review(nil, %__MODULE__{}) do
+    raise ArgumentError,
+          "Cannot review with nil. " <>
+            "Prisms use Maybe, which doesn't allow nil values. " <>
+            "This would violate prism laws: preview(review(nil)) should equal Just(nil), but Just(nil) is invalid."
+  end
+
+  def review(a, %__MODULE__{review: review}),
+    do: review.(a)
+
+  # ============================================================================
+  # Composition
+  # ============================================================================
+
+  @doc """
+  Composes prisms into a single prism using sequential composition.
+
+  This delegates to the monoid append operation, which contains the
+  canonical composition logic.
+
+  ## Binary composition
+
+  Composes two prisms. The outer prism runs first; if it succeeds,
+  the inner prism runs next.
+
+      iex> outer = Funx.Optics.Prism.key(:account)
+      iex> inner = Funx.Optics.Prism.key(:name)
+      iex> p = Funx.Optics.Prism.compose(outer, inner)
+      iex> Funx.Optics.Prism.preview(%{account: %{name: "Alice"}}, p)
+      %Funx.Monad.Maybe.Just{value: "Alice"}
+
+  ## List composition
+
+  Composes a list of prisms into a single prism using sequential composition.
+
+  **Sequential semantics:**
+  - On `preview`: Applies each prism's matcher in sequence (Kleisli composition),
+    stopping at the first `Nothing`
+  - On `review`: Applies each prism's builder in reverse order (function composition)
+
+  This is **not** a union or choice operator. It does not "try all branches."
+  It is strict sequential matching and construction.
+
+      iex> prisms = [
+      ...>   Funx.Optics.Prism.key(:account),
+      ...>   Funx.Optics.Prism.key(:name)
+      ...> ]
+      iex> p = Funx.Optics.Prism.compose(prisms)
+      iex> Funx.Optics.Prism.preview(%{account: %{name: "Alice"}}, p)
+      %Funx.Monad.Maybe.Just{value: "Alice"}
+      iex> Funx.Optics.Prism.preview(%{other: %{name: "Bob"}}, p)
+      %Funx.Monad.Maybe.Nothing{}
+  """
+  @spec compose(t(s, i), t(i, a)) :: t(s, a)
+        when s: term(), i: term(), a: term()
+  def compose(%__MODULE__{} = outer, %__MODULE__{} = inner) do
+    m_append(%PrismCompose{}, outer, inner)
+  end
+
+  @spec compose([t()]) :: t()
+  def compose(prisms) when is_list(prisms) do
+    m_concat(%PrismCompose{}, prisms)
   end
 end

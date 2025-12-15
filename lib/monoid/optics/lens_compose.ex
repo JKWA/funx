@@ -1,12 +1,24 @@
-defmodule Funx.Monoid.LensCompose do
+defmodule Funx.Monoid.Optics.LensCompose do
   @moduledoc """
-  A monoid for composing lenses sequentially.
+  The `Funx.Monoid.Optics.LensCompose` module provides a monoid wrapper for sequential lens composition.
 
-  This wrapper allows lenses to be used with generic monoid operations.
+  This wrapper allows lenses to be used with generic monoid operations like `m_concat/2` and `m_append/3`,
+  enabling functional composition of multiple lenses into a single focusing operation.
+
+  ### Wrapping and Unwrapping
+
+    - `new/1`: Wraps a lens in a `LensCompose` monoid.
+    - `unwrap/1`: Extracts the lens from a `LensCompose` wrapper.
+
+  ### Monoid Operations (via protocol)
+
+    - `empty/1`: Returns the identity lens (leaves structure unchanged).
+    - `append/2`: Composes two lenses sequentially (outer then inner).
+    - `wrap/2`: Wraps a lens value into the monoid.
 
   ## Examples
 
-      iex> alias Funx.Monoid.LensCompose
+      iex> alias Funx.Monoid.Optics.LensCompose
       iex> alias Funx.Optics.Lens
       iex> lenses = [
       ...>   Lens.key(:profile),
@@ -39,8 +51,8 @@ defmodule Funx.Monoid.LensCompose do
   def unwrap(%__MODULE__{lens: lens}), do: lens
 end
 
-defimpl Funx.Monoid, for: Funx.Monoid.LensCompose do
-  alias Funx.Monoid.LensCompose
+defimpl Funx.Monoid, for: Funx.Monoid.Optics.LensCompose do
+  alias Funx.Monoid.Optics.LensCompose
   alias Funx.Optics.Lens
 
   @doc """

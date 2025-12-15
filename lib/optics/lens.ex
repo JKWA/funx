@@ -1,65 +1,62 @@
 defmodule Funx.Optics.Lens do
   @moduledoc """
-  A strictly lawful total optic that focuses on a part of a data structure.
+  The `Funx.Optics.Lens` module provides a lawful total optic for focusing on a part of a data structure.
 
-  ## What "Total" Means
+  A lens is **total**: it assumes the focus always exists within the valid domain. This is a contract
+  enforced at runtime by raising `KeyError` when violated. If the focus might not exist, use a prism instead.
 
-  A lens is **total**: it assumes the focus always exists within the valid domain.
-  This is a contract enforced at runtime by raising `KeyError` when violated.
+  Both `view!` and `set!` enforce totality symmetrically for all data types (maps, structs, etc.). If either
+  operation can succeed when the focus is missing, you no longer have a lens.
 
-  Both `view!` and `set!` enforce totality symmetrically for all data types (maps,
-  structs, etc.). If either operation can succeed when the focus is missing, you
-  no longer have a lens: you have a prism, traversal, or optional.
+  ### Constructors
 
-  **If the focus might not exist, use a prism instead.**
+    - `key/1`: Focuses on a single key in a map or struct.
+    - `path/1`: Focuses on nested keys by composing `key/1` lenses.
+    - `make/2`: Creates a custom lens from viewer and updater functions.
 
-  ## Core Operations (raise on error)
+  ### Core Operations
 
-    * `view!/2` - Extracts the focused part (raises `KeyError` if missing)
-    * `set!/3` - Updates the focused part (raises `KeyError` if missing)
-    * `over!/3` - Applies a function to the focused part (raises `KeyError` if missing)
+    - `view!/2`: Extracts the focused part (raises `KeyError` if missing).
+    - `set!/3`: Updates the focused part (raises `KeyError` if missing).
+    - `over!/3`: Applies a function to the focused part (raises `KeyError` if missing).
 
-  ## Safe Operations (return Either or tuples)
+  ### Safe Operations
 
-  For situations where you prefer explicit error handling instead of exceptions,
-  each core operation has a safe variant that returns results instead of raising:
-
-    * `view/3` - Safe version of `view!/2`
-    * `set/4` - Safe version of `set!/3`
-    * `over/4` - Safe version of `over!/3`
+    - `view/3`: Safe version of `view!/2` (returns `Either` or tuple).
+    - `set/4`: Safe version of `set!/3` (returns `Either` or tuple).
+    - `over/4`: Safe version of `over!/3` (returns `Either` or tuple).
 
   **Error handling modes:**
 
-  All safe operations accept an optional `:as` parameter to control return format:
+  Safe operations accept an optional `:as` parameter:
 
-    * `:either` (default) - Returns `%Either.Right{right: value}` on success or
-      `%Either.Left{left: exception}` on error
-    * `:tuple` - Returns `{:ok, value}` on success or `{:error, exception}` on error
-    * `:raise` - Behaves like the `!` version, raising exceptions directly
-
-  **What gets caught:**
+    - `:either` (default): Returns `Right(value)` or `Left(exception)`.
+    - `:tuple`: Returns `{:ok, value}` or `{:error, exception}`.
+    - `:raise`: Behaves like the `!` version, raising exceptions directly.
 
   Safe operations use `Either.from_try/1` internally, which catches **all exceptions**,
-  not just `KeyError`. This means any exception raised during the operation (including
-  those from user-provided functions in `over/4`) will be caught and wrapped.
+  not just `KeyError`.
 
-  ## Composition
+  ### Composition
 
-  Lenses compose naturally. Composing two lenses yields a new lens that
-  focuses through both layers sequentially.
+    - `compose/2`: Composes two lenses sequentially (outer then inner).
+    - `compose/1`: Composes a list of lenses into a single lens.
+
+  Lenses compose naturally. Composing two lenses yields a new lens that focuses through
+  both layers sequentially.
 
   ## Monoid Structure
 
   Lenses form a monoid under composition **for a fixed outer type `s`**.
 
-  The monoid structure is provided via `Funx.Monoid.LensCompose`, which wraps
-  lenses for use with generic monoid operations:
+  The monoid structure is provided via `Funx.Monoid.Optics.LensCompose`, which wraps lenses
+  for use with generic monoid operations:
 
-  - **Identity**: `make(fn s -> s end, fn _s, a -> a end)` - the identity lens
-  - **Operation**: `compose/2` - sequential composition
+    - **Identity**: `make(fn s -> s end, fn _s, a -> a end)` - the identity lens
+    - **Operation**: `compose/2` - sequential composition
 
-  You can use `concat/1` to compose multiple lenses sequentially, or work
-  directly with `Funx.Monoid.LensCompose` for more control.
+  You can use `compose/1` to compose multiple lenses sequentially, or work directly
+  with `Funx.Monoid.Optics.LensCompose` for more control.
 
   ## Examples
 
@@ -94,7 +91,7 @@ defmodule Funx.Optics.Lens do
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
 
   alias Funx.Monad.Either
-  alias Funx.Monoid.LensCompose
+  alias Funx.Monoid.Optics.LensCompose
 
   @type viewer(s, a) :: (s -> a)
   @type updater(s, a) :: (s, a -> s)

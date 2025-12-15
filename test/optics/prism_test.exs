@@ -1,4 +1,6 @@
 defmodule Funx.Optics.PrismTest do
+  @moduledoc false
+
   use ExUnit.Case, async: true
 
   doctest Funx.Optics.Prism
@@ -15,9 +17,22 @@ defmodule Funx.Optics.PrismTest do
     defstruct [:amount, :account]
   end
 
-  #
-  # Basic preview
-  #
+  defmodule Profile do
+    defstruct [:age, :score]
+  end
+
+  defmodule User do
+    defstruct [:name, :profile]
+  end
+
+  defmodule CreditCard do
+    defstruct [:number, :expiry]
+  end
+
+  defmodule Check do
+    defstruct [:routing_number, :account_number]
+  end
+
   describe "preview/2" do
     test "returns Just for matching value via key prism" do
       p = Prism.key(:name)
@@ -46,9 +61,6 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
-  #
-  # Basic review
-  #
   describe "review/2" do
     test "rebuilds a value using key prism" do
       p = Prism.key(:name)
@@ -84,9 +96,6 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
-  #
-  # Composition
-  #
   describe "compose/2" do
     test "composing struct and key prisms" do
       p1 = Prism.struct(Account)
@@ -126,9 +135,6 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
-  #
-  # Key prisms
-  #
   describe "key/1 prism" do
     test "extracts value when key exists and value is non-nil" do
       p = Prism.key(:age)
@@ -168,17 +174,6 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
-  defmodule Profile do
-    defstruct [:age, :score]
-  end
-
-  defmodule User do
-    defstruct [:name, :profile]
-  end
-
-  #
-  # Path prisms - consolidated from 5 separate describe blocks
-  #
   describe "path/1 - basic operations" do
     test "extracts nested value when full path exists" do
       p = Prism.path([:a, :b, :c])
@@ -519,7 +514,7 @@ defmodule Funx.Optics.PrismTest do
   end
 
   describe "Monoid structure via PrismCompose" do
-    alias Funx.Monoid.PrismCompose
+    alias Funx.Monoid.Optics.PrismCompose
 
     test "prisms form a monoid under composition via PrismCompose" do
       import Funx.Monoid
@@ -684,14 +679,6 @@ defmodule Funx.Optics.PrismTest do
         Prism.make(fn x -> x end, fn -> nil end)
       end
     end
-  end
-
-  defmodule CreditCard do
-    defstruct [:number, :expiry]
-  end
-
-  defmodule Check do
-    defstruct [:routing_number, :account_number]
   end
 
   describe "struct constructor prism" do
