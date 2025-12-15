@@ -90,7 +90,7 @@
 - Use `over!/3` to transform - raises `KeyError` if missing
 - Safe versions (`view/3`, `set/4`, `over/4`) return Either or tuples
 - Chain with `compose/2` or `compose/1`
-- Path shorthand: `path([:a, :b, :c])` = `concat([key(:a), key(:b), key(:c)])`
+- Path shorthand: `path([:a, :b, :c])` = `compose([key(:a), key(:b), key(:c)])`
 - Lenses preserve structure type (structs stay structs)
 - **IMPORTANT**: Only use Lens when focus must exist - absence is a bug
 - For optional fields, use Prism instead
@@ -182,7 +182,7 @@ Lens.view!(%{user: %{}}, email_lens)
 #=> ** (KeyError) key :profile not found in: %{}
 ```
 
-**Implementation**: `path(keys)` = `concat(Enum.map(keys, &key/1))`
+**Implementation**: `path(keys)` = `compose(Enum.map(keys, &key/1))`
 
 **Contract**: ALL keys in path MUST exist. If any might be missing, use `Prism.path/1` instead.
 
@@ -426,7 +426,7 @@ Lens.over!(data, path_lens, &String.upcase/1)
 #=> %{user: %{profile: %{name: "ALICE"}}}
 ```
 
-**Implementation**: `path/1` is implemented as `concat(Enum.map(keys, &key/1))`
+**Implementation**: `path/1` is implemented as `compose(Enum.map(keys, &key/1))`
 
 ## Working with Either Results
 
