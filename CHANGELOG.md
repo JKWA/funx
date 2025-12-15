@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.0] - Unreleased
+
+### Added
+
+Introduced **Optics** for composable, lawful data access and transformation:
+
+* `Funx.Optics.Lens` - Total optic for required fields. Raises `KeyError` if focus is missing. Use for fields that should always exist.
+* `Funx.Optics.Prism` - Partial optic for optional fields. Returns `Maybe`. Use for fields that may be absent or for selecting struct types.
+* `Funx.Monoid.Optics.LensCompose` - Monoid wrapper for sequential lens composition
+* `Funx.Monoid.Optics.PrismCompose` - Monoid wrapper for sequential prism composition
+
 ## [0.3.0] - Unreleased
 
 ### Added

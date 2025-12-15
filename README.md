@@ -22,7 +22,7 @@ To use Funx, add it to the list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:funx, "~> 0.3"}
+    {:funx, "~> 0.4"}
   ]
 end
 ```
@@ -97,6 +97,15 @@ Supported operations:
 ```
 
 See [FORMATTER_EXPORT.md](FORMATTER_EXPORT.md) for details.
+
+## Optics
+
+Optics provide composable, lawful abstractions for focusing on and transforming parts of data structures.
+
+- `Lens`: Total optic for required fields—raises if focus is missing. Use for fields that should always exist.
+- `Prism`: Partial optic for optional fields—returns `Maybe`. Use for fields that may be absent or for selecting struct types.
+
+Both support composition (`compose/1`, `compose/2`) and work uniformly with maps and structs.
 
 ## Monoids
 

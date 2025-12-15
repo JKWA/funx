@@ -113,6 +113,7 @@ defmodule Funx.Monad.Effect do
 
   alias Funx.Errors.EffectError
   alias Funx.Monad.{Effect, Either, Maybe}
+
   alias Effect.{Left, Right}
   alias Maybe.{Just, Nothing}
 
