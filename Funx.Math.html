@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Funx.Math — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Funx.Math — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Math.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="modules" class="page-module">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-module" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,17 +93,19 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Math</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L1" title="View Source" class="icon-action" rel="help">
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Math</span> 
-    <small class="app-vsn" translate="no">(funx v0.3.0)</small>
-
-  </h1>
+  </div>
 
 
     <section id="moduledoc">
@@ -146,7 +129,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#deviation/1" data-no-tooltip translate="no">deviation(list)</a>
+        <a href="#deviation/1" data-no-tooltip="" translate="no">deviation(list)</a>
 
       </div>
 
@@ -156,7 +139,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#max/1" data-no-tooltip translate="no">max(list)</a>
+        <a href="#max/1" data-no-tooltip="" translate="no">max(list)</a>
 
       </div>
 
@@ -166,7 +149,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#max/2" data-no-tooltip translate="no">max(a, b)</a>
+        <a href="#max/2" data-no-tooltip="" translate="no">max(a, b)</a>
 
       </div>
 
@@ -176,7 +159,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#mean/1" data-no-tooltip translate="no">mean(list)</a>
+        <a href="#mean/1" data-no-tooltip="" translate="no">mean(list)</a>
 
       </div>
 
@@ -186,7 +169,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#min/1" data-no-tooltip translate="no">min(list)</a>
+        <a href="#min/1" data-no-tooltip="" translate="no">min(list)</a>
 
       </div>
 
@@ -196,7 +179,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#min/2" data-no-tooltip translate="no">min(a, b)</a>
+        <a href="#min/2" data-no-tooltip="" translate="no">min(a, b)</a>
 
       </div>
 
@@ -206,7 +189,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#product/1" data-no-tooltip translate="no">product(list)</a>
+        <a href="#product/1" data-no-tooltip="" translate="no">product(list)</a>
 
       </div>
 
@@ -216,7 +199,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#product/2" data-no-tooltip translate="no">product(a, b)</a>
+        <a href="#product/2" data-no-tooltip="" translate="no">product(a, b)</a>
 
       </div>
 
@@ -226,7 +209,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#range/1" data-no-tooltip translate="no">range(list)</a>
+        <a href="#range/1" data-no-tooltip="" translate="no">range(list)</a>
 
       </div>
 
@@ -236,7 +219,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#square/1" data-no-tooltip translate="no">square(list)</a>
+        <a href="#square/1" data-no-tooltip="" translate="no">square(list)</a>
 
       </div>
 
@@ -246,7 +229,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#std_dev/1" data-no-tooltip translate="no">std_dev(list)</a>
+        <a href="#std_dev/1" data-no-tooltip="" translate="no">std_dev(list)</a>
 
       </div>
 
@@ -256,7 +239,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#sum/1" data-no-tooltip translate="no">sum(list)</a>
+        <a href="#sum/1" data-no-tooltip="" translate="no">sum(list)</a>
 
       </div>
 
@@ -266,7 +249,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#sum/2" data-no-tooltip translate="no">sum(a, b)</a>
+        <a href="#sum/2" data-no-tooltip="" translate="no">sum(a, b)</a>
 
       </div>
 
@@ -276,7 +259,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#sum_of_squares/1" data-no-tooltip translate="no">sum_of_squares(list)</a>
+        <a href="#sum_of_squares/1" data-no-tooltip="" translate="no">sum_of_squares(list)</a>
 
       </div>
 
@@ -286,7 +269,7 @@ such as addition and multiplication over values or lists of values.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#variance/1" data-no-tooltip translate="no">variance(list)</a>
+        <a href="#variance/1" data-no-tooltip="" translate="no">variance(list)</a>
 
       </div>
 
@@ -306,22 +289,23 @@ such as addition and multiplication over values or lists of values.</p>
       </a>
       <span class="text">Functions</span>
     </h1>
+
     <div class="functions-list">
 <section class="detail" id="deviation/1">
 
   <div class="detail-header">
-    <a href="#deviation/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#deviation/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">deviation(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L237" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">deviation(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L237" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -332,37 +316,31 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Computes the deviations from the mean for a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="deviation/1-examples" class="section-heading">
-  <a href="#deviation/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">deviation</span><span class="p" data-group-id="3795278133-1">(</span><span class="p" data-group-id="3795278133-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="3795278133-2">]</span><span class="p" data-group-id="3795278133-1">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3795278133-3">(</span><span class="p" data-group-id="3795278133-4">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">1.5</span><span class="p" data-group-id="3795278133-4">]</span><span class="p" data-group-id="3795278133-3">)</span><span class="w">
+<p>Computes the deviations from the mean for a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="deviation/1-examples" class="section-heading"><a href="#deviation/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">deviation</span><span class="p" data-group-id="9168645952-1">(</span><span class="p" data-group-id="9168645952-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="9168645952-2">]</span><span class="p" data-group-id="9168645952-1">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9168645952-3">(</span><span class="p" data-group-id="9168645952-4">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">1.5</span><span class="p" data-group-id="9168645952-4">]</span><span class="p" data-group-id="9168645952-3">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">deviation</span><span class="p" data-group-id="3795278133-5">(</span><span class="p" data-group-id="3795278133-6">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3795278133-6">]</span><span class="p" data-group-id="3795278133-5">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3795278133-7">(</span><span class="p" data-group-id="3795278133-8">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p" data-group-id="3795278133-8">]</span><span class="p" data-group-id="3795278133-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">deviation</span><span class="p" data-group-id="9168645952-5">(</span><span class="p" data-group-id="9168645952-6">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9168645952-6">]</span><span class="p" data-group-id="9168645952-5">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9168645952-7">(</span><span class="p" data-group-id="9168645952-8">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p" data-group-id="9168645952-8">]</span><span class="p" data-group-id="9168645952-7">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">deviation</span><span class="p" data-group-id="3795278133-9">(</span><span class="p" data-group-id="3795278133-10">[</span><span class="p" data-group-id="3795278133-10">]</span><span class="p" data-group-id="3795278133-9">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3795278133-11">(</span><span class="p" data-group-id="3795278133-11">)</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">deviation</span><span class="p" data-group-id="9168645952-9">(</span><span class="p" data-group-id="9168645952-10">[</span><span class="p" data-group-id="9168645952-10">]</span><span class="p" data-group-id="9168645952-9">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9168645952-11">(</span><span class="p" data-group-id="9168645952-11">)</span></code></pre>
   </section>
 </section>
 <section class="detail" id="max/1">
 
   <div class="detail-header">
-    <a href="#max/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#max/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">max(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L102" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">max(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L102" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -373,34 +351,28 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Finds the maximum value in a list using the <code class="inline">Max</code> monoid.</p><p>Returns <code class="inline">Float.min_finite()</code> if the list is empty.</p><h2 id="max/1-examples" class="section-heading">
-  <a href="#max/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="8203494041-1">(</span><span class="p" data-group-id="8203494041-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="8203494041-2">]</span><span class="p" data-group-id="8203494041-1">)</span><span class="w">
+<p>Finds the maximum value in a list using the <code class="inline">Max</code> monoid.</p><p>Returns <code class="inline">Float.min_finite()</code> if the list is empty.</p><h2 id="max/1-examples" class="section-heading"><a href="#max/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="5315552055-1">(</span><span class="p" data-group-id="5315552055-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5315552055-2">]</span><span class="p" data-group-id="5315552055-1">)</span><span class="w">
 </span><span class="mi">7</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="8203494041-3">(</span><span class="p" data-group-id="8203494041-4">[</span><span class="p" data-group-id="8203494041-4">]</span><span class="p" data-group-id="8203494041-3">)</span><span class="w">
-</span><span class="nc">Float</span><span class="o">.</span><span class="n">min_finite</span><span class="p" data-group-id="8203494041-5">(</span><span class="p" data-group-id="8203494041-5">)</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="5315552055-3">(</span><span class="p" data-group-id="5315552055-4">[</span><span class="p" data-group-id="5315552055-4">]</span><span class="p" data-group-id="5315552055-3">)</span><span class="w">
+</span><span class="nc">Float</span><span class="o">.</span><span class="n">min_finite</span><span class="p" data-group-id="5315552055-5">(</span><span class="p" data-group-id="5315552055-5">)</span></code></pre>
   </section>
 </section>
 <section class="detail" id="max/2">
 
   <div class="detail-header">
-    <a href="#max/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#max/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">max(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L84" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">max(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L84" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -411,34 +383,28 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Returns the maximum of two numbers using the <code class="inline">Max</code> monoid.</p><h2 id="max/2-examples" class="section-heading">
-  <a href="#max/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="8615835964-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="8615835964-1">)</span><span class="w">
+<p>Returns the maximum of two numbers using the <code class="inline">Max</code> monoid.</p><h2 id="max/2-examples" class="section-heading"><a href="#max/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="3732677332-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="3732677332-1">)</span><span class="w">
 </span><span class="mi">7</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="8615835964-2">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="8615835964-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="3732677332-2">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="3732677332-2">)</span><span class="w">
 </span><span class="o">-</span><span class="mi">1</span></code></pre>
   </section>
 </section>
 <section class="detail" id="mean/1">
 
   <div class="detail-header">
-    <a href="#mean/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#mean/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">mean(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L154" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">mean(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L154" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -449,34 +415,28 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Computes the arithmetic mean of a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="mean/1-examples" class="section-heading">
-  <a href="#mean/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">mean</span><span class="p" data-group-id="2091649647-1">(</span><span class="p" data-group-id="2091649647-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2091649647-2">]</span><span class="p" data-group-id="2091649647-1">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2091649647-3">(</span><span class="mf">2.5</span><span class="p" data-group-id="2091649647-3">)</span><span class="w">
+<p>Computes the arithmetic mean of a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="mean/1-examples" class="section-heading"><a href="#mean/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">mean</span><span class="p" data-group-id="1345557110-1">(</span><span class="p" data-group-id="1345557110-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1345557110-2">]</span><span class="p" data-group-id="1345557110-1">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1345557110-3">(</span><span class="mf">2.5</span><span class="p" data-group-id="1345557110-3">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">mean</span><span class="p" data-group-id="2091649647-4">(</span><span class="p" data-group-id="2091649647-5">[</span><span class="p" data-group-id="2091649647-5">]</span><span class="p" data-group-id="2091649647-4">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2091649647-6">(</span><span class="p" data-group-id="2091649647-6">)</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">mean</span><span class="p" data-group-id="1345557110-4">(</span><span class="p" data-group-id="1345557110-5">[</span><span class="p" data-group-id="1345557110-5">]</span><span class="p" data-group-id="1345557110-4">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1345557110-6">(</span><span class="p" data-group-id="1345557110-6">)</span></code></pre>
   </section>
 </section>
 <section class="detail" id="min/1">
 
   <div class="detail-header">
-    <a href="#min/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#min/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">min(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L136" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">min(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L136" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -487,34 +447,28 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Finds the minimum value in a list using the <code class="inline">Min</code> monoid.</p><p>Returns <code class="inline">Float.max_finite()</code> if the list is empty.</p><h2 id="min/1-examples" class="section-heading">
-  <a href="#min/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="7124546004-1">(</span><span class="p" data-group-id="7124546004-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7124546004-2">]</span><span class="p" data-group-id="7124546004-1">)</span><span class="w">
+<p>Finds the minimum value in a list using the <code class="inline">Min</code> monoid.</p><p>Returns <code class="inline">Float.max_finite()</code> if the list is empty.</p><h2 id="min/1-examples" class="section-heading"><a href="#min/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="9171068488-1">(</span><span class="p" data-group-id="9171068488-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9171068488-2">]</span><span class="p" data-group-id="9171068488-1">)</span><span class="w">
 </span><span class="mi">2</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="7124546004-3">(</span><span class="p" data-group-id="7124546004-4">[</span><span class="p" data-group-id="7124546004-4">]</span><span class="p" data-group-id="7124546004-3">)</span><span class="w">
-</span><span class="nc">Float</span><span class="o">.</span><span class="n">max_finite</span><span class="p" data-group-id="7124546004-5">(</span><span class="p" data-group-id="7124546004-5">)</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="9171068488-3">(</span><span class="p" data-group-id="9171068488-4">[</span><span class="p" data-group-id="9171068488-4">]</span><span class="p" data-group-id="9171068488-3">)</span><span class="w">
+</span><span class="nc">Float</span><span class="o">.</span><span class="n">max_finite</span><span class="p" data-group-id="9171068488-5">(</span><span class="p" data-group-id="9171068488-5">)</span></code></pre>
   </section>
 </section>
 <section class="detail" id="min/2">
 
   <div class="detail-header">
-    <a href="#min/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#min/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">min(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L118" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">min(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L118" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -525,34 +479,28 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Returns the minimum of two numbers using the <code class="inline">Min</code> monoid.</p><h2 id="min/2-examples" class="section-heading">
-  <a href="#min/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="7597296384-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="7597296384-1">)</span><span class="w">
+<p>Returns the minimum of two numbers using the <code class="inline">Min</code> monoid.</p><h2 id="min/2-examples" class="section-heading"><a href="#min/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="8347741255-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="8347741255-1">)</span><span class="w">
 </span><span class="mi">3</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="7597296384-2">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="7597296384-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="8347741255-2">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="8347741255-2">)</span><span class="w">
 </span><span class="o">-</span><span class="mi">5</span></code></pre>
   </section>
 </section>
 <section class="detail" id="product/1">
 
   <div class="detail-header">
-    <a href="#product/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#product/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">product(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L68" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">product(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L68" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -563,34 +511,28 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Multiplies a list of numbers using the <code class="inline">Product</code> monoid.</p><h2 id="product/1-examples" class="section-heading">
-  <a href="#product/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="8579779891-1">(</span><span class="p" data-group-id="8579779891-2">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="8579779891-2">]</span><span class="p" data-group-id="8579779891-1">)</span><span class="w">
+<p>Multiplies a list of numbers using the <code class="inline">Product</code> monoid.</p><h2 id="product/1-examples" class="section-heading"><a href="#product/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="8845157535-1">(</span><span class="p" data-group-id="8845157535-2">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="8845157535-2">]</span><span class="p" data-group-id="8845157535-1">)</span><span class="w">
 </span><span class="mi">24</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="8579779891-3">(</span><span class="p" data-group-id="8579779891-4">[</span><span class="p" data-group-id="8579779891-4">]</span><span class="p" data-group-id="8579779891-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="8845157535-3">(</span><span class="p" data-group-id="8845157535-4">[</span><span class="p" data-group-id="8845157535-4">]</span><span class="p" data-group-id="8845157535-3">)</span><span class="w">
 </span><span class="mi">1</span></code></pre>
   </section>
 </section>
 <section class="detail" id="product/2">
 
   <div class="detail-header">
-    <a href="#product/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#product/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">product(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L52" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">product(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L52" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -601,31 +543,25 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Multiplies two numbers using the <code class="inline">Product</code> monoid.</p><h2 id="product/2-examples" class="section-heading">
-  <a href="#product/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="4777055957-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4777055957-1">)</span><span class="w">
+<p>Multiplies two numbers using the <code class="inline">Product</code> monoid.</p><h2 id="product/2-examples" class="section-heading"><a href="#product/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">product</span><span class="p" data-group-id="9056100745-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="9056100745-1">)</span><span class="w">
 </span><span class="mi">12</span></code></pre>
   </section>
 </section>
 <section class="detail" id="range/1">
 
   <div class="detail-header">
-    <a href="#range/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#range/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">range(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L174" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">range(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L174" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -636,34 +572,28 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Computes the range (difference between max and min) of a list.</p><p>Returns <code class="inline">nothing()</code> if the list is empty.</p><h2 id="range/1-examples" class="section-heading">
-  <a href="#range/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">range</span><span class="p" data-group-id="9472724556-1">(</span><span class="p" data-group-id="9472724556-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9472724556-2">]</span><span class="p" data-group-id="9472724556-1">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9472724556-3">(</span><span class="mi">5</span><span class="p" data-group-id="9472724556-3">)</span><span class="w">
+<p>Computes the range (difference between max and min) of a list.</p><p>Returns <code class="inline">nothing()</code> if the list is empty.</p><h2 id="range/1-examples" class="section-heading"><a href="#range/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">range</span><span class="p" data-group-id="4367962954-1">(</span><span class="p" data-group-id="4367962954-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4367962954-2">]</span><span class="p" data-group-id="4367962954-1">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4367962954-3">(</span><span class="mi">5</span><span class="p" data-group-id="4367962954-3">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">range</span><span class="p" data-group-id="9472724556-4">(</span><span class="p" data-group-id="9472724556-5">[</span><span class="p" data-group-id="9472724556-5">]</span><span class="p" data-group-id="9472724556-4">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9472724556-6">(</span><span class="p" data-group-id="9472724556-6">)</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">range</span><span class="p" data-group-id="4367962954-4">(</span><span class="p" data-group-id="4367962954-5">[</span><span class="p" data-group-id="4367962954-5">]</span><span class="p" data-group-id="4367962954-4">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4367962954-6">(</span><span class="p" data-group-id="4367962954-6">)</span></code></pre>
   </section>
 </section>
 <section class="detail" id="square/1">
 
   <div class="detail-header">
-    <a href="#square/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#square/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">square(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L193" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">square(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L193" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -676,34 +606,28 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Computes the square of a number.</p><h2 id="square/1-examples" class="section-heading">
-  <a href="#square/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">square</span><span class="p" data-group-id="1431553515-1">(</span><span class="mi">3</span><span class="p" data-group-id="1431553515-1">)</span><span class="w">
+<p>Computes the square of a number.</p><h2 id="square/1-examples" class="section-heading"><a href="#square/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">square</span><span class="p" data-group-id="2185214818-1">(</span><span class="mi">3</span><span class="p" data-group-id="2185214818-1">)</span><span class="w">
 </span><span class="mi">9</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">square</span><span class="p" data-group-id="1431553515-2">(</span><span class="o">-</span><span class="mi">4</span><span class="p" data-group-id="1431553515-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">square</span><span class="p" data-group-id="2185214818-2">(</span><span class="o">-</span><span class="mi">4</span><span class="p" data-group-id="2185214818-2">)</span><span class="w">
 </span><span class="mi">16</span></code></pre>
   </section>
 </section>
 <section class="detail" id="std_dev/1">
 
   <div class="detail-header">
-    <a href="#std_dev/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#std_dev/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">std_dev(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L287" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">std_dev(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L287" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -714,37 +638,31 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Computes the standard deviation of a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="std_dev/1-examples" class="section-heading">
-  <a href="#std_dev/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">std_dev</span><span class="p" data-group-id="4437038514-1">(</span><span class="p" data-group-id="4437038514-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4437038514-2">]</span><span class="p" data-group-id="4437038514-1">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4437038514-3">(</span><span class="mf">1.118033988749895</span><span class="p" data-group-id="4437038514-3">)</span><span class="w">
+<p>Computes the standard deviation of a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="std_dev/1-examples" class="section-heading"><a href="#std_dev/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">std_dev</span><span class="p" data-group-id="4793839722-1">(</span><span class="p" data-group-id="4793839722-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4793839722-2">]</span><span class="p" data-group-id="4793839722-1">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4793839722-3">(</span><span class="mf">1.118033988749895</span><span class="p" data-group-id="4793839722-3">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">std_dev</span><span class="p" data-group-id="4437038514-4">(</span><span class="p" data-group-id="4437038514-5">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4437038514-5">]</span><span class="p" data-group-id="4437038514-4">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4437038514-6">(</span><span class="mf">0.0</span><span class="p" data-group-id="4437038514-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">std_dev</span><span class="p" data-group-id="4793839722-4">(</span><span class="p" data-group-id="4793839722-5">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4793839722-5">]</span><span class="p" data-group-id="4793839722-4">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4793839722-6">(</span><span class="mf">0.0</span><span class="p" data-group-id="4793839722-6">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">std_dev</span><span class="p" data-group-id="4437038514-7">(</span><span class="p" data-group-id="4437038514-8">[</span><span class="p" data-group-id="4437038514-8">]</span><span class="p" data-group-id="4437038514-7">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4437038514-9">(</span><span class="p" data-group-id="4437038514-9">)</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">std_dev</span><span class="p" data-group-id="4793839722-7">(</span><span class="p" data-group-id="4793839722-8">[</span><span class="p" data-group-id="4793839722-8">]</span><span class="p" data-group-id="4793839722-7">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4793839722-9">(</span><span class="p" data-group-id="4793839722-9">)</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sum/1">
 
   <div class="detail-header">
-    <a href="#sum/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#sum/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">sum(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L39" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">sum(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L39" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -755,34 +673,28 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Sums a list of numbers using the <code class="inline">Sum</code> monoid.</p><h2 id="sum/1-examples" class="section-heading">
-  <a href="#sum/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="5979378081-1">(</span><span class="p" data-group-id="5979378081-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="5979378081-2">]</span><span class="p" data-group-id="5979378081-1">)</span><span class="w">
+<p>Sums a list of numbers using the <code class="inline">Sum</code> monoid.</p><h2 id="sum/1-examples" class="section-heading"><a href="#sum/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="3763287987-1">(</span><span class="p" data-group-id="3763287987-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="3763287987-2">]</span><span class="p" data-group-id="3763287987-1">)</span><span class="w">
 </span><span class="mi">6</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="5979378081-3">(</span><span class="p" data-group-id="5979378081-4">[</span><span class="p" data-group-id="5979378081-4">]</span><span class="p" data-group-id="5979378081-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="3763287987-3">(</span><span class="p" data-group-id="3763287987-4">[</span><span class="p" data-group-id="3763287987-4">]</span><span class="p" data-group-id="3763287987-3">)</span><span class="w">
 </span><span class="mi">0</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sum/2">
 
   <div class="detail-header">
-    <a href="#sum/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#sum/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">sum(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L23" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">sum(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L23" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -793,31 +705,25 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Sums two numbers using the <code class="inline">Sum</code> monoid.</p><h2 id="sum/2-examples" class="section-heading">
-  <a href="#sum/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="5916343226-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5916343226-1">)</span><span class="w">
+<p>Sums two numbers using the <code class="inline">Sum</code> monoid.</p><h2 id="sum/2-examples" class="section-heading"><a href="#sum/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum</span><span class="p" data-group-id="6360286818-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6360286818-1">)</span><span class="w">
 </span><span class="mi">3</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sum_of_squares/1">
 
   <div class="detail-header">
-    <a href="#sum_of_squares/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#sum_of_squares/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">sum_of_squares(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L216" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">sum_of_squares(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L216" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -828,37 +734,31 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Computes the sum of squares of a list of numbers.</p><p>Returns <code class="inline">0</code> if the list is empty.</p><h2 id="sum_of_squares/1-examples" class="section-heading">
-  <a href="#sum_of_squares/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum_of_squares</span><span class="p" data-group-id="4617766995-1">(</span><span class="p" data-group-id="4617766995-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4617766995-2">]</span><span class="p" data-group-id="4617766995-1">)</span><span class="w">
+<p>Computes the sum of squares of a list of numbers.</p><p>Returns <code class="inline">0</code> if the list is empty.</p><h2 id="sum_of_squares/1-examples" class="section-heading"><a href="#sum_of_squares/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum_of_squares</span><span class="p" data-group-id="7648583487-1">(</span><span class="p" data-group-id="7648583487-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7648583487-2">]</span><span class="p" data-group-id="7648583487-1">)</span><span class="w">
 </span><span class="mi">14</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum_of_squares</span><span class="p" data-group-id="4617766995-3">(</span><span class="p" data-group-id="4617766995-4">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4617766995-4">]</span><span class="p" data-group-id="4617766995-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum_of_squares</span><span class="p" data-group-id="7648583487-3">(</span><span class="p" data-group-id="7648583487-4">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7648583487-4">]</span><span class="p" data-group-id="7648583487-3">)</span><span class="w">
 </span><span class="mi">29</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum_of_squares</span><span class="p" data-group-id="4617766995-5">(</span><span class="p" data-group-id="4617766995-6">[</span><span class="p" data-group-id="4617766995-6">]</span><span class="p" data-group-id="4617766995-5">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">sum_of_squares</span><span class="p" data-group-id="7648583487-5">(</span><span class="p" data-group-id="7648583487-6">[</span><span class="p" data-group-id="7648583487-6">]</span><span class="p" data-group-id="7648583487-5">)</span><span class="w">
 </span><span class="mi">0</span></code></pre>
   </section>
 </section>
 <section class="detail" id="variance/1">
 
   <div class="detail-header">
-    <a href="#variance/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#variance/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">variance(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/math.ex#L262" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">variance(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/math.ex#L262" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -869,20 +769,14 @@ such as addition and multiplication over values or lists of values.</p>
 
       </div>
 
-<p>Computes the variance of a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="variance/1-examples" class="section-heading">
-  <a href="#variance/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">variance</span><span class="p" data-group-id="5971536030-1">(</span><span class="p" data-group-id="5971536030-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="5971536030-2">]</span><span class="p" data-group-id="5971536030-1">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="5971536030-3">(</span><span class="mf">1.25</span><span class="p" data-group-id="5971536030-3">)</span><span class="w">
+<p>Computes the variance of a list of numbers.</p><p>Returns <code class="inline">Nothing</code> if the list is empty.</p><h2 id="variance/1-examples" class="section-heading"><a href="#variance/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">variance</span><span class="p" data-group-id="4057416460-1">(</span><span class="p" data-group-id="4057416460-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4057416460-2">]</span><span class="p" data-group-id="4057416460-1">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4057416460-3">(</span><span class="mf">1.25</span><span class="p" data-group-id="4057416460-3">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">variance</span><span class="p" data-group-id="5971536030-4">(</span><span class="p" data-group-id="5971536030-5">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5971536030-5">]</span><span class="p" data-group-id="5971536030-4">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="5971536030-6">(</span><span class="mf">0.0</span><span class="p" data-group-id="5971536030-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">variance</span><span class="p" data-group-id="4057416460-4">(</span><span class="p" data-group-id="4057416460-5">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4057416460-5">]</span><span class="p" data-group-id="4057416460-4">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4057416460-6">(</span><span class="mf">0.0</span><span class="p" data-group-id="4057416460-6">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">variance</span><span class="p" data-group-id="5971536030-7">(</span><span class="p" data-group-id="5971536030-8">[</span><span class="p" data-group-id="5971536030-8">]</span><span class="p" data-group-id="5971536030-7">)</span><span class="w">
-</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="5971536030-9">(</span><span class="p" data-group-id="5971536030-9">)</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Math</span><span class="o">.</span><span class="n">variance</span><span class="p" data-group-id="4057416460-7">(</span><span class="p" data-group-id="4057416460-8">[</span><span class="p" data-group-id="4057416460-8">]</span><span class="p" data-group-id="4057416460-7">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4057416460-9">(</span><span class="p" data-group-id="4057416460-9">)</span></code></pre>
   </section>
 </section>
 
@@ -890,34 +784,36 @@ such as addition and multiplication over values or lists of values.</p>
   </section>
 
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

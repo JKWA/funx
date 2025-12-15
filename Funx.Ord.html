@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Funx.Ord — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Funx.Ord — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Ord.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="modules" class="page-protocol">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-protocol" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,27 +93,23 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Ord</span> <small>protocol</small>
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/ord.ex#L1" title="View Source" class="icon-action" rel="help">
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/ord.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Ord</span> <small>protocol</small>
-    <small class="app-vsn" translate="no">(funx v0.3.0)</small>
-
-  </h1>
+  </div>
 
 
     <section id="moduledoc">
-<p>The <a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a> protocol defines a set of comparison functions: <a href="#lt?/2"><code class="inline">lt?/2</code></a>, <a href="#le?/2"><code class="inline">le?/2</code></a>, <a href="#gt?/2"><code class="inline">gt?/2</code></a>, and <a href="#ge?/2"><code class="inline">ge?/2</code></a>.</p><p>This protocol is intended for types that can be ordered, allowing values to be compared for their relative positions in a total order.</p><p>By implementing this protocol, you can provide custom logic for how values of a certain type are compared.</p><h2 id="module-fallback" class="section-heading">
-  <a href="#module-fallback" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Fallback</span>
-</h2>
-<p>The protocol uses <code class="inline">@fallback_to_any true</code>, which means if a specific type does not implement <a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>,
+<p>The <a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a> protocol defines a set of comparison functions: <a href="#lt?/2"><code class="inline">lt?/2</code></a>, <a href="#le?/2"><code class="inline">le?/2</code></a>, <a href="#gt?/2"><code class="inline">gt?/2</code></a>, and <a href="#ge?/2"><code class="inline">ge?/2</code></a>.</p><p>This protocol is intended for types that can be ordered, allowing values to be compared for their relative positions in a total order.</p><p>By implementing this protocol, you can provide custom logic for how values of a certain type are compared.</p><h2 id="module-fallback" class="section-heading"><a href="#module-fallback" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Fallback</span></h2><p>The protocol uses <code class="inline">@fallback_to_any true</code>, which means if a specific type does not implement <a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>,
 the default implementation for <code class="inline">Any</code> will be used, which relies on Elixir's built-in comparison operators.</p>
     </section>
 
@@ -152,7 +129,7 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
 
       </div>
 
@@ -168,7 +145,7 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#ge?/2" data-no-tooltip translate="no">ge?(a, b)</a>
+        <a href="#ge?/2" data-no-tooltip="" translate="no">ge?(a, b)</a>
 
       </div>
 
@@ -178,7 +155,7 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#gt?/2" data-no-tooltip translate="no">gt?(a, b)</a>
+        <a href="#gt?/2" data-no-tooltip="" translate="no">gt?(a, b)</a>
 
       </div>
 
@@ -188,7 +165,7 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#le?/2" data-no-tooltip translate="no">le?(a, b)</a>
+        <a href="#le?/2" data-no-tooltip="" translate="no">le?(a, b)</a>
 
       </div>
 
@@ -198,7 +175,7 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#lt?/2" data-no-tooltip translate="no">lt?(a, b)</a>
+        <a href="#lt?/2" data-no-tooltip="" translate="no">lt?(a, b)</a>
 
       </div>
 
@@ -218,22 +195,23 @@ the default implementation for <code class="inline">Any</code> will be used, whi
       </a>
       <span class="text">Types</span>
     </h1>
+
     <div class="types-list">
 <section class="detail" id="t:t/0">
 
   <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t()</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/ord.ex#L1" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t()</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/ord.ex#L1" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -258,144 +236,121 @@ the default implementation for <code class="inline">Any</code> will be used, whi
       </a>
       <span class="text">Functions</span>
     </h1>
+
     <div class="functions-list">
 <section class="detail" id="ge?/2">
 
   <div class="detail-header">
-    <a href="#ge?/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#ge?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">ge?(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/ord.ex#L78" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">ge?(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/ord.ex#L78" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
 
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is greater than or equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="ge?/2-examples" class="section-heading">
-  <a href="#ge?/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">ge?</span><span class="p" data-group-id="6979681932-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6979681932-2">(</span><span class="mi">5</span><span class="p" data-group-id="6979681932-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6979681932-3">(</span><span class="mi">3</span><span class="p" data-group-id="6979681932-3">)</span><span class="p" data-group-id="6979681932-1">)</span><span class="w">
+<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is greater than or equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="ge?/2-examples" class="section-heading"><a href="#ge?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">ge?</span><span class="p" data-group-id="9677942954-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9677942954-2">(</span><span class="mi">5</span><span class="p" data-group-id="9677942954-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9677942954-3">(</span><span class="mi">3</span><span class="p" data-group-id="9677942954-3">)</span><span class="p" data-group-id="9677942954-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">ge?</span><span class="p" data-group-id="6979681932-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6979681932-5">(</span><span class="mi">5</span><span class="p" data-group-id="6979681932-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6979681932-6">(</span><span class="mi">5</span><span class="p" data-group-id="6979681932-6">)</span><span class="p" data-group-id="6979681932-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">ge?</span><span class="p" data-group-id="9677942954-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9677942954-5">(</span><span class="mi">5</span><span class="p" data-group-id="9677942954-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9677942954-6">(</span><span class="mi">5</span><span class="p" data-group-id="9677942954-6">)</span><span class="p" data-group-id="9677942954-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">ge?</span><span class="p" data-group-id="6979681932-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6979681932-8">(</span><span class="mi">3</span><span class="p" data-group-id="6979681932-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6979681932-9">(</span><span class="mi">5</span><span class="p" data-group-id="6979681932-9">)</span><span class="p" data-group-id="6979681932-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">ge?</span><span class="p" data-group-id="9677942954-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9677942954-8">(</span><span class="mi">3</span><span class="p" data-group-id="9677942954-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9677942954-9">(</span><span class="mi">5</span><span class="p" data-group-id="9677942954-9">)</span><span class="p" data-group-id="9677942954-7">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="gt?/2">
 
   <div class="detail-header">
-    <a href="#gt?/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#gt?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">gt?(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/ord.ex#L62" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">gt?(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/ord.ex#L62" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
 
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is greater than <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="gt?/2-examples" class="section-heading">
-  <a href="#gt?/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="3514067122-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3514067122-2">(</span><span class="mi">5</span><span class="p" data-group-id="3514067122-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3514067122-3">(</span><span class="mi">3</span><span class="p" data-group-id="3514067122-3">)</span><span class="p" data-group-id="3514067122-1">)</span><span class="w">
+<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is greater than <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="gt?/2-examples" class="section-heading"><a href="#gt?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="7934267796-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7934267796-2">(</span><span class="mi">5</span><span class="p" data-group-id="7934267796-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7934267796-3">(</span><span class="mi">3</span><span class="p" data-group-id="7934267796-3">)</span><span class="p" data-group-id="7934267796-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="3514067122-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3514067122-5">(</span><span class="mi">3</span><span class="p" data-group-id="3514067122-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3514067122-6">(</span><span class="mi">5</span><span class="p" data-group-id="3514067122-6">)</span><span class="p" data-group-id="3514067122-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="7934267796-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7934267796-5">(</span><span class="mi">3</span><span class="p" data-group-id="7934267796-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7934267796-6">(</span><span class="mi">5</span><span class="p" data-group-id="7934267796-6">)</span><span class="p" data-group-id="7934267796-4">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="3514067122-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3514067122-8">(</span><span class="mi">3</span><span class="p" data-group-id="3514067122-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3514067122-9">(</span><span class="p" data-group-id="3514067122-9">)</span><span class="p" data-group-id="3514067122-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="7934267796-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7934267796-8">(</span><span class="mi">3</span><span class="p" data-group-id="7934267796-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7934267796-9">(</span><span class="p" data-group-id="7934267796-9">)</span><span class="p" data-group-id="7934267796-7">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
 <section class="detail" id="le?/2">
 
   <div class="detail-header">
-    <a href="#le?/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#le?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">le?(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/ord.ex#L46" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">le?(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/ord.ex#L46" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
 
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is less than or equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="le?/2-examples" class="section-heading">
-  <a href="#le?/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">le?</span><span class="p" data-group-id="8720675505-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8720675505-2">(</span><span class="mi">3</span><span class="p" data-group-id="8720675505-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8720675505-3">(</span><span class="mi">5</span><span class="p" data-group-id="8720675505-3">)</span><span class="p" data-group-id="8720675505-1">)</span><span class="w">
+<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is less than or equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="le?/2-examples" class="section-heading"><a href="#le?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">le?</span><span class="p" data-group-id="9220389809-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9220389809-2">(</span><span class="mi">3</span><span class="p" data-group-id="9220389809-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9220389809-3">(</span><span class="mi">5</span><span class="p" data-group-id="9220389809-3">)</span><span class="p" data-group-id="9220389809-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">le?</span><span class="p" data-group-id="8720675505-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8720675505-5">(</span><span class="mi">5</span><span class="p" data-group-id="8720675505-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8720675505-6">(</span><span class="mi">5</span><span class="p" data-group-id="8720675505-6">)</span><span class="p" data-group-id="8720675505-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">le?</span><span class="p" data-group-id="9220389809-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9220389809-5">(</span><span class="mi">5</span><span class="p" data-group-id="9220389809-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9220389809-6">(</span><span class="mi">5</span><span class="p" data-group-id="9220389809-6">)</span><span class="p" data-group-id="9220389809-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">le?</span><span class="p" data-group-id="8720675505-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8720675505-8">(</span><span class="mi">5</span><span class="p" data-group-id="8720675505-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8720675505-9">(</span><span class="mi">3</span><span class="p" data-group-id="8720675505-9">)</span><span class="p" data-group-id="8720675505-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">le?</span><span class="p" data-group-id="9220389809-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9220389809-8">(</span><span class="mi">5</span><span class="p" data-group-id="9220389809-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9220389809-9">(</span><span class="mi">3</span><span class="p" data-group-id="9220389809-9">)</span><span class="p" data-group-id="9220389809-7">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="lt?/2">
 
   <div class="detail-header">
-    <a href="#lt?/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#lt?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">lt?(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/ord.ex#L30" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">lt?(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/ord.ex#L30" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
 
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is less than <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="lt?/2-examples" class="section-heading">
-  <a href="#lt?/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5008404438-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5008404438-2">(</span><span class="mi">3</span><span class="p" data-group-id="5008404438-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5008404438-3">(</span><span class="mi">5</span><span class="p" data-group-id="5008404438-3">)</span><span class="p" data-group-id="5008404438-1">)</span><span class="w">
+<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is less than <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="lt?/2-examples" class="section-heading"><a href="#lt?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5103431958-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5103431958-2">(</span><span class="mi">3</span><span class="p" data-group-id="5103431958-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5103431958-3">(</span><span class="mi">5</span><span class="p" data-group-id="5103431958-3">)</span><span class="p" data-group-id="5103431958-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5008404438-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5008404438-5">(</span><span class="mi">5</span><span class="p" data-group-id="5008404438-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5008404438-6">(</span><span class="mi">3</span><span class="p" data-group-id="5008404438-6">)</span><span class="p" data-group-id="5008404438-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5103431958-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5103431958-5">(</span><span class="mi">5</span><span class="p" data-group-id="5103431958-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5103431958-6">(</span><span class="mi">3</span><span class="p" data-group-id="5103431958-6">)</span><span class="p" data-group-id="5103431958-4">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5008404438-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="5008404438-8">(</span><span class="p" data-group-id="5008404438-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5008404438-9">(</span><span class="mi">3</span><span class="p" data-group-id="5008404438-9">)</span><span class="p" data-group-id="5008404438-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5103431958-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="5103431958-8">(</span><span class="p" data-group-id="5103431958-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5103431958-9">(</span><span class="mi">3</span><span class="p" data-group-id="5103431958-9">)</span><span class="p" data-group-id="5103431958-7">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -404,34 +359,36 @@ the default implementation for <code class="inline">Any</code> will be used, whi
   </section>
 
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Funx.Macros — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Funx.Macros — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Macros.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="modules" class="page-module">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-module" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,17 +93,19 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Macros</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/macros.ex#L1" title="View Source" class="icon-action" rel="help">
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/macros.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Macros</span> 
-    <small class="app-vsn" translate="no">(funx v0.3.0)</small>
-
-  </h1>
+  </div>
 
 
     <section id="moduledoc">
@@ -147,7 +130,7 @@ for custom structs by leveraging an existing field's comparison operations.</p>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#eq_for/2" data-no-tooltip translate="no">eq_for(for_struct, field)</a>
+        <a href="#eq_for/2" data-no-tooltip="" translate="no">eq_for(for_struct, field)</a>
 
       </div>
 
@@ -158,7 +141,7 @@ using the specified field as the basis for equality comparison.</p></div>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#ord_for/2" data-no-tooltip translate="no">ord_for(for_struct, field)</a>
+        <a href="#ord_for/2" data-no-tooltip="" translate="no">ord_for(for_struct, field)</a>
 
       </div>
 
@@ -179,88 +162,77 @@ using the specified field as the basis for ordering comparisons.</p></div>
       </a>
       <span class="text">Functions</span>
     </h1>
+
     <div class="functions-list">
 <section class="detail" id="eq_for/2">
 
   <div class="detail-header">
-    <a href="#eq_for/2" class="detail-link" data-no-tooltip title="Link to this macro">
+    <a href="#eq_for/2" class="detail-link" data-no-tooltip="" aria-label="Link to this macro">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this macro</span>
     </a>
-    <h1 class="signature" translate="no">eq_for(for_struct, field)</h1>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">eq_for(for_struct, field)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/macros.ex#L29" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+        <span class="note">(macro)</span>
 
 
-      <span class="note">(macro)</span>
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/macros.ex#L29" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
 
+    </div>
   </div>
 
   <section class="docstring">
 
 <p>Generates an implementation of the <a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a> protocol for the given struct,
-using the specified field as the basis for equality comparison.</p><h2 id="eq_for/2-examples" class="section-heading">
-  <a href="#eq_for/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="7730128927-1">do</span><span class="w">
-  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="7730128927-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="7730128927-2">]</span><span class="w">
-</span><span class="k" data-group-id="7730128927-1">end</span><span class="w">
+using the specified field as the basis for equality comparison.</p><h2 id="eq_for/2-examples" class="section-heading"><a href="#eq_for/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="7404824792-1">do</span><span class="w">
+  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="7404824792-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="7404824792-2">]</span><span class="w">
+</span><span class="k" data-group-id="7404824792-1">end</span><span class="w">
 
 </span><span class="kn">require</span><span class="w"> </span><span class="nc">Funx.Macros</span><span class="w">
-</span><span class="nc">Funx.Macros</span><span class="o">.</span><span class="n">eq_for</span><span class="p" data-group-id="7730128927-3">(</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="7730128927-3">)</span><span class="w">
+</span><span class="nc">Funx.Macros</span><span class="o">.</span><span class="n">eq_for</span><span class="p" data-group-id="7404824792-3">(</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="7404824792-3">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="7730128927-4">(</span><span class="p" data-group-id="7730128927-5">%</span><span class="nc" data-group-id="7730128927-5">Person</span><span class="p" data-group-id="7730128927-5">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7730128927-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7730128927-6">%</span><span class="nc" data-group-id="7730128927-6">Person</span><span class="p" data-group-id="7730128927-6">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7730128927-6">}</span><span class="p" data-group-id="7730128927-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="7404824792-4">(</span><span class="p" data-group-id="7404824792-5">%</span><span class="nc" data-group-id="7404824792-5">Person</span><span class="p" data-group-id="7404824792-5">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7404824792-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7404824792-6">%</span><span class="nc" data-group-id="7404824792-6">Person</span><span class="p" data-group-id="7404824792-6">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7404824792-6">}</span><span class="p" data-group-id="7404824792-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="7730128927-7">(</span><span class="p" data-group-id="7730128927-8">%</span><span class="nc" data-group-id="7730128927-8">Person</span><span class="p" data-group-id="7730128927-8">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="7730128927-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7730128927-9">%</span><span class="nc" data-group-id="7730128927-9">Person</span><span class="p" data-group-id="7730128927-9">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7730128927-9">}</span><span class="p" data-group-id="7730128927-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="7404824792-7">(</span><span class="p" data-group-id="7404824792-8">%</span><span class="nc" data-group-id="7404824792-8">Person</span><span class="p" data-group-id="7404824792-8">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="7404824792-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7404824792-9">%</span><span class="nc" data-group-id="7404824792-9">Person</span><span class="p" data-group-id="7404824792-9">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7404824792-9">}</span><span class="p" data-group-id="7404824792-7">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="ord_for/2">
 
   <div class="detail-header">
-    <a href="#ord_for/2" class="detail-link" data-no-tooltip title="Link to this macro">
+    <a href="#ord_for/2" class="detail-link" data-no-tooltip="" aria-label="Link to this macro">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this macro</span>
     </a>
-    <h1 class="signature" translate="no">ord_for(for_struct, field)</h1>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">ord_for(for_struct, field)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/macros.ex#L66" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+        <span class="note">(macro)</span>
 
 
-      <span class="note">(macro)</span>
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/macros.ex#L66" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
 
+    </div>
   </div>
 
   <section class="docstring">
 
 <p>Generates an implementation of the <a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a> protocol for the given struct,
-using the specified field as the basis for ordering comparisons.</p><h2 id="ord_for/2-examples" class="section-heading">
-  <a href="#ord_for/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="3507576787-1">do</span><span class="w">
-  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="3507576787-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="3507576787-2">]</span><span class="w">
-</span><span class="k" data-group-id="3507576787-1">end</span><span class="w">
+using the specified field as the basis for ordering comparisons.</p><h2 id="ord_for/2-examples" class="section-heading"><a href="#ord_for/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="4763849264-1">do</span><span class="w">
+  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="4763849264-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4763849264-2">]</span><span class="w">
+</span><span class="k" data-group-id="4763849264-1">end</span><span class="w">
 
 </span><span class="kn">require</span><span class="w"> </span><span class="nc">Funx.Macros</span><span class="w">
-</span><span class="nc">Funx.Macros</span><span class="o">.</span><span class="n">ord_for</span><span class="p" data-group-id="3507576787-3">(</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="3507576787-3">)</span><span class="w">
+</span><span class="nc">Funx.Macros</span><span class="o">.</span><span class="n">ord_for</span><span class="p" data-group-id="4763849264-3">(</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4763849264-3">)</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="3507576787-4">(</span><span class="p" data-group-id="3507576787-5">%</span><span class="nc" data-group-id="3507576787-5">Person</span><span class="p" data-group-id="3507576787-5">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="3507576787-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3507576787-6">%</span><span class="nc" data-group-id="3507576787-6">Person</span><span class="p" data-group-id="3507576787-6">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="3507576787-6">}</span><span class="p" data-group-id="3507576787-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="4763849264-4">(</span><span class="p" data-group-id="4763849264-5">%</span><span class="nc" data-group-id="4763849264-5">Person</span><span class="p" data-group-id="4763849264-5">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p" data-group-id="4763849264-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4763849264-6">%</span><span class="nc" data-group-id="4763849264-6">Person</span><span class="p" data-group-id="4763849264-6">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4763849264-6">}</span><span class="p" data-group-id="4763849264-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="3507576787-7">(</span><span class="p" data-group-id="3507576787-8">%</span><span class="nc" data-group-id="3507576787-8">Person</span><span class="p" data-group-id="3507576787-8">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">35</span><span class="p" data-group-id="3507576787-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3507576787-9">%</span><span class="nc" data-group-id="3507576787-9">Person</span><span class="p" data-group-id="3507576787-9">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="3507576787-9">}</span><span class="p" data-group-id="3507576787-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="4763849264-7">(</span><span class="p" data-group-id="4763849264-8">%</span><span class="nc" data-group-id="4763849264-8">Person</span><span class="p" data-group-id="4763849264-8">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">35</span><span class="p" data-group-id="4763849264-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4763849264-9">%</span><span class="nc" data-group-id="4763849264-9">Person</span><span class="p" data-group-id="4763849264-9">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4763849264-9">}</span><span class="p" data-group-id="4763849264-7">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -269,34 +241,36 @@ using the specified field as the basis for ordering comparisons.</p><h2 id="ord_
   </section>
 
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

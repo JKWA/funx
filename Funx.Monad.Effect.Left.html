@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Funx.Monad.Effect.Left — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Funx.Monad.Effect.Left — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Effect.Left.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="modules" class="page-module">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-module" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,27 +93,23 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Monad.Effect.Left</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/left.ex#L1" title="View Source" class="icon-action" rel="help">
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/left.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Monad.Effect.Left</span> 
-    <small class="app-vsn" translate="no">(funx v0.3.0)</small>
-
-  </h1>
+  </div>
 
 
     <section id="moduledoc">
-<p>Represents the <code class="inline">Left</code> variant of the <code class="inline">Effect</code> monad, used to model a failure or error in an asynchronous context.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> for monadic sequencing in a lazy, effectful context.</li><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>: Provides a string representation of the effect for debugging and inspection.</li></ul><p>A <code class="inline">Left</code> effect propagates its failure value without invoking further computations, preserving short-circuit behavior.</p><h2 id="module-reader-operations" class="section-heading">
-  <a href="#module-reader-operations" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Reader Operations</span>
-</h2>
-<ul><li><a href="#ask/1"><code class="inline">ask/1</code></a> – Returns the environment passed to <code class="inline">run/2</code> as a <code class="inline">Left</code>.</li><li><a href="#asks/2"><code class="inline">asks/2</code></a> – Applies a function to the environment passed to <code class="inline">run/2</code>, wrapping the result in a <code class="inline">Left</code>.</li></ul>
+<p>Represents the <code class="inline">Left</code> variant of the <code class="inline">Effect</code> monad, used to model a failure or error in an asynchronous context.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> for monadic sequencing in a lazy, effectful context.</li><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>: Provides a string representation of the effect for debugging and inspection.</li></ul><p>A <code class="inline">Left</code> effect propagates its failure value without invoking further computations, preserving short-circuit behavior.</p><h2 id="module-reader-operations" class="section-heading"><a href="#module-reader-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Reader Operations</span></h2><ul><li><a href="#ask/1"><code class="inline">ask/1</code></a> – Returns the environment passed to <code class="inline">run/2</code> as a <code class="inline">Left</code>.</li><li><a href="#asks/2"><code class="inline">asks/2</code></a> – Applies a function to the environment passed to <code class="inline">run/2</code>, wrapping the result in a <code class="inline">Left</code>.</li></ul>
     </section>
 
 </div>
@@ -151,7 +128,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
 
       </div>
 
@@ -159,7 +136,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/1" data-no-tooltip translate="no">t(left)</a>
+        <a href="#t:t/1" data-no-tooltip="" translate="no">t(left)</a>
 
       </div>
 
@@ -175,7 +152,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#ask/1" data-no-tooltip translate="no">ask(opts_or_context \\ [])</a>
+        <a href="#ask/1" data-no-tooltip="" translate="no">ask(opts_or_context \\ [])</a>
 
       </div>
 
@@ -185,7 +162,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#asks/2" data-no-tooltip translate="no">asks(f, opts_or_context \\ [])</a>
+        <a href="#asks/2" data-no-tooltip="" translate="no">asks(f, opts_or_context \\ [])</a>
 
       </div>
 
@@ -195,7 +172,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#pure/2" data-no-tooltip translate="no">pure(value, opts_or_context \\ [])</a>
+        <a href="#pure/2" data-no-tooltip="" translate="no">pure(value, opts_or_context \\ [])</a>
 
       </div>
 
@@ -215,22 +192,23 @@ Pages
       </a>
       <span class="text">Types</span>
     </h1>
+
     <div class="types-list">
 <section class="detail" id="t:t/0">
 
   <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t()</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/left.ex#L36" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t()</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/left.ex#L36" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -247,18 +225,18 @@ Pages
 <section class="detail" id="t:t/1">
 
   <div class="detail-header">
-    <a href="#t:t/1" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/1" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t(left)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/left.ex#L31" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t(left)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/left.ex#L31" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -288,24 +266,25 @@ either a <code class="inline">Task.t()</code> or a plain <code class="inline">Ei
       </a>
       <span class="text">Functions</span>
     </h1>
+
     <div class="functions-list">
 <section class="detail" id="ask/1">
 
     <span id="ask/0"></span>
 
   <div class="detail-header">
-    <a href="#ask/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#ask/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">ask(opts_or_context \\ [])</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/left.ex#L75" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">ask(opts_or_context \\ [])</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/left.ex#L75" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -317,15 +296,9 @@ either a <code class="inline">Task.t()</code> or a plain <code class="inline">Ei
       </div>
 
 <p>Returns a <a href="Funx.Monad.Effect.Left.html"><code class="inline">Funx.Monad.Effect.Left</code></a> that yields the environment passed to <a href="Funx.Monad.Effect.html#run/2"><code class="inline">Funx.Monad.Effect.run/2</code></a>.</p><p>This is the Reader-style <code class="inline">ask</code>, used to construct a failure from the full injected environment.
-It can be useful for debugging, instrumentation, or propagating request-scoped failure information.</p><h2 id="ask/1-example" class="section-heading">
-  <a href="#ask/1-example" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Example</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Left</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="4092225113-1">(</span><span class="p" data-group-id="4092225113-1">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4092225113-2">(</span><span class="p" data-group-id="4092225113-3">%{</span><span class="ss">error</span><span class="p">:</span><span class="w"> </span><span class="ss">:unauthorized</span><span class="p" data-group-id="4092225113-3">}</span><span class="p" data-group-id="4092225113-2">)</span><span class="w">
-</span><span class="p" data-group-id="4092225113-4">%</span><span class="nc" data-group-id="4092225113-4">Funx.Monad.Either.Left</span><span class="p" data-group-id="4092225113-4">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4092225113-5">%{</span><span class="ss">error</span><span class="p">:</span><span class="w"> </span><span class="ss">:unauthorized</span><span class="p" data-group-id="4092225113-5">}</span><span class="p" data-group-id="4092225113-4">}</span></code></pre>
+It can be useful for debugging, instrumentation, or propagating request-scoped failure information.</p><h2 id="ask/1-example" class="section-heading"><a href="#ask/1-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Left</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="2967416297-1">(</span><span class="p" data-group-id="2967416297-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="2967416297-2">(</span><span class="p" data-group-id="2967416297-3">%{</span><span class="ss">error</span><span class="p">:</span><span class="w"> </span><span class="ss">:unauthorized</span><span class="p" data-group-id="2967416297-3">}</span><span class="p" data-group-id="2967416297-2">)</span><span class="w">
+</span><span class="p" data-group-id="2967416297-4">%</span><span class="nc" data-group-id="2967416297-4">Funx.Monad.Either.Left</span><span class="p" data-group-id="2967416297-4">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2967416297-5">%{</span><span class="ss">error</span><span class="p">:</span><span class="w"> </span><span class="ss">:unauthorized</span><span class="p" data-group-id="2967416297-5">}</span><span class="p" data-group-id="2967416297-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="asks/2">
@@ -333,18 +306,18 @@ It can be useful for debugging, instrumentation, or propagating request-scoped f
     <span id="asks/1"></span>
 
   <div class="detail-header">
-    <a href="#asks/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#asks/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">asks(f, opts_or_context \\ [])</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/left.ex#L100" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">asks(f, opts_or_context \\ [])</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/left.ex#L100" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -357,15 +330,9 @@ when env: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term
       </div>
 
 <p>Returns a <a href="Funx.Monad.Effect.Left.html"><code class="inline">Funx.Monad.Effect.Left</code></a> that applies the given function to the environment passed to <a href="Funx.Monad.Effect.html#run/2"><code class="inline">Funx.Monad.Effect.run/2</code></a>.</p><p>This allows constructing a failure (<code class="inline">Left</code>) based on runtime input. It complements <code class="inline">Right.asks/2</code>,
-but marks the result as a failure rather than a success.</p><h2 id="asks/2-example" class="section-heading">
-  <a href="#asks/2-example" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Example</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Left</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="3366143042-1">(</span><span class="k" data-group-id="3366143042-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="3366143042-3">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="3366143042-4">[</span><span class="ss">:reason</span><span class="p" data-group-id="3366143042-4">]</span><span class="p" data-group-id="3366143042-3">}</span><span class="w"> </span><span class="k" data-group-id="3366143042-2">end</span><span class="p" data-group-id="3366143042-1">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="3366143042-5">(</span><span class="p" data-group-id="3366143042-6">%{</span><span class="ss">reason</span><span class="p">:</span><span class="w"> </span><span class="ss">:invalid</span><span class="p" data-group-id="3366143042-6">}</span><span class="p" data-group-id="3366143042-5">)</span><span class="w">
-</span><span class="p" data-group-id="3366143042-7">%</span><span class="nc" data-group-id="3366143042-7">Funx.Monad.Either.Left</span><span class="p" data-group-id="3366143042-7">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3366143042-8">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:invalid</span><span class="p" data-group-id="3366143042-8">}</span><span class="p" data-group-id="3366143042-7">}</span></code></pre>
+but marks the result as a failure rather than a success.</p><h2 id="asks/2-example" class="section-heading"><a href="#asks/2-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Left</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="4481858904-1">(</span><span class="k" data-group-id="4481858904-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="4481858904-3">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="4481858904-4">[</span><span class="ss">:reason</span><span class="p" data-group-id="4481858904-4">]</span><span class="p" data-group-id="4481858904-3">}</span><span class="w"> </span><span class="k" data-group-id="4481858904-2">end</span><span class="p" data-group-id="4481858904-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4481858904-5">(</span><span class="p" data-group-id="4481858904-6">%{</span><span class="ss">reason</span><span class="p">:</span><span class="w"> </span><span class="ss">:invalid</span><span class="p" data-group-id="4481858904-6">}</span><span class="p" data-group-id="4481858904-5">)</span><span class="w">
+</span><span class="p" data-group-id="4481858904-7">%</span><span class="nc" data-group-id="4481858904-7">Funx.Monad.Either.Left</span><span class="p" data-group-id="4481858904-7">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4481858904-8">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:invalid</span><span class="p" data-group-id="4481858904-8">}</span><span class="p" data-group-id="4481858904-7">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="pure/2">
@@ -373,18 +340,18 @@ but marks the result as a failure rather than a success.</p><h2 id="asks/2-examp
     <span id="pure/1"></span>
 
   <div class="detail-header">
-    <a href="#pure/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#pure/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">pure(value, opts_or_context \\ [])</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/left.ex#L52" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">pure(value, opts_or_context \\ [])</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/left.ex#L52" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -397,15 +364,9 @@ when left: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">ter
       </div>
 
 <p>Creates a new <code class="inline">Left</code> effect.</p><p>Wraps a failure value in an asynchronous effect. You may provide context either as a keyword list or
-an <code class="inline">Effect.Context</code> struct.</p><h2 id="pure/2-examples" class="section-heading">
-  <a href="#pure/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1244605240-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="1244605240-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1244605240-2">(</span><span class="n">effect</span><span class="p" data-group-id="1244605240-2">)</span><span class="w">
-</span><span class="p" data-group-id="1244605240-3">%</span><span class="nc" data-group-id="1244605240-3">Funx.Monad.Either.Left</span><span class="p" data-group-id="1244605240-3">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="1244605240-3">}</span></code></pre>
+an <code class="inline">Effect.Context</code> struct.</p><h2 id="pure/2-examples" class="section-heading"><a href="#pure/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Left</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1770406960-1">(</span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="1770406960-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1770406960-2">(</span><span class="n">effect</span><span class="p" data-group-id="1770406960-2">)</span><span class="w">
+</span><span class="p" data-group-id="1770406960-3">%</span><span class="nc" data-group-id="1770406960-3">Funx.Monad.Either.Left</span><span class="p" data-group-id="1770406960-3">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="p" data-group-id="1770406960-3">}</span></code></pre>
   </section>
 </section>
 
@@ -413,34 +374,36 @@ an <code class="inline">Effect.Context</code> struct.</p><h2 id="pure/2-examples
   </section>
 
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

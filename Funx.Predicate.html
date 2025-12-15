@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Funx.Predicate — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Funx.Predicate — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Predicate.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="modules" class="page-module">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-module" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,91 +93,57 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Predicate</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/predicate.ex#L1" title="View Source" class="icon-action" rel="help">
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/predicate.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Predicate</span> 
-    <small class="app-vsn" translate="no">(funx v0.3.0)</small>
-
-  </h1>
+  </div>
 
 
     <section id="moduledoc">
-<p>Provides utility functions for working with predicates—functions that return <code class="inline">true</code> or <code class="inline">false</code>.</p><p>This module enables combining predicates in a declarative way using logical operations:</p><ul><li><a href="#p_and/2"><code class="inline">p_and/2</code></a>: Returns <code class="inline">true</code> if <strong>both</strong> predicates are <code class="inline">true</code>.</li><li><a href="#p_or/2"><code class="inline">p_or/2</code></a>: Returns <code class="inline">true</code> if <strong>at least one</strong> predicate is <code class="inline">true</code>.</li><li><a href="#p_not/1"><code class="inline">p_not/1</code></a>: Negates a predicate.</li><li><a href="#p_all/1"><code class="inline">p_all/1</code></a>: Returns <code class="inline">true</code> if <strong>all</strong> predicates in a list are <code class="inline">true</code>.</li><li><a href="#p_any/1"><code class="inline">p_any/1</code></a>: Returns <code class="inline">true</code> if <strong>any</strong> predicate in a list is <code class="inline">true</code>.</li><li><a href="#p_none/1"><code class="inline">p_none/1</code></a>: Returns <code class="inline">true</code> if <strong>none</strong> of the predicates in a list are <code class="inline">true</code>.</li></ul><p>These functions simplify complex conditional logic.</p><h2 id="module-examples" class="section-heading">
-  <a href="#module-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<h3 id="module-combining-predicates-with-p_and-2" class="section-heading">
-  <a href="#module-combining-predicates-with-p_and-2" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Combining predicates with <a href="#p_and/2"><code class="inline">p_and/2</code></a>:</span>
-</h3>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7373863751-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="7373863751-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">has_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7373863751-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">tickets</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="7373863751-2">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_and</span><span class="p" data-group-id="7373863751-3">(</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">has_ticket</span><span class="p" data-group-id="7373863751-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="7373863751-4">(</span><span class="p" data-group-id="7373863751-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7373863751-5">}</span><span class="p" data-group-id="7373863751-4">)</span><span class="w">
+<p>Provides utility functions for working with predicates—functions that return <code class="inline">true</code> or <code class="inline">false</code>.</p><p>This module enables combining predicates in a declarative way using logical operations:</p><ul><li><a href="#p_and/2"><code class="inline">p_and/2</code></a>: Returns <code class="inline">true</code> if <strong>both</strong> predicates are <code class="inline">true</code>.</li><li><a href="#p_or/2"><code class="inline">p_or/2</code></a>: Returns <code class="inline">true</code> if <strong>at least one</strong> predicate is <code class="inline">true</code>.</li><li><a href="#p_not/1"><code class="inline">p_not/1</code></a>: Negates a predicate.</li><li><a href="#p_all/1"><code class="inline">p_all/1</code></a>: Returns <code class="inline">true</code> if <strong>all</strong> predicates in a list are <code class="inline">true</code>.</li><li><a href="#p_any/1"><code class="inline">p_any/1</code></a>: Returns <code class="inline">true</code> if <strong>any</strong> predicate in a list is <code class="inline">true</code>.</li><li><a href="#p_none/1"><code class="inline">p_none/1</code></a>: Returns <code class="inline">true</code> if <strong>none</strong> of the predicates in a list are <code class="inline">true</code>.</li></ul><p>These functions simplify complex conditional logic.</p><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><h3 id="module-combining-predicates-with-p_and-2" class="section-heading"><a href="#module-combining-predicates-with-p_and-2" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Combining predicates with <a href="#p_and/2"><code class="inline">p_and/2</code></a>:</span></h3><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0372204059-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="0372204059-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">has_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0372204059-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">tickets</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="0372204059-2">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_and</span><span class="p" data-group-id="0372204059-3">(</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">has_ticket</span><span class="p" data-group-id="0372204059-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="0372204059-4">(</span><span class="p" data-group-id="0372204059-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0372204059-5">}</span><span class="p" data-group-id="0372204059-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="7373863751-6">(</span><span class="p" data-group-id="7373863751-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7373863751-7">}</span><span class="p" data-group-id="7373863751-6">)</span><span class="w">
-</span><span class="no">false</span></code></pre><h3 id="module-using-p_or-2-for-alternative-conditions" class="section-heading">
-  <a href="#module-using-p_or-2-for-alternative-conditions" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Using <a href="#p_or/2"><code class="inline">p_or/2</code></a> for alternative conditions:</span>
-</h3>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3618804856-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="3618804856-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_sponsor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="3618804856-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">sponsor</span><span class="w"> </span><span class="k" data-group-id="3618804856-2">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_or</span><span class="p" data-group-id="3618804856-3">(</span><span class="n">is_vip</span><span class="p">,</span><span class="w"> </span><span class="n">is_sponsor</span><span class="p" data-group-id="3618804856-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="3618804856-4">(</span><span class="p" data-group-id="3618804856-5">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="3618804856-5">}</span><span class="p" data-group-id="3618804856-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="0372204059-6">(</span><span class="p" data-group-id="0372204059-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0372204059-7">}</span><span class="p" data-group-id="0372204059-6">)</span><span class="w">
+</span><span class="no">false</span></code></pre><h3 id="module-using-p_or-2-for-alternative-conditions" class="section-heading"><a href="#module-using-p_or-2-for-alternative-conditions" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Using <a href="#p_or/2"><code class="inline">p_or/2</code></a> for alternative conditions:</span></h3><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1685398150-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="1685398150-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_sponsor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1685398150-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">sponsor</span><span class="w"> </span><span class="k" data-group-id="1685398150-2">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_or</span><span class="p" data-group-id="1685398150-3">(</span><span class="n">is_vip</span><span class="p">,</span><span class="w"> </span><span class="n">is_sponsor</span><span class="p" data-group-id="1685398150-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="1685398150-4">(</span><span class="p" data-group-id="1685398150-5">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="1685398150-5">}</span><span class="p" data-group-id="1685398150-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="3618804856-6">(</span><span class="p" data-group-id="3618804856-7">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="3618804856-7">}</span><span class="p" data-group-id="3618804856-6">)</span><span class="w">
-</span><span class="no">false</span></code></pre><h3 id="module-negating-predicates-with-p_not-1" class="section-heading">
-  <a href="#module-negating-predicates-with-p_not-1" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Negating predicates with <a href="#p_not/1"><code class="inline">p_not/1</code></a>:</span>
-</h3>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_minor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="6517584029-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="6517584029-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_not</span><span class="p" data-group-id="6517584029-2">(</span><span class="n">is_minor</span><span class="p" data-group-id="6517584029-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="o">.</span><span class="p" data-group-id="6517584029-3">(</span><span class="p" data-group-id="6517584029-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="6517584029-4">}</span><span class="p" data-group-id="6517584029-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="1685398150-6">(</span><span class="p" data-group-id="1685398150-7">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="1685398150-7">}</span><span class="p" data-group-id="1685398150-6">)</span><span class="w">
+</span><span class="no">false</span></code></pre><h3 id="module-negating-predicates-with-p_not-1" class="section-heading"><a href="#module-negating-predicates-with-p_not-1" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Negating predicates with <a href="#p_not/1"><code class="inline">p_not/1</code></a>:</span></h3><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_minor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1879107536-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="1879107536-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_not</span><span class="p" data-group-id="1879107536-2">(</span><span class="n">is_minor</span><span class="p" data-group-id="1879107536-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="o">.</span><span class="p" data-group-id="1879107536-3">(</span><span class="p" data-group-id="1879107536-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="1879107536-4">}</span><span class="p" data-group-id="1879107536-3">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="o">.</span><span class="p" data-group-id="6517584029-5">(</span><span class="p" data-group-id="6517584029-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p" data-group-id="6517584029-6">}</span><span class="p" data-group-id="6517584029-5">)</span><span class="w">
-</span><span class="no">false</span></code></pre><h3 id="module-using-p_all-1-and-p_any-1-for-predicate-lists" class="section-heading">
-  <a href="#module-using-p_all-1-and-p_any-1-for-predicate-lists" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Using <a href="#p_all/1"><code class="inline">p_all/1</code></a> and <a href="#p_any/1"><code class="inline">p_any/1</code></a> for predicate lists:</span>
-</h3>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1673541229-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="1673541229-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">has_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1673541229-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">tickets</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="1673541229-2">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">conditions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="1673541229-3">[</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">has_ticket</span><span class="p" data-group-id="1673541229-3">]</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_all</span><span class="p" data-group-id="1673541229-4">(</span><span class="n">conditions</span><span class="p" data-group-id="1673541229-4">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_any</span><span class="p" data-group-id="1673541229-5">(</span><span class="n">conditions</span><span class="p" data-group-id="1673541229-5">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_all</span><span class="o">.</span><span class="p" data-group-id="1673541229-6">(</span><span class="p" data-group-id="1673541229-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="1673541229-7">}</span><span class="p" data-group-id="1673541229-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="o">.</span><span class="p" data-group-id="1879107536-5">(</span><span class="p" data-group-id="1879107536-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p" data-group-id="1879107536-6">}</span><span class="p" data-group-id="1879107536-5">)</span><span class="w">
+</span><span class="no">false</span></code></pre><h3 id="module-using-p_all-1-and-p_any-1-for-predicate-lists" class="section-heading"><a href="#module-using-p_all-1-and-p_any-1-for-predicate-lists" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Using <a href="#p_all/1"><code class="inline">p_all/1</code></a> and <a href="#p_any/1"><code class="inline">p_any/1</code></a> for predicate lists:</span></h3><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1837666027-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="1837666027-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">has_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1837666027-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">tickets</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="1837666027-2">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">conditions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="1837666027-3">[</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">has_ticket</span><span class="p" data-group-id="1837666027-3">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_all</span><span class="p" data-group-id="1837666027-4">(</span><span class="n">conditions</span><span class="p" data-group-id="1837666027-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_any</span><span class="p" data-group-id="1837666027-5">(</span><span class="n">conditions</span><span class="p" data-group-id="1837666027-5">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_all</span><span class="o">.</span><span class="p" data-group-id="1837666027-6">(</span><span class="p" data-group-id="1837666027-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="1837666027-7">}</span><span class="p" data-group-id="1837666027-6">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_all</span><span class="o">.</span><span class="p" data-group-id="1673541229-8">(</span><span class="p" data-group-id="1673541229-9">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1673541229-9">}</span><span class="p" data-group-id="1673541229-8">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_all</span><span class="o">.</span><span class="p" data-group-id="1837666027-8">(</span><span class="p" data-group-id="1837666027-9">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1837666027-9">}</span><span class="p" data-group-id="1837666027-8">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_any</span><span class="o">.</span><span class="p" data-group-id="1673541229-10">(</span><span class="p" data-group-id="1673541229-11">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1673541229-11">}</span><span class="p" data-group-id="1673541229-10">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_any</span><span class="o">.</span><span class="p" data-group-id="1837666027-10">(</span><span class="p" data-group-id="1837666027-11">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1837666027-11">}</span><span class="p" data-group-id="1837666027-10">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_any</span><span class="o">.</span><span class="p" data-group-id="1673541229-12">(</span><span class="p" data-group-id="1673541229-13">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1673541229-13">}</span><span class="p" data-group-id="1673541229-12">)</span><span class="w">
-</span><span class="no">false</span></code></pre><h3 id="module-using-p_none-1-to-reject-multiple-conditions" class="section-heading">
-  <a href="#module-using-p_none-1-to-reject-multiple-conditions" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Using <a href="#p_none/1"><code class="inline">p_none/1</code></a> to reject multiple conditions:</span>
-</h3>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5826181378-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="5826181378-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5826181378-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="5826181378-2">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_none</span><span class="p" data-group-id="5826181378-3">(</span><span class="p" data-group-id="5826181378-4">[</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">is_vip</span><span class="p" data-group-id="5826181378-4">]</span><span class="p" data-group-id="5826181378-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="o">.</span><span class="p" data-group-id="5826181378-5">(</span><span class="p" data-group-id="5826181378-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="5826181378-6">}</span><span class="p" data-group-id="5826181378-5">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">must_meet_any</span><span class="o">.</span><span class="p" data-group-id="1837666027-12">(</span><span class="p" data-group-id="1837666027-13">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1837666027-13">}</span><span class="p" data-group-id="1837666027-12">)</span><span class="w">
+</span><span class="no">false</span></code></pre><h3 id="module-using-p_none-1-to-reject-multiple-conditions" class="section-heading"><a href="#module-using-p_none-1-to-reject-multiple-conditions" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Using <a href="#p_none/1"><code class="inline">p_none/1</code></a> to reject multiple conditions:</span></h3><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5083558280-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="5083558280-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5083558280-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="5083558280-2">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_none</span><span class="p" data-group-id="5083558280-3">(</span><span class="p" data-group-id="5083558280-4">[</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">is_vip</span><span class="p" data-group-id="5083558280-4">]</span><span class="p" data-group-id="5083558280-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="o">.</span><span class="p" data-group-id="5083558280-5">(</span><span class="p" data-group-id="5083558280-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="5083558280-6">}</span><span class="p" data-group-id="5083558280-5">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="o">.</span><span class="p" data-group-id="5826181378-7">(</span><span class="p" data-group-id="5826181378-8">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="5826181378-8">}</span><span class="p" data-group-id="5826181378-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="o">.</span><span class="p" data-group-id="5083558280-7">(</span><span class="p" data-group-id="5083558280-8">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="5083558280-8">}</span><span class="p" data-group-id="5083558280-7">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
     </section>
 
@@ -216,7 +163,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
 
       </div>
 
@@ -230,7 +177,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#p_all/1" data-no-tooltip translate="no">p_all(p_list)</a>
+        <a href="#p_all/1" data-no-tooltip="" translate="no">p_all(p_list)</a>
 
       </div>
 
@@ -241,7 +188,7 @@ Returns <code class="inline">true</code> only if all predicates return <code cla
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#p_and/2" data-no-tooltip translate="no">p_and(pred1, pred2)</a>
+        <a href="#p_and/2" data-no-tooltip="" translate="no">p_and(pred1, pred2)</a>
 
       </div>
 
@@ -252,7 +199,7 @@ Returns a predicate that evaluates to <code class="inline">true</code> only if b
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#p_any/1" data-no-tooltip translate="no">p_any(p_list)</a>
+        <a href="#p_any/1" data-no-tooltip="" translate="no">p_any(p_list)</a>
 
       </div>
 
@@ -263,7 +210,7 @@ Returns <code class="inline">true</code> if at least one predicate returns <code
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#p_none/1" data-no-tooltip translate="no">p_none(p_list)</a>
+        <a href="#p_none/1" data-no-tooltip="" translate="no">p_none(p_list)</a>
 
       </div>
 
@@ -274,7 +221,7 @@ Returns <code class="inline">true</code> only if <strong>none</strong> of the pr
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#p_not/1" data-no-tooltip translate="no">p_not(pred)</a>
+        <a href="#p_not/1" data-no-tooltip="" translate="no">p_not(pred)</a>
 
       </div>
 
@@ -285,7 +232,7 @@ Returns a predicate that evaluates to <code class="inline">true</code> when <cod
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#p_or/2" data-no-tooltip translate="no">p_or(pred1, pred2)</a>
+        <a href="#p_or/2" data-no-tooltip="" translate="no">p_or(pred1, pred2)</a>
 
       </div>
 
@@ -306,22 +253,23 @@ Returns a predicate that evaluates to <code class="inline">true</code> if either
       </a>
       <span class="text">Types</span>
     </h1>
+
     <div class="types-list">
 <section class="detail" id="t:t/0">
 
   <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t()</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/predicate.ex#L76" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t()</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/predicate.ex#L76" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -346,22 +294,23 @@ Returns a predicate that evaluates to <code class="inline">true</code> if either
       </a>
       <span class="text">Functions</span>
     </h1>
+
     <div class="functions-list">
 <section class="detail" id="p_all/1">
 
   <div class="detail-header">
-    <a href="#p_all/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#p_all/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">p_all(p_list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/predicate.ex#L149" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">p_all(p_list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/predicate.ex#L149" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -373,36 +322,30 @@ Returns a predicate that evaluates to <code class="inline">true</code> if either
       </div>
 
 <p>Combines a list of predicates (<code class="inline">p_list</code>) using logical AND.
-Returns <code class="inline">true</code> only if all predicates return <code class="inline">true</code>. An empty list returns <code class="inline">true</code>.</p><h2 id="p_all/1-examples" class="section-heading">
-  <a href="#p_all/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="9570915904-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="9570915904-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">has_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="9570915904-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">tickets</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="9570915904-2">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_all</span><span class="p" data-group-id="9570915904-3">(</span><span class="p" data-group-id="9570915904-4">[</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">has_ticket</span><span class="p" data-group-id="9570915904-4">]</span><span class="p" data-group-id="9570915904-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="9570915904-5">(</span><span class="p" data-group-id="9570915904-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="9570915904-6">}</span><span class="p" data-group-id="9570915904-5">)</span><span class="w">
+Returns <code class="inline">true</code> only if all predicates return <code class="inline">true</code>. An empty list returns <code class="inline">true</code>.</p><h2 id="p_all/1-examples" class="section-heading"><a href="#p_all/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0845344886-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="0845344886-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">has_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0845344886-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">tickets</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="0845344886-2">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_all</span><span class="p" data-group-id="0845344886-3">(</span><span class="p" data-group-id="0845344886-4">[</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">has_ticket</span><span class="p" data-group-id="0845344886-4">]</span><span class="p" data-group-id="0845344886-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="0845344886-5">(</span><span class="p" data-group-id="0845344886-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0845344886-6">}</span><span class="p" data-group-id="0845344886-5">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="9570915904-7">(</span><span class="p" data-group-id="9570915904-8">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="9570915904-8">}</span><span class="p" data-group-id="9570915904-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="0845344886-7">(</span><span class="p" data-group-id="0845344886-8">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0845344886-8">}</span><span class="p" data-group-id="0845344886-7">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="p_and/2">
 
   <div class="detail-header">
-    <a href="#p_and/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#p_and/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">p_and(pred1, pred2)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/predicate.ex#L93" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">p_and(pred1, pred2)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/predicate.ex#L93" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -414,36 +357,30 @@ Returns <code class="inline">true</code> only if all predicates return <code cla
       </div>
 
 <p>Combines two predicates (<code class="inline">pred1</code> and <code class="inline">pred2</code>) using logical AND.
-Returns a predicate that evaluates to <code class="inline">true</code> only if both <code class="inline">pred1</code> and <code class="inline">pred2</code> return <code class="inline">true</code>.</p><h2 id="p_and/2-examples" class="section-heading">
-  <a href="#p_and/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5611964360-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="5611964360-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">has_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5611964360-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">tickets</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="5611964360-2">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_and</span><span class="p" data-group-id="5611964360-3">(</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">has_ticket</span><span class="p" data-group-id="5611964360-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="5611964360-4">(</span><span class="p" data-group-id="5611964360-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="5611964360-5">}</span><span class="p" data-group-id="5611964360-4">)</span><span class="w">
+Returns a predicate that evaluates to <code class="inline">true</code> only if both <code class="inline">pred1</code> and <code class="inline">pred2</code> return <code class="inline">true</code>.</p><h2 id="p_and/2-examples" class="section-heading"><a href="#p_and/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4742115100-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="4742115100-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">has_ticket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4742115100-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">tickets</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k" data-group-id="4742115100-2">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_and</span><span class="p" data-group-id="4742115100-3">(</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">has_ticket</span><span class="p" data-group-id="4742115100-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="4742115100-4">(</span><span class="p" data-group-id="4742115100-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="4742115100-5">}</span><span class="p" data-group-id="4742115100-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="5611964360-6">(</span><span class="p" data-group-id="5611964360-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="5611964360-7">}</span><span class="p" data-group-id="5611964360-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_enter</span><span class="o">.</span><span class="p" data-group-id="4742115100-6">(</span><span class="p" data-group-id="4742115100-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">tickets</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="4742115100-7">}</span><span class="p" data-group-id="4742115100-6">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="p_any/1">
 
   <div class="detail-header">
-    <a href="#p_any/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#p_any/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">p_any(p_list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/predicate.ex#L168" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">p_any(p_list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/predicate.ex#L168" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -455,36 +392,30 @@ Returns a predicate that evaluates to <code class="inline">true</code> only if b
       </div>
 
 <p>Combines a list of predicates (<code class="inline">p_list</code>) using logical OR.
-Returns <code class="inline">true</code> if at least one predicate returns <code class="inline">true</code>. An empty list returns <code class="inline">false</code>.</p><h2 id="p_any/1-examples" class="section-heading">
-  <a href="#p_any/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4053113648-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="4053113648-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_sponsor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4053113648-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">sponsor</span><span class="w"> </span><span class="k" data-group-id="4053113648-2">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_any</span><span class="p" data-group-id="4053113648-3">(</span><span class="p" data-group-id="4053113648-4">[</span><span class="n">is_vip</span><span class="p">,</span><span class="w"> </span><span class="n">is_sponsor</span><span class="p" data-group-id="4053113648-4">]</span><span class="p" data-group-id="4053113648-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="4053113648-5">(</span><span class="p" data-group-id="4053113648-6">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="4053113648-6">}</span><span class="p" data-group-id="4053113648-5">)</span><span class="w">
+Returns <code class="inline">true</code> if at least one predicate returns <code class="inline">true</code>. An empty list returns <code class="inline">false</code>.</p><h2 id="p_any/1-examples" class="section-heading"><a href="#p_any/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0411080339-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="0411080339-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_sponsor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0411080339-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">sponsor</span><span class="w"> </span><span class="k" data-group-id="0411080339-2">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_any</span><span class="p" data-group-id="0411080339-3">(</span><span class="p" data-group-id="0411080339-4">[</span><span class="n">is_vip</span><span class="p">,</span><span class="w"> </span><span class="n">is_sponsor</span><span class="p" data-group-id="0411080339-4">]</span><span class="p" data-group-id="0411080339-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="0411080339-5">(</span><span class="p" data-group-id="0411080339-6">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="0411080339-6">}</span><span class="p" data-group-id="0411080339-5">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="4053113648-7">(</span><span class="p" data-group-id="4053113648-8">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="4053113648-8">}</span><span class="p" data-group-id="4053113648-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="0411080339-7">(</span><span class="p" data-group-id="0411080339-8">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="0411080339-8">}</span><span class="p" data-group-id="0411080339-7">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="p_none/1">
 
   <div class="detail-header">
-    <a href="#p_none/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#p_none/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">p_none(p_list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/predicate.ex#L187" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">p_none(p_list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/predicate.ex#L187" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -496,36 +427,30 @@ Returns <code class="inline">true</code> if at least one predicate returns <code
       </div>
 
 <p>Combines a list of predicates (<code class="inline">p_list</code>) using logical NOR (negated OR).
-Returns <code class="inline">true</code> only if <strong>none</strong> of the predicates return <code class="inline">true</code>. An empty list returns <code class="inline">true</code>.</p><h2 id="p_none/1-examples" class="section-heading">
-  <a href="#p_none/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5806216721-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="5806216721-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5806216721-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="5806216721-2">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_none</span><span class="p" data-group-id="5806216721-3">(</span><span class="p" data-group-id="5806216721-4">[</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">is_vip</span><span class="p" data-group-id="5806216721-4">]</span><span class="p" data-group-id="5806216721-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="o">.</span><span class="p" data-group-id="5806216721-5">(</span><span class="p" data-group-id="5806216721-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="5806216721-6">}</span><span class="p" data-group-id="5806216721-5">)</span><span class="w">
+Returns <code class="inline">true</code> only if <strong>none</strong> of the predicates return <code class="inline">true</code>. An empty list returns <code class="inline">true</code>.</p><h2 id="p_none/1-examples" class="section-heading"><a href="#p_none/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="6569388695-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="6569388695-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="6569388695-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="6569388695-2">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_none</span><span class="p" data-group-id="6569388695-3">(</span><span class="p" data-group-id="6569388695-4">[</span><span class="n">is_adult</span><span class="p">,</span><span class="w"> </span><span class="n">is_vip</span><span class="p" data-group-id="6569388695-4">]</span><span class="p" data-group-id="6569388695-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="o">.</span><span class="p" data-group-id="6569388695-5">(</span><span class="p" data-group-id="6569388695-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="6569388695-6">}</span><span class="p" data-group-id="6569388695-5">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="o">.</span><span class="p" data-group-id="5806216721-7">(</span><span class="p" data-group-id="5806216721-8">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="5806216721-8">}</span><span class="p" data-group-id="5806216721-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">cannot_enter</span><span class="o">.</span><span class="p" data-group-id="6569388695-7">(</span><span class="p" data-group-id="6569388695-8">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="6569388695-8">}</span><span class="p" data-group-id="6569388695-7">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
 <section class="detail" id="p_not/1">
 
   <div class="detail-header">
-    <a href="#p_not/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#p_not/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">p_not(pred)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/predicate.ex#L130" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">p_not(pred)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/predicate.ex#L130" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -537,35 +462,29 @@ Returns <code class="inline">true</code> only if <strong>none</strong> of the pr
       </div>
 
 <p>Negates a predicate (<code class="inline">pred</code>).
-Returns a predicate that evaluates to <code class="inline">true</code> when <code class="inline">pred</code> returns <code class="inline">false</code>, and vice versa.</p><h2 id="p_not/1-examples" class="section-heading">
-  <a href="#p_not/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_minor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5156366472-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="5156366472-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_not</span><span class="p" data-group-id="5156366472-2">(</span><span class="n">is_minor</span><span class="p" data-group-id="5156366472-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="o">.</span><span class="p" data-group-id="5156366472-3">(</span><span class="p" data-group-id="5156366472-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="5156366472-4">}</span><span class="p" data-group-id="5156366472-3">)</span><span class="w">
+Returns a predicate that evaluates to <code class="inline">true</code> when <code class="inline">pred</code> returns <code class="inline">false</code>, and vice versa.</p><h2 id="p_not/1-examples" class="section-heading"><a href="#p_not/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_minor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7244131342-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="k" data-group-id="7244131342-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_not</span><span class="p" data-group-id="7244131342-2">(</span><span class="n">is_minor</span><span class="p" data-group-id="7244131342-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="o">.</span><span class="p" data-group-id="7244131342-3">(</span><span class="p" data-group-id="7244131342-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="7244131342-4">}</span><span class="p" data-group-id="7244131342-3">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="o">.</span><span class="p" data-group-id="5156366472-5">(</span><span class="p" data-group-id="5156366472-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p" data-group-id="5156366472-6">}</span><span class="p" data-group-id="5156366472-5">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_adult</span><span class="o">.</span><span class="p" data-group-id="7244131342-5">(</span><span class="p" data-group-id="7244131342-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p" data-group-id="7244131342-6">}</span><span class="p" data-group-id="7244131342-5">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="p_or/2">
 
   <div class="detail-header">
-    <a href="#p_or/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#p_or/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">p_or(pred1, pred2)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/predicate.ex#L112" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">p_or(pred1, pred2)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/predicate.ex#L112" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -577,18 +496,12 @@ Returns a predicate that evaluates to <code class="inline">true</code> when <cod
       </div>
 
 <p>Combines two predicates (<code class="inline">pred1</code> and <code class="inline">pred2</code>) using logical OR.
-Returns a predicate that evaluates to <code class="inline">true</code> if either <code class="inline">pred1</code> or <code class="inline">pred2</code> return <code class="inline">true</code>.</p><h2 id="p_or/2-examples" class="section-heading">
-  <a href="#p_or/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="6553183563-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="6553183563-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">is_sponsor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="6553183563-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">sponsor</span><span class="w"> </span><span class="k" data-group-id="6553183563-2">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_or</span><span class="p" data-group-id="6553183563-3">(</span><span class="n">is_vip</span><span class="p">,</span><span class="w"> </span><span class="n">is_sponsor</span><span class="p" data-group-id="6553183563-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="6553183563-4">(</span><span class="p" data-group-id="6553183563-5">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="6553183563-5">}</span><span class="p" data-group-id="6553183563-4">)</span><span class="w">
+Returns a predicate that evaluates to <code class="inline">true</code> if either <code class="inline">pred1</code> or <code class="inline">pred2</code> return <code class="inline">true</code>.</p><h2 id="p_or/2-examples" class="section-heading"><a href="#p_or/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">is_vip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="6423410858-1">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">vip</span><span class="w"> </span><span class="k" data-group-id="6423410858-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">is_sponsor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="6423410858-2">fn</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">person</span><span class="o">.</span><span class="n">sponsor</span><span class="w"> </span><span class="k" data-group-id="6423410858-2">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="o">.</span><span class="n">p_or</span><span class="p" data-group-id="6423410858-3">(</span><span class="n">is_vip</span><span class="p">,</span><span class="w"> </span><span class="n">is_sponsor</span><span class="p" data-group-id="6423410858-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="6423410858-4">(</span><span class="p" data-group-id="6423410858-5">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="6423410858-5">}</span><span class="p" data-group-id="6423410858-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="6553183563-6">(</span><span class="p" data-group-id="6553183563-7">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="6553183563-7">}</span><span class="p" data-group-id="6553183563-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">can_access_vip_area</span><span class="o">.</span><span class="p" data-group-id="6423410858-6">(</span><span class="p" data-group-id="6423410858-7">%{</span><span class="ss">vip</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p">,</span><span class="w"> </span><span class="ss">sponsor</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="p" data-group-id="6423410858-7">}</span><span class="p" data-group-id="6423410858-6">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -597,34 +510,36 @@ Returns a predicate that evaluates to <code class="inline">true</code> if either
   </section>
 
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

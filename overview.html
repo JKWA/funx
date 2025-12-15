@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Overview — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Overview — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/overview.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="extras" class="page-extra">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-extra" id="main" data-type="extras">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,24 +93,19 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>Overview</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/guides/dsl/overview.md#L1" title="View Source" class="icon-action" rel="help">
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/guides/dsl/overview.md#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
+  </div>
 
-    <span>Overview</span>
-  </h1>
 
-<h2 id="structure" class="section-heading">
-  <a href="#structure" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Structure</span>
-</h2>
-<p>A Funx DSL block compiles to a single struct that contains an ordered list of steps. This struct is the complete representation of the DSL expression and is what the executor receives at runtime.</p><pre><code class="text">Compilation
+<h2 id="structure" class="section-heading"><a href="#structure" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Structure</span></h2><p>A Funx DSL block compiles to a single struct that contains an ordered list of steps. This struct is the complete representation of the DSL expression and is what the executor receives at runtime.</p><pre><code class="text">Compilation
     ├── DSL Block (AST)
     ├── Parser
     │     └── Builds step list
@@ -137,41 +113,12 @@ Pages
     │     └── Optional rewrites
     ├── Compiled Struct
     └── Executor
-          └── Runs the steps</code></pre><h2 id="steps" class="section-heading">
-  <a href="#steps" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Steps</span>
-</h2>
-<p>Each DSL defines its own set of step types. Every step is a struct that describes one operation in the pipeline. The executor pattern-matches on these structs to determine how each step should run.</p><pre><code class="text">Pipeline
+          └── Runs the steps</code></pre><h2 id="steps" class="section-heading"><a href="#steps" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Steps</span></h2><p>Each DSL defines its own set of step types. Every step is a struct that describes one operation in the pipeline. The executor pattern-matches on these structs to determine how each step should run.</p><pre><code class="text">Pipeline
     ├── Step
     ├── Step
     ├── Step
-    └── Step</code></pre><h2 id="parser" class="section-heading">
-  <a href="#parser" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Parser</span>
-</h2>
-<p>Each DSL provides its own parser. The parser converts the DSL block into a list of steps, applies lifting and alias-expansion rules, and raises compile-time errors for invalid or unsupported forms.</p><h2 id="transformers" class="section-heading">
-  <a href="#transformers" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Transformers</span>
-</h2>
-<p>Transformers run during compilation and may rewrite the step list before it is finalized. They can insert, remove, or modify steps. A transformer must return a valid list of steps for that DSL and introduces a compile-time dependency.</p><h2 id="execution" class="section-heading">
-  <a href="#execution" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Execution</span>
-</h2>
-<p>Each DSL has a dedicated executor. The executor receives the compiled struct and evaluates the steps in order. It does not inspect source code; it operates only on the compiled representation.</p><h2 id="behaviours" class="section-heading">
-  <a href="#behaviours" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Behaviours</span>
-</h2>
-<p>Each DSL defines a behaviour for modules that participate in the DSL. Modules implementing this behaviour supply the callback the executor invokes for a step. The DSL determines how the callback’s return value is interpreted.</p>
+    └── Step</code></pre><h2 id="parser" class="section-heading"><a href="#parser" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Parser</span></h2><p>Each DSL provides its own parser. The parser converts the DSL block into a list of steps, applies lifting and alias-expansion rules, and raises compile-time errors for invalid or unsupported forms.</p><h2 id="transformers" class="section-heading"><a href="#transformers" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Transformers</span></h2><p>Transformers run during compilation and may rewrite the step list before it is finalized. They can insert, remove, or modify steps. A transformer must return a valid list of steps for that DSL and introduces a compile-time dependency.</p><h2 id="execution" class="section-heading"><a href="#execution" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Execution</span></h2><p>Each DSL has a dedicated executor. The executor receives the compiled struct and evaluates the steps in order. It does not inspect source code; it operates only on the compiled representation.</p><h2 id="behaviours" class="section-heading"><a href="#behaviours" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Behaviours</span></h2><p>Each DSL defines a behaviour for modules that participate in the DSL. Modules implementing this behaviour supply the callback the executor invokes for a step. The DSL determines how the callback’s return value is interpreted.</p>
+
 </div>
 
 <div class="bottom-actions" id="bottom-actions">
@@ -201,36 +148,38 @@ Either
   </div>
 </div>
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+                (<a href="https://preview.hex.pm/preview/funx/0.4.0/show/guides/dsl/overview.md">current file</a>)
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
-
-              (<a href="https://preview.hex.pm/preview/funx/0.3.0/show/guides/dsl/overview.md">current file</a>)
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

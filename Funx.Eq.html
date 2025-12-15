@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Funx.Eq — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Funx.Eq — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Eq.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="modules" class="page-protocol">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-protocol" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,56 +93,46 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Eq</span> <small>protocol</small>
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/eq.ex#L1" title="View Source" class="icon-action" rel="help">
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/eq.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Eq</span> <small>protocol</small>
-    <small class="app-vsn" translate="no">(funx v0.3.0)</small>
-
-  </h1>
+  </div>
 
 
     <section id="moduledoc">
 <p>The <a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a> protocol defines an equality function, <a href="#eq?/2"><code class="inline">eq?/2</code></a>, for comparing two values,
 and its complement, <a href="#not_eq?/2"><code class="inline">not_eq?/2</code></a>, for checking inequality.</p><p>Types that implement this protocol can define custom equality logic, allowing for
-domain-specific comparisons.</p><h2 id="module-fallback" class="section-heading">
-  <a href="#module-fallback" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Fallback</span>
-</h2>
-<p>The protocol uses <code class="inline">@fallback_to_any true</code>, meaning that if a specific type does not
+domain-specific comparisons.</p><h2 id="module-fallback" class="section-heading"><a href="#module-fallback" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Fallback</span></h2><p>The protocol uses <code class="inline">@fallback_to_any true</code>, meaning that if a specific type does not
 implement <a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>, it falls back to the default implementation for <code class="inline">Any</code>, which
-uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h2 id="module-examples" class="section-heading">
-  <a href="#module-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<p>With a custom implementation for a <a href="Funx.Monad.Maybe.html"><code class="inline">Funx.Monad.Maybe</code></a> type:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1257733913-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1257733913-2">(</span><span class="mi">3</span><span class="p" data-group-id="1257733913-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1257733913-3">(</span><span class="mi">3</span><span class="p" data-group-id="1257733913-3">)</span><span class="p" data-group-id="1257733913-1">)</span><span class="w">
+uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><p>With a custom implementation for a <a href="Funx.Monad.Maybe.html"><code class="inline">Funx.Monad.Maybe</code></a> type:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1404028590-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1404028590-2">(</span><span class="mi">3</span><span class="p" data-group-id="1404028590-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1404028590-3">(</span><span class="mi">3</span><span class="p" data-group-id="1404028590-3">)</span><span class="p" data-group-id="1404028590-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1257733913-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1257733913-5">(</span><span class="mi">3</span><span class="p" data-group-id="1257733913-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1257733913-6">(</span><span class="mi">5</span><span class="p" data-group-id="1257733913-6">)</span><span class="p" data-group-id="1257733913-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1404028590-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1404028590-5">(</span><span class="mi">3</span><span class="p" data-group-id="1404028590-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1404028590-6">(</span><span class="mi">5</span><span class="p" data-group-id="1404028590-6">)</span><span class="p" data-group-id="1404028590-4">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1257733913-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1257733913-8">(</span><span class="p" data-group-id="1257733913-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1257733913-9">(</span><span class="p" data-group-id="1257733913-9">)</span><span class="p" data-group-id="1257733913-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1404028590-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1404028590-8">(</span><span class="p" data-group-id="1404028590-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1404028590-9">(</span><span class="p" data-group-id="1404028590-9">)</span><span class="p" data-group-id="1404028590-7">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1257733913-10">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1257733913-11">(</span><span class="p" data-group-id="1257733913-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1257733913-12">(</span><span class="mi">5</span><span class="p" data-group-id="1257733913-12">)</span><span class="p" data-group-id="1257733913-10">)</span><span class="w">
-</span><span class="no">false</span></code></pre><p>Checking inequality with <a href="#not_eq?/2"><code class="inline">not_eq?/2</code></a>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8931642152-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8931642152-2">(</span><span class="mi">3</span><span class="p" data-group-id="8931642152-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8931642152-3">(</span><span class="mi">3</span><span class="p" data-group-id="8931642152-3">)</span><span class="p" data-group-id="8931642152-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="1404028590-10">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1404028590-11">(</span><span class="p" data-group-id="1404028590-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1404028590-12">(</span><span class="mi">5</span><span class="p" data-group-id="1404028590-12">)</span><span class="p" data-group-id="1404028590-10">)</span><span class="w">
+</span><span class="no">false</span></code></pre><p>Checking inequality with <a href="#not_eq?/2"><code class="inline">not_eq?/2</code></a>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8495866325-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8495866325-2">(</span><span class="mi">3</span><span class="p" data-group-id="8495866325-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8495866325-3">(</span><span class="mi">3</span><span class="p" data-group-id="8495866325-3">)</span><span class="p" data-group-id="8495866325-1">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8931642152-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8931642152-5">(</span><span class="mi">3</span><span class="p" data-group-id="8931642152-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8931642152-6">(</span><span class="mi">5</span><span class="p" data-group-id="8931642152-6">)</span><span class="p" data-group-id="8931642152-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8495866325-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8495866325-5">(</span><span class="mi">3</span><span class="p" data-group-id="8495866325-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8495866325-6">(</span><span class="mi">5</span><span class="p" data-group-id="8495866325-6">)</span><span class="p" data-group-id="8495866325-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8931642152-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8931642152-8">(</span><span class="p" data-group-id="8931642152-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8931642152-9">(</span><span class="p" data-group-id="8931642152-9">)</span><span class="p" data-group-id="8931642152-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8495866325-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8495866325-8">(</span><span class="p" data-group-id="8495866325-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8495866325-9">(</span><span class="p" data-group-id="8495866325-9">)</span><span class="p" data-group-id="8495866325-7">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8931642152-10">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8931642152-11">(</span><span class="p" data-group-id="8931642152-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8931642152-12">(</span><span class="mi">5</span><span class="p" data-group-id="8931642152-12">)</span><span class="p" data-group-id="8931642152-10">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="8495866325-10">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="8495866325-11">(</span><span class="p" data-group-id="8495866325-11">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8495866325-12">(</span><span class="mi">5</span><span class="p" data-group-id="8495866325-12">)</span><span class="p" data-group-id="8495866325-10">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
     </section>
 
@@ -181,7 +152,7 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
 
       </div>
 
@@ -197,7 +168,7 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#eq?/2" data-no-tooltip translate="no">eq?(a, b)</a>
+        <a href="#eq?/2" data-no-tooltip="" translate="no">eq?(a, b)</a>
 
       </div>
 
@@ -207,7 +178,7 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#not_eq?/2" data-no-tooltip translate="no">not_eq?(a, b)</a>
+        <a href="#not_eq?/2" data-no-tooltip="" translate="no">not_eq?(a, b)</a>
 
       </div>
 
@@ -227,22 +198,23 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
       </a>
       <span class="text">Types</span>
     </h1>
+
     <div class="types-list">
 <section class="detail" id="t:t/0">
 
   <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t()</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/eq.ex#L1" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t()</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/eq.ex#L1" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -267,68 +239,57 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
       </a>
       <span class="text">Functions</span>
     </h1>
+
     <div class="functions-list">
 <section class="detail" id="eq?/2">
 
   <div class="detail-header">
-    <a href="#eq?/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#eq?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">eq?(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/eq.ex#L58" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">eq?(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/eq.ex#L58" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
 
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="eq?/2-examples" class="section-heading">
-  <a href="#eq?/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2533525711-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="2533525711-1">)</span><span class="w">
+<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="eq?/2-examples" class="section-heading"><a href="#eq?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4499530908-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="4499530908-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="2533525711-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2533525711-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">eq?</span><span class="p" data-group-id="4499530908-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4499530908-2">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="not_eq?/2">
 
   <div class="detail-header">
-    <a href="#not_eq?/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#not_eq?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">not_eq?(a, b)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/eq.ex#L71" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">not_eq?(a, b)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/eq.ex#L71" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
 
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is not equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="not_eq?/2-examples" class="section-heading">
-  <a href="#not_eq?/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="6703643846-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="6703643846-1">)</span><span class="w">
+<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is not equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="not_eq?/2-examples" class="section-heading"><a href="#not_eq?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="0773358290-1">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0773358290-1">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="6703643846-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6703643846-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">not_eq?</span><span class="p" data-group-id="0773358290-2">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0773358290-2">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -337,34 +298,36 @@ uses Elixir's built-in equality operator (<code class="inline">==</code>).</p><h
   </section>
 
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

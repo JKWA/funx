@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Funx.Optics.Prism — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Funx.Optics.Prism — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Optics.Prism.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="modules" class="page-module">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-module" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,69 +93,41 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Optics.Prism</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L1" title="View Source" class="icon-action" rel="help">
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Optics.Prism</span> 
-    <small class="app-vsn" translate="no">(funx v0.3.0)</small>
-
-  </h1>
+  </div>
 
 
     <section id="moduledoc">
 <p>The <a href="Funx.Optics.Prism.html"><code class="inline">Funx.Optics.Prism</code></a> module provides a lawful partial optic for focusing on a branch of a data structure.</p><p>A prism is <strong>partial</strong>: the focus may or may not be present. This makes prisms ideal for working with
-optional values, variants, and sum types. Unlike lenses, prisms never raise—they return <code class="inline">Maybe</code> instead.</p><p><strong>When to use prisms vs lenses:</strong></p><ul><li><strong>Prisms</strong> (partial): Use for optional values, variants, sum types, missing map keys.</li><li><strong>Lenses</strong> (total): Use for record fields, map keys that always exist.</li></ul><h3 id="module-constructors" class="section-heading">
-  <a href="#module-constructors" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Constructors</span>
-</h3>
-<ul><li><a href="#key/1"><code class="inline">key/1</code></a>: Focuses on an optional key in a map.</li><li><a href="#struct/1"><code class="inline">struct/1</code></a>: Focuses on a specific struct type (for sum types).</li><li><a href="#path/1"><code class="inline">path/1</code></a>: Focuses on nested paths through maps and structs.</li><li><a href="#make/2"><code class="inline">make/2</code></a>: Creates a custom prism from preview and review functions.</li></ul><h3 id="module-core-operations" class="section-heading">
-  <a href="#module-core-operations" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Core Operations</span>
-</h3>
-<ul><li><a href="#preview/2"><code class="inline">preview/2</code></a>: Attempts to extract the focus, returning <code class="inline">Just(value)</code> or <code class="inline">Nothing</code>.</li><li><a href="#review/2"><code class="inline">review/2</code></a>: Reconstructs the whole structure from the focused value.</li></ul><p><strong>Important:</strong> <code class="inline">review</code> constructs a fresh structure from the focused value alone—it does not merge
+optional values, variants, and sum types. Unlike lenses, prisms never raise—they return <code class="inline">Maybe</code> instead.</p><p><strong>When to use prisms vs lenses:</strong></p><ul><li><strong>Prisms</strong> (partial): Use for optional values, variants, sum types, missing map keys.</li><li><strong>Lenses</strong> (total): Use for record fields, map keys that always exist.</li></ul><h3 id="module-constructors" class="section-heading"><a href="#module-constructors" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Constructors</span></h3><ul><li><a href="#key/1"><code class="inline">key/1</code></a>: Focuses on an optional key in a map.</li><li><a href="#struct/1"><code class="inline">struct/1</code></a>: Focuses on a specific struct type (for sum types).</li><li><a href="#path/1"><code class="inline">path/1</code></a>: Focuses on nested paths through maps and structs.</li><li><a href="#make/2"><code class="inline">make/2</code></a>: Creates a custom prism from preview and review functions.</li></ul><h3 id="module-core-operations" class="section-heading"><a href="#module-core-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Core Operations</span></h3><ul><li><a href="#preview/2"><code class="inline">preview/2</code></a>: Attempts to extract the focus, returning <code class="inline">Just(value)</code> or <code class="inline">Nothing</code>.</li><li><a href="#review/2"><code class="inline">review/2</code></a>: Reconstructs the whole structure from the focused value.</li></ul><p><strong>Important:</strong> <code class="inline">review</code> constructs a fresh structure from the focused value alone—it does not merge
 or preserve other fields. This is lawful prism behavior. If you need to update while preserving other
-fields, use a lens instead.</p><h3 id="module-composition" class="section-heading">
-  <a href="#module-composition" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Composition</span>
-</h3>
-<ul><li><a href="#compose/2"><code class="inline">compose/2</code></a>: Composes two prisms sequentially (outer then inner).</li><li><a href="#compose/1"><code class="inline">compose/1</code></a>: Composes a list of prisms into a single prism.</li></ul><p>Prisms compose naturally. Composing two prisms yields a new prism that attempts both matches in sequence,
-stopping at the first <code class="inline">Nothing</code>.</p><h2 id="module-monoid-structure" class="section-heading">
-  <a href="#module-monoid-structure" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Monoid Structure</span>
-</h2>
-<p>Prisms form a monoid under composition <strong>for a fixed outer type <code class="inline">s</code></strong>.</p><p>The monoid structure is provided via <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Monoid.Optics.PrismCompose</code></a>, which wraps prisms
+fields, use a lens instead.</p><h3 id="module-composition" class="section-heading"><a href="#module-composition" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Composition</span></h3><ul><li><a href="#compose/2"><code class="inline">compose/2</code></a>: Composes two prisms sequentially (outer then inner).</li><li><a href="#compose/1"><code class="inline">compose/1</code></a>: Composes a list of prisms into a single prism.</li></ul><p>Prisms compose naturally. Composing two prisms yields a new prism that attempts both matches in sequence,
+stopping at the first <code class="inline">Nothing</code>.</p><h2 id="module-monoid-structure" class="section-heading"><a href="#module-monoid-structure" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Monoid Structure</span></h2><p>Prisms form a monoid under composition <strong>for a fixed outer type <code class="inline">s</code></strong>.</p><p>The monoid structure is provided via <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Monoid.Optics.PrismCompose</code></a>, which wraps prisms
 for use with generic monoid operations:</p><ul><li><strong>Identity</strong>: <code class="inline">make(fn x -&gt; Maybe.from_nil(x) end, fn x -&gt; x end)</code> - the identity prism</li><li><strong>Operation</strong>: <a href="#compose/2"><code class="inline">compose/2</code></a> - sequential composition</li></ul><p>You can use <a href="#compose/1"><code class="inline">compose/1</code></a> to compose multiple prisms sequentially, or work directly
-with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Monoid.Optics.PrismCompose</code></a> for more control.</p><h2 id="module-examples" class="section-heading">
-  <a href="#module-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<p>Working with optional map keys:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">name_prism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9300551661-1">(</span><span class="ss">:name</span><span class="p" data-group-id="9300551661-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9300551661-2">(</span><span class="p" data-group-id="9300551661-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9300551661-3">}</span><span class="p">,</span><span class="w"> </span><span class="n">name_prism</span><span class="p" data-group-id="9300551661-2">)</span><span class="w">
-</span><span class="p" data-group-id="9300551661-4">%</span><span class="nc" data-group-id="9300551661-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="9300551661-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9300551661-4">}</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9300551661-5">(</span><span class="p" data-group-id="9300551661-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="9300551661-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">name_prism</span><span class="p" data-group-id="9300551661-5">)</span><span class="w">
-</span><span class="p" data-group-id="9300551661-7">%</span><span class="nc" data-group-id="9300551661-7">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="9300551661-7">{</span><span class="p" data-group-id="9300551661-7">}</span></code></pre><p>Composing prisms for nested access:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">outer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2654970042-1">(</span><span class="ss">:person</span><span class="p" data-group-id="2654970042-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">inner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2654970042-2">(</span><span class="ss">:name</span><span class="p" data-group-id="2654970042-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="2654970042-3">(</span><span class="n">outer</span><span class="p">,</span><span class="w"> </span><span class="n">inner</span><span class="p" data-group-id="2654970042-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="2654970042-4">(</span><span class="p" data-group-id="2654970042-5">%{</span><span class="ss">person</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2654970042-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="2654970042-6">}</span><span class="p" data-group-id="2654970042-5">}</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="2654970042-4">)</span><span class="w">
-</span><span class="p" data-group-id="2654970042-7">%</span><span class="nc" data-group-id="2654970042-7">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="2654970042-7">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="2654970042-7">}</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="2654970042-8">(</span><span class="p" data-group-id="2654970042-9">%{</span><span class="ss">person</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2654970042-10">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2654970042-10">}</span><span class="p" data-group-id="2654970042-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="2654970042-8">)</span><span class="w">
-</span><span class="p" data-group-id="2654970042-11">%</span><span class="nc" data-group-id="2654970042-11">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="2654970042-11">{</span><span class="p" data-group-id="2654970042-11">}</span></code></pre><p>Using <a href="#path/1"><code class="inline">path/1</code></a> for convenient nested access:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">person_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="2818141685-1">(</span><span class="p" data-group-id="2818141685-2">[</span><span class="ss">:person</span><span class="p">,</span><span class="w"> </span><span class="ss">:name</span><span class="p" data-group-id="2818141685-2">]</span><span class="p" data-group-id="2818141685-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="2818141685-3">(</span><span class="p" data-group-id="2818141685-4">%{</span><span class="ss">person</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2818141685-5">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="2818141685-5">}</span><span class="p" data-group-id="2818141685-4">}</span><span class="p">,</span><span class="w"> </span><span class="n">person_name</span><span class="p" data-group-id="2818141685-3">)</span><span class="w">
-</span><span class="p" data-group-id="2818141685-6">%</span><span class="nc" data-group-id="2818141685-6">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="2818141685-6">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="2818141685-6">}</span></code></pre>
+with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Monoid.Optics.PrismCompose</code></a> for more control.</p><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><p>Working with optional map keys:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">name_prism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="6881486519-1">(</span><span class="ss">:name</span><span class="p" data-group-id="6881486519-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="6881486519-2">(</span><span class="p" data-group-id="6881486519-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="6881486519-3">}</span><span class="p">,</span><span class="w"> </span><span class="n">name_prism</span><span class="p" data-group-id="6881486519-2">)</span><span class="w">
+</span><span class="p" data-group-id="6881486519-4">%</span><span class="nc" data-group-id="6881486519-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="6881486519-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="6881486519-4">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="6881486519-5">(</span><span class="p" data-group-id="6881486519-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="6881486519-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">name_prism</span><span class="p" data-group-id="6881486519-5">)</span><span class="w">
+</span><span class="p" data-group-id="6881486519-7">%</span><span class="nc" data-group-id="6881486519-7">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="6881486519-7">{</span><span class="p" data-group-id="6881486519-7">}</span></code></pre><p>Composing prisms for nested access:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">outer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9066376603-1">(</span><span class="ss">:person</span><span class="p" data-group-id="9066376603-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">inner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9066376603-2">(</span><span class="ss">:name</span><span class="p" data-group-id="9066376603-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="9066376603-3">(</span><span class="n">outer</span><span class="p">,</span><span class="w"> </span><span class="n">inner</span><span class="p" data-group-id="9066376603-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9066376603-4">(</span><span class="p" data-group-id="9066376603-5">%{</span><span class="ss">person</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9066376603-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9066376603-6">}</span><span class="p" data-group-id="9066376603-5">}</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="9066376603-4">)</span><span class="w">
+</span><span class="p" data-group-id="9066376603-7">%</span><span class="nc" data-group-id="9066376603-7">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="9066376603-7">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9066376603-7">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9066376603-8">(</span><span class="p" data-group-id="9066376603-9">%{</span><span class="ss">person</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9066376603-10">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="9066376603-10">}</span><span class="p" data-group-id="9066376603-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="9066376603-8">)</span><span class="w">
+</span><span class="p" data-group-id="9066376603-11">%</span><span class="nc" data-group-id="9066376603-11">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="9066376603-11">{</span><span class="p" data-group-id="9066376603-11">}</span></code></pre><p>Using <a href="#path/1"><code class="inline">path/1</code></a> for convenient nested access:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">person_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="4705206477-1">(</span><span class="p" data-group-id="4705206477-2">[</span><span class="ss">:person</span><span class="p">,</span><span class="w"> </span><span class="ss">:name</span><span class="p" data-group-id="4705206477-2">]</span><span class="p" data-group-id="4705206477-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="4705206477-3">(</span><span class="p" data-group-id="4705206477-4">%{</span><span class="ss">person</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4705206477-5">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="4705206477-5">}</span><span class="p" data-group-id="4705206477-4">}</span><span class="p">,</span><span class="w"> </span><span class="n">person_name</span><span class="p" data-group-id="4705206477-3">)</span><span class="w">
+</span><span class="p" data-group-id="4705206477-6">%</span><span class="nc" data-group-id="4705206477-6">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="4705206477-6">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="4705206477-6">}</span></code></pre>
     </section>
 
 </div>
@@ -193,7 +146,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:previewer/2" data-no-tooltip translate="no">previewer(s, a)</a>
+        <a href="#t:previewer/2" data-no-tooltip="" translate="no">previewer(s, a)</a>
 
       </div>
 
@@ -201,7 +154,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:reviewer/2" data-no-tooltip translate="no">reviewer(s, a)</a>
+        <a href="#t:reviewer/2" data-no-tooltip="" translate="no">reviewer(s, a)</a>
 
       </div>
 
@@ -209,7 +162,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
 
       </div>
 
@@ -217,7 +170,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/2" data-no-tooltip translate="no">t(s, a)</a>
+        <a href="#t:t/2" data-no-tooltip="" translate="no">t(s, a)</a>
 
       </div>
 
@@ -231,7 +184,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#compose/1" data-no-tooltip translate="no">compose(prisms)</a>
+        <a href="#compose/1" data-no-tooltip="" translate="no">compose(prisms)</a>
 
       </div>
 
@@ -239,7 +192,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#compose/2" data-no-tooltip translate="no">compose(outer, inner)</a>
+        <a href="#compose/2" data-no-tooltip="" translate="no">compose(outer, inner)</a>
 
       </div>
 
@@ -249,7 +202,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#key/1" data-no-tooltip translate="no">key(k)</a>
+        <a href="#key/1" data-no-tooltip="" translate="no">key(k)</a>
 
       </div>
 
@@ -259,7 +212,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#make/2" data-no-tooltip translate="no">make(preview, review)</a>
+        <a href="#make/2" data-no-tooltip="" translate="no">make(preview, review)</a>
 
       </div>
 
@@ -269,7 +222,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#path/1" data-no-tooltip translate="no">path(path)</a>
+        <a href="#path/1" data-no-tooltip="" translate="no">path(path)</a>
 
       </div>
 
@@ -279,7 +232,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#preview/2" data-no-tooltip translate="no">preview(s, prism)</a>
+        <a href="#preview/2" data-no-tooltip="" translate="no">preview(s, prism)</a>
 
       </div>
 
@@ -289,7 +242,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#review/2" data-no-tooltip translate="no">review(a, prism)</a>
+        <a href="#review/2" data-no-tooltip="" translate="no">review(a, prism)</a>
 
       </div>
 
@@ -299,7 +252,7 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#struct/1" data-no-tooltip translate="no">struct(mod)</a>
+        <a href="#struct/1" data-no-tooltip="" translate="no">struct(mod)</a>
 
       </div>
 
@@ -319,22 +272,23 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
       </a>
       <span class="text">Types</span>
     </h1>
+
     <div class="types-list">
 <section class="detail" id="t:previewer/2">
 
   <div class="detail-header">
-    <a href="#t:previewer/2" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:previewer/2" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">previewer(s, a)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L84" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">previewer(s, a)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L84" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -351,18 +305,18 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 <section class="detail" id="t:reviewer/2">
 
   <div class="detail-header">
-    <a href="#t:reviewer/2" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:reviewer/2" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">reviewer(s, a)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L85" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">reviewer(s, a)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L85" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -379,18 +333,18 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 <section class="detail" id="t:t/0">
 
   <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t()</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L92" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t()</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L92" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -407,18 +361,18 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 <section class="detail" id="t:t/2">
 
   <div class="detail-header">
-    <a href="#t:t/2" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/2" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t(s, a)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L87" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t(s, a)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L87" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -443,22 +397,23 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
       </a>
       <span class="text">Functions</span>
     </h1>
+
     <div class="functions-list">
 <section class="detail" id="compose/1">
 
   <div class="detail-header">
-    <a href="#compose/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#compose/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">compose(prisms)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L420" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">compose(prisms)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L420" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -475,18 +430,18 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
 <section class="detail" id="compose/2">
 
   <div class="detail-header">
-    <a href="#compose/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#compose/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">compose(outer, inner)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L415" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">compose(outer, inner)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L415" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -498,51 +453,39 @@ with <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Mo
       </div>
 
 <p>Composes prisms into a single prism using sequential composition.</p><p>This delegates to the monoid append operation, which contains the
-canonical composition logic.</p><h2 id="compose/2-binary-composition" class="section-heading">
-  <a href="#compose/2-binary-composition" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Binary composition</span>
-</h2>
-<p>Composes two prisms. The outer prism runs first; if it succeeds,
-the inner prism runs next.</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">outer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="3280932703-1">(</span><span class="ss">:account</span><span class="p" data-group-id="3280932703-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">inner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="3280932703-2">(</span><span class="ss">:name</span><span class="p" data-group-id="3280932703-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="3280932703-3">(</span><span class="n">outer</span><span class="p">,</span><span class="w"> </span><span class="n">inner</span><span class="p" data-group-id="3280932703-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="3280932703-4">(</span><span class="p" data-group-id="3280932703-5">%{</span><span class="ss">account</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3280932703-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="3280932703-6">}</span><span class="p" data-group-id="3280932703-5">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="3280932703-4">)</span><span class="w">
-</span><span class="p" data-group-id="3280932703-7">%</span><span class="nc" data-group-id="3280932703-7">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3280932703-7">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="3280932703-7">}</span></code></pre><h2 id="compose/2-list-composition" class="section-heading">
-  <a href="#compose/2-list-composition" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">List composition</span>
-</h2>
-<p>Composes a list of prisms into a single prism using sequential composition.</p><p><strong>Sequential semantics:</strong></p><ul><li>On <code class="inline">preview</code>: Applies each prism's matcher in sequence (Kleisli composition),
+canonical composition logic.</p><h2 id="compose/2-binary-composition" class="section-heading"><a href="#compose/2-binary-composition" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Binary composition</span></h2><p>Composes two prisms. The outer prism runs first; if it succeeds,
+the inner prism runs next.</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">outer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="8444549459-1">(</span><span class="ss">:account</span><span class="p" data-group-id="8444549459-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">inner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="8444549459-2">(</span><span class="ss">:name</span><span class="p" data-group-id="8444549459-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="8444549459-3">(</span><span class="n">outer</span><span class="p">,</span><span class="w"> </span><span class="n">inner</span><span class="p" data-group-id="8444549459-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="8444549459-4">(</span><span class="p" data-group-id="8444549459-5">%{</span><span class="ss">account</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8444549459-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="8444549459-6">}</span><span class="p" data-group-id="8444549459-5">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="8444549459-4">)</span><span class="w">
+</span><span class="p" data-group-id="8444549459-7">%</span><span class="nc" data-group-id="8444549459-7">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="8444549459-7">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="8444549459-7">}</span></code></pre><h2 id="compose/2-list-composition" class="section-heading"><a href="#compose/2-list-composition" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">List composition</span></h2><p>Composes a list of prisms into a single prism using sequential composition.</p><p><strong>Sequential semantics:</strong></p><ul><li>On <code class="inline">preview</code>: Applies each prism's matcher in sequence (Kleisli composition),
 stopping at the first <code class="inline">Nothing</code></li><li>On <code class="inline">review</code>: Applies each prism's builder in reverse order (function composition)</li></ul><p>This is <strong>not</strong> a union or choice operator. It does not &quot;try all branches.&quot;
-It is strict sequential matching and construction.</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">prisms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="9452094800-1">[</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9452094800-2">(</span><span class="ss">:account</span><span class="p" data-group-id="9452094800-2">)</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9452094800-3">(</span><span class="ss">:name</span><span class="p" data-group-id="9452094800-3">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="9452094800-1">]</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="9452094800-4">(</span><span class="n">prisms</span><span class="p" data-group-id="9452094800-4">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9452094800-5">(</span><span class="p" data-group-id="9452094800-6">%{</span><span class="ss">account</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9452094800-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9452094800-7">}</span><span class="p" data-group-id="9452094800-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="9452094800-5">)</span><span class="w">
-</span><span class="p" data-group-id="9452094800-8">%</span><span class="nc" data-group-id="9452094800-8">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="9452094800-8">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9452094800-8">}</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9452094800-9">(</span><span class="p" data-group-id="9452094800-10">%{</span><span class="ss">other</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9452094800-11">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="9452094800-11">}</span><span class="p" data-group-id="9452094800-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="9452094800-9">)</span><span class="w">
-</span><span class="p" data-group-id="9452094800-12">%</span><span class="nc" data-group-id="9452094800-12">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="9452094800-12">{</span><span class="p" data-group-id="9452094800-12">}</span></code></pre>
+It is strict sequential matching and construction.</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">prisms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="9963188482-1">[</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9963188482-2">(</span><span class="ss">:account</span><span class="p" data-group-id="9963188482-2">)</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9963188482-3">(</span><span class="ss">:name</span><span class="p" data-group-id="9963188482-3">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="9963188482-1">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="9963188482-4">(</span><span class="n">prisms</span><span class="p" data-group-id="9963188482-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9963188482-5">(</span><span class="p" data-group-id="9963188482-6">%{</span><span class="ss">account</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9963188482-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9963188482-7">}</span><span class="p" data-group-id="9963188482-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="9963188482-5">)</span><span class="w">
+</span><span class="p" data-group-id="9963188482-8">%</span><span class="nc" data-group-id="9963188482-8">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="9963188482-8">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9963188482-8">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9963188482-9">(</span><span class="p" data-group-id="9963188482-10">%{</span><span class="ss">other</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9963188482-11">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="9963188482-11">}</span><span class="p" data-group-id="9963188482-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="9963188482-9">)</span><span class="w">
+</span><span class="p" data-group-id="9963188482-12">%</span><span class="nc" data-group-id="9963188482-12">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="9963188482-12">{</span><span class="p" data-group-id="9963188482-12">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="key/1">
 
   <div class="detail-header">
-    <a href="#key/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#key/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">key(k)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L112" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">key(k)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L112" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -553,34 +496,28 @@ It is strict sequential matching and construction.</p><pre><code class="makeup e
 
       </div>
 
-<p>Builds a prism that focuses on a single key inside a map.</p><h2 id="key/1-examples" class="section-heading">
-  <a href="#key/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="3212160050-1">(</span><span class="ss">:name</span><span class="p" data-group-id="3212160050-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="3212160050-2">(</span><span class="p" data-group-id="3212160050-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="3212160050-3">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="3212160050-2">)</span><span class="w">
-</span><span class="p" data-group-id="3212160050-4">%</span><span class="nc" data-group-id="3212160050-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3212160050-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="3212160050-4">}</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="3212160050-5">(</span><span class="p" data-group-id="3212160050-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="3212160050-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="3212160050-5">)</span><span class="w">
-</span><span class="p" data-group-id="3212160050-7">%</span><span class="nc" data-group-id="3212160050-7">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="3212160050-7">{</span><span class="p" data-group-id="3212160050-7">}</span></code></pre>
+<p>Builds a prism that focuses on a single key inside a map.</p><h2 id="key/1-examples" class="section-heading"><a href="#key/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="6422320716-1">(</span><span class="ss">:name</span><span class="p" data-group-id="6422320716-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="6422320716-2">(</span><span class="p" data-group-id="6422320716-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="6422320716-3">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="6422320716-2">)</span><span class="w">
+</span><span class="p" data-group-id="6422320716-4">%</span><span class="nc" data-group-id="6422320716-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="6422320716-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="6422320716-4">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="6422320716-5">(</span><span class="p" data-group-id="6422320716-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="6422320716-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="6422320716-5">)</span><span class="w">
+</span><span class="p" data-group-id="6422320716-7">%</span><span class="nc" data-group-id="6422320716-7">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="6422320716-7">{</span><span class="p" data-group-id="6422320716-7">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="make/2">
 
   <div class="detail-header">
-    <a href="#make/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#make/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">make(preview, review)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L301" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">make(preview, review)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L301" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -592,36 +529,30 @@ It is strict sequential matching and construction.</p><pre><code class="makeup e
       </div>
 
 <p>Creates a custom prism from previewer and reviewer functions.</p><p>The previewer attempts to extract the focused part, returning a <code class="inline">Maybe</code>.
-The reviewer reconstructs the whole structure from the focused part.</p><p>Both functions must maintain the prism laws for the result to be lawful.</p><h2 id="make/2-examples" class="section-heading">
-  <a href="#make/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="7771930760-1">(</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="7771930760-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7771930760-3">(</span><span class="n">x</span><span class="p" data-group-id="7771930760-3">)</span><span class="w"> </span><span class="k" data-group-id="7771930760-2">end</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="7771930760-4">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k" data-group-id="7771930760-4">end</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="p" data-group-id="7771930760-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="7771930760-5">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="7771930760-5">)</span><span class="w">
-</span><span class="p" data-group-id="7771930760-6">%</span><span class="nc" data-group-id="7771930760-6">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7771930760-6">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7771930760-6">}</span></code></pre>
+The reviewer reconstructs the whole structure from the focused part.</p><p>Both functions must maintain the prism laws for the result to be lawful.</p><h2 id="make/2-examples" class="section-heading"><a href="#make/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="8578010822-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="8578010822-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="8578010822-3">(</span><span class="n">x</span><span class="p" data-group-id="8578010822-3">)</span><span class="w"> </span><span class="k" data-group-id="8578010822-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="8578010822-4">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="k" data-group-id="8578010822-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="p" data-group-id="8578010822-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="8578010822-5">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="8578010822-5">)</span><span class="w">
+</span><span class="p" data-group-id="8578010822-6">%</span><span class="nc" data-group-id="8578010822-6">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="8578010822-6">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8578010822-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="path/1">
 
   <div class="detail-header">
-    <a href="#path/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#path/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">path(path)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L255" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">path(path)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L255" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -632,79 +563,61 @@ The reviewer reconstructs the whole structure from the focused part.</p><p>Both 
 
       </div>
 
-<p>Builds a prism that focuses on a nested path through maps and structs.</p><p>Each element in the path can be:</p><ul><li><code class="inline">:atom</code> - A plain key access (works with maps and structs)</li><li><a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a> - A naked struct verification (checks type, no key access)</li><li><code class="inline">{Module, :atom}</code> - A struct-typed key access (verifies struct type and accesses key)</li></ul><p>The syntax expands as follows:</p><ul><li><code class="inline">:key</code> → <code class="inline">key(:key)</code> - plain key access</li><li><a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a> → <code class="inline">struct(Module)</code> - struct type verification</li><li><code class="inline">{Module, :key}</code> → <code class="inline">compose(struct(Module), key(:key))</code> - typed field access</li></ul><p>Modules are distinguished from plain keys using <code class="inline">function_exported?(atom, :__struct__, 0)</code>.</p><h2 id="path/1-examples" class="section-heading">
-  <a href="#path/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="c1"># Plain map path</span><span class="w">
-</span><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="7236241759-1">(</span><span class="p" data-group-id="7236241759-2">[</span><span class="ss">:person</span><span class="p">,</span><span class="w"> </span><span class="ss">:bio</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="7236241759-2">]</span><span class="p" data-group-id="7236241759-1">)</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="7236241759-3">(</span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="n">p1</span><span class="p" data-group-id="7236241759-3">)</span><span class="w">
+<p>Builds a prism that focuses on a nested path through maps and structs.</p><p>Each element in the path can be:</p><ul><li><code class="inline">:atom</code> - A plain key access (works with maps and structs)</li><li><a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a> - A naked struct verification (checks type, no key access)</li><li><code class="inline">{Module, :atom}</code> - A struct-typed key access (verifies struct type and accesses key)</li></ul><p>The syntax expands as follows:</p><ul><li><code class="inline">:key</code> → <code class="inline">key(:key)</code> - plain key access</li><li><a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a> → <code class="inline">struct(Module)</code> - struct type verification</li><li><code class="inline">{Module, :key}</code> → <code class="inline">compose(struct(Module), key(:key))</code> - typed field access</li></ul><p>Modules are distinguished from plain keys using <code class="inline">function_exported?(atom, :__struct__, 0)</code>.</p><h2 id="path/1-examples" class="section-heading"><a href="#path/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Plain map path</span><span class="w">
+</span><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="4326819763-1">(</span><span class="p" data-group-id="4326819763-2">[</span><span class="ss">:person</span><span class="p">,</span><span class="w"> </span><span class="ss">:bio</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4326819763-2">]</span><span class="p" data-group-id="4326819763-1">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="4326819763-3">(</span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="n">p1</span><span class="p" data-group-id="4326819763-3">)</span><span class="w">
 </span><span class="c1">#=&gt; %{person: %{bio: %{age: 30}}}</span><span class="w">
 
 </span><span class="c1"># Given struct modules:</span><span class="w">
-</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Bio</span><span class="w"> </span><span class="k" data-group-id="7236241759-4">do</span><span class="w">
-  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="7236241759-5">[</span><span class="ss">:age</span><span class="p">,</span><span class="w"> </span><span class="ss">:location</span><span class="p" data-group-id="7236241759-5">]</span><span class="w">
-</span><span class="k" data-group-id="7236241759-4">end</span><span class="w">
+</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Bio</span><span class="w"> </span><span class="k" data-group-id="4326819763-4">do</span><span class="w">
+  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="4326819763-5">[</span><span class="ss">:age</span><span class="p">,</span><span class="w"> </span><span class="ss">:location</span><span class="p" data-group-id="4326819763-5">]</span><span class="w">
+</span><span class="k" data-group-id="4326819763-4">end</span><span class="w">
 
-</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="7236241759-6">do</span><span class="w">
-  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="7236241759-7">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:bio</span><span class="p" data-group-id="7236241759-7">]</span><span class="w">
-</span><span class="k" data-group-id="7236241759-6">end</span><span class="w">
+</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="k" data-group-id="4326819763-6">do</span><span class="w">
+  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="4326819763-7">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:bio</span><span class="p" data-group-id="4326819763-7">]</span><span class="w">
+</span><span class="k" data-group-id="4326819763-6">end</span><span class="w">
 
 </span><span class="c1"># Struct-typed path using {Module, :key} syntax</span><span class="w">
-</span><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="7236241759-8">(</span><span class="p" data-group-id="7236241759-9">[</span><span class="p" data-group-id="7236241759-10">{</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:bio</span><span class="p" data-group-id="7236241759-10">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7236241759-11">{</span><span class="nc">Bio</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="7236241759-11">}</span><span class="p" data-group-id="7236241759-9">]</span><span class="p" data-group-id="7236241759-8">)</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="7236241759-12">(</span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span><span class="p" data-group-id="7236241759-12">)</span><span class="w">
+</span><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="4326819763-8">(</span><span class="p" data-group-id="4326819763-9">[</span><span class="p" data-group-id="4326819763-10">{</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:bio</span><span class="p" data-group-id="4326819763-10">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4326819763-11">{</span><span class="nc">Bio</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4326819763-11">}</span><span class="p" data-group-id="4326819763-9">]</span><span class="p" data-group-id="4326819763-8">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="4326819763-12">(</span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="n">p2</span><span class="p" data-group-id="4326819763-12">)</span><span class="w">
 </span><span class="c1">#=&gt; %Person{bio: %Bio{age: 30, location: nil}, name: nil}</span><span class="w">
 
 </span><span class="c1"># Naked struct at end verifies final type</span><span class="w">
-</span><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="7236241759-13">(</span><span class="p" data-group-id="7236241759-14">[</span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="nc">Bio</span><span class="p" data-group-id="7236241759-14">]</span><span class="p" data-group-id="7236241759-13">)</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="7236241759-15">(</span><span class="p" data-group-id="7236241759-16">%{</span><span class="ss">profile</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7236241759-17">%</span><span class="nc" data-group-id="7236241759-17">Bio</span><span class="p" data-group-id="7236241759-17">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7236241759-17">}</span><span class="p" data-group-id="7236241759-16">}</span><span class="p">,</span><span class="w"> </span><span class="n">p3</span><span class="p" data-group-id="7236241759-15">)</span><span class="w">
+</span><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="4326819763-13">(</span><span class="p" data-group-id="4326819763-14">[</span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="nc">Bio</span><span class="p" data-group-id="4326819763-14">]</span><span class="p" data-group-id="4326819763-13">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="4326819763-15">(</span><span class="p" data-group-id="4326819763-16">%{</span><span class="ss">profile</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4326819763-17">%</span><span class="nc" data-group-id="4326819763-17">Bio</span><span class="p" data-group-id="4326819763-17">{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4326819763-17">}</span><span class="p" data-group-id="4326819763-16">}</span><span class="p">,</span><span class="w"> </span><span class="n">p3</span><span class="p" data-group-id="4326819763-15">)</span><span class="w">
 </span><span class="c1">#=&gt; Just(%Bio{age: 30, location: nil})</span><span class="w">
 
 </span><span class="c1"># Naked struct at beginning verifies root type</span><span class="w">
-</span><span class="n">p4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="7236241759-18">(</span><span class="p" data-group-id="7236241759-19">[</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:name</span><span class="p" data-group-id="7236241759-19">]</span><span class="p" data-group-id="7236241759-18">)</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="7236241759-20">(</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p4</span><span class="p" data-group-id="7236241759-20">)</span><span class="w">
+</span><span class="n">p4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="4326819763-18">(</span><span class="p" data-group-id="4326819763-19">[</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:name</span><span class="p" data-group-id="4326819763-19">]</span><span class="p" data-group-id="4326819763-18">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="4326819763-20">(</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p4</span><span class="p" data-group-id="4326819763-20">)</span><span class="w">
 </span><span class="c1">#=&gt; %Person{name: &quot;Alice&quot;, bio: nil}</span><span class="w">
 
 </span><span class="c1"># Mix naked structs with typed field syntax</span><span class="w">
-</span><span class="n">p5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="7236241759-21">(</span><span class="p" data-group-id="7236241759-22">[</span><span class="p" data-group-id="7236241759-23">{</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:bio</span><span class="p" data-group-id="7236241759-23">}</span><span class="p">,</span><span class="w"> </span><span class="nc">Bio</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="7236241759-22">]</span><span class="p" data-group-id="7236241759-21">)</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="7236241759-24">(</span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="n">p5</span><span class="p" data-group-id="7236241759-24">)</span><span class="w">
+</span><span class="n">p5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="4326819763-21">(</span><span class="p" data-group-id="4326819763-22">[</span><span class="p" data-group-id="4326819763-23">{</span><span class="nc">Person</span><span class="p">,</span><span class="w"> </span><span class="ss">:bio</span><span class="p" data-group-id="4326819763-23">}</span><span class="p">,</span><span class="w"> </span><span class="nc">Bio</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4326819763-22">]</span><span class="p" data-group-id="4326819763-21">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="4326819763-24">(</span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="n">p5</span><span class="p" data-group-id="4326819763-24">)</span><span class="w">
 </span><span class="c1">#=&gt; %Person{bio: %Bio{age: 25, location: nil}, name: nil}</span><span class="w">
 
 </span><span class="c1"># Naked struct only (just type verification)</span><span class="w">
-</span><span class="n">p6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="7236241759-25">(</span><span class="p" data-group-id="7236241759-26">[</span><span class="nc">Person</span><span class="p" data-group-id="7236241759-26">]</span><span class="p" data-group-id="7236241759-25">)</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="7236241759-27">(</span><span class="p" data-group-id="7236241759-28">%</span><span class="nc" data-group-id="7236241759-28">Person</span><span class="p" data-group-id="7236241759-28">{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="7236241759-28">}</span><span class="p">,</span><span class="w"> </span><span class="n">p6</span><span class="p" data-group-id="7236241759-27">)</span><span class="w">
-</span><span class="c1">#=&gt; Just(%Person{name: &quot;Bob&quot;, bio: nil})</span></code></pre><h2 id="path/1-implementation" class="section-heading">
-  <a href="#path/1-implementation" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Implementation</span>
-</h2>
-<p>The <a href="#path/1"><code class="inline">path/1</code></a> function composes prisms using <a href="#compose/1"><code class="inline">compose/1</code></a>:</p><ul><li><code class="inline">:key</code> → <code class="inline">[key(:key)]</code></li><li><a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a> → <code class="inline">[struct(Module)]</code></li><li><code class="inline">{Mod, :key}</code> → <code class="inline">[struct(Mod), key(:key)]</code></li></ul><p>This means <code class="inline">path</code> is just syntactic sugar for prism composition.</p><h2 id="path/1-important" class="section-heading">
-  <a href="#path/1-important" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Important</span>
-</h2>
-<ul><li>When using <code class="inline">{Module, :field}</code>, ensure <code class="inline">:field</code> exists in <a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a></li><li>Using non-existent fields may violate prism laws (Kernel.struct/2 silently drops invalid keys)</li><li>The tuple form <code class="inline">{Module, :key}</code> requires <a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a> to be a struct module (raises otherwise)</li><li>Plain lowercase atoms like <code class="inline">:user</code> are always treated as keys, not struct modules</li></ul>
+</span><span class="n">p6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">path</span><span class="p" data-group-id="4326819763-25">(</span><span class="p" data-group-id="4326819763-26">[</span><span class="nc">Person</span><span class="p" data-group-id="4326819763-26">]</span><span class="p" data-group-id="4326819763-25">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="4326819763-27">(</span><span class="p" data-group-id="4326819763-28">%</span><span class="nc" data-group-id="4326819763-28">Person</span><span class="p" data-group-id="4326819763-28">{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="4326819763-28">}</span><span class="p">,</span><span class="w"> </span><span class="n">p6</span><span class="p" data-group-id="4326819763-27">)</span><span class="w">
+</span><span class="c1">#=&gt; Just(%Person{name: &quot;Bob&quot;, bio: nil})</span></code></pre><h2 id="path/1-implementation" class="section-heading"><a href="#path/1-implementation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Implementation</span></h2><p>The <a href="#path/1"><code class="inline">path/1</code></a> function composes prisms using <a href="#compose/1"><code class="inline">compose/1</code></a>:</p><ul><li><code class="inline">:key</code> → <code class="inline">[key(:key)]</code></li><li><a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a> → <code class="inline">[struct(Module)]</code></li><li><code class="inline">{Mod, :key}</code> → <code class="inline">[struct(Mod), key(:key)]</code></li></ul><p>This means <code class="inline">path</code> is just syntactic sugar for prism composition.</p><h2 id="path/1-important" class="section-heading"><a href="#path/1-important" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Important</span></h2><ul><li>When using <code class="inline">{Module, :field}</code>, ensure <code class="inline">:field</code> exists in <a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a></li><li>Using non-existent fields may violate prism laws (Kernel.struct/2 silently drops invalid keys)</li><li>The tuple form <code class="inline">{Module, :key}</code> requires <a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a> to be a struct module (raises otherwise)</li><li>Plain lowercase atoms like <code class="inline">:user</code> are always treated as keys, not struct modules</li></ul>
   </section>
 </section>
 <section class="detail" id="preview/2">
 
   <div class="detail-header">
-    <a href="#preview/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#preview/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">preview(s, prism)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L335" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">preview(s, prism)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L335" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -716,34 +629,28 @@ The reviewer reconstructs the whole structure from the focused part.</p><p>Both 
       </div>
 
 <p>Attempts to extract the focus from a structure using the prism.</p><p>Returns a <a href="Funx.Monad.Maybe.Just.html"><code class="inline">Funx.Monad.Maybe.Just</code></a> on success or <a href="Funx.Monad.Maybe.Nothing.html"><code class="inline">Funx.Monad.Maybe.Nothing</code></a>
-if the branch does not match.</p><h2 id="preview/2-examples" class="section-heading">
-  <a href="#preview/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="5738566549-1">(</span><span class="ss">:name</span><span class="p" data-group-id="5738566549-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="5738566549-2">(</span><span class="p" data-group-id="5738566549-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="5738566549-3">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="5738566549-2">)</span><span class="w">
-</span><span class="p" data-group-id="5738566549-4">%</span><span class="nc" data-group-id="5738566549-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="5738566549-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="5738566549-4">}</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="5738566549-5">(</span><span class="p" data-group-id="5738566549-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5738566549-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="5738566549-5">)</span><span class="w">
-</span><span class="p" data-group-id="5738566549-7">%</span><span class="nc" data-group-id="5738566549-7">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="5738566549-7">{</span><span class="p" data-group-id="5738566549-7">}</span></code></pre>
+if the branch does not match.</p><h2 id="preview/2-examples" class="section-heading"><a href="#preview/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="7264516026-1">(</span><span class="ss">:name</span><span class="p" data-group-id="7264516026-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="7264516026-2">(</span><span class="p" data-group-id="7264516026-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="7264516026-3">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="7264516026-2">)</span><span class="w">
+</span><span class="p" data-group-id="7264516026-4">%</span><span class="nc" data-group-id="7264516026-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7264516026-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="7264516026-4">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="7264516026-5">(</span><span class="p" data-group-id="7264516026-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7264516026-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="7264516026-5">)</span><span class="w">
+</span><span class="p" data-group-id="7264516026-7">%</span><span class="nc" data-group-id="7264516026-7">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7264516026-7">{</span><span class="p" data-group-id="7264516026-7">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="review/2">
 
   <div class="detail-header">
-    <a href="#review/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#review/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">review(a, prism)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L360" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">review(a, prism)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L360" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -759,32 +666,26 @@ structure. <strong>Important</strong>: <code class="inline">review</code> constr
 focused value alone - it does not merge with or patch an existing structure.
 This is the lawful behaviour of prisms.</p><p>If you need to update a field while preserving other fields, you need a lens,
 not a prism.</p><p><strong>Note</strong>: Cannot review with <code class="inline">nil</code> as it would violate prism laws (since
-<code class="inline">Just(nil)</code> is invalid).</p><h2 id="review/2-examples" class="section-heading">
-  <a href="#review/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="5314638085-1">(</span><span class="ss">:name</span><span class="p" data-group-id="5314638085-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="5314638085-2">(</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="5314638085-2">)</span><span class="w">
-</span><span class="p" data-group-id="5314638085-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="5314638085-3">}</span></code></pre>
+<code class="inline">Just(nil)</code> is invalid).</p><h2 id="review/2-examples" class="section-heading"><a href="#review/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="8244803694-1">(</span><span class="ss">:name</span><span class="p" data-group-id="8244803694-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="8244803694-2">(</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="8244803694-2">)</span><span class="w">
+</span><span class="p" data-group-id="8244803694-3">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="8244803694-3">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="struct/1">
 
   <div class="detail-header">
-    <a href="#struct/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#struct/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">struct(mod)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/optics/prism.ex#L163" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">struct(mod)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/prism.ex#L163" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -798,38 +699,26 @@ not a prism.</p><p><strong>Note</strong>: Cannot review with <code class="inline
 <p>Builds a prism that focuses on a specific struct constructor.</p><p>This prism succeeds only when the input value is a struct of the given module.
 It models a <em>sum-type constructor</em>: selecting one structural variant from a
 set of possible variants.</p><p>On <code class="inline">review</code>, this prism can promote a plain map to the specified struct type,
-filling in defaults for missing fields.</p><h2 id="struct/1-examples" class="section-heading">
-  <a href="#struct/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="c1"># Given a struct module:</span><span class="w">
-</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Account</span><span class="w"> </span><span class="k" data-group-id="9301295062-1">do</span><span class="w">
-  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="9301295062-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:email</span><span class="p" data-group-id="9301295062-2">]</span><span class="w">
-</span><span class="k" data-group-id="9301295062-1">end</span><span class="w">
+filling in defaults for missing fields.</p><h2 id="struct/1-examples" class="section-heading"><a href="#struct/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Given a struct module:</span><span class="w">
+</span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Account</span><span class="w"> </span><span class="k" data-group-id="3493455163-1">do</span><span class="w">
+  </span><span class="kd">defstruct</span><span class="w"> </span><span class="p" data-group-id="3493455163-2">[</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:email</span><span class="p" data-group-id="3493455163-2">]</span><span class="w">
+</span><span class="k" data-group-id="3493455163-1">end</span><span class="w">
 
 </span><span class="c1"># Create a prism for that struct type</span><span class="w">
-</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">struct</span><span class="p" data-group-id="9301295062-3">(</span><span class="nc">Account</span><span class="p" data-group-id="9301295062-3">)</span><span class="w">
+</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">struct</span><span class="p" data-group-id="3493455163-3">(</span><span class="nc">Account</span><span class="p" data-group-id="3493455163-3">)</span><span class="w">
 
 </span><span class="c1"># Preview succeeds for matching struct</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9301295062-4">(</span><span class="p" data-group-id="9301295062-5">%</span><span class="nc" data-group-id="9301295062-5">Account</span><span class="p" data-group-id="9301295062-5">{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9301295062-5">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="9301295062-4">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="3493455163-4">(</span><span class="p" data-group-id="3493455163-5">%</span><span class="nc" data-group-id="3493455163-5">Account</span><span class="p" data-group-id="3493455163-5">{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="3493455163-5">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="3493455163-4">)</span><span class="w">
 </span><span class="c1">#=&gt; %Just{value: %Account{name: &quot;Alice&quot;, email: nil}}</span><span class="w">
 
 </span><span class="c1"># Preview fails for non-matching types</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9301295062-6">(</span><span class="p" data-group-id="9301295062-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="9301295062-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="9301295062-6">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="3493455163-6">(</span><span class="p" data-group-id="3493455163-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="3493455163-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="3493455163-6">)</span><span class="w">
 </span><span class="c1">#=&gt; %Nothing{}</span><span class="w">
 
 </span><span class="c1"># Review promotes a map to the struct type</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="9301295062-8">(</span><span class="p" data-group-id="9301295062-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Charlie&quot;</span><span class="p" data-group-id="9301295062-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="9301295062-8">)</span><span class="w">
-</span><span class="c1">#=&gt; %Account{name: &quot;Charlie&quot;, email: nil}</span></code></pre><h2 id="struct/1-composition" class="section-heading">
-  <a href="#struct/1-composition" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Composition</span>
-</h2>
-<p>The <a href="#struct/1"><code class="inline">struct/1</code></a> prism is commonly composed with <a href="#key/1"><code class="inline">key/1</code></a> to focus on struct fields:</p><pre><code class="makeup elixir" translate="no"><span class="n">user_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="6094262743-1">(</span><span class="nc">Prism</span><span class="o">.</span><span class="n">struct</span><span class="p" data-group-id="6094262743-2">(</span><span class="nc">Account</span><span class="p" data-group-id="6094262743-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="6094262743-3">(</span><span class="ss">:name</span><span class="p" data-group-id="6094262743-3">)</span><span class="p" data-group-id="6094262743-1">)</span><span class="w">
-</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="6094262743-4">(</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">user_name</span><span class="p" data-group-id="6094262743-4">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="3493455163-8">(</span><span class="p" data-group-id="3493455163-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Charlie&quot;</span><span class="p" data-group-id="3493455163-9">}</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p" data-group-id="3493455163-8">)</span><span class="w">
+</span><span class="c1">#=&gt; %Account{name: &quot;Charlie&quot;, email: nil}</span></code></pre><h2 id="struct/1-composition" class="section-heading"><a href="#struct/1-composition" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Composition</span></h2><p>The <a href="#struct/1"><code class="inline">struct/1</code></a> prism is commonly composed with <a href="#key/1"><code class="inline">key/1</code></a> to focus on struct fields:</p><pre><code class="makeup elixir" translate="no"><span class="n">user_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="5642114192-1">(</span><span class="nc">Prism</span><span class="o">.</span><span class="n">struct</span><span class="p" data-group-id="5642114192-2">(</span><span class="nc">Account</span><span class="p" data-group-id="5642114192-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="5642114192-3">(</span><span class="ss">:name</span><span class="p" data-group-id="5642114192-3">)</span><span class="p" data-group-id="5642114192-1">)</span><span class="w">
+</span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="5642114192-4">(</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">user_name</span><span class="p" data-group-id="5642114192-4">)</span><span class="w">
 </span><span class="c1">#=&gt; %Account{name: &quot;Alice&quot;, email: nil}</span></code></pre>
   </section>
 </section>
@@ -838,34 +727,36 @@ filling in defaults for missing fields.</p><h2 id="struct/1-examples" class="sec
   </section>
 
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

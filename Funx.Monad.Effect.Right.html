@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Funx.Monad.Effect.Right — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Funx.Monad.Effect.Right — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Effect.Right.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="modules" class="page-module">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-module" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,28 +93,24 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Monad.Effect.Right</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/right.ex#L1" title="View Source" class="icon-action" rel="help">
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/right.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Monad.Effect.Right</span> 
-    <small class="app-vsn" translate="no">(funx v0.3.0)</small>
-
-  </h1>
+  </div>
 
 
     <section id="moduledoc">
 <p>Represents the <code class="inline">Right</code> variant of the <code class="inline">Effect</code> monad, used to model a successful computation in an asynchronous context.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements the <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code> functions to handle monadic operations within an effectful, lazy execution context.</li><li><a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>: Provides a <a href="https://hexdocs.pm/elixir/Kernel.html#to_string/1"><code class="inline">to_string/1</code></a> function to represent <code class="inline">Right</code> values as strings.</li></ul><p>The <code class="inline">Right</code> effect allows the computation to proceed with successful values, supporting lazy, asynchronous tasks
-and capturing execution context through the <code class="inline">Effect.Context</code> struct.</p><h2 id="module-reader-operations" class="section-heading">
-  <a href="#module-reader-operations" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Reader Operations</span>
-</h2>
-<ul><li><a href="#ask/1"><code class="inline">ask/1</code></a> – Returns the environment passed to <code class="inline">run/2</code> as a <code class="inline">Right</code>.</li><li><a href="#asks/2"><code class="inline">asks/2</code></a> – Applies a function to the environment passed to <code class="inline">run/2</code>, wrapping the result in a <code class="inline">Right</code>.</li></ul>
+and capturing execution context through the <code class="inline">Effect.Context</code> struct.</p><h2 id="module-reader-operations" class="section-heading"><a href="#module-reader-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Reader Operations</span></h2><ul><li><a href="#ask/1"><code class="inline">ask/1</code></a> – Returns the environment passed to <code class="inline">run/2</code> as a <code class="inline">Right</code>.</li><li><a href="#asks/2"><code class="inline">asks/2</code></a> – Applies a function to the environment passed to <code class="inline">run/2</code>, wrapping the result in a <code class="inline">Right</code>.</li></ul>
     </section>
 
 </div>
@@ -152,7 +129,7 @@ and capturing execution context through the <code class="inline">Effect.Context<
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip translate="no">t()</a>
+        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
 
       </div>
 
@@ -160,7 +137,7 @@ and capturing execution context through the <code class="inline">Effect.Context<
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/1" data-no-tooltip translate="no">t(right)</a>
+        <a href="#t:t/1" data-no-tooltip="" translate="no">t(right)</a>
 
       </div>
 
@@ -176,7 +153,7 @@ and capturing execution context through the <code class="inline">Effect.Context<
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#ask/1" data-no-tooltip translate="no">ask(opts_or_context \\ [])</a>
+        <a href="#ask/1" data-no-tooltip="" translate="no">ask(opts_or_context \\ [])</a>
 
       </div>
 
@@ -186,7 +163,7 @@ and capturing execution context through the <code class="inline">Effect.Context<
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#asks/2" data-no-tooltip translate="no">asks(f, opts_or_context \\ [])</a>
+        <a href="#asks/2" data-no-tooltip="" translate="no">asks(f, opts_or_context \\ [])</a>
 
       </div>
 
@@ -196,7 +173,7 @@ and capturing execution context through the <code class="inline">Effect.Context<
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#pure/2" data-no-tooltip translate="no">pure(value, opts_or_context \\ [])</a>
+        <a href="#pure/2" data-no-tooltip="" translate="no">pure(value, opts_or_context \\ [])</a>
 
       </div>
 
@@ -216,22 +193,23 @@ and capturing execution context through the <code class="inline">Effect.Context<
       </a>
       <span class="text">Types</span>
     </h1>
+
     <div class="types-list">
 <section class="detail" id="t:t/0">
 
   <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t()</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/right.ex#L37" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t()</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/right.ex#L37" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -248,18 +226,18 @@ and capturing execution context through the <code class="inline">Effect.Context<
 <section class="detail" id="t:t/1">
 
   <div class="detail-header">
-    <a href="#t:t/1" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/1" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t(right)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/right.ex#L32" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t(right)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/right.ex#L32" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -289,24 +267,25 @@ either a <code class="inline">Task.t()</code> or a plain <code class="inline">Ei
       </a>
       <span class="text">Functions</span>
     </h1>
+
     <div class="functions-list">
 <section class="detail" id="ask/1">
 
     <span id="ask/0"></span>
 
   <div class="detail-header">
-    <a href="#ask/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#ask/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">ask(opts_or_context \\ [])</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/right.ex#L74" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">ask(opts_or_context \\ [])</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/right.ex#L74" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -318,16 +297,10 @@ either a <code class="inline">Task.t()</code> or a plain <code class="inline">Ei
       </div>
 
 <p>Returns a <a href="Funx.Monad.Effect.Right.html"><code class="inline">Funx.Monad.Effect.Right</code></a> that yields the environment passed to <a href="Funx.Monad.Effect.html#run/2"><code class="inline">Funx.Monad.Effect.run/2</code></a>.</p><p>This is the Reader monad's equivalent of <code class="inline">ask</code>, giving access to the entire injected environment
-for further computation.</p><h2 id="ask/1-example" class="section-heading">
-  <a href="#ask/1-example" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Example</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="8118001616-1">(</span><span class="p" data-group-id="8118001616-1">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="8118001616-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="p" data-group-id="8118001616-3">[</span><span class="ss">:user</span><span class="p" data-group-id="8118001616-3">]</span><span class="p" data-group-id="8118001616-2">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="8118001616-4">(</span><span class="p" data-group-id="8118001616-5">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="8118001616-5">}</span><span class="p" data-group-id="8118001616-4">)</span><span class="w">
-</span><span class="p" data-group-id="8118001616-6">%</span><span class="nc" data-group-id="8118001616-6">Funx.Monad.Either.Right</span><span class="p" data-group-id="8118001616-6">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="8118001616-6">}</span></code></pre>
+for further computation.</p><h2 id="ask/1-example" class="section-heading"><a href="#ask/1-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">ask</span><span class="p" data-group-id="9033062175-1">(</span><span class="p" data-group-id="9033062175-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="9033062175-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="p" data-group-id="9033062175-3">[</span><span class="ss">:user</span><span class="p" data-group-id="9033062175-3">]</span><span class="p" data-group-id="9033062175-2">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="9033062175-4">(</span><span class="p" data-group-id="9033062175-5">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="9033062175-5">}</span><span class="p" data-group-id="9033062175-4">)</span><span class="w">
+</span><span class="p" data-group-id="9033062175-6">%</span><span class="nc" data-group-id="9033062175-6">Funx.Monad.Either.Right</span><span class="p" data-group-id="9033062175-6">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="9033062175-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="asks/2">
@@ -335,18 +308,18 @@ for further computation.</p><h2 id="ask/1-example" class="section-heading">
     <span id="asks/1"></span>
 
   <div class="detail-header">
-    <a href="#asks/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#asks/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">asks(f, opts_or_context \\ [])</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/right.ex#L101" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">asks(f, opts_or_context \\ [])</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/right.ex#L101" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -363,16 +336,10 @@ when result: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">t
       </div>
 
 <p>Returns a <a href="Funx.Monad.Effect.Right.html"><code class="inline">Funx.Monad.Effect.Right</code></a> that applies the given function to the environment passed to <a href="Funx.Monad.Effect.html#run/2"><code class="inline">Funx.Monad.Effect.run/2</code></a>.</p><p>This allows extracting a value from the environment and using it in an effectful computation,
-following the Reader pattern.</p><h2 id="asks/2-example" class="section-heading">
-  <a href="#asks/2-example" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Example</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="4576907020-1">(</span><span class="k" data-group-id="4576907020-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="4576907020-3">[</span><span class="ss">:user</span><span class="p" data-group-id="4576907020-3">]</span><span class="w"> </span><span class="k" data-group-id="4576907020-2">end</span><span class="p" data-group-id="4576907020-1">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="4576907020-4">(</span><span class="k" data-group-id="4576907020-5">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="4576907020-6">(</span><span class="n">user</span><span class="p" data-group-id="4576907020-6">)</span><span class="w"> </span><span class="k" data-group-id="4576907020-5">end</span><span class="p" data-group-id="4576907020-4">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="4576907020-7">(</span><span class="p" data-group-id="4576907020-8">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="4576907020-8">}</span><span class="p" data-group-id="4576907020-7">)</span><span class="w">
-</span><span class="p" data-group-id="4576907020-9">%</span><span class="nc" data-group-id="4576907020-9">Funx.Monad.Either.Right</span><span class="p" data-group-id="4576907020-9">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="4576907020-9">}</span></code></pre>
+following the Reader pattern.</p><h2 id="asks/2-example" class="section-heading"><a href="#asks/2-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">asks</span><span class="p" data-group-id="7098333135-1">(</span><span class="k" data-group-id="7098333135-2">fn</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="7098333135-3">[</span><span class="ss">:user</span><span class="p" data-group-id="7098333135-3">]</span><span class="w"> </span><span class="k" data-group-id="7098333135-2">end</span><span class="p" data-group-id="7098333135-1">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="7098333135-4">(</span><span class="k" data-group-id="7098333135-5">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="7098333135-6">(</span><span class="n">user</span><span class="p" data-group-id="7098333135-6">)</span><span class="w"> </span><span class="k" data-group-id="7098333135-5">end</span><span class="p" data-group-id="7098333135-4">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="7098333135-7">(</span><span class="p" data-group-id="7098333135-8">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="7098333135-8">}</span><span class="p" data-group-id="7098333135-7">)</span><span class="w">
+</span><span class="p" data-group-id="7098333135-9">%</span><span class="nc" data-group-id="7098333135-9">Funx.Monad.Either.Right</span><span class="p" data-group-id="7098333135-9">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice&quot;</span><span class="p" data-group-id="7098333135-9">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="pure/2">
@@ -380,18 +347,18 @@ following the Reader pattern.</p><h2 id="asks/2-example" class="section-heading"
     <span id="pure/1"></span>
 
   <div class="detail-header">
-    <a href="#pure/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#pure/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">pure(value, opts_or_context \\ [])</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/effect/right.ex#L52" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">pure(value, opts_or_context \\ [])</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/effect/right.ex#L52" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -403,15 +370,9 @@ when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
 
       </div>
 
-<p>Creates a new <code class="inline">Right</code> effect.</p><p>The <a href="#pure/2"><code class="inline">pure/2</code></a> function wraps a value in the <code class="inline">Right</code> effect monad, representing an asynchronous success.</p><h2 id="pure/2-examples" class="section-heading">
-  <a href="#pure/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="1336925943-1">(</span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="1336925943-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="1336925943-2">(</span><span class="n">effect</span><span class="p" data-group-id="1336925943-2">)</span><span class="w">
-</span><span class="p" data-group-id="1336925943-3">%</span><span class="nc" data-group-id="1336925943-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="1336925943-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="1336925943-3">}</span></code></pre>
+<p>Creates a new <code class="inline">Right</code> effect.</p><p>The <a href="#pure/2"><code class="inline">pure/2</code></a> function wraps a value in the <code class="inline">Right</code> effect monad, representing an asynchronous success.</p><h2 id="pure/2-examples" class="section-heading"><a href="#pure/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Effect.Right</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="9709236941-1">(</span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="9709236941-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Effect</span><span class="o">.</span><span class="n">run</span><span class="p" data-group-id="9709236941-2">(</span><span class="n">effect</span><span class="p" data-group-id="9709236941-2">)</span><span class="w">
+</span><span class="p" data-group-id="9709236941-3">%</span><span class="nc" data-group-id="9709236941-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="9709236941-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;success&quot;</span><span class="p" data-group-id="9709236941-3">}</span></code></pre>
   </section>
 </section>
 
@@ -419,34 +380,36 @@ when right: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">te
   </section>
 
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

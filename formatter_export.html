@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Formatter Rules — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Formatter Rules — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/formatter_export.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="extras" class="page-extra">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-extra" id="main" data-type="extras">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,74 +93,40 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>Formatter Rules</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/FORMATTER_EXPORT.md#L1" title="View Source" class="icon-action" rel="help">
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/FORMATTER_EXPORT.md#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
+  </div>
 
-    <span>Formatter Rules</span>
-  </h1>
 
-<p>The Funx library now exports formatter rules for its Either DSL, allowing projects that depend on Funx to automatically format DSL code without extra parentheses.</p><h2 id="exported-rules" class="section-heading">
-  <a href="#exported-rules" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Exported Rules</span>
-</h2>
-<p>The following Either DSL functions are configured to format without parentheses:</p><ul><li><code class="inline">either/2</code> - DSL entry point</li><li><code class="inline">bind/1</code> - Chain operations that return Either or result tuples</li><li><code class="inline">map/1</code> - Transform values with plain functions</li><li><code class="inline">ap/1</code> - Apply function in Either to value in Either</li><li><code class="inline">validate/1</code> - Collect all errors from validators</li><li><code class="inline">filter_or_else/2</code> - Filter with predicate, fallback if fails</li><li><code class="inline">or_else/1</code> - Provide fallback on error</li><li><code class="inline">map_left/1</code> - Transform error values</li><li><code class="inline">tap</code> - Run a side-effecting function inside the chain without changing the data</li></ul><p>Note that <code class="inline">flip/0</code> - Swap Left and Right still requires parentheses.</p><h2 id="usage-in-dependent-projects" class="section-heading">
-  <a href="#usage-in-dependent-projects" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Usage in Dependent Projects</span>
-</h2>
-<h3 id="step-1-add-to-dependencies" class="section-heading">
-  <a href="#step-1-add-to-dependencies" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Step 1: Add to Dependencies</span>
-</h3>
-<p>Make sure your <code class="inline">mix.exs</code> includes Funx as a dependency:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="1308951166-1">do</span><span class="w">
-  </span><span class="p" data-group-id="1308951166-2">[</span><span class="w">
-    </span><span class="p" data-group-id="1308951166-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.2&quot;</span><span class="p" data-group-id="1308951166-3">}</span><span class="w">
-  </span><span class="p" data-group-id="1308951166-2">]</span><span class="w">
-</span><span class="k" data-group-id="1308951166-1">end</span></code></pre><h3 id="step-2-update-formatter-exs" class="section-heading">
-  <a href="#step-2-update-formatter-exs" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Step 2: Update .formatter.exs</span>
-</h3>
-<p>In your project's <code class="inline">.formatter.exs</code>, add <code class="inline">:funx</code> to <code class="inline">import_deps</code>:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="6102669136-1">[</span><span class="w">
-  </span><span class="ss">import_deps</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6102669136-2">[</span><span class="ss">:funx</span><span class="p" data-group-id="6102669136-2">]</span><span class="p">,</span><span class="w">
-  </span><span class="ss">inputs</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6102669136-3">[</span><span class="s">&quot;{mix,.formatter}.exs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;{config,lib,test}/**/*.{ex,exs}&quot;</span><span class="p" data-group-id="6102669136-3">]</span><span class="w">
-</span><span class="p" data-group-id="6102669136-1">]</span></code></pre><h2 id="example" class="section-heading">
-  <a href="#example" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Example</span>
-</h2>
-<p>With this configuration, your DSL code will format cleanly:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">user_input</span><span class="w"> </span><span class="k" data-group-id="1726729785-1">do</span><span class="w">
+<p>The Funx library now exports formatter rules for its Either DSL, allowing projects that depend on Funx to automatically format DSL code without extra parentheses.</p><h2 id="exported-rules" class="section-heading"><a href="#exported-rules" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Exported Rules</span></h2><p>The following Either DSL functions are configured to format without parentheses:</p><ul><li><code class="inline">either/2</code> - DSL entry point</li><li><code class="inline">bind/1</code> - Chain operations that return Either or result tuples</li><li><code class="inline">map/1</code> - Transform values with plain functions</li><li><code class="inline">ap/1</code> - Apply function in Either to value in Either</li><li><code class="inline">validate/1</code> - Collect all errors from validators</li><li><code class="inline">filter_or_else/2</code> - Filter with predicate, fallback if fails</li><li><code class="inline">or_else/1</code> - Provide fallback on error</li><li><code class="inline">map_left/1</code> - Transform error values</li><li><code class="inline">tap</code> - Run a side-effecting function inside the chain without changing the data</li></ul><p>Note that <code class="inline">flip/0</code> - Swap Left and Right still requires parentheses.</p><h2 id="usage-in-dependent-projects" class="section-heading"><a href="#usage-in-dependent-projects" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Usage in Dependent Projects</span></h2><h3 id="step-1-add-to-dependencies" class="section-heading"><a href="#step-1-add-to-dependencies" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Step 1: Add to Dependencies</span></h3><p>Make sure your <code class="inline">mix.exs</code> includes Funx as a dependency:</p><pre><code class="makeup elixir" translate="no"><span class="kd">def</span><span class="w"> </span><span class="nf">deps</span><span class="w"> </span><span class="k" data-group-id="6044864089-1">do</span><span class="w">
+  </span><span class="p" data-group-id="6044864089-2">[</span><span class="w">
+    </span><span class="p" data-group-id="6044864089-3">{</span><span class="ss">:funx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;~&gt; 0.2&quot;</span><span class="p" data-group-id="6044864089-3">}</span><span class="w">
+  </span><span class="p" data-group-id="6044864089-2">]</span><span class="w">
+</span><span class="k" data-group-id="6044864089-1">end</span></code></pre><h3 id="step-2-update-formatter-exs" class="section-heading"><a href="#step-2-update-formatter-exs" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Step 2: Update .formatter.exs</span></h3><p>In your project's <code class="inline">.formatter.exs</code>, add <code class="inline">:funx</code> to <code class="inline">import_deps</code>:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="0165853216-1">[</span><span class="w">
+  </span><span class="ss">import_deps</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="0165853216-2">[</span><span class="ss">:funx</span><span class="p" data-group-id="0165853216-2">]</span><span class="p">,</span><span class="w">
+  </span><span class="ss">inputs</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="0165853216-3">[</span><span class="s">&quot;{mix,.formatter}.exs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;{config,lib,test}/**/*.{ex,exs}&quot;</span><span class="p" data-group-id="0165853216-3">]</span><span class="w">
+</span><span class="p" data-group-id="0165853216-1">]</span></code></pre><h2 id="example" class="section-heading"><a href="#example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><p>With this configuration, your DSL code will format cleanly:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="w"> </span><span class="n">user_input</span><span class="w"> </span><span class="k" data-group-id="7258028581-1">do</span><span class="w">
   </span><span class="n">bind</span><span class="w"> </span><span class="nc">ParseUser</span><span class="w">
   </span><span class="n">map</span><span class="w"> </span><span class="nc">ValidateEmail</span><span class="w">
-  </span><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="1726729785-2">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="1726729785-2">]</span><span class="w">
+  </span><span class="n">validate</span><span class="w"> </span><span class="p" data-group-id="7258028581-2">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="7258028581-2">]</span><span class="w">
   </span><span class="n">bind</span><span class="w"> </span><span class="nc">SaveToDatabase</span><span class="w">
-  </span><span class="n">or_else</span><span class="w"> </span><span class="n">default_user</span><span class="p" data-group-id="1726729785-3">(</span><span class="p" data-group-id="1726729785-3">)</span><span class="w">
-</span><span class="k" data-group-id="1726729785-1">end</span></code></pre><p>Instead of:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="p" data-group-id="9392375958-1">(</span><span class="n">user_input</span><span class="p" data-group-id="9392375958-1">)</span><span class="w"> </span><span class="k" data-group-id="9392375958-2">do</span><span class="w">
-  </span><span class="n">bind</span><span class="p" data-group-id="9392375958-3">(</span><span class="nc">ParseUser</span><span class="p" data-group-id="9392375958-3">)</span><span class="w">
-  </span><span class="n">map</span><span class="p" data-group-id="9392375958-4">(</span><span class="nc">ValidateEmail</span><span class="p" data-group-id="9392375958-4">)</span><span class="w">
-  </span><span class="n">validate</span><span class="p" data-group-id="9392375958-5">(</span><span class="p" data-group-id="9392375958-6">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="9392375958-6">]</span><span class="p" data-group-id="9392375958-5">)</span><span class="w">
-  </span><span class="n">bind</span><span class="p" data-group-id="9392375958-7">(</span><span class="nc">SaveToDatabase</span><span class="p" data-group-id="9392375958-7">)</span><span class="w">
-  </span><span class="n">or_else</span><span class="p" data-group-id="9392375958-8">(</span><span class="n">default_user</span><span class="p" data-group-id="9392375958-9">(</span><span class="p" data-group-id="9392375958-9">)</span><span class="p" data-group-id="9392375958-8">)</span><span class="w">
-</span><span class="k" data-group-id="9392375958-2">end</span></code></pre><h2 id="verification" class="section-heading">
-  <a href="#verification" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Verification</span>
-</h2>
-<p>To verify the formatter rules are being imported correctly, you can run:</p><pre><code class="makeup bash" translate="no"><span class="">mix format --check-formatted
+  </span><span class="n">or_else</span><span class="w"> </span><span class="n">default_user</span><span class="p" data-group-id="7258028581-3">(</span><span class="p" data-group-id="7258028581-3">)</span><span class="w">
+</span><span class="k" data-group-id="7258028581-1">end</span></code></pre><p>Instead of:</p><pre><code class="makeup elixir" translate="no"><span class="n">either</span><span class="p" data-group-id="3991564734-1">(</span><span class="n">user_input</span><span class="p" data-group-id="3991564734-1">)</span><span class="w"> </span><span class="k" data-group-id="3991564734-2">do</span><span class="w">
+  </span><span class="n">bind</span><span class="p" data-group-id="3991564734-3">(</span><span class="nc">ParseUser</span><span class="p" data-group-id="3991564734-3">)</span><span class="w">
+  </span><span class="n">map</span><span class="p" data-group-id="3991564734-4">(</span><span class="nc">ValidateEmail</span><span class="p" data-group-id="3991564734-4">)</span><span class="w">
+  </span><span class="n">validate</span><span class="p" data-group-id="3991564734-5">(</span><span class="p" data-group-id="3991564734-6">[</span><span class="nc">CheckLength</span><span class="p">,</span><span class="w"> </span><span class="nc">CheckFormat</span><span class="p" data-group-id="3991564734-6">]</span><span class="p" data-group-id="3991564734-5">)</span><span class="w">
+  </span><span class="n">bind</span><span class="p" data-group-id="3991564734-7">(</span><span class="nc">SaveToDatabase</span><span class="p" data-group-id="3991564734-7">)</span><span class="w">
+  </span><span class="n">or_else</span><span class="p" data-group-id="3991564734-8">(</span><span class="n">default_user</span><span class="p" data-group-id="3991564734-9">(</span><span class="p" data-group-id="3991564734-9">)</span><span class="p" data-group-id="3991564734-8">)</span><span class="w">
+</span><span class="k" data-group-id="3991564734-2">end</span></code></pre><h2 id="verification" class="section-heading"><a href="#verification" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Verification</span></h2><p>To verify the formatter rules are being imported correctly, you can run:</p><pre><code class="makeup bash" translate="no"><span class="">mix format --check-formatted
 </span></code></pre><p>Your DSL code should format without adding parentheses.</p>
+
 </div>
 
 <div class="bottom-actions" id="bottom-actions">
@@ -209,36 +156,38 @@ Overview
   </div>
 </div>
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+                (<a href="https://preview.hex.pm/preview/funx/0.4.0/show/FORMATTER_EXPORT.md">current file</a>)
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
-
-              (<a href="https://preview.hex.pm/preview/funx/0.3.0/show/FORMATTER_EXPORT.md">current file</a>)
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>

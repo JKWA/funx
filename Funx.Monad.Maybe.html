@@ -4,37 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="ExDoc v0.34.2">
-    <meta name="project" content="funx v0.3.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
 
 
-    <title>Funx.Monad.Maybe — funx v0.3.0</title>
-    <link rel="stylesheet" href="dist/html-elixir-F2VRIOKR.css" />
+    <title>Funx.Monad.Maybe — funx v0.4.0</title>
 
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Maybe.html" />
 
-    <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
-    <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-5C020EFA.js"></script>
-    <script src="docs_config.js"></script>
-    <script async src="dist/html-YIPIRHGU.js"></script>
+    <script defer src="dist/sidebar_items-F0A0DE4A.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
 
   </head>
-  <body data-type="modules" class="page-module">
-    <script>
-
-      try {
-        var settings = JSON.parse(localStorage.getItem('ex_doc:settings') || '{}');
-
-        if (settings.theme === 'dark' ||
-           ((settings.theme === 'system' || settings.theme == null) &&
-             window.matchMedia('(prefers-color-scheme: dark)').matches)
-           ) {
-          document.body.classList.add('dark')
-        }
-      } catch (error) { }
-    </script>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
 
 <div class="body-wrapper">
 
@@ -52,57 +39,51 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.3.0
+          v0.4.0
         </div>
       </div>
     </div>
-    <ul id="sidebar-listNav" class="sidebar-listNav" role="tablist">
-      <li>
-        <button id="extras-list-tab-button" role="tab" data-type="extras" aria-controls="extras-tab-panel" aria-selected="true" tabindex="0">
-Pages
-        </button>
-      </li>
-
-        <li>
-          <button id="modules-list-tab-button" role="tab" data-type="modules" aria-controls="modules-tab-panel" aria-selected="false" tabindex="-1">
-            Modules
-          </button>
-        </li>
-
-
-    </ul>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
   </div>
-
-  <div id="extras-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="extras-list-tab-button">
-    <ul id="extras-full-list" class="full-list"></ul>
-  </div>
-
-    <div id="modules-tab-panel" class="sidebar-tabpanel" role="tabpanel" aria-labelledby="modules-list-tab-button" hidden>
-      <ul id="modules-full-list" class="full-list"></ul>
-    </div>
-
-
 </nav>
 
-<main class="content">
-  <output role="status" id="toast"></output>
+<output role="status" id="toast"></output>
 
+<main class="content page-module" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
         <form class="search-bar" action="search.html">
           <label class="search-label">
             <span class="sr-only">Search documentation of funx</span>
-            <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
           </label>
-          <button type="submit" class="search-button" aria-label="Submit Search">
-            <i class="ri-search-2-line ri-lg" aria-hidden="true" title="Submit search"></i>
-          </button>
-          <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
-            <i class="ri-close-line ri-lg" title="Cancel search"></i>
-          </button>
         </form>
         <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
         </div>
         <button class="icon-settings display-settings">
           <i class="ri-settings-3-line"></i>
@@ -112,63 +93,23 @@ Pages
     </div>
 
 <div id="top-content">
-  <h1>
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Monad.Maybe</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L1" title="View Source" class="icon-action" rel="help">
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
 
-    <span translate="no">Funx.Monad.Maybe</span> 
-    <small class="app-vsn" translate="no">(funx v0.3.0)</small>
-
-  </h1>
+  </div>
 
 
     <section id="moduledoc">
-<p>The <a href="Funx.Monad.Maybe.html"><code class="inline">Funx.Monad.Maybe</code></a> module provides an implementation of the <code class="inline">Maybe</code> monad, a functional abstraction used to represent optional values in Elixir.</p><p>A <code class="inline">Maybe</code> represents one of two possibilities:</p><ul><li><code class="inline">Just(value)</code>: the presence of a value</li><li><code class="inline">Nothing</code>: the absence of a value</li></ul><p>This pattern is useful for eliminating <code class="inline">nil</code> checks and handling missing data explicitly and safely in functional pipelines.</p><h3 id="module-constructors" class="section-heading">
-  <a href="#module-constructors" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Constructors</span>
-</h3>
-<ul><li><a href="#just/1"><code class="inline">just/1</code></a>: Wraps a value in the <code class="inline">Just</code> variant.</li><li><a href="#nothing/0"><code class="inline">nothing/0</code></a>: Returns a <code class="inline">Nothing</code> value.</li><li><a href="#pure/1"><code class="inline">pure/1</code></a>: Alias for <a href="#just/1"><code class="inline">just/1</code></a>.</li></ul><h3 id="module-refinement" class="section-heading">
-  <a href="#module-refinement" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Refinement</span>
-</h3>
-<ul><li><a href="#just?/1"><code class="inline">just?/1</code></a>: Returns <code class="inline">true</code> if the value is a <code class="inline">Just</code>.</li><li><a href="#nothing?/1"><code class="inline">nothing?/1</code></a>: Returns <code class="inline">true</code> if the value is a <code class="inline">Nothing</code>.</li></ul><h3 id="module-fallback-and-extraction" class="section-heading">
-  <a href="#module-fallback-and-extraction" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Fallback and Extraction</span>
-</h3>
-<ul><li><a href="#get_or_else/2"><code class="inline">get_or_else/2</code></a>: Returns the value from a <code class="inline">Just</code>, or a default if <code class="inline">Nothing</code>.</li><li><a href="#or_else/2"><code class="inline">or_else/2</code></a>: Returns the original <code class="inline">Just</code>, or invokes a fallback function if <code class="inline">Nothing</code>.</li></ul><h3 id="module-list-operations" class="section-heading">
-  <a href="#module-list-operations" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">List Operations</span>
-</h3>
-<ul><li><a href="#concat/1"><code class="inline">concat/1</code></a>: Removes all <code class="inline">Nothing</code> values and unwraps the <code class="inline">Just</code> values from a list.</li><li><a href="#concat_map/2"><code class="inline">concat_map/2</code></a>: Applies a function and collects only <code class="inline">Just</code> results.</li><li><a href="#sequence/1"><code class="inline">sequence/1</code></a>: Converts a list of <code class="inline">Maybe</code> values into a single <code class="inline">Maybe</code> of list.</li><li><a href="#traverse/2"><code class="inline">traverse/2</code></a>: Applies a function to each element in a list and sequences the results.</li></ul><h3 id="module-lifting" class="section-heading">
-  <a href="#module-lifting" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Lifting</span>
-</h3>
-<ul><li><a href="#lift_predicate/2"><code class="inline">lift_predicate/2</code></a>: Converts a value to <code class="inline">Just</code> if it meets a predicate, otherwise <code class="inline">Nothing</code>.</li><li><a href="#lift_identity/1"><code class="inline">lift_identity/1</code></a>: Converts an <code class="inline">Identity</code> to a <code class="inline">Maybe</code>.</li><li><a href="#lift_either/1"><code class="inline">lift_either/1</code></a>: Converts an <code class="inline">Either</code> to a <code class="inline">Maybe</code>.</li><li><a href="#lift_eq/1"><code class="inline">lift_eq/1</code></a>: Lifts an equality function for use in the <code class="inline">Maybe</code> context.</li><li><a href="#lift_ord/1"><code class="inline">lift_ord/1</code></a>: Lifts an ordering function for use in the <code class="inline">Maybe</code> context.</li></ul><h3 id="module-elixir-interoperability" class="section-heading">
-  <a href="#module-elixir-interoperability" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Elixir Interoperability</span>
-</h3>
-<ul><li><a href="#from_nil/1"><code class="inline">from_nil/1</code></a>: Converts <code class="inline">nil</code> to <code class="inline">Nothing</code>, otherwise wraps the value in <code class="inline">Just</code>.</li><li><a href="#to_nil/1"><code class="inline">to_nil/1</code></a>: Returns the underlying value or <code class="inline">nil</code>.</li><li><a href="#from_result/1"><code class="inline">from_result/1</code></a>: Converts <code class="inline">{:ok, val}</code> or <code class="inline">{:error, _}</code> into a <code class="inline">Maybe</code>.</li><li><a href="#to_result/1"><code class="inline">to_result/1</code></a>: Converts a <code class="inline">Maybe</code> to a result tuple.</li><li><a href="#from_try/1"><code class="inline">from_try/1</code></a>: Runs a function and returns <code class="inline">Just</code> on success, or <code class="inline">Nothing</code> if an exception is raised.</li><li><a href="#to_try!/2"><code class="inline">to_try!/2</code></a>: Unwraps a <code class="inline">Just</code>, or raises an error if <code class="inline">Nothing</code>.</li></ul><h2 id="module-protocols" class="section-heading">
-  <a href="#module-protocols" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Protocols</span>
-</h2>
-<p>The <code class="inline">Just</code> and <code class="inline">Nothing</code> structs implement the following protocols, making the <code class="inline">Maybe</code> abstraction composable and extensible:</p><ul><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Enables equality comparisons between <code class="inline">Maybe</code> values.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Implements <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code> for reducing over the value or fallback.</li><li><a href="Funx.Filterable.html"><code class="inline">Funx.Filterable</code></a>: Supports conditional retention with <code class="inline">filter/2</code>, <code class="inline">guard/2</code>, and <code class="inline">filter_map/2</code>.</li><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Provides <code class="inline">map/2</code>, <code class="inline">ap/2</code>, and <code class="inline">bind/2</code> for monadic composition.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering behavior between <code class="inline">Just</code> and <code class="inline">Nothing</code> values.</li><li><a href="Funx.Tappable.html"><code class="inline">Funx.Tappable</code></a>: Executes side effects on <code class="inline">Just</code> values via <a href="Funx.Tappable.html#tap/2"><code class="inline">Funx.Tappable.tap/2</code></a>, leaving <code class="inline">Nothing</code> unchanged.</li></ul><p>Although these implementations are defined per constructor (<code class="inline">Just</code> and <code class="inline">Nothing</code>), the behavior is consistent across the <code class="inline">Maybe</code> abstraction.</p><p>This module helps you represent optional data explicitly, structure conditional logic safely, and eliminate reliance on <code class="inline">nil</code> in functional pipelines.</p>
+<p>The <a href="Funx.Monad.Maybe.html"><code class="inline">Funx.Monad.Maybe</code></a> module provides an implementation of the <code class="inline">Maybe</code> monad, a functional abstraction used to represent optional values in Elixir.</p><p>A <code class="inline">Maybe</code> represents one of two possibilities:</p><ul><li><code class="inline">Just(value)</code>: the presence of a value</li><li><code class="inline">Nothing</code>: the absence of a value</li></ul><p>This pattern is useful for eliminating <code class="inline">nil</code> checks and handling missing data explicitly and safely in functional pipelines.</p><h3 id="module-constructors" class="section-heading"><a href="#module-constructors" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Constructors</span></h3><ul><li><a href="#just/1"><code class="inline">just/1</code></a>: Wraps a value in the <code class="inline">Just</code> variant.</li><li><a href="#nothing/0"><code class="inline">nothing/0</code></a>: Returns a <code class="inline">Nothing</code> value.</li><li><a href="#pure/1"><code class="inline">pure/1</code></a>: Alias for <a href="#just/1"><code class="inline">just/1</code></a>.</li></ul><h3 id="module-refinement" class="section-heading"><a href="#module-refinement" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Refinement</span></h3><ul><li><a href="#just?/1"><code class="inline">just?/1</code></a>: Returns <code class="inline">true</code> if the value is a <code class="inline">Just</code>.</li><li><a href="#nothing?/1"><code class="inline">nothing?/1</code></a>: Returns <code class="inline">true</code> if the value is a <code class="inline">Nothing</code>.</li></ul><h3 id="module-fallback-and-extraction" class="section-heading"><a href="#module-fallback-and-extraction" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Fallback and Extraction</span></h3><ul><li><a href="#get_or_else/2"><code class="inline">get_or_else/2</code></a>: Returns the value from a <code class="inline">Just</code>, or a default if <code class="inline">Nothing</code>.</li><li><a href="#or_else/2"><code class="inline">or_else/2</code></a>: Returns the original <code class="inline">Just</code>, or invokes a fallback function if <code class="inline">Nothing</code>.</li></ul><h3 id="module-list-operations" class="section-heading"><a href="#module-list-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">List Operations</span></h3><ul><li><a href="#concat/1"><code class="inline">concat/1</code></a>: Removes all <code class="inline">Nothing</code> values and unwraps the <code class="inline">Just</code> values from a list.</li><li><a href="#concat_map/2"><code class="inline">concat_map/2</code></a>: Applies a function and collects only <code class="inline">Just</code> results.</li><li><a href="#sequence/1"><code class="inline">sequence/1</code></a>: Converts a list of <code class="inline">Maybe</code> values into a single <code class="inline">Maybe</code> of list.</li><li><a href="#traverse/2"><code class="inline">traverse/2</code></a>: Applies a function to each element in a list and sequences the results.</li></ul><h3 id="module-lifting" class="section-heading"><a href="#module-lifting" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Lifting</span></h3><ul><li><a href="#lift_predicate/2"><code class="inline">lift_predicate/2</code></a>: Converts a value to <code class="inline">Just</code> if it meets a predicate, otherwise <code class="inline">Nothing</code>.</li><li><a href="#lift_identity/1"><code class="inline">lift_identity/1</code></a>: Converts an <code class="inline">Identity</code> to a <code class="inline">Maybe</code>.</li><li><a href="#lift_either/1"><code class="inline">lift_either/1</code></a>: Converts an <code class="inline">Either</code> to a <code class="inline">Maybe</code>.</li><li><a href="#lift_eq/1"><code class="inline">lift_eq/1</code></a>: Lifts an equality function for use in the <code class="inline">Maybe</code> context.</li><li><a href="#lift_ord/1"><code class="inline">lift_ord/1</code></a>: Lifts an ordering function for use in the <code class="inline">Maybe</code> context.</li></ul><h3 id="module-elixir-interoperability" class="section-heading"><a href="#module-elixir-interoperability" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Elixir Interoperability</span></h3><ul><li><a href="#from_nil/1"><code class="inline">from_nil/1</code></a>: Converts <code class="inline">nil</code> to <code class="inline">Nothing</code>, otherwise wraps the value in <code class="inline">Just</code>.</li><li><a href="#to_nil/1"><code class="inline">to_nil/1</code></a>: Returns the underlying value or <code class="inline">nil</code>.</li><li><a href="#from_result/1"><code class="inline">from_result/1</code></a>: Converts <code class="inline">{:ok, val}</code> or <code class="inline">{:error, _}</code> into a <code class="inline">Maybe</code>.</li><li><a href="#to_result/1"><code class="inline">to_result/1</code></a>: Converts a <code class="inline">Maybe</code> to a result tuple.</li><li><a href="#from_try/1"><code class="inline">from_try/1</code></a>: Runs a function and returns <code class="inline">Just</code> on success, or <code class="inline">Nothing</code> if an exception is raised.</li><li><a href="#to_try!/2"><code class="inline">to_try!/2</code></a>: Unwraps a <code class="inline">Just</code>, or raises an error if <code class="inline">Nothing</code>.</li></ul><h2 id="module-protocols" class="section-heading"><a href="#module-protocols" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Protocols</span></h2><p>The <code class="inline">Just</code> and <code class="inline">Nothing</code> structs implement the following protocols, making the <code class="inline">Maybe</code> abstraction composable and extensible:</p><ul><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Enables equality comparisons between <code class="inline">Maybe</code> values.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Implements <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code> for reducing over the value or fallback.</li><li><a href="Funx.Filterable.html"><code class="inline">Funx.Filterable</code></a>: Supports conditional retention with <code class="inline">filter/2</code>, <code class="inline">guard/2</code>, and <code class="inline">filter_map/2</code>.</li><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Provides <code class="inline">map/2</code>, <code class="inline">ap/2</code>, and <code class="inline">bind/2</code> for monadic composition.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering behavior between <code class="inline">Just</code> and <code class="inline">Nothing</code> values.</li><li><a href="Funx.Tappable.html"><code class="inline">Funx.Tappable</code></a>: Executes side effects on <code class="inline">Just</code> values via <a href="Funx.Tappable.html#tap/2"><code class="inline">Funx.Tappable.tap/2</code></a>, leaving <code class="inline">Nothing</code> unchanged.</li></ul><p>Although these implementations are defined per constructor (<code class="inline">Just</code> and <code class="inline">Nothing</code>), the behavior is consistent across the <code class="inline">Maybe</code> abstraction.</p><p>This module helps you represent optional data explicitly, structure conditional logic safely, and eliminate reliance on <code class="inline">nil</code> in functional pipelines.</p>
     </section>
 
 </div>
@@ -187,7 +128,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/1" data-no-tooltip translate="no">t(value)</a>
+        <a href="#t:t/1" data-no-tooltip="" translate="no">t(value)</a>
 
       </div>
 
@@ -201,7 +142,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#concat/1" data-no-tooltip translate="no">concat(list)</a>
+        <a href="#concat/1" data-no-tooltip="" translate="no">concat(list)</a>
 
       </div>
 
@@ -211,7 +152,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#concat_map/2" data-no-tooltip translate="no">concat_map(list, func)</a>
+        <a href="#concat_map/2" data-no-tooltip="" translate="no">concat_map(list, func)</a>
 
       </div>
 
@@ -221,7 +162,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#from_nil/1" data-no-tooltip translate="no">from_nil(value)</a>
+        <a href="#from_nil/1" data-no-tooltip="" translate="no">from_nil(value)</a>
 
       </div>
 
@@ -231,7 +172,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#from_result/1" data-no-tooltip translate="no">from_result(arg)</a>
+        <a href="#from_result/1" data-no-tooltip="" translate="no">from_result(arg)</a>
 
       </div>
 
@@ -241,7 +182,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#from_try/1" data-no-tooltip translate="no">from_try(func)</a>
+        <a href="#from_try/1" data-no-tooltip="" translate="no">from_try(func)</a>
 
       </div>
 
@@ -251,7 +192,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#get_or_else/2" data-no-tooltip translate="no">get_or_else(maybe, default)</a>
+        <a href="#get_or_else/2" data-no-tooltip="" translate="no">get_or_else(maybe, default)</a>
 
       </div>
 
@@ -261,7 +202,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#just/1" data-no-tooltip translate="no">just(value)</a>
+        <a href="#just/1" data-no-tooltip="" translate="no">just(value)</a>
 
       </div>
 
@@ -271,7 +212,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#just?/1" data-no-tooltip translate="no">just?(arg1)</a>
+        <a href="#just?/1" data-no-tooltip="" translate="no">just?(arg1)</a>
 
       </div>
 
@@ -281,7 +222,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#lift_either/1" data-no-tooltip translate="no">lift_either(either)</a>
+        <a href="#lift_either/1" data-no-tooltip="" translate="no">lift_either(either)</a>
 
       </div>
 
@@ -291,7 +232,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#lift_eq/1" data-no-tooltip translate="no">lift_eq(custom_eq)</a>
+        <a href="#lift_eq/1" data-no-tooltip="" translate="no">lift_eq(custom_eq)</a>
 
       </div>
 
@@ -301,7 +242,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#lift_identity/1" data-no-tooltip translate="no">lift_identity(identity)</a>
+        <a href="#lift_identity/1" data-no-tooltip="" translate="no">lift_identity(identity)</a>
 
       </div>
 
@@ -311,7 +252,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#lift_ord/1" data-no-tooltip translate="no">lift_ord(custom_ord)</a>
+        <a href="#lift_ord/1" data-no-tooltip="" translate="no">lift_ord(custom_ord)</a>
 
       </div>
 
@@ -321,7 +262,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#lift_predicate/2" data-no-tooltip translate="no">lift_predicate(value, predicate)</a>
+        <a href="#lift_predicate/2" data-no-tooltip="" translate="no">lift_predicate(value, predicate)</a>
 
       </div>
 
@@ -331,7 +272,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#nothing/0" data-no-tooltip translate="no">nothing()</a>
+        <a href="#nothing/0" data-no-tooltip="" translate="no">nothing()</a>
 
       </div>
 
@@ -341,7 +282,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#nothing?/1" data-no-tooltip translate="no">nothing?(arg1)</a>
+        <a href="#nothing?/1" data-no-tooltip="" translate="no">nothing?(arg1)</a>
 
       </div>
 
@@ -351,7 +292,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#or_else/2" data-no-tooltip translate="no">or_else(just, fallback_fun)</a>
+        <a href="#or_else/2" data-no-tooltip="" translate="no">or_else(just, fallback_fun)</a>
 
       </div>
 
@@ -361,7 +302,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#pure/1" data-no-tooltip translate="no">pure(value)</a>
+        <a href="#pure/1" data-no-tooltip="" translate="no">pure(value)</a>
 
       </div>
 
@@ -371,7 +312,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#sequence/1" data-no-tooltip translate="no">sequence(list)</a>
+        <a href="#sequence/1" data-no-tooltip="" translate="no">sequence(list)</a>
 
       </div>
 
@@ -381,7 +322,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#to_nil/1" data-no-tooltip translate="no">to_nil(maybe)</a>
+        <a href="#to_nil/1" data-no-tooltip="" translate="no">to_nil(maybe)</a>
 
       </div>
 
@@ -391,7 +332,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#to_predicate/1" data-no-tooltip translate="no">to_predicate(maybe)</a>
+        <a href="#to_predicate/1" data-no-tooltip="" translate="no">to_predicate(maybe)</a>
 
       </div>
 
@@ -401,7 +342,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#to_result/1" data-no-tooltip translate="no">to_result(maybe)</a>
+        <a href="#to_result/1" data-no-tooltip="" translate="no">to_result(maybe)</a>
 
       </div>
 
@@ -411,7 +352,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#to_try!/2" data-no-tooltip translate="no">to_try!(maybe, message \\ &quot;Nothing value encountered&quot;)</a>
+        <a href="#to_try!/2" data-no-tooltip="" translate="no">to_try!(maybe, message \\ &quot;Nothing value encountered&quot;)</a>
 
       </div>
 
@@ -421,7 +362,7 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#traverse/2" data-no-tooltip translate="no">traverse(list, func)</a>
+        <a href="#traverse/2" data-no-tooltip="" translate="no">traverse(list, func)</a>
 
       </div>
 
@@ -441,22 +382,23 @@ Pages
       </a>
       <span class="text">Types</span>
     </h1>
+
     <div class="types-list">
 <section class="detail" id="t:t/1">
 
   <div class="detail-header">
-    <a href="#t:t/1" class="detail-link" data-no-tooltip title="Link to this type">
+    <a href="#t:t/1" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this type</span>
     </a>
-    <h1 class="signature" translate="no">t(value)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L77" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t(value)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L78" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -481,22 +423,23 @@ Pages
       </a>
       <span class="text">Functions</span>
     </h1>
+
     <div class="functions-list">
 <section class="detail" id="concat/1">
 
   <div class="detail-header">
-    <a href="#concat/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#concat/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">concat(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L278" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">concat(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L279" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -507,37 +450,31 @@ Pages
 
       </div>
 
-<p>Removes <code class="inline">Nothing</code> values from a list of <code class="inline">Maybe</code> and returns a list of unwrapped <code class="inline">Just</code> values.</p><h2 id="concat/1-examples" class="section-heading">
-  <a href="#concat/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="4486557055-1">(</span><span class="p" data-group-id="4486557055-2">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4486557055-3">(</span><span class="mi">1</span><span class="p" data-group-id="4486557055-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4486557055-4">(</span><span class="p" data-group-id="4486557055-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4486557055-5">(</span><span class="mi">2</span><span class="p" data-group-id="4486557055-5">)</span><span class="p" data-group-id="4486557055-2">]</span><span class="p" data-group-id="4486557055-1">)</span><span class="w">
-</span><span class="p" data-group-id="4486557055-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4486557055-6">]</span><span class="w">
+<p>Removes <code class="inline">Nothing</code> values from a list of <code class="inline">Maybe</code> and returns a list of unwrapped <code class="inline">Just</code> values.</p><h2 id="concat/1-examples" class="section-heading"><a href="#concat/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="2838147093-1">(</span><span class="p" data-group-id="2838147093-2">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2838147093-3">(</span><span class="mi">1</span><span class="p" data-group-id="2838147093-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2838147093-4">(</span><span class="p" data-group-id="2838147093-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2838147093-5">(</span><span class="mi">2</span><span class="p" data-group-id="2838147093-5">)</span><span class="p" data-group-id="2838147093-2">]</span><span class="p" data-group-id="2838147093-1">)</span><span class="w">
+</span><span class="p" data-group-id="2838147093-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2838147093-6">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="4486557055-7">(</span><span class="p" data-group-id="4486557055-8">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4486557055-9">(</span><span class="p" data-group-id="4486557055-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4486557055-10">(</span><span class="p" data-group-id="4486557055-10">)</span><span class="p" data-group-id="4486557055-8">]</span><span class="p" data-group-id="4486557055-7">)</span><span class="w">
-</span><span class="p" data-group-id="4486557055-11">[</span><span class="p" data-group-id="4486557055-11">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="2838147093-7">(</span><span class="p" data-group-id="2838147093-8">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2838147093-9">(</span><span class="p" data-group-id="2838147093-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2838147093-10">(</span><span class="p" data-group-id="2838147093-10">)</span><span class="p" data-group-id="2838147093-8">]</span><span class="p" data-group-id="2838147093-7">)</span><span class="w">
+</span><span class="p" data-group-id="2838147093-11">[</span><span class="p" data-group-id="2838147093-11">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="4486557055-12">(</span><span class="p" data-group-id="4486557055-13">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4486557055-14">(</span><span class="s">&quot;a&quot;</span><span class="p" data-group-id="4486557055-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4486557055-15">(</span><span class="s">&quot;b&quot;</span><span class="p" data-group-id="4486557055-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4486557055-16">(</span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="4486557055-16">)</span><span class="p" data-group-id="4486557055-13">]</span><span class="p" data-group-id="4486557055-12">)</span><span class="w">
-</span><span class="p" data-group-id="4486557055-17">[</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="4486557055-17">]</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="2838147093-12">(</span><span class="p" data-group-id="2838147093-13">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2838147093-14">(</span><span class="s">&quot;a&quot;</span><span class="p" data-group-id="2838147093-14">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2838147093-15">(</span><span class="s">&quot;b&quot;</span><span class="p" data-group-id="2838147093-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="2838147093-16">(</span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="2838147093-16">)</span><span class="p" data-group-id="2838147093-13">]</span><span class="p" data-group-id="2838147093-12">)</span><span class="w">
+</span><span class="p" data-group-id="2838147093-17">[</span><span class="s">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p" data-group-id="2838147093-17">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="concat_map/2">
 
   <div class="detail-header">
-    <a href="#concat_map/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#concat_map/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">concat_map(list, func)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L310" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">concat_map(list, func)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L311" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -549,45 +486,39 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Maps a function over a list, collecting unwrapped <code class="inline">Just</code> values and ignoring <code class="inline">Nothing</code> in a single pass.</p><h2 id="concat_map/2-examples" class="section-heading">
-  <a href="#concat_map/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="7026648806-1">(</span><span class="p" data-group-id="7026648806-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7026648806-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7026648806-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">rem</span><span class="p" data-group-id="7026648806-4">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7026648806-4">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7026648806-5">(</span><span class="n">x</span><span class="p" data-group-id="7026648806-5">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7026648806-6">(</span><span class="p" data-group-id="7026648806-6">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="7026648806-3">end</span><span class="p" data-group-id="7026648806-1">)</span><span class="w">
-</span><span class="p" data-group-id="7026648806-7">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7026648806-7">]</span><span class="w">
+<p>Maps a function over a list, collecting unwrapped <code class="inline">Just</code> values and ignoring <code class="inline">Nothing</code> in a single pass.</p><h2 id="concat_map/2-examples" class="section-heading"><a href="#concat_map/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="3896342579-1">(</span><span class="p" data-group-id="3896342579-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="3896342579-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3896342579-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">rem</span><span class="p" data-group-id="3896342579-4">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3896342579-4">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3896342579-5">(</span><span class="n">x</span><span class="p" data-group-id="3896342579-5">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3896342579-6">(</span><span class="p" data-group-id="3896342579-6">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3896342579-3">end</span><span class="p" data-group-id="3896342579-1">)</span><span class="w">
+</span><span class="p" data-group-id="3896342579-7">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="3896342579-7">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="7026648806-8">(</span><span class="p" data-group-id="7026648806-9">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7026648806-9">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7026648806-10">fn</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7026648806-11">(</span><span class="p" data-group-id="7026648806-11">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7026648806-12">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7026648806-12">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="7026648806-10">end</span><span class="p" data-group-id="7026648806-8">)</span><span class="w">
-</span><span class="p" data-group-id="7026648806-13">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p" data-group-id="7026648806-13">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="3896342579-8">(</span><span class="p" data-group-id="3896342579-9">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="3896342579-9">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3896342579-10">fn</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3896342579-11">(</span><span class="p" data-group-id="3896342579-11">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3896342579-12">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3896342579-12">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3896342579-10">end</span><span class="p" data-group-id="3896342579-8">)</span><span class="w">
+</span><span class="p" data-group-id="3896342579-13">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p" data-group-id="3896342579-13">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="7026648806-14">(</span><span class="p" data-group-id="7026648806-15">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7026648806-15">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7026648806-16">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7026648806-17">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7026648806-17">)</span><span class="w"> </span><span class="k" data-group-id="7026648806-16">end</span><span class="p" data-group-id="7026648806-14">)</span><span class="w">
-</span><span class="p" data-group-id="7026648806-18">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7026648806-18">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="3896342579-14">(</span><span class="p" data-group-id="3896342579-15">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="3896342579-15">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3896342579-16">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3896342579-17">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="3896342579-17">)</span><span class="w"> </span><span class="k" data-group-id="3896342579-16">end</span><span class="p" data-group-id="3896342579-14">)</span><span class="w">
+</span><span class="p" data-group-id="3896342579-18">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="3896342579-18">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="7026648806-19">(</span><span class="p" data-group-id="7026648806-20">[</span><span class="p" data-group-id="7026648806-20">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7026648806-21">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7026648806-22">(</span><span class="n">x</span><span class="p" data-group-id="7026648806-22">)</span><span class="w"> </span><span class="k" data-group-id="7026648806-21">end</span><span class="p" data-group-id="7026648806-19">)</span><span class="w">
-</span><span class="p" data-group-id="7026648806-23">[</span><span class="p" data-group-id="7026648806-23">]</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">concat_map</span><span class="p" data-group-id="3896342579-19">(</span><span class="p" data-group-id="3896342579-20">[</span><span class="p" data-group-id="3896342579-20">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3896342579-21">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3896342579-22">(</span><span class="n">x</span><span class="p" data-group-id="3896342579-22">)</span><span class="w"> </span><span class="k" data-group-id="3896342579-21">end</span><span class="p" data-group-id="3896342579-19">)</span><span class="w">
+</span><span class="p" data-group-id="3896342579-23">[</span><span class="p" data-group-id="3896342579-23">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="from_nil/1">
 
   <div class="detail-header">
-    <a href="#from_nil/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#from_nil/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">from_nil(value)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L460" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">from_nil(value)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L461" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -598,34 +529,28 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Converts <code class="inline">nil</code> to <code class="inline">Nothing</code>; any other value becomes <code class="inline">Just</code>.</p><h2 id="from_nil/1-examples" class="section-heading">
-  <a href="#from_nil/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="0546700804-1">(</span><span class="no">nil</span><span class="p" data-group-id="0546700804-1">)</span><span class="w">
-</span><span class="p" data-group-id="0546700804-2">%</span><span class="nc" data-group-id="0546700804-2">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="0546700804-2">{</span><span class="p" data-group-id="0546700804-2">}</span><span class="w">
+<p>Converts <code class="inline">nil</code> to <code class="inline">Nothing</code>; any other value becomes <code class="inline">Just</code>.</p><h2 id="from_nil/1-examples" class="section-heading"><a href="#from_nil/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="7289781591-1">(</span><span class="no">nil</span><span class="p" data-group-id="7289781591-1">)</span><span class="w">
+</span><span class="p" data-group-id="7289781591-2">%</span><span class="nc" data-group-id="7289781591-2">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7289781591-2">{</span><span class="p" data-group-id="7289781591-2">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="0546700804-3">(</span><span class="mi">5</span><span class="p" data-group-id="0546700804-3">)</span><span class="w">
-</span><span class="p" data-group-id="0546700804-4">%</span><span class="nc" data-group-id="0546700804-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="0546700804-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0546700804-4">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_nil</span><span class="p" data-group-id="7289781591-3">(</span><span class="mi">5</span><span class="p" data-group-id="7289781591-3">)</span><span class="w">
+</span><span class="p" data-group-id="7289781591-4">%</span><span class="nc" data-group-id="7289781591-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7289781591-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7289781591-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="from_result/1">
 
   <div class="detail-header">
-    <a href="#from_result/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#from_result/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">from_result(arg)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L533" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">from_result(arg)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L534" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -636,34 +561,28 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Converts a result tuple to a <code class="inline">Maybe</code>. <code class="inline">{:ok, value}</code> becomes <code class="inline">Just(value)</code>, while <code class="inline">{:error, _}</code> becomes <code class="inline">Nothing</code>.</p><h2 id="from_result/1-examples" class="section-heading">
-  <a href="#from_result/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="7149631522-1">(</span><span class="p" data-group-id="7149631522-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7149631522-2">}</span><span class="p" data-group-id="7149631522-1">)</span><span class="w">
-</span><span class="p" data-group-id="7149631522-3">%</span><span class="nc" data-group-id="7149631522-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7149631522-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7149631522-3">}</span><span class="w">
+<p>Converts a result tuple to a <code class="inline">Maybe</code>. <code class="inline">{:ok, value}</code> becomes <code class="inline">Just(value)</code>, while <code class="inline">{:error, _}</code> becomes <code class="inline">Nothing</code>.</p><h2 id="from_result/1-examples" class="section-heading"><a href="#from_result/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="2021473297-1">(</span><span class="p" data-group-id="2021473297-2">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2021473297-2">}</span><span class="p" data-group-id="2021473297-1">)</span><span class="w">
+</span><span class="p" data-group-id="2021473297-3">%</span><span class="nc" data-group-id="2021473297-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="2021473297-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2021473297-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="7149631522-4">(</span><span class="p" data-group-id="7149631522-5">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:something</span><span class="p" data-group-id="7149631522-5">}</span><span class="p" data-group-id="7149631522-4">)</span><span class="w">
-</span><span class="p" data-group-id="7149631522-6">%</span><span class="nc" data-group-id="7149631522-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7149631522-6">{</span><span class="p" data-group-id="7149631522-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_result</span><span class="p" data-group-id="2021473297-4">(</span><span class="p" data-group-id="2021473297-5">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:something</span><span class="p" data-group-id="2021473297-5">}</span><span class="p" data-group-id="2021473297-4">)</span><span class="w">
+</span><span class="p" data-group-id="2021473297-6">%</span><span class="nc" data-group-id="2021473297-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="2021473297-6">{</span><span class="p" data-group-id="2021473297-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="from_try/1">
 
   <div class="detail-header">
-    <a href="#from_try/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#from_try/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">from_try(func)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L491" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">from_try(func)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L492" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -674,34 +593,28 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Executes a function within a <code class="inline">Maybe</code> context, returning <code class="inline">Nothing</code> if an exception occurs.</p><h2 id="from_try/1-examples" class="section-heading">
-  <a href="#from_try/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="7290654656-1">(</span><span class="k" data-group-id="7290654656-2">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="7290654656-2">end</span><span class="p" data-group-id="7290654656-1">)</span><span class="w">
-</span><span class="p" data-group-id="7290654656-3">%</span><span class="nc" data-group-id="7290654656-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7290654656-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7290654656-3">}</span><span class="w">
+<p>Executes a function within a <code class="inline">Maybe</code> context, returning <code class="inline">Nothing</code> if an exception occurs.</p><h2 id="from_try/1-examples" class="section-heading"><a href="#from_try/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="4584052587-1">(</span><span class="k" data-group-id="4584052587-2">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="4584052587-2">end</span><span class="p" data-group-id="4584052587-1">)</span><span class="w">
+</span><span class="p" data-group-id="4584052587-3">%</span><span class="nc" data-group-id="4584052587-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="4584052587-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4584052587-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="7290654656-4">(</span><span class="k" data-group-id="7290654656-5">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="7290654656-5">end</span><span class="p" data-group-id="7290654656-4">)</span><span class="w">
-</span><span class="p" data-group-id="7290654656-6">%</span><span class="nc" data-group-id="7290654656-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7290654656-6">{</span><span class="p" data-group-id="7290654656-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">from_try</span><span class="p" data-group-id="4584052587-4">(</span><span class="k" data-group-id="4584052587-5">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s">&quot;error&quot;</span><span class="w"> </span><span class="k" data-group-id="4584052587-5">end</span><span class="p" data-group-id="4584052587-4">)</span><span class="w">
+</span><span class="p" data-group-id="4584052587-6">%</span><span class="nc" data-group-id="4584052587-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="4584052587-6">{</span><span class="p" data-group-id="4584052587-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="get_or_else/2">
 
   <div class="detail-header">
-    <a href="#get_or_else/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#get_or_else/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">get_or_else(maybe, default)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L153" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">get_or_else(maybe, default)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L154" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -712,34 +625,28 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Retrieves the value from a <code class="inline">Maybe</code>, returning <code class="inline">default</code> if <code class="inline">Nothing</code>.</p><h2 id="get_or_else/2-examples" class="section-heading">
-  <a href="#get_or_else/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="4946575853-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4946575853-2">(</span><span class="mi">5</span><span class="p" data-group-id="4946575853-2">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4946575853-1">)</span><span class="w">
+<p>Retrieves the value from a <code class="inline">Maybe</code>, returning <code class="inline">default</code> if <code class="inline">Nothing</code>.</p><h2 id="get_or_else/2-examples" class="section-heading"><a href="#get_or_else/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="9663859431-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9663859431-2">(</span><span class="mi">5</span><span class="p" data-group-id="9663859431-2">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="9663859431-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="4946575853-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4946575853-4">(</span><span class="p" data-group-id="4946575853-4">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4946575853-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">get_or_else</span><span class="p" data-group-id="9663859431-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9663859431-4">(</span><span class="p" data-group-id="9663859431-4">)</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="9663859431-3">)</span><span class="w">
 </span><span class="mi">0</span></code></pre>
   </section>
 </section>
 <section class="detail" id="just/1">
 
   <div class="detail-header">
-    <a href="#just/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#just/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">just(value)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L87" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">just(value)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L88" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -750,31 +657,25 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Wraps a value in <code class="inline">Just</code>.</p><h2 id="just/1-examples" class="section-heading">
-  <a href="#just/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6491701984-1">(</span><span class="mi">2</span><span class="p" data-group-id="6491701984-1">)</span><span class="w">
-</span><span class="p" data-group-id="6491701984-2">%</span><span class="nc" data-group-id="6491701984-2">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="6491701984-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6491701984-2">}</span></code></pre>
+<p>Wraps a value in <code class="inline">Just</code>.</p><h2 id="just/1-examples" class="section-heading"><a href="#just/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3205776813-1">(</span><span class="mi">2</span><span class="p" data-group-id="3205776813-1">)</span><span class="w">
+</span><span class="p" data-group-id="3205776813-2">%</span><span class="nc" data-group-id="3205776813-2">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3205776813-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3205776813-2">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="just?/1">
 
   <div class="detail-header">
-    <a href="#just?/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#just?/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">just?(arg1)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L123" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">just?(arg1)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L124" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -785,66 +686,54 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Returns <code class="inline">true</code> if the <code class="inline">Maybe</code> is <code class="inline">Just</code>, otherwise <code class="inline">false</code>.</p><h2 id="just?/1-examples" class="section-heading">
-  <a href="#just?/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="6524417691-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6524417691-2">(</span><span class="mi">5</span><span class="p" data-group-id="6524417691-2">)</span><span class="p" data-group-id="6524417691-1">)</span><span class="w">
+<p>Returns <code class="inline">true</code> if the <code class="inline">Maybe</code> is <code class="inline">Just</code>, otherwise <code class="inline">false</code>.</p><h2 id="just?/1-examples" class="section-heading"><a href="#just?/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="0310857862-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0310857862-2">(</span><span class="mi">5</span><span class="p" data-group-id="0310857862-2">)</span><span class="p" data-group-id="0310857862-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="6524417691-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6524417691-4">(</span><span class="p" data-group-id="6524417691-4">)</span><span class="p" data-group-id="6524417691-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just?</span><span class="p" data-group-id="0310857862-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="0310857862-4">(</span><span class="p" data-group-id="0310857862-4">)</span><span class="p" data-group-id="0310857862-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="lift_either/1">
 
   <div class="detail-header">
-    <a href="#lift_either/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#lift_either/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">lift_either(either)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L401" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">lift_either(either)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L402" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
 
-<p>Converts an <code class="inline">Either</code> to a <code class="inline">Maybe</code>. <code class="inline">Right</code> becomes <code class="inline">Just</code>, and <code class="inline">Left</code> becomes <code class="inline">Nothing</code>.</p><h2 id="lift_either/1-examples" class="section-heading">
-  <a href="#lift_either/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="4052989700-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="4052989700-2">(</span><span class="mi">5</span><span class="p" data-group-id="4052989700-2">)</span><span class="p" data-group-id="4052989700-1">)</span><span class="w">
-</span><span class="p" data-group-id="4052989700-3">%</span><span class="nc" data-group-id="4052989700-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="4052989700-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4052989700-3">}</span><span class="w">
+<p>Converts an <code class="inline">Either</code> to a <code class="inline">Maybe</code>. <code class="inline">Right</code> becomes <code class="inline">Just</code>, and <code class="inline">Left</code> becomes <code class="inline">Nothing</code>.</p><h2 id="lift_either/1-examples" class="section-heading"><a href="#lift_either/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="0743348307-1">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0743348307-2">(</span><span class="mi">5</span><span class="p" data-group-id="0743348307-2">)</span><span class="p" data-group-id="0743348307-1">)</span><span class="w">
+</span><span class="p" data-group-id="0743348307-3">%</span><span class="nc" data-group-id="0743348307-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="0743348307-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0743348307-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="4052989700-4">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="4052989700-5">(</span><span class="s">&quot;Error&quot;</span><span class="p" data-group-id="4052989700-5">)</span><span class="p" data-group-id="4052989700-4">)</span><span class="w">
-</span><span class="p" data-group-id="4052989700-6">%</span><span class="nc" data-group-id="4052989700-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="4052989700-6">{</span><span class="p" data-group-id="4052989700-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_either</span><span class="p" data-group-id="0743348307-4">(</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0743348307-5">(</span><span class="s">&quot;Error&quot;</span><span class="p" data-group-id="0743348307-5">)</span><span class="p" data-group-id="0743348307-4">)</span><span class="w">
+</span><span class="p" data-group-id="0743348307-6">%</span><span class="nc" data-group-id="0743348307-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="0743348307-6">{</span><span class="p" data-group-id="0743348307-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="lift_eq/1">
 
   <div class="detail-header">
-    <a href="#lift_eq/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#lift_eq/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">lift_eq(custom_eq)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L194" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">lift_eq(custom_eq)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L195" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -855,73 +744,61 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Lifts an equality function to compare <code class="inline">Maybe</code> values:</p><ul><li><code class="inline">Just</code> vs <code class="inline">Just</code>: Uses the custom equality function.</li><li><code class="inline">Nothing</code> vs <code class="inline">Nothing</code>: Always <code class="inline">true</code>.</li><li><code class="inline">Just</code> vs <code class="inline">Nothing</code> or vice versa: Always <code class="inline">false</code>.</li></ul><h2 id="lift_eq/1-examples" class="section-heading">
-  <a href="#lift_eq/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_eq</span><span class="p" data-group-id="9373578453-1">(</span><span class="p" data-group-id="9373578453-2">%{</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="9373578453-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="9373578453-3">end</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="9373578453-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="9373578453-4">end</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="9373578453-2">}</span><span class="p" data-group-id="9373578453-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9373578453-5">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9373578453-6">(</span><span class="mi">5</span><span class="p" data-group-id="9373578453-6">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9373578453-7">(</span><span class="mi">5</span><span class="p" data-group-id="9373578453-7">)</span><span class="p" data-group-id="9373578453-5">)</span><span class="w">
+<p>Lifts an equality function to compare <code class="inline">Maybe</code> values:</p><ul><li><code class="inline">Just</code> vs <code class="inline">Just</code>: Uses the custom equality function.</li><li><code class="inline">Nothing</code> vs <code class="inline">Nothing</code>: Always <code class="inline">true</code>.</li><li><code class="inline">Just</code> vs <code class="inline">Nothing</code> or vice versa: Always <code class="inline">false</code>.</li></ul><h2 id="lift_eq/1-examples" class="section-heading"><a href="#lift_eq/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_eq</span><span class="p" data-group-id="1405095767-1">(</span><span class="p" data-group-id="1405095767-2">%{</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1405095767-3">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1405095767-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1405095767-4">fn</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="k" data-group-id="1405095767-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="1405095767-2">}</span><span class="p" data-group-id="1405095767-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="1405095767-5">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1405095767-6">(</span><span class="mi">5</span><span class="p" data-group-id="1405095767-6">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1405095767-7">(</span><span class="mi">5</span><span class="p" data-group-id="1405095767-7">)</span><span class="p" data-group-id="1405095767-5">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9373578453-8">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9373578453-9">(</span><span class="mi">5</span><span class="p" data-group-id="9373578453-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9373578453-10">(</span><span class="mi">10</span><span class="p" data-group-id="9373578453-10">)</span><span class="p" data-group-id="9373578453-8">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="1405095767-8">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1405095767-9">(</span><span class="mi">5</span><span class="p" data-group-id="1405095767-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1405095767-10">(</span><span class="mi">10</span><span class="p" data-group-id="1405095767-10">)</span><span class="p" data-group-id="1405095767-8">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9373578453-11">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9373578453-12">(</span><span class="p" data-group-id="9373578453-12">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9373578453-13">(</span><span class="p" data-group-id="9373578453-13">)</span><span class="p" data-group-id="9373578453-11">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="1405095767-11">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1405095767-12">(</span><span class="p" data-group-id="1405095767-12">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1405095767-13">(</span><span class="p" data-group-id="1405095767-13">)</span><span class="p" data-group-id="1405095767-11">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="9373578453-14">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9373578453-15">(</span><span class="mi">5</span><span class="p" data-group-id="9373578453-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9373578453-16">(</span><span class="p" data-group-id="9373578453-16">)</span><span class="p" data-group-id="9373578453-14">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="1405095767-14">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1405095767-15">(</span><span class="mi">5</span><span class="p" data-group-id="1405095767-15">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1405095767-16">(</span><span class="p" data-group-id="1405095767-16">)</span><span class="p" data-group-id="1405095767-14">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="lift_identity/1">
 
   <div class="detail-header">
-    <a href="#lift_identity/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#lift_identity/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">lift_identity(identity)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L383" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">lift_identity(identity)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L384" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
 
-<p>Converts an <code class="inline">Identity</code> value into a <code class="inline">Maybe</code>. If the value is <code class="inline">nil</code>, returns <code class="inline">Nothing</code>; otherwise <code class="inline">Just</code>.</p><h2 id="lift_identity/1-examples" class="section-heading">
-  <a href="#lift_identity/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="0569763797-1">(</span><span class="nc">Funx.Monad.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="0569763797-2">(</span><span class="mi">5</span><span class="p" data-group-id="0569763797-2">)</span><span class="p" data-group-id="0569763797-1">)</span><span class="w">
-</span><span class="p" data-group-id="0569763797-3">%</span><span class="nc" data-group-id="0569763797-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="0569763797-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0569763797-3">}</span><span class="w">
+<p>Converts an <code class="inline">Identity</code> value into a <code class="inline">Maybe</code>. If the value is <code class="inline">nil</code>, returns <code class="inline">Nothing</code>; otherwise <code class="inline">Just</code>.</p><h2 id="lift_identity/1-examples" class="section-heading"><a href="#lift_identity/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="7894357932-1">(</span><span class="nc">Funx.Monad.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7894357932-2">(</span><span class="mi">5</span><span class="p" data-group-id="7894357932-2">)</span><span class="p" data-group-id="7894357932-1">)</span><span class="w">
+</span><span class="p" data-group-id="7894357932-3">%</span><span class="nc" data-group-id="7894357932-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7894357932-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7894357932-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="0569763797-4">(</span><span class="nc">Funx.Monad.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="0569763797-5">(</span><span class="no">nil</span><span class="p" data-group-id="0569763797-5">)</span><span class="p" data-group-id="0569763797-4">)</span><span class="w">
-</span><span class="p" data-group-id="0569763797-6">%</span><span class="nc" data-group-id="0569763797-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="0569763797-6">{</span><span class="p" data-group-id="0569763797-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_identity</span><span class="p" data-group-id="7894357932-4">(</span><span class="nc">Funx.Monad.Identity</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="7894357932-5">(</span><span class="no">nil</span><span class="p" data-group-id="7894357932-5">)</span><span class="p" data-group-id="7894357932-4">)</span><span class="w">
+</span><span class="p" data-group-id="7894357932-6">%</span><span class="nc" data-group-id="7894357932-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7894357932-6">{</span><span class="p" data-group-id="7894357932-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="lift_ord/1">
 
   <div class="detail-header">
-    <a href="#lift_ord/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#lift_ord/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">lift_ord(custom_ord)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L232" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">lift_ord(custom_ord)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L233" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -932,39 +809,33 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Adapts an ordering function to compare <code class="inline">Maybe</code> values:</p><ul><li><code class="inline">Nothing</code> is considered less than any <code class="inline">Just</code>.</li><li>Two <code class="inline">Just</code> values are compared by the provided function.</li></ul><h2 id="lift_ord/1-examples" class="section-heading">
-  <a href="#lift_ord/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_ord</span><span class="p" data-group-id="4271090838-1">(</span><span class="p" data-group-id="4271090838-2">%{</span><span class="w">
+<p>Adapts an ordering function to compare <code class="inline">Maybe</code> values:</p><ul><li><code class="inline">Nothing</code> is considered less than any <code class="inline">Just</code>.</li><li>Two <code class="inline">Just</code> values are compared by the provided function.</li></ul><h2 id="lift_ord/1-examples" class="section-heading"><a href="#lift_ord/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_ord</span><span class="p" data-group-id="3221191452-1">(</span><span class="p" data-group-id="3221191452-2">%{</span><span class="w">
 </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">lt?</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="o">&lt;</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="w">
 </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">le?</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="o">&lt;=</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="w">
 </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">gt?</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="o">&gt;</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="w">
 </span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">ge?</span><span class="p">:</span><span class="w"> </span><span class="o">&amp;</span><span class="o">&gt;=</span><span class="o">/</span><span class="mi">2</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="4271090838-2">}</span><span class="p" data-group-id="4271090838-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="4271090838-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4271090838-4">(</span><span class="mi">3</span><span class="p" data-group-id="4271090838-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4271090838-5">(</span><span class="mi">5</span><span class="p" data-group-id="4271090838-5">)</span><span class="p" data-group-id="4271090838-3">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="3221191452-2">}</span><span class="p" data-group-id="3221191452-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="3221191452-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3221191452-4">(</span><span class="mi">3</span><span class="p" data-group-id="3221191452-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3221191452-5">(</span><span class="mi">5</span><span class="p" data-group-id="3221191452-5">)</span><span class="p" data-group-id="3221191452-3">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="4271090838-6">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4271090838-7">(</span><span class="p" data-group-id="4271090838-7">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4271090838-8">(</span><span class="mi">5</span><span class="p" data-group-id="4271090838-8">)</span><span class="p" data-group-id="4271090838-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="3221191452-6">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3221191452-7">(</span><span class="p" data-group-id="3221191452-7">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3221191452-8">(</span><span class="mi">5</span><span class="p" data-group-id="3221191452-8">)</span><span class="p" data-group-id="3221191452-6">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
 <section class="detail" id="lift_predicate/2">
 
   <div class="detail-header">
-    <a href="#lift_predicate/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#lift_predicate/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">lift_predicate(value, predicate)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L420" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">lift_predicate(value, predicate)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L421" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -975,34 +846,28 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Lifts a value into <code class="inline">Maybe</code> based on a predicate. If <code class="inline">predicate.(value)</code> is <code class="inline">true</code>, returns <code class="inline">Just(value)</code>; otherwise <code class="inline">Nothing</code>.</p><h2 id="lift_predicate/2-examples" class="section-heading">
-  <a href="#lift_predicate/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3932291059-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3932291059-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="3932291059-2">end</span><span class="p" data-group-id="3932291059-1">)</span><span class="w">
-</span><span class="p" data-group-id="3932291059-3">%</span><span class="nc" data-group-id="3932291059-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3932291059-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3932291059-3">}</span><span class="w">
+<p>Lifts a value into <code class="inline">Maybe</code> based on a predicate. If <code class="inline">predicate.(value)</code> is <code class="inline">true</code>, returns <code class="inline">Just(value)</code>; otherwise <code class="inline">Nothing</code>.</p><h2 id="lift_predicate/2-examples" class="section-heading"><a href="#lift_predicate/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7172724406-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7172724406-2">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="7172724406-2">end</span><span class="p" data-group-id="7172724406-1">)</span><span class="w">
+</span><span class="p" data-group-id="7172724406-3">%</span><span class="nc" data-group-id="7172724406-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7172724406-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7172724406-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="3932291059-4">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3932291059-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="3932291059-5">end</span><span class="p" data-group-id="3932291059-4">)</span><span class="w">
-</span><span class="p" data-group-id="3932291059-6">%</span><span class="nc" data-group-id="3932291059-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="3932291059-6">{</span><span class="p" data-group-id="3932291059-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="7172724406-4">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7172724406-5">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="7172724406-5">end</span><span class="p" data-group-id="7172724406-4">)</span><span class="w">
+</span><span class="p" data-group-id="7172724406-6">%</span><span class="nc" data-group-id="7172724406-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7172724406-6">{</span><span class="p" data-group-id="7172724406-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="nothing/0">
 
   <div class="detail-header">
-    <a href="#nothing/0" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#nothing/0" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">nothing()</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L98" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">nothing()</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L99" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -1013,31 +878,25 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Returns a <code class="inline">Nothing</code> value.</p><h2 id="nothing/0-examples" class="section-heading">
-  <a href="#nothing/0-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6019301565-1">(</span><span class="p" data-group-id="6019301565-1">)</span><span class="w">
-</span><span class="p" data-group-id="6019301565-2">%</span><span class="nc" data-group-id="6019301565-2">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="6019301565-2">{</span><span class="p" data-group-id="6019301565-2">}</span></code></pre>
+<p>Returns a <code class="inline">Nothing</code> value.</p><h2 id="nothing/0-examples" class="section-heading"><a href="#nothing/0-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9639226316-1">(</span><span class="p" data-group-id="9639226316-1">)</span><span class="w">
+</span><span class="p" data-group-id="9639226316-2">%</span><span class="nc" data-group-id="9639226316-2">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="9639226316-2">{</span><span class="p" data-group-id="9639226316-2">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="nothing?/1">
 
   <div class="detail-header">
-    <a href="#nothing?/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#nothing?/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">nothing?(arg1)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L138" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">nothing?(arg1)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L139" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -1048,72 +907,60 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Returns <code class="inline">true</code> if the <code class="inline">Maybe</code> is <code class="inline">Nothing</code>, otherwise <code class="inline">false</code>.</p><h2 id="nothing?/1-examples" class="section-heading">
-  <a href="#nothing?/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="7672272603-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7672272603-2">(</span><span class="p" data-group-id="7672272603-2">)</span><span class="p" data-group-id="7672272603-1">)</span><span class="w">
+<p>Returns <code class="inline">true</code> if the <code class="inline">Maybe</code> is <code class="inline">Nothing</code>, otherwise <code class="inline">false</code>.</p><h2 id="nothing?/1-examples" class="section-heading"><a href="#nothing?/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="9580747435-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9580747435-2">(</span><span class="p" data-group-id="9580747435-2">)</span><span class="p" data-group-id="9580747435-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="7672272603-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7672272603-4">(</span><span class="mi">5</span><span class="p" data-group-id="7672272603-4">)</span><span class="p" data-group-id="7672272603-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing?</span><span class="p" data-group-id="9580747435-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9580747435-4">(</span><span class="mi">5</span><span class="p" data-group-id="9580747435-4">)</span><span class="p" data-group-id="9580747435-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
 <section class="detail" id="or_else/2">
 
   <div class="detail-header">
-    <a href="#or_else/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#or_else/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">or_else(just, fallback_fun)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L169" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">or_else(just, fallback_fun)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L170" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> or_else(<a href="#t:t/1">t</a>(value), (-&gt; <a href="#t:t/1">t</a>(value))) :: <a href="#t:t/1">t</a>(value) when value: var</pre>
+          <pre translate="no"><span class="attribute">@spec</span> or_else(<a href="#t:t/1">t</a>(value), (-&gt; <a href="#t:t/1">t</a>(value))) :: <a href="#t:t/1">t</a>(value)</pre>
 
       </div>
 
-<p>Returns the current <code class="inline">Just</code> value or invokes the <code class="inline">fallback_fun</code> if <code class="inline">Nothing</code>.</p><h2 id="or_else/2-examples" class="section-heading">
-  <a href="#or_else/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="4923729865-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4923729865-2">(</span><span class="p" data-group-id="4923729865-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4923729865-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4923729865-4">(</span><span class="mi">42</span><span class="p" data-group-id="4923729865-4">)</span><span class="w"> </span><span class="k" data-group-id="4923729865-3">end</span><span class="p" data-group-id="4923729865-1">)</span><span class="w">
-</span><span class="p" data-group-id="4923729865-5">%</span><span class="nc" data-group-id="4923729865-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="4923729865-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="4923729865-5">}</span><span class="w">
+<p>Returns the current <code class="inline">Just</code> value or invokes the <code class="inline">fallback_fun</code> if <code class="inline">Nothing</code>.</p><h2 id="or_else/2-examples" class="section-heading"><a href="#or_else/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="7173679456-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7173679456-2">(</span><span class="p" data-group-id="7173679456-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7173679456-3">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7173679456-4">(</span><span class="mi">42</span><span class="p" data-group-id="7173679456-4">)</span><span class="w"> </span><span class="k" data-group-id="7173679456-3">end</span><span class="p" data-group-id="7173679456-1">)</span><span class="w">
+</span><span class="p" data-group-id="7173679456-5">%</span><span class="nc" data-group-id="7173679456-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7173679456-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="7173679456-5">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="4923729865-6">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4923729865-7">(</span><span class="mi">10</span><span class="p" data-group-id="4923729865-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4923729865-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4923729865-9">(</span><span class="mi">42</span><span class="p" data-group-id="4923729865-9">)</span><span class="w"> </span><span class="k" data-group-id="4923729865-8">end</span><span class="p" data-group-id="4923729865-6">)</span><span class="w">
-</span><span class="p" data-group-id="4923729865-10">%</span><span class="nc" data-group-id="4923729865-10">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="4923729865-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4923729865-10">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">or_else</span><span class="p" data-group-id="7173679456-6">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7173679456-7">(</span><span class="mi">10</span><span class="p" data-group-id="7173679456-7">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7173679456-8">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7173679456-9">(</span><span class="mi">42</span><span class="p" data-group-id="7173679456-9">)</span><span class="w"> </span><span class="k" data-group-id="7173679456-8">end</span><span class="p" data-group-id="7173679456-6">)</span><span class="w">
+</span><span class="p" data-group-id="7173679456-10">%</span><span class="nc" data-group-id="7173679456-10">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7173679456-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7173679456-10">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="pure/1">
 
   <div class="detail-header">
-    <a href="#pure/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#pure/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">pure(value)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L109" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">pure(value)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L110" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -1124,31 +971,25 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Alias for <a href="#just/1"><code class="inline">just/1</code></a>.</p><h2 id="pure/1-examples" class="section-heading">
-  <a href="#pure/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="8167685617-1">(</span><span class="mi">5</span><span class="p" data-group-id="8167685617-1">)</span><span class="w">
-</span><span class="p" data-group-id="8167685617-2">%</span><span class="nc" data-group-id="8167685617-2">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="8167685617-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8167685617-2">}</span></code></pre>
+<p>Alias for <a href="#just/1"><code class="inline">just/1</code></a>.</p><h2 id="pure/1-examples" class="section-heading"><a href="#pure/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="4117522830-1">(</span><span class="mi">5</span><span class="p" data-group-id="4117522830-1">)</span><span class="w">
+</span><span class="p" data-group-id="4117522830-2">%</span><span class="nc" data-group-id="4117522830-2">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="4117522830-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4117522830-2">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sequence/1">
 
   <div class="detail-header">
-    <a href="#sequence/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#sequence/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">sequence(list)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L332" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">sequence(list)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L333" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -1159,34 +1000,28 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Converts a list of <code class="inline">Maybe</code> values into a <code class="inline">Maybe</code> containing a list. If any element is <code class="inline">Nothing</code>, the entire result is <code class="inline">Nothing</code>.</p><h2 id="sequence/1-examples" class="section-heading">
-  <a href="#sequence/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="7836113891-1">(</span><span class="p" data-group-id="7836113891-2">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7836113891-3">(</span><span class="mi">1</span><span class="p" data-group-id="7836113891-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7836113891-4">(</span><span class="mi">2</span><span class="p" data-group-id="7836113891-4">)</span><span class="p" data-group-id="7836113891-2">]</span><span class="p" data-group-id="7836113891-1">)</span><span class="w">
-</span><span class="p" data-group-id="7836113891-5">%</span><span class="nc" data-group-id="7836113891-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7836113891-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7836113891-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7836113891-6">]</span><span class="p" data-group-id="7836113891-5">}</span><span class="w">
+<p>Converts a list of <code class="inline">Maybe</code> values into a <code class="inline">Maybe</code> containing a list. If any element is <code class="inline">Nothing</code>, the entire result is <code class="inline">Nothing</code>.</p><h2 id="sequence/1-examples" class="section-heading"><a href="#sequence/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="0063655029-1">(</span><span class="p" data-group-id="0063655029-2">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0063655029-3">(</span><span class="mi">1</span><span class="p" data-group-id="0063655029-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0063655029-4">(</span><span class="mi">2</span><span class="p" data-group-id="0063655029-4">)</span><span class="p" data-group-id="0063655029-2">]</span><span class="p" data-group-id="0063655029-1">)</span><span class="w">
+</span><span class="p" data-group-id="0063655029-5">%</span><span class="nc" data-group-id="0063655029-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="0063655029-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="0063655029-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0063655029-6">]</span><span class="p" data-group-id="0063655029-5">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="7836113891-7">(</span><span class="p" data-group-id="7836113891-8">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7836113891-9">(</span><span class="mi">1</span><span class="p" data-group-id="7836113891-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7836113891-10">(</span><span class="p" data-group-id="7836113891-10">)</span><span class="p" data-group-id="7836113891-8">]</span><span class="p" data-group-id="7836113891-7">)</span><span class="w">
-</span><span class="p" data-group-id="7836113891-11">%</span><span class="nc" data-group-id="7836113891-11">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7836113891-11">{</span><span class="p" data-group-id="7836113891-11">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">sequence</span><span class="p" data-group-id="0063655029-7">(</span><span class="p" data-group-id="0063655029-8">[</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0063655029-9">(</span><span class="mi">1</span><span class="p" data-group-id="0063655029-9">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="0063655029-10">(</span><span class="p" data-group-id="0063655029-10">)</span><span class="p" data-group-id="0063655029-8">]</span><span class="p" data-group-id="0063655029-7">)</span><span class="w">
+</span><span class="p" data-group-id="0063655029-11">%</span><span class="nc" data-group-id="0063655029-11">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="0063655029-11">{</span><span class="p" data-group-id="0063655029-11">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="to_nil/1">
 
   <div class="detail-header">
-    <a href="#to_nil/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#to_nil/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">to_nil(maybe)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L475" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">to_nil(maybe)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L476" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -1197,34 +1032,28 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Converts a <code class="inline">Maybe</code> to its wrapped value or <code class="inline">nil</code>.</p><h2 id="to_nil/1-examples" class="section-heading">
-  <a href="#to_nil/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="6048439447-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6048439447-2">(</span><span class="mi">5</span><span class="p" data-group-id="6048439447-2">)</span><span class="p" data-group-id="6048439447-1">)</span><span class="w">
+<p>Converts a <code class="inline">Maybe</code> to its wrapped value or <code class="inline">nil</code>.</p><h2 id="to_nil/1-examples" class="section-heading"><a href="#to_nil/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="9346377857-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9346377857-2">(</span><span class="mi">5</span><span class="p" data-group-id="9346377857-2">)</span><span class="p" data-group-id="9346377857-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="6048439447-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6048439447-4">(</span><span class="p" data-group-id="6048439447-4">)</span><span class="p" data-group-id="6048439447-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_nil</span><span class="p" data-group-id="9346377857-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9346377857-4">(</span><span class="p" data-group-id="9346377857-4">)</span><span class="p" data-group-id="9346377857-3">)</span><span class="w">
 </span><span class="no">nil</span></code></pre>
   </section>
 </section>
 <section class="detail" id="to_predicate/1">
 
   <div class="detail-header">
-    <a href="#to_predicate/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#to_predicate/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">to_predicate(maybe)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L444" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">to_predicate(maybe)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L445" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -1235,34 +1064,28 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Returns <code class="inline">true</code> if the given <code class="inline">Maybe</code> is a <code class="inline">Just</code>, or <code class="inline">false</code> if it is <code class="inline">Nothing</code>.</p><p>This provides a simple way to treat a <code class="inline">Maybe</code> as a boolean condition, useful when filtering or making branching decisions based on presence.</p><h2 id="to_predicate/1-examples" class="section-heading">
-  <a href="#to_predicate/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="6588469142-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6588469142-2">(</span><span class="mi">42</span><span class="p" data-group-id="6588469142-2">)</span><span class="p" data-group-id="6588469142-1">)</span><span class="w">
+<p>Returns <code class="inline">true</code> if the given <code class="inline">Maybe</code> is a <code class="inline">Just</code>, or <code class="inline">false</code> if it is <code class="inline">Nothing</code>.</p><p>This provides a simple way to treat a <code class="inline">Maybe</code> as a boolean condition, useful when filtering or making branching decisions based on presence.</p><h2 id="to_predicate/1-examples" class="section-heading"><a href="#to_predicate/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="1620687596-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1620687596-2">(</span><span class="mi">42</span><span class="p" data-group-id="1620687596-2">)</span><span class="p" data-group-id="1620687596-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="6588469142-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6588469142-4">(</span><span class="p" data-group-id="6588469142-4">)</span><span class="p" data-group-id="6588469142-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_predicate</span><span class="p" data-group-id="1620687596-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1620687596-4">(</span><span class="p" data-group-id="1620687596-4">)</span><span class="p" data-group-id="1620687596-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre><p>Raises an error if the input is not a <code class="inline">Just</code> or <code class="inline">Nothing</code>.</p>
   </section>
 </section>
 <section class="detail" id="to_result/1">
 
   <div class="detail-header">
-    <a href="#to_result/1" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#to_result/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">to_result(maybe)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L548" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">to_result(maybe)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L549" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -1273,17 +1096,11 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Converts a <code class="inline">Maybe</code> to a result tuple. <code class="inline">Just(value)</code> becomes <code class="inline">{:ok, value}</code>, while <code class="inline">Nothing</code> becomes <code class="inline">{:error, :nothing}</code>.</p><h2 id="to_result/1-examples" class="section-heading">
-  <a href="#to_result/1-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="0037895092-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0037895092-2">(</span><span class="mi">5</span><span class="p" data-group-id="0037895092-2">)</span><span class="p" data-group-id="0037895092-1">)</span><span class="w">
-</span><span class="p" data-group-id="0037895092-3">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0037895092-3">}</span><span class="w">
+<p>Converts a <code class="inline">Maybe</code> to a result tuple. <code class="inline">Just(value)</code> becomes <code class="inline">{:ok, value}</code>, while <code class="inline">Nothing</code> becomes <code class="inline">{:error, :nothing}</code>.</p><h2 id="to_result/1-examples" class="section-heading"><a href="#to_result/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="2842630358-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2842630358-2">(</span><span class="mi">5</span><span class="p" data-group-id="2842630358-2">)</span><span class="p" data-group-id="2842630358-1">)</span><span class="w">
+</span><span class="p" data-group-id="2842630358-3">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2842630358-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="0037895092-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="0037895092-5">(</span><span class="p" data-group-id="0037895092-5">)</span><span class="p" data-group-id="0037895092-4">)</span><span class="w">
-</span><span class="p" data-group-id="0037895092-6">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:nothing</span><span class="p" data-group-id="0037895092-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_result</span><span class="p" data-group-id="2842630358-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2842630358-5">(</span><span class="p" data-group-id="2842630358-5">)</span><span class="p" data-group-id="2842630358-4">)</span><span class="w">
+</span><span class="p" data-group-id="2842630358-6">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="ss">:nothing</span><span class="p" data-group-id="2842630358-6">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="to_try!/2">
@@ -1291,18 +1108,18 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
     <span id="to_try!/1"></span>
 
   <div class="detail-header">
-    <a href="#to_try!/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#to_try!/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">to_try!(maybe, message \\ &quot;Nothing value encountered&quot;)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L513" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">to_try!(maybe, message \\ &quot;Nothing value encountered&quot;)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L514" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -1313,34 +1130,28 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Extracts a value from a <code class="inline">Maybe</code>, raising an exception if <code class="inline">Nothing</code>.</p><h2 id="to_try!/2-examples" class="section-heading">
-  <a href="#to_try!/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="0675004284-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0675004284-2">(</span><span class="mi">5</span><span class="p" data-group-id="0675004284-2">)</span><span class="p" data-group-id="0675004284-1">)</span><span class="w">
+<p>Extracts a value from a <code class="inline">Maybe</code>, raising an exception if <code class="inline">Nothing</code>.</p><h2 id="to_try!/2-examples" class="section-heading"><a href="#to_try!/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="1415528980-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1415528980-2">(</span><span class="mi">5</span><span class="p" data-group-id="1415528980-2">)</span><span class="p" data-group-id="1415528980-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="0675004284-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="0675004284-4">(</span><span class="p" data-group-id="0675004284-4">)</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;No value found&quot;</span><span class="p" data-group-id="0675004284-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">to_try!</span><span class="p" data-group-id="1415528980-3">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="1415528980-4">(</span><span class="p" data-group-id="1415528980-4">)</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;No value found&quot;</span><span class="p" data-group-id="1415528980-3">)</span><span class="w">
 </span><span class="gt">** (RuntimeError) No value found</span></code></pre>
   </section>
 </section>
 <section class="detail" id="traverse/2">
 
   <div class="detail-header">
-    <a href="#traverse/2" class="detail-link" data-no-tooltip title="Link to this function">
+    <a href="#traverse/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
-      <span class="sr-only">Link to this function</span>
     </a>
-    <h1 class="signature" translate="no">traverse(list, func)</h1>
-
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/monad/maybe.ex#L359" class="icon-action" rel="help" title="View Source">
-       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-       <span class="sr-only">View Source</span>
-     </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">traverse(list, func)</h1>
 
 
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe.ex#L360" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
   </div>
 
   <section class="docstring">
@@ -1352,20 +1163,14 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
 
       </div>
 
-<p>Applies a function to each element of a list, collecting results into a single <code class="inline">Maybe</code>. If any call returns <code class="inline">Nothing</code>, the operation halts and returns <code class="inline">Nothing</code>.</p><h2 id="traverse/2-examples" class="section-heading">
-  <a href="#traverse/2-examples" class="hover-link">
-    <i class="ri-link-m" aria-hidden="true"></i>
-  </a>
-  <span class="text">Examples</span>
-</h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="2195404673-1">(</span><span class="p" data-group-id="2195404673-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2195404673-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2195404673-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2195404673-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2195404673-4">)</span><span class="w"> </span><span class="k" data-group-id="2195404673-3">end</span><span class="p" data-group-id="2195404673-1">)</span><span class="w">
-</span><span class="p" data-group-id="2195404673-5">%</span><span class="nc" data-group-id="2195404673-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="2195404673-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2195404673-6">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2195404673-6">]</span><span class="p" data-group-id="2195404673-5">}</span><span class="w">
+<p>Applies a function to each element of a list, collecting results into a single <code class="inline">Maybe</code>. If any call returns <code class="inline">Nothing</code>, the operation halts and returns <code class="inline">Nothing</code>.</p><h2 id="traverse/2-examples" class="section-heading"><a href="#traverse/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="7182862218-1">(</span><span class="p" data-group-id="7182862218-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7182862218-2">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7182862218-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7182862218-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7182862218-4">)</span><span class="w"> </span><span class="k" data-group-id="7182862218-3">end</span><span class="p" data-group-id="7182862218-1">)</span><span class="w">
+</span><span class="p" data-group-id="7182862218-5">%</span><span class="nc" data-group-id="7182862218-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7182862218-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7182862218-6">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7182862218-6">]</span><span class="p" data-group-id="7182862218-5">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="2195404673-7">(</span><span class="p" data-group-id="2195404673-8">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2195404673-8">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="2195404673-9">fn</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="2195404673-10">(</span><span class="p" data-group-id="2195404673-10">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="2195404673-11">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2195404673-11">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="2195404673-9">end</span><span class="p" data-group-id="2195404673-7">)</span><span class="w">
-</span><span class="p" data-group-id="2195404673-12">%</span><span class="nc" data-group-id="2195404673-12">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="2195404673-12">{</span><span class="p" data-group-id="2195404673-12">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">traverse</span><span class="p" data-group-id="7182862218-7">(</span><span class="p" data-group-id="7182862218-8">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="no">nil</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7182862218-8">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7182862218-9">fn</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="no">nil</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7182862218-10">(</span><span class="p" data-group-id="7182862218-10">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7182862218-11">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7182862218-11">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="7182862218-9">end</span><span class="p" data-group-id="7182862218-7">)</span><span class="w">
+</span><span class="p" data-group-id="7182862218-12">%</span><span class="nc" data-group-id="7182862218-12">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7182862218-12">{</span><span class="p" data-group-id="7182862218-12">}</span></code></pre>
   </section>
 </section>
 
@@ -1373,34 +1178,36 @@ when input: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</
   </section>
 
     <footer class="footer">
-      <p>
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
 
           <span class="line">
-            <a href="https://hex.pm/packages/funx/0.3.0" class="footer-hex-package">Hex Package</a>
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
 
-            <a href="https://preview.hex.pm/preview/funx/0.3.0">Hex Preview</a>
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
 
           </span>
+        </p>
 
-        <span class="line">
-          <button class="a-main footer-button display-quick-switch" title="Search HexDocs packages">
-            Search HexDocs
-          </button>
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
 
-            <a href="funx.epub" title="ePub version">
-              Download ePub version
-            </a>
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
 
-        </span>
-      </p>
+        </p>
 
-      <p class="built-using">
-        Built using
-        <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.34.2) for the
-
-          <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
-
-      </p>
 
     </footer>
   </div>
