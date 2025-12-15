@@ -13,11 +13,12 @@ defmodule Funx.Monad.EitherTest do
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Summarizable, only: [summarize: 1]
 
-  alias Either.{Left, Right}
   alias Funx.Eq
   alias Funx.Monad.{Either, Maybe}
   alias Funx.Ord
   alias Funx.Tappable
+
+  alias Either.{Left, Right}
 
   describe "pure/1" do
     test "wraps a value in a Right monad" do
