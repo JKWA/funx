@@ -13,9 +13,10 @@ defmodule Funx.Monad.MaybeTest do
   import Funx.Filterable, only: [filter: 2, filter_map: 2, guard: 2]
   import Funx.Summarizable, only: [summarize: 1]
 
-  alias Funx.{Eq, Ord}
-  alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Eq
   alias Funx.Monad.{Either, Identity}
+  alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Ord
   alias Funx.Tappable
 
   describe "Just.pure/1" do

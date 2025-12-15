@@ -69,8 +69,9 @@ defmodule Funx.Monad.Maybe do
   import Funx.Foldable, only: [fold_l: 3]
 
   alias Funx.Eq
-  alias Funx.Ord
   alias Funx.Monad.{Either, Identity, Maybe}
+  alias Funx.Ord
+
   alias Either.{Left, Right}
   alias Maybe.{Just, Nothing}
 
