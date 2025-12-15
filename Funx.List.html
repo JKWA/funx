@@ -16,7 +16,7 @@
 
     <script src="dist/handlebars.runtime-NWIB6V2M.js"></script>
     <script src="dist/handlebars.templates-K7URE6B4.js"></script>
-    <script src="dist/sidebar_items-2871D1AD.js"></script>
+    <script src="dist/sidebar_items-5C020EFA.js"></script>
     <script src="docs_config.js"></script>
     <script async src="dist/html-YIPIRHGU.js"></script>
 
@@ -217,6 +217,16 @@ Pages
 
     <div class="summary-row">
       <div class="summary-signature">
+        <a href="#maybe_head/1" data-no-tooltip translate="no">maybe_head(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns the head of a list wrapped in <code class="inline">Maybe.Just</code>, or <code class="inline">Maybe.Nothing</code> if empty.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
         <a href="#sort/2" data-no-tooltip translate="no">sort(list, ord \\ Funx.Ord)</a>
 
       </div>
@@ -307,7 +317,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">concat(list)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L204" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L205" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -329,8 +339,8 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="5556018995-1">(</span><span class="p" data-group-id="5556018995-2">[</span><span class="p" data-group-id="5556018995-3">[</span><span class="mi">1</span><span class="p" data-group-id="5556018995-3">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5556018995-4">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="5556018995-4">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5556018995-5">[</span><span class="mi">4</span><span class="p" data-group-id="5556018995-5">]</span><span class="p" data-group-id="5556018995-2">]</span><span class="p" data-group-id="5556018995-1">)</span><span class="w">
-</span><span class="p" data-group-id="5556018995-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="5556018995-6">]</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="1261287529-1">(</span><span class="p" data-group-id="1261287529-2">[</span><span class="p" data-group-id="1261287529-3">[</span><span class="mi">1</span><span class="p" data-group-id="1261287529-3">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1261287529-4">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="1261287529-4">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1261287529-5">[</span><span class="mi">4</span><span class="p" data-group-id="1261287529-5">]</span><span class="p" data-group-id="1261287529-2">]</span><span class="p" data-group-id="1261287529-1">)</span><span class="w">
+</span><span class="p" data-group-id="1261287529-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1261287529-6">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="difference/3">
@@ -344,7 +354,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">difference(list1, list2, eq \\ Funx.Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L112" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L113" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -366,8 +376,8 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">difference</span><span class="p" data-group-id="5878357944-1">(</span><span class="p" data-group-id="5878357944-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="5878357944-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5878357944-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5878357944-3">]</span><span class="p" data-group-id="5878357944-1">)</span><span class="w">
-</span><span class="p" data-group-id="5878357944-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5878357944-4">]</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">difference</span><span class="p" data-group-id="1726310559-1">(</span><span class="p" data-group-id="1726310559-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1726310559-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1726310559-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1726310559-3">]</span><span class="p" data-group-id="1726310559-1">)</span><span class="w">
+</span><span class="p" data-group-id="1726310559-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1726310559-4">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="intersection/3">
@@ -381,7 +391,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">intersection(list1, list2, eq \\ Funx.Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L97" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L98" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -403,8 +413,49 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">intersection</span><span class="p" data-group-id="4180486891-1">(</span><span class="p" data-group-id="4180486891-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4180486891-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4180486891-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4180486891-3">]</span><span class="p" data-group-id="4180486891-1">)</span><span class="w">
-</span><span class="p" data-group-id="4180486891-4">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4180486891-4">]</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">intersection</span><span class="p" data-group-id="7946816742-1">(</span><span class="p" data-group-id="7946816742-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7946816742-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7946816742-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7946816742-3">]</span><span class="p" data-group-id="7946816742-1">)</span><span class="w">
+</span><span class="p" data-group-id="7946816742-4">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7946816742-4">]</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="maybe_head/1">
+
+  <div class="detail-header">
+    <a href="#maybe_head/1" class="detail-link" data-no-tooltip title="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+      <span class="sr-only">Link to this function</span>
+    </a>
+    <h1 class="signature" translate="no">maybe_head(list)</h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L226" class="icon-action" rel="help" title="View Source">
+       <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+       <span class="sr-only">View Source</span>
+     </a>
+
+
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> maybe_head([a]) :: <a href="Funx.Monad.Maybe.html#t:t/1">Funx.Monad.Maybe.t</a>(a) when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Returns the head of a list wrapped in <code class="inline">Maybe.Just</code>, or <code class="inline">Maybe.Nothing</code> if empty.</p><p>This is a safe version of <a href="https://hexdocs.pm/elixir/Kernel.html#hd/1"><code class="inline">hd/1</code></a> that returns <code class="inline">Maybe</code> instead of raising.</p><h2 id="maybe_head/1-examples" class="section-heading">
+  <a href="#maybe_head/1-examples" class="hover-link">
+    <i class="ri-link-m" aria-hidden="true"></i>
+  </a>
+  <span class="text">Examples</span>
+</h2>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">maybe_head</span><span class="p" data-group-id="7240437322-1">(</span><span class="p" data-group-id="7240437322-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7240437322-2">]</span><span class="p" data-group-id="7240437322-1">)</span><span class="w">
+</span><span class="p" data-group-id="7240437322-3">%</span><span class="nc" data-group-id="7240437322-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7240437322-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7240437322-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">maybe_head</span><span class="p" data-group-id="7240437322-4">(</span><span class="p" data-group-id="7240437322-5">[</span><span class="p" data-group-id="7240437322-5">]</span><span class="p" data-group-id="7240437322-4">)</span><span class="w">
+</span><span class="p" data-group-id="7240437322-6">%</span><span class="nc" data-group-id="7240437322-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7240437322-6">{</span><span class="p" data-group-id="7240437322-6">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">maybe_head</span><span class="p" data-group-id="7240437322-7">(</span><span class="s">&quot;not a list&quot;</span><span class="p" data-group-id="7240437322-7">)</span><span class="w">
+</span><span class="p" data-group-id="7240437322-8">%</span><span class="nc" data-group-id="7240437322-8">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7240437322-8">{</span><span class="p" data-group-id="7240437322-8">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sort/2">
@@ -418,7 +469,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">sort(list, ord \\ Funx.Ord)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L174" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L175" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -440,8 +491,8 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="1362156338-1">(</span><span class="p" data-group-id="1362156338-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1362156338-2">]</span><span class="p" data-group-id="1362156338-1">)</span><span class="w">
-</span><span class="p" data-group-id="1362156338-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1362156338-3">]</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="2050740919-1">(</span><span class="p" data-group-id="2050740919-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2050740919-2">]</span><span class="p" data-group-id="2050740919-1">)</span><span class="w">
+</span><span class="p" data-group-id="2050740919-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2050740919-3">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="strict_sort/2">
@@ -455,7 +506,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">strict_sort(list, ord \\ Funx.Ord)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L187" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L188" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -477,8 +528,8 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">strict_sort</span><span class="p" data-group-id="1219863875-1">(</span><span class="p" data-group-id="1219863875-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1219863875-2">]</span><span class="p" data-group-id="1219863875-1">)</span><span class="w">
-</span><span class="p" data-group-id="1219863875-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1219863875-3">]</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">strict_sort</span><span class="p" data-group-id="7927103410-1">(</span><span class="p" data-group-id="7927103410-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7927103410-2">]</span><span class="p" data-group-id="7927103410-1">)</span><span class="w">
+</span><span class="p" data-group-id="7927103410-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7927103410-3">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="subset?/3">
@@ -492,7 +543,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">subset?(small, large, eq \\ Funx.Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L145" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L146" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -514,10 +565,10 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">subset?</span><span class="p" data-group-id="2778833268-1">(</span><span class="p" data-group-id="2778833268-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2778833268-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2778833268-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2778833268-3">]</span><span class="p" data-group-id="2778833268-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">subset?</span><span class="p" data-group-id="3585701748-1">(</span><span class="p" data-group-id="3585701748-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3585701748-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3585701748-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="3585701748-3">]</span><span class="p" data-group-id="3585701748-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">subset?</span><span class="p" data-group-id="2778833268-4">(</span><span class="p" data-group-id="2778833268-5">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2778833268-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2778833268-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2778833268-6">]</span><span class="p" data-group-id="2778833268-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">subset?</span><span class="p" data-group-id="3585701748-4">(</span><span class="p" data-group-id="3585701748-5">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3585701748-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3585701748-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="3585701748-6">]</span><span class="p" data-group-id="3585701748-4">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -532,7 +583,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">superset?(large, small, eq \\ Funx.Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L161" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L162" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -554,10 +605,10 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">superset?</span><span class="p" data-group-id="6099031071-1">(</span><span class="p" data-group-id="6099031071-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="6099031071-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6099031071-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6099031071-3">]</span><span class="p" data-group-id="6099031071-1">)</span><span class="w">
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">superset?</span><span class="p" data-group-id="1407361748-1">(</span><span class="p" data-group-id="1407361748-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1407361748-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1407361748-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1407361748-3">]</span><span class="p" data-group-id="1407361748-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">superset?</span><span class="p" data-group-id="6099031071-4">(</span><span class="p" data-group-id="6099031071-5">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="6099031071-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6099031071-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6099031071-6">]</span><span class="p" data-group-id="6099031071-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">superset?</span><span class="p" data-group-id="1407361748-4">(</span><span class="p" data-group-id="1407361748-5">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1407361748-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1407361748-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1407361748-6">]</span><span class="p" data-group-id="1407361748-4">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -572,7 +623,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">symmetric_difference(list1, list2, eq \\ Funx.Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L127" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L128" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -594,8 +645,8 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p" data-group-id="1554295420-1">(</span><span class="p" data-group-id="1554295420-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="1554295420-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1554295420-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1554295420-3">]</span><span class="p" data-group-id="1554295420-1">)</span><span class="w">
-</span><span class="p" data-group-id="1554295420-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1554295420-4">]</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p" data-group-id="8910410274-1">(</span><span class="p" data-group-id="8910410274-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="8910410274-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8910410274-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8910410274-3">]</span><span class="p" data-group-id="8910410274-1">)</span><span class="w">
+</span><span class="p" data-group-id="8910410274-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8910410274-4">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="union/3">
@@ -609,7 +660,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">union(list1, list2, eq \\ Funx.Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L84" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L85" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -631,8 +682,8 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">union</span><span class="p" data-group-id="6981219037-1">(</span><span class="p" data-group-id="6981219037-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="6981219037-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6981219037-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6981219037-3">]</span><span class="p" data-group-id="6981219037-1">)</span><span class="w">
-</span><span class="p" data-group-id="6981219037-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6981219037-4">]</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">union</span><span class="p" data-group-id="0038823960-1">(</span><span class="p" data-group-id="0038823960-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0038823960-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0038823960-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0038823960-3">]</span><span class="p" data-group-id="0038823960-1">)</span><span class="w">
+</span><span class="p" data-group-id="0038823960-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0038823960-4">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="uniq/2">
@@ -646,7 +697,7 @@ Pages
     </a>
     <h1 class="signature" translate="no">uniq(list, eq \\ Funx.Eq)</h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L67" class="icon-action" rel="help" title="View Source">
+      <a href="https://github.com/JKWA/funx/blob/v0.3.0/lib/list.ex#L68" class="icon-action" rel="help" title="View Source">
        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
        <span class="sr-only">View Source</span>
      </a>
@@ -668,8 +719,8 @@ Pages
   </a>
   <span class="text">Examples</span>
 </h2>
-<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">uniq</span><span class="p" data-group-id="6358561362-1">(</span><span class="p" data-group-id="6358561362-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6358561362-2">]</span><span class="p" data-group-id="6358561362-1">)</span><span class="w">
-</span><span class="p" data-group-id="6358561362-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6358561362-3">]</span></code></pre>
+<pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">uniq</span><span class="p" data-group-id="1367426096-1">(</span><span class="p" data-group-id="1367426096-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1367426096-2">]</span><span class="p" data-group-id="1367426096-1">)</span><span class="w">
+</span><span class="p" data-group-id="1367426096-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1367426096-3">]</span></code></pre>
   </section>
 </section>
 
