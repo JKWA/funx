@@ -94,6 +94,7 @@ defmodule Funx.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:castore, "~> 1.0", only: [:dev, :test]},
       {:excoveralls, "~> 0.18", only: [:dev, :test], runtime: false},
+      {:stream_data, "~> 1.1", only: :test},
       {:telemetry, "~> 1.0"}
     ]
   end

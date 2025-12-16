@@ -70,8 +70,10 @@ defimpl Funx.Monoid, for: Funx.Monoid.Optics.IsoCompose do
   @doc """
   Composes two isos sequentially.
 
-  Forward direction: applies outer's view, then inner's view
-  Backward direction: applies inner's review, then outer's review
+  The outer iso transforms first, then the inner iso transforms the result.
+
+  Forward direction: applies outer's view first, then inner's view
+  Backward direction: applies inner's review first, then outer's review
   """
   def append(%IsoCompose{iso: outer}, %IsoCompose{iso: inner}) do
     composed =

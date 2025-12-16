@@ -502,4 +502,239 @@ defmodule Funx.Optics.IsoTest do
       assert Iso.review(42, iso) == "42"
     end
   end
+
+  describe "property-based iso laws" do
+    use ExUnitProperties
+
+    property "round-trip law: review(view(s, iso), iso) == s for integer addition" do
+      check all(value <- integer(), offset <- integer()) do
+        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+
+        # View then review should return original
+        result = value |> Iso.view(iso) |> then(&Iso.review(&1, iso))
+
+        assert result == value
+      end
+    end
+
+    property "round-trip law: view(review(a, iso), iso) == a for integer addition" do
+      check all(value <- integer(), offset <- integer()) do
+        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+
+        # Review then view should return original
+        result = value |> Iso.review(iso) |> then(&Iso.view(&1, iso))
+
+        assert result == value
+      end
+    end
+
+    property "round-trip law: review(view(s, iso), iso) == s for multiplication" do
+      check all(
+              value <- integer(1..1000),
+              multiplier <- integer(1..100)
+            ) do
+        iso = Iso.make(fn x -> x * multiplier end, fn x -> div(x, multiplier) end)
+
+        result = value |> Iso.view(iso) |> then(&Iso.review(&1, iso))
+
+        assert result == value
+      end
+    end
+
+    property "round-trip law: view(review(a, iso), iso) == a for multiplication" do
+      check all(
+              base <- integer(1..1000),
+              multiplier <- integer(1..100)
+            ) do
+        # Ensure value is divisible by multiplier for perfect round-trip
+        value = base * multiplier
+        iso = Iso.make(fn x -> x * multiplier end, fn x -> div(x, multiplier) end)
+
+        result = value |> Iso.review(iso) |> then(&Iso.view(&1, iso))
+
+        assert result == value
+      end
+    end
+
+    property "identity iso satisfies view(x) == x" do
+      check all(value <- one_of([integer(), string(:alphanumeric), boolean()])) do
+        iso = Iso.identity()
+
+        assert Iso.view(value, iso) == value
+      end
+    end
+
+    property "identity iso satisfies review(x) == x" do
+      check all(value <- one_of([integer(), string(:alphanumeric), boolean()])) do
+        iso = Iso.identity()
+
+        assert Iso.review(value, iso) == value
+      end
+    end
+
+    property "composition is associative" do
+      check all(
+              offset1 <- integer(-100..100),
+              offset2 <- integer(-100..100),
+              offset3 <- integer(-100..100),
+              value <- integer()
+            ) do
+        i1 = Iso.make(fn x -> x + offset1 end, fn x -> x - offset1 end)
+        i2 = Iso.make(fn x -> x + offset2 end, fn x -> x - offset2 end)
+        i3 = Iso.make(fn x -> x + offset3 end, fn x -> x - offset3 end)
+
+        # (i1 . i2) . i3 vs i1 . (i2 . i3)
+        left_assoc = Iso.compose(Iso.compose(i1, i2), i3)
+        right_assoc = Iso.compose(i1, Iso.compose(i2, i3))
+
+        # Both should view to the same result
+        assert Iso.view(value, left_assoc) == Iso.view(value, right_assoc)
+
+        # Both should review to the same result
+        viewed = Iso.view(value, left_assoc)
+        assert Iso.review(viewed, left_assoc) == Iso.review(viewed, right_assoc)
+      end
+    end
+
+    property "composing with identity on left has no effect" do
+      check all(value <- integer(), offset <- integer()) do
+        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        id = Iso.identity()
+
+        composed = Iso.compose(id, iso)
+
+        assert Iso.view(value, composed) == Iso.view(value, iso)
+        assert Iso.review(value, composed) == Iso.review(value, iso)
+      end
+    end
+
+    property "composing with identity on right has no effect" do
+      check all(value <- integer(), offset <- integer()) do
+        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        id = Iso.identity()
+
+        composed = Iso.compose(iso, id)
+
+        assert Iso.view(value, composed) == Iso.view(value, iso)
+        assert Iso.review(value, composed) == Iso.review(value, iso)
+      end
+    end
+
+    property "from involution: from(from(iso)) behaves like iso" do
+      check all(value <- integer(), offset <- integer()) do
+        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+
+        reversed_twice = iso |> Iso.from() |> Iso.from()
+
+        # Should behave identically to original
+        assert Iso.view(value, reversed_twice) == Iso.view(value, iso)
+        assert Iso.review(value, reversed_twice) == Iso.review(value, iso)
+      end
+    end
+
+    property "from reverses direction: view becomes review and vice versa" do
+      check all(value <- integer(), offset <- integer()) do
+        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        reversed = Iso.from(iso)
+
+        # Original iso's view should equal reversed iso's review
+        assert Iso.view(value, iso) == Iso.review(value, reversed)
+
+        # Original iso's review should equal reversed iso's view
+        assert Iso.review(value, iso) == Iso.view(value, reversed)
+      end
+    end
+
+    property "over with identity function returns original" do
+      check all(value <- integer(), offset <- integer()) do
+        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+
+        result = Iso.over(value, iso, fn x -> x end)
+
+        assert result == value
+      end
+    end
+
+    property "under with identity function returns original" do
+      check all(value <- integer(), offset <- integer()) do
+        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+
+        result = Iso.under(value, iso, fn x -> x end)
+
+        assert result == value
+      end
+    end
+
+    property "over and under are related through view/review" do
+      check all(
+              value <- integer(1..1000),
+              add_amount <- integer(1..100)
+            ) do
+        iso = Iso.make(fn x -> x * 2 end, fn x -> div(x, 2) end)
+
+        # over: view -> f -> review
+        over_result = Iso.over(value, iso, fn x -> x + add_amount end)
+
+        # Manual equivalent
+        manual_result = value |> Iso.view(iso) |> Kernel.+(add_amount) |> then(&Iso.review(&1, iso))
+
+        assert over_result == manual_result
+      end
+    end
+
+    property "composed isos satisfy round-trip laws" do
+      check all(
+              value <- integer(),
+              offset1 <- integer(-100..100),
+              offset2 <- integer(-100..100)
+            ) do
+        i1 = Iso.make(fn x -> x + offset1 end, fn x -> x - offset1 end)
+        i2 = Iso.make(fn x -> x + offset2 end, fn x -> x - offset2 end)
+
+        composed = Iso.compose(i1, i2)
+
+        # Round-trip forward-back
+        result1 = value |> Iso.view(composed) |> then(&Iso.review(&1, composed))
+        assert result1 == value
+
+        # Round-trip back-forward
+        result2 = value |> Iso.review(composed) |> then(&Iso.view(&1, composed))
+        assert result2 == value
+      end
+    end
+
+    property "list composition applies transformations in sequence" do
+      check all(
+              value <- integer(),
+              offset1 <- integer(-50..50),
+              offset2 <- integer(-50..50),
+              offset3 <- integer(-50..50)
+            ) do
+        isos = [
+          Iso.make(fn x -> x + offset1 end, fn x -> x - offset1 end),
+          Iso.make(fn x -> x + offset2 end, fn x -> x - offset2 end),
+          Iso.make(fn x -> x + offset3 end, fn x -> x - offset3 end)
+        ]
+
+        composed = Iso.compose(isos)
+
+        # View should apply all offsets in order
+        expected_view = value + offset1 + offset2 + offset3
+        assert Iso.view(value, composed) == expected_view
+
+        # Round-trip should return original
+        result = value |> Iso.view(composed) |> then(&Iso.review(&1, composed))
+        assert result == value
+      end
+    end
+
+    property "empty list composition returns identity" do
+      check all(value <- one_of([integer(), string(:alphanumeric)])) do
+        composed = Iso.compose([])
+
+        assert Iso.view(value, composed) == value
+        assert Iso.review(value, composed) == value
+      end
+    end
+  end
 end

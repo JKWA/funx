@@ -29,12 +29,12 @@ defmodule Funx.Optics.Iso do
 
   ### Composition
 
-    - `compose/2`: Composes two isos sequentially.
+    - `compose/2`: Composes two isos sequentially (outer then inner).
     - `compose/1`: Composes a list of isos into a single iso.
 
   Isos compose naturally. Composing two isos yields a new iso where:
-  - Forward (`view`) applies both forwards in sequence
-  - Backward (`review`) applies both backwards in reverse order
+  - Forward (`view`) applies the outer iso first, then the inner iso
+  - Backward (`review`) applies the inner iso first, then the outer iso
 
   ## Monoid Structure
 
@@ -299,8 +299,17 @@ defmodule Funx.Optics.Iso do
 
   ## Binary composition
 
-  Composes two isos. The forward direction applies both forwards in sequence.
-  The backward direction applies both backwards in reverse order.
+  Composes two isos. The outer iso transforms first, then the inner iso
+  transforms the result.
+
+  This is left-to-right composition: the first parameter is applied first.
+  This differs from mathematical function composition (f ∘ g applies g first).
+
+  **Sequential semantics:**
+  - On `view`: Applies outer's forward transformation first, then inner's forward transformation
+  - On `review`: Applies inner's backward transformation first, then outer's backward transformation
+
+  This is sequential transformation through composed isos.
 
       iex> alias Funx.Optics.Iso
       iex> # string <-> int
@@ -322,6 +331,12 @@ defmodule Funx.Optics.Iso do
   ## List composition
 
   Composes a list of isos into a single iso using sequential composition.
+
+  **Sequential semantics:**
+  - On `view`: Applies transformations in list order (left-to-right)
+  - On `review`: Applies transformations in reverse list order (right-to-left)
+
+  This is sequential transformation through composed isos.
 
       iex> isos = [
       ...>   Funx.Optics.Iso.make(

@@ -746,4 +746,241 @@ defmodule Funx.Optics.PrismTest do
       assert Prism.preview(reviewed, cc_number_prism) == Maybe.just("1234")
     end
   end
+
+  describe "property-based prism laws" do
+    use ExUnitProperties
+
+    property "preview-review law: preview(review(a, prism), prism) == Just(a) for key prisms" do
+      check all(
+              key <- atom(:alphanumeric),
+              value <- one_of([integer(), string(:alphanumeric), boolean()])
+            ) do
+        prism = Prism.key(key)
+
+        # Review a value, then preview it - should get Just(value) back
+        reviewed = Prism.review(value, prism)
+        result = Prism.preview(reviewed, prism)
+
+        assert result == Maybe.just(value)
+      end
+    end
+
+    property "preview-review law: preview(review(a, prism), prism) == Just(a) for path prisms" do
+      check all(
+              key1 <- atom(:alphanumeric),
+              key2 <- atom(:alphanumeric),
+              key3 <- atom(:alphanumeric),
+              value <- one_of([integer(), string(:alphanumeric)])
+            ) do
+        prism = Prism.path([key1, key2, key3])
+
+        reviewed = Prism.review(value, prism)
+        result = Prism.preview(reviewed, prism)
+
+        assert result == Maybe.just(value)
+      end
+    end
+
+    property "preview-review law: preview(review(a, prism), prism) == Just(a) for composed prisms" do
+      check all(
+              key1 <- atom(:alphanumeric),
+              key2 <- atom(:alphanumeric),
+              value <- integer(0..1000)
+            ) do
+        outer = Prism.key(key1)
+        inner = Prism.key(key2)
+        prism = Prism.compose(outer, inner)
+
+        reviewed = Prism.review(value, prism)
+        result = Prism.preview(reviewed, prism)
+
+        assert result == Maybe.just(value)
+      end
+    end
+
+    property "preview returns Nothing for maps missing the key" do
+      check all(
+              target_key <- atom(:alphanumeric),
+              other_key <- atom(:alphanumeric),
+              value <- integer()
+            ) do
+        # Only test when keys are different
+        if target_key != other_key do
+          prism = Prism.key(target_key)
+          data = %{other_key => value}
+
+          result = Prism.preview(data, prism)
+
+          assert result == Maybe.nothing()
+        end
+      end
+    end
+
+    property "preview returns Nothing when value is nil" do
+      check all(key <- atom(:alphanumeric)) do
+        prism = Prism.key(key)
+        data = %{key => nil}
+
+        result = Prism.preview(data, prism)
+
+        assert result == Maybe.nothing()
+      end
+    end
+
+    property "composition is associative for prisms" do
+      check all(
+              key1 <- atom(:alphanumeric),
+              key2 <- atom(:alphanumeric),
+              key3 <- atom(:alphanumeric),
+              value <- integer(0..1000)
+            ) do
+        p1 = Prism.key(key1)
+        p2 = Prism.key(key2)
+        p3 = Prism.key(key3)
+
+        # (p1 . p2) . p3 vs p1 . (p2 . p3)
+        left_assoc = Prism.compose(Prism.compose(p1, p2), p3)
+        right_assoc = Prism.compose(p1, Prism.compose(p2, p3))
+
+        # Both should review to the same structure
+        reviewed_left = Prism.review(value, left_assoc)
+        reviewed_right = Prism.review(value, right_assoc)
+
+        assert reviewed_left == reviewed_right
+
+        # Both should preview the same value
+        assert Prism.preview(reviewed_left, left_assoc) == Maybe.just(value)
+        assert Prism.preview(reviewed_right, right_assoc) == Maybe.just(value)
+      end
+    end
+
+    property "identity prism satisfies preview(x) == Just(x) for non-nil values" do
+      check all(value <- one_of([integer(), string(:alphanumeric), boolean()])) do
+        id_prism = Prism.compose([])
+
+        result = Prism.preview(value, id_prism)
+
+        assert result == Maybe.just(value)
+      end
+    end
+
+    property "identity prism satisfies review(x) == x" do
+      check all(
+              value <-
+                one_of([
+                  integer(),
+                  string(:alphanumeric),
+                  map_of(atom(:alphanumeric), integer())
+                ])
+            ) do
+        id_prism = Prism.compose([])
+
+        result = Prism.review(value, id_prism)
+
+        assert result == value
+      end
+    end
+
+    property "preview on nested paths returns Nothing if any intermediate key is missing" do
+      check all(
+              key1 <- atom(:alphanumeric),
+              key2 <- atom(:alphanumeric),
+              key3 <- atom(:alphanumeric),
+              other_key <- atom(:alphanumeric),
+              value <- integer()
+            ) do
+        # Only test when keys are different
+        if key2 != other_key do
+          prism = Prism.path([key1, key2, key3])
+
+          # Create data where first level exists but second level key is different
+          data = %{key1 => %{other_key => value}}
+
+          result = Prism.preview(data, prism)
+
+          assert result == Maybe.nothing()
+        end
+      end
+    end
+
+    property "path prism with single key behaves like key prism" do
+      check all(
+              key <- atom(:alphanumeric),
+              value <- integer(0..1000)
+            ) do
+        path_prism = Prism.path([key])
+        key_prism = Prism.key(key)
+
+        # Both should review to the same structure
+        assert Prism.review(value, path_prism) == Prism.review(value, key_prism)
+
+        # Both should preview the same from matching data
+        data = %{key => value}
+        assert Prism.preview(data, path_prism) == Prism.preview(data, key_prism)
+      end
+    end
+
+    property "struct prism satisfies preview-review law" do
+      check all(
+              name <- string(:alphanumeric),
+              number <- string(:alphanumeric, min_length: 4, max_length: 16)
+            ) do
+        prism = Prism.struct(CreditCard)
+        cc = %CreditCard{number: number, expiry: name}
+
+        reviewed = Prism.review(cc, prism)
+        result = Prism.preview(reviewed, prism)
+
+        assert result == Maybe.just(cc)
+      end
+    end
+
+    property "composed struct and key prism satisfies preview-review law" do
+      check all(value <- string(:alphanumeric)) do
+        prism = Prism.compose(Prism.struct(Account), Prism.key(:name))
+
+        reviewed = Prism.review(value, prism)
+        result = Prism.preview(reviewed, prism)
+
+        assert result == Maybe.just(value)
+        # Also verify the structure is correct
+        assert reviewed == %Account{name: value, type: nil}
+      end
+    end
+
+    property "review creates minimal structure with only specified keys" do
+      check all(
+              key <- atom(:alphanumeric),
+              value <- integer()
+            ) do
+        prism = Prism.key(key)
+        reviewed = Prism.review(value, prism)
+
+        # Should create a map with only the specified key
+        assert reviewed == %{key => value}
+        assert Map.keys(reviewed) == [key]
+      end
+    end
+
+    property "multiple reviews with different values replace the focused value" do
+      check all(
+              key <- atom(:alphanumeric),
+              value1 <- integer(0..500),
+              value2 <- integer(501..1000)
+            ) do
+        prism = Prism.key(key)
+
+        # Review with first value
+        result1 = Prism.review(value1, prism)
+
+        # Review with second value (creates fresh structure)
+        result2 = Prism.review(value2, prism)
+
+        # Both should create independent structures
+        assert Prism.preview(result1, prism) == Maybe.just(value1)
+        assert Prism.preview(result2, prism) == Maybe.just(value2)
+        assert result1 != result2
+      end
+    end
+  end
 end
