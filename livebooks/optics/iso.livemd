@@ -1,0 +1,358 @@
+# Funx.Optics.Iso
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", ref: "67302cb"}
+])
+```
+
+## Overview
+
+The `Funx.Optics.Iso` module provides a lawful isomorphism optic for bidirectional, lossless transformations.
+
+An isomorphism (iso) represents a reversible transformation between two types. It consists of two inverse functions that satisfy the round-trip laws:
+
+* `review(view(s, iso), iso) == s` - Round-trip forward then back returns the original
+* `view(review(a, iso), iso) == a` - Round-trip back then forward returns the original
+
+Isos are total optics with no partiality. If the transformation can fail, you do not have an iso. Contract violations crash immediately - there are no bang variants or safe alternatives.
+
+## Quick Reference
+
+**Constructors:**
+
+* `make/2`: Creates a custom iso from two inverse functions.
+* `identity/0`: The identity iso (both directions are identity).
+
+**Core Operations:**
+
+* `view/2`: Apply the forward transformation (s -> a).
+* `review/2`: Apply the backward transformation (a -> s).
+* `over/3`: Modify the viewed side (view, apply function, review).
+* `under/3`: Modify the reviewed side (review, apply function, view).
+
+**Direction:**
+
+* `from/1`: Reverse the iso's direction.
+
+**Composition:**
+
+* `compose/2`: Composes two isos sequentially.
+* `compose/1`: Composes a list of isos into a single iso.
+
+## Function Examples
+
+```elixir
+alias Funx.Optics.Iso
+```
+
+## Building Isos
+
+### make/2
+
+Create isos from pairs of inverse functions. The most common use is for encoding/decoding and unit conversions.
+
+```elixir
+# String <-> Integer
+string_int_iso =
+  Iso.make(
+    fn s -> String.to_integer(s) end,
+    fn i -> Integer.to_string(i) end
+  )
+```
+
+```elixir
+# Celsius <-> Fahrenheit
+# Note: In production, use exact representations (integer base units or Decimal)
+# to maintain true losslessness. Floats accumulate rounding errors.
+celsius_fahrenheit_iso =
+  Iso.make(
+    fn c -> c * 9 / 5 + 32 end,
+    fn f -> (f - 32) * 5 / 9 end
+  )
+```
+
+```elixir
+# Miles <-> Kilometers
+miles_km_iso =
+  Iso.make(
+    fn miles -> miles * 1.60934 end,
+    fn km -> km / 1.60934 end
+  )
+```
+
+### identity/0
+
+The identity iso applies no transformation in either direction.
+
+```elixir
+id_iso = Iso.identity()
+```
+
+## Core Operations
+
+### view/2
+
+Apply the forward transformation (s -> a).
+
+```elixir
+Iso.view("42", string_int_iso)
+```
+
+```elixir
+Iso.view(0, celsius_fahrenheit_iso)
+```
+
+```elixir
+Iso.view(100, miles_km_iso)
+```
+
+### review/2
+
+Apply the backward transformation (a -> s).
+
+```elixir
+Iso.review(42, string_int_iso)
+```
+
+```elixir
+Iso.review(32, celsius_fahrenheit_iso)
+```
+
+```elixir
+Iso.review(160.934, miles_km_iso)
+```
+
+### Round-trip properties
+
+An iso always round-trips. The transformations are exact inverses (within the precision of your numeric representation).
+
+```elixir
+# Forward then back
+original = "100"
+original |> Iso.view(string_int_iso) |> then(&Iso.review(&1, string_int_iso))
+```
+
+```elixir
+# Back then forward
+original = 100
+original |> Iso.review(string_int_iso) |> then(&Iso.view(&1, string_int_iso))
+```
+
+### over/3
+
+Modify the viewed side: view → apply function → review.
+
+This lets you work in the "viewed" representation while keeping your data in the "source" representation.
+
+```elixir
+# Start with string "10", modify as integer, get back string
+Iso.over("10", string_int_iso, fn i -> i * 5 end)
+```
+
+```elixir
+# Start with Celsius, modify as Fahrenheit, get back Celsius
+Iso.over(0, celsius_fahrenheit_iso, fn f -> f + 10 end)
+```
+
+### under/3
+
+Modify the reviewed side: review → apply function → view.
+
+This lets you work in the "source" representation while keeping your data in the "viewed" representation.
+
+```elixir
+# Start with integer 100, modify as string, get back integer
+Iso.under(100, string_int_iso, fn s -> s <> "0" end)
+```
+
+```elixir
+# Start with Fahrenheit, modify as Celsius, get back Fahrenheit
+Iso.under(32, celsius_fahrenheit_iso, fn c -> c + 10 end)
+```
+
+## Direction
+
+### from/1
+
+Reverse the iso's direction. This swaps `view` and `review`.
+
+```elixir
+# Original: string -> int
+Iso.view("42", string_int_iso)
+```
+
+```elixir
+# Reversed: int -> string (same as review)
+reversed_iso = Iso.from(string_int_iso)
+Iso.view(42, reversed_iso)
+```
+
+```elixir
+# Reversed: string -> int (same as original view)
+Iso.review("42", reversed_iso)
+```
+
+## Composition
+
+### compose/2
+
+Compose two isos sequentially. The resulting iso applies transformations in sequence.
+
+```elixir
+# Iso: int -> doubled int
+double_iso =
+  Iso.make(
+    fn i -> i * 2 end,
+    fn i -> div(i, 2) end
+  )
+```
+
+```elixir
+# Compose: string -> int -> doubled int
+string_to_doubled =
+  Iso.compose(string_int_iso, double_iso)
+```
+
+```elixir
+# "21" -> 21 -> 42
+Iso.view("21", string_to_doubled)
+```
+
+```elixir
+# 42 -> 21 -> "21"
+Iso.review(42, string_to_doubled)
+```
+
+### compose/1
+
+Compose a list of isos into a single iso.
+
+```elixir
+# Build incrementally
+add_one =
+  Iso.make(
+    fn n -> n + 1 end,
+    fn n -> n - 1 end
+  )
+
+add_two = Iso.compose(add_one, add_one)
+add_five = Iso.compose([add_two, add_two, add_one])
+```
+
+```elixir
+Iso.view(10, add_five)
+```
+
+```elixir
+Iso.review(15, add_five)
+```
+
+Composing an empty list returns the identity iso.
+
+```elixir
+empty_compose = Iso.compose([])
+Iso.view(42, empty_compose)
+```
+
+## Working with Structs
+
+Isos work naturally with structs for converting between different representations of the same data.
+
+```elixir
+defmodule Celsius do
+  defstruct [:value]
+end
+
+defmodule Fahrenheit do
+  defstruct [:value]
+end
+```
+
+```elixir
+temp_struct_iso =
+  Iso.make(
+    fn %Celsius{value: c} ->
+      %Fahrenheit{value: c * 9 / 5 + 32}
+    end,
+    fn %Fahrenheit{value: f} ->
+      %Celsius{value: (f - 32) * 5 / 9}
+    end
+  )
+```
+
+```elixir
+c_temp = %Celsius{value: 0}
+```
+
+```elixir
+f_temp = Iso.view(c_temp, temp_struct_iso)
+```
+
+```elixir
+Iso.review(f_temp, temp_struct_iso)
+```
+
+## Practical Example: JSON Encoding
+
+A common use of isos is encoding/decoding between internal representations and external formats.
+
+```elixir
+defmodule User do
+  defstruct [:id, :name, :email]
+end
+```
+
+```elixir
+user_json_iso =
+  Iso.make(
+    # User -> Map (for JSON encoding)
+    fn %User{id: id, name: name, email: email} ->
+      %{"id" => id, "name" => name, "email" => email}
+    end,
+    # Map (from JSON decoding) -> User
+    fn %{"id" => id, "name" => name, "email" => email} ->
+      %User{id: id, name: name, email: email}
+    end
+  )
+```
+
+```elixir
+user = %User{id: 1, name: "Alice", email: "alice@example.com"}
+```
+
+```elixir
+# Convert to map for JSON encoding
+json_map = Iso.view(user, user_json_iso)
+```
+
+```elixir
+# Convert back from map (after JSON decoding)
+Iso.review(json_map, user_json_iso)
+```
+
+## When to Use Isos
+
+Use isos when you have:
+
+* **Lossless transformations**: Converting between equivalent representations
+* **Unit conversions**: Temperature, distance, currency (with exact numeric types)
+* **Encoding/decoding**: Serialization, format conversions
+* **Type conversions**: Between isomorphic data structures
+
+Don't use isos when:
+
+* The transformation is not reversible (use a function or lens instead)
+* The transformation loses information (use a prism for partial transformations)
+* The transformation can fail (use a prism with `Maybe`)
+* You need to handle missing data (use a lens with safe variants)
+
+## Why No Bang Variants?
+
+Notice that Iso operations have no `!` suffix and no safe alternatives.
+
+This is intentional. An Iso models **no failure**.
+
+The bang convention in Elixir means "this has a non-bang counterpart that models failure." But isos are total - if the transformation can fail, you don't have an iso.
+
+If an iso operation crashes, that's a contract violation (a broken iso), not an expected failure mode. The crash is loud, immediate, and correct.
