@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-{:funx, github: "JKWA/funx", ref: "67302cb"}
+{:funx, github: "JKWA/funx", ref: "738d63f"}
 ])
 ```
 
@@ -236,6 +236,206 @@ nav_input
 ```
 
 Starting from `NewtonSeconds`, we apply `10` `LbfSeconds`.
+
+### Handle Nested Data with Lens and Iso
+
+Our thruster and navigation data isn't just raw values. It's nested inside a larger spacecraft structure:
+
+```elixir
+defmodule ThrusterData do
+  defstruct [:impulse, :fuel_remaining, :status]
+end
+
+defmodule NavData do
+  defstruct [:target_impulse, :trajectory, :eta]
+end
+
+defmodule Spacecraft do
+  defstruct [:id, :thrusters, :navigation]
+end
+```
+
+Here's our current spacecraft:
+
+```elixir
+spacecraft = %Spacecraft{
+  id: "MCO-1999",
+  thrusters: %ThrusterData{
+    impulse: %LbfSeconds{value: 100},
+    fuel_remaining: 75.5,
+    status: :active
+  },
+  navigation: %NavData{
+    target_impulse: %NewtonSeconds{value: 501},
+    trajectory: :mars_orbit,
+    eta: ~U[1999-09-23 09:01:00Z]
+  }
+}
+```
+
+Let's start by getting our current thruster impulse value.
+
+For that, we'll need a lens:
+
+```elixir
+thrusters_impulse_lens = Lens.path([:thrusters, :impulse])
+```
+
+```elixir
+spacecraft |> Lens.view!(thrusters_impulse_lens)
+```
+
+Except we need it in newton seconds.
+
+An `Iso` can act as a `Lens`, so we can convert it with `as_lens/1`:
+
+```elixir
+thruster_impulse_ns_lens =
+  Lens.compose([
+    thrusters_impulse_lens,
+    Iso.as_lens(impulse_iso)
+  ])
+```
+
+Now, we have our current thrust in `NewtonSeconds`:
+
+```elixir
+spacecraft |> Lens.view!(thruster_impulse_ns_lens)
+```
+
+We can extend our lens to get the actual value:
+
+```elixir
+thruster_impulse_ns_value_lens =
+  Lens.compose(thruster_impulse_ns_lens, Lens.key(:value))
+
+Lens.view!(spacecraft, thruster_impulse_ns_value_lens)
+```
+
+Have we met our navigation's impulse target?
+
+```elixir
+navigation_target_impulse_lens = Lens.path([:navigation, :target_impulse, :value])
+
+target = Lens.view!(spacecraft, navigation_target_impulse_lens)
+```
+
+No, our target is `501` newton seconds and our current thrusters are at `444.822`.
+
+We can set our thrust to match our navigation target, trusting our lens to do the conversion:
+
+```elixir
+spacecraft |> Lens.set!(thruster_impulse_ns_value_lens, target)
+```
+
+It turns out that we needed about 12.6 additional pound-force seconds to match our `Navigation` module's target impulse.
+
+<!-- livebook:{"break_markdown":true} -->
+
+The iso handles the conversion. The lens handles the navigation. Together, they let us work with nested data in the representation that makes sense at each level.
+
+### Handle Unreliable Data with Prism and Iso
+
+Space communications are unreliable. Solar flares, distance from Earth, hardware faults - our navigation module sometimes drops out.
+
+When it's online, we have navigation data. When it's not, the field is `nil`:
+
+```elixir
+spacecraft_connected = %Spacecraft{
+  id: "MCO-1999",
+  thrusters: %ThrusterData{
+    impulse: %LbfSeconds{value: 40},
+    fuel_remaining: 75.5,
+    status: :active
+  },
+  navigation: %NavData{
+    target_impulse: %NewtonSeconds{value: 345},
+    trajectory: :mars_orbit,
+    eta: ~U[1999-09-23 09:01:00Z]
+  }
+}
+```
+
+```elixir
+spacecraft_disconnected = %Spacecraft{
+  id: "MCO-1999",
+  thrusters: %ThrusterData{
+    impulse: %LbfSeconds{value: 76},
+    fuel_remaining: 75.5,
+    status: :active
+  },
+  navigation: nil  # Communication lost
+}
+```
+
+We need to check if our thruster impulse matches the navigation target. But we can't assume navigation data exists.
+
+With `Prism`, we can safely access optional data. With `Iso`, we can convert units. We need both.
+
+An `Iso` can act as a `Prism`, so we can convert it with `as_prism/1`:
+
+```elixir
+nav_target_prism =
+  Prism.path([:navigation, :target_impulse])
+```
+
+With a good connection, we get the target:
+
+```elixir
+Prism.preview(spacecraft_connected, nav_target_prism)
+```
+
+But our thruster module needs pound-force seconds.
+
+```elixir
+nav_target_lbf_prism = Prism.compose(nav_target_prism, Iso.as_prism(Iso.from(impulse_iso)))
+```
+
+```elixir
+Prism.preview(spacecraft_connected, nav_target_lbf_prism)
+```
+
+```elixir
+nav_target_lbf_value_prism = 
+  Prism.compose(nav_target_lbf_prism, Prism.path([{LbfSeconds, :value}]))
+```
+
+```elixir
+Prism.preview(spacecraft_connected, nav_target_lbf_value_prism)
+```
+
+With a lost connection, we get `Nothing`:
+
+```elixir
+Prism.preview(spacecraft_disconnected, nav_target_lbf_value_prism)
+```
+
+We can check our entire fleet, asking if all have comms:
+
+```elixir
+alias Funx.Monad.Maybe
+
+fleet = [spacecraft, spacecraft_connected]
+
+fleet
+|> Maybe.traverse(fn ship -> Prism.preview(ship, nav_target_lbf_value_prism) end)
+
+```
+
+Here we get `Just`, letting us know all have comms, and the list of nav targets, in pound-force seconds.
+
+If we add our disconnected spacecraft:
+
+```elixir
+fleet = [spacecraft_connected, spacecraft_disconnected]
+
+fleet
+|> Maybe.traverse(fn ship -> Prism.preview(ship, nav_target_lbf_value_prism) end)
+```
+
+We get `Nothing`. From the context of our fleet, not all have nav target information.
+
+The prism handles the missing data. The iso handles the conversion. Together, they let us work with unreliable systems in the representation we need.
 
 The Mars Climate Orbiter crashed because there was no enforced isomorphism. Just implicit assumptions about units that failed silently.
 
