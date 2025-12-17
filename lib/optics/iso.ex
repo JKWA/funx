@@ -32,6 +32,14 @@ defmodule Funx.Optics.Iso do
     - `compose/2`: Composes two isos sequentially (outer then inner).
     - `compose/1`: Composes a list of isos into a single iso.
 
+  ### Interoperability
+
+    - `as_lens/1`: Converts an iso to a lens.
+    - `as_prism/1`: Converts an iso to a prism.
+
+  An iso is more powerful than both lens and prism. Every iso can be used as a lens
+  (viewing and setting always succeed) or as a prism (preview always returns `Just`).
+
   Isos compose naturally. Composing two isos yields a new iso where:
   - Forward (`view`) applies the outer iso first, then the inner iso
   - Backward (`review`) applies the inner iso first, then the outer iso
@@ -98,7 +106,9 @@ defmodule Funx.Optics.Iso do
 
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
 
+  alias Funx.Monad.Maybe
   alias Funx.Monoid.Optics.IsoCompose
+  alias Funx.Optics.{Lens, Prism}
 
   @type forward(s, a) :: (s -> a)
   @type backward(a, s) :: (a -> s)
@@ -361,5 +371,78 @@ defmodule Funx.Optics.Iso do
   @spec compose([t()]) :: t()
   def compose(isos) when is_list(isos) do
     m_concat(%IsoCompose{}, isos)
+  end
+
+  # ============================================================================
+  # Interoperability
+  # ============================================================================
+
+  @doc """
+  Converts an iso to a lens.
+
+  An iso is more powerful than a lens: it provides bidirectional transformation,
+  while a lens only provides viewing and updating. Every iso can be used as a lens.
+
+  The resulting lens:
+  - `view` uses the iso's forward transformation
+  - `update` ignores the old value and uses the iso's backward transformation
+
+  This is safe because an iso is total - the transformation always succeeds.
+
+  ## Examples
+
+      iex> alias Funx.Optics.{Iso, Lens}
+      iex> string_int = Iso.make(
+      ...>   fn s -> String.to_integer(s) end,
+      ...>   fn i -> Integer.to_string(i) end
+      ...> )
+      iex> lens = Iso.as_lens(string_int)
+      iex> Lens.view!("42", lens)
+      42
+      iex> Lens.set!("10", lens, 99)
+      "99"
+  """
+  @spec as_lens(t(s, a)) :: Lens.t(s, a)
+        when s: term(), a: term()
+  def as_lens(%__MODULE__{view: v, review: r}) do
+    Lens.make(
+      v,
+      fn _s, a -> r.(a) end
+    )
+  end
+
+  @doc """
+  Converts an iso to a prism.
+
+  An iso is more powerful than a prism: it never fails to extract a value,
+  while a prism models optional extraction. Every iso can be used as a prism.
+
+  The resulting prism:
+  - `preview` always succeeds (returns `Just`), using the iso's forward transformation
+  - `review` uses the iso's backward transformation
+
+  This is safe because an iso is total - the transformation always succeeds.
+
+  ## Examples
+
+      iex> alias Funx.Optics.{Iso, Prism}
+      iex> alias Funx.Monad.Maybe.Just
+      iex> string_int = Iso.make(
+      ...>   fn s -> String.to_integer(s) end,
+      ...>   fn i -> Integer.to_string(i) end
+      ...> )
+      iex> prism = Iso.as_prism(string_int)
+      iex> Prism.preview("42", prism)
+      %Just{value: 42}
+      iex> Prism.review(42, prism)
+      "42"
+  """
+  @spec as_prism(t(s, a)) :: Prism.t(s, a)
+        when s: term(), a: term()
+  def as_prism(%__MODULE__{view: v, review: r}) do
+    Prism.make(
+      fn s -> Maybe.just(v.(s)) end,
+      r
+    )
   end
 end

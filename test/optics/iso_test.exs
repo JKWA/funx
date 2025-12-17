@@ -738,4 +738,151 @@ defmodule Funx.Optics.IsoTest do
       end
     end
   end
+
+  describe "as_lens/1" do
+    test "converts iso to lens with correct view operation" do
+      alias Funx.Optics.Lens
+
+      string_int =
+        Iso.make(
+          fn s -> String.to_integer(s) end,
+          fn i -> Integer.to_string(i) end
+        )
+
+      lens = Iso.as_lens(string_int)
+
+      assert Lens.view!("42", lens) == 42
+      assert Lens.view!("100", lens) == 100
+    end
+
+    test "converts iso to lens with correct set operation" do
+      alias Funx.Optics.Lens
+
+      string_int =
+        Iso.make(
+          fn s -> String.to_integer(s) end,
+          fn i -> Integer.to_string(i) end
+        )
+
+      lens = Iso.as_lens(string_int)
+
+      # Set ignores the old value and uses iso's review
+      assert Lens.set!("42", lens, 99) == "99"
+      assert Lens.set!("anything", lens, 0) == "0"
+    end
+
+    test "converts iso to lens with correct over operation" do
+      alias Funx.Optics.Lens
+
+      string_int =
+        Iso.make(
+          fn s -> String.to_integer(s) end,
+          fn i -> Integer.to_string(i) end
+        )
+
+      lens = Iso.as_lens(string_int)
+
+      # "10" -> 10 -> 50 -> "50"
+      assert Lens.over!("10", lens, fn i -> i * 5 end) == "50"
+      assert Lens.over!("7", lens, fn i -> i + 3 end) == "10"
+    end
+
+    test "resulting lens works with nested data" do
+      alias Funx.Optics.Lens
+
+      string_int =
+        Iso.make(
+          fn s -> String.to_integer(s) end,
+          fn i -> Integer.to_string(i) end
+        )
+
+      iso_lens = Iso.as_lens(string_int)
+      key_lens = Lens.key(:value)
+      composed = Lens.compose(key_lens, iso_lens)
+
+      data = %{value: "42"}
+
+      assert Lens.view!(data, composed) == 42
+      assert Lens.set!(data, composed, 99) == %{value: "99"}
+    end
+  end
+
+  describe "as_prism/1" do
+    test "converts iso to prism with preview that always succeeds" do
+      alias Funx.Monad.Maybe.Just
+      alias Funx.Optics.Prism
+
+      string_int =
+        Iso.make(
+          fn s -> String.to_integer(s) end,
+          fn i -> Integer.to_string(i) end
+        )
+
+      prism = Iso.as_prism(string_int)
+
+      # Preview always returns Just (never Nothing)
+      assert Prism.preview("42", prism) == %Just{value: 42}
+      assert Prism.preview("100", prism) == %Just{value: 100}
+    end
+
+    test "converts iso to prism with correct review operation" do
+      alias Funx.Optics.Prism
+
+      string_int =
+        Iso.make(
+          fn s -> String.to_integer(s) end,
+          fn i -> Integer.to_string(i) end
+        )
+
+      prism = Iso.as_prism(string_int)
+
+      assert Prism.review(42, prism) == "42"
+      assert Prism.review(0, prism) == "0"
+    end
+
+    test "resulting prism satisfies round-trip property" do
+      alias Funx.Monad.Maybe.Just
+      alias Funx.Optics.Prism
+
+      string_int =
+        Iso.make(
+          fn s -> String.to_integer(s) end,
+          fn i -> Integer.to_string(i) end
+        )
+
+      prism = Iso.as_prism(string_int)
+
+      # preview then review
+      original = "42"
+      %Just{value: viewed} = Prism.preview(original, prism)
+      assert Prism.review(viewed, prism) == original
+
+      # review then preview
+      original_int = 42
+      reviewed = Prism.review(original_int, prism)
+      assert Prism.preview(reviewed, prism) == %Just{value: original_int}
+    end
+
+    test "resulting prism composes with other prisms" do
+      alias Funx.Monad.Maybe.Just
+      alias Funx.Optics.Prism
+
+      string_int =
+        Iso.make(
+          fn s -> String.to_integer(s) end,
+          fn i -> Integer.to_string(i) end
+        )
+
+      iso_prism = Iso.as_prism(string_int)
+      key_prism = Prism.key(:value)
+      composed = Prism.compose(key_prism, iso_prism)
+
+      # Success case
+      assert Prism.preview(%{value: "42"}, composed) == %Just{value: 42}
+      assert Prism.review(42, composed) == %{value: "42"}
+
+      # Failure case (missing key) - fails at the key prism, not the iso
+      assert Prism.preview(%{other: "42"}, composed) == %Funx.Monad.Maybe.Nothing{}
+    end
+  end
 end
