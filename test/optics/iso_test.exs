@@ -676,7 +676,8 @@ defmodule Funx.Optics.IsoTest do
         over_result = Iso.over(value, iso, fn x -> x + add_amount end)
 
         # Manual equivalent
-        manual_result = value |> Iso.view(iso) |> Kernel.+(add_amount) |> then(&Iso.review(&1, iso))
+        manual_result =
+          value |> Iso.view(iso) |> Kernel.+(add_amount) |> then(&Iso.review(&1, iso))
 
         assert over_result == manual_result
       end

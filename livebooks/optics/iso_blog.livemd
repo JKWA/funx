@@ -1,0 +1,449 @@
+# Funx.Optics.Iso
+
+```elixir
+Mix.install([
+{:funx, github: "JKWA/funx", ref: "67302cb"}
+])
+```
+
+## What’s an Iso?
+
+```elixir
+alias Funx.Optics.{Iso, Lens, Prism}
+```
+
+An iso represents a reversible change of representation. Nothing is added, nothing is lost.
+
+<!-- livebook:{"break_markdown":true} -->
+
+Let's start simple. Here is an iso that adds one.
+
+```elixir
+add_one_iso =
+  Iso.make(
+    fn n -> n + 1 end,
+    fn n -> n - 1 end
+  )
+```
+
+`view/2` applies the forward transformation.
+
+```elixir
+Iso.view(42, add_one_iso)
+```
+
+`review/2` applies the inverse transformation.
+
+```elixir
+Iso.review(43, add_one_iso)
+```
+
+An iso always round-trips. The inverse is exact, not a fallback.
+
+### Composing Isos
+
+Isomorphisms are composable:
+
+```elixir
+add_two_iso = Iso.compose(add_one_iso, add_one_iso)
+Iso.view(42, add_two_iso)
+```
+
+And we still have reversibility:
+
+```elixir
+Iso.review(44, add_two_iso)
+```
+
+Because the inverse remains valid, composition can scale arbitrarily.
+
+```elixir
+add_five_iso = Iso.compose([add_two_iso, add_two_iso, add_one_iso])
+add_ten_iso = Iso.compose([add_five_iso, add_five_iso])
+add_fifty_iso = Iso.compose([add_ten_iso, add_ten_iso, add_ten_iso, add_ten_iso, add_ten_iso])
+add_one_hundred_three_iso = Iso.compose([add_fifty_iso, add_fifty_iso, add_two_iso, add_one_iso])
+
+updated_value = Iso.view(42, add_one_hundred_three_iso)
+```
+
+And the original value can always be recovered.
+
+```elixir
+Iso.review(updated_value, add_one_hundred_three_iso)
+```
+
+Within the context of `add_one_hundred_three_iso`, `145` and `42` are different representations of the same thing.
+
+These examples show how isos work. Now let's see what happens when we don't have an iso enforcing the boundary between representations.
+
+## Unit conversion
+
+We're building a spacecraft navigation system with multiple contractors. One team's thrusters output data in pound-force seconds. Another team's navigation software expects newton-seconds. Same thrust, different representations.
+
+In 1999, NASA lost the Mars Climate Orbiter - $125 million worth of spacecraft - because one team's software output thrust data in pound-force seconds while another team's navigation software expected newton-seconds. The orbiter approached Mars at the wrong altitude and burned up in the atmosphere.
+
+That wasn't a calculation error. It was a representation error. Two teams looking at the same data, seeing different things, with no enforcement at the boundary.
+
+We need to do better.
+
+Pound-force seconds and newton-seconds are two representations of impulse (thrust over time). Let's start with an `Iso` to switch between them:
+
+```elixir
+lbf_seconds_to_newton_seconds =
+  Iso.make(
+    fn lbf_s -> lbf_s * 4.44822 end,
+    fn n_s -> n_s / 4.44822 end
+  )
+```
+
+In production, we would represent impulse in an exact form - an integer base unit or `Decimal` - so the inverse is genuinely lossless. Floats accumulate rounding errors that break the round-trip guarantee. For this example, we'll use floats to keep the math readable.
+
+To track which unit we're using, we need types - two structs that represent the same data:
+
+```elixir
+defmodule LbfSeconds do
+  defstruct [:value]
+end
+
+defmodule NewtonSeconds do
+  defstruct [:value]
+end
+```
+
+Now an `Iso` that converts between the structs:
+
+```elixir
+impulse_iso =
+  Iso.make(
+    fn %LbfSeconds{value: lbf} ->
+      %NewtonSeconds{value: Iso.view(lbf, lbf_seconds_to_newton_seconds)}
+    end,
+    fn %NewtonSeconds{value: ns} ->
+      %LbfSeconds{value: Iso.review(ns, lbf_seconds_to_newton_seconds)}
+    end
+  )
+```
+
+We can swap representations:
+
+```elixir
+thruster_output = %LbfSeconds{value: 100}
+```
+
+```elixir
+nav_input = Iso.view(thruster_output, impulse_iso)
+```
+
+And reverse:
+
+```elixir
+Iso.review(nav_input, impulse_iso)
+```
+
+Next, let's create a way to modify our impulse:
+
+```elixir
+add_ten = fn n -> n + 10.0 end
+```
+
+With our values in a struct, we need a `Lens`:
+
+```elixir
+impulse_lens = Lens.key(:value)
+```
+
+And `Lens.over!/3` to update our value:
+
+```elixir
+thruster_output
+|> Lens.over!(impulse_lens, add_ten)
+```
+
+```elixir
+nav_input
+|> Lens.over!(impulse_lens, add_ten)
+```
+
+This works as expected, adding `10` to each value.
+
+But what if we mean 10 in the context of `NewtonSeconds`?
+
+Let's explore a few approaches to see how different optics handle this.
+
+We could use a `Prism`. But prisms model absence - cases where something might be `Nothing`. That's the wrong tool here:
+
+Our `Impulse` representations aren't absent or present. They're always both valid. Still, let's see what a prism would do:
+
+```elixir
+newton_seconds_prism = Prism.path([{NewtonSeconds, :value}])
+```
+
+Now, if our current value is `NewtonSeconds`:
+
+```elixir
+alias Funx.Monad
+
+nav_input
+|> Prism.preview(newton_seconds_prism)
+|> Monad.map(add_ten)
+```
+
+We get back `Just` the new value.
+
+If we are in `LbfSeconds`:
+
+```elixir
+thruster_output
+|> Prism.preview(newton_seconds_prism)
+|> Monad.map(add_ten)
+```
+
+`LbfSeconds` is `Nothing` in the context of `NewtonSeconds`.
+
+But here's the key insight: `LbfSeconds` and `NewtonSeconds` aren't two separate things where one might be `Nothing`. They're the *same thing* viewed two different ways. That's what makes `Impulse` an `Iso`, not just a `Prism`.
+
+With an iso, we don't fail when we're in the "wrong" representation. We just swap to the right context, do our work, and swap back:
+
+```elixir
+thruster_output
+|> Iso.view(impulse_iso)
+|> Lens.over!(impulse_lens, add_ten)
+|> Iso.review(impulse_iso)
+```
+
+Here, `100` lbf·s plus `10` N·s is `102.248` lbf·s.
+
+That manual swap works, but `Iso` provides `over/3` to do this automatically. It views to the opposite representation, applies your function there, and reviews back:
+
+```elixir
+thruster_output
+|> Iso.over(
+  impulse_iso,
+  &Lens.over!(&1, impulse_lens, add_ten)
+)
+```
+
+Same result: starting from `LbfSeconds`, we apply `10` `NewtonSeconds`.
+
+And `Iso` has the inverse: `under/3` reviews to the opposite representation, applies your function, and views back:
+
+```elixir
+nav_input
+|> Iso.under(
+  impulse_iso,
+  &Lens.over!(&1, impulse_lens, add_ten)
+)
+```
+
+Starting from `NewtonSeconds`, we apply `10` `LbfSeconds`.
+
+The Mars Climate Orbiter crashed because there was no enforced isomorphism. Just implicit assumptions about units that failed silently.
+
+Our system is different. The boundary between pound-force seconds and newton-seconds is explicit. We cannot mix representations without going through the iso. And because the transformation is bidirectional and total, we know exactly what we're getting on both sides.
+
+When our thruster team and navigation team share data, the iso handles it. No `Maybe`, no silent failures, no confusion about which representation we're in. Just the same impulse, viewed two ways, with guaranteed correctness in both directions.
+
+## GIS ISO Boundary
+
+We are in the early stages of our project, and folks are enamored with SupGIS: a bespoke solution that gets us out of the starting blocks quickly.
+
+SupGIS has a free tier, but if we are successful it will be expensive. The worst case scenario is that we are only moderately successful, where SupGIS costs will significantly shorten our runway.
+
+We need to choose now without losing the ability to change our mind later.
+
+The data from SupGIS looks like this.
+
+```elixir
+defmodule SupGis.Point do
+  defstruct [:x, :y]
+end
+
+defmodule SupGis.Attributes do
+  defstruct [
+    :object_id,
+    :name,
+    :category,
+    :rating,
+    :created_at
+  ]
+end
+
+defmodule SupGis.Feature do
+  defstruct [
+    geometry: SupGis.Point,
+    attributes: SupGis.Attributes
+  ]
+end
+```
+
+We do not know what we will choose later, so we pick GeoJson as our boundary representation: a general schema meant to bridge GIS platforms.
+
+Here is our GeoJson.
+
+```elixir
+defmodule GeoJson.Point do
+  defstruct [:lon, :lat]
+end
+
+defmodule GeoJson.Properties do
+  defstruct [
+    :id,
+    :name,
+    :category,
+    :rating,
+    :created_at
+  ]
+end
+
+defmodule GeoJson.Feature do
+  defstruct [
+    geometry: GeoJson.Point,
+    properties: GeoJson.Properties
+  ]
+end
+```
+
+Our `point_iso` converts SupGIS points from `x` and `y` to `lon` and `lat`.
+
+```elixir
+point_iso =
+  Iso.make(
+    fn %SupGis.Point{x: x, y: y} ->
+      %GeoJson.Point{lon: x, lat: y}
+    end,
+    fn %GeoJson.Point{lon: lon, lat: lat} ->
+      %SupGis.Point{x: lon, y: lat}
+    end
+  )
+```
+
+Next we handle the attributes, establishing the relationship between SupGIS and GeoJson properties.
+
+```elixir
+attributes_iso =
+  Iso.make(
+    fn %SupGis.Attributes{
+         object_id: id,
+         name: name,
+         category: category,
+         rating: rating,
+         created_at: created_at
+       } ->
+      %GeoJson.Properties{
+        id: id,
+        name: name,
+        category: category,
+        rating: rating,
+        created_at: created_at
+      }
+    end,
+    fn %GeoJson.Properties{
+         id: id,
+         name: name,
+         category: category,
+         rating: rating,
+         created_at: created_at
+       } ->
+      %SupGis.Attributes{
+        object_id: id,
+        name: name,
+        category: category,
+        rating: rating,
+        created_at: created_at
+      }
+    end
+  )
+```
+
+Finally, a feature iso, composed the point and attribute isos. This lets us swap feature representations without losing information.
+
+```elixir
+feature_iso =
+  Iso.make(
+    fn %SupGis.Feature{geometry: geom, attributes: attrs} ->
+      %GeoJson.Feature{
+        geometry: Iso.view(geom, point_iso),
+        properties: Iso.view(attrs, attributes_iso)
+      }
+    end,
+    fn %GeoJson.Feature{geometry: geom, properties: props} ->
+      %SupGis.Feature{
+        geometry: Iso.review(geom, point_iso),
+        attributes: Iso.review(props, attributes_iso)
+      }
+    end
+  )
+```
+
+Now when we receive a SupGIS feature:
+
+```elixir
+supgis_feature =
+  %SupGis.Feature{
+    geometry: %SupGis.Point{
+      x: -122.335167,
+      y: 47.608013
+    },
+    attributes: %SupGis.Attributes{
+      object_id: 1,
+      name: "Coffee Shop",
+      category: "Retail",
+      rating: 4.6,
+      created_at: ~U[2023-08-15 00:00:00Z]
+    }
+  }
+```
+
+We can `view/2` it as GeoJson:
+
+```elixir
+geo_json_feature = Iso.view(supgis_feature, feature_iso)
+```
+
+And we can go back:
+
+```elixir
+Iso.review(geo_json_feature, feature_iso)
+```
+
+The key is that an `Iso` is not a one-way mapping. It is a statement that these two representations are the same information.
+
+Inside the system, we can choose the representation that makes sense in that part of the code: GeoJson when we want portability, SupGIS when we need vendor-specific capabilities.
+
+Later, if SupGIS costs start to dominate, the migration is not a rewrite. We add a new iso between the new provider and GeoJson.
+
+More importantly, we do not need to migrate all at once. Because the boundary is explicit and reversible, we can replace the most expensive SupGIS calls first, move gradually, and keep the system coherent the entire time.
+
+## Why No Bang Variants?
+
+Notice that Iso operations have no `!` suffix and no safe alternatives.
+
+This is intentional. An Iso models **no failure**.
+
+The bang convention in Elixir means "this has a non-bang counterpart that models failure." But isos are total - if the transformation can fail, you don't have an iso. (This is why our unit conversion example noted that production code needs exact numeric representations: floats don't actually round-trip, so they break the iso contract.)
+
+If an iso operation crashes, that's a contract violation (a broken iso), not an expected failure mode. The crash is loud, immediate, and correct.
+
+## When to Use Isos
+
+Use isos when you have:
+
+* **Lossless transformations**: Converting between equivalent representations (string ↔ integer, JSON ↔ struct)
+* **Unit conversions**: Temperature, distance, currency, etc.
+* **Encoding/decoding**: Serialization, format conversions
+* **Type conversions**: Between isomorphic data structures
+
+Don't use isos when:
+
+* The transformation is not reversible (use a function or lens instead)
+* The transformation loses information
+* You need partial/optional transformations (use a prism instead)
+* The focus might not exist (use a lens with safe variants)
+
+## Wrapping Up
+
+Isos enforce a simple invariant: two representations of the same thing must convert cleanly in both directions. When that invariant holds, you get guarantees that matter.
+
+The Mars Climate Orbiter shows the cost of implicit conversions. The GIS example shows the value of explicit boundaries. In both cases, the iso is the same tool: a way to say "these two things are identical, just viewed differently," and make that boundary explicit and executable.
+
+No silent failures. No information loss. Just reversible transformations you can trust.
