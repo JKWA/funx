@@ -65,7 +65,26 @@ defmodule Funx.Monad.Maybe do
   Although these implementations are defined per constructor (`Just` and `Nothing`), the behavior is consistent across the `Maybe` abstraction.
 
   This module helps you represent optional data explicitly, structure conditional logic safely, and eliminate reliance on `nil` in functional pipelines.
+
+  ## DSL Usage
+
+  You can use the Maybe DSL for clean monadic composition:
+
+      use Funx.Monad.Maybe
+
+      maybe input do
+        bind ParseInt
+        bind PositiveNumber
+        map Double
+      end
   """
+
+  defmacro __using__(_opts) do
+    quote do
+      import Funx.Monad.Maybe
+      import Funx.Monad.Maybe.Dsl
+    end
+  end
 
   import Funx.Monad, only: [map: 2]
   import Funx.Foldable, only: [fold_l: 3]

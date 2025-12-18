@@ -351,3 +351,244 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     def run(_value, _opts, _env), do: false
   end
 end
+
+defmodule Funx.Monad.Maybe.Dsl.Examples do
+  @moduledoc """
+  Example modules demonstrating the Maybe DSL pattern.
+
+  These modules implement `run/3` from the `Funx.Monad.Maybe.Dsl.Behaviour`.
+  The DSL keywords (`bind`, `map`) determine how the result is handled.
+  """
+
+  defmodule ParseInt do
+    @moduledoc """
+    Parses a string into an integer, returning Maybe.
+
+    Implements `run/3` which can be used with `bind` or `map`.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    import Funx.Monad.Maybe
+
+    @impl true
+    def run(value, _opts, _env) when is_binary(value) do
+      case Integer.parse(value) do
+        {int, ""} -> just(int)
+        {_int, _rest} -> nothing()
+        :error -> nothing()
+      end
+    end
+
+    def run(_value, _opts, _env), do: nothing()
+  end
+
+  defmodule PositiveNumber do
+    @moduledoc """
+    Validates that a number is positive, returning Maybe.
+
+    Implements `run/3` which can be used with `bind` or `map`.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    import Funx.Monad.Maybe
+
+    @impl true
+    def run(value, _opts, _env) when is_number(value) and value > 0 do
+      just(value)
+    end
+
+    def run(_value, _opts, _env), do: nothing()
+  end
+
+  defmodule Double do
+    @moduledoc """
+    Doubles a number, returning a plain value.
+
+    Implements `run/3` to be used with `map`.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    @impl true
+    def run(value, _opts, _env) when is_number(value) do
+      value * 2
+    end
+  end
+
+  defmodule Square do
+    @moduledoc """
+    Squares a number, returning a plain value.
+
+    Implements `run/3` to be used with `map`.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    @impl true
+    def run(value, _opts, _env) when is_number(value) do
+      value * value
+    end
+  end
+
+  defmodule TupleParseInt do
+    @moduledoc """
+    Parses a string into an integer, returning tuple result.
+
+    Demonstrates tuple support - `run/3` returns `{:ok, int}` or
+    `{:error, reason}` which is automatically converted to Maybe.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    @impl true
+    def run(value, _opts, _env) when is_binary(value) do
+      case Integer.parse(value) do
+        {int, ""} -> {:ok, int}
+        _ -> {:error, "Invalid integer"}
+      end
+    end
+  end
+
+  defmodule TupleValidator do
+    @moduledoc """
+    Validates that a number is positive, returning tuple result.
+
+    Demonstrates tuple support for validation - `run/3` returns `{:ok, value}` or
+    `{:error, reason}` which is automatically converted to Maybe.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    @impl true
+    def run(n, _opts, _env) when is_number(n) and n > 0, do: {:ok, n}
+    def run(_n, _opts, _env), do: {:error, "not positive"}
+  end
+
+  defmodule InvalidReturn do
+    @moduledoc """
+    Example of an invalid implementation that returns a plain string.
+
+    This module demonstrates what happens when `run/3` returns an invalid type.
+    Used for testing error handling in the DSL.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    @impl true
+    def run(_, _opts, _env), do: "not a valid return"
+  end
+
+  defmodule ParseIntWithBase do
+    @moduledoc """
+    Parses a string into an integer with configurable base.
+
+    Demonstrates module-specific options - base can be passed via opts.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    import Funx.Monad.Maybe
+
+    @impl true
+    def run(value, opts, _env) when is_binary(value) do
+      base = Keyword.get(opts, :base, 10)
+
+      case Integer.parse(value, base) do
+        {int, ""} -> just(int)
+        _ -> nothing()
+      end
+    end
+
+    def run(_value, _opts, _env), do: nothing()
+  end
+
+  defmodule MinValidator do
+    @moduledoc """
+    Validates that a number is above a minimum value.
+
+    Demonstrates module-specific options - min threshold passed via opts.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    import Funx.Monad.Maybe
+
+    @impl true
+    def run(value, opts, _env) when is_number(value) do
+      min = Keyword.get(opts, :min, 0)
+
+      if value > min do
+        just(value)
+      else
+        nothing()
+      end
+    end
+
+    def run(_value, _opts, _env), do: nothing()
+  end
+
+  defmodule Multiplier do
+    @moduledoc """
+    Multiplies a number by a configurable factor.
+
+    Demonstrates module-specific options with map - factor passed via opts.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    @impl true
+    def run(value, opts, _env) when is_number(value) do
+      factor = Keyword.get(opts, :factor, 1)
+      value * factor
+    end
+
+    def run(value, _opts, _env), do: value
+  end
+
+  defmodule Logger do
+    @moduledoc """
+    Logs a value for side effects, used with tap.
+
+    Demonstrates tap with module - sends message to test process.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    @impl true
+    def run(value, opts, _env) do
+      test_pid = Keyword.get(opts, :test_pid)
+      label = Keyword.get(opts, :label, :logged)
+
+      if test_pid do
+        send(test_pid, {label, value})
+      end
+
+      value
+    end
+  end
+
+  defmodule IsPositive do
+    @moduledoc """
+    Predicate that checks if a number is positive.
+
+    Used with filter.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    @impl true
+    def run(value, _opts, _env) when is_number(value) do
+      value > 0
+    end
+
+    def run(_value, _opts, _env), do: false
+  end
+
+  defmodule InRange do
+    @moduledoc """
+    Predicate that checks if a value is within a range.
+
+    Used with filter and options.
+    """
+    @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+
+    @impl true
+    def run(value, opts, _env) when is_number(value) do
+      min = Keyword.get(opts, :min, 0)
+      max = Keyword.get(opts, :max, 100)
+      value >= min and value <= max
+    end
+
+    def run(_value, _opts, _env), do: false
+  end
+end
