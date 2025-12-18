@@ -80,11 +80,11 @@ These examples show how isos work. Now let's see what happens when we don't have
 
 We're building a spacecraft navigation system with multiple contractors. One team's thrusters output data in pound-force seconds. Another team's navigation software expects newton-seconds. Same thrust, different representations.
 
-In 1999, NASA lost the Mars Climate Orbiter - $125 million worth of spacecraft - because one team's software output thrust data in pound-force seconds while another team's navigation software expected newton-seconds. The orbiter approached Mars at the wrong altitude and burned up in the atmosphere.
+In 1999, [NASA lost the Mars Climate Orbiter](https://science.nasa.gov/mission/mars-climate-orbiter/) because one team's software output thrust data in pound-force seconds while another team's navigation software expected newton-seconds. The orbiter approached Mars at the wrong altitude and burned up in the atmosphere.
 
 That wasn't a calculation error. It was a representation error. Two teams looking at the same data, seeing different things, with no enforcement at the boundary.
 
-We need to do better.
+That's a job for `Iso`.
 
 Pound-force seconds and newton-seconds are two representations of impulse (thrust over time). Let's start with an `Iso` to switch between them:
 
@@ -96,7 +96,7 @@ lbf_seconds_to_newton_seconds =
   )
 ```
 
-In production, we would represent impulse in an exact form - an integer base unit or `Decimal` - so the inverse is genuinely lossless. Floats accumulate rounding errors that break the round-trip guarantee. For this example, we'll use floats to keep the math readable.
+In production, we would represent impulse in an exact form - an integer base unit or `Decimal` - so the inverse is genuinely lossless. Floats accumulate rounding errors that break the round-trip guarantee. But for this example, we'll use floats to keep the math simple.
 
 To track which unit we're using, we need types - two structs that represent the same data:
 
@@ -110,7 +110,7 @@ defmodule NewtonSeconds do
 end
 ```
 
-Now an `Iso` that converts between the structs:
+Now we compose an `Iso` that converts between our structs:
 
 ```elixir
 impulse_iso =
@@ -124,7 +124,7 @@ impulse_iso =
   )
 ```
 
-We can swap representations:
+This let's us swap representations:
 
 ```elixir
 thruster_output = %LbfSeconds{value: 100}
@@ -140,19 +140,19 @@ And reverse:
 Iso.review(nav_input, impulse_iso)
 ```
 
-Next, let's create a way to modify our impulse:
+Next, we need a way to modify our impulse:
 
 ```elixir
 add_ten = fn n -> n + 10.0 end
 ```
 
-With our values in a struct, we need a `Lens`:
+And a `Lens`:
 
 ```elixir
 impulse_lens = Lens.key(:value)
 ```
 
-And `Lens.over!/3` to update our value:
+We can use `Lens.over!/3` to update our value:
 
 ```elixir
 thruster_output
@@ -168,11 +168,7 @@ This works as expected, adding `10` to each value.
 
 But what if we mean 10 in the context of `NewtonSeconds`?
 
-Let's explore a few approaches to see how different optics handle this.
-
-We could use a `Prism`. But prisms model absence - cases where something might be `Nothing`. That's the wrong tool here:
-
-Our `Impulse` representations aren't absent or present. They're always both valid. Still, let's see what a prism would do:
+What about a `Prism`?
 
 ```elixir
 newton_seconds_prism = Prism.path([{NewtonSeconds, :value}])
@@ -198,9 +194,9 @@ thruster_output
 |> Monad.map(add_ten)
 ```
 
-`LbfSeconds` is `Nothing` in the context of `NewtonSeconds`.
+`LbfSeconds` is `Nothing`.
 
-But here's the key insight: `LbfSeconds` and `NewtonSeconds` aren't two separate things where one might be `Nothing`. They're the *same thing* viewed two different ways. That's what makes `Impulse` an `Iso`, not just a `Prism`.
+But here's the key insight: `LbfSeconds` and `NewtonSeconds` aren't two separate things where one might be `Nothing`. They're the *same thing* viewed two different ways. `Impulse` isn't a `Prism`, it is an `Iso`.
 
 With an iso, we don't fail when we're in the "wrong" representation. We just swap to the right context, do our work, and swap back:
 
@@ -213,7 +209,7 @@ thruster_output
 
 Here, `100` lbf·s plus `10` N·s is `102.248` lbf·s.
 
-That manual swap works, but `Iso` provides `over/3` to do this automatically. It views to the opposite representation, applies your function there, and reviews back:
+That manual swap works, but `Iso` includes `over/3` to do this automatically. It views to the opposite representation, applies your function there, and reviews back:
 
 ```elixir
 thruster_output
@@ -237,7 +233,7 @@ nav_input
 
 Starting from `NewtonSeconds`, we apply `10` `LbfSeconds`.
 
-### Handle Nested Data with Lens and Iso
+### Handling nested data with Lens and Iso
 
 Our thruster and navigation data isn't just raw values. It's nested inside a larger spacecraft structure:
 
@@ -279,15 +275,12 @@ For that, we'll need a lens:
 
 ```elixir
 thrusters_impulse_lens = Lens.path([:thrusters, :impulse])
-```
-
-```elixir
 spacecraft |> Lens.view!(thrusters_impulse_lens)
 ```
 
 Except we need it in newton seconds.
 
-An `Iso` can act as a `Lens`, so we can convert it with `as_lens/1`:
+It turns out that `Iso` can act as a `Lens`, so we can convert it with `as_lens/1`:
 
 ```elixir
 thruster_impulse_ns_lens =
@@ -334,9 +327,9 @@ It turns out that we needed about 12.6 additional pound-force seconds to match o
 
 The iso handles the conversion. The lens handles the navigation. Together, they let us work with nested data in the representation that makes sense at each level.
 
-### Handle Unreliable Data with Prism and Iso
+### Handling unreliable data with Prism and Iso
 
-Space communications are unreliable. Solar flares, distance from Earth, hardware faults - our navigation module sometimes drops out.
+Space communications are unreliable. Solar flares, distance from Earth, hardware faults. We need to handle our navigation module sometimes dropping out.
 
 When it's online, we have navigation data. When it's not, the field is `nil`:
 
@@ -388,19 +381,23 @@ Prism.preview(spacecraft_connected, nav_target_prism)
 But our thruster module needs pound-force seconds.
 
 ```elixir
-nav_target_lbf_prism = Prism.compose(nav_target_prism, Iso.as_prism(Iso.from(impulse_iso)))
-```
+nav_target_lbf_prism = 
+  Prism.compose(
+    nav_target_prism, 
+    Iso.as_prism(Iso.from(impulse_iso)))
 
-```elixir
 Prism.preview(spacecraft_connected, nav_target_lbf_prism)
 ```
 
-```elixir
-nav_target_lbf_value_prism = 
-  Prism.compose(nav_target_lbf_prism, Prism.path([{LbfSeconds, :value}]))
-```
+We can extend this into the value itself:
 
 ```elixir
+nav_target_lbf_value_prism = 
+  Prism.compose(
+    nav_target_lbf_prism, 
+    Prism.path([{LbfSeconds, :value}])
+  )
+
 Prism.preview(spacecraft_connected, nav_target_lbf_value_prism)
 ```
 
