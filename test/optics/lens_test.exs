@@ -1192,4 +1192,222 @@ defmodule Funx.Optics.LensTest do
       assert result == data
     end
   end
+
+  describe "property-based lens laws" do
+    use ExUnitProperties
+
+    property "get-put law: set(s, lens, view(s, lens)) == s for maps" do
+      check all(
+              name <- string(:alphanumeric),
+              age <- integer(1..150),
+              score <- integer(0..1000)
+            ) do
+        data = %{name: name, age: age, score: score}
+        lens = Lens.key(:age)
+
+        # Setting to the current value should return the same structure
+        current = Lens.view!(data, lens)
+        result = Lens.set!(data, lens, current)
+
+        assert result == data
+      end
+    end
+
+    property "get-put law: set(s, lens, view(s, lens)) == s for nested paths" do
+      check all(
+              name <- string(:alphanumeric),
+              wins <- integer(0..1000),
+              losses <- integer(0..1000)
+            ) do
+        data = %{
+          player: %{
+            name: name,
+            stats: %{wins: wins, losses: losses}
+          }
+        }
+
+        lens = Lens.path([:player, :stats, :wins])
+
+        current = Lens.view!(data, lens)
+        result = Lens.set!(data, lens, current)
+
+        assert result == data
+      end
+    end
+
+    property "get-put law: set(s, lens, view(s, lens)) == s for structs" do
+      check all(
+              name <- string(:alphanumeric),
+              age <- integer(1..150),
+              email <- string(:alphanumeric)
+            ) do
+        user = %User{name: name, age: age, email: email}
+        lens = Lens.key(:age)
+
+        current = Lens.view!(user, lens)
+        result = Lens.set!(user, lens, current)
+
+        assert result == user
+        assert result.__struct__ == User
+      end
+    end
+
+    property "put-get law: view(set(s, lens, a), lens) == a for maps" do
+      check all(
+              initial_age <- integer(1..150),
+              new_age <- integer(1..150),
+              name <- string(:alphanumeric)
+            ) do
+        data = %{name: name, age: initial_age}
+        lens = Lens.key(:age)
+
+        updated = Lens.set!(data, lens, new_age)
+        retrieved = Lens.view!(updated, lens)
+
+        assert retrieved == new_age
+      end
+    end
+
+    property "put-get law: view(set(s, lens, a), lens) == a for nested paths" do
+      check all(
+              initial_wins <- integer(0..1000),
+              new_wins <- integer(0..1000),
+              losses <- integer(0..1000)
+            ) do
+        data = %{stats: %{wins: initial_wins, losses: losses}}
+        lens = Lens.path([:stats, :wins])
+
+        updated = Lens.set!(data, lens, new_wins)
+        retrieved = Lens.view!(updated, lens)
+
+        assert retrieved == new_wins
+      end
+    end
+
+    property "put-get law: view(set(s, lens, a), lens) == a for structs" do
+      check all(
+              initial_age <- integer(1..150),
+              new_age <- integer(1..150),
+              name <- string(:alphanumeric),
+              email <- string(:alphanumeric)
+            ) do
+        user = %User{name: name, age: initial_age, email: email}
+        lens = Lens.key(:age)
+
+        updated = Lens.set!(user, lens, new_age)
+        retrieved = Lens.view!(updated, lens)
+
+        assert retrieved == new_age
+        assert updated.__struct__ == User
+      end
+    end
+
+    property "put-put law: set(set(s, lens, a), lens, b) == set(s, lens, b) for maps" do
+      check all(
+              initial <- integer(0..1000),
+              first_value <- integer(0..1000),
+              second_value <- integer(0..1000)
+            ) do
+        data = %{value: initial, other: "data"}
+        lens = Lens.key(:value)
+
+        # Setting twice should only keep the last value
+        result1 = data |> Lens.set!(lens, first_value) |> Lens.set!(lens, second_value)
+        result2 = data |> Lens.set!(lens, second_value)
+
+        assert result1 == result2
+      end
+    end
+
+    property "put-put law: set(set(s, lens, a), lens, b) == set(s, lens, b) for nested paths" do
+      check all(
+              initial <- string(:alphanumeric),
+              first <- string(:alphanumeric),
+              second <- string(:alphanumeric)
+            ) do
+        data = %{a: %{b: initial, c: "other"}}
+        lens = Lens.path([:a, :b])
+
+        result1 = data |> Lens.set!(lens, first) |> Lens.set!(lens, second)
+        result2 = data |> Lens.set!(lens, second)
+
+        assert result1 == result2
+      end
+    end
+
+    property "put-put law: set(set(s, lens, a), lens, b) == set(s, lens, b) for structs" do
+      check all(
+              initial_email <- string(:alphanumeric),
+              first_email <- string(:alphanumeric),
+              second_email <- string(:alphanumeric),
+              name <- string(:alphanumeric),
+              age <- integer(1..150)
+            ) do
+        user = %User{name: name, age: age, email: initial_email}
+        lens = Lens.key(:email)
+
+        result1 = user |> Lens.set!(lens, first_email) |> Lens.set!(lens, second_email)
+        result2 = user |> Lens.set!(lens, second_email)
+
+        assert result1 == result2
+        assert result1.__struct__ == User
+      end
+    end
+
+    property "lens composition preserves get-put law" do
+      check all(
+              name <- string(:alphanumeric),
+              score <- integer(0..1000),
+              level <- integer(1..100)
+            ) do
+        data = %{user: %{profile: %{score: score, level: level}}, name: name}
+
+        outer = Lens.key(:user)
+        inner = Lens.key(:profile)
+        innermost = Lens.key(:score)
+        lens = Lens.compose(Lens.compose(outer, inner), innermost)
+
+        current = Lens.view!(data, lens)
+        result = Lens.set!(data, lens, current)
+
+        assert result == data
+      end
+    end
+
+    property "over! preserves lens laws (view after over with identity)" do
+      check all(
+              age <- integer(1..150),
+              name <- string(:alphanumeric)
+            ) do
+        data = %{name: name, age: age}
+        lens = Lens.key(:age)
+
+        # Applying identity function via over! should not change the structure
+        result = Lens.over!(data, lens, fn x -> x end)
+
+        assert result == data
+      end
+    end
+
+    property "over! with function composition" do
+      check all(
+              initial <- integer(0..100),
+              add_amount <- integer(1..50),
+              multiply_by <- integer(1..10)
+            ) do
+        data = %{value: initial}
+        lens = Lens.key(:value)
+
+        # Composing operations via over!
+        result1 =
+          data
+          |> Lens.over!(lens, fn x -> x + add_amount end)
+          |> Lens.over!(lens, fn x -> x * multiply_by end)
+
+        result2 = Lens.over!(data, lens, fn x -> (x + add_amount) * multiply_by end)
+
+        assert result1 == result2
+      end
+    end
+  end
 end

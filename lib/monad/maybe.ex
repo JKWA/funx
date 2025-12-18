@@ -42,10 +42,12 @@ defmodule Funx.Monad.Maybe do
 
   ### Elixir Interoperability
 
-    - `from_nil/1`: Converts `nil` to `Nothing`, otherwise wraps the value in `Just`.
-    - `to_nil/1`: Returns the underlying value or `nil`.
-    - `from_result/1`: Converts `{:ok, val}` or `{:error, _}` into a `Maybe`.
-    - `to_result/1`: Converts a `Maybe` to a result tuple.
+    - `nil_iso/0`: Returns the isomorphism between `Maybe` and nil values.
+    - `from_nil/1`: Converts `nil` to `Nothing`, otherwise wraps the value in `Just` (via `nil_iso`).
+    - `to_nil/1`: Returns the underlying value or `nil` (via `nil_iso`).
+    - `result_iso/0`: Returns the isomorphism between `Maybe` and result tuples.
+    - `from_result/1`: Converts `{:ok, val}` or `{:error, _}` into a `Maybe` (via `result_iso`).
+    - `to_result/1`: Converts a `Maybe` to a result tuple (via `result_iso`).
     - `from_try/1`: Runs a function and returns `Just` on success, or `Nothing` if an exception is raised.
     - `to_try!/2`: Unwraps a `Just`, or raises an error if `Nothing`.
 
@@ -70,6 +72,7 @@ defmodule Funx.Monad.Maybe do
 
   alias Funx.Eq
   alias Funx.Monad.{Either, Identity, Maybe}
+  alias Funx.Optics.Iso
   alias Funx.Ord
 
   alias Either.{Left, Right}
@@ -427,6 +430,68 @@ defmodule Funx.Monad.Maybe do
   end
 
   @doc """
+  Returns the isomorphism between Maybe and nil values.
+
+  This iso witnesses that `Maybe` and `nil | value` are equivalent representations.
+
+  ## Examples
+
+      iex> iso = Funx.Monad.Maybe.nil_iso()
+      iex> Funx.Optics.Iso.view(nil, iso)
+      %Funx.Monad.Maybe.Nothing{}
+      iex> Funx.Optics.Iso.view(42, iso)
+      %Funx.Monad.Maybe.Just{value: 42}
+      iex> Funx.Optics.Iso.review(%Funx.Monad.Maybe.Just{value: 42}, iso)
+      42
+      iex> Funx.Optics.Iso.review(%Funx.Monad.Maybe.Nothing{}, iso)
+      nil
+  """
+  @spec nil_iso() :: Iso.t()
+  def nil_iso do
+    Iso.make(
+      fn
+        nil -> %Nothing{}
+        value -> %Just{value: value}
+      end,
+      fn
+        %Just{value: value} -> value
+        %Nothing{} -> nil
+      end
+    )
+  end
+
+  @doc """
+  Returns the isomorphism between Maybe and Elixir result tuples.
+
+  This iso witnesses that `Maybe` and `{:ok, _} | {:error, :nothing}` are equivalent representations.
+
+  ## Examples
+
+      iex> iso = Funx.Monad.Maybe.result_iso()
+      iex> Funx.Optics.Iso.view({:ok, 42}, iso)
+      %Funx.Monad.Maybe.Just{value: 42}
+      iex> Funx.Optics.Iso.view({:error, :nothing}, iso)
+      %Funx.Monad.Maybe.Nothing{}
+      iex> Funx.Optics.Iso.review(%Funx.Monad.Maybe.Just{value: 42}, iso)
+      {:ok, 42}
+      iex> Funx.Optics.Iso.review(%Funx.Monad.Maybe.Nothing{}, iso)
+      {:error, :nothing}
+  """
+  @spec result_iso() :: Iso.t()
+  def result_iso do
+    Iso.make(
+      fn
+        {:ok, value} -> %Just{value: value}
+        {:error, _} -> %Nothing{}
+      end,
+      fn
+        %Just{value: value} -> {:ok, value}
+        %Nothing{} -> {:error, :nothing}
+      end
+    )
+  end
+
+  @doc """
   Returns `true` if the given `Maybe` is a `Just`, or `false` if it is `Nothing`.
 
   This provides a simple way to treat a `Maybe` as a boolean condition, useful when filtering or making branching decisions based on presence.
@@ -449,6 +514,8 @@ defmodule Funx.Monad.Maybe do
   @doc """
   Converts `nil` to `Nothing`; any other value becomes `Just`.
 
+  Implemented via the `Maybe <-> nil` isomorphism.
+
   ## Examples
 
       iex> Funx.Monad.Maybe.from_nil(nil)
@@ -458,11 +525,12 @@ defmodule Funx.Monad.Maybe do
       %Funx.Monad.Maybe.Just{value: 5}
   """
   @spec from_nil(nil | value) :: t(value) when value: term()
-  def from_nil(nil), do: nothing()
-  def from_nil(value), do: just(value)
+  def from_nil(value), do: Iso.view(value, nil_iso())
 
   @doc """
   Converts a `Maybe` to its wrapped value or `nil`.
+
+  Implemented via the `Maybe <-> nil` isomorphism.
 
   ## Examples
 
@@ -473,9 +541,7 @@ defmodule Funx.Monad.Maybe do
       nil
   """
   @spec to_nil(t(value)) :: nil | value when value: term()
-  def to_nil(maybe) when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
-    fold_l(maybe, fn value -> value end, fn -> nil end)
-  end
+  def to_nil(maybe), do: Iso.review(maybe, nil_iso())
 
   @doc """
   Executes a function within a `Maybe` context, returning `Nothing` if an exception occurs.
@@ -522,6 +588,8 @@ defmodule Funx.Monad.Maybe do
   @doc """
   Converts a result tuple to a `Maybe`. `{:ok, value}` becomes `Just(value)`, while `{:error, _}` becomes `Nothing`.
 
+  Implemented via the `Maybe <-> result tuple` isomorphism.
+
   ## Examples
 
       iex> Funx.Monad.Maybe.from_result({:ok, 5})
@@ -531,11 +599,12 @@ defmodule Funx.Monad.Maybe do
       %Funx.Monad.Maybe.Nothing{}
   """
   @spec from_result({:ok, right} | {:error, term()}) :: t(right) when right: term()
-  def from_result({:ok, value}), do: just(value)
-  def from_result({:error, _reason}), do: nothing()
+  def from_result(result), do: Iso.view(result, result_iso())
 
   @doc """
   Converts a `Maybe` to a result tuple. `Just(value)` becomes `{:ok, value}`, while `Nothing` becomes `{:error, :nothing}`.
+
+  Implemented via the `Maybe <-> result tuple` isomorphism.
 
   ## Examples
 
@@ -546,10 +615,5 @@ defmodule Funx.Monad.Maybe do
       {:error, :nothing}
   """
   @spec to_result(t(right)) :: {:ok, right} | {:error, :nothing} when right: term()
-  def to_result(maybe) when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
-    case maybe do
-      %Just{value: value} -> {:ok, value}
-      %Nothing{} -> {:error, :nothing}
-    end
-  end
+  def to_result(maybe), do: Iso.review(maybe, result_iso())
 end

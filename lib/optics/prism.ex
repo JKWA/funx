@@ -382,6 +382,15 @@ defmodule Funx.Optics.Prism do
   Composes two prisms. The outer prism runs first; if it succeeds,
   the inner prism runs next.
 
+  This is left-to-right composition: the first parameter is applied first.
+  This differs from mathematical function composition (f ∘ g applies g first).
+
+  **Sequential semantics:**
+  - On `preview`: Applies outer's matcher first, then inner's matcher (short-circuits on `Nothing`)
+  - On `review`: Applies inner's builder first, then outer's builder
+
+  This is sequential matching through nested structures.
+
       iex> outer = Funx.Optics.Prism.key(:account)
       iex> inner = Funx.Optics.Prism.key(:name)
       iex> p = Funx.Optics.Prism.compose(outer, inner)
@@ -393,9 +402,8 @@ defmodule Funx.Optics.Prism do
   Composes a list of prisms into a single prism using sequential composition.
 
   **Sequential semantics:**
-  - On `preview`: Applies each prism's matcher in sequence (Kleisli composition),
-    stopping at the first `Nothing`
-  - On `review`: Applies each prism's builder in reverse order (function composition)
+  - On `preview`: Applies matchers in list order (left-to-right), stopping at first `Nothing`
+  - On `review`: Applies builders in reverse list order (right-to-left)
 
   This is **not** a union or choice operator. It does not "try all branches."
   It is strict sequential matching and construction.

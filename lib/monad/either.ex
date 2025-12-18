@@ -25,7 +25,8 @@ defmodule Funx.Monad.Either do
     - `get_or_else/2`: Returns the value from a `Right`, or a default if `Left`.
     - `or_else/2`: Returns the original `Right`, or invokes a fallback function if `Left`.
     - `map_left/2`: Transforms a `Left` using a function, leaving `Right` values unchanged.
-    - `flip/1`: Swaps `Left` and `Right`, turning errors into successes and vice versa.
+    - `flip_iso/0`: Returns the isomorphism that swaps `Left` and `Right` branches.
+    - `flip/1`: Swaps `Left` and `Right`, turning errors into successes and vice versa (via `flip_iso`).
     - `filter_or_else/3`: Applies a predicate to the `Right` value; if false, returns a fallback `Left`.
 
   ### List Operations
@@ -55,8 +56,9 @@ defmodule Funx.Monad.Either do
 
   ### Elixir Interoperability
 
-    - `from_result/1`: Converts `{:ok, val}` or `{:error, err}` into an `Either`.
-    - `to_result/1`: Converts an `Either` into a result tuple.
+    - `result_iso/0`: Returns the isomorphism between `Either` and result tuples.
+    - `from_result/1`: Converts `{:ok, val}` or `{:error, err}` into an `Either` (via `result_iso`).
+    - `to_result/1`: Converts an `Either` into a result tuple (via `result_iso`).
     - `from_try/1`: Runs a function and returns `Right` on success or `Left` on exception.
     - `to_try!/1`: Unwraps a `Right`, or raises an error from a `Left`.
 
@@ -100,6 +102,7 @@ defmodule Funx.Monad.Either do
 
   alias Funx.Eq
   alias Funx.Monad.{Either, Maybe}
+  alias Funx.Optics.Iso
   alias Funx.Ord
 
   alias Either.{Left, Right}
@@ -240,6 +243,8 @@ defmodule Funx.Monad.Either do
 
   Turns a `Left` into a `Right` and vice versa, preserving the contained term.
 
+  Implemented via the `flip_iso` involution.
+
   ## Examples
 
       iex> Funx.Monad.Either.flip(Funx.Monad.Either.left(:error))
@@ -250,8 +255,7 @@ defmodule Funx.Monad.Either do
   """
   @spec flip(t(left, right)) :: t(right, left)
         when left: term(), right: term()
-  def flip(%Left{left: l}), do: %Right{right: l}
-  def flip(%Right{right: r}), do: %Left{left: r}
+  def flip(either), do: Iso.view(either, flip_iso())
 
   @doc """
   Lifts an equality function to compare `Either` values:
@@ -677,7 +681,60 @@ defmodule Funx.Monad.Either do
   end
 
   @doc """
+  Returns the isomorphism between Either and Elixir result tuples.
+
+  This iso witnesses that `Either` and `{:ok, _} | {:error, _}` are equivalent representations.
+
+  ## Examples
+
+      iex> iso = Funx.Monad.Either.result_iso()
+      iex> Funx.Optics.Iso.view({:ok, 42}, iso)
+      %Funx.Monad.Either.Right{right: 42}
+      iex> Funx.Optics.Iso.review(%Funx.Monad.Either.Left{left: "err"}, iso)
+      {:error, "err"}
+  """
+  @spec result_iso() :: Iso.t()
+  def result_iso do
+    Iso.make(
+      fn
+        {:ok, value} -> %Right{right: value}
+        {:error, reason} -> %Left{left: reason}
+      end,
+      fn
+        %Right{right: value} -> {:ok, value}
+        %Left{left: reason} -> {:error, reason}
+      end
+    )
+  end
+
+  @doc """
+  Returns the isomorphism that swaps Left and Right branches.
+
+  This is an involution - applying it twice returns the original value.
+  Both directions of the iso perform the same swap operation.
+
+  ## Examples
+
+      iex> iso = Funx.Monad.Either.flip_iso()
+      iex> Funx.Optics.Iso.view(%Funx.Monad.Either.Left{left: :error}, iso)
+      %Funx.Monad.Either.Right{right: :error}
+      iex> Funx.Optics.Iso.review(%Funx.Monad.Either.Right{right: 42}, iso)
+      %Funx.Monad.Either.Left{left: 42}
+  """
+  @spec flip_iso() :: Iso.t()
+  def flip_iso do
+    flip_fn = fn
+      %Left{left: l} -> %Right{right: l}
+      %Right{right: r} -> %Left{left: r}
+    end
+
+    Iso.make(flip_fn, flip_fn)
+  end
+
+  @doc """
   Converts a result (`{:ok, _}` or `{:error, _}`) to an `Either`.
+
+  Implemented via the `Either <-> result tuple` isomorphism.
 
   ## Examples
 
@@ -689,11 +746,12 @@ defmodule Funx.Monad.Either do
   """
   @spec from_result({:ok, right} | {:error, left}) :: t(left, right)
         when left: term(), right: term()
-  def from_result({:ok, value}), do: right(value)
-  def from_result({:error, reason}), do: left(reason)
+  def from_result(result), do: Iso.view(result, result_iso())
 
   @doc """
   Converts an `Either` to a result (`{:ok, value}` or `{:error, reason}`).
+
+  Implemented via the `Either <-> result tuple` isomorphism.
 
   ## Examples
 
@@ -705,12 +763,7 @@ defmodule Funx.Monad.Either do
   """
   @spec to_result(t(left, right)) :: {:ok, right} | {:error, left}
         when left: term(), right: term()
-  def to_result(either) when is_struct(either, Right) or is_struct(either, Left) do
-    case either do
-      %Right{right: value} -> {:ok, value}
-      %Left{left: reason} -> {:error, reason}
-    end
-  end
+  def to_result(either), do: Iso.review(either, result_iso())
 
   @doc """
   Wraps a value in an `Either`, catching any exceptions. If an exception occurs, a `Left` is returned with the exception.

@@ -464,6 +464,15 @@ defmodule Funx.Optics.Lens do
   Composes two lenses. The outer lens focuses first, then the inner lens
   focuses within the result.
 
+  This is left-to-right composition: the first parameter is applied first.
+  This differs from mathematical function composition (f ∘ g applies g first).
+
+  **Sequential semantics:**
+  - On `view!`: Applies outer's viewer first, then inner's viewer
+  - On `set!`: Updates through both lenses, maintaining nested structure
+
+  This is sequential focusing through nested structures.
+
       iex> alias Funx.Optics.Lens
       iex> outer = Lens.key(:profile)
       iex> inner = Lens.key(:age)
@@ -476,7 +485,7 @@ defmodule Funx.Optics.Lens do
   Composes a list of lenses into a single lens using sequential composition.
 
   **Sequential semantics:**
-  - On `view!`: Applies each lens's viewer in sequence (function composition)
+  - On `view!`: Applies viewers in list order (left-to-right)
   - On `set!`: Updates through each lens in reverse order to maintain structure
 
   This is sequential focusing through nested structures.
