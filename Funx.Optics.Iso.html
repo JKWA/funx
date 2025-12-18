@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
+
+
+    <title>Funx.Optics.Iso — funx v0.4.0</title>
+
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Optics.Iso.html" />
+
+    <script defer src="dist/sidebar_items-4A09F5DE.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
+
+  </head>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.4.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
+  </div>
+</nav>
+
+<output role="status" id="toast"></output>
+
+<main class="content page-module" id="main" data-type="modules">
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
+          </label>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Optics.Iso</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
+
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+  </div>
+
+
+    <section id="moduledoc">
+<p>The <a href="Funx.Optics.Iso.html"><code class="inline">Funx.Optics.Iso</code></a> module provides a lawful isomorphism optic for bidirectional, lossless transformations.</p><p>An isomorphism (iso) represents a reversible transformation between two types. It consists of
+two inverse functions that satisfy the round-trip laws:</p><ul><li><code class="inline">review(view(s, iso), iso) == s</code> - Round-trip forward then back returns the original</li><li><code class="inline">view(review(a, iso), iso) == a</code> - Round-trip back then forward returns the original</li></ul><p>Isos are total optics with no partiality. If the transformation can fail, you do not have an iso.
+Contract violations crash immediately - there are no bang variants or safe alternatives.</p><h3 id="module-constructors" class="section-heading"><a href="#module-constructors" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Constructors</span></h3><ul><li><a href="#make/2"><code class="inline">make/2</code></a>: Creates a custom iso from two inverse functions.</li><li><a href="#identity/0"><code class="inline">identity/0</code></a>: The identity iso (both directions are identity).</li></ul><h3 id="module-core-operations" class="section-heading"><a href="#module-core-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Core Operations</span></h3><ul><li><a href="#view/2"><code class="inline">view/2</code></a>: Apply the forward transformation (s -&gt; a).</li><li><a href="#review/2"><code class="inline">review/2</code></a>: Apply the backward transformation (a -&gt; s).</li><li><a href="#over/3"><code class="inline">over/3</code></a>: Modify the viewed side (view, apply function, review).</li><li><a href="#under/3"><code class="inline">under/3</code></a>: Modify the reviewed side (review, apply function, view).</li></ul><h3 id="module-direction" class="section-heading"><a href="#module-direction" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Direction</span></h3><ul><li><a href="#from/1"><code class="inline">from/1</code></a>: Reverse the iso's direction.</li></ul><h3 id="module-composition" class="section-heading"><a href="#module-composition" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Composition</span></h3><ul><li><a href="#compose/2"><code class="inline">compose/2</code></a>: Composes two isos sequentially (outer then inner).</li><li><a href="#compose/1"><code class="inline">compose/1</code></a>: Composes a list of isos into a single iso.</li></ul><h3 id="module-interoperability" class="section-heading"><a href="#module-interoperability" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Interoperability</span></h3><ul><li><a href="#as_lens/1"><code class="inline">as_lens/1</code></a>: Converts an iso to a lens.</li><li><a href="#as_prism/1"><code class="inline">as_prism/1</code></a>: Converts an iso to a prism.</li></ul><p>An iso is more powerful than both lens and prism. Every iso can be used as a lens
+(viewing and setting always succeed) or as a prism (preview always returns <code class="inline">Just</code>).</p><p>Isos compose naturally. Composing two isos yields a new iso where:</p><ul><li>Forward (<code class="inline">view</code>) applies the outer iso first, then the inner iso</li><li>Backward (<code class="inline">review</code>) applies the inner iso first, then the outer iso</li></ul><h2 id="module-monoid-structure" class="section-heading"><a href="#module-monoid-structure" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Monoid Structure</span></h2><p>Isos form a monoid under composition.</p><p>The monoid structure is provided via <a href="Funx.Monoid.Optics.IsoCompose.html"><code class="inline">Funx.Monoid.Optics.IsoCompose</code></a>, which wraps isos
+for use with generic monoid operations:</p><ul><li><strong>Identity</strong>: <a href="#identity/0"><code class="inline">identity/0</code></a> - the identity iso</li><li><strong>Operation</strong>: <a href="#compose/2"><code class="inline">compose/2</code></a> - sequential composition</li></ul><p>Composing an empty list returns the identity iso.</p><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><p>Simple encoding/decoding:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="c1"># Iso between string and integer (string representation)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="8653528166-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="8653528166-2">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="8653528166-3">(</span><span class="n">s</span><span class="p" data-group-id="8653528166-3">)</span><span class="w"> </span><span class="k" data-group-id="8653528166-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="8653528166-4">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="8653528166-5">(</span><span class="n">i</span><span class="p" data-group-id="8653528166-5">)</span><span class="w"> </span><span class="k" data-group-id="8653528166-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="8653528166-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="8653528166-6">(</span><span class="s">&quot;42&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">string_int</span><span class="p" data-group-id="8653528166-6">)</span><span class="w">
+</span><span class="mi">42</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="8653528166-7">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">string_int</span><span class="p" data-group-id="8653528166-7">)</span><span class="w">
+</span><span class="s">&quot;42&quot;</span></code></pre><p>Composing isos:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="c1"># Iso: string &lt;-&gt; integer</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="1950057671-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="1950057671-2">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="1950057671-3">(</span><span class="n">s</span><span class="p" data-group-id="1950057671-3">)</span><span class="w"> </span><span class="k" data-group-id="1950057671-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="1950057671-4">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="1950057671-5">(</span><span class="n">i</span><span class="p" data-group-id="1950057671-5">)</span><span class="w"> </span><span class="k" data-group-id="1950057671-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="1950057671-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="c1"># Iso: integer &lt;-&gt; doubled integer</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">double</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="1950057671-6">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="1950057671-7">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="1950057671-7">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="1950057671-8">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">div</span><span class="p" data-group-id="1950057671-9">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="1950057671-9">)</span><span class="w"> </span><span class="k" data-group-id="1950057671-8">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="1950057671-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="c1"># Composed: string &lt;-&gt; doubled integer</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="1950057671-10">(</span><span class="n">string_int</span><span class="p">,</span><span class="w"> </span><span class="n">double</span><span class="p" data-group-id="1950057671-10">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="1950057671-11">(</span><span class="s">&quot;21&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="1950057671-11">)</span><span class="w">
+</span><span class="mi">42</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="1950057671-12">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="1950057671-12">)</span><span class="w">
+</span><span class="s">&quot;21&quot;</span></code></pre><p>Using <code class="inline">over</code> and <code class="inline">under</code>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="9746010123-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="9746010123-2">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="9746010123-3">(</span><span class="n">s</span><span class="p" data-group-id="9746010123-3">)</span><span class="w"> </span><span class="k" data-group-id="9746010123-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="9746010123-4">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="9746010123-5">(</span><span class="n">i</span><span class="p" data-group-id="9746010123-5">)</span><span class="w"> </span><span class="k" data-group-id="9746010123-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="9746010123-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">over</span><span class="p" data-group-id="9746010123-6">(</span><span class="s">&quot;10&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">string_int</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9746010123-7">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="9746010123-7">end</span><span class="p" data-group-id="9746010123-6">)</span><span class="w">
+</span><span class="s">&quot;50&quot;</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">under</span><span class="p" data-group-id="9746010123-8">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="n">string_int</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9746010123-9">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="w"> </span><span class="k" data-group-id="9746010123-9">end</span><span class="p" data-group-id="9746010123-8">)</span><span class="w">
+</span><span class="mi">1000</span></code></pre>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:backward/2" data-no-tooltip="" translate="no">backward(a, s)</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:forward/2" data-no-tooltip="" translate="no">forward(s, a)</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:t/2" data-no-tooltip="" translate="no">t(s, a)</a>
+
+      </div>
+
+    </div>
+
+</div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#as_lens/1" data-no-tooltip="" translate="no">as_lens(iso)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts an iso to a lens.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#as_prism/1" data-no-tooltip="" translate="no">as_prism(iso)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts an iso to a prism.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#compose/1" data-no-tooltip="" translate="no">compose(isos)</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#compose/2" data-no-tooltip="" translate="no">compose(outer, inner)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Composes isos into a single iso using sequential composition.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#from/1" data-no-tooltip="" translate="no">from(iso)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Reverses the direction of an iso.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#identity/0" data-no-tooltip="" translate="no">identity()</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>The identity iso that leaves values unchanged in both directions.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#make/2" data-no-tooltip="" translate="no">make(viewer, reviewer)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Creates a custom iso from two inverse functions.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#over/3" data-no-tooltip="" translate="no">over(s, iso, f)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Modify the viewed side of the iso.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#review/2" data-no-tooltip="" translate="no">review(a, iso)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Apply the backward transformation of the iso.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#under/3" data-no-tooltip="" translate="no">under(a, iso, f)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Modify the reviewed side of the iso.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#view/2" data-no-tooltip="" translate="no">view(s, iso)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Apply the forward transformation of the iso.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+
+    <div class="types-list">
+<section class="detail" id="t:backward/2">
+
+  <div class="detail-header">
+    <a href="#t:backward/2" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">backward(a, s)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L114" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> backward(a, s) :: (a -&gt; s)</pre>
+
+      </div>
+
+
+  </section>
+</section>
+<section class="detail" id="t:forward/2">
+
+  <div class="detail-header">
+    <a href="#t:forward/2" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">forward(s, a)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L113" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> forward(s, a) :: (s -&gt; a)</pre>
+
+      </div>
+
+
+  </section>
+</section>
+<section class="detail" id="t:t/0">
+
+  <div class="detail-header">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t()</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L121" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> t() :: <a href="#t:t/2">t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>())</pre>
+
+      </div>
+
+
+  </section>
+</section>
+<section class="detail" id="t:t/2">
+
+  <div class="detail-header">
+    <a href="#t:t/2" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t(s, a)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L116" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> t(s, a) :: %Funx.Optics.Iso{review: <a href="#t:backward/2">backward</a>(a, s), view: <a href="#t:forward/2">forward</a>(s, a)}</pre>
+
+      </div>
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+
+    <div class="functions-list">
+<section class="detail" id="as_lens/1">
+
+  <div class="detail-header">
+    <a href="#as_lens/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">as_lens(iso)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L407" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> as_lens(<a href="#t:t/2">t</a>(s, a)) :: <a href="Funx.Optics.Lens.html#t:t/2">Funx.Optics.Lens.t</a>(s, a) when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Converts an iso to a lens.</p><p>An iso is more powerful than a lens: it provides bidirectional transformation,
+while a lens only provides viewing and updating. Every iso can be used as a lens.</p><p>The resulting lens:</p><ul><li><code class="inline">view</code> uses the iso's forward transformation</li><li><code class="inline">update</code> ignores the old value and uses the iso's backward transformation</li></ul><p>This is safe because an iso is total - the transformation always succeeds.</p><h2 id="as_lens/1-examples" class="section-heading"><a href="#as_lens/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="4723465390-1">{</span><span class="nc">Iso</span><span class="p">,</span><span class="w"> </span><span class="nc">Lens</span><span class="p" data-group-id="4723465390-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="4723465390-2">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="4723465390-3">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="4723465390-4">(</span><span class="n">s</span><span class="p" data-group-id="4723465390-4">)</span><span class="w"> </span><span class="k" data-group-id="4723465390-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="4723465390-5">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="4723465390-6">(</span><span class="n">i</span><span class="p" data-group-id="4723465390-6">)</span><span class="w"> </span><span class="k" data-group-id="4723465390-5">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="4723465390-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">lens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">as_lens</span><span class="p" data-group-id="4723465390-7">(</span><span class="n">string_int</span><span class="p" data-group-id="4723465390-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Lens</span><span class="o">.</span><span class="n">view!</span><span class="p" data-group-id="4723465390-8">(</span><span class="s">&quot;42&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lens</span><span class="p" data-group-id="4723465390-8">)</span><span class="w">
+</span><span class="mi">42</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Lens</span><span class="o">.</span><span class="n">set!</span><span class="p" data-group-id="4723465390-9">(</span><span class="s">&quot;10&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lens</span><span class="p">,</span><span class="w"> </span><span class="mi">99</span><span class="p" data-group-id="4723465390-9">)</span><span class="w">
+</span><span class="s">&quot;99&quot;</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="as_prism/1">
+
+  <div class="detail-header">
+    <a href="#as_prism/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">as_prism(iso)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L442" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> as_prism(<a href="#t:t/2">t</a>(s, a)) :: <a href="Funx.Optics.Prism.html#t:t/2">Funx.Optics.Prism.t</a>(s, a) when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Converts an iso to a prism.</p><p>An iso is more powerful than a prism: it never fails to extract a value,
+while a prism models optional extraction. Every iso can be used as a prism.</p><p>The resulting prism:</p><ul><li><code class="inline">preview</code> always succeeds (returns <code class="inline">Just</code>), using the iso's forward transformation</li><li><code class="inline">review</code> uses the iso's backward transformation</li></ul><p>This is safe because an iso is total - the transformation always succeeds.</p><h2 id="as_prism/1-examples" class="section-heading"><a href="#as_prism/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="5083721678-1">{</span><span class="nc">Iso</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="p" data-group-id="5083721678-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Just</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="5083721678-2">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="5083721678-3">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="5083721678-4">(</span><span class="n">s</span><span class="p" data-group-id="5083721678-4">)</span><span class="w"> </span><span class="k" data-group-id="5083721678-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="5083721678-5">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="5083721678-6">(</span><span class="n">i</span><span class="p" data-group-id="5083721678-6">)</span><span class="w"> </span><span class="k" data-group-id="5083721678-5">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5083721678-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">prism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">as_prism</span><span class="p" data-group-id="5083721678-7">(</span><span class="n">string_int</span><span class="p" data-group-id="5083721678-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="5083721678-8">(</span><span class="s">&quot;42&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">prism</span><span class="p" data-group-id="5083721678-8">)</span><span class="w">
+</span><span class="p" data-group-id="5083721678-9">%</span><span class="nc" data-group-id="5083721678-9">Just</span><span class="p" data-group-id="5083721678-9">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="5083721678-9">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Prism</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="5083721678-10">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">prism</span><span class="p" data-group-id="5083721678-10">)</span><span class="w">
+</span><span class="s">&quot;42&quot;</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="compose/1">
+
+  <div class="detail-header">
+    <a href="#compose/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">compose(isos)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L372" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> compose([<a href="#t:t/0">t</a>()]) :: <a href="#t:t/0">t</a>()</pre>
+
+      </div>
+
+
+  </section>
+</section>
+<section class="detail" id="compose/2">
+
+  <div class="detail-header">
+    <a href="#compose/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">compose(outer, inner)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L367" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> compose(<a href="#t:t/2">t</a>(s, i), <a href="#t:t/2">t</a>(i, a)) :: <a href="#t:t/2">t</a>(s, a) when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), i: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Composes isos into a single iso using sequential composition.</p><p>This delegates to the monoid append operation, which contains the
+canonical composition logic.</p><h2 id="compose/2-binary-composition" class="section-heading"><a href="#compose/2-binary-composition" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Binary composition</span></h2><p>Composes two isos. The outer iso transforms first, then the inner iso
+transforms the result.</p><p>This is left-to-right composition: the first parameter is applied first.
+This differs from mathematical function composition (f ∘ g applies g first).</p><p><strong>Sequential semantics:</strong></p><ul><li>On <code class="inline">view</code>: Applies outer's forward transformation first, then inner's forward transformation</li><li>On <code class="inline">review</code>: Applies inner's backward transformation first, then outer's backward transformation</li></ul><p>This is sequential transformation through composed isos.</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="c1"># string &lt;-&gt; int</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="5213719745-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="5213719745-2">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="5213719745-3">(</span><span class="n">s</span><span class="p" data-group-id="5213719745-3">)</span><span class="w"> </span><span class="k" data-group-id="5213719745-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="5213719745-4">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="5213719745-5">(</span><span class="n">i</span><span class="p" data-group-id="5213719745-5">)</span><span class="w"> </span><span class="k" data-group-id="5213719745-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5213719745-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="c1"># int &lt;-&gt; doubled int</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">double</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="5213719745-6">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="5213719745-7">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="5213719745-7">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="5213719745-8">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">div</span><span class="p" data-group-id="5213719745-9">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5213719745-9">)</span><span class="w"> </span><span class="k" data-group-id="5213719745-8">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5213719745-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Iso</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="5213719745-10">(</span><span class="n">string_int</span><span class="p">,</span><span class="w"> </span><span class="n">double</span><span class="p" data-group-id="5213719745-10">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="5213719745-11">(</span><span class="s">&quot;21&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="5213719745-11">)</span><span class="w">
+</span><span class="mi">42</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="5213719745-12">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="5213719745-12">)</span><span class="w">
+</span><span class="s">&quot;21&quot;</span></code></pre><h2 id="compose/2-list-composition" class="section-heading"><a href="#compose/2-list-composition" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">List composition</span></h2><p>Composes a list of isos into a single iso using sequential composition.</p><p><strong>Sequential semantics:</strong></p><ul><li>On <code class="inline">view</code>: Applies transformations in list order (left-to-right)</li><li>On <code class="inline">review</code>: Applies transformations in reverse list order (right-to-left)</li></ul><p>This is sequential transformation through composed isos.</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">isos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="7609012814-1">[</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="7609012814-2">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="7609012814-3">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="7609012814-4">(</span><span class="n">s</span><span class="p" data-group-id="7609012814-4">)</span><span class="w"> </span><span class="k" data-group-id="7609012814-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="7609012814-5">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="7609012814-6">(</span><span class="n">i</span><span class="p" data-group-id="7609012814-6">)</span><span class="w"> </span><span class="k" data-group-id="7609012814-5">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="p" data-group-id="7609012814-2">)</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="7609012814-7">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="7609012814-8">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="7609012814-8">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="7609012814-9">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">div</span><span class="p" data-group-id="7609012814-10">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7609012814-10">)</span><span class="w"> </span><span class="k" data-group-id="7609012814-9">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="p" data-group-id="7609012814-7">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="7609012814-1">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="7609012814-11">(</span><span class="n">isos</span><span class="p" data-group-id="7609012814-11">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="7609012814-12">(</span><span class="s">&quot;21&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="7609012814-12">)</span><span class="w">
+</span><span class="mi">42</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="from/1">
+
+  <div class="detail-header">
+    <a href="#from/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">from(iso)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L296" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> from(<a href="#t:t/2">t</a>(s, a)) :: <a href="#t:t/2">t</a>(a, s) when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Reverses the direction of an iso.</p><p>Swaps the view and review functions.</p><p>This is the established optic operation for reversing direction, following Haskell's
+<code class="inline">Control.Lens.Iso.from</code>.</p><h2 id="from/1-examples" class="section-heading"><a href="#from/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="6298846847-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="6298846847-2">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="6298846847-3">(</span><span class="n">s</span><span class="p" data-group-id="6298846847-3">)</span><span class="w"> </span><span class="k" data-group-id="6298846847-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="6298846847-4">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="6298846847-5">(</span><span class="n">i</span><span class="p" data-group-id="6298846847-5">)</span><span class="w"> </span><span class="k" data-group-id="6298846847-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="6298846847-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">int_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">from</span><span class="p" data-group-id="6298846847-6">(</span><span class="n">string_int</span><span class="p" data-group-id="6298846847-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="6298846847-7">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">int_string</span><span class="p" data-group-id="6298846847-7">)</span><span class="w">
+</span><span class="s">&quot;42&quot;</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="6298846847-8">(</span><span class="s">&quot;42&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">int_string</span><span class="p" data-group-id="6298846847-8">)</span><span class="w">
+</span><span class="mi">42</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="identity/0">
+
+  <div class="detail-header">
+    <a href="#identity/0" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">identity()</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L174" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> identity() :: <a href="#t:t/0">t</a>()</pre>
+
+      </div>
+
+<p>The identity iso that leaves values unchanged in both directions.</p><h2 id="identity/0-examples" class="section-heading"><a href="#identity/0-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">iso</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">identity</span><span class="p" data-group-id="1071869091-1">(</span><span class="p" data-group-id="1071869091-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="1071869091-2">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">iso</span><span class="p" data-group-id="1071869091-2">)</span><span class="w">
+</span><span class="mi">42</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="1071869091-3">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">iso</span><span class="p" data-group-id="1071869091-3">)</span><span class="w">
+</span><span class="mi">42</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="make/2">
+
+  <div class="detail-header">
+    <a href="#make/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">make(viewer, reviewer)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L157" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> make(<a href="#t:forward/2">forward</a>(s, a), <a href="#t:backward/2">backward</a>(a, s)) :: <a href="#t:t/2">t</a>(s, a) when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Creates a custom iso from two inverse functions.</p><p>The viewer function transforms from the source type to the target type.
+The reviewer function transforms from the target type back to the source type.</p><p>Both functions must be inverses for the iso to be lawful:</p><ul><li><code class="inline">review(view(s, iso), iso) == s</code></li><li><code class="inline">view(review(a, iso), iso) == a</code></li></ul><p>If these functions are not true inverses, the iso contract is violated and
+the program is incorrect. There are no runtime checks - the contract is enforced
+by design.</p><h2 id="make/2-examples" class="section-heading"><a href="#make/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="c1"># Celsius &lt;-&gt; Fahrenheit</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">temp_iso</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="6620207942-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="6620207942-2">fn</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="k" data-group-id="6620207942-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="6620207942-3">fn</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="6620207942-4">(</span><span class="n">f</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="p" data-group-id="6620207942-4">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="k" data-group-id="6620207942-3">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="6620207942-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="6620207942-5">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">temp_iso</span><span class="p" data-group-id="6620207942-5">)</span><span class="w">
+</span><span class="mf">32.0</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="6620207942-6">(</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="n">temp_iso</span><span class="p" data-group-id="6620207942-6">)</span><span class="w">
+</span><span class="mf">0.0</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="over/3">
+
+  <div class="detail-header">
+    <a href="#over/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">over(s, iso, f)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L243" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> over(s, <a href="#t:t/2">t</a>(s, a), (a -&gt; a)) :: s when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Modify the viewed side of the iso.</p><p>Applies a function through the iso: view, apply function, review.</p><p>This is the standard optic modifier, consistent with Lens and Prism.</p><h2 id="over/3-examples" class="section-heading"><a href="#over/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="3804083923-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="3804083923-2">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="3804083923-3">(</span><span class="n">s</span><span class="p" data-group-id="3804083923-3">)</span><span class="w"> </span><span class="k" data-group-id="3804083923-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="3804083923-4">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="3804083923-5">(</span><span class="n">i</span><span class="p" data-group-id="3804083923-5">)</span><span class="w"> </span><span class="k" data-group-id="3804083923-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="3804083923-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">over</span><span class="p" data-group-id="3804083923-6">(</span><span class="s">&quot;10&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">string_int</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3804083923-7">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k" data-group-id="3804083923-7">end</span><span class="p" data-group-id="3804083923-6">)</span><span class="w">
+</span><span class="s">&quot;50&quot;</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="review/2">
+
+  <div class="detail-header">
+    <a href="#review/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">review(a, iso)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L223" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> review(a, <a href="#t:t/2">t</a>(s, a)) :: s when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Apply the backward transformation of the iso.</p><p>Transforms from the target type back to the source type.</p><p>This operation is total. If it crashes, the iso contract is violated.</p><h2 id="review/2-examples" class="section-heading"><a href="#review/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="5170569435-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="5170569435-2">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="5170569435-3">(</span><span class="n">s</span><span class="p" data-group-id="5170569435-3">)</span><span class="w"> </span><span class="k" data-group-id="5170569435-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="5170569435-4">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="5170569435-5">(</span><span class="n">i</span><span class="p" data-group-id="5170569435-5">)</span><span class="w"> </span><span class="k" data-group-id="5170569435-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5170569435-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">review</span><span class="p" data-group-id="5170569435-6">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">string_int</span><span class="p" data-group-id="5170569435-6">)</span><span class="w">
+</span><span class="s">&quot;42&quot;</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="under/3">
+
+  <div class="detail-header">
+    <a href="#under/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">under(a, iso, f)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L266" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> under(a, <a href="#t:t/2">t</a>(s, a), (s -&gt; s)) :: a when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Modify the reviewed side of the iso.</p><p>Applies a function in reverse through the iso: review, apply function, view.</p><p>This operation is unique to Iso due to its bidirectional symmetry.
+Lens and Prism cannot offer this.</p><h2 id="under/3-examples" class="section-heading"><a href="#under/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="1157467968-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="1157467968-2">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="1157467968-3">(</span><span class="n">s</span><span class="p" data-group-id="1157467968-3">)</span><span class="w"> </span><span class="k" data-group-id="1157467968-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="1157467968-4">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="1157467968-5">(</span><span class="n">i</span><span class="p" data-group-id="1157467968-5">)</span><span class="w"> </span><span class="k" data-group-id="1157467968-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="1157467968-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">under</span><span class="p" data-group-id="1157467968-6">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="n">string_int</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1157467968-7">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="w"> </span><span class="k" data-group-id="1157467968-7">end</span><span class="p" data-group-id="1157467968-6">)</span><span class="w">
+</span><span class="mi">1000</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="view/2">
+
+  <div class="detail-header">
+    <a href="#view/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">view(s, iso)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/optics/iso.ex#L203" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> view(s, <a href="#t:t/2">t</a>(s, a)) :: a when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Apply the forward transformation of the iso.</p><p>Transforms from the source type to the target type.</p><p>This operation is total. If it crashes, the iso contract is violated.</p><h2 id="view/2-examples" class="section-heading"><a href="#view/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">string_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="7060597352-1">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="7060597352-2">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="7060597352-3">(</span><span class="n">s</span><span class="p" data-group-id="7060597352-3">)</span><span class="w"> </span><span class="k" data-group-id="7060597352-2">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="7060597352-4">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="7060597352-5">(</span><span class="n">i</span><span class="p" data-group-id="7060597352-5">)</span><span class="w"> </span><span class="k" data-group-id="7060597352-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="7060597352-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Optics.Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="7060597352-6">(</span><span class="s">&quot;42&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">string_int</span><span class="p" data-group-id="7060597352-6">)</span><span class="w">
+</span><span class="mi">42</span></code></pre>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
+
+          <span class="line">
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
+
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
+
+          </span>
+        </p>
+
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
+
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+        </p>
+
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
