@@ -176,13 +176,15 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
       # Transform {Module, opts} tuple syntax to function calls
       {{:__aliases__, _, _} = module_alias, opts_ast} when is_list(opts_ast) ->
         quote do
-          fn value -> unquote(module_alias).run(value, unquote(opts_ast), unquote(user_env)) end
+          fn value ->
+            unquote(module_alias).run_maybe(value, unquote(opts_ast), unquote(user_env))
+          end
         end
 
       # Transform bare module syntax to function calls
       {:__aliases__, _, _} = module_alias ->
         quote do
-          fn value -> unquote(module_alias).run(value, [], unquote(user_env)) end
+          fn value -> unquote(module_alias).run_maybe(value, [], unquote(user_env)) end
         end
 
       other ->
@@ -198,14 +200,14 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
        )
        when is_list(opts_ast) do
     quote do
-      fn value -> unquote(module_alias).run(value, unquote(opts_ast), unquote(user_env)) end
+      fn value -> unquote(module_alias).run_maybe(value, unquote(opts_ast), unquote(user_env)) end
     end
   end
 
   # Transforms bare module syntax to function calls
   defp ast_transform_list_item({:__aliases__, _, _} = module_alias, user_env, _caller_env) do
     quote do
-      fn value -> unquote(module_alias).run(value, [], unquote(user_env)) end
+      fn value -> unquote(module_alias).run_maybe(value, [], unquote(user_env)) end
     end
   end
 

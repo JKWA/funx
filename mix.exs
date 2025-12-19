@@ -26,7 +26,8 @@ defmodule Funx.MixProject do
           "RESOURCES.md",
           "LICENSE",
           "guides/dsl/overview.md",
-          "guides/dsl/either.md"
+          "guides/dsl/either.md",
+          "guides/dsl/maybe.md"
         ],
         filter_prefix: "Examples",
         source_url: "https://github.com/JKWA/funx",
@@ -38,7 +39,8 @@ defmodule Funx.MixProject do
           Guides: ["README.md", "FORMATTER_EXPORT.md"],
           DSL: [
             "guides/dsl/overview.md",
-            "guides/dsl/either.md"
+            "guides/dsl/either.md",
+            "guides/dsl/maybe.md"
           ]
         ]
       ],

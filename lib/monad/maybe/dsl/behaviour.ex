@@ -2,11 +2,11 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
   @moduledoc """
   Behaviour for modules that participate in the Maybe DSL.
 
-  A module implementing this behaviour must define `run/3`. The DSL calls
-  `run/3` with the current value, the global environment provided to the
+  A module implementing this behaviour must define `run_maybe/3`. The DSL calls
+  `run_maybe/3` with the current value, the global environment provided to the
   `maybe` macro, and any options given alongside the module inside the DSL.
   How the return value is treated depends on whether the module is used with
-  `bind`, `map`, or `run`.
+  `bind` or `map`.
 
   ## Examples
 
@@ -17,7 +17,7 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
       ...>
       ...>   @impl true
-      ...>   def run(value, _env, opts) when is_binary(value) do
+      ...>   def run_maybe(value, _env, opts) when is_binary(value) do
       ...>     base = Keyword.get(opts, :base, 10)
       ...>
       ...>     case Integer.parse(value, base) do
@@ -26,11 +26,11 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
       ...>     end
       ...>   end
       ...> end
-      iex> MyParseInt.run("42", [], [])
+      iex> MyParseInt.run_maybe("42", [], [])
       %Funx.Monad.Maybe.Just{value: 42}
-      iex> MyParseInt.run("FF", [], [base: 16])
+      iex> MyParseInt.run_maybe("FF", [], [base: 16])
       %Funx.Monad.Maybe.Just{value: 255}
-      iex> MyParseInt.run("invalid", [], [])
+      iex> MyParseInt.run_maybe("invalid", [], [])
       %Funx.Monad.Maybe.Nothing{}
 
   A pure transformation:
@@ -39,11 +39,11 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
       ...>
       ...>   @impl true
-      ...>   def run(value, _env, _opts) when is_number(value) do
+      ...>   def run_maybe(value, _env, _opts) when is_number(value) do
       ...>     value * 2
       ...>   end
       ...> end
-      iex> MyDouble.run(21, [], [])
+      iex> MyDouble.run_maybe(21, [], [])
       42
 
   A validator that uses options:
@@ -53,7 +53,7 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
       ...>
       ...>   @impl true
-      ...>   def run(value, _env, opts) do
+      ...>   def run_maybe(value, _env, opts) do
       ...>     min = Keyword.get(opts, :min, 0)
       ...>
       ...>     if value > min do
@@ -63,11 +63,11 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
       ...>     end
       ...>   end
       ...> end
-      iex> MyPositiveNumber.run(10, [], [])
+      iex> MyPositiveNumber.run_maybe(10, [], [])
       %Funx.Monad.Maybe.Just{value: 10}
-      iex> MyPositiveNumber.run(100, [], [min: 50])
+      iex> MyPositiveNumber.run_maybe(100, [], [min: 50])
       %Funx.Monad.Maybe.Just{value: 100}
-      iex> MyPositiveNumber.run(-5, [], [min: 0])
+      iex> MyPositiveNumber.run_maybe(-5, [], [min: 0])
       %Funx.Monad.Maybe.Nothing{}
 
   ## Usage in the DSL
@@ -76,7 +76,7 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
       ...>   use Funx.Monad.Maybe
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
       ...>   @impl true
-      ...>   def run(value, _env, _opts) when is_binary(value) do
+      ...>   def run_maybe(value, _env, _opts) when is_binary(value) do
       ...>     case Integer.parse(value) do
       ...>       {int, ""} -> just(int)
       ...>       _ -> nothing()
@@ -87,7 +87,7 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
       ...>   use Funx.Monad.Maybe
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
       ...>   @impl true
-      ...>   def run(value, _env, opts) do
+      ...>   def run_maybe(value, _env, opts) do
       ...>     min = Keyword.get(opts, :min, 0)
       ...>     if value > min, do: just(value), else: nothing()
       ...>   end
@@ -95,7 +95,7 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
       iex> defmodule DslDouble do
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
       ...>   @impl true
-      ...>   def run(value, _env, _opts), do: value * 2
+      ...>   def run_maybe(value, _env, _opts), do: value * 2
       ...> end
       iex> use Funx.Monad.Maybe
       iex> maybe "42" do
@@ -105,8 +105,8 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
       ...> end
       %Funx.Monad.Maybe.Just{value: 84}
 
-  `bind` unwraps the current Maybe value, calls `run/3`, and normalizes the
-  result back into Maybe. `map` unwraps the value, calls `run/3`, and wraps the
+  `bind` unwraps the current Maybe value, calls `run_maybe/3`, and normalizes the
+  result back into Maybe. `map` unwraps the value, calls `run_maybe/3`, and wraps the
   plain result back into Maybe.
   """
 
@@ -129,30 +129,30 @@ defmodule Funx.Monad.Maybe.Dsl.Behaviour do
 
   Return expectations:
 
-    * With `bind`, `run/3` may return a Maybe or a result tuple.
-    * With `map`, `run/3` should return a plain value.
+    * With `bind`, `run_maybe/3` may return a Maybe or a result tuple.
+    * With `map`, `run_maybe/3` should return a plain value.
 
   Examples:
 
       # Suitable for bind
-      def run(value, _env, _opts) do
+      def run_maybe(value, _env, _opts) do
         if valid?(value), do: just(value), else: nothing()
       end
 
       # Suitable for map
-      def run(value, _env, opts) do
+      def run_maybe(value, _env, opts) do
         value * Keyword.get(opts, :multiplier, 2)
       end
 
       # Returning a result tuple (also suitable for bind)
-      def run(value, _env, _opts) do
+      def run_maybe(value, _env, _opts) do
         case process(value) do
           {:ok, result} -> {:ok, result}
           error -> error
         end
       end
   """
-  @callback run(value :: any(), env :: keyword(), opts :: keyword()) ::
+  @callback run_maybe(value :: any(), env :: keyword(), opts :: keyword()) ::
               any()
               | Funx.Monad.Maybe.t(any())
               | {:ok, any()}

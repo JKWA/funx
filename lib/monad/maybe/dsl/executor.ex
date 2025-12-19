@@ -95,7 +95,7 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
   # ============================================================================
 
   defp call_operation(module, value, opts, user_env) when is_atom(module) do
-    module.run(value, opts, user_env)
+    module.run_maybe(value, opts, user_env)
   end
 
   defp call_operation(func, value, _opts, _user_env) when is_function(func) do
@@ -107,46 +107,62 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
   # ============================================================================
 
   @doc false
-  @spec normalize_run_result(tuple() | Maybe.t(any()) | nil) :: Maybe.t(any())
-  @spec normalize_run_result(tuple() | Maybe.t(any()) | nil, map() | nil) ::
+  @spec normalize_run_result(
+          tuple() | Maybe.t(any()) | Either.t(any(), any()) | nil
+        ) :: Maybe.t(any())
+  @spec normalize_run_result(
+          tuple() | Maybe.t(any()) | Either.t(any(), any()) | nil,
+          map() | nil
+        ) ::
           Maybe.t(any())
   @spec normalize_run_result(
-          tuple() | Maybe.t(any()) | nil,
+          tuple() | Maybe.t(any()) | Either.t(any(), any()) | nil,
           map() | nil,
           String.t() | nil
         ) ::
           Maybe.t(any())
-  def normalize_run_result(result, meta \\ nil, operation_type \\ nil) do
-    case result do
-      {:ok, value} ->
-        Maybe.just(value)
 
-      {:error, _} ->
-        Maybe.nothing()
+  def normalize_run_result(result, meta \\ nil, operation_type \\ nil)
 
-      nil ->
-        Maybe.nothing()
+  def normalize_run_result({:ok, value}, _meta, _operation_type),
+    do: Maybe.just(value)
 
-      %Maybe.Just{} = maybe ->
-        maybe
+  def normalize_run_result({:error, _}, _meta, _operation_type),
+    do: Maybe.nothing()
 
-      %Maybe.Nothing{} = maybe ->
-        maybe
+  def normalize_run_result(nil, _meta, _operation_type),
+    do: Maybe.nothing()
 
-      other ->
-        location = format_location(meta)
-        op_info = if operation_type, do: " in #{operation_type} operation", else: ""
+  def normalize_run_result(%Maybe.Just{} = maybe, _meta, _operation_type),
+    do: maybe
 
-        raise ArgumentError, """
-        Module run/3 callback must return either a Maybe struct, a result tuple, or nil#{op_info}.#{location}
-        Got: #{inspect(other)}
+  def normalize_run_result(%Maybe.Nothing{} = maybe, _meta, _operation_type),
+    do: maybe
 
-        Expected return types:
-          - Maybe: just(value) or nothing()
-          - Result tuple: {:ok, value} or {:error, reason}
-          - nil (lifted to nothing())
-        """
-    end
+  def normalize_run_result(%Either.Right{right: value}, _meta, _operation_type),
+    do: Maybe.just(value)
+
+  def normalize_run_result(%Either.Left{}, _meta, _operation_type),
+    do: Maybe.nothing()
+
+  def normalize_run_result(other, meta, operation_type) do
+    raise_invalid_result_error(other, meta, operation_type)
+  end
+
+  defp raise_invalid_result_error(result, meta, operation_type) do
+    location = format_location(meta)
+    op_info = if operation_type, do: " in #{operation_type} operation", else: ""
+
+    raise ArgumentError, """
+    Module run_maybe/3 callback must return a Maybe struct, Either struct, result tuple, or nil#{op_info}.#{location}
+    Got: #{inspect(result)}
+
+    Expected return types:
+      - Maybe: just(value) or nothing()
+      - Either: right(value) or left(error)
+      - Result tuple: {:ok, value} or {:error, reason}
+      - nil (lifted to nothing())
+    """
   end
 
   # ============================================================================

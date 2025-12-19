@@ -78,20 +78,32 @@ defmodule Funx.Monad.Maybe.Dsl.ExecutorTest do
       assert Executor.normalize_run_result(maybe) == maybe
     end
 
+    test "converts Either Right to Just" do
+      assert Executor.normalize_run_result(right(42)) == just(42)
+    end
+
+    test "converts Either Left to Nothing" do
+      assert Executor.normalize_run_result(left("error")) == nothing()
+    end
+
+    test "converts nil to Nothing" do
+      assert Executor.normalize_run_result(nil) == nothing()
+    end
+
     test "raises ArgumentError for invalid return value" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
+      assert_raise ArgumentError, ~r/run_maybe\/3 callback must return/, fn ->
         Executor.normalize_run_result(:invalid)
       end
     end
 
     test "raises ArgumentError for plain value" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
+      assert_raise ArgumentError, ~r/run_maybe\/3 callback must return/, fn ->
         Executor.normalize_run_result(42)
       end
     end
 
     test "raises ArgumentError for list" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
+      assert_raise ArgumentError, ~r/run_maybe\/3 callback must return/, fn ->
         Executor.normalize_run_result([1, 2, 3])
       end
     end

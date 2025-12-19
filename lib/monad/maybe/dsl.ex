@@ -8,7 +8,7 @@ defmodule Funx.Monad.Maybe.Dsl do
 
   ## Supported Operations
 
-  - `bind` - for operations that return Maybe, result tuples, or nil
+  - `bind` - for operations that return Maybe, Either, result tuples, or nil
   - `map` - for transformations that return plain values
   - `ap` - for applying a function in a Maybe to a value in a Maybe
   - Maybe functions: `or_else`
@@ -18,7 +18,7 @@ defmodule Funx.Monad.Maybe.Dsl do
 
   ## Short-Circuit Behavior
 
-  The DSL uses fail-fast semantics. When any step returns a `Nothing` value, `{:error, _}` tuple, or `nil`,
+  The DSL uses fail-fast semantics. When any step returns a `Nothing` value, `Either.Left`, `{:error, _}` tuple, or `nil`,
   the pipeline **stops immediately** and returns `Nothing`. Subsequent steps are never executed.
 
   Example:
@@ -26,16 +26,16 @@ defmodule Funx.Monad.Maybe.Dsl do
       iex> defmodule GetUser do
       ...>   use Funx.Monad.Maybe
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run(_value, _env, _opts), do: nothing()
+      ...>   def run_maybe(_value, _env, _opts), do: nothing()
       ...> end
       iex> defmodule CheckPermissions do
       ...>   use Funx.Monad.Maybe
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run(value, _env, _opts), do: just(value)
+      ...>   def run_maybe(value, _env, _opts), do: just(value)
       ...> end
       iex> defmodule FormatUser do
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run(value, _env, _opts), do: "formatted: \#{value}"
+      ...>   def run_maybe(value, _env, _opts), do: "formatted: \#{value}"
       ...> end
       iex> use Funx.Monad.Maybe
       iex> maybe 123 do
@@ -56,7 +56,7 @@ defmodule Funx.Monad.Maybe.Dsl do
       iex> defmodule ParseInt do
       ...>   use Funx.Monad.Maybe
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run(value, _env, _opts) when is_binary(value) do
+      ...>   def run_maybe(value, _env, _opts) when is_binary(value) do
       ...>     case Integer.parse(value) do
       ...>       {int, ""} -> just(int)
       ...>       _ -> nothing()
@@ -65,7 +65,7 @@ defmodule Funx.Monad.Maybe.Dsl do
       ...> end
       iex> defmodule Double do
       ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run(value, _env, _opts), do: value * 2
+      ...>   def run_maybe(value, _env, _opts), do: value * 2
       ...> end
       iex> use Funx.Monad.Maybe
       iex> maybe "42" do
