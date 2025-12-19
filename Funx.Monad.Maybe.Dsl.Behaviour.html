@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
+
+
+    <title>Funx.Monad.Maybe.Dsl.Behaviour — funx v0.4.0</title>
+
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Maybe.Dsl.Behaviour.html" />
+
+    <script defer src="dist/sidebar_items-0F1C00CE.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
+
+  </head>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.4.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
+  </div>
+</nav>
+
+<output role="status" id="toast"></output>
+
+<main class="content page-behaviour" id="main" data-type="modules">
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
+          </label>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Monad.Maybe.Dsl.Behaviour</span> <small>behaviour</small>
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
+
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+  </div>
+
+
+    <section id="moduledoc">
+<p>Behaviour for modules that participate in the Maybe DSL.</p><p>A module implementing this behaviour must define <code class="inline">run_maybe/3</code>. The DSL calls
+<code class="inline">run_maybe/3</code> with the current value, any options given alongside the module
+inside the DSL, and the global environment provided to the <code class="inline">maybe</code> macro.
+How the return value is treated depends on whether the module is used with
+<code class="inline">bind</code> or <code class="inline">map</code>.</p><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><p>An operation that may return nothing:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">MyParseInt</span><span class="w"> </span><span class="k" data-group-id="1638732340-1">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="1638732340-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="1638732340-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_binary</span><span class="p" data-group-id="1638732340-3">(</span><span class="n">value</span><span class="p" data-group-id="1638732340-3">)</span><span class="w"> </span><span class="k" data-group-id="1638732340-4">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="1638732340-5">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:base</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="1638732340-5">)</span><span class="w">
+</span><span class="gp unselectable">...&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">parse</span><span class="p" data-group-id="1638732340-6">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">base</span><span class="p" data-group-id="1638732340-6">)</span><span class="w"> </span><span class="k" data-group-id="1638732340-7">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">      </span><span class="p" data-group-id="1638732340-8">{</span><span class="n">int</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p" data-group-id="1638732340-8">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="1638732340-9">(</span><span class="n">int</span><span class="p" data-group-id="1638732340-9">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">      </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">nothing</span><span class="p" data-group-id="1638732340-10">(</span><span class="p" data-group-id="1638732340-10">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="1638732340-7">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="1638732340-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="1638732340-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">MyParseInt</span><span class="o">.</span><span class="n">run_maybe</span><span class="p" data-group-id="1638732340-11">(</span><span class="s">&quot;42&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1638732340-12">[</span><span class="p" data-group-id="1638732340-12">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1638732340-13">[</span><span class="p" data-group-id="1638732340-13">]</span><span class="p" data-group-id="1638732340-11">)</span><span class="w">
+</span><span class="p" data-group-id="1638732340-14">%</span><span class="nc" data-group-id="1638732340-14">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="1638732340-14">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p" data-group-id="1638732340-14">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">MyParseInt</span><span class="o">.</span><span class="n">run_maybe</span><span class="p" data-group-id="1638732340-15">(</span><span class="s">&quot;FF&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1638732340-16">[</span><span class="ss">base</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p" data-group-id="1638732340-16">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1638732340-17">[</span><span class="p" data-group-id="1638732340-17">]</span><span class="p" data-group-id="1638732340-15">)</span><span class="w">
+</span><span class="p" data-group-id="1638732340-18">%</span><span class="nc" data-group-id="1638732340-18">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="1638732340-18">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">255</span><span class="p" data-group-id="1638732340-18">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">MyParseInt</span><span class="o">.</span><span class="n">run_maybe</span><span class="p" data-group-id="1638732340-19">(</span><span class="s">&quot;invalid&quot;</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1638732340-20">[</span><span class="p" data-group-id="1638732340-20">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1638732340-21">[</span><span class="p" data-group-id="1638732340-21">]</span><span class="p" data-group-id="1638732340-19">)</span><span class="w">
+</span><span class="p" data-group-id="1638732340-22">%</span><span class="nc" data-group-id="1638732340-22">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="1638732340-22">{</span><span class="p" data-group-id="1638732340-22">}</span></code></pre><p>A pure transformation:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">MyDouble</span><span class="w"> </span><span class="k" data-group-id="5781359939-1">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="5781359939-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="5781359939-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_number</span><span class="p" data-group-id="5781359939-3">(</span><span class="n">value</span><span class="p" data-group-id="5781359939-3">)</span><span class="w"> </span><span class="k" data-group-id="5781359939-4">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="5781359939-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="5781359939-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">MyDouble</span><span class="o">.</span><span class="n">run_maybe</span><span class="p" data-group-id="5781359939-5">(</span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5781359939-6">[</span><span class="p" data-group-id="5781359939-6">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5781359939-7">[</span><span class="p" data-group-id="5781359939-7">]</span><span class="p" data-group-id="5781359939-5">)</span><span class="w">
+</span><span class="mi">42</span></code></pre><p>A validator that uses options:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">MyPositiveNumber</span><span class="w"> </span><span class="k" data-group-id="3577985492-1">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="3577985492-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="3577985492-2">)</span><span class="w"> </span><span class="k" data-group-id="3577985492-3">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="3577985492-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:min</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3577985492-4">)</span><span class="w">
+</span><span class="gp unselectable">...&gt;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="k" data-group-id="3577985492-5">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">      </span><span class="n">just</span><span class="p" data-group-id="3577985492-6">(</span><span class="n">value</span><span class="p" data-group-id="3577985492-6">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="3577985492-5">else</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">      </span><span class="n">nothing</span><span class="p" data-group-id="3577985492-7">(</span><span class="p" data-group-id="3577985492-7">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="3577985492-5">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="3577985492-3">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3577985492-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">MyPositiveNumber</span><span class="o">.</span><span class="n">run_maybe</span><span class="p" data-group-id="3577985492-8">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3577985492-9">[</span><span class="p" data-group-id="3577985492-9">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3577985492-10">[</span><span class="p" data-group-id="3577985492-10">]</span><span class="p" data-group-id="3577985492-8">)</span><span class="w">
+</span><span class="p" data-group-id="3577985492-11">%</span><span class="nc" data-group-id="3577985492-11">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3577985492-11">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="3577985492-11">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">MyPositiveNumber</span><span class="o">.</span><span class="n">run_maybe</span><span class="p" data-group-id="3577985492-12">(</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3577985492-13">[</span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p" data-group-id="3577985492-13">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3577985492-14">[</span><span class="p" data-group-id="3577985492-14">]</span><span class="p" data-group-id="3577985492-12">)</span><span class="w">
+</span><span class="p" data-group-id="3577985492-15">%</span><span class="nc" data-group-id="3577985492-15">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3577985492-15">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p" data-group-id="3577985492-15">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">MyPositiveNumber</span><span class="o">.</span><span class="n">run_maybe</span><span class="p" data-group-id="3577985492-16">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3577985492-17">[</span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3577985492-17">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3577985492-18">[</span><span class="p" data-group-id="3577985492-18">]</span><span class="p" data-group-id="3577985492-16">)</span><span class="w">
+</span><span class="p" data-group-id="3577985492-19">%</span><span class="nc" data-group-id="3577985492-19">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="3577985492-19">{</span><span class="p" data-group-id="3577985492-19">}</span></code></pre><h2 id="module-usage-in-the-dsl" class="section-heading"><a href="#module-usage-in-the-dsl" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Usage in the DSL</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">DslParseInt</span><span class="w"> </span><span class="k" data-group-id="3516772640-1">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="3516772640-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="3516772640-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_binary</span><span class="p" data-group-id="3516772640-3">(</span><span class="n">value</span><span class="p" data-group-id="3516772640-3">)</span><span class="w"> </span><span class="k" data-group-id="3516772640-4">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">parse</span><span class="p" data-group-id="3516772640-5">(</span><span class="n">value</span><span class="p" data-group-id="3516772640-5">)</span><span class="w"> </span><span class="k" data-group-id="3516772640-6">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">      </span><span class="p" data-group-id="3516772640-7">{</span><span class="n">int</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p" data-group-id="3516772640-7">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="3516772640-8">(</span><span class="n">int</span><span class="p" data-group-id="3516772640-8">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">      </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">nothing</span><span class="p" data-group-id="3516772640-9">(</span><span class="p" data-group-id="3516772640-9">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="3516772640-6">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="3516772640-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3516772640-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">DslPositive</span><span class="w"> </span><span class="k" data-group-id="3516772640-10">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="3516772640-11">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="3516772640-11">)</span><span class="w"> </span><span class="k" data-group-id="3516772640-12">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="3516772640-13">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:min</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="3516772640-13">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="3516772640-14">(</span><span class="n">value</span><span class="p" data-group-id="3516772640-14">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="n">nothing</span><span class="p" data-group-id="3516772640-15">(</span><span class="p" data-group-id="3516772640-15">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="3516772640-12">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3516772640-10">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">DslDouble</span><span class="w"> </span><span class="k" data-group-id="3516772640-16">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="3516772640-17">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="3516772640-17">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3516772640-16">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">maybe</span><span class="w"> </span><span class="s">&quot;42&quot;</span><span class="w"> </span><span class="k" data-group-id="3516772640-18">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">bind</span><span class="w"> </span><span class="nc">DslParseInt</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">bind</span><span class="w"> </span><span class="p" data-group-id="3516772640-19">{</span><span class="nc">DslPositive</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="3516772640-19">}</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">map</span><span class="w"> </span><span class="nc">DslDouble</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3516772640-18">end</span><span class="w">
+</span><span class="p" data-group-id="3516772640-20">%</span><span class="nc" data-group-id="3516772640-20">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3516772640-20">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">84</span><span class="p" data-group-id="3516772640-20">}</span></code></pre><p><code class="inline">bind</code> unwraps the current Maybe value, calls <code class="inline">run_maybe/3</code>, and normalizes the
+result back into Maybe. <code class="inline">map</code> unwraps the value, calls <code class="inline">run_maybe/3</code>, and wraps the
+plain result back into Maybe.</p>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-callbacks summary">
+  <h2>
+    <a href="#callbacks">Callbacks</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#c:run_maybe/3" data-no-tooltip="" translate="no">run_maybe(value, opts, env)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Runs a single step in a Maybe pipeline.</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="callbacks" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#callbacks">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Callbacks</span>
+    </h1>
+
+    <div class="callbacks-list">
+<section class="detail" id="c:run_maybe/3">
+
+  <div class="detail-header">
+    <a href="#c:run_maybe/3" class="detail-link" data-no-tooltip="" aria-label="Link to this callback">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">run_maybe(value, opts, env)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe/dsl/behaviour.ex#L155" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@callback</span> run_maybe(value :: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), opts :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">keyword</a>(), env :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">keyword</a>()) ::
+  <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() | <a href="Funx.Monad.Maybe.html#t:t/1">Funx.Monad.Maybe.t</a>(<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()) | {:ok, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()} | {:error, <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()}</pre>
+
+      </div>
+
+<p>Runs a single step in a Maybe pipeline.</p><p>Arguments:</p><ul><li><p>value
+The current value provided by the pipeline.</p></li><li><p>opts
+Module-specific options passed in the DSL, for example:</p><pre><code class="makeup elixir" translate="no"><span class="n">bind</span><span class="w"> </span><span class="nc">ParseInt</span><span class="p">,</span><span class="w"> </span><span class="ss">base</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span></code></pre></li><li><p>env
+The read-only environment supplied by the <code class="inline">maybe</code> macro. It is threaded
+through the pipeline unchanged.</p></li></ul><p>Return expectations:</p><ul><li>With <code class="inline">bind</code>, <code class="inline">run_maybe/3</code> may return a Maybe or a result tuple.</li><li>With <code class="inline">map</code>, <code class="inline">run_maybe/3</code> should return a plain value.</li></ul><p>Examples:</p><pre><code class="makeup elixir" translate="no"><span class="c1"># Suitable for bind</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="7752662355-1">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="7752662355-1">)</span><span class="w"> </span><span class="k" data-group-id="7752662355-2">do</span><span class="w">
+  </span><span class="k">if</span><span class="w"> </span><span class="n">valid?</span><span class="p" data-group-id="7752662355-3">(</span><span class="n">value</span><span class="p" data-group-id="7752662355-3">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="7752662355-4">(</span><span class="n">value</span><span class="p" data-group-id="7752662355-4">)</span><span class="p">,</span><span class="w"> </span><span class="ss">else</span><span class="p">:</span><span class="w"> </span><span class="n">nothing</span><span class="p" data-group-id="7752662355-5">(</span><span class="p" data-group-id="7752662355-5">)</span><span class="w">
+</span><span class="k" data-group-id="7752662355-2">end</span><span class="w">
+
+</span><span class="c1"># Suitable for map</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="7752662355-6">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="7752662355-6">)</span><span class="w"> </span><span class="k" data-group-id="7752662355-7">do</span><span class="w">
+  </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="7752662355-8">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:multiplier</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7752662355-8">)</span><span class="w">
+</span><span class="k" data-group-id="7752662355-7">end</span><span class="w">
+
+</span><span class="c1"># Returning a result tuple (also suitable for bind)</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="7752662355-9">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="7752662355-9">)</span><span class="w"> </span><span class="k" data-group-id="7752662355-10">do</span><span class="w">
+  </span><span class="k">case</span><span class="w"> </span><span class="n">process</span><span class="p" data-group-id="7752662355-11">(</span><span class="n">value</span><span class="p" data-group-id="7752662355-11">)</span><span class="w"> </span><span class="k" data-group-id="7752662355-12">do</span><span class="w">
+    </span><span class="p" data-group-id="7752662355-13">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="7752662355-13">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="7752662355-14">{</span><span class="ss">:ok</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p" data-group-id="7752662355-14">}</span><span class="w">
+    </span><span class="n">error</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">error</span><span class="w">
+  </span><span class="k" data-group-id="7752662355-12">end</span><span class="w">
+</span><span class="k" data-group-id="7752662355-10">end</span></code></pre>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
+
+          <span class="line">
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
+
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
+
+          </span>
+        </p>
+
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
+
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+        </p>
+
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>

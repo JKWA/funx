@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.0">
+
+
+    <title>Funx.Monad.Maybe.Dsl — funx v0.4.0</title>
+
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Maybe.Dsl.html" />
+
+    <script defer src="dist/sidebar_items-0F1C00CE.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
+
+  </head>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.4.0
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
+  </div>
+</nav>
+
+<output role="status" id="toast"></output>
+
+<main class="content page-module" id="main" data-type="modules">
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
+          </label>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Monad.Maybe.Dsl</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.0)</small>
+
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe/dsl.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+  </div>
+
+
+    <section id="moduledoc">
+<p>Provides the <a href="#maybe/2"><code class="inline">maybe/2</code></a> macro for writing declarative pipelines in the Maybe context.</p><p>The DSL lets you express a sequence of operations that may return nothing without manually
+threading values through <code class="inline">bind</code>, <code class="inline">map</code>, or <code class="inline">filter</code>. Input is lifted into Maybe
+automatically, each step runs in order, and the pipeline stops on the first Nothing.</p><h2 id="module-supported-operations" class="section-heading"><a href="#module-supported-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Supported Operations</span></h2><ul><li><code class="inline">bind</code> - for operations that return Maybe, Either, result tuples, or nil</li><li><code class="inline">map</code> - for transformations that return plain values</li><li><code class="inline">ap</code> - for applying a function in a Maybe to a value in a Maybe</li><li>Maybe functions: <code class="inline">or_else</code></li><li>Protocol functions: <code class="inline">tap</code> (via Funx.Tappable), <code class="inline">filter</code>, <code class="inline">filter_map</code>, <code class="inline">guard</code> (via Funx.Filterable)</li></ul><p>The result format is controlled by the <code class="inline">:as</code> option (<code class="inline">:maybe</code>, <code class="inline">:raise</code>, or <code class="inline">:nil</code>).</p><h2 id="module-short-circuit-behavior" class="section-heading"><a href="#module-short-circuit-behavior" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Short-Circuit Behavior</span></h2><p>The DSL uses fail-fast semantics. When any step returns a <code class="inline">Nothing</code> value, <code class="inline">Either.Left</code>, <code class="inline">{:error, _}</code> tuple, or <code class="inline">nil</code>,
+the pipeline <strong>stops immediately</strong> and returns <code class="inline">Nothing</code>. Subsequent steps are never executed.</p><p>Example:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">GetUser</span><span class="w"> </span><span class="k" data-group-id="7350545647-1">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="7350545647-2">(</span><span class="c">_value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="7350545647-2">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">nothing</span><span class="p" data-group-id="7350545647-3">(</span><span class="p" data-group-id="7350545647-3">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="7350545647-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">CheckPermissions</span><span class="w"> </span><span class="k" data-group-id="7350545647-4">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="7350545647-5">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="7350545647-5">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="7350545647-6">(</span><span class="n">value</span><span class="p" data-group-id="7350545647-6">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="7350545647-4">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">FormatUser</span><span class="w"> </span><span class="k" data-group-id="7350545647-7">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="7350545647-8">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="7350545647-8">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;formatted: </span><span class="si" data-group-id="7350545647-9">#{</span><span class="n">value</span><span class="si" data-group-id="7350545647-9">}</span><span class="s">&quot;</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="7350545647-7">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">maybe</span><span class="w"> </span><span class="mi">123</span><span class="w"> </span><span class="k" data-group-id="7350545647-10">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">bind</span><span class="w"> </span><span class="nc">GetUser</span><span class="w">           </span><span class="c1"># Returns Nothing</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">bind</span><span class="w"> </span><span class="nc">CheckPermissions</span><span class="w">  </span><span class="c1"># Never runs</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">map</span><span class="w"> </span><span class="nc">FormatUser</span><span class="w">         </span><span class="c1"># Never runs</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="7350545647-10">end</span><span class="w">
+</span><span class="p" data-group-id="7350545647-11">%</span><span class="nc" data-group-id="7350545647-11">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7350545647-11">{</span><span class="p" data-group-id="7350545647-11">}</span></code></pre><h2 id="module-performance" class="section-heading"><a href="#module-performance" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Performance</span></h2><p>The DSL compiles to direct function calls at <strong>compile time</strong>. There is no runtime
+overhead for the DSL itself - it expands into the same code you would write manually
+with <code class="inline">bind</code>, <code class="inline">map</code>, etc.</p><p>Example showing compile-time expansion:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">ParseInt</span><span class="w"> </span><span class="k" data-group-id="3657024620-1">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="3657024620-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="3657024620-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_binary</span><span class="p" data-group-id="3657024620-3">(</span><span class="n">value</span><span class="p" data-group-id="3657024620-3">)</span><span class="w"> </span><span class="k" data-group-id="3657024620-4">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">parse</span><span class="p" data-group-id="3657024620-5">(</span><span class="n">value</span><span class="p" data-group-id="3657024620-5">)</span><span class="w"> </span><span class="k" data-group-id="3657024620-6">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">      </span><span class="p" data-group-id="3657024620-7">{</span><span class="n">int</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p" data-group-id="3657024620-7">}</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">just</span><span class="p" data-group-id="3657024620-8">(</span><span class="n">int</span><span class="p" data-group-id="3657024620-8">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">      </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">nothing</span><span class="p" data-group-id="3657024620-9">(</span><span class="p" data-group-id="3657024620-9">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="3657024620-6">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="k" data-group-id="3657024620-4">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3657024620-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Double</span><span class="w"> </span><span class="k" data-group-id="3657024620-10">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Dsl.Behaviour</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="kd">def</span><span class="w"> </span><span class="nf">run_maybe</span><span class="p" data-group-id="3657024620-11">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p" data-group-id="3657024620-11">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3657024620-10">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">maybe</span><span class="w"> </span><span class="s">&quot;42&quot;</span><span class="w"> </span><span class="k" data-group-id="3657024620-12">do</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">bind</span><span class="w"> </span><span class="nc">ParseInt</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="n">map</span><span class="w"> </span><span class="nc">Double</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="k" data-group-id="3657024620-12">end</span><span class="w">
+</span><span class="p" data-group-id="3657024620-13">%</span><span class="nc" data-group-id="3657024620-13">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3657024620-13">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">84</span><span class="p" data-group-id="3657024620-13">}</span></code></pre><p>Auto-lifting creates anonymous functions, but these are created at compile time,
+not runtime. For performance-critical hot paths, you may prefer direct combinator
+calls, but the difference is typically negligible.</p><h2 id="module-transformers" class="section-heading"><a href="#module-transformers" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Transformers</span></h2><p>Transformers allow post-parse optimization and validation of pipelines:</p><pre><code class="makeup elixir" translate="no"><span class="n">maybe</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="ss">transformers</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6948524938-1">[</span><span class="nc">MyCustomTransformer</span><span class="p" data-group-id="6948524938-1">]</span><span class="w"> </span><span class="k" data-group-id="6948524938-2">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">GetUser</span><span class="w">
+  </span><span class="n">map</span><span class="w"> </span><span class="nc">Transform</span><span class="w">
+</span><span class="k" data-group-id="6948524938-2">end</span></code></pre><p>Transformers run at compile time and create compile-time dependencies.
+See <a href="Funx.Monad.Maybe.Dsl.Transformer.html"><code class="inline">Funx.Monad.Maybe.Dsl.Transformer</code></a> for details on creating custom transformers.</p><h2 id="module-example" class="section-heading"><a href="#module-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="n">maybe</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="ss">as</span><span class="p">:</span><span class="w"> </span><span class="ss">:nil</span><span class="w"> </span><span class="k" data-group-id="4548941858-1">do</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">Accounts</span><span class="o">.</span><span class="n">get_user</span><span class="p" data-group-id="4548941858-2">(</span><span class="p" data-group-id="4548941858-2">)</span><span class="w">
+  </span><span class="n">bind</span><span class="w"> </span><span class="nc">Policies</span><span class="o">.</span><span class="n">ensure_active</span><span class="p" data-group-id="4548941858-3">(</span><span class="p" data-group-id="4548941858-3">)</span><span class="w">
+  </span><span class="n">map</span><span class="w"> </span><span class="k" data-group-id="4548941858-4">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p" data-group-id="4548941858-5">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="n">user</span><span class="p" data-group-id="4548941858-5">}</span><span class="w"> </span><span class="k" data-group-id="4548941858-4">end</span><span class="w">
+</span><span class="k" data-group-id="4548941858-1">end</span></code></pre><h2 id="module-auto-lifting-of-function-calls" class="section-heading"><a href="#module-auto-lifting-of-function-calls" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Auto-Lifting of Function Calls</span></h2><p>The DSL automatically lifts certain function call patterns for convenience:</p><ul><li><code class="inline">Module.fun()</code> becomes <code class="inline">&amp;Module.fun/1</code> (zero-arity qualified calls)</li><li><code class="inline">Module.fun(arg)</code> becomes <code class="inline">fn x -&gt; Module.fun(x, arg) end</code> (partial application)</li></ul><p>This is particularly useful in filter operations:</p><pre><code class="makeup elixir" translate="no"><span class="n">filter</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">Validator</span><span class="o">.</span><span class="n">positive?</span><span class="o">/</span><span class="mi">1</span></code></pre><p>This module defines the public DSL entry point. The macro expansion details and
+internal rewrite rules are not part of the public API.</p>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#maybe/2" data-no-tooltip="" translate="no">maybe(input, list)</a>
+
+      </div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#maybe/3" data-no-tooltip="" translate="no">maybe(input, opts, list)</a>
+
+      </div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+
+    <div class="functions-list">
+<section class="detail" id="maybe/2">
+
+  <div class="detail-header">
+    <a href="#maybe/2" class="detail-link" data-no-tooltip="" aria-label="Link to this macro">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">maybe(input, list)</h1>
+
+        <span class="note">(macro)</span>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe/dsl.ex#L139" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+
+  </section>
+</section>
+<section class="detail" id="maybe/3">
+
+  <div class="detail-header">
+    <a href="#maybe/3" class="detail-link" data-no-tooltip="" aria-label="Link to this macro">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">maybe(input, opts, list)</h1>
+
+        <span class="note">(macro)</span>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.0/lib/monad/maybe/dsl.ex#L143" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.0" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.0">Hex Preview</a>
+
+            </span>
+
+          <span class="line">
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
+
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
+
+          </span>
+        </p>
+
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
+
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+        </p>
+
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
