@@ -115,6 +115,196 @@
 - **Note**: Maybe values are structs `%Just{value: ...}` or `%Nothing{}`, not tagged tuples
 - Import `Funx.Monad` for `map`, `bind`, `ap` and `Funx.Foldable` for `fold_l`
 
+## Maybe DSL
+
+The Maybe monad includes a declarative DSL for writing optional-value pipelines without explicit `bind`, `map`, or `ap` calls.
+
+**Design Philosophy:**
+
+- **Surface intent over implementation** - Focus on what the code does, not how
+- **Declarative optional handling** - Let the DSL manage presence/absence checks
+- **Pipeline-friendly** - Works naturally with Elixir's pipeline syntax
+- **Safer than nil checks** - Handle optional values explicitly without sacrificing ergonomics
+- **Kleisli composition** - Chain operations that return optional types (Maybe, result tuples, nil)
+
+**Key Benefits:**
+
+- Automatic input lifting (plain values, result tuples, Maybe values, nil)
+- Short-circuits on first Nothing (fail-fast behavior)
+- Multiple output formats (Maybe, nil, or raise)
+- Clean, readable syntax for complex optional-value flows
+- More ergonomic than manual Maybe operations while maintaining safety
+
+### Basic Usage
+
+```elixir
+use Funx.Monad.Maybe
+
+maybe user_id do
+  bind fetch_user()
+  bind get_profile()
+  map format_display_name()
+end
+```
+
+### Supported Operations
+
+- `bind` - Chain operations that return Maybe or `{:ok, value}` / `{:error, reason}` tuples, or nil
+- `map` - Transform values with functions that return plain values
+- `ap` - Apply a function wrapped in Maybe to a value wrapped in Maybe
+- Maybe functions: `or_else`
+- Protocol functions: `tap` (Funx.Tappable), `filter`, `filter_map`, `guard` (Funx.Filterable)
+
+### DSL Examples
+
+**Basic pipeline with bind and map:**
+
+```elixir
+maybe "42" do
+  bind parse_int()
+  bind validate_positive()
+  map double()
+end
+# just(84)
+```
+
+**Short-circuit on Nothing:**
+
+```elixir
+maybe user_id do
+  bind fetch_user()      # Returns nothing() if user not found
+  bind get_settings()    # Never runs if fetch_user returned nothing
+  map apply_theme()      # Never runs if any previous step returned nothing
+end
+# nothing() - short-circuits at first nothing
+```
+
+### Output Formats
+
+**Default - Maybe (default):**
+
+```elixir
+maybe user_id do
+  bind fetch_user()
+end
+# Returns: just(%User{}) or nothing()
+```
+
+**Nil format (`:nil`):**
+
+```elixir
+maybe user_id, as: :nil do
+  bind fetch_user()
+  map format_response()
+end
+# Returns: response or nil
+```
+
+**Raise on nothing (`:raise`):**
+
+```elixir
+maybe config_path, as: :raise do
+  bind read_file()
+  bind parse_config()
+end
+# Returns: parsed value or raises RuntimeError
+```
+
+### Function Call Lifting
+
+The DSL automatically lifts function call syntax for cleaner pipelines:
+
+```elixir
+# Zero-arity qualified calls → function capture
+maybe user_id do
+  bind Repo.fetch_user()  # Becomes: &Repo.fetch_user/1
+end
+
+# Partial application with arguments
+maybe user_id do
+  bind Repo.fetch_user(preload: :posts)  # Becomes: fn x -> Repo.fetch_user(x, preload: :posts) end
+end
+
+# Module references
+maybe user_id do
+  bind ParseInt              # Calls: ParseInt.run_maybe(user_id, [], env)
+  bind {ParseInt, base: 16}  # Calls: ParseInt.run_maybe(user_id, [base: 16], env)
+end
+```
+
+### Module-Based Operations
+
+Create reusable operations as modules with `run_maybe/3`:
+
+```elixir
+defmodule ParseInt do
+  @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+  use Funx.Monad.Maybe
+
+  def run_maybe(str, _opts, _env) do
+    case Integer.parse(str) do
+      {int, ""} -> just(int)
+      _ -> nothing()
+    end
+  end
+end
+
+# Use in pipelines
+maybe "42" do
+  bind ParseInt
+  map &(&1 * 2)
+end
+
+# With options
+defmodule ParseIntWithBase do
+  @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+  use Funx.Monad.Maybe
+
+  def run_maybe(str, opts, _env) do
+    base = Keyword.get(opts, :base, 10)
+    case Integer.parse(str, base) do
+      {int, ""} -> just(int)
+      _ -> nothing()
+    end
+  end
+end
+
+maybe "FF" do
+  bind {ParseIntWithBase, base: 16}
+end
+# just(255)
+```
+
+### When to Use the DSL
+
+**✅ Use the DSL when:**
+
+- You have multiple sequential operations that may return nothing
+- You want declarative, readable optional-value pipelines
+- You're combining bind, map, and other operations
+- You prefer pipeline syntax over explicit function calls
+- You need automatic input lifting and type conversions
+
+**❌ Use direct functions when:**
+
+- You only need one or two operations
+- You need complex branching or conditionals
+- You're implementing reusable combinators
+- Performance is critical (DSL has minimal but non-zero overhead)
+
+### Formatter Configuration
+
+Funx exports formatter rules for clean DSL formatting without parentheses. To enable in your project:
+
+**Add to `.formatter.exs`:**
+
+```elixir
+[
+  import_deps: [:funx],
+  inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"]
+]
+```
+
 ## Overview
 
 `Funx.Monad.Maybe` handles presence and absence without explicit null checks.
