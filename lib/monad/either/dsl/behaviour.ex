@@ -3,8 +3,8 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
   Behaviour for modules that participate in the Either DSL.
 
   A module implementing this behaviour must define `run/3`. The DSL calls
-  `run/3` with the current value, the global environment provided to the
-  `either` macro, and any options given alongside the module inside the DSL.
+  `run/3` with the current value, any options given alongside the module
+  inside the DSL, and the global environment provided to the `either` macro.
   How the return value is treated depends on whether the module is used with
   `bind`, `map`, or `run`.
 
@@ -17,7 +17,7 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
       ...>
       ...>   @impl true
-      ...>   def run(value, _env, opts) when is_binary(value) do
+      ...>   def run(value, opts, _env) when is_binary(value) do
       ...>     base = Keyword.get(opts, :base, 10)
       ...>
       ...>     case Integer.parse(value, base) do
@@ -28,7 +28,7 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...> end
       iex> MyParseInt.run("42", [], [])
       %Funx.Monad.Either.Right{right: 42}
-      iex> MyParseInt.run("FF", [], [base: 16])
+      iex> MyParseInt.run("FF", [base: 16], [])
       %Funx.Monad.Either.Right{right: 255}
       iex> MyParseInt.run("invalid", [], [])
       %Funx.Monad.Either.Left{left: "Invalid integer"}
@@ -39,7 +39,7 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
       ...>
       ...>   @impl true
-      ...>   def run(value, _env, _opts) when is_number(value) do
+      ...>   def run(value, _opts, _env) when is_number(value) do
       ...>     value * 2
       ...>   end
       ...> end
@@ -53,7 +53,7 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
       ...>
       ...>   @impl true
-      ...>   def run(value, _env, opts) do
+      ...>   def run(value, opts, _env) do
       ...>     min = Keyword.get(opts, :min, 0)
       ...>
       ...>     if value > min do
@@ -65,9 +65,9 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...> end
       iex> MyPositiveNumber.run(10, [], [])
       %Funx.Monad.Either.Right{right: 10}
-      iex> MyPositiveNumber.run(100, [], [min: 50])
+      iex> MyPositiveNumber.run(100, [min: 50], [])
       %Funx.Monad.Either.Right{right: 100}
-      iex> MyPositiveNumber.run(-5, [], [min: 0])
+      iex> MyPositiveNumber.run(-5, [min: 0], [])
       %Funx.Monad.Either.Left{left: "must be > 0, got: -5"}
 
   ## Usage in the DSL
@@ -76,7 +76,7 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...>   use Funx.Monad.Either
       ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
       ...>   @impl true
-      ...>   def run(value, _env, _opts) when is_binary(value) do
+      ...>   def run(value, _opts, _env) when is_binary(value) do
       ...>     case Integer.parse(value) do
       ...>       {int, ""} -> right(int)
       ...>       _ -> left("Invalid integer")
@@ -87,7 +87,7 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...>   use Funx.Monad.Either
       ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
       ...>   @impl true
-      ...>   def run(value, _env, opts) do
+      ...>   def run(value, opts, _env) do
       ...>     min = Keyword.get(opts, :min, 0)
       ...>     if value > min, do: right(value), else: left("too small")
       ...>   end
@@ -95,7 +95,7 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       iex> defmodule DslDouble do
       ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
       ...>   @impl true
-      ...>   def run(value, _env, _opts), do: value * 2
+      ...>   def run(value, _opts, _env), do: value * 2
       ...> end
       iex> use Funx.Monad.Either
       iex> either "42" do
@@ -118,14 +118,14 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
     * value
       The current value provided by the pipeline.
 
-    * env
-      The read-only environment supplied by the `either` macro. It is threaded
-      through the pipeline unchanged.
-
     * opts
       Module-specific options passed in the DSL, for example:
 
           bind ParseInt, base: 16
+
+    * env
+      The read-only environment supplied by the `either` macro. It is threaded
+      through the pipeline unchanged.
 
   Return expectations:
 
@@ -135,24 +135,24 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
   Examples:
 
       # Suitable for bind
-      def run(value, _env, _opts) do
+      def run(value, _opts, _env) do
         if valid?(value), do: right(value), else: left("invalid")
       end
 
       # Suitable for map
-      def run(value, _env, opts) do
+      def run(value, opts, _env) do
         value * Keyword.get(opts, :multiplier, 2)
       end
 
       # Returning a result tuple (also suitable for bind)
-      def run(value, _env, _opts) do
+      def run(value, _opts, _env) do
         case process(value) do
           {:ok, result} -> {:ok, result}
           error -> error
         end
       end
   """
-  @callback run(value :: any(), env :: keyword(), opts :: keyword()) ::
+  @callback run(value :: any(), opts :: keyword(), env :: keyword()) ::
               any()
               | Funx.Monad.Either.t(any(), any())
               | {:ok, any()}

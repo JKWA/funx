@@ -47,4 +47,4 @@ A `Nothing` value stops the pipeline immediately. The return mode controls how t
 
 ## Behaviours
 
-Modules participating in the Maybe DSL implement `Funx.Monad.Maybe.Dsl.Behaviour`. The executor calls `run/3` on these modules. The DSL determines whether the result is interpreted as a bindable value (returning Maybe, Either, result tuple, or nil) or a mapped value (returning a plain value). The executor only invokes the callback and applies the step semantics.
+Modules participating in the Maybe DSL implement `Funx.Monad.Maybe.Dsl.Behaviour`. The executor calls `run_maybe/3` on these modules. The DSL determines whether the result is interpreted as a bindable value (returning Maybe, Either, result tuple, or nil) or a mapped value (returning a plain value). The executor only invokes the callback and applies the step semantics.
