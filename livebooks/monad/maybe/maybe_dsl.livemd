@@ -1,0 +1,501 @@
+# Funx.Monad.Maybe.Dsl
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", ref: "89f8e6f"}
+])
+```
+
+## Overview
+
+The `Funx.Monad.Maybe.Dsl` module provides a macro-based DSL for writing declarative pipelines that may return nothing. Instead of manually chaining `bind`, `map`, and other Maybe operations, you can express your logic in a clean, readable way.
+
+The DSL automatically:
+
+* Lifts input values into the Maybe context
+* Handles missing values by short-circuiting on the first Nothing
+* Provides compile-time warnings for common mistakes
+* Supports multiple output formats (Maybe, nil, or raise)
+
+## Setup
+
+```elixir
+use Funx.Monad.Maybe
+```
+
+## Basic Usage
+
+### Understanding Maybe: Conditional Existence
+
+Maybe is not about "missing data" or "errors." It's about **conditional existence in domain contexts**.
+
+Consider a system that processes geometric shapes. A shape can be a circle or a rectangle. Both are valid shapes, but `radius` only exists for circles.
+
+This isn't "a rectangle with a missing radius" - that's nonsense. A rectangle doesn't have a radius. The radius exists conditionally - only in the circle context.
+
+### Simple Pipeline with `bind`
+
+The `bind` operation is used when your function returns a Maybe, Either, result tuple, or nil.
+
+```elixir
+# Shapes with different properties
+defmodule Circle do
+  defstruct [:radius, :color]
+end
+
+defmodule Rectangle do
+  defstruct [:width, :height, :color]
+end
+
+defmodule Triangle do
+  defstruct [:base, :height, :color]
+end
+
+defmodule ShapeProcessor do
+  use Funx.Monad.Maybe
+
+  # Does this shape exist as a circle?
+  def as_circle(%Circle{} = circle), do: just(circle)
+  def as_circle(_other), do: nothing()
+
+  # Does this shape exist as a rectangle?
+  def as_rectangle(%Rectangle{} = rect), do: just(rect)
+  def as_rectangle(_other), do: nothing()
+
+  # Does this shape exist as a triangle?
+  def as_triangle(%Triangle{} = tri), do: just(tri)
+  def as_triangle(_other), do: nothing()
+
+  # Extract radius - only exists in circle context
+  def get_radius(%Circle{radius: r}), do: just(r)
+  def get_radius(_), do: nothing()
+
+  # Extract width - only exists in rectangle context
+  def get_width(%Rectangle{width: w}), do: just(w)
+  def get_width(_), do: nothing()
+end
+```
+
+```elixir
+circle = %Circle{radius: 6, color: "red"}
+rectangle = %Rectangle{width: 10, height: 5, color: "blue"}
+triangle = %Triangle{base: 8, height: 6, color: "green"}
+```
+
+```elixir
+# Does this shape exist as a circle? Yes!
+maybe circle do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+end
+```
+
+```elixir
+# Does this shape exist as a circle? No - it's a rectangle.
+# This isn't an error - rectangles are valid, they just don't exist in the circle context
+maybe rectangle do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+end
+```
+
+```elixir
+# Does this shape have a width? No - circles don't have width
+maybe circle do
+  bind ShapeProcessor.as_rectangle()
+  bind ShapeProcessor.get_width()
+end
+```
+
+```elixir
+# Does this shape have a width? Yes - it's a rectangle
+maybe rectangle do
+  bind ShapeProcessor.as_rectangle()
+  bind ShapeProcessor.get_width()
+end
+```
+
+### Using `map` for Transformations
+
+The `map` operation transforms a value without changing the Maybe context. Use it when your function returns a plain value, not a Maybe.
+
+```elixir
+# Calculate area if shape is a circle
+maybe circle do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+  map fn r -> :math.pi() * r * r end
+end
+```
+
+```elixir
+# Calculate area if shape is a rectangle
+maybe rectangle do
+  bind ShapeProcessor.as_rectangle()
+  map fn rect -> rect.width * rect.height end
+end
+```
+
+### Using `tap` for Side Effects
+
+The `tap` operation executes a side-effect function on a Just value and returns the original Maybe unchanged. This is useful for debugging, logging, or performing side effects without changing the value.
+
+If the Maybe is Nothing, the tap function is not called.
+
+```elixir
+# Side effect only runs if shape is a circle
+maybe circle do
+  bind ShapeProcessor.as_circle()
+  tap fn c -> IO.inspect(c.radius, label: "circle radius") end
+  bind ShapeProcessor.get_radius()
+end
+```
+
+```elixir
+# No side effect - rectangle doesn't exist as a circle
+maybe rectangle do
+  bind ShapeProcessor.as_circle()
+  tap fn c -> IO.inspect(c.radius, label: "should not see this") end
+  bind ShapeProcessor.get_radius()
+end
+```
+
+## Protocol Functions
+
+Maybe DSL integrates with Funx protocols for filtering and guarding based on predicates.
+
+### `filter/2` - Conditional Filtering
+
+Filter based on a predicate. If the predicate returns `false`, the result becomes `Nothing`.
+
+```elixir
+# Get only large circles (radius > 5)
+maybe circle do
+  bind ShapeProcessor.as_circle()
+  filter fn c -> c.radius > 5 end
+  map fn c -> c.radius end
+end
+```
+
+```elixir
+# Small circle fails the filter
+small_circle = %Circle{radius: 3, color: "blue"}
+
+maybe small_circle do
+  bind ShapeProcessor.as_circle()
+  filter fn c -> c.radius > 5 end
+  map fn c -> c.radius end
+end
+```
+
+### `guard/2` - Predicate-Based Gates
+
+Guard is similar to filter but uses guard syntax for clarity:
+
+```elixir
+# Only process red shapes
+maybe circle do
+  guard fn shape -> shape.color == "red" end
+  bind ShapeProcessor.as_circle()
+  map fn c -> c.radius end
+end
+```
+
+```elixir
+# Blue circle fails the guard
+blue_circle = %Circle{radius: 5, color: "blue"}
+
+maybe blue_circle do
+  guard fn shape -> shape.color == "red" end
+  bind ShapeProcessor.as_circle()
+  map fn c -> c.radius end
+end
+```
+
+## Output Formats
+
+### Default: Maybe
+
+By default, the DSL returns a Maybe value:
+
+```elixir
+# Returns Just(radius)
+maybe circle do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+end
+```
+
+```elixir
+# Returns Nothing - rectangle doesn't exist as a circle
+maybe rectangle do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+end
+```
+
+### Nil Format
+
+Use `as: :nil` to unwrap the value or get `nil`:
+
+```elixir
+# Returns 5
+maybe circle, as: :nil do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+end
+```
+
+```elixir
+# Returns nil - rectangle doesn't exist as a circle
+maybe rectangle, as: :nil do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+end
+```
+
+### Raise Format
+
+Use `as: :raise` to unwrap the value or raise when value doesn't exist in the context:
+
+```elixir
+# Returns 5
+maybe circle, as: :raise do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+end
+```
+
+```elixir
+# Raises - rectangle doesn't exist as a circle
+maybe rectangle, as: :raise do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+end
+
+```
+
+### `filter_map/2` - Filter and Transform
+
+Filter and transform in one step - returns `Nothing` if the transformation returns `:error`:
+
+```elixir
+# Get diameter if circle and radius > 3
+maybe circle do
+  bind ShapeProcessor.as_circle()
+  filter_map fn c ->
+    if c.radius > 3 do
+      {:ok, c.radius * 2}
+    else
+      :error
+    end
+  end
+end
+```
+
+```elixir
+# Small circle fails filter_map
+small_circle = %Circle{radius: 2, color: "blue"}
+
+maybe small_circle do
+  bind ShapeProcessor.as_circle()
+  filter_map fn c ->
+    if c.radius > 3 do
+      {:ok, c.radius * 2}
+    else
+      :error
+    end
+  end
+end
+```
+
+### `or_else/2` - Providing Fallbacks
+
+Provide a fallback when value doesn't exist in the expected context:
+
+```elixir
+# If not a circle, use a default radius
+maybe rectangle do
+  bind ShapeProcessor.as_circle()
+  bind ShapeProcessor.get_radius()
+  or_else fn -> just(1) end
+end
+```
+
+## Input Lifting
+
+The DSL automatically lifts various input types into the Maybe context:
+
+```elixir
+# Plain values → Just
+maybe circle do
+  map fn c -> c.color end
+end
+```
+
+```elixir
+# {:ok, value} → Just (integrating with Elixir conventions)
+maybe {:ok, circle} do
+  bind ShapeProcessor.as_circle()
+  map fn c -> c.radius end
+end
+```
+
+```elixir
+# {:error, _} → Nothing
+maybe {:error, "not found"} do
+  bind ShapeProcessor.as_circle()
+  map fn c -> c.radius end
+end
+```
+
+```elixir
+# Maybe values pass through unchanged
+maybe just(circle) do
+  bind ShapeProcessor.as_circle()
+  map fn c -> c.radius end
+end
+```
+
+```elixir
+# Nothing short-circuits immediately
+maybe nothing() do
+  bind ShapeProcessor.as_circle()
+  map fn c -> c.radius end
+end
+```
+
+```elixir
+# Either values are converted (Right → Just, Left → Nothing)
+use Funx.Monad.Either
+
+maybe right(circle) do
+  bind ShapeProcessor.as_circle()
+  map fn c -> c.radius end
+end
+```
+
+```elixir
+# nil → Nothing
+maybe nil do
+  bind ShapeProcessor.as_circle()
+  map fn c -> c.radius end
+end
+```
+
+## Advanced: Module-Based Operations
+
+You can create reusable operations as modules that implement the `run_maybe/3` callback. This is useful for domain boundaries you'll check across many pipelines:
+
+```elixir
+defmodule ScaleShape do
+  @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+  use Funx.Monad.Maybe
+
+  def run_maybe(shape, opts, _env) do
+    factor = Keyword.get(opts, :factor, 2)
+
+    case shape do
+      %Circle{radius: r} = c -> %{c | radius: r * factor}
+      %Rectangle{width: w, height: h} = r -> %{r | width: w * factor, height: h * factor}
+      %Triangle{base: b, height: h} = t -> %{t | base: b * factor, height: h * factor}
+    end
+  end
+end
+```
+
+```elixir
+# Use modules in the DSL with options
+maybe circle do
+  bind ShapeProcessor.as_circle()
+  map {ScaleShape, factor: 3}
+end
+```
+
+```elixir
+# Without options, uses default behavior (2x)
+maybe circle do
+  bind ShapeProcessor.as_circle()
+  map ScaleShape
+end
+```
+
+## Applicative Functor Support
+
+The Maybe DSL supports applicative functors with the `ap` operation, allowing you to apply a function wrapped in a Maybe to a value wrapped in a Maybe.
+
+Note: In the DSL, the pipeline value should be the function, and you pass the value to `ap`:
+
+```elixir
+# Pipeline contains the function, ap receives the value
+add_five = just(fn x -> x + 5 end)
+
+maybe add_five do
+  ap just(10)
+end
+```
+
+```elixir
+# ap with Nothing function returns Nothing
+nothing_fn = nothing()
+
+maybe nothing_fn do
+  ap just(10)
+end
+```
+
+```elixir
+# ap on Nothing value returns Nothing
+add_five = just(fn x -> x + 5 end)
+
+maybe add_five do
+  ap nothing()
+end
+```
+
+## Summary
+
+**Maybe is not about missing data or errors. It's about conditional existence in domain contexts.**
+
+When you ask "does this value exist as X?", Maybe gives you:
+
+* `Just(value)` - yes, it exists in this context
+* `Nothing` - no, it doesn't exist in this context (which is not an error!)
+
+The Maybe DSL provides a clean, declarative way to work with sum types and conditional existence:
+
+### Core Operations
+
+* **`bind`** - for operations that check domain contexts (returns Maybe, Either, result tuples, or nil)
+* **`map`** - for transformations on values that exist in the current context
+* **`tap`** - for side effects on values in the current context (debugging, logging)
+* **`ap`** - for applicative functor application
+
+### Working with Collections
+
+* **`concat_map`** - collect all values that exist in a given context from a heterogeneous list
+* **`traverse`** - require that ALL values in a list exist in a given context (enforces homogeneity)
+
+### Protocol Functions
+
+* **`filter`** - keep only values that match a predicate
+* **`filter_map`** - filter and transform in one step
+* **`guard`** - predicate-based gates
+
+### Maybe Functions
+
+* **`or_else`** - provide fallbacks when values don't exist in expected contexts
+
+### Output Formats
+
+* **`:maybe`** (default) - returns `Just(value)` or `Nothing`
+* **`:nil`** - unwraps to value or `nil`
+* **`:raise`** - unwraps or raises when value doesn't exist in context
+
+### Integration
+
+* **Auto-lifting** - automatic conversion of Maybe, Either, tuples, nil, and plain values
+* **Module support** - reusable domain boundary checks via `run_maybe/3` callback
+* **Options support** - pass options to modules using `{Module, opts}` syntax
+
+This makes **conditional existence** explicit, composable, and enforced at boundaries!
