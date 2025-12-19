@@ -314,6 +314,66 @@ defmodule Funx.Monad.Maybe.DslTest do
       assert result == %Nothing{}
     end
 
+    test "guard keeps value when predicate is true" do
+      result =
+        maybe "10" do
+          bind ParseInt
+          guard(&(&1 > 5))
+        end
+
+      assert result == %Just{value: 10}
+    end
+
+    test "guard returns Nothing when predicate is false" do
+      result =
+        maybe "3" do
+          bind ParseInt
+          guard(&(&1 > 5))
+        end
+
+      assert result == %Nothing{}
+    end
+
+    test "guard with module predicate (passes)" do
+      result =
+        maybe 5 do
+          guard(IsPositive)
+          map(&(&1 * 2))
+        end
+
+      assert result == %Just{value: 10}
+    end
+
+    test "guard with module predicate (fails)" do
+      result =
+        maybe -5 do
+          guard(IsPositive)
+          map(&(&1 * 2))
+        end
+
+      assert result == %Nothing{}
+    end
+
+    test "guard with module and options (passes)" do
+      result =
+        maybe 50 do
+          guard({InRange, min: 0, max: 100})
+          map(&(&1 * 2))
+        end
+
+      assert result == %Just{value: 100}
+    end
+
+    test "guard with module and options (fails)" do
+      result =
+        maybe 150 do
+          guard({InRange, min: 0, max: 100})
+          map(&(&1 * 2))
+        end
+
+      assert result == %Nothing{}
+    end
+
     test "filter_map applies function and filters" do
       result =
         maybe [1, 2, 3, 4, 5] do

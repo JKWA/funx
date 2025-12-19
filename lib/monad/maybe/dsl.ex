@@ -12,7 +12,7 @@ defmodule Funx.Monad.Maybe.Dsl do
   - `map` - for transformations that return plain values
   - `ap` - for applying a function in a Maybe to a value in a Maybe
   - Maybe functions: `or_else`
-  - Protocol functions: `tap` (via Funx.Tappable), `filter`, `filter_map` (via Funx.Filterable)
+  - Protocol functions: `tap` (via Funx.Tappable), `filter`, `filter_map`, `guard` (via Funx.Filterable)
 
   The result format is controlled by the `:as` option (`:maybe`, `:raise`, or `:nil`).
 

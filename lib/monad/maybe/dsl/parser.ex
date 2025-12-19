@@ -9,7 +9,8 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
   @protocol_functions %{
     tap: Funx.Tappable,
     filter: Funx.Filterable,
-    filter_map: Funx.Filterable
+    filter_map: Funx.Filterable,
+    guard: Funx.Filterable
   }
 
   @all_allowed_functions @maybe_functions ++ Map.keys(@protocol_functions)

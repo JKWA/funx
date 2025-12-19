@@ -84,10 +84,30 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
 
   defp execute_step(
          maybe_value,
+         %Step.ProtocolFunction{protocol: protocol, function: :guard, args: [predicate | rest]},
+         user_env
+       ) do
+    # guard expects a boolean, but DSL passes a predicate function
+    # Evaluate the predicate on the value and pass the boolean to guard
+    Funx.Monad.bind(maybe_value, fn value ->
+      bool_result = call_predicate(predicate, value, user_env)
+      apply(protocol, :guard, [Maybe.just(value), bool_result | rest])
+    end)
+  end
+
+  defp execute_step(
+         maybe_value,
          %Step.ProtocolFunction{protocol: protocol, function: func_name, args: args},
          _user_env
        ) do
     apply(protocol, func_name, [maybe_value | args])
+  end
+
+  # Helper to call predicate function
+  # Note: The parser always converts modules to functions at compile time,
+  # so we only need to handle the function case here
+  defp call_predicate(func, value, _user_env) when is_function(func, 1) do
+    func.(value)
   end
 
   # ============================================================================
@@ -107,9 +127,8 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
   # ============================================================================
 
   @doc false
-  @spec normalize_run_result(
-          tuple() | Maybe.t(any()) | Either.t(any(), any()) | nil
-        ) :: Maybe.t(any())
+  @spec normalize_run_result(tuple() | Maybe.t(any()) | Either.t(any(), any()) | nil) ::
+          Maybe.t(any())
   @spec normalize_run_result(
           tuple() | Maybe.t(any()) | Either.t(any(), any()) | nil,
           map() | nil
