@@ -313,6 +313,184 @@ defmodule Funx.Optics.TraversalTest do
     end
   end
 
+  describe "to_list_maybe/2 with Lens only" do
+    test "returns Just(list) when all Lens foci exist" do
+      alias Funx.Monad.Maybe
+
+      t = Traversal.combine([Lens.key(:name), Lens.key(:age)])
+      data = %{name: "Alice", age: 30}
+
+      assert Traversal.to_list_maybe(data, t) == Maybe.just(["Alice", 30])
+    end
+
+    test "preserves combine order" do
+      alias Funx.Monad.Maybe
+
+      t = Traversal.combine([Lens.key(:age), Lens.key(:name)])
+      data = %{name: "Alice", age: 30}
+
+      assert Traversal.to_list_maybe(data, t) == Maybe.just([30, "Alice"])
+    end
+
+    test "throws when Lens focus is invalid (contract violation)" do
+      t = Traversal.combine([Lens.key(:name)])
+      data = %{age: 30}
+
+      assert_raise KeyError, fn ->
+        Traversal.to_list_maybe(data, t)
+      end
+    end
+
+    test "works with composed Lens paths" do
+      alias Funx.Monad.Maybe
+
+      path = Lens.compose([Lens.key(:user), Lens.key(:name)])
+      t = Traversal.combine([path, Lens.key(:score)])
+      data = %{user: %{name: "Bob"}, score: 100}
+
+      assert Traversal.to_list_maybe(data, t) == Maybe.just(["Bob", 100])
+    end
+  end
+
+  describe "to_list_maybe/2 with Prism only" do
+    test "returns Just(list) when all Prisms match" do
+      alias Funx.Monad.Maybe
+
+      t = Traversal.combine([Prism.key(:name), Prism.key(:age)])
+      data = %{name: "Alice", age: 30}
+
+      assert Traversal.to_list_maybe(data, t) == Maybe.just(["Alice", 30])
+    end
+
+    test "returns Nothing when any Prism doesn't match" do
+      alias Funx.Monad.Maybe
+
+      t = Traversal.combine([Prism.key(:name), Prism.key(:email)])
+      data = %{name: "Alice"}
+
+      # email doesn't match - whole thing returns Nothing
+      assert Traversal.to_list_maybe(data, t) == Maybe.nothing()
+    end
+
+    test "returns Nothing when no Prisms match" do
+      alias Funx.Monad.Maybe
+
+      t = Traversal.combine([Prism.key(:email), Prism.key(:phone)])
+      data = %{name: "Alice"}
+
+      assert Traversal.to_list_maybe(data, t) == Maybe.nothing()
+    end
+
+    test "returns Just(list) when all domain boundary Prisms match" do
+      alias Funx.Monad.Maybe
+
+      cc_charge =
+        %Transaction{
+          type: %Charge{
+            item: %Item{name: "Camera", amount: 500},
+            payment: %CreditCard{name: "Alice", number: "1234", expiry: "12/26", amount: 75}
+          }
+        }
+
+      # Both charge prisms (but only cc_payment will match)
+      t = Traversal.combine([cc_payment_prism()])
+
+      assert Traversal.to_list_maybe(cc_charge, t) == Maybe.just([75])
+    end
+
+    test "returns Nothing when domain boundary doesn't match" do
+      alias Funx.Monad.Maybe
+
+      # A refund doesn't exist in the "charge" context
+      cc_refund =
+        %Transaction{
+          type: %Refund{
+            item: %Item{name: "Tripod", amount: 150},
+            payment: %CreditCard{name: "Carol", number: "4333", expiry: "10/27", amount: 25}
+          }
+        }
+
+      # cc_payment_prism expects a charge, not a refund
+      t = Traversal.combine([cc_payment_prism()])
+
+      assert Traversal.to_list_maybe(cc_refund, t) == Maybe.nothing()
+    end
+  end
+
+  describe "to_list_maybe/2 with mixed Lens and Prism" do
+    test "returns Just(list) when all foci exist" do
+      alias Funx.Monad.Maybe
+
+      t = Traversal.combine([Lens.key(:name), Prism.key(:email)])
+      data = %{name: "Alice", email: "alice@example.com"}
+
+      assert Traversal.to_list_maybe(data, t) == Maybe.just(["Alice", "alice@example.com"])
+    end
+
+    test "returns Nothing when Prism doesn't match" do
+      alias Funx.Monad.Maybe
+
+      t = Traversal.combine([Lens.key(:name), Prism.key(:email)])
+      data = %{name: "Alice"}
+
+      # email Prism doesn't match - whole thing returns Nothing
+      assert Traversal.to_list_maybe(data, t) == Maybe.nothing()
+    end
+
+    test "Lens throws even when mixed with Prisms" do
+      t = Traversal.combine([Lens.key(:required), Prism.key(:optional)])
+      data = %{optional: "value"}
+
+      assert_raise KeyError, fn ->
+        Traversal.to_list_maybe(data, t)
+      end
+    end
+
+    test "transaction example: all-or-nothing collection" do
+      alias Funx.Monad.Maybe
+
+      # Build a lens for item amount (always exists)
+      item_amount = Lens.compose([Lens.path([:type, :item, :amount])])
+
+      # Combine with payment prisms - all must match
+      t = Traversal.combine([item_amount, cc_payment_prism()])
+
+      # Case 1: Credit card charge - both match
+      cc_charge =
+        %Transaction{
+          type: %Charge{
+            item: %Item{name: "Camera", amount: 500},
+            payment: %CreditCard{name: "Alice", number: "1234", expiry: "12/26", amount: 520}
+          }
+        }
+
+      assert Traversal.to_list_maybe(cc_charge, t) == Maybe.just([500, 520])
+
+      # Case 2: Refund - cc_payment_prism doesn't match, returns Nothing
+      cc_refund =
+        %Transaction{
+          type: %Refund{
+            item: %Item{name: "Tripod", amount: 150},
+            payment: %CreditCard{name: "Carol", number: "4333", expiry: "10/27", amount: 155}
+          }
+        }
+
+      # cc_payment_prism doesn't match a refund - whole thing is Nothing
+      assert Traversal.to_list_maybe(cc_refund, t) == Maybe.nothing()
+    end
+  end
+
+  describe "to_list_maybe/2 with empty traversal" do
+    test "returns Just(empty list)" do
+      alias Funx.Monad.Maybe
+
+      t = Traversal.combine([])
+      data = %{name: "Alice"}
+
+      assert Traversal.to_list_maybe(data, t) == Maybe.just([])
+    end
+  end
+
   describe "preview/2 with Lens only" do
     test "returns first Lens value" do
       alias Funx.Monad.Maybe
@@ -713,6 +891,37 @@ defmodule Funx.Optics.TraversalTest do
       result = Traversal.traverse(data, t, fn v -> Maybe.just(v) end)
 
       assert result == Maybe.just(data)
+    end
+  end
+
+  describe "traverse/3 overlapping write detection" do
+    test "raises when different Prism foci write to the same key" do
+      alias Funx.Monad.Maybe
+
+      # Two prisms that both write to :name - this is a contract violation
+      t = Traversal.combine([Prism.key(:name), Prism.key(:name)])
+      data = %{name: "Alice"}
+
+      assert_raise ArgumentError,
+                   ~r/Traversal contract violation: overlapping writes detected/,
+                   fn ->
+                     Traversal.traverse(data, t, fn value -> Maybe.just(String.upcase(value)) end)
+                   end
+    end
+
+    test "allows updating the same field that existed in the original structure" do
+      alias Funx.Monad.Maybe
+
+      # Single prism updating an existing field - this is fine
+      t = Traversal.combine([Prism.key(:name)])
+      data = %{name: "Alice"}
+
+      result =
+        Traversal.traverse(data, t, fn value ->
+          Maybe.just(String.upcase(value))
+        end)
+
+      assert result == Maybe.just(%{name: "ALICE"})
     end
   end
 

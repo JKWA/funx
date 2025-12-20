@@ -219,7 +219,15 @@ defmodule Funx.Optics.Traversal do
   def traverse(structure, %__MODULE__{foci: foci}, f) when is_function(f, 1) do
     foci
     |> Maybe.traverse(&extract_and_apply(&1, structure, f))
-    |> map(fn updates -> Enum.reduce(updates, structure, &apply_optic_update/2) end)
+    |> map(fn updates ->
+      # Track written keys to detect overlapping writes between different foci
+      {result, _written_keys} =
+        Enum.reduce(updates, {structure, MapSet.new()}, fn update, {acc, written_keys} ->
+          apply_optic_update(update, acc, written_keys)
+        end)
+
+      result
+    end)
   end
 
   # Helper for traverse: extracts value from optic, applies function, returns Maybe {optic, new_val}
@@ -232,19 +240,38 @@ defmodule Funx.Optics.Traversal do
   end
 
   # Helper for traverse: applies a single optic update to the structure
-  defp apply_optic_update({%Lens{} = optic, new_val}, acc) do
-    Lens.set!(acc, optic, new_val)
+  # Returns {updated_structure, updated_written_keys_set}
+  defp apply_optic_update({%Lens{} = optic, new_val}, acc, written_keys) do
+    # Lens updates don't produce fragments, so no new keys to track
+    {Lens.set!(acc, optic, new_val), written_keys}
   end
 
-  defp apply_optic_update({%Prism{} = optic, new_val}, acc) do
-    apply_prism_update(acc, optic, new_val)
+  defp apply_optic_update({%Prism{} = optic, new_val}, acc, written_keys) do
+    apply_prism_update(acc, optic, new_val, written_keys)
   end
 
   # Prism write-back: uses review to create fragment, then merges into accumulator
   # This relies on Prism laws: review creates a lawful fragment that can be merged
-  defp apply_prism_update(acc, optic, new_val) do
+  # Raises if fragment overlaps with keys written by previous foci (overlapping writes are a contract violation)
+  defp apply_prism_update(acc, optic, new_val, written_keys) do
     fragment = Prism.review(new_val, optic)
-    Map.merge(acc, fragment)
+    fragment_keys = MapSet.new(Map.keys(fragment))
+
+    # Check for overlap with keys written by PREVIOUS foci in this traversal
+    overlapping_keys = MapSet.intersection(fragment_keys, written_keys) |> MapSet.to_list()
+
+    unless overlapping_keys == [] do
+      raise ArgumentError,
+            "Traversal contract violation: overlapping writes detected. " <>
+              "Prism #{inspect(optic)} attempted to write to keys #{inspect(overlapping_keys)} " <>
+              "which were already written by a previous focus. Traversal requires disjoint write regions."
+    end
+
+    # Merge fragment and update written_keys set
+    updated_structure = Map.merge(acc, fragment)
+    updated_written_keys = MapSet.union(written_keys, fragment_keys)
+
+    {updated_structure, updated_written_keys}
   end
 
   # Helper: reads all foci and collects successful results into a list
@@ -262,6 +289,48 @@ defmodule Funx.Optics.Traversal do
 
   defp read_optic_as_maybe(%Prism{} = optic, structure) do
     Prism.preview(structure, optic)
+  end
+
+  @doc """
+  Extracts values from all foci into a Maybe list (all-or-nothing).
+
+  This is the all-or-nothing version of `to_list/2`. Unlike `to_list/2` which filters
+  out Nothing values, this operation fails if ANY focus returns Nothing.
+
+  For each focus in the traversal:
+  - **Lens**: Uses `view!`, contributes one value or throws on contract violation
+  - **Prism**: Uses `preview`, contributes one value if matches, otherwise returns Nothing for the entire operation
+
+  Returns `Just(list)` only if all foci succeed. Returns `Nothing` if any Prism doesn't match.
+
+  This is useful for enforcing homogeneity: "this structure exists in ALL these contexts."
+
+  ## Examples
+
+      iex> alias Funx.Optics.{Lens, Prism, Traversal}
+      iex> alias Funx.Monad.Maybe
+      iex> t = Traversal.combine([Prism.key(:name), Prism.key(:email)])
+      iex> Traversal.to_list_maybe(%{name: "Alice", email: "alice@example.com"}, t)
+      %Maybe.Just{value: ["Alice", "alice@example.com"]}
+
+  Returns Nothing if any Prism doesn't match:
+
+      iex> alias Funx.Optics.{Prism, Traversal}
+      iex> alias Funx.Monad.Maybe
+      iex> t = Traversal.combine([Prism.key(:name), Prism.key(:email)])
+      iex> Traversal.to_list_maybe(%{name: "Alice"}, t)
+      %Maybe.Nothing{}
+
+  Lens contract violation throws:
+
+      iex> alias Funx.Optics.{Lens, Traversal}
+      iex> t = Traversal.combine([Lens.key(:name)])
+      iex> Traversal.to_list_maybe(%{age: 30}, t)
+      ** (KeyError) key :name not found in: %{age: 30}
+  """
+  @spec to_list_maybe(s, t()) :: Maybe.t([a]) when s: term(), a: term()
+  def to_list_maybe(structure, %__MODULE__{foci: foci}) do
+    Maybe.traverse(foci, &read_optic_as_maybe(&1, structure))
   end
 
   @doc """
