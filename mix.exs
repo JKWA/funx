@@ -1,7 +1,7 @@
 defmodule Funx.MixProject do
   use Mix.Project
 
-  @version "0.4.0"
+  @version "0.4.2"
 
   def project do
     [
