@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1] - Unreleased
+
+### Added
+
+* `Funx.Optics.Iso` – A lawful isomorphism optic for reversible, lossless transformations between equivalent representations.
+* `Funx.Maybe.Dsl` – A structured DSL for sequencing `Maybe` computations with explicit boundaries, validation, and side effects.
+
 ## [0.4.0] - Unreleased
 
 ### Added

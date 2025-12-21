@@ -104,8 +104,7 @@ Optics provide composable, lawful abstractions for focusing on and transforming 
 
 - `Lens`: Total optic for required fields—raises if focus is missing. Use for fields that should always exist.
 - `Prism`: Partial optic for optional fields—returns `Maybe`. Use for fields that may be absent or for selecting struct types.
-
-Both support composition (`compose/1`, `compose/2`) and work uniformly with maps and structs.
+- `Iso`: Total optic for reversible representation changes. Use when two shapes carry the same information and you need guaranteed round trip conversion (`view` then `review`).
 
 ## Monoids
 
