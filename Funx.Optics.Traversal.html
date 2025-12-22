@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.4.2">
+
+
+    <title>Funx.Optics.Traversal — funx v0.4.2</title>
+
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Optics.Traversal.html" />
+
+    <script defer src="dist/sidebar_items-1CB4A10F.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
+
+  </head>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.4.2
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
+  </div>
+</nav>
+
+<output role="status" id="toast"></output>
+
+<main class="content page-module" id="main" data-type="modules">
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
+          </label>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <div class="heading-with-actions top-heading">
+    <h1>
+      <span translate="no">Funx.Optics.Traversal</span> 
+      <small class="app-vsn" translate="no">(funx v0.4.2)</small>
+
+    </h1>
+
+      <a href="https://github.com/JKWA/funx/blob/v0.4.2/lib/optics/traversal.ex#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+  </div>
+
+
+    <section id="moduledoc">
+<p>The <a href="Funx.Optics.Traversal.html"><code class="inline">Funx.Optics.Traversal</code></a> module provides a multi-focus optic for targeting multiple locations in a data structure.</p><p>A traversal is built using <code class="inline">combine</code>, which takes multiple optics (Lens or Prism) and creates a single
+optic that can focus on all of them as a single optic.</p><h2 id="module-building-traversals" class="section-heading"><a href="#module-building-traversals" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Building Traversals</span></h2><ul><li><a href="#combine/1"><code class="inline">combine/1</code></a>: Takes a list of optics and creates a multi-focus traversal.</li></ul><h2 id="module-read-operations" class="section-heading"><a href="#module-read-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Read Operations</span></h2><ul><li><a href="#to_list/2"><code class="inline">to_list/2</code></a>: Extracts values from lens foci and any prism foci that match.</li><li><a href="#to_list_maybe/2"><code class="inline">to_list_maybe/2</code></a>: Extracts values from all foci (all-or-nothing).</li><li><a href="#preview/2"><code class="inline">preview/2</code></a>: Returns the first matching focus.</li><li><a href="#has/2"><code class="inline">has/2</code></a>: Returns true if at least one focus matches.</li></ul><h2 id="module-key-properties" class="section-heading"><a href="#module-key-properties" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Key Properties</span></h2><ul><li><strong>Order preservation</strong>: Foci are traversed in the order they were combined.</li><li><strong>Lens behavior</strong>: Lens foci require presence and raise on violation.</li><li><strong>Prism behavior</strong>: Prism foci contribute if they match, otherwise are skipped.</li><li><strong>combine is a monoid</strong>: Declares multiplicity, not iteration.</li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="3969784541-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="3969784541-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="3969784541-2">(</span><span class="p" data-group-id="3969784541-3">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="3969784541-4">(</span><span class="ss">:name</span><span class="p" data-group-id="3969784541-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="3969784541-5">(</span><span class="ss">:age</span><span class="p" data-group-id="3969784541-5">)</span><span class="p" data-group-id="3969784541-3">]</span><span class="p" data-group-id="3969784541-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="3969784541-6">(</span><span class="p" data-group-id="3969784541-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="3969784541-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="3969784541-6">)</span><span class="w">
+</span><span class="p" data-group-id="3969784541-8">[</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="3969784541-8">]</span></code></pre><p>With Prisms (optional foci):</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="2271558896-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="2271558896-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="2271558896-2">(</span><span class="p" data-group-id="2271558896-3">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2271558896-4">(</span><span class="ss">:name</span><span class="p" data-group-id="2271558896-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2271558896-5">(</span><span class="ss">:email</span><span class="p" data-group-id="2271558896-5">)</span><span class="p" data-group-id="2271558896-3">]</span><span class="p" data-group-id="2271558896-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="2271558896-6">(</span><span class="p" data-group-id="2271558896-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="2271558896-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="2271558896-6">)</span><span class="w">
+</span><span class="p" data-group-id="2271558896-8">[</span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="2271558896-8">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="2271558896-9">(</span><span class="p" data-group-id="2271558896-10">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice@example.com&quot;</span><span class="p" data-group-id="2271558896-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="2271558896-9">)</span><span class="w">
+</span><span class="p" data-group-id="2271558896-11">[</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;alice@example.com&quot;</span><span class="p" data-group-id="2271558896-11">]</span></code></pre>
+    </section>
+
+</div>
+
+  <section id="summary" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#summary">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Summary</span>
+    </h1>
+<div class="summary-types summary">
+  <h2>
+    <a href="#types">Types</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
+
+      </div>
+
+    </div>
+
+</div>
+<div class="summary-functions summary">
+  <h2>
+    <a href="#functions">Functions</a>
+  </h2>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#combine/1" data-no-tooltip="" translate="no">combine(optics)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Combines multiple optics into a single multi-focus traversal.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#has/2" data-no-tooltip="" translate="no">has(structure, traversal)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns true if at least one focus matches.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#preview/2" data-no-tooltip="" translate="no">preview(structure, traversal)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns the first successful focus from a traversal.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_list/2" data-no-tooltip="" translate="no">to_list(structure, traversal)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Extracts values from all foci into a list.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_list_maybe/2" data-no-tooltip="" translate="no">to_list_maybe(structure, traversal)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Extracts values from all foci into a Maybe list (all-or-nothing).</p></div>
+
+    </div>
+
+</div>
+
+  </section>
+
+
+  <section id="types" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#types">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Types</span>
+    </h1>
+
+    <div class="types-list">
+<section class="detail" id="t:t/0">
+
+  <div class="detail-header">
+    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">t()</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.2/lib/optics/traversal.ex#L51" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Optics.Traversal{
+  foci: [<a href="Funx.Optics.Lens.html#t:t/0">Funx.Optics.Lens.t</a>() | <a href="Funx.Optics.Prism.html#t:t/0">Funx.Optics.Prism.t</a>()]
+}</pre>
+
+      </div>
+
+
+  </section>
+</section>
+
+    </div>
+  </section>
+
+  <section id="functions" class="details-list">
+    <h1 class="section-heading">
+      <a class="hover-link" href="#functions">
+        <i class="ri-link-m" aria-hidden="true"></i>
+      </a>
+      <span class="text">Functions</span>
+    </h1>
+
+    <div class="functions-list">
+<section class="detail" id="combine/1">
+
+  <div class="detail-header">
+    <a href="#combine/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">combine(optics)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.2/lib/optics/traversal.ex#L90" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> combine([<a href="Funx.Optics.Lens.html#t:t/0">Funx.Optics.Lens.t</a>() | <a href="Funx.Optics.Prism.html#t:t/0">Funx.Optics.Prism.t</a>()]) :: <a href="#t:t/0">t</a>()</pre>
+
+      </div>
+
+<p>Combines multiple optics into a single multi-focus traversal.</p><p>This is parallel composition. It widens the focus to include all provided optics.
+The resulting traversal targets all foci simultaneously.</p><h2 id="combine/1-examples" class="section-heading"><a href="#combine/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="7938094975-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="7938094975-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="7938094975-2">(</span><span class="p" data-group-id="7938094975-3">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="7938094975-4">(</span><span class="ss">:name</span><span class="p" data-group-id="7938094975-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="7938094975-5">(</span><span class="ss">:age</span><span class="p" data-group-id="7938094975-5">)</span><span class="p" data-group-id="7938094975-3">]</span><span class="p" data-group-id="7938094975-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="7938094975-6">(</span><span class="p" data-group-id="7938094975-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7938094975-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="7938094975-6">)</span><span class="w">
+</span><span class="p" data-group-id="7938094975-8">[</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="7938094975-8">]</span></code></pre><p>With composed paths:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="2597076262-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="2597076262-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="2597076262-2">(</span><span class="p" data-group-id="2597076262-3">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2597076262-4">(</span><span class="ss">:user</span><span class="p" data-group-id="2597076262-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2597076262-5">(</span><span class="ss">:name</span><span class="p" data-group-id="2597076262-5">)</span><span class="p" data-group-id="2597076262-3">]</span><span class="p" data-group-id="2597076262-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="2597076262-6">(</span><span class="p" data-group-id="2597076262-7">[</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2597076262-8">(</span><span class="ss">:score</span><span class="p" data-group-id="2597076262-8">)</span><span class="p" data-group-id="2597076262-7">]</span><span class="p" data-group-id="2597076262-6">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="2597076262-9">(</span><span class="p" data-group-id="2597076262-10">%{</span><span class="ss">user</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2597076262-11">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="2597076262-11">}</span><span class="p">,</span><span class="w"> </span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p" data-group-id="2597076262-10">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="2597076262-9">)</span><span class="w">
+</span><span class="p" data-group-id="2597076262-12">[</span><span class="s">&quot;Bob&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p" data-group-id="2597076262-12">]</span></code></pre><p>Empty traversal (identity):</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics.Traversal</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="5622795357-1">(</span><span class="p" data-group-id="5622795357-2">[</span><span class="p" data-group-id="5622795357-2">]</span><span class="p" data-group-id="5622795357-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="5622795357-3">(</span><span class="p" data-group-id="5622795357-4">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="5622795357-4">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="5622795357-3">)</span><span class="w">
+</span><span class="p" data-group-id="5622795357-5">[</span><span class="p" data-group-id="5622795357-5">]</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="has/2">
+
+  <div class="detail-header">
+    <a href="#has/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">has(structure, traversal)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.2/lib/optics/traversal.ex#L175" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> has(s, <a href="#t:t/0">t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>() when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Returns true if at least one focus matches.</p><p>This is a boolean query derived from <a href="#preview/2"><code class="inline">preview/2</code></a>:</p><ul><li>Returns <code class="inline">true</code> if any focus matches</li><li>Returns <code class="inline">false</code> if all foci fail (Nothing)</li><li>Lens throws on contract violation</li></ul><h2 id="has/2-examples" class="section-heading"><a href="#has/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="0627962943-1">{</span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="0627962943-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="0627962943-2">(</span><span class="p" data-group-id="0627962943-3">[</span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="0627962943-4">(</span><span class="ss">:name</span><span class="p" data-group-id="0627962943-4">)</span><span class="p" data-group-id="0627962943-3">]</span><span class="p" data-group-id="0627962943-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">has</span><span class="p" data-group-id="0627962943-5">(</span><span class="p" data-group-id="0627962943-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="0627962943-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="0627962943-5">)</span><span class="w">
+</span><span class="no">true</span></code></pre><p>No match:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="1925842636-1">{</span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="1925842636-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="1925842636-2">(</span><span class="p" data-group-id="1925842636-3">[</span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="1925842636-4">(</span><span class="ss">:email</span><span class="p" data-group-id="1925842636-4">)</span><span class="p" data-group-id="1925842636-3">]</span><span class="p" data-group-id="1925842636-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">has</span><span class="p" data-group-id="1925842636-5">(</span><span class="p" data-group-id="1925842636-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="1925842636-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="1925842636-5">)</span><span class="w">
+</span><span class="no">false</span></code></pre><p>Empty traversal:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics.Traversal</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="0548518219-1">(</span><span class="p" data-group-id="0548518219-2">[</span><span class="p" data-group-id="0548518219-2">]</span><span class="p" data-group-id="0548518219-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">has</span><span class="p" data-group-id="0548518219-3">(</span><span class="p" data-group-id="0548518219-4">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="0548518219-4">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="0548518219-3">)</span><span class="w">
+</span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="preview/2">
+
+  <div class="detail-header">
+    <a href="#preview/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">preview(structure, traversal)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.2/lib/optics/traversal.ex#L139" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> preview(s, <a href="#t:t/0">t</a>()) :: <a href="Funx.Monad.Maybe.html#t:t/1">Funx.Monad.Maybe.t</a>(a) when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Returns the first successful focus from a traversal.</p><p>Collapses multiple foci to at most one value using first-success semantics:</p><ul><li>Returns the first <code class="inline">Just</code> and ignores later matches</li><li>Prism <code class="inline">Nothing</code> is skipped</li><li>Lens throws on contract violation</li><li>Traversal order determines priority</li></ul><h2 id="preview/2-examples" class="section-heading"><a href="#preview/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="9906768985-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="9906768985-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="9906768985-2">(</span><span class="p" data-group-id="9906768985-3">[</span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9906768985-4">(</span><span class="ss">:email</span><span class="p" data-group-id="9906768985-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9906768985-5">(</span><span class="ss">:name</span><span class="p" data-group-id="9906768985-5">)</span><span class="p" data-group-id="9906768985-3">]</span><span class="p" data-group-id="9906768985-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9906768985-6">(</span><span class="p" data-group-id="9906768985-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9906768985-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="9906768985-6">)</span><span class="w">
+</span><span class="p" data-group-id="9906768985-8">%</span><span class="nc" data-group-id="9906768985-8">Maybe.Just</span><span class="p" data-group-id="9906768985-8">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9906768985-8">}</span></code></pre><p>First success wins:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="0897034110-1">{</span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="0897034110-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="0897034110-2">(</span><span class="p" data-group-id="0897034110-3">[</span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="0897034110-4">(</span><span class="ss">:name</span><span class="p" data-group-id="0897034110-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="0897034110-5">(</span><span class="ss">:email</span><span class="p" data-group-id="0897034110-5">)</span><span class="p" data-group-id="0897034110-3">]</span><span class="p" data-group-id="0897034110-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="0897034110-6">(</span><span class="p" data-group-id="0897034110-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice@example.com&quot;</span><span class="p" data-group-id="0897034110-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="0897034110-6">)</span><span class="w">
+</span><span class="p" data-group-id="0897034110-8">%</span><span class="nc" data-group-id="0897034110-8">Maybe.Just</span><span class="p" data-group-id="0897034110-8">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="0897034110-8">}</span></code></pre><p>Nothing when no foci match:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="2068285148-1">{</span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="2068285148-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="2068285148-2">(</span><span class="p" data-group-id="2068285148-3">[</span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2068285148-4">(</span><span class="ss">:email</span><span class="p" data-group-id="2068285148-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2068285148-5">(</span><span class="ss">:phone</span><span class="p" data-group-id="2068285148-5">)</span><span class="p" data-group-id="2068285148-3">]</span><span class="p" data-group-id="2068285148-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="2068285148-6">(</span><span class="p" data-group-id="2068285148-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="2068285148-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="2068285148-6">)</span><span class="w">
+</span><span class="p" data-group-id="2068285148-8">%</span><span class="nc" data-group-id="2068285148-8">Maybe.Nothing</span><span class="p" data-group-id="2068285148-8">{</span><span class="p" data-group-id="2068285148-8">}</span></code></pre><p>Lens throws on violation:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="9193091675-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="9193091675-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="9193091675-2">(</span><span class="p" data-group-id="9193091675-3">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9193091675-4">(</span><span class="ss">:email</span><span class="p" data-group-id="9193091675-4">)</span><span class="p" data-group-id="9193091675-3">]</span><span class="p" data-group-id="9193091675-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="9193091675-5">(</span><span class="p" data-group-id="9193091675-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="9193091675-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="9193091675-5">)</span><span class="w">
+</span><span class="gt">** (KeyError) key :email not found in: %{name: &quot;Alice&quot;}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_list/2">
+
+  <div class="detail-header">
+    <a href="#to_list/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">to_list(structure, traversal)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.2/lib/optics/traversal.ex#L260" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_list(s, <a href="#t:t/0">t</a>()) :: [a] when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Extracts values from all foci into a list.</p><p>For each focus in the traversal:</p><ul><li><strong>Lens</strong>: Uses <code class="inline">view!</code>, contributes one value or throws on contract violation</li><li><strong>Prism</strong>: Uses <code class="inline">preview</code>, contributes one value if matches, otherwise skips (Nothing)</li></ul><p>The order of values matches the combine order.</p><h2 id="to_list/2-examples" class="section-heading"><a href="#to_list/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="4598416838-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="4598416838-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="4598416838-2">(</span><span class="p" data-group-id="4598416838-3">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4598416838-4">(</span><span class="ss">:name</span><span class="p" data-group-id="4598416838-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4598416838-5">(</span><span class="ss">:age</span><span class="p" data-group-id="4598416838-5">)</span><span class="p" data-group-id="4598416838-3">]</span><span class="p" data-group-id="4598416838-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="4598416838-6">(</span><span class="p" data-group-id="4598416838-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4598416838-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="4598416838-6">)</span><span class="w">
+</span><span class="p" data-group-id="4598416838-8">[</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4598416838-8">]</span></code></pre><p>With Prisms (skips Nothing):</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="8089456247-1">{</span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="8089456247-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="8089456247-2">(</span><span class="p" data-group-id="8089456247-3">[</span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="8089456247-4">(</span><span class="ss">:name</span><span class="p" data-group-id="8089456247-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="8089456247-5">(</span><span class="ss">:email</span><span class="p" data-group-id="8089456247-5">)</span><span class="p" data-group-id="8089456247-3">]</span><span class="p" data-group-id="8089456247-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="8089456247-6">(</span><span class="p" data-group-id="8089456247-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="8089456247-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="8089456247-6">)</span><span class="w">
+</span><span class="p" data-group-id="8089456247-8">[</span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="8089456247-8">]</span></code></pre><p>Order is preserved:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="0302650849-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="0302650849-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="0302650849-2">(</span><span class="p" data-group-id="0302650849-3">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="0302650849-4">(</span><span class="ss">:age</span><span class="p" data-group-id="0302650849-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="0302650849-5">(</span><span class="ss">:name</span><span class="p" data-group-id="0302650849-5">)</span><span class="p" data-group-id="0302650849-3">]</span><span class="p" data-group-id="0302650849-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="0302650849-6">(</span><span class="p" data-group-id="0302650849-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0302650849-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="0302650849-6">)</span><span class="w">
+</span><span class="p" data-group-id="0302650849-8">[</span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="0302650849-8">]</span></code></pre><p>Lens contract violation throws:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="1976953618-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="1976953618-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="1976953618-2">(</span><span class="p" data-group-id="1976953618-3">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="1976953618-4">(</span><span class="ss">:name</span><span class="p" data-group-id="1976953618-4">)</span><span class="p" data-group-id="1976953618-3">]</span><span class="p" data-group-id="1976953618-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list</span><span class="p" data-group-id="1976953618-5">(</span><span class="p" data-group-id="1976953618-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="1976953618-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="1976953618-5">)</span><span class="w">
+</span><span class="gt">** (KeyError) key :name not found in: %{age: 30}</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_list_maybe/2">
+
+  <div class="detail-header">
+    <a href="#to_list_maybe/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">to_list_maybe(structure, traversal)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.4.2/lib/optics/traversal.ex#L218" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_list_maybe(s, <a href="#t:t/0">t</a>()) :: <a href="Funx.Monad.Maybe.html#t:t/1">Funx.Monad.Maybe.t</a>([a]) when s: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Extracts values from all foci into a Maybe list (all-or-nothing).</p><p>This is the all-or-nothing version of <a href="#to_list/2"><code class="inline">to_list/2</code></a>. Unlike <a href="#to_list/2"><code class="inline">to_list/2</code></a> which skips
+prism foci that don't match, this operation returns Nothing if any prism focus doesn't match.</p><p>For each focus in the traversal:</p><ul><li><strong>Lens</strong>: Uses <code class="inline">view!</code>, contributes one value or throws on contract violation</li><li><strong>Prism</strong>: Uses <code class="inline">preview</code>, contributes one value if matches, otherwise returns Nothing for the entire operation</li></ul><p>Returns <code class="inline">Just(list)</code> only when every focus succeeds.</p><p>This is useful for enforcing co-presence: &quot;this structure exists in ALL these contexts.&quot;</p><h2 id="to_list_maybe/2-examples" class="section-heading"><a href="#to_list_maybe/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="4062784717-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="4062784717-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="4062784717-2">(</span><span class="p" data-group-id="4062784717-3">[</span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4062784717-4">(</span><span class="ss">:name</span><span class="p" data-group-id="4062784717-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4062784717-5">(</span><span class="ss">:email</span><span class="p" data-group-id="4062784717-5">)</span><span class="p" data-group-id="4062784717-3">]</span><span class="p" data-group-id="4062784717-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list_maybe</span><span class="p" data-group-id="4062784717-6">(</span><span class="p" data-group-id="4062784717-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice@example.com&quot;</span><span class="p" data-group-id="4062784717-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="4062784717-6">)</span><span class="w">
+</span><span class="p" data-group-id="4062784717-8">%</span><span class="nc" data-group-id="4062784717-8">Maybe.Just</span><span class="p" data-group-id="4062784717-8">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4062784717-9">[</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;alice@example.com&quot;</span><span class="p" data-group-id="4062784717-9">]</span><span class="p" data-group-id="4062784717-8">}</span></code></pre><p>Returns Nothing if any Prism doesn't match:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="0680140180-1">{</span><span class="nc">Prism</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="0680140180-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="0680140180-2">(</span><span class="p" data-group-id="0680140180-3">[</span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="0680140180-4">(</span><span class="ss">:name</span><span class="p" data-group-id="0680140180-4">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="0680140180-5">(</span><span class="ss">:email</span><span class="p" data-group-id="0680140180-5">)</span><span class="p" data-group-id="0680140180-3">]</span><span class="p" data-group-id="0680140180-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list_maybe</span><span class="p" data-group-id="0680140180-6">(</span><span class="p" data-group-id="0680140180-7">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="0680140180-7">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="0680140180-6">)</span><span class="w">
+</span><span class="p" data-group-id="0680140180-8">%</span><span class="nc" data-group-id="0680140180-8">Maybe.Nothing</span><span class="p" data-group-id="0680140180-8">{</span><span class="p" data-group-id="0680140180-8">}</span></code></pre><p>Lens contract violation throws:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics</span><span class="o">.</span><span class="p" data-group-id="2768111708-1">{</span><span class="nc">Lens</span><span class="p">,</span><span class="w"> </span><span class="nc">Traversal</span><span class="p" data-group-id="2768111708-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="2768111708-2">(</span><span class="p" data-group-id="2768111708-3">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="2768111708-4">(</span><span class="ss">:name</span><span class="p" data-group-id="2768111708-4">)</span><span class="p" data-group-id="2768111708-3">]</span><span class="p" data-group-id="2768111708-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">to_list_maybe</span><span class="p" data-group-id="2768111708-5">(</span><span class="p" data-group-id="2768111708-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="2768111708-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p" data-group-id="2768111708-5">)</span><span class="w">
+</span><span class="gt">** (KeyError) key :name not found in: %{age: 30}</span></code></pre>
+  </section>
+</section>
+
+    </div>
+  </section>
+
+    <footer class="footer">
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.4.2" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.4.2">Hex Preview</a>
+
+            </span>
+
+          <span class="line">
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
+
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
+
+          </span>
+        </p>
+
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
+
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+        </p>
+
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
