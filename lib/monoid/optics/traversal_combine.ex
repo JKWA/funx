@@ -57,7 +57,7 @@ defimpl Funx.Monoid, for: Funx.Monoid.Optics.TraversalCombine do
   This is the identity element for combine: a traversal that contributes no foci.
   """
   def empty(_) do
-    TraversalCombine.new(%Traversal{foci: []})
+    TraversalCombine.new(Traversal.identity())
   end
 
   @doc """

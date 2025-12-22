@@ -116,6 +116,33 @@ defmodule Funx.Optics.TraversalTest do
     end
   end
 
+  describe "identity/0" do
+    test "creates empty traversal (no foci)" do
+      t = Traversal.identity()
+      assert %Traversal{foci: []} = t
+    end
+
+    test "identity traversal returns empty list for to_list" do
+      t = Traversal.identity()
+      assert Traversal.to_list(%{name: "Alice", age: 30}, t) == []
+    end
+
+    test "identity traversal returns Just([]) for to_list_maybe" do
+      t = Traversal.identity()
+      assert Traversal.to_list_maybe(%{name: "Alice"}, t) == Maybe.just([])
+    end
+
+    test "identity traversal returns Nothing for preview" do
+      t = Traversal.identity()
+      assert Traversal.preview(%{name: "Alice"}, t) == Maybe.nothing()
+    end
+
+    test "identity traversal returns false for has" do
+      t = Traversal.identity()
+      assert Traversal.has(%{name: "Alice"}, t) == false
+    end
+  end
+
   # ============================================================================
   # to_list/2 - Collection Mode Tests
   # ============================================================================

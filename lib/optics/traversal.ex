@@ -54,6 +54,12 @@ defmodule Funx.Optics.Traversal do
 
   defstruct foci: []
 
+  @doc false
+  @spec identity() :: t()
+  def identity do
+    %__MODULE__{foci: []}
+  end
+
   # ============================================================================
   # Constructors
   # ============================================================================
