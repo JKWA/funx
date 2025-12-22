@@ -3,7 +3,7 @@ defmodule Funx.Optics.Traversal do
   The `Funx.Optics.Traversal` module provides a multi-focus optic for targeting multiple locations in a data structure.
 
   A traversal is built using `combine`, which takes multiple optics (Lens or Prism) and creates a single
-  optic that can focus on all of them simultaneously.
+  optic that can focus on all of them as a single optic.
 
   ## Building Traversals
 
@@ -11,12 +11,15 @@ defmodule Funx.Optics.Traversal do
 
   ## Read Operations
 
-    - `to_list/2`: Extracts values from all foci into a list.
+    - `to_list/2`: Extracts values from lens foci and any prism foci that match.
+    - `to_list_maybe/2`: Extracts values from all foci (all-or-nothing).
+    - `preview/2`: Returns the first matching focus.
+    - `has/2`: Returns true if at least one focus matches.
 
   ## Key Properties
 
   - **Order preservation**: Foci are traversed in the order they were combined.
-  - **Lens behavior**: Lens foci always contribute (or throw on contract violation).
+  - **Lens behavior**: Lens foci require presence and raise on violation.
   - **Prism behavior**: Prism foci contribute if they match, otherwise are skipped.
   - **combine is a monoid**: Declares multiplicity, not iteration.
 
@@ -140,10 +143,10 @@ defmodule Funx.Optics.Traversal do
   end
 
   @doc """
-  Returns true if at least one focus exists.
+  Returns true if at least one focus matches.
 
   This is a boolean query derived from `preview/2`:
-  - Returns `true` if any focus succeeds
+  - Returns `true` if any focus matches
   - Returns `false` if all foci fail (Nothing)
   - Lens throws on contract violation
 
@@ -177,16 +180,16 @@ defmodule Funx.Optics.Traversal do
   @doc """
   Extracts values from all foci into a Maybe list (all-or-nothing).
 
-  This is the all-or-nothing version of `to_list/2`. Unlike `to_list/2` which filters
-  out Nothing values, this operation fails if ANY focus returns Nothing.
+  This is the all-or-nothing version of `to_list/2`. Unlike `to_list/2` which skips
+  prism foci that don't match, this operation returns Nothing if any prism focus doesn't match.
 
   For each focus in the traversal:
   - **Lens**: Uses `view!`, contributes one value or throws on contract violation
   - **Prism**: Uses `preview`, contributes one value if matches, otherwise returns Nothing for the entire operation
 
-  Returns `Just(list)` only if all foci succeed. Returns `Nothing` if any Prism doesn't match.
+  Returns `Just(list)` only when every focus succeeds.
 
-  This is useful for enforcing homogeneity: "this structure exists in ALL these contexts."
+  This is useful for enforcing co-presence: "this structure exists in ALL these contexts."
 
   ## Examples
 

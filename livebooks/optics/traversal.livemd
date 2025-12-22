@@ -1,459 +1,400 @@
-# Traversal
+# Funx.Optics.Traversal
 
 ```elixir
 Mix.install([
-  {:funx, github: "JKWA/funx", ref: "9cc278a"}
+  {:funx, "0.4.0"}
 ])
 ```
 
-## Why Traversal?
+## Overview
 
-We have seen `Lens` and `Prism`, which focus on one location at a time.
+The `Funx.Optics.Traversal` module provides a multi-focus optic for targeting multiple locations in a data structure as a single optic.
 
-A `Traversal` answers a different question:
+A traversal combines multiple optics (lenses and prisms) into a single optic that can extract multiple foci. With `to_list_maybe/2`, you can require those foci to exist together for the operation to apply.
 
-Do the foci required by this operation exist together, in the same context?
+Traversals serve two purposes: enforcing structural requirements across multiple foci ("these fields must all be present together for this operation to apply"), and collecting values from whatever foci match in the structure.
 
-That matters when an operation depends on more than one focus, and when domain rules relate those foci.
+## Quick Reference
 
-## The Problem
+**Constructors:**
 
-We are building a system to process transactions. A transaction can be a charge or a refund, and it can be paid by check or credit card.
+* `combine/1`: Creates a traversal from a list of lenses and prisms.
 
-```text
-Transaction
-└─ type
-   ├─ Charge
-   │  ├─ item
-   │  │  └─ amount
-   │  └─ payment
-   │     ├─ CreditCard
-   │     │  └─ amount   ← cc_payment
-   │     └─ Check
-   │        └─ amount   ← check_payment
-   │
-   └─ Refund
-      ├─ item
-      │  └─ amount
-      └─ payment
-         ├─ CreditCard
-         │  └─ amount   ← cc_refund
-         └─ Check
-            └─ amount   ← check_refund
-```
+**Read Operations:**
 
-The transaction always has an `Item`. The path `type.item` refers to the same concept for both `Charge` and `Refund`, so a `Lens` is a good fit.
+* `to_list/2`: Extracts values from lens foci and any prism foci that match.
+* `to_list_maybe/2`: Extracts values from all foci (all-or-nothing: returns `Nothing` if any prism focus does not match, and raises on lens violation).
+* `preview/2`: Returns the first matching focus in combine order.
+* `has/2`: Returns true if at least one focus matches.
 
-The payment is conditional. The path `type.payment` is one location, but the meaning depends on which branch exists. That is what `Prism` models.
-
-The operation depends on both.
-
-We need the item and the relevant payment present in the same transaction and traversal gives us a single boundary.
-
-## Building the Transaction Processor
+## Function Examples
 
 ```elixir
-alias Funx.Optics.{Lens, Prism}
-require Logger
-use Funx.Monad.Maybe
+alias Funx.Optics.{Lens, Prism, Traversal}
+alias Funx.Monad.Maybe
+```
 
-defmodule CreditCard do
-  defstruct [:name, :number, :expiry, :amount]
-  alias Funx.Optics.Prism
-  
-  def amount_prism do
-    Prism.path([{__MODULE__, :amount}])
-  end
-end
+## Building Traversals
 
-defmodule Check do
-  defstruct [:name, :routing_number, :account_number, :amount]
-  alias Funx.Optics.Prism
+A traversal is built by combining multiple optics. Each optic focuses on a different location, and the traversal targets them all.
 
-  def amount_prism do
-    Prism.path([{__MODULE__, :amount}])
-  end
-end
+```elixir
+# Simple traversal combining two lenses
+name_age_trav = Traversal.combine([Lens.key(:name), Lens.key(:age)])
 
+# Traversal with nested paths
+user_name_lens = Lens.compose([Lens.key(:user), Lens.key(:name)])
+user_score_trav = Traversal.combine([user_name_lens, Lens.key(:score)])
+
+# Traversal mixing lenses and prisms
+required_optional_trav = Traversal.combine([
+  Lens.key(:name),
+  Prism.key(:email)
+])
+
+# Empty traversal (no foci)
+empty_trav = Traversal.combine([])
+```
+
+## Using Traversals with Maps
+
+Create some test data:
+
+```elixir
+user = %{
+  name: "Alice",
+  age: 30,
+  email: "alice@example.com"
+}
+
+incomplete_user = %{
+  name: "Bob",
+  age: 25
+}
+
+nested_data = %{
+  user: %{name: "Carol", id: 123},
+  score: 95
+}
+```
+
+### to_list/2
+
+Extracts values from lens foci and any prism foci that match:
+
+```elixir
+Traversal.to_list(user, name_age_trav)
+```
+
+```elixir
+Traversal.to_list(nested_data, user_score_trav)
+```
+
+Order is preserved:
+
+```elixir
+age_name_trav = Traversal.combine([Lens.key(:age), Lens.key(:name)])
+Traversal.to_list(user, age_name_trav)
+```
+
+Prism foci are skipped when they don't match:
+
+```elixir
+Traversal.to_list(incomplete_user, required_optional_trav)
+```
+
+```elixir
+Traversal.to_list(user, required_optional_trav)
+```
+
+Empty traversal returns empty list:
+
+```elixir
+Traversal.to_list(user, empty_trav)
+```
+
+Lens contract violation raises when a required focus is missing:
+
+```elixir
+Traversal.to_list(%{age: 30}, name_age_trav)
+```
+
+### to_list_maybe/2
+
+All-or-nothing extraction. Returns `Just(list)` only when every focus succeeds, otherwise `Nothing`:
+
+```elixir
+Traversal.to_list_maybe(user, required_optional_trav)
+```
+
+```elixir
+Traversal.to_list_maybe(incomplete_user, required_optional_trav)
+```
+
+This enforces co-presence: all required foci must exist together for the operation to apply.
+
+### preview/2
+
+Returns the first matching focus (in combine order):
+
+```elixir
+email_name_trav = Traversal.combine([Prism.key(:email), Prism.key(:name)])
+Traversal.preview(user, email_name_trav)
+```
+
+Evaluation stops at the first matching focus, even when multiple foci would match:
+
+```elixir
+Traversal.preview(incomplete_user, email_name_trav)
+```
+
+Returns `Nothing` when no foci match:
+
+```elixir
+phone_email_trav = Traversal.combine([Prism.key(:phone), Prism.key(:email)])
+Traversal.preview(%{name: "Alice"}, phone_email_trav)
+```
+
+Lens throws on violation:
+
+```elixir
+Traversal.preview(%{age: 30}, name_age_trav)
+```
+
+### has/2
+
+Boolean query: returns true if at least one focus matches. Never returns extracted data, only whether a match exists:
+
+```elixir
+Traversal.has(user, email_name_trav)
+```
+
+```elixir
+Traversal.has(incomplete_user, email_name_trav)
+```
+
+```elixir
+Traversal.has(%{age: 30}, phone_email_trav)
+```
+
+Empty traversal always returns false:
+
+```elixir
+Traversal.has(user, empty_trav)
+```
+
+## Working with Structs
+
+Traversals work with structs just like maps:
+
+```elixir
 defmodule Item do
   defstruct [:name, :amount]
 end
 
-defmodule Charge do
-  defstruct [:item, :payment, :status]
-  alias Funx.Optics.Prism
-
-  def payment_prism do
-    Prism.path([{__MODULE__, :payment}])
-  end
-end
-
-defmodule Refund do
-  defstruct [:item, :payment, :status]
-  alias Funx.Optics.Prism
-
-  def payment_prism do
-    Prism.path([{__MODULE__, :payment}])
-  end
+defmodule CreditCard do
+  defstruct [:name, :number, :amount]
 end
 
 defmodule Transaction do
-  defstruct [:type]
-  alias Funx.Optics.Prism
+  defstruct [:item, :payment]
+end
+```
 
-  def type_prism do
-    Prism.path([{__MODULE__, :type}])
+```elixir
+transaction = %Transaction{
+  item: %Item{name: "Camera", amount: 500},
+  payment: %CreditCard{name: "Alice", number: "4111", amount: 500}
+}
+```
+
+Build a traversal for item and payment amounts:
+
+```elixir
+item_amount_lens = Lens.path([:item, :amount])
+payment_amount_lens = Lens.path([:payment, :amount])
+amounts_trav = Traversal.combine([item_amount_lens, payment_amount_lens])
+
+Traversal.to_list(transaction, amounts_trav)
+```
+
+## Combining with Prisms
+
+Traversals become powerful when combining with prisms for variant data:
+
+```elixir
+defmodule Check do
+  defstruct [:name, :routing_number, :amount]
+end
+
+defmodule Charge do
+  defstruct [:item, :payment]
+end
+
+cc_transaction = %Transaction{
+  item: %Item{name: "Camera", amount: 500},
+  payment: %CreditCard{name: "Alice", number: "4111", amount: 500}
+}
+
+check_transaction = %Transaction{
+  item: %Item{name: "Lens", amount: 300},
+  payment: %Check{name: "Bob", routing_number: "111000025", amount: 300}
+}
+```
+
+Build a traversal that focuses on item and CreditCard payment:
+
+```elixir
+cc_payment_prism = Prism.path([:payment, CreditCard])
+cc_amount_prism = Prism.compose(cc_payment_prism, Prism.key(:amount))
+
+cc_amounts_trav = Traversal.combine([item_amount_lens, cc_amount_prism])
+```
+
+This succeeds for credit card transactions:
+
+```elixir
+Traversal.to_list_maybe(cc_transaction, cc_amounts_trav)
+```
+
+And returns `Nothing` for check transactions (the prism doesn't match):
+
+```elixir
+Traversal.to_list_maybe(check_transaction, cc_amounts_trav)
+```
+
+## Patterns with Maybe DSL
+
+Since `to_list_maybe/2` returns `Maybe`, you can use it with the Maybe DSL for validation pipelines.
+
+Import the DSL:
+
+```elixir
+use Funx.Monad.Maybe
+```
+
+Create a validation function:
+
+```elixir
+defmodule ValidateAmounts do
+  def run_maybe([item_amount, payment_amount], _opts, _env) do
+    item_amount == payment_amount
   end
 end
 ```
 
-Next, some transactions:
+Use the traversal to extract foci, then validate they match. The `guard ValidateAmounts` step applies the domain rule to the extracted foci:
 
 ```elixir
-charge_cc =
+maybe cc_transaction do
+  bind Traversal.to_list_maybe(cc_amounts_trav)
+  guard ValidateAmounts
+end
+```
+
+This returns the extracted amounts only if both foci exist AND the amounts match.
+
+Invalid amounts fail the guard:
+
+```elixir
+invalid_transaction = %Transaction{
+  item: %Item{name: "Camera", amount: 500},
+  payment: %CreditCard{name: "Alice", number: "4111", amount: 400}
+}
+
+maybe invalid_transaction do
+  bind Traversal.to_list_maybe(cc_amounts_trav)
+  guard ValidateAmounts
+end
+```
+
+Wrong payment type fails at traversal extraction:
+
+```elixir
+maybe check_transaction do
+  bind Traversal.to_list_maybe(cc_amounts_trav)
+  guard ValidateAmounts
+end
+```
+
+## Collecting from Lists
+
+The traversal operates on one transaction at a time; list processing happens via standard collection functions.
+
+Process multiple transactions and collect successes:
+
+```elixir
+transactions = [
   %Transaction{
-    type: %Charge{
-      item: %Item{name: "Camera", amount: 500},
-      payment: %CreditCard{name: "Alice", number: "4111", expiry: "12/26", amount: 500},
-      status: :pending
-    }
-  }
-
-invalid_charge_cc =
+    item: %Item{name: "Camera", amount: 500},
+    payment: %CreditCard{name: "Alice", number: "4111", amount: 500}
+  },
   %Transaction{
-    type: %Charge{
-      item: %Item{name: "Camera", amount: 500},
-      payment: %CreditCard{name: "Alice", number: "4111", expiry: "12/26", amount: 400},
-      status: :pending
-    }
-  }
-
-charge_check =
+    item: %Item{name: "Lens", amount: 300},
+    payment: %Check{name: "Bob", routing_number: "111000025", amount: 300}
+  },
   %Transaction{
-    type: %Charge{
-      item: %Item{name: "Lens", amount: 300},
-      payment: %Check{name: "Bob", routing_number: "111000025", account_number: "987654", amount: 300},
-      status: :pending
-    }
+    item: %Item{name: "Tripod", amount: 150},
+    payment: %CreditCard{name: "Carol", number: "4333", amount: 150}
   }
-
-refund_cc =
-  %Transaction{
-    type: %Refund{
-      item: %Item{name: "Tripod", amount: 150},
-      payment: %CreditCard{name: "Carol", number: "4333", expiry: "10/27", amount: 150},
-      status: :pending
-    }
-  }
-
-refund_check =
-  %Transaction{
-    type: %Refund{
-      item: %Item{name: "Flash", amount: 200},
-      payment: %Check{name: "Dave", routing_number: "222000025", account_number: "123456", amount: 200},
-      status: :pending
-    }
-  }
-
-transactions = [charge_cc, charge_check, refund_cc, refund_check]
+]
 ```
 
-## Pattern Matching in Function Heads
-
-The idiomatic Elixir approach is to encode applicability directly in the function head.
+Extract amounts from all credit card transactions:
 
 ```elixir
-defmodule Guarded.TransactionProcessor do
-  def cc_payment(
-        %Transaction{
-          type: %Charge{
-            item: %Item{amount: item_amount, name: name},
-            payment: %CreditCard{amount: payment_amount}
-          } = charge
-        } = transaction
-      ) when item_amount == payment_amount do
-    Logger.info("Charge cc $#{payment_amount} for #{name}")
+transactions
+|> Enum.map(&Traversal.to_list_maybe(&1, cc_amounts_trav))
+|> Maybe.compose()
+```
 
-    %{
-      transaction
-      | type: %{charge | status: :complete}
-    }
-  end
+Or use `concat_map` to flatten:
 
-  def check_payment(
-        %Transaction{
-          type: %Charge{
-            item: %Item{amount: item_amount, name: name},
-            payment: %Check{amount: payment_amount}
-          } = charge
-        } = transaction
-      ) when item_amount == payment_amount do
-    Logger.info("Charge check $#{payment_amount} for #{name}")
+```elixir
+transactions
+|> Maybe.concat_map(&Traversal.to_list_maybe(&1, cc_amounts_trav))
+```
 
-    %{
-      transaction
-      | type: %{charge | status: :complete}
-    }
-  end
+## Key Properties
 
-  def cc_refund(
-        %Transaction{
-          type: %Refund{
-            item: %Item{amount: item_amount, name: name},
-            payment: %CreditCard{amount: payment_amount}
-          } = refund
-        } = transaction
-      ) when item_amount == payment_amount do
-    Logger.info("Refund cc $#{payment_amount} for #{name}")
+**Order preservation**: Values are extracted in the order the optics were combined.
 
-    %{
-      transaction
-      | type: %{refund | status: :complete}
-    }
-  end
+**Lens behavior**: Lens foci require presence and raise on violation.
 
-  def check_refund(
-        %Transaction{
-          type: %Refund{
-            item: %Item{amount: item_amount, name: name},
-            payment: %Check{amount: payment_amount}
-          } = refund
-        } = transaction
-      ) when item_amount == payment_amount do
-    Logger.info("Refund check $#{payment_amount} for #{name}")
+**Prism behavior**: Prism foci contribute if they match, otherwise are skipped (in `to_list/2`) or cause failure (in `to_list_maybe/2`).
 
-    %{
-      transaction
-      | type: %{refund | status: :complete}
-    }
+**Co-presence**: Use `to_list_maybe/2` when you need all foci to exist together. Use `to_list/2` when you want to collect whatever matches.
+
+## Comparison with Pattern Matching
+
+Elixir's pattern matching encodes requirements in syntax:
+
+```elixir
+def process(%Transaction{
+      item: %Item{amount: item_amount},
+      payment: %CreditCard{amount: payment_amount}
+    })
+    when item_amount == payment_amount do
+  # process
+end
+```
+
+Traversals encode the same requirement as data:
+
+```elixir
+def process(transaction) do
+  maybe transaction do
+    bind Traversal.to_list_maybe(cc_amounts_trav)
+    guard ValidateAmounts
   end
 end
 ```
 
-Our domain includes a `item_amount == payment_amount` rule.
+The traversal approach lets you:
 
-The happy path works:
+* Name and reuse structural requirements
+* Test applicability rules independently
+* Compose requirements from smaller pieces
+* Pass requirements as values
 
-```elixir
-Guarded.TransactionProcessor.cc_payment(charge_cc)
-```
-
-A mismatch raises:
-
-```elixir
-Guarded.TransactionProcessor.cc_payment(refund_check)
-```
-
-An invalid charge also raises:
-
-```elixir
-Guarded.TransactionProcessor.cc_payment(invalid_charge_cc)
-```
-
-This function head does three things at once:
-
-* It selects the shape required by the operation.
-* It extracts the foci needed by the operation.
-* It enforces the domain rule that relates those foci.
-
-It works, but it is not a reusable boundary. If the same applicability rule matters in another workflow, the rule has to be re-expressed in a new function head. Worse, if they change we need to find all and change all the rules in lockstep.
-
-## The Functional Way
-
-A traversal lets us treat applicability as data.
-
-Instead of encoding “what must exist together for this operation to apply” in syntax, we define that requirement as an optic and pass it around.
-
-The traversal establishes the required foci. Validation applies the domain rule. The operation runs only after both hold.
-
-### Optics for the boundary
-
-```elixir
-defmodule Processor do
-  alias Funx.Optics.{Lens, Prism, Traversal}
-
-  def item_lens do
-    Lens.path([:type, :item])
-  end
-  
-  def cc_payment_trav do
-    Traversal.combine([
-      Processor.item_lens,
-      Prism.compose([
-        Transaction.type_prism,
-        Charge.payment_prism,
-        Prism.struct(CreditCard)
-      ])
-    ])
-  end
-
-  def check_payment_trav do
-    Traversal.combine([
-      Processor.item_lens,
-      Prism.compose([
-        Transaction.type_prism,
-        Charge.payment_prism,
-        Prism.struct(Check)
-      ])
-    ])
-  end
-
-  def cc_refund_trav do
-    Traversal.combine([
-      Processor.item_lens,
-      Prism.compose([
-        Transaction.type_prism,
-        Refund.payment_prism,
-        Prism.struct(CreditCard)
-      ])
-    ])
-  end
-
-  def check_refund_trav do
-    Traversal.combine([
-      Processor.item_lens,
-      Prism.compose([
-        Transaction.type_prism,
-        Refund.payment_prism,
-        Prism.struct(Check)
-      ])
-    ])
-  end
-
-  def payment_status_lens do
-    Lens.path([:type, :status])
-  end
-end
-```
-
-Each traversal describes the structural requirement for an operation: the item must exist, and the relevant payment branch must exist, in the same transaction.
-
-### Domain validation
-
-```elixir
-defmodule ValidateTransaction do
-  def run_maybe([item, payment], _opt, _env) do
-    item.amount == payment.amount
-  end
-end
-```
-
-This is not a structural check. It is a rule that relates the extracted foci.
-
-### Logging as an effect
-
-```elixir
-defmodule LogTransaction do
-  def run_maybe([item, payment], opts, _env) do
-    prefix = Keyword.get(opts, :prefix)
-
-    Logger.info("#{prefix} $#{payment.amount} for #{item.name}")
-    :ok
-  end
-end
-```
-
-### Completing the transaction
-
-```elixir
-defmodule CompleteTransaction do
-  alias Funx.Optics.Lens
-
-  def run_maybe(_traversal, opts, _env) do
-    transaction = Keyword.get(opts, :original)
-
-    Lens.set(transaction, Processor.payment_status_lens, :complete)
-  end
-end
-```
-
-This uses `Lens.set` rather than `Lens.set!`, so the update itself is modeled as a fallible step.
-
-## The processor
-
-```elixir
-defmodule Traversal.TransactionProcessor do
-  alias Funx.Optics.Traversal
-
-  def cc_payment(transaction) do
-    maybe transaction, as: :raise do
-      bind Traversal.to_list_maybe(Processor.cc_payment_trav)
-      guard ValidateTransaction
-      tap {LogTransaction, prefix: "Charging cc"}
-      bind {CompleteTransaction, original: transaction}
-    end
-  end
-
-  def check_payment(transaction) do
-    maybe transaction, as: :raise do
-      bind Traversal.to_list_maybe(Processor.check_payment_trav)
-      guard ValidateTransaction
-      tap {LogTransaction, prefix: "Charging check"}
-      bind {CompleteTransaction, original: transaction}
-    end
-  end
-
-  def cc_refund(transaction) do
-    maybe transaction, as: :raise do
-      bind Traversal.to_list_maybe(Processor.cc_refund_trav)
-      guard ValidateTransaction
-      tap {LogTransaction, prefix: "Refunding cc"}
-      bind {CompleteTransaction, original: transaction}
-    end
-  end
-
-  def check_refund(transaction) do
-    maybe transaction, as: :raise do
-      bind Traversal.to_list_maybe(Processor.check_refund_trav)
-      guard ValidateTransaction
-      tap {LogTransaction, prefix: "Refunding check"}
-      bind {CompleteTransaction, original: transaction}
-    end
-  end
-end
-```
-
-This pipeline has a specific shape:
-
-The traversal establishes which foci exist together for the operation.
-
-The guard enforces the rule that relates those foci.
-
-The remaining steps describe the operation itself.
-
-A valid credit card charge succeeds:
-
-```elixir
-Traversal.TransactionProcessor.cc_payment(charge_cc)
-```
-
-A mismatch raises:
-
-```elixir
-Traversal.TransactionProcessor.cc_payment(refund_cc)
-```
-
-An invalid credit card charge also raises:
-
-```elixir
-Traversal.TransactionProcessor.cc_payment(invalid_charge_cc)
-```
-
-## Applicability
-
-Applicability is often encoded as control flow:
-
-* selecting a function clause
-* checks inside the function body
-* `if` statements that guard execution
-* failure paths that implicitly signal inapplicability
-
-Optics let us separate the concerns:
-
-The traversal names the structural requirement for an operation.
-
-Validation names the domain rule for the extracted foci.
-
-The operation is written as a straight pipeline that runs only after both hold.
-
-This is not about replacing pattern matching. Pattern matching remains a strong tool. The difference is that the requirements for an operation can exist as values: named, reusable, testable, and composable.
+Pattern matching remains powerful. Traversals offer an alternative when the requirement needs to be first-class data.
