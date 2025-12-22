@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:funx, "0.4.0"}
+  {:funx, github: "JKWA/funx", ref: "9cc278a"}
 ])
 ```
 
@@ -230,7 +230,9 @@ end
 defmodule Charge do
   defstruct [:item, :payment]
 end
+```
 
+```elixir
 cc_transaction = %Transaction{
   item: %Item{name: "Camera", amount: 500},
   payment: %CreditCard{name: "Alice", number: "4111", amount: 500}
@@ -324,20 +326,23 @@ The traversal operates on one transaction at a time; list processing happens via
 Process multiple transactions and collect successes:
 
 ```elixir
-transactions = [
-  %Transaction{
-    item: %Item{name: "Camera", amount: 500},
-    payment: %CreditCard{name: "Alice", number: "4111", amount: 500}
-  },
-  %Transaction{
-    item: %Item{name: "Lens", amount: 300},
-    payment: %Check{name: "Bob", routing_number: "111000025", amount: 300}
-  },
-  %Transaction{
-    item: %Item{name: "Tripod", amount: 150},
-    payment: %CreditCard{name: "Carol", number: "4333", amount: 150}
-  }
-]
+cc_payment_1 = %Transaction{
+  item: %Item{name: "Camera", amount: 500},
+  payment: %CreditCard{name: "Alice", number: "4111", amount: 500}
+}
+
+check_payment = %Transaction{
+  item: %Item{name: "Lens", amount: 300},
+  payment: %Check{name: "Bob", routing_number: "111000025", amount: 300}
+}
+
+cc_payment_2 = %Transaction{
+  item: %Item{name: "Tripod", amount: 150},
+  payment: %CreditCard{name: "Carol", number: "4333", amount: 150}
+}
+
+transactions = [cc_payment_1, check_payment, cc_payment_2]
+cc_payment_transactions = [cc_payment_1, cc_payment_2]
 ```
 
 Extract amounts from all credit card transactions:
@@ -345,7 +350,6 @@ Extract amounts from all credit card transactions:
 ```elixir
 transactions
 |> Enum.map(&Traversal.to_list_maybe(&1, cc_amounts_trav))
-|> Maybe.compose()
 ```
 
 Or use `concat_map` to flatten:
@@ -353,6 +357,20 @@ Or use `concat_map` to flatten:
 ```elixir
 transactions
 |> Maybe.concat_map(&Traversal.to_list_maybe(&1, cc_amounts_trav))
+```
+
+Or use `traverse` to flip the logic. This returns `Nothing` if ANY transaction doesn't match (because `check_payment` fails the prism):
+
+```elixir
+transactions
+|> Maybe.traverse(&Traversal.to_list_maybe(&1, cc_amounts_trav))
+```
+
+But succeeds when all transactions are credit card payments, returning a homogeneous list:
+
+```elixir
+cc_payment_transactions
+|> Maybe.traverse(&Traversal.to_list_maybe(&1, cc_amounts_trav))
 ```
 
 ## Key Properties
@@ -370,22 +388,46 @@ transactions
 Elixir's pattern matching encodes requirements in syntax:
 
 ```elixir
-def process(%Transaction{
-      item: %Item{amount: item_amount},
-      payment: %CreditCard{amount: payment_amount}
-    })
-    when item_amount == payment_amount do
-  # process
+defmodule Pattern.Process do
+  def process(%Transaction{
+        item: %Item{amount: item_amount},
+        payment: %CreditCard{amount: payment_amount}
+      })
+      when item_amount == payment_amount do
+  end
 end
 ```
 
 Traversals encode the same requirement as data:
 
 ```elixir
-def process(transaction) do
-  maybe transaction do
-    bind Traversal.to_list_maybe(cc_amounts_trav)
-    guard ValidateAmounts
+defmodule Processor do
+  alias Funx.Optics.{Lens, Traversal}
+
+  def item_amount_lens do
+    Lens.path([:item, :amount])
+  end
+
+  def payment_amount_lens do
+    Lens.path([:payment, :amount])
+  end
+
+  def cc_amounts_trav do
+    Traversal.combine([
+      Processor.item_amount_lens,
+      Processor.payment_amount_lens
+    ])
+  end
+end
+```
+
+```elixir
+defmodule Traversal.Process do
+  def process(transaction) do
+    maybe transaction do
+      bind Traversal.to_list_maybe(Processor.cc_amounts_trav)
+      guard ValidateAmounts
+    end
   end
 end
 ```
