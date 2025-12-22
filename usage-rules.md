@@ -53,6 +53,12 @@ These rules provide guidance on how to effectively apply functional patterns in 
 - Funx.Monoid Usage Rules - **funx:monoid usage**
   Identity and associative combination, enabling folds, logs, and accumulation.
 
+- Funx.Optics.Prism Usage Rules - **funx:optics_prism usage**
+  Partial optic for focusing on branches—optional fields, sum types, and compositional partial access.
+
+- Funx.Optics.Traversal Usage Rules - **funx:optics_traversal usage**
+  Multi-focus optic for targeting multiple locations—enforcing co-presence and validating related foci.
+
 - Funx.Ord Usage Rules - **funx:ord usage**
   Context-aware ordering for sorting, ranking, and prioritization.
 
@@ -85,6 +91,8 @@ usage-rules/
   monad_reader.md             # ← Funx.Monad.Reader rules
   monad_writer.md             # ← Funx.Monad.Writer rules
   monoid.md                   # ← Funx.Monoid rules
+  optics_prism.md             # ← Funx.Optics.Prism rules
+  optics_traversal.md         # ← Funx.Optics.Traversal rules
   ord.md                      # ← Funx.Ord rules
   predicate.md                # ← Funx.Predicate rules
   utils.md                    # ← Funx.Utils rules
