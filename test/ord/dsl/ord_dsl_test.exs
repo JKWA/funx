@@ -1,0 +1,764 @@
+defmodule Funx.Ord.Dsl.OrdDslTest do
+  @moduledoc false
+
+  use ExUnit.Case, async: true
+  use Funx.Ord.Dsl
+
+  alias Funx.Optics.{Lens, Prism}
+  alias Funx.Ord.Utils
+
+  # ============================================================================
+  # Test Domain Structs
+  # ============================================================================
+
+  defmodule Person do
+    defstruct [:name, :age, :score, :address, :bio]
+  end
+
+  defmodule Address do
+    defstruct [:street, :city, :state, :zip]
+  end
+
+  # ============================================================================
+  # Protocol Implementations
+  # ============================================================================
+
+  defimpl Funx.Ord, for: Address do
+    def lt?(a, b), do: {a.state, a.city} < {b.state, b.city}
+    def le?(a, b), do: {a.state, a.city} <= {b.state, b.city}
+    def gt?(a, b), do: {a.state, a.city} > {b.state, b.city}
+    def ge?(a, b), do: {a.state, a.city} >= {b.state, b.city}
+  end
+
+  # ============================================================================
+  # Custom Behaviour Projections
+  # ============================================================================
+
+  defmodule NameLength do
+    @behaviour Funx.Ord.Dsl.Behaviour
+
+    @impl true
+    def project(person, _opts) do
+      String.length(person.name)
+    end
+  end
+
+  defmodule WeightedScore do
+    @behaviour Funx.Ord.Dsl.Behaviour
+
+    @impl true
+    def project(person, opts) do
+      weight = Keyword.get(opts, :weight, 1.0)
+      (person.score || 0) * weight
+    end
+  end
+
+  # ============================================================================
+  # Test Fixtures
+  # ============================================================================
+
+  defp fixture(:alice) do
+    %Person{name: "Alice", age: 30, score: 100, bio: "Software engineer"}
+  end
+
+  defp fixture(:bob) do
+    %Person{name: "Bob", age: 25, score: 50, bio: "Developer"}
+  end
+
+  defp fixture(:charlie) do
+    %Person{name: "Charlie", age: 30, score: nil, bio: "Designer"}
+  end
+
+  defp fixture(:alice_with_address) do
+    %Person{
+      name: "Alice",
+      age: 30,
+      address: %Address{city: "Austin", state: "TX", street: "Main St", zip: "78701"}
+    }
+  end
+
+  defp fixture(:bob_with_address) do
+    %Person{
+      name: "Bob",
+      age: 25,
+      address: %Address{city: "Boston", state: "MA", street: "Oak Ave", zip: "02101"}
+    }
+  end
+
+  defp fixture(:charlie_with_address) do
+    %Person{
+      name: "Charlie",
+      age: 35,
+      address: %Address{city: "Houston", state: "TX", street: "Pine Rd", zip: "77001"}
+    }
+  end
+
+  # ============================================================================
+  # Basic Atom Projection Tests
+  # ============================================================================
+
+  describe "basic atom projections" do
+    test "asc sorts in ascending order" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_name =
+        ord do
+          asc(:name)
+        end
+
+      assert Utils.compare(alice, bob, ord_name) == :lt
+      assert Utils.compare(bob, alice, ord_name) == :gt
+    end
+
+    test "desc sorts in descending order" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_name_desc =
+        ord do
+          desc(:name)
+        end
+
+      assert Utils.compare(alice, bob, ord_name_desc) == :gt
+      assert Utils.compare(bob, alice, ord_name_desc) == :lt
+    end
+
+    test "multiple fields use tie-breaking" do
+      alice_30 = %Person{name: "Alice", age: 30}
+      alice_25 = %Person{name: "Alice", age: 25}
+      bob_30 = %Person{name: "Bob", age: 30}
+
+      ord_name_then_age =
+        ord do
+          asc(:name)
+          asc(:age)
+        end
+
+      assert Utils.compare(alice_25, alice_30, ord_name_then_age) == :lt
+      assert Utils.compare(alice_30, bob_30, ord_name_then_age) == :lt
+    end
+
+    test "mixed asc and desc" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_desc_age_asc_name =
+        ord do
+          desc(:age)
+          asc(:name)
+        end
+
+      # Alice age=30 > Bob age=25, so Alice comes first (desc)
+      assert Utils.compare(alice, bob, ord_desc_age_asc_name) == :lt
+    end
+  end
+
+  # ============================================================================
+  # Atom with Default (Prism) Tests
+  # ============================================================================
+
+  describe "atom with default (Prism)" do
+    test "nil value uses default" do
+      with_score = %Person{name: "Alice", score: 100}
+      without_score = %Person{name: "Bob", score: nil}
+
+      ord_score =
+        ord do
+          asc(:score, default: 0)
+        end
+
+      assert Utils.compare(without_score, with_score, ord_score) == :lt
+    end
+
+    test "combines with other projections" do
+      alice_no_score = %Person{name: "Alice", age: 30, score: nil}
+      bob_with_score = %Person{name: "Bob", age: 25, score: 50}
+
+      ord_score_then_age =
+        ord do
+          asc(:score, default: 0)
+          desc(:age)
+        end
+
+      assert Utils.compare(alice_no_score, bob_with_score, ord_score_then_age) == :lt
+    end
+  end
+
+  # ============================================================================
+  # Function Projection Tests
+  # ============================================================================
+
+  describe "function projections" do
+    test "anonymous function with asc" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_bio_length =
+        ord do
+          asc(&String.length(&1.bio))
+        end
+
+      assert Utils.compare(bob, alice, ord_bio_length) == :lt
+    end
+
+    test "captured function" do
+      items = ["apple", "kiwi", "banana"]
+
+      ord_length =
+        ord do
+          asc(&String.length/1)
+        end
+
+      sorted = Enum.sort(items, Utils.comparator(ord_length))
+      assert sorted == ["kiwi", "apple", "banana"]
+    end
+
+    test "anonymous function with desc" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_bio_length_desc =
+        ord do
+          desc(&String.length(&1.bio))
+        end
+
+      assert Utils.compare(alice, bob, ord_bio_length_desc) == :lt
+    end
+  end
+
+  # ============================================================================
+  # Explicit Lens Projection Tests
+  # ============================================================================
+
+  describe "explicit Lens projections" do
+    test "Lens.key for simple fields" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_age =
+        ord do
+          asc(Lens.key(:age))
+        end
+
+      assert Utils.compare(bob, alice, ord_age) == :lt
+    end
+
+    test "Lens.path for nested fields" do
+      alice = fixture(:alice_with_address)
+      bob = fixture(:bob_with_address)
+
+      ord_city =
+        ord do
+          asc(Lens.path([:address, :city]))
+        end
+
+      assert Utils.compare(alice, bob, ord_city) == :lt
+    end
+  end
+
+  # ============================================================================
+  # Explicit Prism Projection Tests
+  # ============================================================================
+
+  describe "explicit Prism with default" do
+    test "Prism tuple with default value" do
+      alice = fixture(:alice)
+      charlie = fixture(:charlie)
+
+      ord_score =
+        ord do
+          asc({Prism.key(:score), 0})
+        end
+
+      assert Utils.compare(charlie, alice, ord_score) == :lt
+    end
+  end
+
+  # ============================================================================
+  # Bare Prism (Maybe.lift_ord) Tests
+  # ============================================================================
+
+  describe "bare Prism (Maybe.lift_ord)" do
+    test "Nothing sorts before Just with asc" do
+      alice = fixture(:alice)
+      charlie = fixture(:charlie)
+
+      ord_score =
+        ord do
+          asc(Prism.key(:score))
+        end
+
+      assert Utils.compare(charlie, alice, ord_score) == :lt
+    end
+
+    test "Nothing sorts after Just with desc" do
+      alice = fixture(:alice)
+      charlie = fixture(:charlie)
+
+      ord_score_desc =
+        ord do
+          desc(Prism.key(:score))
+        end
+
+      assert Utils.compare(alice, charlie, ord_score_desc) == :lt
+    end
+
+    test "two Nothing values compare as equal" do
+      charlie1 = %Person{name: "Alice", score: nil}
+      charlie2 = %Person{name: "Bob", score: nil}
+
+      ord_score =
+        ord do
+          asc(Prism.key(:score))
+        end
+
+      assert Utils.compare(charlie1, charlie2, ord_score) == :eq
+    end
+
+    test "bare Prism with nested path uses Maybe.lift_ord" do
+      person_with_nested = %Person{
+        name: "Alice",
+        address: %Address{city: "Austin", state: "TX"}
+      }
+
+      person_without_nested = %Person{name: "Bob", address: nil}
+
+      ord_state =
+        ord do
+          asc(Prism.path([{Person, :address}, {Address, :state}]))
+        end
+
+      # Nothing sorts before Just with asc
+      assert Utils.compare(person_without_nested, person_with_nested, ord_state) == :lt
+    end
+
+    test "multiple bare Prisms in sequence" do
+      p1 = %Person{name: "Alice", score: nil, age: 30}
+      p2 = %Person{name: "Bob", score: 100, age: 25}
+      p3 = %Person{name: "Charlie", score: nil, age: 35}
+
+      ord_multi_prism =
+        ord do
+          asc(Prism.key(:score))
+          asc(:age)
+        end
+
+      # Both p1 and p3 have Nothing for score, so they tie on first projection
+      # Then compare by age: p1.age=30 < p3.age=35
+      assert Utils.compare(p1, p3, ord_multi_prism) == :lt
+
+      # p1 has Nothing, p2 has Just, so Nothing < Just
+      assert Utils.compare(p1, p2, ord_multi_prism) == :lt
+    end
+  end
+
+  # ============================================================================
+  # Behaviour Module Projection Tests
+  # ============================================================================
+
+  describe "behaviour module projections" do
+    test "simple behaviour without options" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_name_length =
+        ord do
+          asc(NameLength)
+        end
+
+      assert Utils.compare(alice, bob, ord_name_length) == :gt
+    end
+
+    test "behaviour with options in asc" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_weighted =
+        ord do
+          asc(WeightedScore, weight: 2.0)
+        end
+
+      assert Utils.compare(bob, alice, ord_weighted) == :lt
+      assert Utils.compare(alice, bob, ord_weighted) == :gt
+    end
+
+    test "behaviour with options in desc" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_weighted_desc =
+        ord do
+          desc(WeightedScore, weight: 2.0)
+        end
+
+      assert Utils.compare(alice, bob, ord_weighted_desc) == :lt
+      assert Utils.compare(bob, alice, ord_weighted_desc) == :gt
+    end
+
+    test "behaviour combined with other projections" do
+      alice = %Person{name: "Alice", age: 30, score: 100}
+      bob = %Person{name: "Bob", age: 25, score: 100}
+
+      ord_combined =
+        ord do
+          desc(WeightedScore, weight: 1.5)
+          asc(NameLength)
+        end
+
+      assert Utils.compare(alice, bob, ord_combined) == :gt
+    end
+  end
+
+  # ============================================================================
+  # Protocol Dispatch Tests
+  # ============================================================================
+
+  describe "protocol dispatch" do
+    test "uses custom Ord protocol implementation" do
+      alice = fixture(:alice_with_address)
+      bob = fixture(:bob_with_address)
+      charlie = fixture(:charlie_with_address)
+
+      ord_by_address =
+        ord do
+          asc(:address)
+        end
+
+      assert Utils.compare(bob, alice, ord_by_address) == :lt
+      assert Utils.compare(alice, charlie, ord_by_address) == :lt
+    end
+  end
+
+  # ============================================================================
+  # Complex Composition Tests
+  # ============================================================================
+
+  describe "complex compositions" do
+    test "multi-field sorting with tie-breaking" do
+      people = [
+        %Person{name: "Charlie", age: 30, score: nil},
+        %Person{name: "Alice", age: 25, score: 100},
+        %Person{name: "Bob", age: 30, score: 50},
+        %Person{name: "Alice", age: 30, score: 100}
+      ]
+
+      ord_person =
+        ord do
+          asc(:name)
+          desc(:age)
+          asc(:score, default: 0)
+        end
+
+      sorted = Enum.sort(people, Utils.comparator(ord_person))
+
+      assert sorted == [
+               %Person{name: "Alice", age: 30, score: 100},
+               %Person{name: "Alice", age: 25, score: 100},
+               %Person{name: "Bob", age: 30, score: 50},
+               %Person{name: "Charlie", age: 30, score: nil}
+             ]
+    end
+
+    test "combining all projection types" do
+      alice = %Person{
+        name: "Alice",
+        age: 30,
+        score: 100,
+        bio: "Software engineer",
+        address: %Address{city: "Austin", state: "TX"}
+      }
+
+      bob = %Person{
+        name: "Bob",
+        age: 30,
+        score: nil,
+        bio: "Developer at big corp",
+        address: %Address{city: "Austin", state: "TX"}
+      }
+
+      ord_complex =
+        ord do
+          asc(Lens.path([:address, :state]))
+          desc(:age)
+          asc(Prism.key(:score))
+          desc(&String.length(&1.bio))
+          asc(NameLength)
+        end
+
+      assert Utils.compare(bob, alice, ord_complex) == :lt
+    end
+
+    test "bare Prism sorting with Nothing values" do
+      items = [
+        %Person{name: "Alice", score: 100},
+        %Person{name: "Bob", score: nil},
+        %Person{name: "Charlie", score: 50},
+        %Person{name: "Diana", score: nil}
+      ]
+
+      ord_score_then_name =
+        ord do
+          asc(Prism.key(:score))
+          asc(:name)
+        end
+
+      sorted = Enum.sort(items, Utils.comparator(ord_score_then_name))
+
+      assert [
+               %Person{name: "Bob"},
+               %Person{name: "Diana"},
+               %Person{name: "Charlie"},
+               %Person{name: "Alice"}
+             ] = sorted
+    end
+  end
+
+  # ============================================================================
+  # Compile-Time Error Tests
+  # ============================================================================
+
+  describe "compile-time errors" do
+    test "rejects invalid projection type" do
+      assert_raise CompileError, ~r/Invalid projection/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+
+            ord do
+              asc(%{invalid: :struct})
+            end
+          end
+        )
+      end
+    end
+
+    test "rejects module without Behaviour implementation" do
+      defmodule NotABehaviour do
+        def some_function, do: :ok
+      end
+
+      assert_raise CompileError, ~r/must implement Funx\.Ord\.Dsl\.Behaviour/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+
+            ord do
+              asc(NotABehaviour)
+            end
+          end
+        )
+      end
+    end
+
+    test "rejects ambiguous bare Prism with default option" do
+      assert_raise CompileError, ~r/Use either bare Prism OR.*tuple/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+            alias Funx.Optics.Prism
+
+            ord do
+              asc(Prism.key(:score), default: 0)
+            end
+          end
+        )
+      end
+    end
+
+    test "rejects default with function projection" do
+      assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+
+            ord do
+              asc(&String.length/1, default: 0)
+            end
+          end
+        )
+      end
+    end
+
+    test "rejects default with Lens projection" do
+      assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+            alias Funx.Optics.Lens
+
+            ord do
+              asc(Lens.key(:name), default: "Unknown")
+            end
+          end
+        )
+      end
+    end
+
+    test "rejects default with behaviour module" do
+      assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+
+            ord do
+              asc(NameLength, default: 0)
+            end
+          end
+        )
+      end
+    end
+  end
+
+  # ============================================================================
+  # Runtime Error Tests
+  # ============================================================================
+
+  describe "runtime errors" do
+    test "Lens.path raises BadMapError when intermediate value is nil" do
+      person_with_address = fixture(:alice_with_address)
+      person_without_address = %Person{name: "Bob", address: nil}
+
+      ord_city =
+        ord do
+          asc(Lens.path([:address, :city]))
+        end
+
+      assert_raise BadMapError, fn ->
+        Utils.compare(person_with_address, person_without_address, ord_city)
+      end
+    end
+
+    test "Lens.path raises BadMapError when intermediate field is nil" do
+      person_with_address = fixture(:alice_with_address)
+      person_without_address = %Person{name: "Bob"}
+
+      ord_city =
+        ord do
+          asc(Lens.path([:address, :city]))
+        end
+
+      assert_raise BadMapError, fn ->
+        Utils.compare(person_with_address, person_without_address, ord_city)
+      end
+    end
+
+    test "function projection raises when function fails on nil" do
+      person1 = %Person{name: "Alice", bio: nil}
+      person2 = %Person{name: "Bob", bio: "Developer"}
+
+      ord_bio_length =
+        ord do
+          asc(&String.length(&1.bio))
+        end
+
+      assert_raise FunctionClauseError, fn ->
+        Utils.compare(person1, person2, ord_bio_length)
+      end
+    end
+
+    test "custom Ord implementation raises on invalid values" do
+      person_with_address = fixture(:alice_with_address)
+      person_with_nil_address = %Person{name: "Bob", address: nil}
+
+      ord_by_address =
+        ord do
+          asc(:address)
+        end
+
+      assert_raise KeyError, fn ->
+        Utils.compare(person_with_address, person_with_nil_address, ord_by_address)
+      end
+    end
+  end
+
+  # ============================================================================
+  # Edge Case Tests
+  # ============================================================================
+
+  describe "edge cases" do
+    test "empty ord block returns identity ordering" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_empty =
+        ord do
+        end
+
+      assert Utils.compare(alice, bob, ord_empty) == :eq
+      assert Utils.compare(bob, alice, ord_empty) == :eq
+      assert Utils.compare(alice, alice, ord_empty) == :eq
+    end
+
+    test "equal values on projection field return :eq" do
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 25}
+
+      ord_name =
+        ord do
+          asc(:name)
+        end
+
+      assert Utils.compare(alice1, alice2, ord_name) == :eq
+    end
+
+    test "first projection has priority in tie-breaking" do
+      people = [
+        %Person{name: "Bob", age: 30},
+        %Person{name: "Alice", age: 25},
+        %Person{name: "Alice", age: 30},
+        %Person{name: "Bob", age: 25}
+      ]
+
+      ord_name_then_age =
+        ord do
+          asc(:name)
+          asc(:age)
+        end
+
+      sorted = Enum.sort(people, Utils.comparator(ord_name_then_age))
+
+      assert [
+               %Person{name: "Alice", age: 25},
+               %Person{name: "Alice", age: 30},
+               %Person{name: "Bob", age: 25},
+               %Person{name: "Bob", age: 30}
+             ] = sorted
+    end
+  end
+
+  # ============================================================================
+  # Ergonomics Comparison Tests
+  # ============================================================================
+
+  describe "ergonomics comparison" do
+    test "simple case shows improved readability" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_person =
+        ord do
+          asc(:name)
+          desc(:age)
+        end
+
+      assert Utils.compare(alice, bob, ord_person) == :lt
+    end
+
+    test "complex case demonstrates DSL benefits" do
+      alice = %Person{name: "Alice", age: 30, score: 100, bio: "Engineer"}
+      bob = %Person{name: "Bob", age: 25, score: nil, bio: "Developer"}
+
+      ord_person =
+        ord do
+          asc(:name)
+          desc(:age)
+          asc(:score, default: 0)
+          asc(&String.length(&1.bio))
+        end
+
+      sorted = Enum.sort([bob, alice], Utils.comparator(ord_person))
+      assert [%Person{name: "Alice"}, %Person{name: "Bob"}] = sorted
+    end
+  end
+end

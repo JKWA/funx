@@ -1,0 +1,422 @@
+# Ord DSL - Interactive Examples
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", ref: "9cc278a"}
+])
+```
+
+## Setup
+
+```elixir
+use Funx.Ord.Dsl
+
+alias Funx.Monad.Maybe
+alias Funx.Optics.{Lens, Prism}
+alias Funx.Ord.Utils
+```
+
+## Domain Models
+
+Let's define some domain models to work with:
+
+```elixir
+defmodule Person do
+  defstruct [:name, :age, :score, :email, :bio]
+end
+
+defmodule Address do
+  defstruct [:street, :city, :state, :zip]
+end
+
+defmodule Employee do
+  defstruct [:name, :department, :salary, :start_date]
+end
+```
+
+## Basic Sorting
+
+### Single Field - Ascending
+
+```elixir
+people = [
+  %Person{name: "Charlie", age: 30},
+  %Person{name: "Alice", age: 25},
+  %Person{name: "Bob", age: 35}
+]
+
+ord_by_name =
+  ord do
+    asc(:name)
+  end
+
+Enum.sort(people, Utils.comparator(ord_by_name))
+```
+
+### Single Field - Descending
+
+```elixir
+ord_by_age_desc =
+  ord do
+    desc(:age)
+  end
+
+Enum.sort(people, Utils.comparator(ord_by_age_desc))
+```
+
+### Multi-Field with Tie-Breaking
+
+```elixir
+people_complex = [
+  %Person{name: "Alice", age: 30, score: 100},
+  %Person{name: "Alice", age: 25, score: 90},
+  %Person{name: "Bob", age: 30, score: 85},
+  %Person{name: "Charlie", age: 30, score: 95}
+]
+
+ord_name_then_age =
+  ord do
+    asc(:name)
+    desc(:age)
+  end
+
+Enum.sort(people_complex, Utils.comparator(ord_name_then_age))
+```
+
+## Optional Fields with Defaults
+
+Handle nil values gracefully using the `default:` option:
+
+```elixir
+people_with_scores = [
+  %Person{name: "Alice", score: 100},
+  %Person{name: "Bob", score: nil},
+  %Person{name: "Charlie", score: 50},
+  %Person{name: "Diana", score: nil}
+]
+
+ord_score_with_default =
+  ord do
+    asc(:score, default: 0)
+    asc(:name)
+  end
+
+Enum.sort(people_with_scores, Utils.comparator(ord_score_with_default))
+```
+
+## Function Projections
+
+### Anonymous Functions
+
+```elixir
+people_with_bios = [
+  %Person{name: "Alice", bio: "Software engineer with 10 years experience"},
+  %Person{name: "Bob", bio: "Developer"},
+  %Person{name: "Charlie", bio: "Senior architect"}
+]
+
+ord_by_bio_length =
+  ord do
+    asc(&String.length(&1.bio))
+  end
+
+Enum.sort(people_with_bios, Utils.comparator(ord_by_bio_length))
+```
+
+### Captured Functions
+
+```elixir
+words = ["elephant", "cat", "dog", "butterfly"]
+
+ord_by_length =
+  ord do
+    asc(&String.length/1)
+    asc(&(&1))
+  end
+
+Enum.sort(words, Utils.comparator(ord_by_length))
+```
+
+### Complex Transformations
+
+```elixir
+ord_by_name_length =
+  ord do
+    desc(&String.length(&1.name))
+    asc(:name)
+  end
+
+Enum.sort(people, Utils.comparator(ord_by_name_length))
+```
+
+## Bare Prisms with Maybe.lift_ord
+
+Bare Prisms return `Maybe` values. With `Maybe.lift_ord`, `Nothing` sorts before `Just`:
+
+```elixir
+people_optional = [
+  %Person{name: "Alice", score: 100},
+  %Person{name: "Bob", score: nil},
+  %Person{name: "Charlie", score: 50},
+  %Person{name: "Diana", score: nil}
+]
+
+ord_bare_prism =
+  ord do
+    asc(Prism.key(:score))
+    asc(:name)
+  end
+
+result = Enum.sort(people_optional, Utils.comparator(ord_bare_prism))
+
+IO.puts("With bare Prism (Nothing < Just):")
+Enum.each(result, fn p -> IO.puts("  #{p.name}: #{inspect(p.score)}") end)
+
+result
+```
+
+Compare with default behavior:
+
+```elixir
+ord_with_default =
+  ord do
+    asc(:score, default: 0)
+    asc(:name)
+  end
+
+result_default = Enum.sort(people_optional, Utils.comparator(ord_with_default))
+
+IO.puts("\nWith default value:")
+Enum.each(result_default, fn p -> IO.puts("  #{p.name}: #{inspect(p.score)}") end)
+
+result_default
+```
+
+## Nested Data with Lenses
+
+```elixir
+defmodule PersonWithAddress do
+  defstruct [:name, :address]
+end
+
+people_with_addresses = [
+  %PersonWithAddress{
+    name: "Alice",
+    address: %Address{city: "Austin", state: "TX", zip: "78701"}
+  },
+  %PersonWithAddress{
+    name: "Bob",
+    address: %Address{city: "Boston", state: "MA", zip: "02101"}
+  },
+  %PersonWithAddress{
+    name: "Charlie",
+    address: %Address{city: "Chicago", state: "IL", zip: "60601"}
+  }
+]
+
+ord_by_city =
+  ord do
+    asc(Lens.path([:address, :city]))
+  end
+
+Enum.sort(people_with_addresses, Utils.comparator(ord_by_city))
+```
+
+### Sort by State, then City
+
+```elixir
+ord_state_city =
+  ord do
+    asc(Lens.path([:address, :state]))
+    asc(Lens.path([:address, :city]))
+  end
+
+Enum.sort(people_with_addresses, Utils.comparator(ord_state_city))
+```
+
+## Custom Ord Protocol
+
+Define custom ordering logic for your types:
+
+```elixir
+defimpl Funx.Ord, for: Address do
+  # Sort by state, then city
+  def lt?(a, b), do: {a.state, a.city} < {b.state, b.city}
+  def le?(a, b), do: {a.state, a.city} <= {b.state, b.city}
+  def gt?(a, b), do: {a.state, a.city} > {b.state, b.city}
+  def ge?(a, b), do: {a.state, a.city} >= {b.state, b.city}
+end
+
+ord_by_address =
+  ord do
+    asc(:address)
+  end
+
+Enum.sort(people_with_addresses, Utils.comparator(ord_by_address))
+```
+
+## Custom Behaviour Projections
+
+Create reusable projection logic:
+
+```elixir
+defmodule NameLength do
+  @behaviour Funx.Ord.Dsl.Behaviour
+
+  @impl true
+  def project(person, _opts) do
+    String.length(person.name)
+  end
+end
+
+ord_name_length =
+  ord do
+    asc(NameLength)
+  end
+
+Enum.sort(people, Utils.comparator(ord_name_length))
+```
+
+### Behaviour with Options
+
+```elixir
+defmodule WeightedScore do
+  @behaviour Funx.Ord.Dsl.Behaviour
+
+  @impl true
+  def project(person, opts) do
+    weight = Keyword.get(opts, :weight, 1.0)
+    (person.score || 0) * weight
+  end
+end
+
+people_for_weighted = [
+  %Person{name: "Alice", score: 100},
+  %Person{name: "Bob", score: 50},
+  %Person{name: "Charlie", score: 75}
+]
+
+ord_weighted =
+  ord do
+    desc(WeightedScore, weight: 2.0)
+    asc(:name)
+  end
+
+Enum.sort(people_for_weighted, Utils.comparator(ord_weighted))
+```
+
+## Complex Real-World Example
+
+Employee sorting with multiple criteria:
+
+```elixir
+employees = [
+  %Employee{name: "Alice", department: "Engineering", salary: 120000, start_date: ~D[2020-01-15]},
+  %Employee{name: "Bob", department: "Engineering", salary: 110000, start_date: ~D[2021-03-20]},
+  %Employee{name: "Charlie", department: "Sales", salary: 95000, start_date: ~D[2019-06-01]},
+  %Employee{name: "Diana", department: "Engineering", salary: 125000, start_date: ~D[2018-09-10]},
+  %Employee{name: "Eve", department: "Sales", salary: 105000, start_date: ~D[2020-11-05]}
+]
+
+ord_employees =
+  ord do
+    asc(:department)
+    desc(:salary)
+    asc(:start_date)
+  end
+
+sorted_employees = Enum.sort(employees, Utils.comparator(ord_employees))
+
+IO.puts("Employees by Department, Salary (desc), Start Date:")
+Enum.each(sorted_employees, fn emp ->
+  IO.puts(
+    "  #{emp.name} - #{emp.department} - $#{emp.salary} - Started: #{emp.start_date}"
+  )
+end)
+
+sorted_employees
+```
+
+## Playground
+
+Try your own examples here!
+
+```elixir
+# Define your data
+my_people = [
+  %Person{name: "Zara", age: 28, score: 85},
+  %Person{name: "Alex", age: 32, score: 90},
+  %Person{name: "Morgan", age: 28, score: nil}
+]
+
+# Define your ordering
+my_ord =
+  ord do
+    # Try different combinations!
+    asc(:age)
+    desc(:score, default: 0)
+    asc(:name)
+  end
+
+Enum.sort(my_people, Utils.comparator(my_ord))
+```
+
+## Performance Note
+
+The Ord DSL compiles to efficient code at compile-time. Here's what gets generated:
+
+```elixir
+# This DSL code:
+ord do
+  asc(:name)
+  desc(:age)
+end
+
+# Compiles to (approximately):
+# Utils.concat([
+#   Utils.contramap(fn x -> Lens.view!(x, Lens.key(:name)) end, Funx.Ord),
+#   Utils.reverse(Utils.contramap(fn x -> Lens.view!(x, Lens.key(:age)) end, Funx.Ord))
+# ])
+```
+
+No runtime overhead from the DSL itself!
+
+## Comparison Functions
+
+```elixir
+alice = %Person{name: "Alice", age: 30}
+bob = %Person{name: "Bob", age: 25}
+
+ord = ord(do: asc(:age))
+
+Utils.compare(alice, bob, ord)
+```
+
+```elixir
+Utils.min(alice, bob, ord)
+```
+
+```elixir
+Utils.max(alice, bob, ord)
+```
+
+## Finding Min/Max in Lists
+
+```elixir
+ord_by_score = ord(do: desc(:score, default: 0))
+
+people_scores = [
+  %Person{name: "Alice", score: 85},
+  %Person{name: "Bob", score: 92},
+  %Person{name: "Charlie", score: 78},
+  %Person{name: "Diana", score: 95}
+]
+
+# Highest score (max with desc ordering)
+Utils.max_by(people_scores, ord_by_score)
+```
+
+```elixir
+# Lowest score (min with desc ordering)
+Utils.min_by(people_scores, ord_by_score)
+```
