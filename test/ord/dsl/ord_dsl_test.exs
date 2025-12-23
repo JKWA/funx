@@ -326,6 +326,18 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       assert Utils.compare(alice, bob, ord_by_name_length) == :gt
     end
 
+    test "anonymous function projection" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_by_name_length =
+        ord do
+          asc fn person -> String.length(person.name) end
+        end
+
+      assert Utils.compare(alice, bob, ord_by_name_length) == :gt
+    end
+
     test "combining helper functions with inline syntax" do
       people = [
         %Person{name: "Charlie", age: 30, score: nil},
@@ -709,7 +721,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       end
     end
 
-    test "rejects default with Lens projection" do
+    test "rejects default with Lens.key projection" do
       assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
         Code.eval_quoted(
           quote do
@@ -724,6 +736,21 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       end
     end
 
+    test "rejects default with Lens.path projection" do
+      assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+            alias Funx.Optics.Lens
+
+            ord do
+              asc Lens.path([:address, :city]), default: "Unknown"
+            end
+          end
+        )
+      end
+    end
+
     test "rejects default with behaviour module" do
       assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
         Code.eval_quoted(
@@ -732,6 +759,49 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
             ord do
               asc NameLength, default: 0
+            end
+          end
+        )
+      end
+    end
+
+    test "rejects default with anonymous function" do
+      assert_raise CompileError, ~r/cannot be used with anonymous functions/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+
+            ord do
+              asc fn x -> x.name end, default: "Unknown"
+            end
+          end
+        )
+      end
+    end
+
+    test "rejects redundant default with tuple syntax" do
+      assert_raise CompileError, ~r/already contains a default value/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+            alias Funx.Optics.Prism
+
+            ord do
+              asc {Prism.key(:score), 0}, default: 10
+            end
+          end
+        )
+      end
+    end
+
+    test "rejects invalid DSL syntax" do
+      assert_raise CompileError, ~r/Invalid Ord DSL syntax/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+
+            ord do
+              sort_by(:name)
             end
           end
         )

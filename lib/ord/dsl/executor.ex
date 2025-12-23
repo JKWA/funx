@@ -1,8 +1,20 @@
 defmodule Funx.Ord.Dsl.Executor do
   @moduledoc false
   # Compile-time executor for Ord DSL - converts steps to quoted AST
+  #
+  # ## Single-Path Execution
+  #
+  # This executor has ZERO branching on projection type. It follows a single path:
+  #
+  #   1. Take normalized Steps (parser already resolved all syntax)
+  #   2. Wrap each in `Utils.contramap(projection, ord)`
+  #   3. Optionally wrap in `Utils.reverse(...)` for `:desc`
+  #   4. Combine with `Utils.concat([...])`
+  #
+  # All projection-type-specific logic lives in contramap/2.
+  # This module just orchestrates the composition.
 
-  alias Funx.Monoid.Ord, as: OrdStruct
+  alias Funx.Monoid.Ord
   alias Funx.Ord.Dsl.Step
   alias Funx.Ord.Utils
 
@@ -11,6 +23,14 @@ defmodule Funx.Ord.Dsl.Executor do
 
   Unlike Maybe DSL's runtime executor, this runs at compile time and returns
   quoted AST that will be compiled into the calling module.
+
+  ## Execution Model
+
+  Each Step is converted to:
+  - `:asc` → `contramap(projection, ord)`
+  - `:desc` → `reverse(contramap(projection, ord))`
+
+  Multiple steps are combined with `concat([...])` (monoid append).
   """
   @spec execute_steps(list(Step.t())) :: Macro.t()
   def execute_steps([]), do: empty_ord_ast()
@@ -20,9 +40,8 @@ defmodule Funx.Ord.Dsl.Executor do
   # AST BUILDING
   # ============================================================================
 
-  # Build concat([contramap(...), contramap(...), ...])
   defp build_concat_ast([single_step]) do
-    # For a single step, don't use concat - just return the ord directly
+    # Optimization: skip concat wrapper for single step
     step_to_ord_ast(single_step)
   end
 
@@ -34,7 +53,6 @@ defmodule Funx.Ord.Dsl.Executor do
     end
   end
 
-  # Convert a single step to its Ord AST
   defp step_to_ord_ast(%Step{direction: direction, projection: projection_ast, ord: ord_ast}) do
     base_ord_ast = build_contramap_ast(projection_ast, ord_ast)
 
@@ -44,25 +62,22 @@ defmodule Funx.Ord.Dsl.Executor do
     end
   end
 
-  # Build contramap(projection_ast, ord_ast)
-  # Note: contramap handles all projection types (functions, Lens, Prism, {Prism, default})
   defp build_contramap_ast(projection_ast, ord_ast) do
     quote do
       Utils.contramap(unquote(projection_ast), unquote(ord_ast))
     end
   end
 
-  # Build reverse(ord_ast)
   defp build_reverse_ast(ord_ast) do
     quote do
       Utils.reverse(unquote(ord_ast))
     end
   end
 
-  # Empty ord (identity ordering - always returns :eq)
+  # Monoid identity: everything compares equal
   defp empty_ord_ast do
     quote do
-      %OrdStruct{}
+      %Ord{}
     end
   end
 end

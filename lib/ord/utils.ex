@@ -24,12 +24,18 @@ defmodule Funx.Ord.Utils do
   @doc """
   Transforms an ordering by applying a projection before comparison.
 
-  The `projection` must be one of:
+  ## Canonical Normalization Layer
 
-    * a function `(a -> b)` - Applied directly to extract the comparison value
-    * a `Lens` - Uses `view!/2` to extract the focused value (raises on missing)
-    * a `Prism` - Uses `preview/2`, returns `Maybe`, with `Nothing < Just(_)` ordering
-    * a tuple `{Prism, default}` - Uses `preview/2`, falling back to `default` on `Nothing`
+  This function defines the **single normalization point** for all projections
+  in the Ord DSL. Every projection type resolves to one of these four forms:
+
+    * `Lens.t()` - Uses `view!/2` to extract the focused value (raises on missing)
+    * `Prism.t()` - Uses `preview/2`, returns `Maybe`, with `Nothing < Just(_)` ordering
+    * `{Prism.t(), default}` - Uses `preview/2`, falling back to `default` on `Nothing`
+    * `(a -> b)` - Projection function applied directly
+
+  All DSL syntax sugar (atoms, helpers, etc.) normalizes to these types in the parser.
+  This function is the **only place** that converts optics to executable functions.
 
   The `ord` parameter may be an `Ord` module or a custom comparator map
   with `:lt?`, `:le?`, `:gt?`, and `:ge?` functions. The projection is applied

@@ -1,10 +1,33 @@
 defmodule Funx.Ord.Dsl.Parser do
   @moduledoc false
   # Internal parser for Ord DSL - converts keyword list AST into Step structs
+  #
+  # ## Normalization Contract
+  #
+  # This parser normalizes all projection syntax into one of four canonical types
+  # that contramap/2 accepts:
+  #
+  #   1. Lens.t()              - bare Lens struct
+  #   2. Prism.t()             - bare Prism struct (uses Maybe.lift_ord)
+  #   3. {Prism.t(), default}  - Prism with default value
+  #   4. (a -> b)              - projection function
+  #
+  # All syntax sugar resolves to these types:
+  #
+  #   - :atom              → Lens.key(:atom)
+  #   - :atom, default: x  → {Prism.key(:atom), x}
+  #   - Lens.key(...)      → Lens.key(...) (pass through)
+  #   - Prism.key(...)     → Prism.key(...) (pass through)
+  #   - {Prism, x}         → {Prism, x} (pass through)
+  #   - fn -> ... end      → fn -> ... end (pass through)
+  #   - Behaviour          → fn v -> Behaviour.project(v, []) end
+  #
+  # contramap/2 is the ONLY place that converts optics to functions.
+  # The parser never creates function wrappers around optics.
 
-  alias Funx.Monad.Maybe
   alias Funx.Optics.Lens
   alias Funx.Optics.Prism
+  alias Funx.Ord.Dsl.Errors
   alias Funx.Ord.Dsl.Step
 
   # ============================================================================
@@ -45,9 +68,7 @@ defmodule Funx.Ord.Dsl.Parser do
   end
 
   defp parse_entry_to_step(other, _caller_env) do
-    raise CompileError,
-      description:
-        "Invalid Ord DSL syntax. Expected `asc projection` or `desc projection`, got: #{inspect(other)}"
+    raise CompileError, description: Errors.invalid_dsl_syntax(other)
   end
 
   # ============================================================================
@@ -69,36 +90,26 @@ defmodule Funx.Ord.Dsl.Parser do
   # PROJECTION AST BUILDING
   # ============================================================================
 
-  # Atom without default -> Lens.key(atom)
   defp build_projection_ast(atom, nil, _meta, _caller_env) when is_atom(atom) do
     quote do
-      fn value ->
-        Lens.view!(value, Lens.key(unquote(atom)))
-      end
+      Lens.key(unquote(atom))
     end
   end
 
-  # Atom with default -> {Prism.key(atom), default}
   defp build_projection_ast(atom, default, _meta, _caller_env)
        when is_atom(atom) and not is_nil(default) do
     quote do
-      fn value ->
-        value
-        |> Prism.preview(Prism.key(unquote(atom)))
-        |> Maybe.get_or_else(unquote(default))
-      end
+      {Prism.key(unquote(atom)), unquote(default)}
     end
   end
 
-  # Function (captured or anonymous)
   defp build_projection_ast({:&, _, _} = fun_ast, default, meta, _caller_env) do
     if is_nil(default) do
       fun_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description:
-          "The `default:` option cannot be used with captured functions. Use a 0-arity helper function or inline Prism syntax instead."
+        description: Errors.default_with_captured_function()
     end
   end
 
@@ -108,12 +119,10 @@ defmodule Funx.Ord.Dsl.Parser do
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description:
-          "The `default:` option cannot be used with anonymous functions. Use a 0-arity helper function or inline Prism syntax instead."
+        description: Errors.default_with_anonymous_function()
     end
   end
 
-  # Remote function call (Module.function or Module.function())
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, _}, _]}, _, args} = fun_ast,
          default,
@@ -124,15 +133,13 @@ defmodule Funx.Ord.Dsl.Parser do
     if is_nil(default) do
       fun_ast
     else
-      # Wrap in tuple for Prism with default
-      # If the function returns a Lens, contramap will error at runtime
+      # Runtime: if helper returns Lens, contramap will raise
       quote do
         {unquote(fun_ast), unquote(default)}
       end
     end
   end
 
-  # Explicit Lens struct (Lens.key(...) syntax)
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Lens]}, :key]}, _, _} = lens_ast,
          default,
@@ -140,13 +147,11 @@ defmodule Funx.Ord.Dsl.Parser do
          _caller_env
        ) do
     if is_nil(default) do
-      # Pass Lens struct directly to contramap (it handles view!)
       lens_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description:
-          "The `default:` option is only valid with atom or explicit Prism projections, not with Lens."
+        description: Errors.default_with_lens()
     end
   end
 
@@ -157,17 +162,14 @@ defmodule Funx.Ord.Dsl.Parser do
          _caller_env
        ) do
     if is_nil(default) do
-      # Pass Lens struct directly to contramap (it handles view!)
       lens_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description:
-          "The `default:` option is only valid with atom or explicit Prism projections, not with Lens."
+        description: Errors.default_with_lens()
     end
   end
 
-  # Explicit Prism - bare or with default option
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Prism]}, _]}, _, _} = prism_ast,
          default,
@@ -175,10 +177,8 @@ defmodule Funx.Ord.Dsl.Parser do
          _caller_env
        ) do
     if is_nil(default) do
-      # Bare Prism -> pass struct directly to contramap (it handles Maybe.lift_ord)
       prism_ast
     else
-      # Prism with default -> wrap in tuple
       quote do
         {unquote(prism_ast), unquote(default)}
       end
@@ -186,30 +186,20 @@ defmodule Funx.Ord.Dsl.Parser do
   end
 
   defp build_projection_ast({prism_ast, default_ast}, nil, _meta, _caller_env) do
-    # {Prism.key(:foo), default} tuple
     quote do
-      fn value ->
-        value
-        |> Prism.preview(unquote(prism_ast))
-        |> Maybe.get_or_else(unquote(default_ast))
-      end
+      {unquote(prism_ast), unquote(default_ast)}
     end
   end
 
   defp build_projection_ast({_prism_ast, _default_ast}, _extra_default, meta, _caller_env) do
     raise CompileError,
       line: Keyword.get(meta, :line),
-      description:
-        "Invalid usage. {Prism, default} tuple already contains a default value. Do not use `default:` option."
+      description: Errors.redundant_default()
   end
 
-  # Module (Behaviour implementation)
   defp build_projection_ast({:__aliases__, _, _} = module_alias, default, meta, caller_env) do
     if is_nil(default) do
-      # Expand module alias
       expanded_module = Macro.expand(module_alias, caller_env)
-
-      # Validate that module implements Behaviour
       validate_behaviour_implementation!(expanded_module, meta)
 
       quote do
@@ -218,17 +208,14 @@ defmodule Funx.Ord.Dsl.Parser do
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description:
-          "The `default:` option is only valid with atom or explicit Prism projections, not with Behaviour modules."
+        description: Errors.default_with_behaviour()
     end
   end
 
-  # Unknown projection type
   defp build_projection_ast(other, _default, meta, _caller_env) do
     raise CompileError,
       line: Keyword.get(meta, :line),
-      description:
-        "Invalid projection. Expected atom, function, Lens, Prism, or Behaviour module, got: #{inspect(other)}"
+      description: Errors.invalid_projection_type(other)
   end
 
   # ============================================================================
@@ -236,16 +223,13 @@ defmodule Funx.Ord.Dsl.Parser do
   # ============================================================================
 
   defp validate_behaviour_implementation!(module, meta) do
-    # Ensure module is compiled
     Code.ensure_compiled!(module)
-
-    # Check if module implements Behaviour
     behaviours = module.module_info(:attributes)[:behaviour] || []
 
     unless Funx.Ord.Dsl.Behaviour in behaviours do
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description: "Module #{inspect(module)} must implement Funx.Ord.Dsl.Behaviour"
+        description: Errors.missing_behaviour_implementation(module)
     end
 
     :ok
