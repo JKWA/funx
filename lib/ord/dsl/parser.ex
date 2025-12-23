@@ -98,7 +98,7 @@ defmodule Funx.Ord.Dsl.Parser do
       raise CompileError,
         line: Keyword.get(meta, :line),
         description:
-          "The `default:` option is only valid with atom or explicit Prism projections, not with functions."
+          "The `default:` option cannot be used with captured functions. Use a 0-arity helper function or inline Prism syntax instead."
     end
   end
 
@@ -109,7 +109,7 @@ defmodule Funx.Ord.Dsl.Parser do
       raise CompileError,
         line: Keyword.get(meta, :line),
         description:
-          "The `default:` option is only valid with atom or explicit Prism projections, not with functions."
+          "The `default:` option cannot be used with anonymous functions. Use a 0-arity helper function or inline Prism syntax instead."
     end
   end
 
@@ -117,17 +117,18 @@ defmodule Funx.Ord.Dsl.Parser do
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, _}, _]}, _, args} = fun_ast,
          default,
-         meta,
+         _meta,
          _caller_env
        )
        when args == [] or is_nil(args) do
     if is_nil(default) do
       fun_ast
     else
-      raise CompileError,
-        line: Keyword.get(meta, :line),
-        description:
-          "The `default:` option is only valid with atom or explicit Prism projections, not with functions."
+      # Wrap in tuple for Prism with default
+      # If the function returns a Lens, contramap will error at runtime
+      quote do
+        {unquote(fun_ast), unquote(default)}
+      end
     end
   end
 
@@ -170,17 +171,17 @@ defmodule Funx.Ord.Dsl.Parser do
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Prism]}, _]}, _, _} = prism_ast,
          default,
-         meta,
+         _meta,
          _caller_env
        ) do
     if is_nil(default) do
       # Bare Prism -> pass struct directly to contramap (it handles Maybe.lift_ord)
       prism_ast
     else
-      raise CompileError,
-        line: Keyword.get(meta, :line),
-        description:
-          "Ambiguous Prism usage. Use either bare Prism OR {Prism, default} tuple, not Prism with `default:` option."
+      # Prism with default -> wrap in tuple
+      quote do
+        {unquote(prism_ast), unquote(default)}
+      end
     end
   end
 

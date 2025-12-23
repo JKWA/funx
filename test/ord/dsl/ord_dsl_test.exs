@@ -278,6 +278,20 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       assert Utils.compare(charlie, alice, ord_with_default) == :lt
     end
 
+    test "0-arity function with default option (syntactic sugar)" do
+      alice = fixture(:alice)
+      charlie = fixture(:charlie)
+
+      ord_with_default =
+        ord do
+          asc ProjectionHelpers.score_prism(), default: 0
+        end
+
+      # nil treated as 0, so 0 < 100
+      # This is equivalent to {ProjectionHelpers.score_prism(), 0}
+      assert Utils.compare(charlie, alice, ord_with_default) == :lt
+    end
+
     test "multiple 0-arity function calls" do
       people = [
         %Person{name: "Charlie", age: 30},
@@ -659,23 +673,30 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       end
     end
 
-    test "rejects ambiguous bare Prism with default option" do
-      assert_raise CompileError, ~r/Use either bare Prism OR.*tuple/, fn ->
+    test "allows explicit Prism with default option" do
+      # This now works - compiles to {Prism.key(:score), 0}
+      {result, _binding} =
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl
             alias Funx.Optics.Prism
+            alias Funx.Ord.Utils
 
             ord do
               asc Prism.key(:score), default: 0
             end
           end
         )
-      end
+
+      # Verify it works with nil values
+      alice = %{name: "Alice", score: 100}
+      bob = %{name: "Bob", score: nil}
+
+      assert Utils.compare(bob, alice, result) == :lt
     end
 
-    test "rejects default with function projection" do
-      assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
+    test "rejects default with captured function projection" do
+      assert_raise CompileError, ~r/cannot be used with captured functions/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl
