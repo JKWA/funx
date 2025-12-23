@@ -9,13 +9,13 @@ defmodule Funx.Ord.Dsl.Parser do
   #
   #   1. Lens.t()              - bare Lens struct
   #   2. Prism.t()             - bare Prism struct (uses Maybe.lift_ord)
-  #   3. {Prism.t(), default}  - Prism with default value
+  #   3. {Prism.t(), or_else}  - Prism with or_else value
   #   4. (a -> b)              - projection function
   #
   # All syntax sugar resolves to these types:
   #
   #   - :atom              → Lens.key(:atom)
-  #   - :atom, default: x  → {Prism.key(:atom), x}
+  #   - :atom, or_else: x  → {Prism.key(:atom), x}
   #   - Lens.key(...)      → Lens.key(...) (pass through)
   #   - Prism.key(...)     → Prism.key(...) (pass through)
   #   - {Prism, x}         → {Prism, x} (pass through)
@@ -76,10 +76,10 @@ defmodule Funx.Ord.Dsl.Parser do
   # ============================================================================
 
   defp parse_projection(direction, projection_value, opts, meta, caller_env) do
-    default = Keyword.get(opts, :default)
+    or_else = Keyword.get(opts, :or_else)
     custom_ord = Keyword.get(opts, :ord)
 
-    projection_ast = build_projection_ast(projection_value, default, meta, caller_env)
+    projection_ast = build_projection_ast(projection_value, or_else, meta, caller_env)
     ord_ast = custom_ord || quote(do: Funx.Ord)
     metadata = extract_meta(meta)
 
@@ -96,109 +96,109 @@ defmodule Funx.Ord.Dsl.Parser do
     end
   end
 
-  defp build_projection_ast(atom, default, _meta, _caller_env)
-       when is_atom(atom) and not is_nil(default) do
+  defp build_projection_ast(atom, or_else, _meta, _caller_env)
+       when is_atom(atom) and not is_nil(or_else) do
     quote do
-      {Prism.key(unquote(atom)), unquote(default)}
+      {Prism.key(unquote(atom)), unquote(or_else)}
     end
   end
 
-  defp build_projection_ast({:&, _, _} = fun_ast, default, meta, _caller_env) do
-    if is_nil(default) do
+  defp build_projection_ast({:&, _, _} = fun_ast, or_else, meta, _caller_env) do
+    if is_nil(or_else) do
       fun_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description: Errors.default_with_captured_function()
+        description: Errors.or_else_with_captured_function()
     end
   end
 
-  defp build_projection_ast({:fn, _, _} = fun_ast, default, meta, _caller_env) do
-    if is_nil(default) do
+  defp build_projection_ast({:fn, _, _} = fun_ast, or_else, meta, _caller_env) do
+    if is_nil(or_else) do
       fun_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description: Errors.default_with_anonymous_function()
+        description: Errors.or_else_with_anonymous_function()
     end
   end
 
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, _}, _]}, _, args} = fun_ast,
-         default,
+         or_else,
          _meta,
          _caller_env
        )
        when args == [] or is_nil(args) do
-    if is_nil(default) do
+    if is_nil(or_else) do
       fun_ast
     else
       # Runtime: if helper returns Lens, contramap will raise
       quote do
-        {unquote(fun_ast), unquote(default)}
+        {unquote(fun_ast), unquote(or_else)}
       end
     end
   end
 
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Lens]}, :key]}, _, _} = lens_ast,
-         default,
+         or_else,
          meta,
          _caller_env
        ) do
-    if is_nil(default) do
+    if is_nil(or_else) do
       lens_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description: Errors.default_with_lens()
+        description: Errors.or_else_with_lens()
     end
   end
 
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Lens]}, :path]}, _, _} = lens_ast,
-         default,
+         or_else,
          meta,
          _caller_env
        ) do
-    if is_nil(default) do
+    if is_nil(or_else) do
       lens_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description: Errors.default_with_lens()
+        description: Errors.or_else_with_lens()
     end
   end
 
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Prism]}, _]}, _, _} = prism_ast,
-         default,
+         or_else,
          _meta,
          _caller_env
        ) do
-    if is_nil(default) do
+    if is_nil(or_else) do
       prism_ast
     else
       quote do
-        {unquote(prism_ast), unquote(default)}
+        {unquote(prism_ast), unquote(or_else)}
       end
     end
   end
 
-  defp build_projection_ast({prism_ast, default_ast}, nil, _meta, _caller_env) do
+  defp build_projection_ast({prism_ast, or_else_ast}, nil, _meta, _caller_env) do
     quote do
-      {unquote(prism_ast), unquote(default_ast)}
+      {unquote(prism_ast), unquote(or_else_ast)}
     end
   end
 
-  defp build_projection_ast({_prism_ast, _default_ast}, _extra_default, meta, _caller_env) do
+  defp build_projection_ast({_prism_ast, _or_else_ast}, _extra_or_else, meta, _caller_env) do
     raise CompileError,
       line: Keyword.get(meta, :line),
-      description: Errors.redundant_default()
+      description: Errors.redundant_or_else()
   end
 
-  defp build_projection_ast({:__aliases__, _, _} = module_alias, default, meta, caller_env) do
-    if is_nil(default) do
+  defp build_projection_ast({:__aliases__, _, _} = module_alias, or_else, meta, caller_env) do
+    if is_nil(or_else) do
       expanded_module = Macro.expand(module_alias, caller_env)
       validate_behaviour_implementation!(expanded_module, meta)
 
@@ -208,11 +208,11 @@ defmodule Funx.Ord.Dsl.Parser do
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description: Errors.default_with_behaviour()
+        description: Errors.or_else_with_behaviour()
     end
   end
 
-  defp build_projection_ast(other, _default, meta, _caller_env) do
+  defp build_projection_ast(other, _or_else, meta, _caller_env) do
     raise CompileError,
       line: Keyword.get(meta, :line),
       description: Errors.invalid_projection_type(other)

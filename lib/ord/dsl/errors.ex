@@ -32,98 +32,98 @@ defmodule Funx.Ord.Dsl.Errors do
   end
 
   @doc """
-  Error: Captured function with `default:` option.
+  Error: Captured function with `or_else:` option.
   """
-  def default_with_captured_function do
+  def or_else_with_captured_function do
     """
-    The `default:` option cannot be used with captured functions.
+    The `or_else:` option cannot be used with captured functions.
 
     Use one of these alternatives:
       1. Create a 0-arity helper that returns a Prism:
          def score_prism, do: Prism.key(:score)
-         asc score_prism(), default: 0
+         asc score_prism(), or_else: 0
 
       2. Use inline Prism syntax:
-         asc Prism.key(:score), default: 0
+         asc Prism.key(:score), or_else: 0
 
     Reason: Captured functions like &fun/1 don't expose their projection type
-    at compile time, making default semantics ambiguous.
+    at compile time, making or_else semantics ambiguous.
     """
   end
 
   @doc """
-  Error: Anonymous function with `default:` option.
+  Error: Anonymous function with `or_else:` option.
   """
-  def default_with_anonymous_function do
+  def or_else_with_anonymous_function do
     """
-    The `default:` option cannot be used with anonymous functions.
+    The `or_else:` option cannot be used with anonymous functions.
 
     Use one of these alternatives:
       1. Create a 0-arity helper that returns a Prism:
          def score_prism, do: Prism.key(:score)
-         asc score_prism(), default: 0
+         asc score_prism(), or_else: 0
 
       2. Use inline Prism syntax:
-         asc Prism.key(:score), default: 0
+         asc Prism.key(:score), or_else: 0
 
     Reason: Anonymous functions like `fn x -> x.field end` don't expose their
-    projection type at compile time, making default semantics ambiguous.
+    projection type at compile time, making or_else semantics ambiguous.
     """
   end
 
   @doc """
-  Error: Lens with `default:` option.
+  Error: Lens with `or_else:` option.
   """
-  def default_with_lens do
+  def or_else_with_lens do
     """
-    The `default:` option is only valid with atoms or Prism projections, not with Lens.
+    The `or_else:` option is only valid with atoms or Prism projections, not with Lens.
 
     Reason: Lens guarantees focus on an existing value (or raises an error).
-    Adding a default would violate this contract.
+    Adding an or_else would violate this contract.
 
     If you need optional field handling, use a Prism instead:
-      asc Prism.key(:name), default: "Unknown"
+      asc Prism.key(:name), or_else: "Unknown"
 
-    Or use an atom with default (automatically becomes a Prism):
-      asc :name, default: "Unknown"
+    Or use an atom with or_else (automatically becomes a Prism):
+      asc :name, or_else: "Unknown"
     """
   end
 
   @doc """
-  Error: Behaviour module with `default:` option.
+  Error: Behaviour module with `or_else:` option.
   """
-  def default_with_behaviour do
+  def or_else_with_behaviour do
     """
-    The `default:` option is only valid with atoms or Prism projections, not with Behaviour modules.
+    The `or_else:` option is only valid with atoms or Prism projections, not with Behaviour modules.
 
     Reason: Behaviour modules define custom projection logic that may not
-    return Maybe values compatible with default handling.
+    return Maybe values compatible with or_else handling.
 
-    If you need default handling, implement it inside your Behaviour:
+    If you need or_else handling, implement it inside your Behaviour:
       defmodule MyProjection do
         @behaviour Funx.Ord.Dsl.Behaviour
 
         def project(value, opts) do
-          value.field || Keyword.get(opts, :default, 0)
+          value.field || Keyword.get(opts, :or_else, 0)
         end
       end
     """
   end
 
   @doc """
-  Error: {Prism, default} tuple already has default, can't use option too.
+  Error: {Prism, or_else} tuple already has or_else, can't use option too.
   """
-  def redundant_default do
+  def redundant_or_else do
     """
-    Invalid usage: {Prism, default} tuple already contains a default value.
-    Do not also use the `default:` option.
+    Invalid usage: {Prism, or_else} tuple already contains an or_else value.
+    Do not also use the `or_else:` option.
 
     Choose one:
       1. Tuple syntax:
          asc {Prism.key(:score), 0}
 
       2. Option syntax:
-         asc Prism.key(:score), default: 0
+         asc Prism.key(:score), or_else: 0
 
     Both are equivalent and normalize to the same form.
     """
@@ -140,7 +140,7 @@ defmodule Funx.Ord.Dsl.Errors do
       - atom                  (e.g., :name)
       - Lens                  (e.g., Lens.key(:name))
       - Prism                 (e.g., Prism.key(:score))
-      - {Prism, default}      (e.g., {Prism.key(:score), 0})
+      - {Prism, or_else}      (e.g., {Prism.key(:score), 0})
       - function              (e.g., &String.length/1)
       - Behaviour module      (e.g., MyProjection)
 

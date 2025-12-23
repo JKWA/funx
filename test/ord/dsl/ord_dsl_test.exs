@@ -155,17 +155,17 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   end
 
   # ============================================================================
-  # Atom with Default (Prism) Tests
+  # Atom with or_else (Prism) Tests
   # ============================================================================
 
-  describe "atom with default (Prism)" do
-    test "nil value uses default" do
+  describe "atom with or_else (Prism)" do
+    test "nil value uses or_else" do
       with_score = %Person{name: "Alice", score: 100}
       without_score = %Person{name: "Bob", score: nil}
 
       ord_score =
         ord do
-          asc :score, default: 0
+          asc :score, or_else: 0
         end
 
       assert Utils.compare(without_score, with_score, ord_score) == :lt
@@ -177,7 +177,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_score_then_age =
         ord do
-          asc :score, default: 0
+          asc :score, or_else: 0
           desc :age
         end
 
@@ -237,7 +237,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       def name_lens, do: Lens.key(:name)
       def age_lens, do: Lens.key(:age)
       def score_prism, do: Prism.key(:score)
-      def score_with_default, do: {Prism.key(:score), 0}
+      def score_with_or_else, do: {Prism.key(:score), 0}
     end
 
     test "0-arity function returning Lens" do
@@ -265,31 +265,31 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       assert Utils.compare(charlie, alice, ord_score) == :lt
     end
 
-    test "0-arity function returning Prism tuple with default" do
+    test "0-arity function returning Prism tuple with or_else" do
       alice = fixture(:alice)
       charlie = fixture(:charlie)
 
-      ord_with_default =
+      ord_with_or_else =
         ord do
-          asc ProjectionHelpers.score_with_default()
+          asc ProjectionHelpers.score_with_or_else()
         end
 
       # nil treated as 0, so 0 < 100
-      assert Utils.compare(charlie, alice, ord_with_default) == :lt
+      assert Utils.compare(charlie, alice, ord_with_or_else) == :lt
     end
 
-    test "0-arity function with default option (syntactic sugar)" do
+    test "0-arity function with or_else option (syntactic sugar)" do
       alice = fixture(:alice)
       charlie = fixture(:charlie)
 
-      ord_with_default =
+      ord_with_or_else =
         ord do
-          asc ProjectionHelpers.score_prism(), default: 0
+          asc ProjectionHelpers.score_prism(), or_else: 0
         end
 
       # nil treated as 0, so 0 < 100
       # This is equivalent to {ProjectionHelpers.score_prism(), 0}
-      assert Utils.compare(charlie, alice, ord_with_default) == :lt
+      assert Utils.compare(charlie, alice, ord_with_or_else) == :lt
     end
 
     test "multiple 0-arity function calls" do
@@ -348,7 +348,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       ord_combined =
         ord do
           asc ProjectionHelpers.age_lens()
-          asc :score, default: 0
+          asc :score, or_else: 0
         end
 
       sorted = Enum.sort(people, Utils.comparator(ord_combined))
@@ -395,8 +395,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   # Explicit Prism Projection Tests
   # ============================================================================
 
-  describe "explicit Prism with default" do
-    test "Prism tuple with default value" do
+  describe "explicit Prism with or_else" do
+    test "Prism tuple with or_else value" do
       alice = fixture(:alice)
       charlie = fixture(:charlie)
 
@@ -581,7 +581,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
         ord do
           asc :name
           desc :age
-          asc :score, default: 0
+          asc :score, or_else: 0
         end
 
       sorted = Enum.sort(people, Utils.comparator(ord_person))
@@ -685,7 +685,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       end
     end
 
-    test "allows explicit Prism with default option" do
+    test "allows explicit Prism with or_else option" do
       # This now works - compiles to {Prism.key(:score), 0}
       {result, _binding} =
         Code.eval_quoted(
@@ -695,7 +695,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
             alias Funx.Ord.Utils
 
             ord do
-              asc Prism.key(:score), default: 0
+              asc Prism.key(:score), or_else: 0
             end
           end
         )
@@ -707,87 +707,87 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       assert Utils.compare(bob, alice, result) == :lt
     end
 
-    test "rejects default with captured function projection" do
+    test "rejects or_else with captured function projection" do
       assert_raise CompileError, ~r/cannot be used with captured functions/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl
 
             ord do
-              asc &String.length/1, default: 0
+              asc &String.length/1, or_else: 0
             end
           end
         )
       end
     end
 
-    test "rejects default with Lens.key projection" do
-      assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
+    test "rejects or_else with Lens.key projection" do
+      assert_raise CompileError, ~r/or_else.*only.*atom.*Prism/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl
             alias Funx.Optics.Lens
 
             ord do
-              asc Lens.key(:name), default: "Unknown"
+              asc Lens.key(:name), or_else: "Unknown"
             end
           end
         )
       end
     end
 
-    test "rejects default with Lens.path projection" do
-      assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
+    test "rejects or_else with Lens.path projection" do
+      assert_raise CompileError, ~r/or_else.*only.*atom.*Prism/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl
             alias Funx.Optics.Lens
 
             ord do
-              asc Lens.path([:address, :city]), default: "Unknown"
+              asc Lens.path([:address, :city]), or_else: "Unknown"
             end
           end
         )
       end
     end
 
-    test "rejects default with behaviour module" do
-      assert_raise CompileError, ~r/default.*only.*atom.*Prism/, fn ->
+    test "rejects or_else with behaviour module" do
+      assert_raise CompileError, ~r/or_else.*only.*atom.*Prism/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl
 
             ord do
-              asc NameLength, default: 0
+              asc NameLength, or_else: 0
             end
           end
         )
       end
     end
 
-    test "rejects default with anonymous function" do
+    test "rejects or_else with anonymous function" do
       assert_raise CompileError, ~r/cannot be used with anonymous functions/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl
 
             ord do
-              asc fn x -> x.name end, default: "Unknown"
+              asc fn x -> x.name end, or_else: "Unknown"
             end
           end
         )
       end
     end
 
-    test "rejects redundant default with tuple syntax" do
-      assert_raise CompileError, ~r/already contains a default value/, fn ->
+    test "rejects redundant or_else with tuple syntax" do
+      assert_raise CompileError, ~r/already contains an or_else value/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl
             alias Funx.Optics.Prism
 
             ord do
-              asc {Prism.key(:score), 0}, default: 10
+              asc {Prism.key(:score), 0}, or_else: 10
             end
           end
         )
@@ -952,7 +952,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
         ord do
           asc :name
           desc :age
-          asc :score, default: 0
+          asc :score, or_else: 0
           asc &String.length(&1.bio)
         end
 

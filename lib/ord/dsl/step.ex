@@ -11,7 +11,7 @@ defmodule Funx.Ord.Dsl.Step do
   #   - `projection`: Quoted AST that evaluates to one of contramap's canonical types:
   #       * `Lens.t()`
   #       * `Prism.t()`
-  #       * `{Prism.t(), default}`
+  #       * `{Prism.t(), or_else}`
   #       * `(a -> b)` function
   #   - `ord`: Module atom or quoted AST that evaluates to an Ord implementation
   #   - `__meta__`: Compile-time metadata (line, column) for error reporting

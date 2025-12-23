@@ -9,10 +9,10 @@ defmodule Funx.Ord.Dsl do
   ## Supported Projections
 
   - **Atom** - Creates `Lens.key(atom)` for field access
-  - **Atom with default** - Creates `{Prism.key(atom), default}` for optional fields
+  - **Atom with or_else** - Creates `{Prism.key(atom), or_else}` for optional fields
   - **Function** - Direct projection function
   - **Lens** - Explicit lens for nested access
-  - **Prism tuple** - `{Prism, default}` for optional with fallback
+  - **Prism tuple** - `{Prism, or_else}` for optional with fallback
   - **Bare Prism** - Returns `Maybe`, uses `Maybe.lift_ord` (Nothing < Just)
   - **Behaviour module** - Custom projection via `Funx.Ord.Dsl.Behaviour`
 
@@ -31,12 +31,12 @@ defmodule Funx.Ord.Dsl do
       iex> Funx.Ord.Utils.compare(alice, bob, ord_person)
       :lt
 
-  Optional fields with defaults:
+  Optional fields with or_else:
 
       iex> use Funx.Ord.Dsl
       iex> defmodule Item, do: defstruct [:name, :score]
       iex> ord_item = ord do
-      ...>   asc :score, default: 0
+      ...>   asc :score, or_else: 0
       ...>   asc :name
       ...> end
       iex> item1 = %Item{name: "A", score: nil}
@@ -126,7 +126,7 @@ defmodule Funx.Ord.Dsl do
       end
 
       ord do
-        asc :score, default: 0
+        asc :score, or_else: 0
         desc &String.length(&1.bio)
       end
   """

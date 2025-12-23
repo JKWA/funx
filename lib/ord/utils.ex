@@ -31,7 +31,7 @@ defmodule Funx.Ord.Utils do
 
     * `Lens.t()` - Uses `view!/2` to extract the focused value (raises on missing)
     * `Prism.t()` - Uses `preview/2`, returns `Maybe`, with `Nothing < Just(_)` ordering
-    * `{Prism.t(), default}` - Uses `preview/2`, falling back to `default` on `Nothing`
+    * `{Prism.t(), or_else}` - Uses `preview/2`, falling back to `or_else` on `Nothing`
     * `(a -> b)` - Projection function applied directly
 
   All DSL syntax sugar (atoms, helpers, etc.) normalizes to these types in the parser.
@@ -68,7 +68,7 @@ defmodule Funx.Ord.Utils do
       iex> ord.gt?.(%{score: 30}, %{})
       true
 
-  Using a prism with a default value:
+  Using a prism with an or_else value:
 
       iex> prism = Funx.Optics.Prism.key(:score)
       iex> ord = Funx.Ord.Utils.contramap({prism, 0})
@@ -97,11 +97,11 @@ defmodule Funx.Ord.Utils do
     contramap(fn a -> Prism.preview(a, prism) end, Maybe.lift_ord(ord))
   end
 
-  # Prism with default
-  def contramap({%Prism{} = prism, default}, ord) do
+  # Prism with or_else
+  def contramap({%Prism{} = prism, or_else}, ord) do
     contramap(
       fn a ->
-        a |> Prism.preview(prism) |> Maybe.get_or_else(default)
+        a |> Prism.preview(prism) |> Maybe.get_or_else(or_else)
       end,
       ord
     )
