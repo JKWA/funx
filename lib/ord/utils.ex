@@ -28,6 +28,7 @@ defmodule Funx.Ord.Utils do
 
     * a function `(a -> b)` - Applied directly to extract the comparison value
     * a `Lens` - Uses `view!/2` to extract the focused value (raises on missing)
+    * a `Prism` - Uses `preview/2`, returns `Maybe`, with `Nothing < Just(_)` ordering
     * a tuple `{Prism, default}` - Uses `preview/2`, falling back to `default` on `Nothing`
 
   The `ord` parameter may be an `Ord` module or a custom comparator map
@@ -52,6 +53,15 @@ defmodule Funx.Ord.Utils do
       iex> ord.lt?.(%{age: 30}, %{age: 40})
       true
 
+  Using a bare prism (Nothing < Just):
+
+      iex> prism = Funx.Optics.Prism.key(:score)
+      iex> ord = Funx.Ord.Utils.contramap(prism)
+      iex> ord.lt?.(%{}, %{score: 20})
+      true
+      iex> ord.gt?.(%{score: 30}, %{})
+      true
+
   Using a prism with a default value:
 
       iex> prism = Funx.Optics.Prism.key(:score)
@@ -65,7 +75,7 @@ defmodule Funx.Ord.Utils do
   """
 
   @spec contramap(
-          (a -> b) | Lens.t() | {Prism.t(), b},
+          (a -> b) | Lens.t() | Prism.t() | {Prism.t(), b},
           ord_t()
         ) :: ord_map()
         when a: any, b: any
@@ -74,6 +84,11 @@ defmodule Funx.Ord.Utils do
   # Lens
   def contramap(%Lens{} = lens, ord) do
     contramap(fn a -> Lens.view!(a, lens) end, ord)
+  end
+
+  # Bare Prism - uses Maybe.lift_ord (Nothing < Just)
+  def contramap(%Prism{} = prism, ord) do
+    contramap(fn a -> Prism.preview(a, prism) end, Maybe.lift_ord(ord))
   end
 
   # Prism with default

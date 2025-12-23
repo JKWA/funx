@@ -104,7 +104,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_name =
         ord do
-          asc(:name)
+          asc :name
         end
 
       assert Utils.compare(alice, bob, ord_name) == :lt
@@ -117,7 +117,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_name_desc =
         ord do
-          desc(:name)
+          desc :name
         end
 
       assert Utils.compare(alice, bob, ord_name_desc) == :gt
@@ -131,8 +131,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_name_then_age =
         ord do
-          asc(:name)
-          asc(:age)
+          asc :name
+          asc :age
         end
 
       assert Utils.compare(alice_25, alice_30, ord_name_then_age) == :lt
@@ -145,8 +145,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_desc_age_asc_name =
         ord do
-          desc(:age)
-          asc(:name)
+          desc :age
+          asc :name
         end
 
       # Alice age=30 > Bob age=25, so Alice comes first (desc)
@@ -165,7 +165,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_score =
         ord do
-          asc(:score, default: 0)
+          asc :score, default: 0
         end
 
       assert Utils.compare(without_score, with_score, ord_score) == :lt
@@ -177,8 +177,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_score_then_age =
         ord do
-          asc(:score, default: 0)
-          desc(:age)
+          asc :score, default: 0
+          desc :age
         end
 
       assert Utils.compare(alice_no_score, bob_with_score, ord_score_then_age) == :lt
@@ -196,7 +196,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_bio_length =
         ord do
-          asc(&String.length(&1.bio))
+          asc &String.length(&1.bio)
         end
 
       assert Utils.compare(bob, alice, ord_bio_length) == :lt
@@ -207,7 +207,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_length =
         ord do
-          asc(&String.length/1)
+          asc &String.length/1
         end
 
       sorted = Enum.sort(items, Utils.comparator(ord_length))
@@ -220,10 +220,118 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_bio_length_desc =
         ord do
-          desc(&String.length(&1.bio))
+          desc &String.length(&1.bio)
         end
 
       assert Utils.compare(alice, bob, ord_bio_length_desc) == :lt
+    end
+  end
+
+  # ============================================================================
+  # Remote Function Call Tests
+  # ============================================================================
+
+  describe "reusable projections via helper functions" do
+    defmodule ProjectionHelpers do
+      # 0-arity functions that return projections
+      def name_lens, do: Lens.key(:name)
+      def age_lens, do: Lens.key(:age)
+      def score_prism, do: Prism.key(:score)
+      def score_with_default, do: {Prism.key(:score), 0}
+    end
+
+    test "0-arity function returning Lens" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_by_name =
+        ord do
+          asc ProjectionHelpers.name_lens()
+        end
+
+      assert Utils.compare(alice, bob, ord_by_name) == :lt
+    end
+
+    test "0-arity function returning bare Prism" do
+      alice = fixture(:alice)
+      charlie = fixture(:charlie)
+
+      ord_score =
+        ord do
+          asc ProjectionHelpers.score_prism()
+        end
+
+      # Nothing < Just with bare Prism
+      assert Utils.compare(charlie, alice, ord_score) == :lt
+    end
+
+    test "0-arity function returning Prism tuple with default" do
+      alice = fixture(:alice)
+      charlie = fixture(:charlie)
+
+      ord_with_default =
+        ord do
+          asc ProjectionHelpers.score_with_default()
+        end
+
+      # nil treated as 0, so 0 < 100
+      assert Utils.compare(charlie, alice, ord_with_default) == :lt
+    end
+
+    test "multiple 0-arity function calls" do
+      people = [
+        %Person{name: "Charlie", age: 30},
+        %Person{name: "Alice", age: 30},
+        %Person{name: "Bob", age: 25}
+      ]
+
+      ord_combined =
+        ord do
+          asc ProjectionHelpers.age_lens()
+          asc ProjectionHelpers.name_lens()
+        end
+
+      sorted = Enum.sort(people, Utils.comparator(ord_combined))
+
+      assert [
+               %Person{name: "Bob"},
+               %Person{name: "Alice"},
+               %Person{name: "Charlie"}
+             ] = sorted
+    end
+
+    test "captured function references for custom logic" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_by_name_length =
+        ord do
+          asc &String.length(&1.name)
+        end
+
+      assert Utils.compare(alice, bob, ord_by_name_length) == :gt
+    end
+
+    test "combining helper functions with inline syntax" do
+      people = [
+        %Person{name: "Charlie", age: 30, score: nil},
+        %Person{name: "Alice", age: 30, score: nil},
+        %Person{name: "Bob", age: 25, score: 50}
+      ]
+
+      ord_combined =
+        ord do
+          asc ProjectionHelpers.age_lens()
+          asc :score, default: 0
+        end
+
+      sorted = Enum.sort(people, Utils.comparator(ord_combined))
+
+      # Bob (age 25, score 50) < Alice/Charlie (age 30, score 0)
+      # Alice and Charlie both age 30, score 0, so order is stable
+      assert %Person{name: "Bob"} = hd(sorted)
+      assert Enum.at(sorted, 1).age == 30
+      assert Enum.at(sorted, 2).age == 30
     end
   end
 
@@ -238,7 +346,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_age =
         ord do
-          asc(Lens.key(:age))
+          asc Lens.key(:age)
         end
 
       assert Utils.compare(bob, alice, ord_age) == :lt
@@ -250,7 +358,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_city =
         ord do
-          asc(Lens.path([:address, :city]))
+          asc Lens.path([:address, :city])
         end
 
       assert Utils.compare(alice, bob, ord_city) == :lt
@@ -268,7 +376,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_score =
         ord do
-          asc({Prism.key(:score), 0})
+          asc {Prism.key(:score), 0}
         end
 
       assert Utils.compare(charlie, alice, ord_score) == :lt
@@ -286,7 +394,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_score =
         ord do
-          asc(Prism.key(:score))
+          asc Prism.key(:score)
         end
 
       assert Utils.compare(charlie, alice, ord_score) == :lt
@@ -298,7 +406,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_score_desc =
         ord do
-          desc(Prism.key(:score))
+          desc Prism.key(:score)
         end
 
       assert Utils.compare(alice, charlie, ord_score_desc) == :lt
@@ -310,7 +418,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_score =
         ord do
-          asc(Prism.key(:score))
+          asc Prism.key(:score)
         end
 
       assert Utils.compare(charlie1, charlie2, ord_score) == :eq
@@ -326,7 +434,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_state =
         ord do
-          asc(Prism.path([{Person, :address}, {Address, :state}]))
+          asc Prism.path([{Person, :address}, {Address, :state}])
         end
 
       # Nothing sorts before Just with asc
@@ -340,8 +448,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_multi_prism =
         ord do
-          asc(Prism.key(:score))
-          asc(:age)
+          asc Prism.key(:score)
+          asc :age
         end
 
       # Both p1 and p3 have Nothing for score, so they tie on first projection
@@ -364,7 +472,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_name_length =
         ord do
-          asc(NameLength)
+          asc NameLength
         end
 
       assert Utils.compare(alice, bob, ord_name_length) == :gt
@@ -376,7 +484,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_weighted =
         ord do
-          asc(WeightedScore, weight: 2.0)
+          asc WeightedScore, weight: 2.0
         end
 
       assert Utils.compare(bob, alice, ord_weighted) == :lt
@@ -403,7 +511,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       ord_combined =
         ord do
           desc(WeightedScore, weight: 1.5)
-          asc(NameLength)
+          asc NameLength
         end
 
       assert Utils.compare(alice, bob, ord_combined) == :gt
@@ -422,7 +530,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_by_address =
         ord do
-          asc(:address)
+          asc :address
         end
 
       assert Utils.compare(bob, alice, ord_by_address) == :lt
@@ -445,9 +553,9 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_person =
         ord do
-          asc(:name)
-          desc(:age)
-          asc(:score, default: 0)
+          asc :name
+          desc :age
+          asc :score, default: 0
         end
 
       sorted = Enum.sort(people, Utils.comparator(ord_person))
@@ -479,11 +587,11 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_complex =
         ord do
-          asc(Lens.path([:address, :state]))
-          desc(:age)
-          asc(Prism.key(:score))
-          desc(&String.length(&1.bio))
-          asc(NameLength)
+          asc Lens.path([:address, :state])
+          desc :age
+          asc Prism.key(:score)
+          desc &String.length(&1.bio)
+          asc NameLength
         end
 
       assert Utils.compare(bob, alice, ord_complex) == :lt
@@ -499,8 +607,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_score_then_name =
         ord do
-          asc(Prism.key(:score))
-          asc(:name)
+          asc Prism.key(:score)
+          asc :name
         end
 
       sorted = Enum.sort(items, Utils.comparator(ord_score_then_name))
@@ -526,7 +634,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
             use Funx.Ord.Dsl
 
             ord do
-              asc(%{invalid: :struct})
+              asc %{invalid: :struct}
             end
           end
         )
@@ -544,7 +652,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
             use Funx.Ord.Dsl
 
             ord do
-              asc(NotABehaviour)
+              asc NotABehaviour
             end
           end
         )
@@ -559,7 +667,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
             alias Funx.Optics.Prism
 
             ord do
-              asc(Prism.key(:score), default: 0)
+              asc Prism.key(:score), default: 0
             end
           end
         )
@@ -573,7 +681,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
             use Funx.Ord.Dsl
 
             ord do
-              asc(&String.length/1, default: 0)
+              asc &String.length/1, default: 0
             end
           end
         )
@@ -588,7 +696,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
             alias Funx.Optics.Lens
 
             ord do
-              asc(Lens.key(:name), default: "Unknown")
+              asc Lens.key(:name), default: "Unknown"
             end
           end
         )
@@ -602,7 +710,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
             use Funx.Ord.Dsl
 
             ord do
-              asc(NameLength, default: 0)
+              asc NameLength, default: 0
             end
           end
         )
@@ -621,7 +729,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_city =
         ord do
-          asc(Lens.path([:address, :city]))
+          asc Lens.path([:address, :city])
         end
 
       assert_raise BadMapError, fn ->
@@ -635,7 +743,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_city =
         ord do
-          asc(Lens.path([:address, :city]))
+          asc Lens.path([:address, :city])
         end
 
       assert_raise BadMapError, fn ->
@@ -649,7 +757,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_bio_length =
         ord do
-          asc(&String.length(&1.bio))
+          asc &String.length(&1.bio)
         end
 
       assert_raise FunctionClauseError, fn ->
@@ -663,7 +771,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_by_address =
         ord do
-          asc(:address)
+          asc :address
         end
 
       assert_raise KeyError, fn ->
@@ -696,7 +804,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_name =
         ord do
-          asc(:name)
+          asc :name
         end
 
       assert Utils.compare(alice1, alice2, ord_name) == :eq
@@ -712,8 +820,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_name_then_age =
         ord do
-          asc(:name)
-          asc(:age)
+          asc :name
+          asc :age
         end
 
       sorted = Enum.sort(people, Utils.comparator(ord_name_then_age))
@@ -738,8 +846,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_person =
         ord do
-          asc(:name)
-          desc(:age)
+          asc :name
+          desc :age
         end
 
       assert Utils.compare(alice, bob, ord_person) == :lt
@@ -751,10 +859,10 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       ord_person =
         ord do
-          asc(:name)
-          desc(:age)
-          asc(:score, default: 0)
-          asc(&String.length(&1.bio))
+          asc :name
+          desc :age
+          asc :score, default: 0
+          asc &String.length(&1.bio)
         end
 
       sorted = Enum.sort([bob, alice], Utils.comparator(ord_person))

@@ -2,7 +2,6 @@ defmodule Funx.Ord.Dsl.Executor do
   @moduledoc false
   # Compile-time executor for Ord DSL - converts steps to quoted AST
 
-  alias Funx.Monad.Maybe
   alias Funx.Monoid.Ord, as: OrdStruct
   alias Funx.Ord.Dsl.Step
   alias Funx.Ord.Utils
@@ -46,20 +45,10 @@ defmodule Funx.Ord.Dsl.Executor do
   end
 
   # Build contramap(projection_ast, ord_ast)
+  # Note: contramap handles all projection types (functions, Lens, Prism, {Prism, default})
   defp build_contramap_ast(projection_ast, ord_ast) do
-    # Check if projection returns Maybe (bare Prism case)
-    if bare_prism_projection?(projection_ast) do
-      # Use Maybe.lift_ord for bare Prism projections
-      quote do
-        Utils.contramap(
-          unquote(projection_ast),
-          Maybe.lift_ord(unquote(ord_ast))
-        )
-      end
-    else
-      quote do
-        Utils.contramap(unquote(projection_ast), unquote(ord_ast))
-      end
+    quote do
+      Utils.contramap(unquote(projection_ast), unquote(ord_ast))
     end
   end
 
@@ -76,25 +65,4 @@ defmodule Funx.Ord.Dsl.Executor do
       %OrdStruct{}
     end
   end
-
-  # ============================================================================
-  # BARE PRISM DETECTION
-  # ============================================================================
-
-  # Detect if a projection AST is a bare Prism (returns Maybe)
-  # This checks if the projection calls Prism.preview without get_or_else
-  defp bare_prism_projection?(
-         {:fn, _,
-          [
-            {:->, _,
-             [
-               [_value_var],
-               {{:., _, [{:__aliases__, _, [:Prism]}, :preview]}, _, _}
-             ]}
-          ]}
-       ) do
-    true
-  end
-
-  defp bare_prism_projection?(_), do: false
 end

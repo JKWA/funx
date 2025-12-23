@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:funx, github: "JKWA/funx", ref: "9cc278a"}
+  {:funx, github: "JKWA/funx", ref: "8b54182"}
 ])
 ```
 
@@ -14,6 +14,141 @@ use Funx.Ord.Dsl
 alias Funx.Monad.Maybe
 alias Funx.Optics.{Lens, Prism}
 alias Funx.Ord.Utils
+```
+
+```elixir
+alias Funx.Optics.Prism
+require Logger
+use Funx.Monad.Maybe
+
+defmodule CreditCard do
+  defstruct [:name, :number, :expiry, :amount]
+  alias Funx.Optics.Prism
+
+  def amount_prism do
+    Prism.path([{__MODULE__, :amount}])
+  end
+end
+
+defmodule Check do
+  defstruct [:name, :routing_number, :account_number, :amount]
+  alias Funx.Optics.Prism
+
+  def amount_prism do
+    Prism.path([{__MODULE__, :amount}])
+  end
+end
+
+defmodule Charge do
+  defstruct [:payment]
+  alias Funx.Optics.Prism
+
+  def payment_prism do
+    Prism.path([{__MODULE__, :payment}])
+  end
+end
+
+defmodule Refund do
+  defstruct [:payment]
+  alias Funx.Optics.Prism
+
+  def payment_prism do
+    Prism.path([{__MODULE__, :payment}])
+  end
+end
+
+defmodule Transaction do
+  defstruct [:type]
+  alias Funx.Optics.Prism
+
+  def type_prism do
+    Prism.path([{__MODULE__, :type}])
+  end
+end
+```
+
+```elixir
+defmodule Processor do
+  def cc_payment_prism do
+    Prism.compose([
+      Transaction.type_prism,
+      Charge.payment_prism,
+      CreditCard.amount_prism
+    ])
+  end
+
+  def check_payment_prism do
+    Prism.compose([
+      Transaction.type_prism,
+      Charge.payment_prism,
+      Check.amount_prism
+    ])
+  end
+
+  def cc_refund_prism do
+    Prism.compose([
+      Transaction.type_prism,
+      Refund.payment_prism,
+      CreditCard.amount_prism
+    ])
+  end
+
+  def check_refund_prism do
+    Prism.compose([
+      Transaction.type_prism,
+      Refund.payment_prism,
+      Check.amount_prism
+    ])
+  end
+end
+```
+
+```elixir
+charge_cc_1 =
+  %Transaction{
+    type: %Charge{
+      payment: %CreditCard{name: "Alice", number: "4111", expiry: "12/26", amount: 1592}
+    }
+  }
+
+charge_cc_2 =
+  %Transaction{
+    type: %Charge{
+      payment: %CreditCard{name: "Bob", number: "4222", expiry: "11/25", amount: 823}
+    }
+  }
+
+charge_cc_3 =
+  %Transaction{
+    type: %Charge{
+      payment: %CreditCard{name: "Dave", number: "4444", expiry: "09/26", amount: 191}
+    }
+  }
+
+refund_cc_1 =
+  %Transaction{
+    type: %Refund{
+      payment: %CreditCard{name: "Carol", number: "4333", expiry: "10/27", amount: 161}
+    }
+  }
+
+refund_cc_2 =
+  %Transaction{
+    type: %Refund{
+      payment: %CreditCard{name: "Eve", number: "4555", expiry: "08/28", amount: 110}
+    }
+  }
+
+transactions = [charge_cc_1, charge_cc_2, charge_cc_3, refund_cc_1, refund_cc_2]
+```
+
+```elixir
+ord_by =
+  ord do
+    asc &/Processor.cc_payment_prism/0
+  end
+
+Enum.sort(transactions, Utils.comparator(ord_by))
 ```
 
 ## Domain Models
@@ -47,7 +182,7 @@ people = [
 
 ord_by_name =
   ord do
-    asc(:name)
+    asc :name
   end
 
 Enum.sort(people, Utils.comparator(ord_by_name))
@@ -58,7 +193,7 @@ Enum.sort(people, Utils.comparator(ord_by_name))
 ```elixir
 ord_by_age_desc =
   ord do
-    desc(:age)
+    desc :age
   end
 
 Enum.sort(people, Utils.comparator(ord_by_age_desc))
@@ -76,8 +211,8 @@ people_complex = [
 
 ord_name_then_age =
   ord do
-    asc(:name)
-    desc(:age)
+    asc :name
+    desc :age
   end
 
 Enum.sort(people_complex, Utils.comparator(ord_name_then_age))
@@ -98,7 +233,7 @@ people_with_scores = [
 ord_score_with_default =
   ord do
     asc(:score, default: 0)
-    asc(:name)
+    asc :name
   end
 
 Enum.sort(people_with_scores, Utils.comparator(ord_score_with_default))
@@ -117,7 +252,7 @@ people_with_bios = [
 
 ord_by_bio_length =
   ord do
-    asc(&String.length(&1.bio))
+    asc &String.length(&1.bio)
   end
 
 Enum.sort(people_with_bios, Utils.comparator(ord_by_bio_length))
@@ -130,8 +265,8 @@ words = ["elephant", "cat", "dog", "butterfly"]
 
 ord_by_length =
   ord do
-    asc(&String.length/1)
-    asc(&(&1))
+    asc &String.length/1
+    asc &(&1)
   end
 
 Enum.sort(words, Utils.comparator(ord_by_length))
@@ -142,8 +277,8 @@ Enum.sort(words, Utils.comparator(ord_by_length))
 ```elixir
 ord_by_name_length =
   ord do
-    desc(&String.length(&1.name))
-    asc(:name)
+    desc &String.length(&1.name)
+    asc :name
   end
 
 Enum.sort(people, Utils.comparator(ord_by_name_length))
@@ -163,8 +298,8 @@ people_optional = [
 
 ord_bare_prism =
   ord do
-    asc(Prism.key(:score))
-    asc(:name)
+    asc Prism.key(:score)
+    asc :name
   end
 
 result = Enum.sort(people_optional, Utils.comparator(ord_bare_prism))
@@ -181,7 +316,7 @@ Compare with default behavior:
 ord_with_default =
   ord do
     asc(:score, default: 0)
-    asc(:name)
+    asc :name
   end
 
 result_default = Enum.sort(people_optional, Utils.comparator(ord_with_default))
@@ -198,7 +333,9 @@ result_default
 defmodule PersonWithAddress do
   defstruct [:name, :address]
 end
+```
 
+```elixir
 people_with_addresses = [
   %PersonWithAddress{
     name: "Alice",
@@ -249,7 +386,7 @@ end
 
 ord_by_address =
   ord do
-    asc(:address)
+    asc :address
   end
 
 Enum.sort(people_with_addresses, Utils.comparator(ord_by_address))
@@ -268,10 +405,12 @@ defmodule NameLength do
     String.length(person.name)
   end
 end
+```
 
+```elixir
 ord_name_length =
   ord do
-    asc(NameLength)
+    asc NameLength
   end
 
 Enum.sort(people, Utils.comparator(ord_name_length))
@@ -289,7 +428,9 @@ defmodule WeightedScore do
     (person.score || 0) * weight
   end
 end
+```
 
+```elixir
 people_for_weighted = [
   %Person{name: "Alice", score: 100},
   %Person{name: "Bob", score: 50},
@@ -298,8 +439,8 @@ people_for_weighted = [
 
 ord_weighted =
   ord do
-    desc(WeightedScore, weight: 2.0)
-    asc(:name)
+    desc WeightedScore, weight: 2.0
+    asc :name
   end
 
 Enum.sort(people_for_weighted, Utils.comparator(ord_weighted))
@@ -320,21 +461,12 @@ employees = [
 
 ord_employees =
   ord do
-    asc(:department)
-    desc(:salary)
-    asc(:start_date)
+    asc :department
+    desc :salary
+    asc :start_date
   end
 
-sorted_employees = Enum.sort(employees, Utils.comparator(ord_employees))
-
-IO.puts("Employees by Department, Salary (desc), Start Date:")
-Enum.each(sorted_employees, fn emp ->
-  IO.puts(
-    "  #{emp.name} - #{emp.department} - $#{emp.salary} - Started: #{emp.start_date}"
-  )
-end)
-
-sorted_employees
+Enum.sort(employees, Utils.comparator(ord_employees))
 ```
 
 ## Playground
@@ -353,9 +485,9 @@ my_people = [
 my_ord =
   ord do
     # Try different combinations!
-    asc(:age)
-    desc(:score, default: 0)
-    asc(:name)
+    asc :age
+    desc :score, default: 0
+    asc :name
   end
 
 Enum.sort(my_people, Utils.comparator(my_ord))
@@ -368,8 +500,8 @@ The Ord DSL compiles to efficient code at compile-time. Here's what gets generat
 ```elixir
 # This DSL code:
 ord do
-  asc(:name)
-  desc(:age)
+  asc :name
+  desc :age
 end
 
 # Compiles to (approximately):
@@ -387,7 +519,7 @@ No runtime overhead from the DSL itself!
 alice = %Person{name: "Alice", age: 30}
 bob = %Person{name: "Bob", age: 25}
 
-ord = ord(do: asc(:age))
+ord = ord(do: asc :age)
 
 Utils.compare(alice, bob, ord)
 ```
@@ -413,10 +545,10 @@ people_scores = [
 ]
 
 # Highest score (max with desc ordering)
-Utils.max_by(people_scores, ord_by_score)
+Utils.max(people_scores, ord_by_score)
 ```
 
 ```elixir
 # Lowest score (min with desc ordering)
-Utils.min_by(people_scores, ord_by_score)
+Utils.min(people_scores, ord_by_score)
 ```

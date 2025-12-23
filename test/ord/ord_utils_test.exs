@@ -267,6 +267,79 @@ defmodule Funx.Ord.UtilsTest do
     end
   end
 
+  describe "contramap/2 with bare prism (Maybe.lift_ord)" do
+    test "orders values using bare prism with Nothing < Just semantics" do
+      alias Funx.Optics.Prism
+
+      prism = Prism.key(:score)
+      ord = contramap(prism)
+
+      # Both have score - Just(10) < Just(20)
+      assert ord.lt?.(%{score: 10}, %{score: 20})
+      assert ord.gt?.(%{score: 50}, %{score: 30})
+      assert ord.le?.(%{score: 25}, %{score: 25})
+      assert ord.ge?.(%{score: 25}, %{score: 25})
+
+      # Nothing < Just - missing value sorts before present value
+      assert ord.lt?.(%{}, %{score: 5})
+      assert ord.le?.(%{}, %{score: 5})
+      refute ord.gt?.(%{}, %{score: 5})
+      refute ord.ge?.(%{}, %{score: 5})
+
+      # Just > Nothing - present value sorts after missing value
+      assert ord.gt?.(%{score: 10}, %{})
+      assert ord.ge?.(%{score: 10}, %{})
+      refute ord.lt?.(%{score: 10}, %{})
+      refute ord.le?.(%{score: 10}, %{})
+
+      # Both missing - Nothing == Nothing
+      assert ord.le?.(%{}, %{})
+      assert ord.ge?.(%{}, %{})
+      refute ord.lt?.(%{}, %{})
+      refute ord.gt?.(%{}, %{})
+    end
+
+    test "bare prism with nested path" do
+      alias Funx.Optics.Prism
+
+      prism = Prism.path([:stats, :wins])
+      ord = contramap(prism)
+
+      # Both have nested value
+      assert ord.lt?.(%{stats: %{wins: 2}}, %{stats: %{wins: 5}})
+      assert ord.gt?.(%{stats: %{wins: 7}}, %{stats: %{wins: 3}})
+
+      # One missing intermediate value (Nothing < Just)
+      assert ord.lt?.(%{stats: %{}}, %{stats: %{wins: 5}})
+      assert ord.gt?.(%{stats: %{wins: 5}}, %{stats: %{}})
+
+      # One completely missing stats (Nothing < Just)
+      assert ord.lt?.(%{}, %{stats: %{wins: 5}})
+      assert ord.gt?.(%{stats: %{wins: 5}}, %{})
+    end
+
+    test "compare function returns :lt, :eq, :gt with bare prism" do
+      alias Funx.Optics.Prism
+
+      prism = Prism.key(:score)
+      ord = contramap(prism)
+
+      # Just vs Just
+      assert compare(%{score: 10}, %{score: 20}, ord) == :lt
+      assert compare(%{score: 20}, %{score: 10}, ord) == :gt
+      assert compare(%{score: 15}, %{score: 15}, ord) == :eq
+
+      # Nothing vs Just
+      assert compare(%{}, %{score: 10}, ord) == :lt
+
+      # Just vs Nothing
+      assert compare(%{score: 10}, %{}, ord) == :gt
+
+      # Nothing vs Nothing
+      assert compare(%{}, %{}, ord) == :eq
+    end
+  end
+
   describe "comparator/1 with Any Ord" do
     test "compares plain numbers" do
       assert comparator(Any).(5, 10)

@@ -113,7 +113,25 @@ defmodule Funx.Ord.Dsl.Parser do
     end
   end
 
-  # Explicit Lens struct
+  # Remote function call (Module.function or Module.function())
+  defp build_projection_ast(
+         {{:., _, [{:__aliases__, _, _}, _]}, _, args} = fun_ast,
+         default,
+         meta,
+         _caller_env
+       )
+       when args == [] or is_nil(args) do
+    if is_nil(default) do
+      fun_ast
+    else
+      raise CompileError,
+        line: Keyword.get(meta, :line),
+        description:
+          "The `default:` option is only valid with atom or explicit Prism projections, not with functions."
+    end
+  end
+
+  # Explicit Lens struct (Lens.key(...) syntax)
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Lens]}, :key]}, _, _} = lens_ast,
          default,
@@ -121,9 +139,8 @@ defmodule Funx.Ord.Dsl.Parser do
          _caller_env
        ) do
     if is_nil(default) do
-      quote do
-        fn value -> Lens.view!(value, unquote(lens_ast)) end
-      end
+      # Pass Lens struct directly to contramap (it handles view!)
+      lens_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -139,9 +156,8 @@ defmodule Funx.Ord.Dsl.Parser do
          _caller_env
        ) do
     if is_nil(default) do
-      quote do
-        fn value -> Lens.view!(value, unquote(lens_ast)) end
-      end
+      # Pass Lens struct directly to contramap (it handles view!)
+      lens_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -158,10 +174,8 @@ defmodule Funx.Ord.Dsl.Parser do
          _caller_env
        ) do
     if is_nil(default) do
-      # Bare Prism -> use Maybe.lift_ord
-      quote do
-        fn value -> Prism.preview(value, unquote(prism_ast)) end
-      end
+      # Bare Prism -> pass struct directly to contramap (it handles Maybe.lift_ord)
+      prism_ast
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
