@@ -2,36 +2,40 @@ defmodule Funx.Optics.PrismTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
+  use ExUnitProperties
 
   doctest Funx.Optics.Prism
 
   alias Funx.Monad.Maybe
+  alias Funx.Monad.Maybe.{Just, Nothing}
   alias Funx.Optics.Prism
-  alias Maybe.{Just, Nothing}
 
-  defmodule Account do
-    defstruct [:name, :type]
+  # ============================================================================
+  # Test Domain Structs
+  # ============================================================================
+
+  defmodule Account, do: defstruct([:name, :type])
+  defmodule Payment, do: defstruct([:amount, :account])
+  defmodule Profile, do: defstruct([:age, :score])
+  defmodule User, do: defstruct([:name, :profile])
+  defmodule CreditCard, do: defstruct([:number, :expiry])
+  defmodule Check, do: defstruct([:routing_number, :account_number])
+
+  # ============================================================================
+  # Test Fixtures
+  # ============================================================================
+
+  defp cc_fixture(number \\ "1234", expiry \\ "12/26") do
+    %CreditCard{number: number, expiry: expiry}
   end
 
-  defmodule Payment do
-    defstruct [:amount, :account]
+  defp check_fixture(routing \\ "111000025", account \\ "987654") do
+    %Check{routing_number: routing, account_number: account}
   end
 
-  defmodule Profile do
-    defstruct [:age, :score]
-  end
-
-  defmodule User do
-    defstruct [:name, :profile]
-  end
-
-  defmodule CreditCard do
-    defstruct [:number, :expiry]
-  end
-
-  defmodule Check do
-    defstruct [:routing_number, :account_number]
-  end
+  # ============================================================================
+  # Basic Operations Tests
+  # ============================================================================
 
   describe "preview/2" do
     test "returns Just for matching value via key prism" do
@@ -96,44 +100,9 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
-  describe "compose/2" do
-    test "composing struct and key prisms" do
-      p1 = Prism.struct(Account)
-      p2 = Prism.key(:name)
-      p = Prism.compose(p1, p2)
-
-      assert %Just{value: "Alice"} = %Account{name: "Alice"} |> Prism.preview(p)
-      assert %Nothing{} = %{name: "Bob"} |> Prism.preview(p)
-      assert %Nothing{} = %Account{type: "checking"} |> Prism.preview(p)
-    end
-
-    test "composing nested key prisms" do
-      p1 = Prism.key(:account)
-      p2 = Prism.key(:name)
-      p = Prism.compose(p1, p2)
-
-      assert %Just{value: "Alice"} = %{account: %{name: "Alice"}} |> Prism.preview(p)
-      assert %Nothing{} = %{account: %{type: "checking"}} |> Prism.preview(p)
-      assert %Nothing{} = %{other: "value"} |> Prism.preview(p)
-    end
-
-    test "review rebuilds via both prisms" do
-      struct_prism = Prism.struct(Account)
-      name_prism = Prism.key(:name)
-      p = Prism.compose(struct_prism, name_prism)
-
-      assert "Alice" |> Prism.review(p) == %Account{name: "Alice", type: nil}
-    end
-
-    test "review composes in reverse order (inner first, then outer)" do
-      # Compose struct prism with key prism
-      account_name = Prism.compose(Prism.struct(Account), Prism.key(:name))
-
-      # Review applies inner prism first (key: "Alice" -> %{name: "Alice"}),
-      # then outer prism (struct: %{name: "Alice"} -> %Account{name: "Alice"})
-      assert Prism.review("Alice", account_name) == %Account{name: "Alice", type: nil}
-    end
-  end
+  # ============================================================================
+  # Key Prism Tests
+  # ============================================================================
 
   describe "key/1 prism" do
     test "extracts value when key exists and value is non-nil" do
@@ -173,6 +142,10 @@ defmodule Funx.Optics.PrismTest do
       assert Prism.review(50, p) == %{age: 50}
     end
   end
+
+  # ============================================================================
+  # Path Prism Tests
+  # ============================================================================
 
   describe "path/1 - basic operations" do
     test "extracts nested value when full path exists" do
@@ -219,9 +192,6 @@ defmodule Funx.Optics.PrismTest do
       assert %Nothing{} = Prism.preview(%{a: %{b: nil}}, p)
     end
 
-    #
-    # Empty path tests: ensure coverage of safe_get_path([], …) and safe_put_path([], …)
-    #
     test "review with empty path replaces the entire structure" do
       p = Prism.path([])
 
@@ -513,6 +483,170 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
+  # ============================================================================
+  # Composition Tests
+  # ============================================================================
+
+  describe "compose/2" do
+    test "composing struct and key prisms" do
+      p1 = Prism.struct(Account)
+      p2 = Prism.key(:name)
+      p = Prism.compose(p1, p2)
+
+      assert %Just{value: "Alice"} = %Account{name: "Alice"} |> Prism.preview(p)
+      assert %Nothing{} = %{name: "Bob"} |> Prism.preview(p)
+      assert %Nothing{} = %Account{type: "checking"} |> Prism.preview(p)
+    end
+
+    test "composing nested key prisms" do
+      p1 = Prism.key(:account)
+      p2 = Prism.key(:name)
+      p = Prism.compose(p1, p2)
+
+      assert %Just{value: "Alice"} = %{account: %{name: "Alice"}} |> Prism.preview(p)
+      assert %Nothing{} = %{account: %{type: "checking"}} |> Prism.preview(p)
+      assert %Nothing{} = %{other: "value"} |> Prism.preview(p)
+    end
+
+    test "review rebuilds via both prisms" do
+      struct_prism = Prism.struct(Account)
+      name_prism = Prism.key(:name)
+      p = Prism.compose(struct_prism, name_prism)
+
+      assert "Alice" |> Prism.review(p) == %Account{name: "Alice", type: nil}
+    end
+
+    test "review composes in reverse order (inner first, then outer)" do
+      # Compose struct prism with key prism
+      account_name = Prism.compose(Prism.struct(Account), Prism.key(:name))
+
+      # Review applies inner prism first (key: "Alice" -> %{name: "Alice"}),
+      # then outer prism (struct: %{name: "Alice"} -> %Account{name: "Alice"})
+      assert Prism.review("Alice", account_name) == %Account{name: "Alice", type: nil}
+    end
+  end
+
+  describe "compose/1 list composition" do
+    test "concat composes multiple prisms like m_concat for Ord" do
+      prisms = [
+        Prism.struct(Payment),
+        Prism.key(:account),
+        Prism.struct(Account),
+        Prism.key(:name)
+      ]
+
+      composed = Prism.compose(prisms)
+
+      payment = %Payment{
+        amount: 100,
+        account: %Account{name: "Alice", type: "checking"}
+      }
+
+      # All prisms match
+      assert %Maybe.Just{value: "Alice"} = Prism.preview(payment, composed)
+
+      # Fails first prism (not a Payment struct)
+      assert %Maybe.Nothing{} = Prism.preview(%{account: %Account{name: "Bob"}}, composed)
+
+      # Fails struct prism (account is not an Account struct)
+      payment_with_map = %Payment{amount: 100, account: %{name: "Charlie"}}
+      assert %Maybe.Nothing{} = Prism.preview(payment_with_map, composed)
+
+      # Fails key prism (name is nil)
+      payment_no_name = %Payment{amount: 100, account: %Account{type: "savings"}}
+      assert %Maybe.Nothing{} = Prism.preview(payment_no_name, composed)
+    end
+
+    test "compose/1 with empty list returns identity prism" do
+      identity = Prism.compose([])
+
+      assert %Maybe.Just{value: 42} = Prism.preview(42, identity)
+      assert Prism.review(42, identity) == 42
+    end
+
+    test "compose/1 with single prism returns that prism" do
+      p = Prism.key(:name)
+      composed = Prism.compose([p])
+
+      assert %Maybe.Just{value: "Alice"} = Prism.preview(%{name: "Alice"}, composed)
+      assert %Maybe.Nothing{} = Prism.preview(%{age: 30}, composed)
+    end
+  end
+
+  # ============================================================================
+  # Struct Constructor Prism Tests
+  # ============================================================================
+
+  describe "struct constructor prism" do
+    setup do
+      %{
+        cc_prism: Prism.struct(CreditCard),
+        check_prism: Prism.struct(Check),
+        cc: cc_fixture(),
+        check: check_fixture()
+      }
+    end
+
+    test "preview succeeds for matching struct", %{cc_prism: p, cc: cc} do
+      assert Prism.preview(cc, p) == Maybe.just(cc)
+    end
+
+    test "preview fails for non-matching struct", %{cc_prism: p, check: check} do
+      assert Prism.preview(check, p) == Maybe.nothing()
+    end
+
+    test "preview fails for non-struct input", %{cc_prism: p} do
+      assert Prism.preview(:not_a_struct, p) == Maybe.nothing()
+    end
+
+    test "review returns the struct unchanged", %{cc_prism: p, cc: cc} do
+      assert Prism.review(cc, p) == cc
+    end
+
+    test "review does not construct or wrap", %{check_prism: p, check: check} do
+      assert Prism.review(check, p) == check
+    end
+
+    test "prism law: preview(review(x)) == Just(x)", %{cc_prism: p, cc: cc} do
+      assert Prism.preview(Prism.review(cc, p), p) == Maybe.just(cc)
+    end
+
+    test "composed with key: preview extracts nested value", %{cc_prism: cc_p, cc: cc} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+      assert Prism.preview(cc, cc_number_prism) == Maybe.just("1234")
+    end
+
+    test "composed with key: preview fails on wrong struct", %{cc_prism: cc_p, check: check} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+      assert Prism.preview(check, cc_number_prism) == Maybe.nothing()
+    end
+
+    test "composed with key: review constructs struct from map", %{cc_prism: cc_p} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+      result = Prism.review("5678", cc_number_prism)
+      assert result == %CreditCard{number: "5678", expiry: nil}
+    end
+
+    test "composed with key: law preview(review(x)) == Just(x)", %{cc_prism: cc_p} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+      reviewed = Prism.review("5678", cc_number_prism)
+      assert Prism.preview(reviewed, cc_number_prism) == Maybe.just("5678")
+    end
+
+    test "composed with key: law preserves focus through round-trip", %{cc_prism: cc_p, cc: cc} do
+      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
+
+      assert Prism.preview(cc, cc_number_prism) == Maybe.just("1234")
+
+      reviewed = Prism.review("1234", cc_number_prism)
+      assert Prism.preview(reviewed, cc_number_prism) == Maybe.just("1234")
+    end
+  end
+
+  # ============================================================================
+  # Monoid Structure Tests
+  # ============================================================================
+
   describe "Monoid structure via PrismCompose" do
     alias Funx.Monoid.Optics.PrismCompose
 
@@ -578,52 +712,11 @@ defmodule Funx.Optics.PrismTest do
       assert %Maybe.Nothing{} =
                Prism.preview(%{payment: %{account: %{other: "value"}}}, right_assoc)
     end
-
-    test "concat composes multiple prisms like m_concat for Ord" do
-      prisms = [
-        Prism.struct(Payment),
-        Prism.key(:account),
-        Prism.struct(Account),
-        Prism.key(:name)
-      ]
-
-      composed = Prism.compose(prisms)
-
-      payment = %Payment{
-        amount: 100,
-        account: %Account{name: "Alice", type: "checking"}
-      }
-
-      # All prisms match
-      assert %Maybe.Just{value: "Alice"} = Prism.preview(payment, composed)
-
-      # Fails first prism (not a Payment struct)
-      assert %Maybe.Nothing{} = Prism.preview(%{account: %Account{name: "Bob"}}, composed)
-
-      # Fails struct prism (account is not an Account struct)
-      payment_with_map = %Payment{amount: 100, account: %{name: "Charlie"}}
-      assert %Maybe.Nothing{} = Prism.preview(payment_with_map, composed)
-
-      # Fails key prism (name is nil)
-      payment_no_name = %Payment{amount: 100, account: %Account{type: "savings"}}
-      assert %Maybe.Nothing{} = Prism.preview(payment_no_name, composed)
-    end
-
-    test "compose/1 with empty list returns identity prism" do
-      identity = Prism.compose([])
-
-      assert %Maybe.Just{value: 42} = Prism.preview(42, identity)
-      assert Prism.review(42, identity) == 42
-    end
-
-    test "compose/1 with single prism returns that prism" do
-      p = Prism.key(:name)
-      composed = Prism.compose([p])
-
-      assert %Maybe.Just{value: "Alice"} = Prism.preview(%{name: "Alice"}, composed)
-      assert %Maybe.Nothing{} = Prism.preview(%{age: 30}, composed)
-    end
   end
+
+  # ============================================================================
+  # Malformed Prism Construction Tests
+  # ============================================================================
 
   describe "malformed prism construction" do
     test "key/1 raises for non-atom" do
@@ -681,76 +774,12 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
-  describe "struct constructor prism" do
-    setup do
-      %{
-        cc_prism: Prism.struct(CreditCard),
-        check_prism: Prism.struct(Check),
-        cc: %CreditCard{number: "1234", expiry: "12/26"},
-        check: %Check{routing_number: "111000025", account_number: "987654"}
-      }
-    end
+  # ============================================================================
+  # Property-Based Tests
+  # ============================================================================
 
-    test "preview succeeds for matching struct", %{cc_prism: p, cc: cc} do
-      assert Prism.preview(cc, p) == Maybe.just(cc)
-    end
-
-    test "preview fails for non-matching struct", %{cc_prism: p, check: check} do
-      assert Prism.preview(check, p) == Maybe.nothing()
-    end
-
-    test "preview fails for non-struct input", %{cc_prism: p} do
-      assert Prism.preview(:not_a_struct, p) == Maybe.nothing()
-    end
-
-    test "review returns the struct unchanged", %{cc_prism: p, cc: cc} do
-      assert Prism.review(cc, p) == cc
-    end
-
-    test "review does not construct or wrap", %{check_prism: p, check: check} do
-      assert Prism.review(check, p) == check
-    end
-
-    test "prism law: preview(review(x)) == Just(x)", %{cc_prism: p, cc: cc} do
-      assert Prism.preview(Prism.review(cc, p), p) == Maybe.just(cc)
-    end
-
-    test "composed with key: preview extracts nested value", %{cc_prism: cc_p, cc: cc} do
-      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
-      assert Prism.preview(cc, cc_number_prism) == Maybe.just("1234")
-    end
-
-    test "composed with key: preview fails on wrong struct", %{cc_prism: cc_p, check: check} do
-      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
-      assert Prism.preview(check, cc_number_prism) == Maybe.nothing()
-    end
-
-    test "composed with key: review constructs struct from map", %{cc_prism: cc_p} do
-      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
-      result = Prism.review("5678", cc_number_prism)
-      assert result == %CreditCard{number: "5678", expiry: nil}
-    end
-
-    test "composed with key: law preview(review(x)) == Just(x)", %{cc_prism: cc_p} do
-      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
-      reviewed = Prism.review("5678", cc_number_prism)
-      assert Prism.preview(reviewed, cc_number_prism) == Maybe.just("5678")
-    end
-
-    test "composed with key: law preserves focus through round-trip", %{cc_prism: cc_p, cc: cc} do
-      cc_number_prism = Prism.compose(cc_p, Prism.key(:number))
-
-      assert Prism.preview(cc, cc_number_prism) == Maybe.just("1234")
-
-      reviewed = Prism.review("1234", cc_number_prism)
-      assert Prism.preview(reviewed, cc_number_prism) == Maybe.just("1234")
-    end
-  end
-
-  describe "property-based prism laws" do
-    use ExUnitProperties
-
-    property "preview-review law: preview(review(a, prism), prism) == Just(a) for key prisms" do
+  describe "property: preview-review laws" do
+    property "preview(review(a, prism), prism) == Just(a) for key prisms" do
       check all(
               key <- atom(:alphanumeric),
               value <- one_of([integer(), string(:alphanumeric), boolean()])
@@ -765,7 +794,7 @@ defmodule Funx.Optics.PrismTest do
       end
     end
 
-    property "preview-review law: preview(review(a, prism), prism) == Just(a) for path prisms" do
+    property "preview(review(a, prism), prism) == Just(a) for path prisms" do
       check all(
               key1 <- atom(:alphanumeric),
               key2 <- atom(:alphanumeric),
@@ -781,7 +810,7 @@ defmodule Funx.Optics.PrismTest do
       end
     end
 
-    property "preview-review law: preview(review(a, prism), prism) == Just(a) for composed prisms" do
+    property "preview(review(a, prism), prism) == Just(a) for composed prisms" do
       check all(
               key1 <- atom(:alphanumeric),
               key2 <- atom(:alphanumeric),
@@ -795,128 +824,6 @@ defmodule Funx.Optics.PrismTest do
         result = Prism.preview(reviewed, prism)
 
         assert result == Maybe.just(value)
-      end
-    end
-
-    property "preview returns Nothing for maps missing the key" do
-      check all(
-              target_key <- atom(:alphanumeric),
-              other_key <- atom(:alphanumeric),
-              value <- integer()
-            ) do
-        # Only test when keys are different
-        if target_key != other_key do
-          prism = Prism.key(target_key)
-          data = %{other_key => value}
-
-          result = Prism.preview(data, prism)
-
-          assert result == Maybe.nothing()
-        end
-      end
-    end
-
-    property "preview returns Nothing when value is nil" do
-      check all(key <- atom(:alphanumeric)) do
-        prism = Prism.key(key)
-        data = %{key => nil}
-
-        result = Prism.preview(data, prism)
-
-        assert result == Maybe.nothing()
-      end
-    end
-
-    property "composition is associative for prisms" do
-      check all(
-              key1 <- atom(:alphanumeric),
-              key2 <- atom(:alphanumeric),
-              key3 <- atom(:alphanumeric),
-              value <- integer(0..1000)
-            ) do
-        p1 = Prism.key(key1)
-        p2 = Prism.key(key2)
-        p3 = Prism.key(key3)
-
-        # (p1 . p2) . p3 vs p1 . (p2 . p3)
-        left_assoc = Prism.compose(Prism.compose(p1, p2), p3)
-        right_assoc = Prism.compose(p1, Prism.compose(p2, p3))
-
-        # Both should review to the same structure
-        reviewed_left = Prism.review(value, left_assoc)
-        reviewed_right = Prism.review(value, right_assoc)
-
-        assert reviewed_left == reviewed_right
-
-        # Both should preview the same value
-        assert Prism.preview(reviewed_left, left_assoc) == Maybe.just(value)
-        assert Prism.preview(reviewed_right, right_assoc) == Maybe.just(value)
-      end
-    end
-
-    property "identity prism satisfies preview(x) == Just(x) for non-nil values" do
-      check all(value <- one_of([integer(), string(:alphanumeric), boolean()])) do
-        id_prism = Prism.compose([])
-
-        result = Prism.preview(value, id_prism)
-
-        assert result == Maybe.just(value)
-      end
-    end
-
-    property "identity prism satisfies review(x) == x" do
-      check all(
-              value <-
-                one_of([
-                  integer(),
-                  string(:alphanumeric),
-                  map_of(atom(:alphanumeric), integer())
-                ])
-            ) do
-        id_prism = Prism.compose([])
-
-        result = Prism.review(value, id_prism)
-
-        assert result == value
-      end
-    end
-
-    property "preview on nested paths returns Nothing if any intermediate key is missing" do
-      check all(
-              key1 <- atom(:alphanumeric),
-              key2 <- atom(:alphanumeric),
-              key3 <- atom(:alphanumeric),
-              other_key <- atom(:alphanumeric),
-              value <- integer()
-            ) do
-        # Only test when keys are different
-        if key2 != other_key do
-          prism = Prism.path([key1, key2, key3])
-
-          # Create data where first level exists but second level key is different
-          data = %{key1 => %{other_key => value}}
-
-          result = Prism.preview(data, prism)
-
-          assert result == Maybe.nothing()
-        end
-      end
-    end
-
-    property "path prism with single key behaves like key prism" do
-      check all(
-              key <- atom(:alphanumeric),
-              value <- integer(0..1000)
-            ) do
-        path_prism = Prism.path([key])
-        key_prism = Prism.key(key)
-
-        # Both should review to the same structure
-        assert Prism.review(value, path_prism) == Prism.review(value, key_prism)
-
-        # Both should preview the same from matching data
-        data = %{key => value}
-        assert Prism.preview(data, path_prism) == Prism.preview(data, key_prism)
       end
     end
 
@@ -947,7 +854,137 @@ defmodule Funx.Optics.PrismTest do
         assert reviewed == %Account{name: value, type: nil}
       end
     end
+  end
 
+  describe "property: Nothing behavior" do
+    property "preview returns Nothing for maps missing the key" do
+      check all(
+              target_key <- atom(:alphanumeric),
+              other_key <- atom(:alphanumeric),
+              value <- integer()
+            ) do
+        # Only test when keys are different
+        if target_key != other_key do
+          prism = Prism.key(target_key)
+          data = %{other_key => value}
+
+          result = Prism.preview(data, prism)
+
+          assert result == Maybe.nothing()
+        end
+      end
+    end
+
+    property "preview returns Nothing when value is nil" do
+      check all(key <- atom(:alphanumeric)) do
+        prism = Prism.key(key)
+        data = %{key => nil}
+
+        result = Prism.preview(data, prism)
+
+        assert result == Maybe.nothing()
+      end
+    end
+
+    property "preview on nested paths returns Nothing if any intermediate key is missing" do
+      check all(
+              key1 <- atom(:alphanumeric),
+              key2 <- atom(:alphanumeric),
+              key3 <- atom(:alphanumeric),
+              other_key <- atom(:alphanumeric),
+              value <- integer()
+            ) do
+        # Only test when keys are different
+        if key2 != other_key do
+          prism = Prism.path([key1, key2, key3])
+
+          # Create data where first level exists but second level key is different
+          data = %{key1 => %{other_key => value}}
+
+          result = Prism.preview(data, prism)
+
+          assert result == Maybe.nothing()
+        end
+      end
+    end
+  end
+
+  describe "property: identity prism" do
+    property "identity prism satisfies preview(x) == Just(x) for non-nil values" do
+      check all(value <- one_of([integer(), string(:alphanumeric), boolean()])) do
+        id_prism = Prism.compose([])
+
+        result = Prism.preview(value, id_prism)
+
+        assert result == Maybe.just(value)
+      end
+    end
+
+    property "identity prism satisfies review(x) == x" do
+      check all(
+              value <-
+                one_of([
+                  integer(),
+                  string(:alphanumeric),
+                  map_of(atom(:alphanumeric), integer())
+                ])
+            ) do
+        id_prism = Prism.compose([])
+
+        result = Prism.review(value, id_prism)
+
+        assert result == value
+      end
+    end
+  end
+
+  describe "property: composition laws" do
+    property "composition is associative for prisms" do
+      check all(
+              key1 <- atom(:alphanumeric),
+              key2 <- atom(:alphanumeric),
+              key3 <- atom(:alphanumeric),
+              value <- integer(0..1000)
+            ) do
+        p1 = Prism.key(key1)
+        p2 = Prism.key(key2)
+        p3 = Prism.key(key3)
+
+        # (p1 . p2) . p3 vs p1 . (p2 . p3)
+        left_assoc = Prism.compose(Prism.compose(p1, p2), p3)
+        right_assoc = Prism.compose(p1, Prism.compose(p2, p3))
+
+        # Both should review to the same structure
+        reviewed_left = Prism.review(value, left_assoc)
+        reviewed_right = Prism.review(value, right_assoc)
+
+        assert reviewed_left == reviewed_right
+
+        # Both should preview the same value
+        assert Prism.preview(reviewed_left, left_assoc) == Maybe.just(value)
+        assert Prism.preview(reviewed_right, right_assoc) == Maybe.just(value)
+      end
+    end
+
+    property "path prism with single key behaves like key prism" do
+      check all(
+              key <- atom(:alphanumeric),
+              value <- integer(0..1000)
+            ) do
+        path_prism = Prism.path([key])
+        key_prism = Prism.key(key)
+
+        # Both should review to the same structure
+        assert Prism.review(value, path_prism) == Prism.review(value, key_prism)
+
+        # Both should preview the same from matching data
+        data = %{key => value}
+        assert Prism.preview(data, path_prism) == Prism.preview(data, key_prism)
+      end
+    end
+  end
+
+  describe "property: review structure" do
     property "review creates minimal structure with only specified keys" do
       check all(
               key <- atom(:alphanumeric),

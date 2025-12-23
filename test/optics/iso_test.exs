@@ -2,28 +2,58 @@ defmodule Funx.Optics.IsoTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
+  use ExUnitProperties
+
   doctest Funx.Optics.Iso
 
-  alias Funx.Optics.Iso
+  alias Funx.Optics.{Iso, Lens, Prism}
+
+  # ============================================================================
+  # Test Fixtures
+  # ============================================================================
+
+  defp string_int_iso do
+    Iso.make(
+      fn s -> String.to_integer(s) end,
+      fn i -> Integer.to_string(i) end
+    )
+  end
+
+  defp celsius_fahrenheit_iso do
+    Iso.make(
+      fn c -> c * 9 / 5 + 32 end,
+      fn f -> (f - 32) * 5 / 9 end
+    )
+  end
+
+  defp double_iso do
+    Iso.make(
+      fn i -> i * 2 end,
+      fn i -> div(i, 2) end
+    )
+  end
+
+  defp add_offset_iso(offset) do
+    Iso.make(
+      fn x -> x + offset end,
+      fn x -> x - offset end
+    )
+  end
+
+  # ============================================================================
+  # Constructor Tests
+  # ============================================================================
 
   describe "make/2" do
     test "creates an iso with viewer and reviewer functions" do
-      iso =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
+      iso = string_int_iso()
 
       assert Iso.view("42", iso) == 42
       assert Iso.review(42, iso) == "42"
     end
 
     test "satisfies round-trip property: review(view(s, iso), iso) == s" do
-      iso =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
+      iso = string_int_iso()
 
       original = "42"
       result = original |> Iso.view(iso) |> then(&Iso.review(&1, iso))
@@ -31,11 +61,7 @@ defmodule Funx.Optics.IsoTest do
     end
 
     test "satisfies round-trip property: view(review(a, iso), iso) == a" do
-      iso =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
+      iso = string_int_iso()
 
       original = 42
       result = original |> Iso.review(iso) |> then(&Iso.view(&1, iso))
@@ -53,77 +79,57 @@ defmodule Funx.Optics.IsoTest do
     end
   end
 
+  # ============================================================================
+  # Basic Operations Tests
+  # ============================================================================
+
   describe "view/2" do
     test "applies the forward transformation" do
-      celsius_to_fahrenheit =
-        Iso.make(
-          fn c -> c * 9 / 5 + 32 end,
-          fn f -> (f - 32) * 5 / 9 end
-        )
+      iso = celsius_fahrenheit_iso()
 
-      assert Iso.view(0, celsius_to_fahrenheit) == 32.0
-      assert Iso.view(100, celsius_to_fahrenheit) == 212.0
+      assert Iso.view(0, iso) == 32.0
+      assert Iso.view(100, iso) == 212.0
     end
   end
 
   describe "review/2" do
     test "applies the backward transformation" do
-      celsius_to_fahrenheit =
-        Iso.make(
-          fn c -> c * 9 / 5 + 32 end,
-          fn f -> (f - 32) * 5 / 9 end
-        )
+      iso = celsius_fahrenheit_iso()
 
-      assert Iso.review(32, celsius_to_fahrenheit) == 0.0
-      assert Iso.review(212, celsius_to_fahrenheit) == 100.0
+      assert Iso.review(32, iso) == 0.0
+      assert Iso.review(212, iso) == 100.0
     end
   end
 
   describe "over/3" do
     test "modifies the viewed side" do
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
+      iso = string_int_iso()
 
       # "10" -> 10 -> 50 -> "50"
-      assert Iso.over("10", string_int, fn i -> i * 5 end) == "50"
+      assert Iso.over("10", iso, fn i -> i * 5 end) == "50"
     end
 
     test "preserves round-trip property" do
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
+      iso = string_int_iso()
 
       # over with identity should return the original
-      assert Iso.over("42", string_int, fn i -> i end) == "42"
+      assert Iso.over("42", iso, fn i -> i end) == "42"
     end
   end
 
   describe "under/3" do
     test "modifies the reviewed side" do
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
+      iso = string_int_iso()
 
       # 100 -> "100" -> "1000" -> 1000
-      assert Iso.under(100, string_int, fn s -> s <> "0" end) == 1000
+      assert Iso.under(100, iso, fn s -> s <> "0" end) == 1000
     end
 
     test "preserves round-trip property" do
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
+      iso = string_int_iso()
 
       # under with identity should return the original
-      assert Iso.under(42, string_int, fn s -> s end) == 42
+      assert Iso.under(42, iso, fn s -> s end) == 42
     end
 
     test "is unique to Iso due to bidirectional symmetry" do
@@ -145,35 +151,30 @@ defmodule Funx.Optics.IsoTest do
     end
   end
 
+  # ============================================================================
+  # Composition Tests
+  # ============================================================================
+
   describe "from/1" do
     test "reverses the iso's direction" do
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      int_string = Iso.from(string_int)
+      iso = string_int_iso()
+      int_string = Iso.from(iso)
 
       # Original: view converts string to int
-      assert Iso.view("42", string_int) == 42
+      assert Iso.view("42", iso) == 42
       # Reversed: view converts int to string
       assert Iso.view(42, int_string) == "42"
 
       # Original: review converts int to string
-      assert Iso.review(42, string_int) == "42"
+      assert Iso.review(42, iso) == "42"
       # Reversed: review converts string to int
       assert Iso.review("42", int_string) == 42
     end
 
     test "double reversal returns to original direction" do
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
+      iso = string_int_iso()
 
-      reversed_twice = string_int |> Iso.from() |> Iso.from()
+      reversed_twice = iso |> Iso.from() |> Iso.from()
 
       assert Iso.view("42", reversed_twice) == 42
       assert Iso.review(42, reversed_twice) == "42"
@@ -182,41 +183,20 @@ defmodule Funx.Optics.IsoTest do
 
   describe "compose/2" do
     test "composes two isos sequentially" do
-      # string <-> int
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      # int <-> doubled int
-      double =
-        Iso.make(
-          fn i -> i * 2 end,
-          fn i -> div(i, 2) end
-        )
+      iso = string_int_iso()
+      double = double_iso()
 
       # string <-> doubled int
-      composed = Iso.compose(string_int, double)
+      composed = Iso.compose(iso, double)
 
       assert Iso.view("21", composed) == 42
       assert Iso.review(42, composed) == "21"
     end
 
     test "composition satisfies round-trip laws" do
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      double =
-        Iso.make(
-          fn i -> i * 2 end,
-          fn i -> div(i, 2) end
-        )
-
-      composed = Iso.compose(string_int, double)
+      iso = string_int_iso()
+      double = double_iso()
+      composed = Iso.compose(iso, double)
 
       # review(view(s, iso), iso) == s
       assert "21" |> Iso.view(composed) |> then(&Iso.review(&1, composed)) == "21"
@@ -226,21 +206,16 @@ defmodule Funx.Optics.IsoTest do
     end
 
     test "composing with identity has no effect" do
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
+      iso = string_int_iso()
       id = Iso.identity()
 
       # Compose with identity on left
-      left = Iso.compose(id, string_int)
+      left = Iso.compose(id, iso)
       assert Iso.view("42", left) == 42
       assert Iso.review(42, left) == "42"
 
       # Compose with identity on right
-      right = Iso.compose(string_int, id)
+      right = Iso.compose(iso, id)
       assert Iso.view("42", right) == 42
       assert Iso.review(42, right) == "42"
     end
@@ -249,18 +224,9 @@ defmodule Funx.Optics.IsoTest do
   describe "compose/1 list composition" do
     test "composes multiple isos in sequence" do
       isos = [
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        ),
-        Iso.make(
-          fn i -> i * 2 end,
-          fn i -> div(i, 2) end
-        ),
-        Iso.make(
-          fn i -> i + 10 end,
-          fn i -> i - 10 end
-        )
+        string_int_iso(),
+        double_iso(),
+        add_offset_iso(10)
       ]
 
       composed = Iso.compose(isos)
@@ -279,18 +245,209 @@ defmodule Funx.Optics.IsoTest do
     end
 
     test "composing single iso returns that iso (behaviorally)" do
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      composed = Iso.compose([string_int])
+      iso = string_int_iso()
+      composed = Iso.compose([iso])
 
       assert Iso.view("42", composed) == 42
       assert Iso.review(42, composed) == "42"
     end
   end
+
+  # ============================================================================
+  # Conversion to Other Optics
+  # ============================================================================
+
+  describe "as_lens/1" do
+    test "converts iso to lens with correct view operation" do
+      iso = string_int_iso()
+      lens = Iso.as_lens(iso)
+
+      assert Lens.view!("42", lens) == 42
+      assert Lens.view!("100", lens) == 100
+    end
+
+    test "converts iso to lens with correct set operation" do
+      iso = string_int_iso()
+      lens = Iso.as_lens(iso)
+
+      # Set ignores the old value and uses iso's review
+      assert Lens.set!("42", lens, 99) == "99"
+      assert Lens.set!("anything", lens, 0) == "0"
+    end
+
+    test "converts iso to lens with correct over operation" do
+      iso = string_int_iso()
+      lens = Iso.as_lens(iso)
+
+      # "10" -> 10 -> 50 -> "50"
+      assert Lens.over!("10", lens, fn i -> i * 5 end) == "50"
+      assert Lens.over!("7", lens, fn i -> i + 3 end) == "10"
+    end
+
+    test "resulting lens works with nested data" do
+      iso = string_int_iso()
+      iso_lens = Iso.as_lens(iso)
+      key_lens = Lens.key(:value)
+      composed = Lens.compose(key_lens, iso_lens)
+
+      data = %{value: "42"}
+
+      assert Lens.view!(data, composed) == 42
+      assert Lens.set!(data, composed, 99) == %{value: "99"}
+    end
+  end
+
+  describe "as_prism/1" do
+    test "converts iso to prism with preview that always succeeds" do
+      alias Funx.Monad.Maybe.Just
+
+      iso = string_int_iso()
+      prism = Iso.as_prism(iso)
+
+      # Preview always returns Just (never Nothing)
+      assert Prism.preview("42", prism) == %Just{value: 42}
+      assert Prism.preview("100", prism) == %Just{value: 100}
+    end
+
+    test "converts iso to prism with correct review operation" do
+      iso = string_int_iso()
+      prism = Iso.as_prism(iso)
+
+      assert Prism.review(42, prism) == "42"
+      assert Prism.review(0, prism) == "0"
+    end
+
+    test "resulting prism satisfies round-trip property" do
+      alias Funx.Monad.Maybe.Just
+
+      iso = string_int_iso()
+      prism = Iso.as_prism(iso)
+
+      # preview then review
+      original = "42"
+      %Just{value: viewed} = Prism.preview(original, prism)
+      assert Prism.review(viewed, prism) == original
+
+      # review then preview
+      original_int = 42
+      reviewed = Prism.review(original_int, prism)
+      assert Prism.preview(reviewed, prism) == %Just{value: original_int}
+    end
+
+    test "resulting prism composes with other prisms" do
+      alias Funx.Monad.Maybe.Just
+
+      iso = string_int_iso()
+      iso_prism = Iso.as_prism(iso)
+      key_prism = Prism.key(:value)
+      composed = Prism.compose(key_prism, iso_prism)
+
+      # Success case
+      assert Prism.preview(%{value: "42"}, composed) == %Just{value: 42}
+      assert Prism.review(42, composed) == %{value: "42"}
+
+      # Failure case (missing key) - fails at the key prism, not the iso
+      assert Prism.preview(%{other: "42"}, composed) == %Funx.Monad.Maybe.Nothing{}
+    end
+  end
+
+  # ============================================================================
+  # Monoid Structure Tests
+  # ============================================================================
+
+  describe "Monoid structure via IsoCompose" do
+    alias Funx.Monoid.Optics.IsoCompose
+
+    test "isos form a monoid under composition via IsoCompose" do
+      import Funx.Monoid
+
+      i1 = IsoCompose.new(string_int_iso())
+      i2 = IsoCompose.new(double_iso())
+
+      # Composition via Monoid.append
+      composed = append(i1, i2) |> IsoCompose.unwrap()
+
+      assert Iso.view("21", composed) == 42
+      assert Iso.review(42, composed) == "21"
+    end
+
+    test "identity iso preserves values in both directions" do
+      import Funx.Monoid
+
+      id = empty(%IsoCompose{})
+      i = IsoCompose.new(string_int_iso())
+
+      # Left identity: append(id, i) == i
+      left = append(id, i) |> IsoCompose.unwrap()
+      assert Iso.view("42", left) == 42
+      assert Iso.review(42, left) == "42"
+
+      # Right identity: append(i, id) == i
+      right = append(i, id) |> IsoCompose.unwrap()
+      assert Iso.view("42", right) == 42
+      assert Iso.review(42, right) == "42"
+    end
+
+    test "composition is associative" do
+      import Funx.Monoid
+
+      i1 = IsoCompose.new(string_int_iso())
+      i2 = IsoCompose.new(double_iso())
+      i3 = IsoCompose.new(add_offset_iso(10))
+
+      # (i1 . i2) . i3 == i1 . (i2 . i3)
+      left_assoc = append(append(i1, i2), i3) |> IsoCompose.unwrap()
+      right_assoc = append(i1, append(i2, i3)) |> IsoCompose.unwrap()
+
+      # Both should view the same value
+      assert Iso.view("5", left_assoc) == 20
+      assert Iso.view("5", right_assoc) == 20
+
+      # Both should review the same way
+      assert Iso.review(20, left_assoc) == "5"
+      assert Iso.review(20, right_assoc) == "5"
+    end
+
+    test "compose/1 uses monoid structure correctly" do
+      isos = [
+        string_int_iso(),
+        double_iso(),
+        add_offset_iso(10)
+      ]
+
+      composed = Iso.compose(isos)
+
+      # "5" -> 5 -> 10 -> 20
+      assert Iso.view("5", composed) == 20
+      # 20 -> 10 -> 5 -> "5"
+      assert Iso.review(20, composed) == "5"
+    end
+
+    test "unwrap extracts the iso from IsoCompose wrapper" do
+      iso = string_int_iso()
+      wrapped = IsoCompose.new(iso)
+      unwrapped = IsoCompose.unwrap(wrapped)
+
+      # The unwrapped iso should behave identically
+      assert Iso.view("42", unwrapped) == 42
+      assert Iso.review(42, unwrapped) == "42"
+    end
+
+    test "wrap wraps an iso into IsoCompose" do
+      import Funx.Monoid
+
+      iso = string_int_iso()
+      wrapped = wrap(%IsoCompose{}, iso)
+
+      assert %IsoCompose{iso: wrapped_iso} = wrapped
+      assert Iso.view("42", wrapped_iso) == 42
+      assert Iso.review(42, wrapped_iso) == "42"
+    end
+  end
+
+  # ============================================================================
+  # Practical Examples
+  # ============================================================================
 
   describe "practical examples" do
     test "encoding and decoding map key transformations" do
@@ -368,6 +525,10 @@ defmodule Funx.Optics.IsoTest do
     end
   end
 
+  # ============================================================================
+  # Contract Enforcement Tests
+  # ============================================================================
+
   describe "contract enforcement" do
     test "iso operations are total - crashes indicate broken iso" do
       # This iso is deliberately broken - the functions are not inverses
@@ -401,114 +562,14 @@ defmodule Funx.Optics.IsoTest do
     end
   end
 
-  describe "Monoid structure via IsoCompose" do
-    alias Funx.Monoid.Optics.IsoCompose
+  # ============================================================================
+  # Property-Based Tests
+  # ============================================================================
 
-    test "isos form a monoid under composition via IsoCompose" do
-      import Funx.Monoid
-
-      i1 =
-        IsoCompose.new(
-          Iso.make(fn s -> String.to_integer(s) end, fn i -> Integer.to_string(i) end)
-        )
-
-      i2 = IsoCompose.new(Iso.make(fn i -> i * 2 end, fn i -> div(i, 2) end))
-
-      # Composition via Monoid.append
-      composed = append(i1, i2) |> IsoCompose.unwrap()
-
-      assert Iso.view("21", composed) == 42
-      assert Iso.review(42, composed) == "21"
-    end
-
-    test "identity iso preserves values in both directions" do
-      import Funx.Monoid
-
-      id = empty(%IsoCompose{})
-
-      i =
-        IsoCompose.new(
-          Iso.make(fn s -> String.to_integer(s) end, fn i -> Integer.to_string(i) end)
-        )
-
-      # Left identity: append(id, i) == i
-      left = append(id, i) |> IsoCompose.unwrap()
-      assert Iso.view("42", left) == 42
-      assert Iso.review(42, left) == "42"
-
-      # Right identity: append(i, id) == i
-      right = append(i, id) |> IsoCompose.unwrap()
-      assert Iso.view("42", right) == 42
-      assert Iso.review(42, right) == "42"
-    end
-
-    test "composition is associative" do
-      import Funx.Monoid
-
-      i1 =
-        IsoCompose.new(
-          Iso.make(fn s -> String.to_integer(s) end, fn i -> Integer.to_string(i) end)
-        )
-
-      i2 = IsoCompose.new(Iso.make(fn i -> i * 2 end, fn i -> div(i, 2) end))
-      i3 = IsoCompose.new(Iso.make(fn i -> i + 10 end, fn i -> i - 10 end))
-
-      # (i1 . i2) . i3 == i1 . (i2 . i3)
-      left_assoc = append(append(i1, i2), i3) |> IsoCompose.unwrap()
-      right_assoc = append(i1, append(i2, i3)) |> IsoCompose.unwrap()
-
-      # Both should view the same value
-      assert Iso.view("5", left_assoc) == 20
-      assert Iso.view("5", right_assoc) == 20
-
-      # Both should review the same way
-      assert Iso.review(20, left_assoc) == "5"
-      assert Iso.review(20, right_assoc) == "5"
-    end
-
-    test "compose/1 uses monoid structure correctly" do
-      isos = [
-        Iso.make(fn s -> String.to_integer(s) end, fn i -> Integer.to_string(i) end),
-        Iso.make(fn i -> i * 2 end, fn i -> div(i, 2) end),
-        Iso.make(fn i -> i + 10 end, fn i -> i - 10 end)
-      ]
-
-      composed = Iso.compose(isos)
-
-      # "5" -> 5 -> 10 -> 20
-      assert Iso.view("5", composed) == 20
-      # 20 -> 10 -> 5 -> "5"
-      assert Iso.review(20, composed) == "5"
-    end
-
-    test "unwrap extracts the iso from IsoCompose wrapper" do
-      string_int = Iso.make(fn s -> String.to_integer(s) end, fn i -> Integer.to_string(i) end)
-      wrapped = IsoCompose.new(string_int)
-      unwrapped = IsoCompose.unwrap(wrapped)
-
-      # The unwrapped iso should behave identically
-      assert Iso.view("42", unwrapped) == 42
-      assert Iso.review(42, unwrapped) == "42"
-    end
-
-    test "wrap wraps an iso into IsoCompose" do
-      import Funx.Monoid
-
-      string_int = Iso.make(fn s -> String.to_integer(s) end, fn i -> Integer.to_string(i) end)
-      wrapped = wrap(%IsoCompose{}, string_int)
-
-      assert %IsoCompose{iso: iso} = wrapped
-      assert Iso.view("42", iso) == 42
-      assert Iso.review(42, iso) == "42"
-    end
-  end
-
-  describe "property-based iso laws" do
-    use ExUnitProperties
-
-    property "round-trip law: review(view(s, iso), iso) == s for integer addition" do
+  describe "property: round-trip laws" do
+    property "review(view(s, iso), iso) == s for integer addition" do
       check all(value <- integer(), offset <- integer()) do
-        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        iso = add_offset_iso(offset)
 
         # View then review should return original
         result = value |> Iso.view(iso) |> then(&Iso.review(&1, iso))
@@ -517,9 +578,9 @@ defmodule Funx.Optics.IsoTest do
       end
     end
 
-    property "round-trip law: view(review(a, iso), iso) == a for integer addition" do
+    property "view(review(a, iso), iso) == a for integer addition" do
       check all(value <- integer(), offset <- integer()) do
-        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        iso = add_offset_iso(offset)
 
         # Review then view should return original
         result = value |> Iso.review(iso) |> then(&Iso.view(&1, iso))
@@ -528,7 +589,7 @@ defmodule Funx.Optics.IsoTest do
       end
     end
 
-    property "round-trip law: review(view(s, iso), iso) == s for multiplication" do
+    property "review(view(s, iso), iso) == s for multiplication" do
       check all(
               value <- integer(1..1000),
               multiplier <- integer(1..100)
@@ -541,7 +602,7 @@ defmodule Funx.Optics.IsoTest do
       end
     end
 
-    property "round-trip law: view(review(a, iso), iso) == a for multiplication" do
+    property "view(review(a, iso), iso) == a for multiplication" do
       check all(
               base <- integer(1..1000),
               multiplier <- integer(1..100)
@@ -555,7 +616,9 @@ defmodule Funx.Optics.IsoTest do
         assert result == value
       end
     end
+  end
 
+  describe "property: identity laws" do
     property "identity iso satisfies view(x) == x" do
       check all(value <- one_of([integer(), string(:alphanumeric), boolean()])) do
         iso = Iso.identity()
@@ -571,7 +634,9 @@ defmodule Funx.Optics.IsoTest do
         assert Iso.review(value, iso) == value
       end
     end
+  end
 
+  describe "property: composition laws" do
     property "composition is associative" do
       check all(
               offset1 <- integer(-100..100),
@@ -579,9 +644,9 @@ defmodule Funx.Optics.IsoTest do
               offset3 <- integer(-100..100),
               value <- integer()
             ) do
-        i1 = Iso.make(fn x -> x + offset1 end, fn x -> x - offset1 end)
-        i2 = Iso.make(fn x -> x + offset2 end, fn x -> x - offset2 end)
-        i3 = Iso.make(fn x -> x + offset3 end, fn x -> x - offset3 end)
+        i1 = add_offset_iso(offset1)
+        i2 = add_offset_iso(offset2)
+        i3 = add_offset_iso(offset3)
 
         # (i1 . i2) . i3 vs i1 . (i2 . i3)
         left_assoc = Iso.compose(Iso.compose(i1, i2), i3)
@@ -598,7 +663,7 @@ defmodule Funx.Optics.IsoTest do
 
     property "composing with identity on left has no effect" do
       check all(value <- integer(), offset <- integer()) do
-        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        iso = add_offset_iso(offset)
         id = Iso.identity()
 
         composed = Iso.compose(id, iso)
@@ -610,7 +675,7 @@ defmodule Funx.Optics.IsoTest do
 
     property "composing with identity on right has no effect" do
       check all(value <- integer(), offset <- integer()) do
-        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        iso = add_offset_iso(offset)
         id = Iso.identity()
 
         composed = Iso.compose(iso, id)
@@ -619,10 +684,12 @@ defmodule Funx.Optics.IsoTest do
         assert Iso.review(value, composed) == Iso.review(value, iso)
       end
     end
+  end
 
-    property "from involution: from(from(iso)) behaves like iso" do
+  describe "property: from involution" do
+    property "from(from(iso)) behaves like iso" do
       check all(value <- integer(), offset <- integer()) do
-        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        iso = add_offset_iso(offset)
 
         reversed_twice = iso |> Iso.from() |> Iso.from()
 
@@ -634,7 +701,7 @@ defmodule Funx.Optics.IsoTest do
 
     property "from reverses direction: view becomes review and vice versa" do
       check all(value <- integer(), offset <- integer()) do
-        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        iso = add_offset_iso(offset)
         reversed = Iso.from(iso)
 
         # Original iso's view should equal reversed iso's review
@@ -644,10 +711,12 @@ defmodule Funx.Optics.IsoTest do
         assert Iso.review(value, iso) == Iso.view(value, reversed)
       end
     end
+  end
 
+  describe "property: over and under operations" do
     property "over with identity function returns original" do
       check all(value <- integer(), offset <- integer()) do
-        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        iso = add_offset_iso(offset)
 
         result = Iso.over(value, iso, fn x -> x end)
 
@@ -657,7 +726,7 @@ defmodule Funx.Optics.IsoTest do
 
     property "under with identity function returns original" do
       check all(value <- integer(), offset <- integer()) do
-        iso = Iso.make(fn x -> x + offset end, fn x -> x - offset end)
+        iso = add_offset_iso(offset)
 
         result = Iso.under(value, iso, fn x -> x end)
 
@@ -682,15 +751,17 @@ defmodule Funx.Optics.IsoTest do
         assert over_result == manual_result
       end
     end
+  end
 
+  describe "property: composed isos" do
     property "composed isos satisfy round-trip laws" do
       check all(
               value <- integer(),
               offset1 <- integer(-100..100),
               offset2 <- integer(-100..100)
             ) do
-        i1 = Iso.make(fn x -> x + offset1 end, fn x -> x - offset1 end)
-        i2 = Iso.make(fn x -> x + offset2 end, fn x -> x - offset2 end)
+        i1 = add_offset_iso(offset1)
+        i2 = add_offset_iso(offset2)
 
         composed = Iso.compose(i1, i2)
 
@@ -712,9 +783,9 @@ defmodule Funx.Optics.IsoTest do
               offset3 <- integer(-50..50)
             ) do
         isos = [
-          Iso.make(fn x -> x + offset1 end, fn x -> x - offset1 end),
-          Iso.make(fn x -> x + offset2 end, fn x -> x - offset2 end),
-          Iso.make(fn x -> x + offset3 end, fn x -> x - offset3 end)
+          add_offset_iso(offset1),
+          add_offset_iso(offset2),
+          add_offset_iso(offset3)
         ]
 
         composed = Iso.compose(isos)
@@ -736,153 +807,6 @@ defmodule Funx.Optics.IsoTest do
         assert Iso.view(value, composed) == value
         assert Iso.review(value, composed) == value
       end
-    end
-  end
-
-  describe "as_lens/1" do
-    test "converts iso to lens with correct view operation" do
-      alias Funx.Optics.Lens
-
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      lens = Iso.as_lens(string_int)
-
-      assert Lens.view!("42", lens) == 42
-      assert Lens.view!("100", lens) == 100
-    end
-
-    test "converts iso to lens with correct set operation" do
-      alias Funx.Optics.Lens
-
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      lens = Iso.as_lens(string_int)
-
-      # Set ignores the old value and uses iso's review
-      assert Lens.set!("42", lens, 99) == "99"
-      assert Lens.set!("anything", lens, 0) == "0"
-    end
-
-    test "converts iso to lens with correct over operation" do
-      alias Funx.Optics.Lens
-
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      lens = Iso.as_lens(string_int)
-
-      # "10" -> 10 -> 50 -> "50"
-      assert Lens.over!("10", lens, fn i -> i * 5 end) == "50"
-      assert Lens.over!("7", lens, fn i -> i + 3 end) == "10"
-    end
-
-    test "resulting lens works with nested data" do
-      alias Funx.Optics.Lens
-
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      iso_lens = Iso.as_lens(string_int)
-      key_lens = Lens.key(:value)
-      composed = Lens.compose(key_lens, iso_lens)
-
-      data = %{value: "42"}
-
-      assert Lens.view!(data, composed) == 42
-      assert Lens.set!(data, composed, 99) == %{value: "99"}
-    end
-  end
-
-  describe "as_prism/1" do
-    test "converts iso to prism with preview that always succeeds" do
-      alias Funx.Monad.Maybe.Just
-      alias Funx.Optics.Prism
-
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      prism = Iso.as_prism(string_int)
-
-      # Preview always returns Just (never Nothing)
-      assert Prism.preview("42", prism) == %Just{value: 42}
-      assert Prism.preview("100", prism) == %Just{value: 100}
-    end
-
-    test "converts iso to prism with correct review operation" do
-      alias Funx.Optics.Prism
-
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      prism = Iso.as_prism(string_int)
-
-      assert Prism.review(42, prism) == "42"
-      assert Prism.review(0, prism) == "0"
-    end
-
-    test "resulting prism satisfies round-trip property" do
-      alias Funx.Monad.Maybe.Just
-      alias Funx.Optics.Prism
-
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      prism = Iso.as_prism(string_int)
-
-      # preview then review
-      original = "42"
-      %Just{value: viewed} = Prism.preview(original, prism)
-      assert Prism.review(viewed, prism) == original
-
-      # review then preview
-      original_int = 42
-      reviewed = Prism.review(original_int, prism)
-      assert Prism.preview(reviewed, prism) == %Just{value: original_int}
-    end
-
-    test "resulting prism composes with other prisms" do
-      alias Funx.Monad.Maybe.Just
-      alias Funx.Optics.Prism
-
-      string_int =
-        Iso.make(
-          fn s -> String.to_integer(s) end,
-          fn i -> Integer.to_string(i) end
-        )
-
-      iso_prism = Iso.as_prism(string_int)
-      key_prism = Prism.key(:value)
-      composed = Prism.compose(key_prism, iso_prism)
-
-      # Success case
-      assert Prism.preview(%{value: "42"}, composed) == %Just{value: 42}
-      assert Prism.review(42, composed) == %{value: "42"}
-
-      # Failure case (missing key) - fails at the key prism, not the iso
-      assert Prism.preview(%{other: "42"}, composed) == %Funx.Monad.Maybe.Nothing{}
     end
   end
 end
