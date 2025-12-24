@@ -1,20 +1,48 @@
 defmodule Funx.Ord.Dsl do
   @moduledoc """
-  Provides the `ord/1` and `ord/2` macros for building declarative ordering logic.
+  The `Funx.Ord.Dsl` module provides a declarative syntax for building total orderings over complex data structures.
 
-  The DSL lets you express complex multi-field ordering without manually composing
-  `contramap`, `reverse`, and `concat` calls. Each projection is specified with a
-  direction (`:asc` or `:desc`), and the DSL compiles to efficient `Ord` composition.
+  The DSL compiles at compile time into efficient `Ord` compositions using `contramap`, `reverse`, and `concat`. This eliminates the need to manually compose ordering functions while providing a clear, readable syntax for expressing multi-field lexicographic ordering.
 
-  ## Supported Projections
+  Each projection extracts a comparable value from the input and specifies a direction (`:asc` or `:desc`). The DSL handles optional fields, nested structures, custom projections, and type filtering through a unified interface.
 
-  - **Atom** - Creates `Lens.key(atom)` for field access
-  - **Atom with or_else** - Creates `{Prism.key(atom), or_else}` for optional fields
-  - **Function** - Direct projection function
-  - **Lens** - Explicit lens for nested access
-  - **Prism tuple** - `{Prism, or_else}` for optional with fallback
-  - **Bare Prism** - Returns `Maybe`, uses `Maybe.lift_ord` (Nothing < Just)
-  - **Behaviour module** - Custom projection via `Funx.Ord.Dsl.Behaviour`
+  This module is useful for:
+
+    - Multi-field sorting with different directions per field
+    - Handling optional values explicitly with `or_else` fallbacks
+    - Type partitioning to group heterogeneous data before ordering
+    - Custom ordering logic via behaviour modules or projection functions
+    - Nested field access through lenses and prisms
+
+  ### Directions
+
+    - `:asc` - Ascending order (smallest to largest)
+    - `:desc` - Descending order (largest to smallest)
+
+  ### Projection Types
+
+  The DSL supports seven projection forms, all normalized at compile time:
+
+    - Atom - Field access via `Lens.key(atom)`. Total for non-nil fields.
+    - Atom with or_else - Optional field via `{Prism.key(atom), or_else}`. Treats `nil` as the fallback value.
+    - Function - Direct projection `fn x -> ... end` or `&fun/1`. Must return a comparable value.
+    - Lens - Explicit lens for nested access. Total but raises on `nil` intermediate values.
+    - Prism - Explicit prism `{Prism.t(), or_else}` for optional with fallback.
+    - Bare Prism - Returns `Maybe`. Uses `Maybe.lift_ord` where `Nothing < Just`. Valid for sorting but changes `min`/`max` semantics.
+    - Behaviour - Custom projection via `c:Funx.Ord.Dsl.Behaviour.project/2`.
+
+  > Note: Projections that may fail (for example, `Prism.key/1`) must be scoped
+  > or given a fallback to produce a total ordering.
+
+  ### Utility Functions
+
+  Orderings created with `ord/1` return a `%Funx.Monoid.Ord{}` struct compatible with:
+
+    - `Funx.Ord.Utils.compare/3` - Compare two values, returns `:lt`, `:eq`, or `:gt`.
+    - `Funx.Ord.Utils.comparator/1` - Convert to an Elixir comparator function for `Enum.sort/2`.
+    - `Funx.Ord.Utils.min/3` - Returns the lesser of two values.
+    - `Funx.Ord.Utils.max/3` - Returns the greater of two values.
+    - `Funx.List.sort/2` - Sort a list using the ordering.
 
   ## Examples
 
@@ -56,11 +84,7 @@ defmodule Funx.Ord.Dsl do
 
   ## Compile-Time Behavior
 
-  The DSL compiles to direct function calls at **compile time**. There is no runtime
-  overhead for the DSL itself - it expands into the same code you would write manually
-  with `contramap`, `reverse`, and `concat`.
-
-  Example showing compile-time expansion:
+  The DSL expands into direct `Ord` function calls at compile time with zero runtime overhead:
 
       ord do
         asc :name
@@ -74,15 +98,9 @@ defmodule Funx.Ord.Dsl do
         reverse(contramap(Lens.key(:age)))
       ])
 
-  ## Direction Keywords
-
-  - `:asc` - Ascending order (smallest to largest)
-  - `:desc` - Descending order (largest to smallest)
-
   ## Protocol Dispatch
 
-  The DSL leverages the `Funx.Ord` protocol. Extracted values can be any type
-  that implements `Ord`:
+  The DSL leverages the `Funx.Ord` protocol for custom types. Projected values can be any type that implements `Ord`:
 
       defmodule Address do
         defstruct [:city, :state]
@@ -90,12 +108,28 @@ defmodule Funx.Ord.Dsl do
 
       defimpl Funx.Ord, for: Address do
         def lt?(a, b), do: {a.state, a.city} < {b.state, b.city}
-        # ... other functions
+        def le?(a, b), do: {a.state, a.city} <= {b.state, b.city}
+        def gt?(a, b), do: {a.state, a.city} > {b.state, b.city}
+        def ge?(a, b), do: {a.state, a.city} >= {b.state, b.city}
       end
 
       ord do
-        asc :address  # Uses Funx.Ord.Address automatically
+        asc :address  # Uses Funx.Ord.Address protocol implementation
       end
+
+  ## DSL Usage
+
+  Import the DSL with `use Funx.Ord.Dsl`:
+
+      use Funx.Ord.Dsl
+
+      ord do
+        desc :priority
+        asc :created_at
+        asc :name
+      end
+
+  This creates a total ordering that first sorts by priority (descending), then by creation time (ascending), then by name (ascending) for tie-breaking.
   """
 
   # credo:disable-for-this-file Credo.Check.Design.AliasUsage

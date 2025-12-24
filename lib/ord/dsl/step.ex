@@ -4,7 +4,7 @@ defmodule Funx.Ord.Dsl.Step do
   #
   # ## Normalization Invariant
   #
-  # A Step represents a **fully normalized** ordering operation with all syntax sugar
+  # A Step represents a fully normalized ordering operation with all syntax sugar
   # resolved. Each field contains quoted AST that will be compiled into the final Ord:
   #
   #   - `direction`: Either `:asc` or `:desc`
@@ -18,7 +18,7 @@ defmodule Funx.Ord.Dsl.Step do
   #
   # ## Single-Path Guarantee
   #
-  # After the parser creates Steps, there is **no branching on projection type**.
+  # After the parser creates Steps, there is no branching on projection type.
   # The executor simply wraps each step in `Utils.contramap(projection, ord)` and
   # optionally `Utils.reverse(...)` for `:desc` direction.
   #

@@ -59,8 +59,7 @@ defmodule Funx.Ord.Dsl.Behaviour do
       ...> end
 
   The projection extracts a single comparable value from the input. The returned
-  value will be compared using the `Funx.Ord` protocol (or `Funx.Ord.Any` if no
-  specific implementation exists).
+  value will be compared using the `Funx.Ord` protocol.
   """
 
   @doc """

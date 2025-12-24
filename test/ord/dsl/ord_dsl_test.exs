@@ -1,7 +1,26 @@
 defmodule Funx.Ord.Dsl.OrdDslTest do
   @moduledoc false
+  # Comprehensive test suite for the Ord DSL
+  #
+  # Test Organization:
+  #   - Basic atom projections (asc/desc on fields)
+  #   - Atom with or_else (handling nil values)
+  #   - Function projections (anonymous and captured)
+  #   - Helper function projections (reusable Lens/Prism helpers)
+  #   - Explicit Lens projections
+  #   - Explicit Prism projections
+  #   - Bare Prism with Maybe.lift_ord
+  #   - Behaviour module projections
+  #   - Protocol dispatch
+  #   - Complex compositions
+  #   - Compile-time error handling
+  #   - Runtime error handling
+  #   - Edge cases
+  #   - Bare struct module type filtering
+  #   - Property-based law verification
 
   use ExUnit.Case, async: true
+  use ExUnitProperties
   use Funx.Ord.Dsl
 
   alias Funx.Optics.{Lens, Prism}
@@ -17,6 +36,14 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
   defmodule Address do
     defstruct [:street, :city, :state, :zip]
+  end
+
+  defmodule Check do
+    defstruct [:name, :routing_number, :account_number, :amount]
+  end
+
+  defmodule CreditCard do
+    defstruct [:name, :number, :expiry, :amount]
   end
 
   # ============================================================================
@@ -51,6 +78,22 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       weight = Keyword.get(opts, :weight, 1.0)
       (person.score || 0) * weight
     end
+  end
+
+  # ============================================================================
+  # Projection Helper Functions
+  # ============================================================================
+
+  defmodule ProjectionHelpers do
+    @moduledoc false
+    # Reusable projection functions for testing helper function syntax
+
+    alias Funx.Optics.{Lens, Prism}
+
+    def name_lens, do: Lens.key(:name)
+    def age_lens, do: Lens.key(:age)
+    def score_prism, do: Prism.key(:score)
+    def score_with_or_else, do: {Prism.key(:score), 0}
   end
 
   # ============================================================================
@@ -232,14 +275,6 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   # ============================================================================
 
   describe "reusable projections via helper functions" do
-    defmodule ProjectionHelpers do
-      # 0-arity functions that return projections
-      def name_lens, do: Lens.key(:name)
-      def age_lens, do: Lens.key(:age)
-      def score_prism, do: Prism.key(:score)
-      def score_with_or_else, do: {Prism.key(:score), 0}
-    end
-
     test "0-arity function returning Lens" do
       alice = fixture(:alice)
       bob = fixture(:bob)
@@ -927,53 +962,10 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   end
 
   # ============================================================================
-  # Ergonomics Comparison Tests
-  # ============================================================================
-
-  describe "ergonomics comparison" do
-    test "simple case shows improved readability" do
-      alice = fixture(:alice)
-      bob = fixture(:bob)
-
-      ord_person =
-        ord do
-          asc :name
-          desc :age
-        end
-
-      assert Utils.compare(alice, bob, ord_person) == :lt
-    end
-
-    test "complex case demonstrates DSL benefits" do
-      alice = %Person{name: "Alice", age: 30, score: 100, bio: "Engineer"}
-      bob = %Person{name: "Bob", age: 25, score: nil, bio: "Developer"}
-
-      ord_person =
-        ord do
-          asc :name
-          desc :age
-          asc :score, or_else: 0
-          asc &String.length(&1.bio)
-        end
-
-      sorted = Enum.sort([bob, alice], Utils.comparator(ord_person))
-      assert [%Person{name: "Alice"}, %Person{name: "Bob"}] = sorted
-    end
-  end
-
-  # ============================================================================
   # Bare Struct Module for Type Filtering
   # ============================================================================
 
   describe "bare struct module as type filter" do
-    defmodule Check do
-      defstruct [:name, :routing_number, :account_number, :amount]
-    end
-
-    defmodule CreditCard do
-      defstruct [:name, :number, :expiry, :amount]
-    end
-
     test "bare struct module filters by type without struct field comparison" do
       cc_1 = %CreditCard{name: "Charles", number: "4111", expiry: "12/26", amount: 400}
       cc_2 = %CreditCard{name: "Alice", number: "4242", expiry: "01/27", amount: 300}
@@ -1115,6 +1107,332 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       # Verify the order matches the expected Checks
       assert [check_b, check_a, check_c] == result
+    end
+  end
+
+  # ============================================================================
+  # Property-Based Tests
+  # ============================================================================
+
+  describe "property: Ord laws" do
+    property "totality: all values can be compared" do
+      check all(
+              name1 <- string(:alphanumeric),
+              name2 <- string(:alphanumeric),
+              age1 <- integer(0..100),
+              age2 <- integer(0..100)
+            ) do
+        p1 = %Person{name: name1, age: age1}
+        p2 = %Person{name: name2, age: age2}
+
+        ord_person =
+          ord do
+            asc :name
+            asc :age
+          end
+
+        # compare always returns a valid ordering
+        result = Utils.compare(p1, p2, ord_person)
+        assert result in [:lt, :eq, :gt]
+      end
+    end
+
+    property "reflexivity: x compared to itself is always :eq" do
+      check all(
+              name <- string(:alphanumeric),
+              age <- integer(0..100)
+            ) do
+        person = %Person{name: name, age: age}
+
+        ord_person =
+          ord do
+            asc :name
+            desc :age
+          end
+
+        assert Utils.compare(person, person, ord_person) == :eq
+      end
+    end
+
+    property "antisymmetry: if x <= y and y <= x, then x == y" do
+      check all(
+              name1 <- string(:alphanumeric),
+              name2 <- string(:alphanumeric),
+              age1 <- integer(0..100),
+              age2 <- integer(0..100)
+            ) do
+        p1 = %Person{name: name1, age: age1}
+        p2 = %Person{name: name2, age: age2}
+
+        ord_person =
+          ord do
+            asc :name
+            asc :age
+          end
+
+        cmp_12 = Utils.compare(p1, p2, ord_person)
+        cmp_21 = Utils.compare(p2, p1, ord_person)
+
+        if cmp_12 in [:lt, :eq] and cmp_21 in [:lt, :eq] do
+          # Both x <= y and y <= x, so must be equal
+          assert cmp_12 == :eq
+          assert cmp_21 == :eq
+        end
+      end
+    end
+
+    property "transitivity: if x < y and y < z, then x < z" do
+      check all(
+              name1 <- string(:alphanumeric),
+              name2 <- string(:alphanumeric),
+              name3 <- string(:alphanumeric),
+              age1 <- integer(0..100),
+              age2 <- integer(0..100),
+              age3 <- integer(0..100)
+            ) do
+        p1 = %Person{name: name1, age: age1}
+        p2 = %Person{name: name2, age: age2}
+        p3 = %Person{name: name3, age: age3}
+
+        ord_person =
+          ord do
+            asc :name
+            asc :age
+          end
+
+        cmp_12 = Utils.compare(p1, p2, ord_person)
+        cmp_23 = Utils.compare(p2, p3, ord_person)
+        cmp_13 = Utils.compare(p1, p3, ord_person)
+
+        if cmp_12 == :lt and cmp_23 == :lt do
+          # If x < y and y < z, then x < z
+          assert cmp_13 == :lt
+        end
+
+        if cmp_12 == :gt and cmp_23 == :gt do
+          # If x > y and y > z, then x > z
+          assert cmp_13 == :gt
+        end
+      end
+    end
+
+    property "consistency with sort: sorted lists are ordered" do
+      check all(
+              people <-
+                list_of(
+                  tuple({string(:alphanumeric), integer(0..100)}),
+                  min_length: 2,
+                  max_length: 10
+                )
+            ) do
+        persons = Enum.map(people, fn {name, age} -> %Person{name: name, age: age} end)
+
+        ord_person =
+          ord do
+            asc :name
+            asc :age
+          end
+
+        sorted = Enum.sort(persons, Utils.comparator(ord_person))
+
+        # Verify that consecutive elements are in order
+        sorted
+        |> Enum.chunk_every(2, 1, :discard)
+        |> Enum.each(fn [p1, p2] ->
+          result = Utils.compare(p1, p2, ord_person)
+          assert result in [:lt, :eq]
+        end)
+      end
+    end
+  end
+
+  describe "property: projection behavior" do
+    property "asc projection maintains order" do
+      check all(
+              name1 <- string(:alphanumeric),
+              name2 <- string(:alphanumeric)
+            ) do
+        p1 = %Person{name: name1}
+        p2 = %Person{name: name2}
+
+        ord_name =
+          ord do
+            asc :name
+          end
+
+        dsl_result = Utils.compare(p1, p2, ord_name)
+        direct_result = if name1 < name2, do: :lt, else: if(name1 > name2, do: :gt, else: :eq)
+
+        assert dsl_result == direct_result
+      end
+    end
+
+    property "desc projection reverses order" do
+      check all(
+              age1 <- integer(0..100),
+              age2 <- integer(0..100)
+            ) do
+        p1 = %Person{age: age1}
+        p2 = %Person{age: age2}
+
+        ord_age_desc =
+          ord do
+            desc :age
+          end
+
+        dsl_result = Utils.compare(p1, p2, ord_age_desc)
+        # desc reverses: if age1 < age2, result should be :gt
+        direct_result = if age1 > age2, do: :lt, else: if(age1 < age2, do: :gt, else: :eq)
+
+        assert dsl_result == direct_result
+      end
+    end
+
+    property "or_else provides fallback for nil values" do
+      check all(
+              score <- one_of([integer(0..1000), constant(nil)]),
+              default <- integer(0..100)
+            ) do
+        person = %Person{score: score}
+
+        ord_score =
+          ord do
+            asc :score, or_else: default
+          end
+
+        # Should not raise - or_else handles nil
+        result = Utils.compare(person, person, ord_score)
+        assert result == :eq
+      end
+    end
+
+    property "multiple projections compose lexicographically" do
+      check all(
+              name1 <- string(:alphanumeric),
+              name2 <- string(:alphanumeric),
+              age1 <- integer(0..100),
+              age2 <- integer(0..100)
+            ) do
+        p1 = %Person{name: name1, age: age1}
+        p2 = %Person{name: name2, age: age2}
+
+        ord_composed =
+          ord do
+            asc :name
+            asc :age
+          end
+
+        result = Utils.compare(p1, p2, ord_composed)
+
+        # Manual lexicographic comparison
+        expected =
+          cond do
+            name1 < name2 -> :lt
+            name1 > name2 -> :gt
+            age1 < age2 -> :lt
+            age1 > age2 -> :gt
+            true -> :eq
+          end
+
+        assert result == expected
+      end
+    end
+  end
+
+  describe "property: bare Prism with Maybe.lift_ord" do
+    property "Nothing always compares less than Just with asc" do
+      check all(score <- integer(0..1000)) do
+        with_score = %Person{score: score}
+        without_score = %Person{score: nil}
+
+        ord_score =
+          ord do
+            asc Prism.key(:score)
+          end
+
+        # Nothing < Just for asc
+        assert Utils.compare(without_score, with_score, ord_score) == :lt
+        assert Utils.compare(with_score, without_score, ord_score) == :gt
+      end
+    end
+
+    property "Nothing always compares greater than Just with desc" do
+      check all(score <- integer(0..1000)) do
+        with_score = %Person{score: score}
+        without_score = %Person{score: nil}
+
+        ord_score_desc =
+          ord do
+            desc Prism.key(:score)
+          end
+
+        # Nothing > Just for desc (reversed)
+        assert Utils.compare(with_score, without_score, ord_score_desc) == :lt
+        assert Utils.compare(without_score, with_score, ord_score_desc) == :gt
+      end
+    end
+
+    property "two Nothing values always compare equal" do
+      check all(
+              name1 <- string(:alphanumeric),
+              name2 <- string(:alphanumeric)
+            ) do
+        p1 = %Person{name: name1, score: nil}
+        p2 = %Person{name: name2, score: nil}
+
+        ord_score =
+          ord do
+            asc Prism.key(:score)
+          end
+
+        # Both are Nothing, so equal on this projection
+        assert Utils.compare(p1, p2, ord_score) == :eq
+      end
+    end
+  end
+
+  describe "property: function projections" do
+    property "function projection extracts and compares correctly" do
+      check all(
+              bio1 <- string(:alphanumeric, min_length: 1, max_length: 50),
+              bio2 <- string(:alphanumeric, min_length: 1, max_length: 50)
+            ) do
+        p1 = %Person{bio: bio1}
+        p2 = %Person{bio: bio2}
+
+        ord_bio_length =
+          ord do
+            asc &String.length(&1.bio)
+          end
+
+        result = Utils.compare(p1, p2, ord_bio_length)
+        len1 = String.length(bio1)
+        len2 = String.length(bio2)
+
+        expected = if len1 < len2, do: :lt, else: if(len1 > len2, do: :gt, else: :eq)
+        assert result == expected
+      end
+    end
+  end
+
+  describe "property: identity and empty orderings" do
+    property "empty ord treats all values as equal" do
+      check all(
+              name1 <- string(:alphanumeric),
+              name2 <- string(:alphanumeric),
+              age1 <- integer(0..100),
+              age2 <- integer(0..100)
+            ) do
+        p1 = %Person{name: name1, age: age1}
+        p2 = %Person{name: name2, age: age2}
+
+        ord_empty =
+          ord do
+          end
+
+        # Empty ord means all values are equal
+        assert Utils.compare(p1, p2, ord_empty) == :eq
+      end
     end
   end
 end
