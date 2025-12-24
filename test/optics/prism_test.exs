@@ -643,6 +643,51 @@ defmodule Funx.Optics.PrismTest do
     end
   end
 
+  describe "matches_struct prism" do
+    setup do
+      %{
+        cc_prism: Prism.matches_struct(CreditCard),
+        check_prism: Prism.matches_struct(Check),
+        cc: cc_fixture(),
+        check: check_fixture()
+      }
+    end
+
+    test "preview returns Just(true) for matching struct", %{cc_prism: p, cc: cc} do
+      assert Prism.preview(cc, p) == Maybe.just(true)
+    end
+
+    test "preview returns Nothing for non-matching struct", %{cc_prism: p, check: check} do
+      assert Prism.preview(check, p) == Maybe.nothing()
+    end
+
+    test "preview returns Nothing for non-struct input", %{cc_prism: p} do
+      assert Prism.preview(:not_a_struct, p) == Maybe.nothing()
+      assert Prism.preview(%{number: "1234"}, p) == Maybe.nothing()
+    end
+
+    test "different matching structs return same Just(true)", %{cc_prism: p} do
+      cc1 = %CreditCard{number: "1111", expiry: "12/25"}
+      cc2 = %CreditCard{number: "2222", expiry: "01/26"}
+
+      assert Prism.preview(cc1, p) == Prism.preview(cc2, p)
+      assert Prism.preview(cc1, p) == Maybe.just(true)
+    end
+
+    test "review constructs default struct", %{cc_prism: p} do
+      # matches_struct doesn't use the input value for review
+      assert Prism.review(true, p) == %CreditCard{number: nil, expiry: nil}
+      assert Prism.review(false, p) == %CreditCard{number: nil, expiry: nil}
+      assert Prism.review("anything", p) == %CreditCard{number: nil, expiry: nil}
+    end
+
+    test "raises ArgumentError for non-struct module" do
+      assert_raise ArgumentError, ~r/is not a struct module/, fn ->
+        Prism.matches_struct(String)
+      end
+    end
+  end
+
   # ============================================================================
   # Monoid Structure Tests
   # ============================================================================

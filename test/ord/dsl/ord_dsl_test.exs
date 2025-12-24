@@ -4,6 +4,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   use ExUnit.Case, async: true
   use Funx.Ord.Dsl
 
+  alias Funx.Monad.Maybe
   alias Funx.Optics.{Lens, Prism}
   alias Funx.Ord.Utils
 
@@ -958,6 +959,161 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       sorted = Enum.sort([bob, alice], Utils.comparator(ord_person))
       assert [%Person{name: "Alice"}, %Person{name: "Bob"}] = sorted
+    end
+  end
+
+  # ============================================================================
+  # Prism.matches_struct Tests for Mixed Type Sorting
+  # ============================================================================
+
+  describe "Prism.matches_struct for type partitioning" do
+    defmodule Check do
+      defstruct [:name, :routing_number, :account_number, :amount]
+    end
+
+    defmodule CreditCard do
+      defstruct [:name, :number, :expiry, :amount]
+    end
+
+    test "sorts mixed types with matches_struct - Checks first, then by routing_number" do
+      cc_1 = %CreditCard{name: "Charles", number: "4111", expiry: "12/26", amount: 400}
+      cc_2 = %CreditCard{name: "Alice", number: "4242", expiry: "01/27", amount: 300}
+      cc_3 = %CreditCard{name: "Beth", number: nil, expiry: "06/25", amount: 100}
+
+      check_1 = %Check{
+        name: "Frank",
+        routing_number: "111000025",
+        account_number: "0001234567",
+        amount: 100
+      }
+
+      check_2 = %Check{
+        name: "Edith",
+        routing_number: "121042882",
+        account_number: "0009876543",
+        amount: 400
+      }
+
+      check_3 = %Check{
+        name: "Daves",
+        routing_number: "026009593",
+        account_number: "0005551122",
+        amount: 200
+      }
+
+      payment_data = [check_1, check_2, check_3, cc_1, cc_2, cc_3]
+
+      route_name_ord =
+        ord do
+          desc Prism.matches_struct(Check)
+          asc Prism.key(:routing_number)
+          asc Lens.key(:name)
+        end
+
+      result = Funx.List.sort(payment_data, route_name_ord)
+
+      # Extract just the Checks and CreditCards
+      checks = Enum.filter(result, &match?(%Check{}, &1))
+      ccs = Enum.filter(result, &match?(%CreditCard{}, &1))
+
+      # Verify Checks come first
+      assert length(checks) == 3
+      assert length(ccs) == 3
+
+      # Verify Checks are sorted by routing_number ascending
+      routing_numbers = Enum.map(checks, & &1.routing_number)
+      assert routing_numbers == ["026009593", "111000025", "121042882"]
+
+      # Verify Check names match expected order
+      check_names = Enum.map(checks, & &1.name)
+      assert check_names == ["Daves", "Frank", "Edith"]
+
+      # Verify all Checks come before all CreditCards
+      all_items =
+        Enum.map(result, fn
+          %Check{name: n} -> {:check, n}
+          %CreditCard{name: n} -> {:cc, n}
+        end)
+
+      {checks_part, ccs_part} = Enum.split_while(all_items, fn {type, _} -> type == :check end)
+      assert length(checks_part) == 3
+      assert length(ccs_part) == 3
+    end
+
+    test "matches_struct returns Just(true) for all matching structs" do
+      check_1 = %Check{name: "A", routing_number: "111", account_number: "001", amount: 100}
+      check_2 = %Check{name: "B", routing_number: "222", account_number: "002", amount: 200}
+
+      prism = Prism.matches_struct(Check)
+
+      # Both Checks return Just(true), so they compare equal
+      assert Prism.preview(check_1, prism) == Prism.preview(check_2, prism)
+      assert Prism.preview(check_1, prism) == Maybe.just(true)
+    end
+
+    test "matches_struct allows subsequent sort criteria to work correctly" do
+      # Setup Checks with different routing numbers
+      check_a = %Check{
+        name: "Alice",
+        routing_number: "222000000",
+        account_number: "0001111111",
+        amount: 100
+      }
+
+      check_b = %Check{
+        name: "Bob",
+        routing_number: "111000000",
+        account_number: "9999999999",
+        amount: 200
+      }
+
+      check_c = %Check{
+        name: "Charlie",
+        routing_number: "333000000",
+        account_number: "5555555555",
+        amount: 150
+      }
+
+      # With Prism.matches_struct - all Checks are equal on first criterion
+      ord =
+        ord do
+          desc Prism.matches_struct(Check)
+          asc Prism.key(:routing_number)
+        end
+
+      result = Funx.List.sort([check_c, check_a, check_b], ord)
+
+      # Verify routing_number is sorted correctly in ascending order
+      routing_numbers = Enum.map(result, & &1.routing_number)
+      assert routing_numbers == ["111000000", "222000000", "333000000"]
+
+      # Verify the order matches the expected Checks
+      assert [check_b, check_a, check_c] == result
+    end
+
+    test "matches_struct with multiple type partitions" do
+      check_1 = %Check{
+        name: "Frank",
+        routing_number: "111000025",
+        account_number: "001",
+        amount: 100
+      }
+
+      cc_1 = %CreditCard{name: "Alice", number: "4242", expiry: "01/27", amount: 300}
+      person_1 = %Person{name: "Bob", age: 30}
+
+      # Sort: Checks first, then CreditCards, then other types, all by name
+      ord =
+        ord do
+          desc Prism.matches_struct(Check)
+          desc Prism.matches_struct(CreditCard)
+          asc Lens.key(:name)
+        end
+
+      result = Funx.List.sort([person_1, cc_1, check_1], ord)
+
+      # Checks first, then CreditCards, then Persons
+      assert match?([%Check{}, %CreditCard{}, %Person{}], result)
     end
   end
 end
