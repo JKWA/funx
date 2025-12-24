@@ -299,14 +299,12 @@ defmodule Funx.List do
   """
   @spec max([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
   def max(list, ord \\ Funx.Ord) when is_list(list) do
-    case head(list) do
-      %Maybe.Just{value: first} ->
-        result = fold_l(tail(list), first, fn item, acc -> Ord.Utils.max(item, acc, ord) end)
-        Maybe.just(result)
+    import Funx.Monad, only: [map: 2]
 
-      %Maybe.Nothing{} ->
-        Maybe.nothing()
-    end
+    head(list)
+    |> map(fn first ->
+      fold_l(tail(list), first, fn item, acc -> Ord.Utils.max(item, acc, ord) end)
+    end)
   end
 
   @doc """
@@ -350,14 +348,12 @@ defmodule Funx.List do
   """
   @spec min([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
   def min(list, ord \\ Funx.Ord) when is_list(list) do
-    case head(list) do
-      %Maybe.Just{value: first} ->
-        result = fold_l(tail(list), first, fn item, acc -> Ord.Utils.min(item, acc, ord) end)
-        Maybe.just(result)
+    import Funx.Monad, only: [map: 2]
 
-      %Maybe.Nothing{} ->
-        Maybe.nothing()
-    end
+    head(list)
+    |> map(fn first ->
+      fold_l(tail(list), first, fn item, acc -> Ord.Utils.min(item, acc, ord) end)
+    end)
   end
 
   @doc """
