@@ -5,6 +5,9 @@ defmodule Funx.ListTest do
   import Funx.Monad
 
   alias Funx.List
+  alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Ord.Utils, as: OrdUtils
+
   doctest Funx.List
 
   describe "uniq/2" do
@@ -187,7 +190,136 @@ defmodule Funx.ListTest do
     end
 
     test "works with single-element list" do
-      assert List.maybe_head([:only]) == %Funx.Monad.Maybe.Just{value: :only}
+      assert List.maybe_head([:only]) == %Just{value: :only}
+    end
+  end
+
+  describe "head!/1" do
+    test "returns head element for non-empty list" do
+      assert List.head!([1, 2, 3]) == 1
+    end
+
+    test "raises on empty list" do
+      assert_raise ArgumentError, "cannot get head of empty list", fn ->
+        List.head!([])
+      end
+    end
+
+    test "raises on non-list values" do
+      assert_raise ArgumentError, "argument must be a list", fn ->
+        List.head!("not a list")
+      end
+    end
+
+    test "works with single-element list" do
+      assert List.head!([:only]) == :only
+    end
+  end
+
+  describe "tail/1" do
+    test "returns Just with tail for non-empty list" do
+      assert List.tail([1, 2, 3]) == %Just{value: [2, 3]}
+    end
+
+    test "returns Just with empty list for single-element list" do
+      assert List.tail([42]) == %Just{value: []}
+    end
+
+    test "returns Nothing for empty list" do
+      assert List.tail([]) == %Nothing{}
+    end
+
+    test "returns Nothing for non-list values" do
+      assert List.tail("not a list") == %Nothing{}
+      assert List.tail(42) == %Nothing{}
+    end
+  end
+
+  describe "max/2" do
+    test "returns Just with maximum element for non-empty list" do
+      assert List.max([3, 1, 4, 1, 5]) == %Just{value: 5}
+    end
+
+    test "returns Nothing for empty list" do
+      assert List.max([]) == %Nothing{}
+    end
+
+    test "works with single element" do
+      assert List.max([42]) == %Just{value: 42}
+    end
+
+    test "works with custom Ord" do
+      ord = OrdUtils.contramap(&String.length/1)
+      assert List.max(["cat", "elephant", "ox"], ord) == %Just{value: "elephant"}
+    end
+
+    test "works with negative numbers" do
+      assert List.max([-5, -1, -10, -3]) == %Just{value: -1}
+    end
+  end
+
+  describe "max!/2" do
+    test "returns maximum element for non-empty list" do
+      assert List.max!([3, 1, 4, 1, 5]) == 5
+    end
+
+    test "raises on empty list" do
+      assert_raise Enum.EmptyError, fn ->
+        List.max!([])
+      end
+    end
+
+    test "works with single element" do
+      assert List.max!([42]) == 42
+    end
+
+    test "works with custom Ord" do
+      ord = OrdUtils.contramap(&String.length/1)
+      assert List.max!(["cat", "elephant", "ox"], ord) == "elephant"
+    end
+  end
+
+  describe "min/2" do
+    test "returns Just with minimum element for non-empty list" do
+      assert List.min([3, 1, 4, 1, 5]) == %Funx.Monad.Maybe.Just{value: 1}
+    end
+
+    test "returns Nothing for empty list" do
+      assert List.min([]) == %Funx.Monad.Maybe.Nothing{}
+    end
+
+    test "works with single element" do
+      assert List.min([42]) == %Just{value: 42}
+    end
+
+    test "works with custom Ord" do
+      ord = OrdUtils.contramap(&String.length/1)
+      assert List.min(["cat", "elephant", "ox"], ord) == %Just{value: "ox"}
+    end
+
+    test "works with negative numbers" do
+      assert List.min([-5, -1, -10, -3]) == %Just{value: -10}
+    end
+  end
+
+  describe "min!/2" do
+    test "returns minimum element for non-empty list" do
+      assert List.min!([3, 1, 4, 1, 5]) == 1
+    end
+
+    test "raises on empty list" do
+      assert_raise Enum.EmptyError, fn ->
+        List.min!([])
+      end
+    end
+
+    test "works with single element" do
+      assert List.min!([42]) == 42
+    end
+
+    test "works with custom Ord" do
+      ord = OrdUtils.contramap(&String.length/1)
+      assert List.min!(["cat", "elephant", "ox"], ord) == "ox"
     end
   end
 end
