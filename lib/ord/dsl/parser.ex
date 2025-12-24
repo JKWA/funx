@@ -198,17 +198,18 @@ defmodule Funx.Ord.Dsl.Parser do
   end
 
   defp build_projection_ast({:__aliases__, _, _} = module_alias, or_else, meta, caller_env) do
-    if is_nil(or_else) do
-      expanded_module = Macro.expand(module_alias, caller_env)
-      validate_behaviour_implementation!(expanded_module, meta)
-
-      quote do
-        fn value -> unquote(expanded_module).project(value, []) end
-      end
-    else
+    unless is_nil(or_else) do
       raise CompileError,
         line: Keyword.get(meta, :line),
         description: Errors.or_else_with_behaviour()
+    end
+
+    expanded_module = Macro.expand(module_alias, caller_env)
+
+    if function_exported?(expanded_module, :__struct__, 0) do
+      build_struct_filter_ast(expanded_module)
+    else
+      build_behaviour_projection_ast(expanded_module, meta)
     end
   end
 
@@ -216,6 +217,31 @@ defmodule Funx.Ord.Dsl.Parser do
     raise CompileError,
       line: Keyword.get(meta, :line),
       description: Errors.invalid_projection_type(other)
+  end
+
+  # ============================================================================
+  # MODULE PROJECTION HELPERS
+  # ============================================================================
+
+  # Build a type filter projection for struct modules
+  # Returns true for matching structs, false otherwise
+  # This allows type partitioning without imposing struct-field ordering
+  defp build_struct_filter_ast(struct_module) do
+    quote do
+      fn
+        %unquote(struct_module){} -> true
+        _ -> false
+      end
+    end
+  end
+
+  # Build a behaviour projection that calls the module's project/2 function
+  defp build_behaviour_projection_ast(behaviour_module, meta) do
+    validate_behaviour_implementation!(behaviour_module, meta)
+
+    quote do
+      fn value -> unquote(behaviour_module).project(value, []) end
+    end
   end
 
   # ============================================================================

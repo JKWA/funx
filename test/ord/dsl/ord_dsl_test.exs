@@ -4,7 +4,6 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   use ExUnit.Case, async: true
   use Funx.Ord.Dsl
 
-  alias Funx.Monad.Maybe
   alias Funx.Optics.{Lens, Prism}
   alias Funx.Ord.Utils
 
@@ -963,10 +962,10 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   end
 
   # ============================================================================
-  # Prism.matches_struct Tests for Mixed Type Sorting
+  # Bare Struct Module for Type Filtering
   # ============================================================================
 
-  describe "Prism.matches_struct for type partitioning" do
+  describe "bare struct module as type filter" do
     defmodule Check do
       defstruct [:name, :routing_number, :account_number, :amount]
     end
@@ -975,7 +974,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       defstruct [:name, :number, :expiry, :amount]
     end
 
-    test "sorts mixed types with matches_struct - Checks first, then by routing_number" do
+    test "bare struct module filters by type without struct field comparison" do
       cc_1 = %CreditCard{name: "Charles", number: "4111", expiry: "12/26", amount: 400}
       cc_2 = %CreditCard{name: "Alice", number: "4242", expiry: "01/27", amount: 300}
       cc_3 = %CreditCard{name: "Beth", number: nil, expiry: "06/25", amount: 100}
@@ -1003,9 +1002,10 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       payment_data = [check_1, check_2, check_3, cc_1, cc_2, cc_3]
 
+      # Use bare Check module for type filtering
       route_name_ord =
         ord do
-          desc Prism.matches_struct(Check)
+          desc Check
           asc Prism.key(:routing_number)
           asc Lens.key(:name)
         end
@@ -1040,19 +1040,45 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       assert length(ccs_part) == 3
     end
 
-    test "matches_struct returns Just(true) for all matching structs" do
-      check_1 = %Check{name: "A", routing_number: "111", account_number: "001", amount: 100}
-      check_2 = %Check{name: "B", routing_number: "222", account_number: "002", amount: 200}
+    test "bare struct module creates function returning true/false" do
+      check = %Check{name: "Alice", routing_number: "111", account_number: "001", amount: 100}
+      cc = %CreditCard{name: "Bob", number: "4242", expiry: "01/27", amount: 300}
 
-      prism = Prism.matches_struct(Check)
+      ord =
+        ord do
+          desc Check
+        end
 
-      # Both Checks return Just(true), so they compare equal
-      assert Prism.preview(check_1, prism) == Prism.preview(check_2, prism)
-      assert Prism.preview(check_1, prism) == Maybe.just(true)
+      # Both Checks should return same value (true), CreditCards return false
+      # So Checks compare equal to each other, and all Checks > all CreditCards (when desc)
+      checks_sorted = Funx.List.sort([check, check], ord)
+      assert checks_sorted == [check, check]
+
+      mixed_sorted = Funx.List.sort([cc, check], ord)
+      assert mixed_sorted == [check, cc]
     end
 
-    test "matches_struct allows subsequent sort criteria to work correctly" do
-      # Setup Checks with different routing numbers
+    test "multiple bare struct modules for multi-level partitioning" do
+      check = %Check{name: "Frank", routing_number: "111", account_number: "001", amount: 100}
+      cc = %CreditCard{name: "Alice", number: "4242", expiry: "01/27", amount: 300}
+      person = %Person{name: "Bob", age: 30}
+
+      # Sort: Checks first, then CreditCards, then Persons, all by name
+      ord =
+        ord do
+          desc Check
+          desc CreditCard
+          asc Lens.key(:name)
+        end
+
+      result = Funx.List.sort([person, cc, check], ord)
+
+      # Checks first, then CreditCards, then Persons
+      assert match?([%Check{}, %CreditCard{}, %Person{}], result)
+    end
+
+    test "bare struct avoids struct field ordering interference" do
+      # Create Checks where account_number order differs from routing_number order
       check_a = %Check{
         name: "Alice",
         routing_number: "222000000",
@@ -1074,10 +1100,10 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
         amount: 150
       }
 
-      # With Prism.matches_struct - all Checks are equal on first criterion
+      # With bare struct - all Checks return true, so they're equal on first criterion
       ord =
         ord do
-          desc Prism.matches_struct(Check)
+          desc Check
           asc Prism.key(:routing_number)
         end
 
@@ -1089,31 +1115,6 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       # Verify the order matches the expected Checks
       assert [check_b, check_a, check_c] == result
-    end
-
-    test "matches_struct with multiple type partitions" do
-      check_1 = %Check{
-        name: "Frank",
-        routing_number: "111000025",
-        account_number: "001",
-        amount: 100
-      }
-
-      cc_1 = %CreditCard{name: "Alice", number: "4242", expiry: "01/27", amount: 300}
-      person_1 = %Person{name: "Bob", age: 30}
-
-      # Sort: Checks first, then CreditCards, then other types, all by name
-      ord =
-        ord do
-          desc Prism.matches_struct(Check)
-          desc Prism.matches_struct(CreditCard)
-          asc Lens.key(:name)
-        end
-
-      result = Funx.List.sort([person_1, cc_1, check_1], ord)
-
-      # Checks first, then CreditCards, then Persons
-      assert match?([%Check{}, %CreditCard{}, %Person{}], result)
     end
   end
 end
