@@ -174,23 +174,23 @@ defmodule Funx.ListTest do
     end
   end
 
-  describe "maybe_head/1" do
+  describe "head/1" do
     test "returns Just with head for non-empty list" do
-      assert List.maybe_head([1, 2, 3]) == %Funx.Monad.Maybe.Just{value: 1}
+      assert List.head([1, 2, 3]) == %Funx.Monad.Maybe.Just{value: 1}
     end
 
     test "returns Nothing for empty list" do
-      assert List.maybe_head([]) == %Funx.Monad.Maybe.Nothing{}
+      assert List.head([]) == %Funx.Monad.Maybe.Nothing{}
     end
 
     test "returns Nothing for non-list values" do
-      assert List.maybe_head("not a list") == %Funx.Monad.Maybe.Nothing{}
-      assert List.maybe_head(42) == %Funx.Monad.Maybe.Nothing{}
-      assert List.maybe_head(nil) == %Funx.Monad.Maybe.Nothing{}
+      assert List.head("not a list") == %Funx.Monad.Maybe.Nothing{}
+      assert List.head(42) == %Funx.Monad.Maybe.Nothing{}
+      assert List.head(nil) == %Funx.Monad.Maybe.Nothing{}
     end
 
     test "works with single-element list" do
-      assert List.maybe_head([:only]) == %Just{value: :only}
+      assert List.head([:only]) == %Just{value: :only}
     end
   end
 

@@ -145,7 +145,7 @@ defmodule Funx.Optics.Traversal do
   def preview(structure, %__MODULE__{foci: foci}) do
     foci
     |> Maybe.concat_map(&read_optic_as_maybe(&1, structure))
-    |> List.maybe_head()
+    |> List.head()
   end
 
   @doc """

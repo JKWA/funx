@@ -222,17 +222,17 @@ defmodule Funx.List do
 
   ## Examples
 
-      iex> Funx.List.maybe_head([1, 2, 3])
+      iex> Funx.List.head([1, 2, 3])
       %Funx.Monad.Maybe.Just{value: 1}
 
-      iex> Funx.List.maybe_head([])
+      iex> Funx.List.head([])
       %Funx.Monad.Maybe.Nothing{}
 
-      iex> Funx.List.maybe_head("not a list")
+      iex> Funx.List.head("not a list")
       %Funx.Monad.Maybe.Nothing{}
   """
-  @spec maybe_head([a]) :: Maybe.t(a) when a: term()
-  def maybe_head(list) do
+  @spec head([a]) :: Maybe.t(a) when a: term()
+  def head(list) do
     case list do
       [head | _] -> Maybe.just(head)
       _ -> Maybe.nothing()
@@ -254,7 +254,7 @@ defmodule Funx.List do
   """
   @spec head!([a]) :: a when a: term()
   def head!(list) do
-    Maybe.to_try!(maybe_head(list), %ArgumentError{message: "cannot get head of empty list"})
+    Maybe.to_try!(head(list), %ArgumentError{message: "cannot get head of empty list"})
   end
 
   @doc """
@@ -299,7 +299,7 @@ defmodule Funx.List do
   """
   @spec max([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
   def max(list, ord \\ Funx.Ord) when is_list(list) do
-    case maybe_head(list) do
+    case head(list) do
       %Maybe.Just{value: first} ->
         result = fold_l(tail(list), first, fn item, acc -> Ord.Utils.max(item, acc, ord) end)
         Maybe.just(result)
@@ -350,7 +350,7 @@ defmodule Funx.List do
   """
   @spec min([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
   def min(list, ord \\ Funx.Ord) when is_list(list) do
-    case maybe_head(list) do
+    case head(list) do
       %Maybe.Just{value: first} ->
         result = fold_l(tail(list), first, fn item, acc -> Ord.Utils.min(item, acc, ord) end)
         Maybe.just(result)
