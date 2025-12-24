@@ -63,6 +63,7 @@ defmodule Funx.Macros do
       iex> Ord.gt?(%Person{age: 35}, %Person{age: 30})
       true
   """
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defmacro ord_for(for_struct, field) do
     quote do
       alias Funx.Ord
@@ -73,20 +74,32 @@ defmodule Funx.Macros do
             }),
             do: Ord.lt?(v1, v2)
 
+        def lt?(%unquote(for_struct){} = a, b) when is_struct(b),
+          do: a.__struct__ < b.__struct__
+
         def le?(%unquote(for_struct){unquote(field) => v1}, %unquote(for_struct){
               unquote(field) => v2
             }),
             do: Ord.le?(v1, v2)
+
+        def le?(%unquote(for_struct){} = a, b) when is_struct(b),
+          do: a.__struct__ <= b.__struct__
 
         def gt?(%unquote(for_struct){unquote(field) => v1}, %unquote(for_struct){
               unquote(field) => v2
             }),
             do: Ord.gt?(v1, v2)
 
+        def gt?(%unquote(for_struct){} = a, b) when is_struct(b),
+          do: a.__struct__ > b.__struct__
+
         def ge?(%unquote(for_struct){unquote(field) => v1}, %unquote(for_struct){
               unquote(field) => v2
             }),
             do: Ord.ge?(v1, v2)
+
+        def ge?(%unquote(for_struct){} = a, b) when is_struct(b),
+          do: a.__struct__ >= b.__struct__
       end
     end
   end
