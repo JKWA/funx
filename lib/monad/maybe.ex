@@ -587,6 +587,11 @@ defmodule Funx.Monad.Maybe do
   @doc """
   Extracts a value from a `Maybe`, raising an exception if `Nothing`.
 
+  The second parameter can be:
+  - A string message (raises `RuntimeError`)
+  - An exception module (e.g., `Enum.EmptyError`)
+  - An exception struct (e.g., `%ArgumentError{message: "custom"}`)
+
   ## Examples
 
       iex> Funx.Monad.Maybe.to_try!(Funx.Monad.Maybe.just(5))
@@ -594,14 +599,34 @@ defmodule Funx.Monad.Maybe do
 
       iex> Funx.Monad.Maybe.to_try!(Funx.Monad.Maybe.nothing(), "No value found")
       ** (RuntimeError) No value found
+
+      iex> Funx.Monad.Maybe.to_try!(Funx.Monad.Maybe.nothing(), Enum.EmptyError)
+      ** (Enum.EmptyError) empty error
+
+      iex> Funx.Monad.Maybe.to_try!(Funx.Monad.Maybe.nothing(), %ArgumentError{message: "missing value"})
+      ** (ArgumentError) missing value
   """
-  @spec to_try!(t(right), String.t()) :: right | no_return when right: term()
-  def to_try!(maybe, message \\ "Nothing value encountered")
-      when is_struct(maybe, Just) or is_struct(maybe, Nothing) do
-    case maybe do
-      %Just{value: value} -> value
-      %Nothing{} -> raise message
-    end
+  @spec to_try!(t(right), String.t() | atom() | Exception.t()) :: right | no_return
+        when right: term()
+  def to_try!(maybe, error_or_message \\ "Nothing value encountered")
+
+  def to_try!(%Just{value: value}, _error_or_message), do: value
+
+  def to_try!(%Nothing{}, exception) when is_atom(exception) do
+    raise exception
+  end
+
+  def to_try!(%Nothing{}, %{__exception__: true} = exception) do
+    raise exception
+  end
+
+  def to_try!(%Nothing{}, message) when is_binary(message) do
+    raise message
+  end
+
+  def to_try!(maybe, _message) do
+    raise ArgumentError,
+          "First argument must be a Maybe (Just or Nothing), got: #{inspect(maybe)}"
   end
 
   @doc """

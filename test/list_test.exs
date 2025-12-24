@@ -206,7 +206,7 @@ defmodule Funx.ListTest do
     end
 
     test "raises on non-list values" do
-      assert_raise ArgumentError, "argument must be a list", fn ->
+      assert_raise ArgumentError, "cannot get head of empty list", fn ->
         List.head!("not a list")
       end
     end
@@ -217,21 +217,16 @@ defmodule Funx.ListTest do
   end
 
   describe "tail/1" do
-    test "returns Just with tail for non-empty list" do
-      assert List.tail([1, 2, 3]) == %Just{value: [2, 3]}
+    test "returns tail for non-empty list" do
+      assert List.tail([1, 2, 3]) == [2, 3]
     end
 
-    test "returns Just with empty list for single-element list" do
-      assert List.tail([42]) == %Just{value: []}
+    test "returns empty list for single-element list" do
+      assert List.tail([42]) == []
     end
 
-    test "returns Nothing for empty list" do
-      assert List.tail([]) == %Nothing{}
-    end
-
-    test "returns Nothing for non-list values" do
-      assert List.tail("not a list") == %Nothing{}
-      assert List.tail(42) == %Nothing{}
+    test "returns empty list for empty list" do
+      assert List.tail([]) == []
     end
   end
 

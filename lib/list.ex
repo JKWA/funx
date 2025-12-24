@@ -55,6 +55,7 @@ defmodule Funx.List do
   - `fold_l/3`: Performs left-associative folding.
   - `fold_r/3`: Performs right-associative folding.
   """
+  import Kernel, except: [max: 2, min: 2]
   import Funx.Foldable, only: [fold_l: 3]
   import Funx.Filterable, only: [filter: 2]
   import Funx.Monoid.Utils, only: [m_concat: 2]
@@ -241,7 +242,7 @@ defmodule Funx.List do
   @doc """
   Returns the head of a list.
 
-  Raises `ArgumentError` if the list is empty.
+  Raises `ArgumentError` if the list is empty or not a list.
 
   ## Examples
 
@@ -252,33 +253,29 @@ defmodule Funx.List do
       42
   """
   @spec head!([a]) :: a when a: term()
-  def head!([head | _]), do: head
-  def head!([]), do: raise(ArgumentError, "cannot get head of empty list")
-  def head!(_), do: raise(ArgumentError, "argument must be a list")
+  def head!(list) do
+    Maybe.to_try!(maybe_head(list), %ArgumentError{message: "cannot get head of empty list"})
+  end
 
   @doc """
-  Returns the tail of a list wrapped in `Maybe.Just`, or `Maybe.Nothing` if empty.
+  Returns the tail of a list.
+
+  The tail of an empty list is an empty list.
 
   ## Examples
 
       iex> Funx.List.tail([1, 2, 3])
-      %Funx.Monad.Maybe.Just{value: [2, 3]}
+      [2, 3]
 
       iex> Funx.List.tail([1])
-      %Funx.Monad.Maybe.Just{value: []}
+      []
 
       iex> Funx.List.tail([])
-      %Funx.Monad.Maybe.Nothing{}
+      []
   """
-  @spec tail([a]) :: Maybe.t([a]) when a: term()
-  def tail(list) when is_list(list) do
-    case list do
-      [_ | tail] -> Maybe.just(tail)
-      [] -> Maybe.nothing()
-    end
-  end
-
-  def tail(_), do: Maybe.nothing()
+  @spec tail([a]) :: [a] when a: term()
+  def tail([_ | tail]), do: tail
+  def tail([]), do: []
 
   @doc """
   Returns the maximum element in a list according to the given ordering.
@@ -302,9 +299,13 @@ defmodule Funx.List do
   """
   @spec max([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
   def max(list, ord \\ Funx.Ord) when is_list(list) do
-    case list do
-      [] -> Maybe.nothing()
-      [first | rest] -> Maybe.just(do_max(rest, first, ord))
+    case maybe_head(list) do
+      %Maybe.Just{value: first} ->
+        result = fold_l(tail(list), first, fn item, acc -> Ord.Utils.max(item, acc, ord) end)
+        Maybe.just(result)
+
+      %Maybe.Nothing{} ->
+        Maybe.nothing()
     end
   end
 
@@ -324,10 +325,7 @@ defmodule Funx.List do
   """
   @spec max!([a], Ord.Utils.ord_t()) :: a when a: term()
   def max!(list, ord \\ Funx.Ord) when is_list(list) do
-    case list do
-      [] -> raise Enum.EmptyError
-      [first | rest] -> do_max(rest, first, ord)
-    end
+    Maybe.to_try!(max(list, ord), Enum.EmptyError)
   end
 
   @doc """
@@ -352,9 +350,13 @@ defmodule Funx.List do
   """
   @spec min([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
   def min(list, ord \\ Funx.Ord) when is_list(list) do
-    case list do
-      [] -> Maybe.nothing()
-      [first | rest] -> Maybe.just(do_min(rest, first, ord))
+    case maybe_head(list) do
+      %Maybe.Just{value: first} ->
+        result = fold_l(tail(list), first, fn item, acc -> Ord.Utils.min(item, acc, ord) end)
+        Maybe.just(result)
+
+      %Maybe.Nothing{} ->
+        Maybe.nothing()
     end
   end
 
@@ -374,24 +376,7 @@ defmodule Funx.List do
   """
   @spec min!([a], Ord.Utils.ord_t()) :: a when a: term()
   def min!(list, ord \\ Funx.Ord) when is_list(list) do
-    case list do
-      [] -> raise Enum.EmptyError
-      [first | rest] -> do_min(rest, first, ord)
-    end
-  end
-
-  # Helper: find maximum by folding through the list
-  defp do_max(list, current_max, ord) do
-    fold_l(list, current_max, fn item, acc ->
-      Ord.Utils.max(item, acc, ord)
-    end)
-  end
-
-  # Helper: find minimum by folding through the list
-  defp do_min(list, current_min, ord) do
-    fold_l(list, current_min, fn item, acc ->
-      Ord.Utils.min(item, acc, ord)
-    end)
+    Maybe.to_try!(min(list, ord), Enum.EmptyError)
   end
 end
 
