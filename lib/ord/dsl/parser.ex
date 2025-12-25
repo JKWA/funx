@@ -14,7 +14,7 @@ defmodule Funx.Ord.Dsl.Parser do
   #
   # All syntax sugar resolves to these types:
   #
-  #   - :atom              → Lens.key(:atom)
+  #   - :atom              → Prism.key(:atom)
   #   - :atom, or_else: x  → {Prism.key(:atom), x}
   #   - Lens.key(...)      → Lens.key(...) (pass through)
   #   - Prism.key(...)     → Prism.key(...) (pass through)
@@ -25,7 +25,6 @@ defmodule Funx.Ord.Dsl.Parser do
   # contramap/2 is the ONLY place that converts optics to functions.
   # The parser never creates function wrappers around optics.
 
-  alias Funx.Optics.Lens
   alias Funx.Optics.Prism
   alias Funx.Ord.Dsl.Errors
   alias Funx.Ord.Dsl.Step
@@ -92,7 +91,7 @@ defmodule Funx.Ord.Dsl.Parser do
 
   defp build_projection_ast(atom, nil, _meta, _caller_env) when is_atom(atom) do
     quote do
-      Lens.key(unquote(atom))
+      Prism.key(unquote(atom))
     end
   end
 

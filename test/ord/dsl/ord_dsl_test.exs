@@ -46,6 +46,30 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
     defstruct [:name, :number, :expiry, :amount]
   end
 
+  defmodule LimitedStruct do
+    defstruct [:name]
+  end
+
+  defmodule NullableStruct do
+    defstruct [:name, :optional_field]
+  end
+
+  defmodule Container do
+    defstruct [:value]
+  end
+
+  defmodule Company do
+    defstruct [:name, :address]
+  end
+
+  defmodule Employee do
+    defstruct [:name, :company]
+  end
+
+  defmodule CompanyNoAddress do
+    defstruct [:name]
+  end
+
   # ============================================================================
   # Protocol Implementations
   # ============================================================================
@@ -891,18 +915,204 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       end
     end
 
-    test "custom Ord implementation raises on invalid values" do
+    test "Lens raises on invalid values (explicit Lens required)" do
       person_with_address = fixture(:alice_with_address)
       person_with_nil_address = %Person{name: "Bob", address: nil}
 
+      # Must use explicit Lens to get raising behavior
+      ord_by_address =
+        ord do
+          asc Lens.key(:address)
+        end
+
+      # Lens extracts nil, then Address.Ord.lt? tries to access .state on nil
+      assert_raise KeyError, fn ->
+        Utils.compare(person_with_address, person_with_nil_address, ord_by_address)
+      end
+    end
+
+    test "atoms use Prism and handle nil safely (Nothing < Just)" do
+      person_with_address = fixture(:alice_with_address)
+      person_with_nil_address = %Person{name: "Bob", address: nil}
+
+      # Atom uses Prism.key by default - safe for nil
       ord_by_address =
         ord do
           asc :address
         end
 
+      # nil (Nothing) < Address struct (Just)
+      result = Utils.compare(person_with_nil_address, person_with_address, ord_by_address)
+      assert result == :lt
+    end
+  end
+
+  # ============================================================================
+  # Lens Tests - Total Access with Predictable Failures
+  # ============================================================================
+
+  describe "Lens - total access" do
+    test "Lens.key works correctly when values exist" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_name =
+        ord do
+          asc Lens.key(:name)
+        end
+
+      assert Utils.compare(alice, bob, ord_name) == :lt
+      assert Utils.compare(bob, alice, ord_name) == :gt
+    end
+
+    test "Lens.path works correctly with nested values" do
+      alice_with_address = fixture(:alice_with_address)
+
+      bob_with_address = %Person{
+        name: "Bob",
+        address: %Address{city: "Boston", state: "MA"}
+      }
+
+      ord_city =
+        ord do
+          asc Lens.path([:address, :city])
+        end
+
+      # "Austin" < "Boston"
+      assert Utils.compare(alice_with_address, bob_with_address, ord_city) == :lt
+    end
+
+    test "Lens.key fails fast with KeyError when key is missing from struct" do
+      s1 = %LimitedStruct{name: "Alice"}
+      s2 = %Person{name: "Bob", age: 30}
+
+      ord_age =
+        ord do
+          asc Lens.key(:age)
+        end
+
+      # LimitedStruct doesn't have :age key
       assert_raise KeyError, fn ->
-        Utils.compare(person_with_address, person_with_nil_address, ord_by_address)
+        Utils.compare(s1, s2, ord_age)
       end
+    end
+
+    test "Lens.path fails fast with KeyError when intermediate key is missing" do
+      person_no_address = %Person{name: "Alice", age: 30}
+      person_with_address = fixture(:alice_with_address)
+
+      ord_city =
+        ord do
+          asc Lens.path([:address, :city])
+        end
+
+      # Person struct has :address key, but its value is nil
+      # Lens.path will try to access :city on nil and fail
+      assert_raise BadMapError, fn ->
+        Utils.compare(person_no_address, person_with_address, ord_city)
+      end
+    end
+
+    test "Lens.key extracts nil values successfully and compares them" do
+      s1 = %NullableStruct{name: "Alice", optional_field: nil}
+      s2 = %NullableStruct{name: "Bob", optional_field: "value"}
+
+      ord_optional =
+        ord do
+          asc Lens.key(:optional_field)
+        end
+
+      # Lens extracts nil from s1, then compares nil < "value" (which is true in Elixir)
+      assert Utils.compare(s1, s2, ord_optional) == :lt
+    end
+
+    test "Lens vs Prism - different behavior with nil values" do
+      c1 = %Container{value: nil}
+      c2 = %Container{value: 10}
+
+      # Lens extracts nil, compares nil > 10 (in Elixir's term ordering, atoms > numbers)
+      ord_lens =
+        ord do
+          asc Lens.key(:value)
+        end
+
+      # Prism treats nil as Nothing, which comes before Just values
+      ord_prism =
+        ord do
+          asc :value
+        end
+
+      # Different results!
+      # Lens: nil (atom) > 10 (number) in Elixir's term ordering
+      assert Utils.compare(c1, c2, ord_lens) == :gt
+
+      # Prism: Nothing < Just(10) - semantic ordering
+      assert Utils.compare(c1, c2, ord_prism) == :lt
+
+      # This shows the key difference:
+      # - Lens: Uses Elixir's term ordering (atoms > numbers, so nil > 10)
+      # - Prism: Uses Maybe semantics (Nothing < Just, so nil < 10)
+    end
+
+    test "Lens with multi-level nested paths" do
+      e1 = %Employee{
+        name: "Alice",
+        company: %Company{
+          name: "Acme",
+          address: %Address{city: "Austin", state: "TX"}
+        }
+      }
+
+      e2 = %Employee{
+        name: "Bob",
+        company: %Company{
+          name: "Widgets Inc",
+          address: %Address{city: "Boston", state: "MA"}
+        }
+      }
+
+      ord_company_city =
+        ord do
+          asc Lens.path([:company, :address, :city])
+        end
+
+      # "Austin" < "Boston"
+      assert Utils.compare(e1, e2, ord_company_city) == :lt
+    end
+
+    test "Lens fails predictably with descriptive error on deeply nested missing key" do
+      # Note: Using CompanyNoAddress struct without :address field
+      e1 = %Employee{name: "Alice", company: %CompanyNoAddress{name: "Acme"}}
+      e2 = %Employee{name: "Bob", company: %Company{name: "Widgets"}}
+
+      ord_company_city =
+        ord do
+          asc Lens.path([:company, :address, :city])
+        end
+
+      # Company doesn't have :address key
+      assert_raise KeyError, ~r/:address/, fn ->
+        Utils.compare(e1, e2, ord_company_city)
+      end
+    end
+
+    test "multiple Lens projections in same ord" do
+      alice_with_address = fixture(:alice_with_address)
+
+      bob_same_city = %Person{
+        name: "Bob",
+        age: 25,
+        address: %Address{city: "Austin", state: "TX"}
+      }
+
+      ord_city_then_age =
+        ord do
+          asc Lens.path([:address, :city])
+          asc Lens.key(:age)
+        end
+
+      # Same city "Austin", so compares by age: 30 < 25 is false
+      assert Utils.compare(alice_with_address, bob_same_city, ord_city_then_age) == :gt
     end
   end
 

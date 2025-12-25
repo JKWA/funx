@@ -23,16 +23,16 @@ defmodule Funx.Ord.Dsl do
 
   The DSL supports seven projection forms, all normalized at compile time:
 
-    - Atom - Field access via `Lens.key(atom)`. Total for non-nil fields.
+    - Atom - Field access via `Prism.key(atom)`. Safe for nil values with `Nothing < Just` semantics.
     - Atom with or_else - Optional field via `{Prism.key(atom), or_else}`. Treats `nil` as the fallback value.
     - Function - Direct projection `fn x -> ... end` or `&fun/1`. Must return a comparable value.
-    - Lens - Explicit lens for nested access. Total but raises on `nil` intermediate values.
-    - Prism - Explicit prism `{Prism.t(), or_else}` for optional with fallback.
-    - Bare Prism - Returns `Maybe`. Uses `Maybe.lift_ord` where `Nothing < Just`. Valid for sorting but changes `min`/`max` semantics.
+    - Lens - Explicit lens for nested access. Total but raises on missing keys or nil intermediate values. Must be explicit: `Lens.key(:field)`.
+    - Prism - Explicit prism for optional fields. Returns `Maybe` with `Nothing < Just` semantics.
+    - Prism with or_else - Explicit prism `{Prism.t(), or_else}` for optional with fallback.
     - Behaviour - Custom projection via `c:Funx.Ord.Dsl.Behaviour.project/2`.
 
-  > Note: Projections that may fail (for example, `Prism.key/1`) must be scoped
-  > or given a fallback to produce a total ordering.
+  > Note: Atoms use Prism by default for safety. Use explicit `Lens.key(:field)` when you need
+  > total access that raises on missing keys.
 
   ### Utility Functions
 
@@ -94,8 +94,8 @@ defmodule Funx.Ord.Dsl do
   Compiles to:
 
       concat([
-        contramap(Lens.key(:name)),
-        reverse(contramap(Lens.key(:age)))
+        contramap(Prism.key(:name)),
+        reverse(contramap(Prism.key(:age)))
       ])
 
   ## Protocol Dispatch
