@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:funx, "0.4.2"}
+  {:funx, github: "JKWA/funx", ref: "f292d68"}
 ])
 ```
 
@@ -64,7 +64,9 @@ end
 defmodule Address do
   defstruct [:city, :state, :zip]
 end
+```
 
+```elixir
 alice = %Person{name: "Alice", age: 30, score: 100}
 bob = %Person{name: "Bob", age: 25, score: 50}
 charlie = %Person{name: "Charlie", age: 30, score: nil}
@@ -125,11 +127,11 @@ List.sort([charlie, alice, bob], ord_mixed)
 
 ## Handling Nil Values
 
-Atom projections use Prism semantics under the hood, treating nil as `Nothing`.
+Atom projections use `Prism.key/1` under the hood, which treats missing keys and nil values as `Nothing`.
 
 ### Default Behavior: Nothing < Just
 
-With bare Prisms, `Nothing` (nil values) sort before `Just` (non-nil values):
+When using bare Prisms (including atoms), `Maybe.lift_ord` orders `Nothing` before `Just` with `asc`, and after `Just` with `desc`:
 
 ```elixir
 ord_by_score =
@@ -143,21 +145,21 @@ List.sort([alice, bob, charlie], ord_by_score)
 
 ### Providing Fallbacks with or_else
 
-Use `or_else` to replace nil values with a default:
+Use `or_else` to replace `Nothing` (from missing keys or nil values) with a default value:
 
 ```elixir
 ord_score_with_default =
   ord do
-    asc :score, or_else: 0
+    asc :score, or_else: 1000
   end
 
-# Charlie's nil becomes 0, so: 0 < 50 < 100
+# Charlie's nil becomes 1000, so: 1000 > 100 > 50
 List.sort([alice, bob, charlie], ord_score_with_default)
 ```
 
 ## Explicit Lens Projections
 
-Lenses provide total access - they expect the field to exist and will raise on nil intermediate values.
+Lenses provide total access - they assume fields exist. `Lens.key/1` raises `KeyError` on missing keys. `Lens.path/1` raises on missing keys or nil intermediate values in the path.
 
 ### Simple Fields
 
@@ -200,10 +202,13 @@ defmodule Container do
   defstruct [:value]
 end
 
+```
+
+```elixir
 c1 = %Container{value: nil}
 c2 = %Container{value: 10}
 
-# Lens: uses Elixir's term ordering (nil > 10 because atoms > numbers)
+# Lens: Extracts nil, then uses Ord protocol (Elixir term ordering: nil > 10)
 ord_lens =
   ord do
     asc Lens.key(:value)
@@ -213,7 +218,7 @@ Utils.compare(c1, c2, ord_lens)
 ```
 
 ```elixir
-# Prism: uses Maybe semantics (Nothing < Just, so nil < 10)
+# Prism: Returns Nothing for nil, then Maybe.lift_ord (Nothing < Just)
 ord_prism =
   ord do
     asc :value
@@ -222,11 +227,15 @@ ord_prism =
 Utils.compare(c1, c2, ord_prism)
 ```
 
-**Rule of thumb:** Use Lens when the field must exist. Use atoms/Prisms when the field might be nil.
+**Lens vs Prism:**
+
+- **Lens** - Lawful total optic. Extracts the focus unconditionally. Raises on missing keys or nil intermediate path values.
+- **Prism** - Lawful partial optic. Returns `Maybe` - `Nothing` for missing/nil, `Just(value)` for present. Primary use: sum types (variants).
+- **Atoms** - Convenience syntax that uses `Prism.key/1` under the hood.
 
 ## Explicit Prism Projections
 
-Prisms handle optional values safely, never raising on nil.
+Prisms are primarily for sum types (variants), but also handle optional values safely.
 
 ### With or_else (Tuple Syntax)
 
@@ -383,7 +392,7 @@ List.sort([alice, bob, charlie], ord_weighted)
 
 ## Bare Struct Modules (Type Filtering)
 
-Use bare struct modules to partition data by type without comparing struct fields.
+Bare struct modules (e.g., `asc MyStruct`) compile to a predicate function that returns `true` for matching types, `false` otherwise. This partitions heterogeneous lists by type without comparing struct field values.
 
 ```elixir
 defmodule CreditCard do
@@ -393,7 +402,9 @@ end
 defmodule Check do
   defstruct [:name, :routing_number, :amount]
 end
+```
 
+```elixir
 payments = [
   %CreditCard{name: "Alice", number: "4242", amount: 300},
   %Check{name: "Frank", routing_number: "111000025", amount: 100},
@@ -449,7 +460,9 @@ end
 defmodule Employee do
   defstruct [:name, :company]
 end
+```
 
+```elixir
 employees = [
   %Employee{
     name: "Alice",

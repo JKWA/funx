@@ -368,12 +368,12 @@ The DSL version:
 
 ### Supported Projections
 
-- `asc :atom` / `desc :atom` - Field access via Prism.key (safe for nil)
-- `asc :atom, or_else: value` - Prism with fallback for nil
-- `asc Lens.key(:field)` - Explicit Lens (total access, raises on nil)
-- `asc Lens.path([:a, :b])` - Nested Lens access
-- `asc Prism.key(:field)` - Explicit Prism (partial access, Nothing < Just)
-- `asc {Prism.key(:field), default}` - Prism with or_else value
+- `asc :atom` / `desc :atom` - Field access via `Prism.key/1` (returns `Nothing` for missing keys or nil)
+- `asc :atom, or_else: value` - Prism with fallback (replaces `Nothing` with value)
+- `asc Lens.key(:field)` - Explicit Lens (total access, raises `KeyError` on missing keys)
+- `asc Lens.path([:a, :b])` - Nested Lens (raises on missing keys or nil intermediate values)
+- `asc Prism.key(:field)` - Explicit Prism (returns `Maybe`, Nothing < Just with `Maybe.lift_ord`)
+- `asc {Prism.key(:field), default}` - Prism tuple (replaces `Nothing` with default)
 - `asc &String.length/1` - Function projection
 - `asc fn x -> x.field end` - Anonymous function
 - `asc MyModule.my_projection()` - Helper function (0-arity)
@@ -459,21 +459,22 @@ end
 
 **Use atoms (`:field`) when:**
 
-- Field might be nil and you want Nothing < Just semantics
-- You want safe, forgiving data access
+- Field might be missing or nil, and you want `Nothing < Just` semantics (`Maybe.lift_ord`)
+- You want safe, forgiving data access (no exceptions)
 - You don't need to enforce field existence
 
 **Use Lens when:**
 
 - Field must exist (domain invariant)
-- You want fail-fast on missing data
-- You need nested field access
+- You want fail-fast on missing keys (raises `KeyError`)
+- You need nested field access with total guarantees
 
 **Use Prism when:**
 
-- You want explicit Maybe semantics
+- You need to work with sum types (variants)
+- You want explicit partial access with Maybe semantics
 - You're composing with other Prisms
-- You need type-safe sum type matching
+- You need type-safe pattern matching on variants
 
 **Use functions when:**
 
@@ -519,9 +520,10 @@ end
 
 **When to use each:**
 
-- **Atoms** - Default choice for optional fields
-- **Lens** - Required fields, nested access, fail-fast on nil
-- **Prism with or_else** - Optional fields with specific defaults
+- **Lens** - Lawful total optic. Unconditional extraction. Raises `KeyError` on missing keys, or when intermediate path values are nil.
+- **Prism** - Lawful partial optic. Returns `Maybe` (`Nothing` for missing/nil, `Just(value)` for present). Primary use: sum types (variants).
+- **Atoms** - Convenience syntax using `Prism.key/1`. Safe for optional fields with `Maybe.lift_ord` semantics.
+- **Prism with or_else** - Replaces `Nothing` with a default value before comparison.
 
 ### Compile-Time Safety
 
@@ -720,11 +722,11 @@ Ord.Utils.compare(a, b, ord_identity)  # Always :eq
 
 **❌ Use Utils functions when:**
 
-- You only need single-field sorting
-- You're building dynamic orderings at runtime
+- You only need single-field sorting (DSL may be overkill)
+- You're building dynamic orderings at runtime (DSL is compile-time only)
 - You need fine-grained control over composition
-- Performance is absolutely critical (though DSL has near-zero overhead)
-- You're implementing reusable combinators
+- You prefer explicit function composition over macro expansion
+- You're implementing reusable combinator libraries
 
 ### Common Patterns
 
@@ -879,15 +881,16 @@ The Ord DSL provides declarative multi-field sorting:
 
 - `asc <projection>` - Sort ascending
 - `desc <projection>` - Sort descending
-- `or_else: value` - Fallback for nil (atoms and Prisms only)
+- `or_else: value` - Replaces `Nothing` with fallback value (atoms and Prisms only)
 
 **Key Patterns:**
 
-- Use atoms for optional fields (Nothing < Just)
-- Use Lens for required fields (fail-fast on nil)
-- Use Prism with or_else for optional fields with defaults
-- Use behaviours for complex, reusable projections
-- Use bare struct modules for type-based partitioning
-- Automatic identity tiebreaker ensures deterministic ordering
+- Use atoms for optional fields (`Nothing < Just` with `Maybe.lift_ord`)
+- Use Lens for required fields (raises `KeyError` on missing keys)
+- Use Prism explicitly for sum types (variants) with partial access
+- Use Prism with or_else for optional fields with specific defaults
+- Use behaviours for complex, reusable projection logic
+- Use bare struct modules for type-based partitioning (heterogeneous lists)
+- Automatic identity tiebreaker ensures deterministic total ordering
 
 **Remember:** The Ord DSL compiles to Utils function calls at compile time - use whichever syntax is clearer for your use case.
