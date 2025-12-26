@@ -70,6 +70,26 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
     defstruct [:name]
   end
 
+  defmodule Country do
+    defstruct [:name, :code]
+  end
+
+  defmodule Region do
+    defstruct [:name, :country]
+  end
+
+  defmodule City do
+    defstruct [:name, :region]
+  end
+
+  defmodule Office do
+    defstruct [:name, :city]
+  end
+
+  defmodule Department do
+    defstruct [:name, :office]
+  end
+
   # ============================================================================
   # Protocol Implementations
   # ============================================================================
@@ -101,6 +121,16 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
     def project(person, opts) do
       weight = Keyword.get(opts, :weight, 1.0)
       (person.score || 0) * weight
+    end
+  end
+
+  defmodule OptionalBio do
+    @behaviour Funx.Ord.Dsl.Behaviour
+
+    @impl true
+    def project(person, _opts) do
+      # Returns nil for people without bio
+      person.bio
     end
   end
 
@@ -250,6 +280,21 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       assert Utils.compare(alice_no_score, bob_with_score, ord_score_then_age) == :lt
     end
+
+    test "or_else with nil value treats nil as comparable value" do
+      person_with_score = %Person{name: "Alice", score: 100}
+      person_without_score = %Person{name: "Bob", score: nil}
+
+      ord_score_nil_fallback =
+        ord do
+          asc :score, or_else: nil
+        end
+
+      # When score is nil, or_else provides nil as the fallback value
+      # Then compares nil (fallback) vs 100 (actual value)
+      # nil < 100 in standard ordering
+      assert Utils.compare(person_without_score, person_with_score, ord_score_nil_fallback) == :lt
+    end
   end
 
   # ============================================================================
@@ -309,6 +354,19 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
         end
 
       assert Utils.compare(alice, bob, ord_by_name) == :lt
+    end
+
+    test "0-arity function returning Lens with desc" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_by_name_desc =
+        ord do
+          desc ProjectionHelpers.name_lens()
+        end
+
+      # Reversed: Alice > Bob in desc
+      assert Utils.compare(alice, bob, ord_by_name_desc) == :gt
     end
 
     test "0-arity function returning bare Prism" do
@@ -602,6 +660,38 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
         end
 
       assert Utils.compare(alice, bob, ord_combined) == :gt
+    end
+
+    test "multiple behaviour modules in sequence" do
+      alice = %Person{name: "Alice", age: 30, score: 100}
+      bob = %Person{name: "Bob", age: 25, score: 100}
+      charlie = %Person{name: "Charlie", age: 30, score: 100}
+
+      ord_multi_behaviour =
+        ord do
+          desc(WeightedScore, weight: 1.0)
+          asc NameLength
+        end
+
+      # Same weighted score (100), so compare by name length
+      # "Alice" (5) < "Bob" (3) is false
+      # "Alice" (5) < "Charlie" (7) is true
+      assert Utils.compare(alice, charlie, ord_multi_behaviour) == :lt
+      assert Utils.compare(bob, alice, ord_multi_behaviour) == :lt
+    end
+
+    test "behaviour returning nil compares nil as less than non-nil" do
+      alice_with_bio = %Person{name: "Alice", age: 30, bio: "Engineer"}
+      bob_without_bio = %Person{name: "Bob", age: 25, bio: nil}
+
+      ord_bio =
+        ord do
+          asc OptionalBio
+        end
+
+      # Behaviour returns nil for bob_without_bio and "Engineer" for alice_with_bio
+      # nil < "Engineer" in the DSL's ordering
+      assert Utils.compare(bob_without_bio, alice_with_bio, ord_bio) == :lt
     end
   end
 
@@ -1115,6 +1205,69 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       # Same city "Austin", so compares by age: 30 < 25 is false
       assert Utils.compare(alice_with_address, bob_same_city, ord_city_then_age) == :gt
+    end
+
+    test "very deep Lens.path with 5 levels of nesting" do
+      d1 = %Department{
+        name: "Engineering",
+        office: %Office{
+          name: "HQ",
+          city: %City{
+            name: "Austin",
+            region: %Region{
+              name: "Central",
+              country: %Country{name: "USA", code: "US"}
+            }
+          }
+        }
+      }
+
+      d2 = %Department{
+        name: "Engineering",
+        office: %Office{
+          name: "HQ",
+          city: %City{
+            name: "Austin",
+            region: %Region{
+              name: "Central",
+              country: %Country{name: "Canada", code: "CA"}
+            }
+          }
+        }
+      }
+
+      d3 = %Department{
+        name: "Sales",
+        office: %Office{
+          name: "Branch",
+          city: %City{
+            name: "Boston",
+            region: %Region{
+              name: "Northeast",
+              country: %Country{name: "USA", code: "US"}
+            }
+          }
+        }
+      }
+
+      ord_country_code =
+        ord do
+          asc Lens.path([:office, :city, :region, :country, :code])
+        end
+
+      # "CA" < "US"
+      assert Utils.compare(d2, d1, ord_country_code) == :lt
+      # d1 and d3 both have "US", so identity tiebreaker compares whole struct
+      # d1.name ("Engineering") < d3.name ("Sales")
+      assert Utils.compare(d1, d3, ord_country_code) == :lt
+
+      ord_region_name =
+        ord do
+          asc Lens.path([:office, :city, :region, :name])
+        end
+
+      # "Central" < "Northeast"
+      assert Utils.compare(d1, d3, ord_region_name) == :lt
     end
   end
 

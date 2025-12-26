@@ -300,8 +300,594 @@ Funx.List.sort(tasks, by_priority)
 ## Best Practices
 
 - Define `Ord` for domain types, not just structs
-- Keep `Ord` and `Eq` implementations consistent  
+- Keep `Ord` and `Eq` implementations consistent
 - Use `Utils` functions rather than direct protocol calls
 - Prefer composition over custom implementations
 - Test ordering laws in your implementations
 - Document the ordering semantics for domain types
+
+## Ord DSL
+
+The Ord DSL provides a declarative syntax for building complex lexicographic orderings without explicit `contramap`, `concat`, and `reverse` calls.
+
+**Design Philosophy:**
+
+- **Declarative ordering** - Describe what to sort by, not how to sort
+- **Compile-time composition** - DSL expands to static `Ord` compositions at compile time
+- **Type-safe projections** - Leverages Lens and Prism for safe data access
+- **Deterministic tiebreaking** - Automatic identity projection ensures total ordering
+
+**Key Benefits:**
+
+- Clean, readable multi-field sorting
+- Automatic handling of nil values with Prism semantics
+- Explicit Lens for required fields, atoms for optional fields
+- Type filtering with bare struct modules
+- Zero runtime overhead - compiles to direct function calls
+- Automatic tiebreaker ensures reproducible sorts
+
+### Basic Usage
+
+```elixir
+use Funx.Ord.Dsl
+
+ord do
+  asc :name
+  desc :age
+end
+```
+
+### Practical Comparison: Before and After
+
+**With Utils functions (manual composition):**
+
+```elixir
+Ord.Utils.concat([
+  Ord.Utils.contramap(Prism.key(:routing_number)),
+  Ord.Utils.reverse(Ord.Utils.contramap(Prism.key(:amount))),
+  Ord.Utils.contramap(Lens.key(:name))
+])
+```
+
+**With Ord DSL (declarative):**
+
+```elixir
+ord do
+  asc :routing_number
+  desc :amount
+  asc Lens.key(:name)
+end
+```
+
+The DSL version:
+
+- ✅ More readable (clear sorting intent)
+- ✅ More concise (no manual contramap/concat/reverse)
+- ✅ Type-safe (compile-time projection validation)
+- ✅ Same performance (expands to identical code)
+
+### Supported Projections
+
+- `asc :atom` / `desc :atom` - Field access via Prism.key (safe for nil)
+- `asc :atom, or_else: value` - Prism with fallback for nil
+- `asc Lens.key(:field)` - Explicit Lens (total access, raises on nil)
+- `asc Lens.path([:a, :b])` - Nested Lens access
+- `asc Prism.key(:field)` - Explicit Prism (partial access, Nothing < Just)
+- `asc {Prism.key(:field), default}` - Prism with or_else value
+- `asc &String.length/1` - Function projection
+- `asc fn x -> x.field end` - Anonymous function
+- `asc MyModule.my_projection()` - Helper function (0-arity)
+- `asc MyBehaviour` - Behaviour module projection
+- `asc MyBehaviour, opt: value` - Behaviour with options
+- `asc MyStruct` - Bare struct module (type filtering)
+
+### DSL Examples
+
+**Basic multi-field sorting:**
+
+```elixir
+ord do
+  asc :priority
+  desc :created_at
+  asc :name
+end
+```
+
+**Handling nil values with or_else:**
+
+```elixir
+ord do
+  asc :score, or_else: 0
+  asc :name
+end
+```
+
+**Nested field access:**
+
+```elixir
+ord do
+  asc Lens.path([:address, :city])
+  asc :name
+end
+```
+
+**Type-based partitioning:**
+
+```elixir
+# Sort: all Checks first, then CreditCards, each by amount
+ord do
+  desc Check
+  asc :amount
+end
+```
+
+**Custom behaviour projection:**
+
+```elixir
+defmodule NameLength do
+  @behaviour Funx.Ord.Dsl.Behaviour
+
+  @impl true
+  def project(person, _opts), do: String.length(person.name)
+end
+
+ord do
+  asc NameLength
+  asc :name
+end
+```
+
+**With behaviour options:**
+
+```elixir
+defmodule WeightedScore do
+  @behaviour Funx.Ord.Dsl.Behaviour
+
+  @impl true
+  def project(item, opts) do
+    weight = Keyword.get(opts, :weight, 1.0)
+    (item.score || 0) * weight
+  end
+end
+
+ord do
+  desc WeightedScore, weight: 2.0
+end
+```
+
+### Projection Type Selection Guide
+
+**Use atoms (`:field`) when:**
+
+- Field might be nil and you want Nothing < Just semantics
+- You want safe, forgiving data access
+- You don't need to enforce field existence
+
+**Use Lens when:**
+
+- Field must exist (domain invariant)
+- You want fail-fast on missing data
+- You need nested field access
+
+**Use Prism when:**
+
+- You want explicit Maybe semantics
+- You're composing with other Prisms
+- You need type-safe sum type matching
+
+**Use functions when:**
+
+- You need custom transformation logic
+- Projection doesn't map to a simple field
+- You're computing derived values
+
+**Use behaviours when:**
+
+- Logic is complex and reusable
+- You need parameterized projections
+- You want to share projection logic across modules
+
+**Use bare struct modules when:**
+
+- You need type-based partitioning
+- Sorting heterogeneous lists by type
+- You want all values of one type before another
+
+### Lens vs Prism vs Atoms
+
+**Critical difference in nil handling:**
+
+```elixir
+# Atom: Uses Prism (Nothing < Just)
+ord do
+  asc :value
+end
+# nil values sort first
+
+# Explicit Lens: Uses Elixir term ordering
+ord do
+  asc Lens.key(:value)
+end
+# nil (atom) > numbers in Elixir's term ordering
+
+# Explicit Prism with or_else: Replace nil with default
+ord do
+  asc :value, or_else: 0
+end
+# nil becomes 0 for comparison
+```
+
+**When to use each:**
+
+- **Atoms** - Default choice for optional fields
+- **Lens** - Required fields, nested access, fail-fast on nil
+- **Prism with or_else** - Optional fields with specific defaults
+
+### Compile-Time Safety
+
+**Valid or_else usage:**
+
+```elixir
+# ✅ Atoms accept or_else
+ord do
+  asc :score, or_else: 0
+end
+
+# ✅ Explicit Prisms accept or_else
+ord do
+  asc Prism.key(:score), or_else: 0
+end
+
+# ✅ Helper functions returning Prisms accept or_else
+ord do
+  asc ProjectionHelpers.score_prism(), or_else: 0
+end
+```
+
+**Invalid or_else usage (compile error):**
+
+```elixir
+# ❌ Lens cannot use or_else
+ord do
+  asc Lens.key(:name), or_else: "Unknown"
+end
+
+# ❌ Functions cannot use or_else
+ord do
+  asc &String.length/1, or_else: 0
+end
+
+# ❌ Behaviours cannot use or_else
+ord do
+  asc MyBehaviour, or_else: 0
+end
+
+# ❌ Redundant or_else with tuple syntax
+ord do
+  asc {Prism.key(:score), 0}, or_else: 10
+end
+```
+
+### Implicit Identity Tiebreaker
+
+The DSL automatically appends an identity projection as the final tiebreaker:
+
+```elixir
+ord do
+  asc :name
+end
+```
+
+Compiles to:
+
+```elixir
+Ord.Utils.concat([
+  Ord.Utils.contramap(Prism.key(:name)),
+  Ord.Utils.contramap(fn x -> x end)  # implicit identity
+])
+```
+
+This ensures:
+
+- **Deterministic ordering** - Same input always produces same output
+- **Total ordering** - All values can be compared
+- **No arbitrary tiebreaking** - Uses value's Ord protocol implementation
+- **Reproducible sorts** - Consistent across runs and environments
+
+### Working with Lists
+
+```elixir
+people = [
+  %Person{name: "Charlie", age: 30, score: nil},
+  %Person{name: "Alice", age: 25, score: 100},
+  %Person{name: "Bob", age: 30, score: 50}
+]
+
+ord_person =
+  ord do
+    asc :name
+    desc :age
+    asc :score, or_else: 0
+  end
+
+# With Funx.List
+Funx.List.sort(people, ord_person)
+
+# With Enum.sort/2
+Enum.sort(people, Ord.Utils.comparator(ord_person))
+
+# Find min/max
+Funx.List.min!(people, ord_person)
+Funx.List.max!(people, ord_person)
+```
+
+### Helper Functions Pattern
+
+Define reusable projections as 0-arity functions:
+
+```elixir
+defmodule ProjectionHelpers do
+  alias Funx.Optics.{Lens, Prism}
+
+  def name_lens, do: Lens.key(:name)
+  def age_lens, do: Lens.key(:age)
+  def score_prism, do: Prism.key(:score)
+  def score_with_default, do: {Prism.key(:score), 0}
+end
+
+# Use in DSL
+ord do
+  asc ProjectionHelpers.age_lens()
+  asc ProjectionHelpers.score_with_default()
+  asc ProjectionHelpers.name_lens()
+end
+```
+
+### Type Filtering with Bare Struct Modules
+
+Sort heterogeneous lists by type first, then by fields:
+
+```elixir
+payments = [
+  %CreditCard{name: "Alice", amount: 300},
+  %Check{name: "Frank", amount: 100},
+  %CreditCard{name: "Bob", amount: 100},
+  %Check{name: "Edith", amount: 400}
+]
+
+ord_checks_first =
+  ord do
+    desc Check  # All Checks sort before CreditCards
+    asc :amount
+    asc :name
+  end
+
+Funx.List.sort(payments, ord_checks_first)
+# Result: [Check(Frank), Check(Edith), CreditCard(Bob), CreditCard(Alice)]
+```
+
+### Complex Nested Data
+
+```elixir
+employees = [
+  %Employee{
+    name: "Alice",
+    company: %Company{
+      name: "Acme",
+      address: %Address{city: "Austin", state: "TX"}
+    }
+  },
+  %Employee{
+    name: "Bob",
+    company: %Company{
+      name: "Widgets",
+      address: %Address{city: "Boston", state: "MA"}
+    }
+  }
+]
+
+ord_by_company_city =
+  ord do
+    asc Lens.path([:company, :address, :city])
+    asc :name
+  end
+
+Funx.List.sort(employees, ord_by_company_city)
+```
+
+### Empty Ord Block
+
+An empty `ord` block creates an identity ordering:
+
+```elixir
+ord_identity =
+  ord do
+  end
+
+Ord.Utils.compare(a, b, ord_identity)  # Always :eq
+```
+
+### When to Use the DSL
+
+**✅ Use the DSL when:**
+
+- You need multi-field lexicographic sorting
+- You want declarative, readable ordering definitions
+- You're combining different projection types
+- You need nil-safe field access
+- You want compile-time validation
+- You prefer pipeline-friendly syntax
+
+**❌ Use Utils functions when:**
+
+- You only need single-field sorting
+- You're building dynamic orderings at runtime
+- You need fine-grained control over composition
+- Performance is absolutely critical (though DSL has near-zero overhead)
+- You're implementing reusable combinators
+
+### Common Patterns
+
+**Paginated data sorting:**
+
+```elixir
+ord_pagination =
+  ord do
+    desc :priority
+    asc :created_at
+    asc :id  # Stable tiebreaker
+  end
+```
+
+**Dashboard sorting:**
+
+```elixir
+ord_tasks =
+  ord do
+    desc :is_pinned, or_else: false
+    asc :status
+    desc :updated_at
+  end
+```
+
+**Multi-level grouping:**
+
+```elixir
+ord_reports =
+  ord do
+    asc Lens.path([:department, :name])
+    asc Lens.path([:team, :name])
+    desc :performance_score, or_else: 0
+  end
+```
+
+### Formatter Configuration
+
+Funx exports formatter rules for clean DSL formatting. Add to `.formatter.exs`:
+
+```elixir
+[
+  import_deps: [:funx],
+  inputs: ["{mix,.formatter}.exs", "{config,lib,test}/**/*.{ex,exs}"]
+]
+```
+
+This formats DSL code cleanly without parentheses:
+
+```elixir
+# With formatter rules (clean)
+ord do
+  asc :name
+  desc :age
+end
+
+# Without formatter rules (parentheses added)
+ord() do
+  asc(:name)
+  desc(:age)
+end
+```
+
+### Comparison with Manual Composition
+
+The DSL is syntactic sugar over Utils functions:
+
+```elixir
+# DSL
+ord do
+  asc :name
+  desc :age
+  asc :score, or_else: 0
+end
+
+# Equivalent Utils composition
+Ord.Utils.concat([
+  Ord.Utils.contramap(Prism.key(:name)),
+  Ord.Utils.reverse(Ord.Utils.contramap(Prism.key(:age))),
+  Ord.Utils.contramap({Prism.key(:score), 0}),
+  Ord.Utils.contramap(fn x -> x end)  # implicit identity
+])
+```
+
+Both compile to identical code - the DSL just makes it more readable.
+
+### Testing DSL Orderings
+
+```elixir
+test "multi-field ordering" do
+  alice_30 = %Person{name: "Alice", age: 30}
+  alice_25 = %Person{name: "Alice", age: 25}
+  bob_30 = %Person{name: "Bob", age: 30}
+
+  ord_person =
+    ord do
+      asc :name
+      desc :age
+    end
+
+  # Alice comes before Bob (name)
+  assert Ord.Utils.compare(alice_30, bob_30, ord_person) == :lt
+
+  # Same name, 30 > 25 in desc age
+  assert Ord.Utils.compare(alice_30, alice_25, ord_person) == :lt
+
+  # Verify identity tiebreaker
+  assert Ord.Utils.compare(alice_30, alice_30, ord_person) == :eq
+end
+
+test "nil handling with or_else" do
+  with_score = %Item{name: "A", score: 100}
+  without_score = %Item{name: "B", score: nil}
+
+  ord_item =
+    ord do
+      asc :score, or_else: 0
+    end
+
+  # nil becomes 0, so 0 < 100
+  assert Ord.Utils.compare(without_score, with_score, ord_item) == :lt
+end
+
+test "type filtering" do
+  check = %Check{name: "Alice", amount: 100}
+  cc = %CreditCard{name: "Bob", amount: 200}
+
+  ord_checks_first =
+    ord do
+      desc Check
+      asc :amount
+    end
+
+  # All Checks before CreditCards
+  assert Ord.Utils.compare(check, cc, ord_checks_first) == :lt
+end
+```
+
+### Performance Characteristics
+
+- **Compile-time expansion** - DSL compiles to static function calls
+- **Zero runtime overhead** - No interpretation or dispatch
+- **Efficient composition** - Uses monoid concatenation
+- **Lazy evaluation** - Short-circuits on first non-equal comparison
+- **Memory efficient** - No intermediate allocations
+
+### Summary
+
+The Ord DSL provides declarative multi-field sorting:
+
+**Core Operations:**
+
+- `asc <projection>` - Sort ascending
+- `desc <projection>` - Sort descending
+- `or_else: value` - Fallback for nil (atoms and Prisms only)
+
+**Key Patterns:**
+
+- Use atoms for optional fields (Nothing < Just)
+- Use Lens for required fields (fail-fast on nil)
+- Use Prism with or_else for optional fields with defaults
+- Use behaviours for complex, reusable projections
+- Use bare struct modules for type-based partitioning
+- Automatic identity tiebreaker ensures deterministic ordering
+
+**Remember:** The Ord DSL compiles to Utils function calls at compile time - use whichever syntax is clearer for your use case.

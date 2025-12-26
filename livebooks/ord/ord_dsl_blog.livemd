@@ -1,0 +1,557 @@
+# Ord DSL - Interactive Examples
+
+```elixir
+Mix.install([
+  {:transaction, path: "/Users/josephkoski/Repos/transaction"}
+])
+```
+
+## Introduction
+
+The Ord DSL builds on the Lens and Prism optics you already know.
+
+Optics answer what to extract from nested data. The Ord DSL answers how to compare those extracted foci. You write ordering rules with `asc` and `desc`, and you combine clauses into a single lexicographic `Ord`.
+
+The two layers stay independent. You can refactor an optic without rewriting the ordering, and you can change the ordering without touching the optic.
+
+## Setup
+
+```elixir
+alias Funx.Optics.{Lens, Prism}
+alias Funx.Ord.Utils, as: OrdUtils
+alias Funx.List
+```
+
+We'll return to our trusty transaction problem.
+
+```text
+Transaction
+└─ type
+   ├─ Charge
+   │  └─ payment
+   │     ├─ CreditCard
+   │     │  └─ amount   ← cc_payment
+   │     └─ Check
+   │        └─ amount   ← check_payment
+   │
+   └─ Refund
+      └─ payment
+         ├─ CreditCard
+         │  └─ amount   ← cc_refund
+         └─ Check
+            └─ amount   ← check_refund
+```
+
+Let's start with just payments, which can be a check or credit card.
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+import Funx.Macros, only: [ord_for: 2]
+alias Funx.Optics.{Lens, Prism}
+
+defmodule Check do
+  alias Funx.Optics.Prism
+  defstruct [:name, :routing_number, :account_number, :amount]
+
+  def amount_prism do
+    Prism.path([{__MODULE__, :amount}])
+  end
+
+  ord_for(Check, Lens.key(:name))
+end
+
+defmodule CreditCard do
+  alias Funx.Optics.Prism
+  defstruct [:name, :number, :expiry, :amount]
+
+  def amount_prism do
+    Prism.path([{__MODULE__, :amount}])
+  end
+
+  ord_for(CreditCard, Lens.key(:name))
+end
+```
+
+And some data:
+
+```elixir
+check_1 = %Check{name: "Frank", routing_number: "111000025", account_number: "0001234567", amount: 100}
+check_2 = %Check{name: "Edith",   routing_number: "121042882", account_number: "0009876543", amount: 400}
+check_3 = %Check{name: "Charles", routing_number: "026009593", account_number: "0005551122", amount: 200}
+
+cc_1 = %CreditCard{name: "Dave", number: "4111", expiry: "12/26", amount: 400}
+cc_2 = %CreditCard{name: "Alice",  number: "4242", expiry: "01/27", amount: 300}
+cc_3 = %CreditCard{name: "Beth",   number: "1324", expiry: "06/25", amount: 100}
+
+payment_data = [check_1, check_2, check_3, cc_1, cc_2, cc_3]
+```
+
+Let's see how Elixir sorts this list of payments:
+
+```elixir
+Enum.sort(payment_data)
+```
+
+* First, it picks the key that comes first in the alphabet, which is `:account_number`
+* Next, credit cards don't have an `:account_number`, so it picks the alpha for them, `:amount`
+* Now that all items have been sorted, STOP.
+
+So we end up with an ordered list, first checks by `:account_number` and then credit cards by `amount`. This means the maximum value is Dave, with $400.
+
+Funx takes a different approach, leveraging Elixir's protocol, allowing a struct to define its default sort:
+
+```elixir
+List.sort(payment_data)
+```
+
+Here we are using Funx's Ord.Macro to define a sort, with `ord_for(CreditCard, Lens.key(:name))` we are stating the default sort for a credit card is by name. With Lens, we are stating our domain invariant that `:name` may be `nil`, but the focus must be addressable for this shape.
+
+What we end up with is a list sorted alpha by struct, and within each are sorted by name. Lens is an easy way to build a projection, but more importantly, it expresses `Lens` laws.
+
+Elixir's `sort_by/2` takes a projection, such as sorting a value by name:
+
+```elixir
+name_projection = fn %{name: name} -> name end
+Enum.sort_by(payment_data, name_projection)
+```
+
+Funx doesn't use `sort_by`, instead, when we have a projection we wrap it in `contramap/1`:
+
+```elixir
+name_ord = OrdUtils.contramap(name_projection)
+List.sort(payment_data, name_ord)
+```
+
+Here, our projection is overriding the default rules for sorting checks and credit cards and we get the same result.
+
+Unlike `sort_by/2`, Funx's `contramap/1` also takes a `Lens` or `Prism`, which, after all, are just types of projections:
+
+```elixir
+name_ord = OrdUtils.contramap(Lens.key(:name))
+List.sort(payment_data, name_ord)
+```
+
+We can also use a lens to access `:amount`:
+
+```elixir
+amount_ord = OrdUtils.contramap(Lens.key(:amount))
+List.sort(payment_data, amount_ord)
+```
+
+`Ord` logic can be composed. For this, Funx includes `concat/1`:
+
+```elixir
+amount_name_ord = OrdUtils.concat([amount_ord, name_ord])
+List.sort(payment_data, amount_name_ord)
+```
+
+Here we sort by amount and then name.
+
+Complex sorts are often implemented as multiple staged sorts or ad hoc comparison layers. With composed Ord, you define one comparator and sort once.
+
+This is a [*Lexicographic* sort.](https://en.wikipedia.org/wiki/Lexicographic_order)
+
+Next, let's try sorting by `routing_number`:
+
+```elixir
+routing_ord = OrdUtils.contramap(Lens.key(:routing_number))
+List.sort(payment_data, routing_ord)
+```
+
+This raises with a lens. When we use a lens, we are stating, "All our items will have a routing number key." It fails fast when we break that invariant.
+
+Instead, we need a `Prism`:
+
+```elixir
+routing_ord = OrdUtils.contramap(Prism.key(:routing_number))
+List.sort(payment_data, routing_ord)
+```
+
+In the context of Prism, credit cards are `Nothing` (they lack `:routing_number`), while checks are `Just` (they have it). Notice the order: `Nothing` is always less, so credit cards sort before checks.
+
+Let's sort the credit cards with the name ord:
+
+```elixir
+route_name_ord = OrdUtils.concat([routing_ord, name_ord])
+List.sort(payment_data, route_name_ord)
+```
+
+This is a lexicographic sort in action. It found checks could be sorted by the first rule, and credit cards all equal with `Nothing`, so it applied the second rule, sorting them by name.
+
+Let's reverse the sort, but only for `routing_number`:
+
+```elixir
+route_name_ord = OrdUtils.concat([
+  OrdUtils.reverse(routing_ord), 
+  name_ord
+])
+List.sort(payment_data, route_name_ord)
+```
+
+Funx's logic lets us compose arbitrarily large and complex order logic, but it can be hard to read. We can address that with the `Ord` DSL:
+
+```elixir
+use Funx.Ord.Dsl
+route_name_ord = 
+ord do
+   desc Prism.path([{Check, :routing_number}])
+   asc Lens.key(:name)
+end
+List.sort(payment_data, route_name_ord)
+```
+
+Behind the scenes, this is applying our `contramap/1` `concat` and `reverse`. For simple cases we can shorten to a single atom, `:name`:
+
+```elixir
+route_name_ord = 
+ord do
+   desc Prism.path([{Check, :routing_number}])
+   asc :name
+end
+List.sort(payment_data, route_name_ord)
+```
+
+And the same for `:routing_number`:
+
+```elixir
+route_name_ord = 
+ord do
+   desc :routing_number
+   asc :name
+end
+List.sort(payment_data, route_name_ord)
+```
+
+Our `:atom` context applies the more relaxed `Prism` behind the scenes.
+
+The DSL has another party trick, we don't actually need `:name`. The DSL automatically applies the default sort behavior at the end, which in the case for credit cards is `:name`.
+
+```elixir
+route_name_ord = 
+ord do
+   desc :routing_number
+end
+List.sort(payment_data, route_name_ord)
+```
+
+If we need to express an invariant, explicitly use a `Lens`:
+
+```elixir
+route_name_ord = 
+ord do
+   desc Lens.key(:routing_number)
+   asc :name
+end
+List.sort(payment_data, route_name_ord)
+```
+
+Funx also includes `or_else`, which replace `Nothing` with another value.
+
+In this case, with the value "a":
+
+```elixir
+route_name_ord = 
+ord do
+   desc :routing_number, or_else: "a"
+   asc :name
+end
+List.sort(payment_data, route_name_ord)
+```
+
+Here, because this is a descending sort and "a" is larger then any of our routing numbers, the credit cards are sorted before checks.
+
+This works, but here is a better way:
+
+```elixir
+route_name_ord = 
+ord do
+   desc CreditCard
+   desc Prism.path([{Check, :routing_number}])
+end
+List.sort(payment_data, route_name_ord)
+```
+
+We have the same result, but the logic is easier to read: sort descending by credit card, then only checks by routing number, and don't forget we also get by name.
+
+We can also implement prisms from our modules, such as `CreditCard.amount_prism/0`:
+
+```elixir
+cc_amount_ord = 
+ord do
+   asc CreditCard.amount_prism 
+end
+```
+
+And List comes with `max!/2`:
+
+```elixir
+List.max!(payment_data, cc_amount_ord)
+```
+
+And `min!/2`:
+
+```elixir
+List.min!(payment_data, cc_amount_ord)
+```
+
+Wait, that's a Check!
+
+Remember, `min/2` doesn't filter. What we need is a different sort:
+
+```elixir
+cc_amount_min_ord = 
+ord do
+   desc CreditCard
+   asc CreditCard.amount_prism 
+end
+
+List.min!(payment_data, cc_amount_min_ord)
+```
+
+We can also use a Lens or Prism to set a default `Ord` for deeply nested data.
+
+For instance, we can set a Lens for our `Transaction` that default sorts by payment `:name`:
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+defmodule Transaction do
+  defstruct [:type]
+
+  def type_prism do
+    Prism.path([{__MODULE__, :type}])
+  end
+
+  ord_for(
+    Transaction,
+    Lens.path([:type, :payment, :name])
+  )
+end
+
+defmodule Charge do
+  alias Funx.Optics.Prism
+  defstruct [:payment]
+
+  def payment_prism do
+    Prism.path([{__MODULE__, :payment}])
+  end
+
+  ord_for(
+    Charge,
+    Lens.path([:payment, :name])
+  )
+end
+
+defmodule Refund do
+  alias Funx.Optics.Prism
+  defstruct [:payment]
+
+  def payment_prism do
+    Prism.path([{__MODULE__, :payment}])
+  end
+
+  ord_for(
+    Refund,
+    Lens.path([:payment, :name])
+  )
+end
+```
+
+```elixir
+refund_cc_1 =
+%Transaction{
+  type: %Refund{
+    payment: %CreditCard{name: "Frank", number: "4333", expiry: "10/27", amount: 1200}
+  }
+}
+
+refund_cc_2 =
+%Transaction{
+  type: %Refund{
+    payment: %CreditCard{name: "Eve", number: "4555", expiry: "08/28", amount: 100}
+  }
+}
+
+refund_check_1 =
+  %Transaction{
+    type: %Refund{
+      payment: %Check{name: "Dave", routing_number: "123000025", account_number: "0001234567", amount: 1200}
+    }
+  }
+
+charge_check_1 =
+  %Transaction{
+    type: %Charge{
+      payment: %Check{name: "Charles", routing_number: "111000025", account_number: "0001234567", amount: 1000}
+    }
+  }
+
+charge_cc_1 =
+  %Transaction{
+    type: %Charge{
+      payment: %CreditCard{name: "Bob", number: "4444", expiry: "09/26", amount: 400}
+    }
+  }
+
+charge_cc_2 =
+  %Transaction{
+    type: %Charge{
+      payment: %CreditCard{name: "Alice", number: "4222", expiry: "11/25", amount: 100}
+    }
+  }
+
+transactions = [refund_cc_1, refund_cc_2, refund_check_1, charge_check_1, charge_cc_1, charge_cc_2]
+```
+
+When we have a list of transactions, Funx's `List.sort/1` will sort them by name:
+
+```elixir
+List.sort(transactions)
+```
+
+And we can sort by `:amount`:
+
+```elixir
+payment_amount_ord = 
+ord do
+   asc Lens.path([:type, :payment, :amount])
+end
+
+List.sort(transactions, payment_amount_ord)
+```
+
+Notice the final tiebreaker is still by name.
+
+And we can reuse our `Ord` in `max!/2`:
+
+```elixir
+List.max!(transactions, payment_amount_ord)
+```
+
+Here, Frank's credit card refund is our largest transaction.
+
+And we can continue to use our composed prisms:
+
+```elixir
+defmodule Processor do
+  alias Funx.Optics.Prism
+
+  def cc_payment_prism do
+    Prism.compose([
+      Transaction.type_prism(),
+      Charge.payment_prism(),
+      CreditCard.amount_prism()
+    ])
+  end
+
+  def check_payment_prism do
+    Prism.compose([
+      Transaction.type_prism(),
+      Charge.payment_prism(),
+      Check.amount_prism()
+    ])
+  end
+
+  def cc_refund_prism do
+    Prism.compose([
+      Transaction.type_prism(),
+      Refund.payment_prism(),
+      CreditCard.amount_prism()
+    ])
+  end
+
+  def check_refund_prism do
+    Prism.compose([
+      Transaction.type_prism(),
+      Refund.payment_prism(),
+      Check.amount_prism()
+    ])
+  end
+end
+
+```
+
+To sort by credit card payment, then credit card refund, then check payment, then check refund:
+
+```elixir
+payment_amount_ord =
+ord do
+   asc Processor.cc_payment_prism
+   asc Processor.cc_refund_prism
+   asc Processor.check_payment_prism
+   asc Processor.check_refund_prism
+end
+
+List.sort(transactions, payment_amount_ord)
+```
+
+Here's what it looks with Elixir's `Enum.sort/2`:
+
+```elixir
+Enum.sort(transactions, fn a, b ->
+  cc_payment = fn txn ->
+    case txn do
+      %Transaction{type: %Charge{payment: %CreditCard{amount: amt}}} -> amt
+      _ -> nil
+    end
+  end
+
+  cc_refund = fn txn ->
+    case txn do
+      %Transaction{type: %Refund{payment: %CreditCard{amount: amt}}} -> amt
+      _ -> nil
+    end
+  end
+
+  check_payment = fn txn ->
+    case txn do
+      %Transaction{type: %Charge{payment: %Check{amount: amt}}} -> amt
+      _ -> nil
+    end
+  end
+
+  check_refund = fn txn ->
+    case txn do
+      %Transaction{type: %Refund{payment: %Check{amount: amt}}} -> amt
+      _ -> nil
+    end
+  end
+
+  compare_maybe = fn
+    nil, nil -> :eq
+    nil, _ -> :lt
+    _, nil -> :gt
+    x, y when x < y -> :lt
+    x, y when x > y -> :gt
+    _, _ -> :eq
+  end
+
+  case compare_maybe.(cc_payment.(a), cc_payment.(b)) do
+    :lt -> true
+    :gt -> false
+    :eq ->
+      case compare_maybe.(cc_refund.(a), cc_refund.(b)) do
+        :lt -> true
+        :gt -> false
+        :eq ->
+          case compare_maybe.(check_payment.(a), check_payment.(b)) do
+            :lt -> true
+            :gt -> false
+            :eq ->
+              case compare_maybe.(check_refund.(a), check_refund.(b)) do
+                :lt -> true
+                :gt -> false
+                :eq -> a <= b 
+              end
+          end
+      end
+  end
+end)
+```
+
+Or, if you'd like to use `Enum.sort/2`, just wrap our `Ord` in the `comparator`:
+
+```elixir
+Enum.sort(transactions, OrdUtils.comparator(payment_amount_ord))
+```
