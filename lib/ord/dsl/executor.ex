@@ -31,20 +31,45 @@ defmodule Funx.Ord.Dsl.Executor do
   - `:desc` → `reverse(contramap(projection, ord))`
 
   Multiple steps are combined with `concat([...])` (monoid append).
+
+  ## Implicit Tiebreaker
+
+  A final identity projection is automatically appended to ensure deterministic
+  total ordering. This uses the value's `Ord` protocol implementation, falling
+  back to `Funx.Ord.Any` if no implementation exists.
+
+  This means:
+    - Custom orderings are refinements of the domain's natural ordering
+    - No arbitrary tiebreaking via Elixir term ordering
+    - Sorts are always deterministic and reproducible
   """
   @spec execute_steps(list(Step.t())) :: Macro.t()
   def execute_steps([]), do: empty_ord_ast()
-  def execute_steps(steps), do: build_concat_ast(steps)
+  def execute_steps(steps), do: build_concat_ast(append_identity_tiebreaker(steps))
+
+  # ============================================================================
+  # IMPLICIT TIEBREAKER
+  # ============================================================================
+
+  # Append identity projection as final tiebreaker
+  # This ensures deterministic ordering by falling back to the value's Ord protocol
+  defp append_identity_tiebreaker(steps) do
+    identity_step = %Step{
+      direction: :asc,
+      projection: quote(do: fn x -> x end),
+      ord: quote(do: Funx.Ord),
+      __meta__: %{line: nil, column: nil}
+    }
+
+    steps ++ [identity_step]
+  end
 
   # ============================================================================
   # AST BUILDING
   # ============================================================================
 
-  defp build_concat_ast([single_step]) do
-    # Optimization: skip concat wrapper for single step
-    step_to_ord_ast(single_step)
-  end
-
+  # Note: With implicit identity tiebreaker, we always have at least 2 steps
+  # (user steps + identity), so we always use concat
   defp build_concat_ast(steps) do
     ord_asts = Enum.map(steps, &step_to_ord_ast/1)
 

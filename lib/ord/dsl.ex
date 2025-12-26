@@ -6,6 +6,20 @@ defmodule Funx.Ord.Dsl do
 
   Each projection extracts a comparable value from the input and specifies a direction (`:asc` or `:desc`). The DSL handles optional fields, nested structures, custom projections, and type filtering through a unified interface.
 
+  ## Deterministic Ordering
+
+  The DSL always produces deterministic total orderings by automatically appending an
+  identity projection as the final tiebreaker. This means:
+
+    - When all projections result in equality, the ordering falls back to the value's
+      `Ord` protocol implementation (or `Funx.Ord.Any` if no implementation exists)
+    - Custom orderings are refinements of the domain's natural ordering
+    - No arbitrary tiebreaking via insertion order or Elixir term ordering
+    - Sorts are reproducible and deterministic across runs
+
+  For example, if `Product` has `ord_for(Product, :amount)` defining its natural ordering,
+  then `ord do asc :name end` will sort by name first, then by amount for ties.
+
   This module is useful for:
 
     - Multi-field sorting with different directions per field
@@ -13,6 +27,7 @@ defmodule Funx.Ord.Dsl do
     - Type partitioning to group heterogeneous data before ordering
     - Custom ordering logic via behaviour modules or projection functions
     - Nested field access through lenses and prisms
+    - Building deterministic orderings that respect domain semantics
 
   ### Directions
 

@@ -497,7 +497,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       assert Utils.compare(alice, charlie, ord_score_desc) == :lt
     end
 
-    test "two Nothing values compare as equal" do
+    test "two Nothing values fall back to identity tiebreaker" do
       charlie1 = %Person{name: "Alice", score: nil}
       charlie2 = %Person{name: "Bob", score: nil}
 
@@ -506,7 +506,9 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
           asc Prism.key(:score)
         end
 
-      assert Utils.compare(charlie1, charlie2, ord_score) == :eq
+      # Both nil (Nothing), so identity tiebreaker uses Ord.Any
+      # "Alice" < "Bob" in Elixir term ordering
+      assert Utils.compare(charlie1, charlie2, ord_score) == :lt
     end
 
     test "bare Prism with nested path uses Maybe.lift_ord" do
@@ -1134,7 +1136,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       assert Utils.compare(alice, alice, ord_empty) == :eq
     end
 
-    test "equal values on projection field return :eq" do
+    test "equal values on projection field fall back to identity tiebreaker" do
       alice1 = %Person{name: "Alice", age: 30}
       alice2 = %Person{name: "Alice", age: 25}
 
@@ -1143,7 +1145,9 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
           asc :name
         end
 
-      assert Utils.compare(alice1, alice2, ord_name) == :eq
+      # Same name, but implicit identity tiebreaker uses Ord.Any on whole struct
+      # alice1.age (30) > alice2.age (25) in Elixir term ordering
+      assert Utils.compare(alice1, alice2, ord_name) == :gt
     end
 
     test "first projection has priority in tie-breaking" do
@@ -1582,7 +1586,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       end
     end
 
-    property "two Nothing values always compare equal" do
+    property "two Nothing values fall back to identity tiebreaker" do
       check all(
               name1 <- string(:alphanumeric),
               name2 <- string(:alphanumeric)
@@ -1595,8 +1599,11 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
             asc Prism.key(:score)
           end
 
-        # Both are Nothing, so equal on this projection
-        assert Utils.compare(p1, p2, ord_score) == :eq
+        # Both are Nothing on :score, so identity tiebreaker compares whole struct
+        # Result is deterministic and based on name ordering
+        result = Utils.compare(p1, p2, ord_score)
+        expected = if name1 == name2, do: :eq, else: if(name1 < name2, do: :lt, else: :gt)
+        assert result == expected
       end
     end
   end
@@ -1619,7 +1626,14 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
         len1 = String.length(bio1)
         len2 = String.length(bio2)
 
-        expected = if len1 < len2, do: :lt, else: if(len1 > len2, do: :gt, else: :eq)
+        expected =
+          cond do
+            len1 < len2 -> :lt
+            len1 > len2 -> :gt
+            # Same length: identity tiebreaker compares whole struct (by bio content)
+            true -> if(bio1 < bio2, do: :lt, else: if(bio1 > bio2, do: :gt, else: :eq))
+          end
+
         assert result == expected
       end
     end
