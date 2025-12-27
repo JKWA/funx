@@ -14,7 +14,7 @@ The DSL combines the power of Lens and Prism optics with logical composition (AN
 
 Key Features:
 
-* Declarative `on` and `not_on` directives for equality
+* Declarative `on` and `diff_on` directives for equality
 * Nested `any` (OR) and `all` (AND) blocks for complex logic
 * Support for atoms, lenses, prisms, functions, and custom behaviours
 * Prisms for sum type projection (variants, optional values, tagged unions)
@@ -29,7 +29,7 @@ Key Features:
 ```elixir
 eq do
   on <projection>      # Field/projection must be equal
-  not_on <projection>  # Field/projection must differ
+  diff_on <projection>  # Field/projection must differ
   any do ... end       # At least one nested check must pass (OR)
   all do ... end       # All nested checks must pass (AND)
 end
@@ -110,9 +110,9 @@ Utils.eq?(alice, %Person{name: "Alice", age: 30}, eq_name_and_age)
 Utils.eq?(alice, %Person{name: "Alice", age: 99}, eq_name_and_age)
 ```
 
-## not_on Directive
+## diff_on Directive
 
-The `not_on` directive checks that fields must DIFFER:
+The `diff_on` directive checks that fields must DIFFER:
 
 ```elixir
 # Same person, different records (different IDs)
@@ -120,7 +120,7 @@ eq_same_person_diff_record =
   eq do
     on :name
     on :email
-    not_on :id
+    diff_on :id
   end
 
 Utils.eq?(
@@ -131,13 +131,47 @@ Utils.eq?(
 ```
 
 ```elixir
-# Same ID - not equal because not_on :id requires different IDs
+# Same ID - not equal because diff_on :id requires different IDs
 Utils.eq?(
   %Person{name: "Alice", email: "alice@example.com", id: 1},
   %Person{name: "Alice", email: "alice@example.com", id: 1},
   eq_same_person_diff_record
 )
 ```
+
+### Equivalence Relations and diff_on
+
+**Core Eq** (using only `on`, `all`, `any`) forms an equivalence relation with three properties:
+
+* **Reflexive**: `eq?(a, a)` is always true
+* **Symmetric**: If `eq?(a, b)` then `eq?(b, a)`
+* **Transitive**: If `eq?(a, b)` and `eq?(b, c)` then `eq?(a, c)`
+
+These properties guarantee that Core Eq partitions values into equivalence classes, making it safe for use with `Enum.uniq/2`, `MapSet`, and grouping operations.
+
+**Extended Eq** (using `diff_on`) expresses boolean equality predicates and does not guarantee transitivity.
+
+Example of transitivity violation with `diff_on`:
+
+```elixir
+a = %Person{name: "Alice", id: 1}
+b = %Person{name: "Alice", id: 2}
+c = %Person{name: "Alice", id: 1}
+
+eq_diff_id =
+  eq do
+    on :name
+    diff_on :id
+  end
+
+IO.puts("a == b: #{Utils.eq?(a, b, eq_diff_id)}")
+IO.puts("b == c: #{Utils.eq?(b, c, eq_diff_id)}")
+IO.puts("a == c: #{Utils.eq?(a, c, eq_diff_id)}")
+```
+
+Even though `a == b` and `b == c`, we have `a != c`, violating transitivity.
+
+**Important**: If you need equivalence classes (grouping, uniq, set membership), do not use `diff_on`.
 
 ## Prisms and Sum Types
 
@@ -682,6 +716,6 @@ The Eq DSL provides a declarative, type-safe way to build complex equality compa
 * Bare structs for type-based filtering
 * `any` blocks for OR logic
 * `all` blocks for explicit AND logic
-* `not_on` for inequality checks
+* `diff_on` for inequality checks
 
 All projections compose with AND logic at the top level, while `any` blocks provide OR logic. This makes it easy to express complex equality rules like "equal if (A and B) or (C and D)" without nested conditionals.

@@ -44,7 +44,7 @@ defmodule Funx.Ord.Dsl do
     - Lens - Explicit lens for nested access. Total but raises on missing keys or nil intermediate values. Must be explicit: `Lens.key(:field)`.
     - Prism - Explicit prism for optional fields. Returns `Maybe` with `Nothing < Just` semantics.
     - Prism with or_else - Explicit prism `{Prism.t(), or_else}` for optional with fallback.
-    - Behaviour - Custom projection via `c:Funx.Ord.Dsl.Behaviour.project/2`.
+    - Behaviour - Custom ordering via `c:Funx.Ord.Dsl.Behaviour.ord/1`.
 
   > Note: Atoms use Prism by default for safety. Use explicit `Lens.key(:field)` when you need
   > total access that raises on missing keys.

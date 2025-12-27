@@ -18,7 +18,7 @@ defmodule Funx.Eq.Dsl do
   ## Directives
 
     - `on` - Field/projection must be equal
-    - `not_on` - Field/projection must be different
+    - `diff_on` - Field/projection must be different
     - `any` - At least one nested check must pass (OR logic)
     - `all` - All nested checks must pass (AND logic, implicit at top level)
 
@@ -34,6 +34,40 @@ defmodule Funx.Eq.Dsl do
     - Prism with or_else - `{Prism.t(), or_else}` for optional with fallback
     - Behaviour - Custom equality via `c:Funx.Eq.Dsl.Behaviour.eq/1`
 
+  ## Equivalence Relations and diff_on
+
+  **Core Eq** (using only `on`, `all`, `any`) forms an equivalence relation with three properties:
+
+    - **Reflexive**: `eq?(a, a)` is always true
+    - **Symmetric**: If `eq?(a, b)` then `eq?(b, a)`
+    - **Transitive**: If `eq?(a, b)` and `eq?(b, c)` then `eq?(a, c)`
+
+  These properties guarantee that Core Eq partitions values into equivalence classes, making it
+  safe for use with Enum.uniq/2, MapSet, and grouping operations.
+
+  **Extended Eq** (using `diff_on`) expresses boolean equality predicates and does not guarantee transitivity.
+
+  Example of transitivity violation with `diff_on`:
+
+      defmodule Person, do: defstruct [:name, :id]
+
+      eq_diff_id = eq do
+        on :name
+        diff_on :id
+      end
+
+      a = %Person{name: "Alice", id: 1}
+      b = %Person{name: "Alice", id: 2}
+      c = %Person{name: "Alice", id: 1}
+
+      eq?(a, b)  # true  (same name, different ids)
+      eq?(b, c)  # true  (same name, different ids)
+      eq?(a, c)  # false (same name, SAME id - violates diff_on)
+
+  Even though `a == b` and `b == c`, we have `a != c`, violating transitivity.
+
+  **Important**: If you need equivalence classes (grouping, uniq, set membership), do not use `diff_on`.
+
   ## Examples
 
   Basic multi-field equality:
@@ -47,14 +81,14 @@ defmodule Funx.Eq.Dsl do
       iex> Funx.Eq.Utils.eq?(%Person{name: "Alice", age: 30}, %Person{name: "Alice", age: 30}, eq_person)
       true
 
-  Using not_on to check difference:
+  Using diff_on to check difference:
 
       iex> use Funx.Eq.Dsl
       iex> defmodule Person, do: defstruct [:name, :email, :id]
       iex> eq_same_person = eq do
       ...>   on :name
       ...>   on :email
-      ...>   not_on :id
+      ...>   diff_on :id
       ...> end
       iex> Funx.Eq.Utils.eq?(%Person{name: "Alice", email: "a@test.com", id: 1}, %Person{name: "Alice", email: "a@test.com", id: 2}, eq_same_person)
       true
@@ -105,7 +139,7 @@ defmodule Funx.Eq.Dsl do
 
       eq do
         on :score, or_else: 0
-        not_on :id
+        diff_on :id
       end
 
       eq do

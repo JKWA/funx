@@ -352,20 +352,22 @@ For complex projection logic, implement the `Funx.Ord.Dsl.Behaviour`.
 ```elixir
 defmodule NameLength do
   @behaviour Funx.Ord.Dsl.Behaviour
+  alias Funx.Ord.Utils
 
   @impl true
-  def project(person, _opts) do
-    String.length(person.name)
+  def ord(_opts) do
+    Utils.contramap(fn person -> String.length(person.name) end)
   end
 end
 
 defmodule WeightedScore do
   @behaviour Funx.Ord.Dsl.Behaviour
+  alias Funx.Ord.Utils
 
   @impl true
-  def project(person, opts) do
+  def ord(opts) do
     weight = Keyword.get(opts, :weight, 1.0)
-    (person.score || 0) * weight
+    Utils.contramap(fn person -> (person.score || 0) * weight end)
   end
 end
 ```

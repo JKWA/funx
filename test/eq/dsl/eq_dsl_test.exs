@@ -4,7 +4,7 @@ defmodule Funx.Eq.DslTest do
   #
   # Test Organization:
   #   - Basic on directive (atom projections)
-  #   - not_on directive (negated equality)
+  #   - diff_on directive (negated equality)
   #   - or_else option (handling nil/missing values)
   #   - Nested any blocks (OR logic)
   #   - Nested all blocks (explicit AND logic)
@@ -186,16 +186,16 @@ defmodule Funx.Eq.DslTest do
   end
 
   # ============================================================================
-  # not_on Directive Tests
+  # diff_on Directive Tests
   # ============================================================================
 
-  describe "not_on directive" do
+  describe "diff_on directive" do
     test "fields must differ" do
       eq_same_person_diff_record =
         eq do
           on :name
           on :email
-          not_on :id
+          diff_on(:id)
         end
 
       assert Utils.eq?(
@@ -211,11 +211,11 @@ defmodule Funx.Eq.DslTest do
              )
     end
 
-    test "not_on with matching required fields" do
+    test "diff_on with matching required fields" do
       eq_person =
         eq do
           on :name
-          not_on :id
+          diff_on(:id)
         end
 
       assert Utils.eq?(
@@ -745,11 +745,11 @@ defmodule Funx.Eq.DslTest do
              )
     end
 
-    test "not_on with Eq map" do
+    test "diff_on with Eq map" do
       eq_not =
         eq do
           on :name
-          not_on EqHelpers.age_mod_10()
+          diff_on(EqHelpers.age_mod_10())
         end
 
       # Same name, different ages with different mod 10

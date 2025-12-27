@@ -59,7 +59,7 @@ defmodule Funx.Eq.Dsl.Parser do
   defp extract_operations({:__block__, _meta, lines}) when is_list(lines), do: lines
   defp extract_operations(single_line), do: [single_line]
 
-  # Parse "on value, opt: val" or "on value" or "not_on value"
+  # Parse "on value, opt: val" or "on value" or "diff_on value"
   defp parse_entry_to_node({directive, meta, [[do: block]]}, caller_env)
        when directive in [:any, :all] do
     children = parse_operations(block, caller_env)
@@ -68,14 +68,14 @@ defmodule Funx.Eq.Dsl.Parser do
   end
 
   defp parse_entry_to_node({directive, meta, [projection_value, opts]}, caller_env)
-       when directive in [:on, :not_on] and is_list(opts) do
-    negate = directive == :not_on
+       when directive in [:on, :diff_on] and is_list(opts) do
+    negate = directive == :diff_on
     parse_projection(projection_value, opts, negate, meta, caller_env)
   end
 
   defp parse_entry_to_node({directive, meta, [projection_value]}, caller_env)
-       when directive in [:on, :not_on] do
-    negate = directive == :not_on
+       when directive in [:on, :diff_on] do
+    negate = directive == :diff_on
     parse_projection(projection_value, [], negate, meta, caller_env)
   end
 
@@ -83,7 +83,7 @@ defmodule Funx.Eq.Dsl.Parser do
     raise CompileError, description: Errors.invalid_dsl_syntax(other)
   end
 
-  # Parses a single projection (on/not_on directive) into a Step node.
+  # Parses a single projection (on/diff_on directive) into a Step node.
   #
   # Separates DSL-reserved options (:or_else, :eq) from behaviour options,
   # then delegates to build_projection_ast for type-specific handling.
