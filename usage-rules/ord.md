@@ -728,7 +728,7 @@ Ord.Utils.compare(a, b, ord_identity)  # Always :eq
 - You prefer explicit function composition over macro expansion
 - You're implementing reusable combinator libraries
 
-### Common Patterns
+### Common DSL Patterns
 
 **Paginated data sorting:**
 
