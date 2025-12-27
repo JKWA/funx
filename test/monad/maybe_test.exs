@@ -695,6 +695,32 @@ defmodule Funx.Monad.MaybeTest do
         to_try!(%Nothing{}, "Custom error message")
       end
     end
+
+    test "raises an exception module for Maybe.Nothing" do
+      assert_raise Enum.EmptyError, fn ->
+        to_try!(%Nothing{}, Enum.EmptyError)
+      end
+    end
+
+    test "raises an exception struct for Maybe.Nothing" do
+      assert_raise ArgumentError, "missing value", fn ->
+        to_try!(%Nothing{}, %ArgumentError{message: "missing value"})
+      end
+    end
+
+    test "raises ArgumentError when first argument is not a Maybe" do
+      assert_raise ArgumentError,
+                   "First argument must be a Maybe (Just or Nothing), got: 42",
+                   fn ->
+                     to_try!(42, "error")
+                   end
+    end
+
+    test "raises ArgumentError when first argument is a random struct" do
+      assert_raise ArgumentError, ~r/First argument must be a Maybe/, fn ->
+        to_try!(%{some: "struct"}, "error")
+      end
+    end
   end
 
   describe "from_result/1" do

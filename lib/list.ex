@@ -17,6 +17,7 @@ defmodule Funx.List do
   3. **Filter**: Use `intersection/2` or `difference/2` for set operations.
   4. **Sort**: Use `sort/2` or `strict_sort/2` with `Ord` instances.
   5. **Check Membership**: Use `subset?/2` or `superset?/2` to verify inclusion relationships.
+  6. **Find Extremes**: Use `min/2`, `max/2` for safe min/max, or `min!/2`, `max!/2` to raise on empty.
 
   ### Equality-Based Operations
 
@@ -36,6 +37,13 @@ defmodule Funx.List do
   - `subset?/2`: Checks if one list is a subset of another.
   - `superset?/2`: Checks if one list is a superset of another.
 
+  ### Min/Max Operations
+
+  - `min/2`: Returns the minimum element wrapped in `Maybe`.
+  - `min!/2`: Returns the minimum element, raises on empty list.
+  - `max/2`: Returns the maximum element wrapped in `Maybe`.
+  - `max!/2`: Returns the maximum element, raises on empty list.
+
   ### Monad Implementation
 
   - `map/2`: Transforms list elements.
@@ -47,6 +55,7 @@ defmodule Funx.List do
   - `fold_l/3`: Performs left-associative folding.
   - `fold_r/3`: Performs right-associative folding.
   """
+  import Kernel, except: [max: 2, min: 2]
   import Funx.Foldable, only: [fold_l: 3]
   import Funx.Filterable, only: [filter: 2]
   import Funx.Monoid.Utils, only: [m_concat: 2]
@@ -213,21 +222,157 @@ defmodule Funx.List do
 
   ## Examples
 
-      iex> Funx.List.maybe_head([1, 2, 3])
+      iex> Funx.List.head([1, 2, 3])
       %Funx.Monad.Maybe.Just{value: 1}
 
-      iex> Funx.List.maybe_head([])
+      iex> Funx.List.head([])
       %Funx.Monad.Maybe.Nothing{}
 
-      iex> Funx.List.maybe_head("not a list")
+      iex> Funx.List.head("not a list")
       %Funx.Monad.Maybe.Nothing{}
   """
-  @spec maybe_head([a]) :: Maybe.t(a) when a: term()
-  def maybe_head(list) do
+  @spec head([a]) :: Maybe.t(a) when a: term()
+  def head(list) do
     case list do
       [head | _] -> Maybe.just(head)
       _ -> Maybe.nothing()
     end
+  end
+
+  @doc """
+  Returns the head of a list.
+
+  Raises `ArgumentError` if the list is empty or not a list.
+
+  ## Examples
+
+      iex> Funx.List.head!([1, 2, 3])
+      1
+
+      iex> Funx.List.head!([42])
+      42
+  """
+  @spec head!([a]) :: a when a: term()
+  def head!(list) do
+    Maybe.to_try!(head(list), %ArgumentError{message: "cannot get head of empty list"})
+  end
+
+  @doc """
+  Returns the tail of a list.
+
+  The tail of an empty list is an empty list.
+
+  ## Examples
+
+      iex> Funx.List.tail([1, 2, 3])
+      [2, 3]
+
+      iex> Funx.List.tail([1])
+      []
+
+      iex> Funx.List.tail([])
+      []
+  """
+  @spec tail([a]) :: [a] when a: term()
+  def tail([_ | tail]), do: tail
+  def tail([]), do: []
+
+  @doc """
+  Returns the maximum element in a list according to the given ordering.
+
+  Returns `Just(element)` for non-empty lists, `Nothing` for empty lists.
+
+  This is a safe version that returns `Maybe` instead of raising.
+  Use `max!/2` if you want to raise on empty lists.
+
+  ## Examples
+
+      iex> Funx.List.max([3, 1, 4, 1, 5])
+      %Funx.Monad.Maybe.Just{value: 5}
+
+      iex> Funx.List.max([])
+      %Funx.Monad.Maybe.Nothing{}
+
+      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> Funx.List.max(["cat", "elephant", "ox"], ord)
+      %Funx.Monad.Maybe.Just{value: "elephant"}
+  """
+  @spec max([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
+  def max(list, ord \\ Funx.Ord) when is_list(list) do
+    import Funx.Monad, only: [map: 2]
+
+    head(list)
+    |> map(fn first ->
+      fold_l(tail(list), first, fn item, acc -> Ord.Utils.max(item, acc, ord) end)
+    end)
+  end
+
+  @doc """
+  Returns the maximum element in a list according to the given ordering.
+
+  Raises `Enum.EmptyError` if the list is empty.
+
+  ## Examples
+
+      iex> Funx.List.max!([3, 1, 4, 1, 5])
+      5
+
+      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> Funx.List.max!(["cat", "elephant", "ox"], ord)
+      "elephant"
+  """
+  @spec max!([a], Ord.Utils.ord_t()) :: a when a: term()
+  def max!(list, ord \\ Funx.Ord) when is_list(list) do
+    Maybe.to_try!(max(list, ord), Enum.EmptyError)
+  end
+
+  @doc """
+  Returns the minimum element in a list according to the given ordering.
+
+  Returns `Just(element)` for non-empty lists, `Nothing` for empty lists.
+
+  This is a safe version that returns `Maybe` instead of raising.
+  Use `min!/2` if you want to raise on empty lists.
+
+  ## Examples
+
+      iex> Funx.List.min([3, 1, 4, 1, 5])
+      %Funx.Monad.Maybe.Just{value: 1}
+
+      iex> Funx.List.min([])
+      %Funx.Monad.Maybe.Nothing{}
+
+      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> Funx.List.min(["cat", "elephant", "ox"], ord)
+      %Funx.Monad.Maybe.Just{value: "ox"}
+  """
+  @spec min([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
+  def min(list, ord \\ Funx.Ord) when is_list(list) do
+    import Funx.Monad, only: [map: 2]
+
+    head(list)
+    |> map(fn first ->
+      fold_l(tail(list), first, fn item, acc -> Ord.Utils.min(item, acc, ord) end)
+    end)
+  end
+
+  @doc """
+  Returns the minimum element in a list according to the given ordering.
+
+  Raises `Enum.EmptyError` if the list is empty.
+
+  ## Examples
+
+      iex> Funx.List.min!([3, 1, 4, 1, 5])
+      1
+
+      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> Funx.List.min!(["cat", "elephant", "ox"], ord)
+      "ox"
+  """
+  @spec min!([a], Ord.Utils.ord_t()) :: a when a: term()
+  def min!(list, ord \\ Funx.Ord) when is_list(list) do
+    Maybe.to_try!(min(list, ord), Enum.EmptyError)
   end
 end
 

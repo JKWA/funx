@@ -1,9 +1,10 @@
 # Used by "mix format"
 
-# Export formatter rules for the Either DSL
+# Export formatter rules for DSLs
 # This allows projects that add `import_deps: [:funx]` to automatically
 # format DSL functions without extra parentheses
 export_locals_without_parens = [
+  # Either DSL
   either: 2,
   bind: 1,
   map: 1,
@@ -12,7 +13,17 @@ export_locals_without_parens = [
   filter_or_else: 2,
   or_else: 1,
   map_left: 1,
-  tap: 1
+  tap: 1,
+  # Maybe DSL
+  maybe: 2,
+  filter: 1,
+  filter_map: 2,
+  guard: 1,
+  # Ord DSL
+  asc: 1,
+  asc: 2,
+  desc: 1,
+  desc: 2
 ]
 
 [

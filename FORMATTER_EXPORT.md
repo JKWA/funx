@@ -1,8 +1,10 @@
 # Formatter Rules
 
-The Funx library now exports formatter rules for its Either DSL, allowing projects that depend on Funx to automatically format DSL code without extra parentheses.
+The Funx library exports formatter rules for its DSLs, allowing projects that depend on Funx to automatically format DSL code without extra parentheses.
 
 ## Exported Rules
+
+### Either DSL
 
 The following Either DSL functions are configured to format without parentheses:
 
@@ -17,6 +19,29 @@ The following Either DSL functions are configured to format without parentheses:
 - `tap` - Run a side-effecting function inside the chain without changing the data
 
 Note that `flip/0` - Swap Left and Right still requires parentheses.
+
+### Maybe DSL
+
+The following Maybe DSL functions are configured to format without parentheses:
+
+- `maybe/2` - DSL entry point
+- `bind/1` - Chain operations that return Maybe, Either, result tuples, or nil (shared with Either DSL)
+- `map/1` - Transform values with plain functions (shared with Either DSL)
+- `ap/1` - Apply function in Maybe to value in Maybe (shared with Either DSL)
+- `or_else/1` - Provide fallback on Nothing (shared with Either DSL)
+- `tap/1` - Run a side-effecting function inside the chain without changing the data (shared with Either DSL)
+- `filter/1` - Filter with a predicate, returns Nothing if predicate fails
+- `filter_map/2` - Filter and transform in one step
+- `guard/1` - Guard with a boolean condition
+
+### Ord DSL
+
+The following Ord DSL functions are configured to format without parentheses:
+
+- `asc/1` - Ascending order for a projection
+- `asc/2` - Ascending order with options (e.g., `default:`)
+- `desc/1` - Descending order for a projection
+- `desc/2` - Descending order with options (e.g., `default:`)
 
 ## Usage in Dependent Projects
 
@@ -43,7 +68,9 @@ In your project's `.formatter.exs`, add `:funx` to `import_deps`:
 ]
 ```
 
-## Example
+## Examples
+
+### Either DSL
 
 With this configuration, your DSL code will format cleanly:
 
@@ -66,6 +93,52 @@ either(user_input) do
   validate([CheckLength, CheckFormat])
   bind(SaveToDatabase)
   or_else(default_user())
+end
+```
+
+### Maybe DSL
+
+Your Maybe pipelines will format cleanly:
+
+```elixir
+maybe user_input do
+  bind ParseInt
+  filter PositiveNumber
+  map Double
+  or_else default_value()
+end
+```
+
+Instead of:
+
+```elixir
+maybe(user_input) do
+  bind(ParseInt)
+  filter(PositiveNumber)
+  map(Double)
+  or_else(default_value())
+end
+```
+
+### Ord DSL
+
+Your ordering definitions will format cleanly:
+
+```elixir
+ord do
+  asc :name
+  desc :age
+  asc :score, default: 0
+end
+```
+
+Instead of:
+
+```elixir
+ord do
+  asc(:name)
+  desc(:age)
+  asc(:score, default: 0)
 end
 ```
 

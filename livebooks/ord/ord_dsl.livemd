@@ -1,0 +1,583 @@
+# Funx.Ord.Dsl
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", ref: "f292d68"}
+])
+```
+
+## Overview
+
+The `Funx.Ord.Dsl` module provides a declarative syntax for building complex orderings (comparators) using optics and projections.
+
+The DSL combines the power of Lens and Prism optics with lexicographic sorting rules, allowing you to express "sort by X, then by Y, then by Z" in a clear, composable way.
+
+Key Features:
+
+* Declarative `asc` and `desc` directives for sorting
+* Support for atoms, lenses, prisms, functions, and custom behaviours
+* Automatic composition into lexicographic orderings
+* Safe handling of nil values with Prism semantics
+* Type-based filtering with bare struct modules
+
+## Quick Reference
+
+### DSL Syntax:
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+ord do
+  asc <projection>   # Sort ascending
+  desc <projection>  # Sort descending
+end
+```
+
+### Valid Projections:
+
+* Atoms: `:field_name`, converts to `Prism.key(:field_name)`
+* Lenses: `Lens.key(:field)`, `Lens.path([:a, :b])`
+* Prisms: `Prism.key(:field)`, `Prism.path([{Struct, :field}])`
+* Functions: `&String.length/1`, `fn x -> x.field end`
+* Helper functions: `MyModule.my_projection()`
+* Behaviour modules: `MyBehaviour`
+* Bare struct modules: `MyStruct` (for type filtering)
+
+### Options:
+
+* `or_else: value` - Fallback value for nil (only with atoms and Prisms)
+
+## Setup
+
+```elixir
+use Funx.Ord.Dsl
+alias Funx.Optics.{Lens, Prism}
+alias Funx.Ord.Utils
+alias Funx.List
+```
+
+Let's create some test data:
+
+```elixir
+defmodule Person do
+  defstruct [:name, :age, :score, :address]
+end
+
+defmodule Address do
+  defstruct [:city, :state, :zip]
+end
+```
+
+```elixir
+alice = %Person{name: "Alice", age: 30, score: 100}
+bob = %Person{name: "Bob", age: 25, score: 50}
+charlie = %Person{name: "Charlie", age: 30, score: nil}
+```
+
+## Basic Atom Projections
+
+The simplest projections use atoms to reference struct fields.
+
+### Ascending Sort
+
+```elixir
+ord_by_name =
+  ord do
+    asc :name
+  end
+
+List.sort([bob, alice, charlie], ord_by_name)
+```
+
+### Descending Sort
+
+```elixir
+ord_by_age_desc =
+  ord do
+    desc :age
+  end
+
+List.sort([bob, alice, charlie], ord_by_age_desc)
+```
+
+### Multiple Fields (Tie-Breaking)
+
+When the first projection results in a tie, subsequent projections act as tie-breakers:
+
+```elixir
+# Alice and Charlie both have age 30, so we break ties by name
+ord_age_then_name =
+  ord do
+    asc :age
+    asc :name
+  end
+
+List.sort([charlie, alice, bob], ord_age_then_name)
+```
+
+### Mixed Directions
+
+```elixir
+ord_mixed =
+  ord do
+    desc :age
+    asc :name
+  end
+
+List.sort([charlie, alice, bob], ord_mixed)
+```
+
+## Handling Nil Values
+
+Atom projections use `Prism.key/1` under the hood, which treats missing keys and nil values as `Nothing`.
+
+### Default Behavior: Nothing < Just
+
+When using bare Prisms (including atoms), `Maybe.lift_ord` orders `Nothing` before `Just` with `asc`, and after `Just` with `desc`:
+
+```elixir
+ord_by_score =
+  ord do
+    asc :score
+  end
+
+# Charlie's nil score comes first (Nothing < Just)
+List.sort([alice, bob, charlie], ord_by_score)
+```
+
+### Providing Fallbacks with or_else
+
+Use `or_else` to replace `Nothing` (from missing keys or nil values) with a default value:
+
+```elixir
+ord_score_with_default =
+  ord do
+    asc :score, or_else: 1000
+  end
+
+# Charlie's nil becomes 1000, so: 1000 > 100 > 50
+List.sort([alice, bob, charlie], ord_score_with_default)
+```
+
+## Explicit Lens Projections
+
+Lenses provide total access - they assume fields exist. `Lens.key/1` raises `KeyError` on missing keys. `Lens.path/1` raises on missing keys or nil intermediate values in the path.
+
+### Simple Fields
+
+```elixir
+ord_by_age =
+  ord do
+    asc Lens.key(:age)
+  end
+
+List.sort([alice, bob, charlie], ord_by_age)
+```
+
+### Nested Paths
+
+```elixir
+alice_tx = %Person{
+  name: "Alice",
+  address: %Address{city: "Austin", state: "TX"}
+}
+
+bob_ma = %Person{
+  name: "Bob",
+  address: %Address{city: "Boston", state: "MA"}
+}
+
+ord_by_city =
+  ord do
+    asc Lens.path([:address, :city])
+  end
+
+List.sort([bob_ma, alice_tx], ord_by_city)
+```
+
+### Lens vs Prism: Different Nil Handling
+
+This is a critical difference:
+
+```elixir
+defmodule Container do
+  defstruct [:value]
+end
+
+```
+
+```elixir
+c1 = %Container{value: nil}
+c2 = %Container{value: 10}
+
+# Lens: Extracts nil, then uses Ord protocol (Elixir term ordering: nil > 10)
+ord_lens =
+  ord do
+    asc Lens.key(:value)
+  end
+
+Utils.compare(c1, c2, ord_lens)
+```
+
+```elixir
+# Prism: Returns Nothing for nil, then Maybe.lift_ord (Nothing < Just)
+ord_prism =
+  ord do
+    asc :value
+  end
+
+Utils.compare(c1, c2, ord_prism)
+```
+
+### Lens vs Prism:
+
+* Lens - Lawful total optic. Extracts the focus unconditionally. Raises on missing keys or nil intermediate path values.
+* Prism - Lawful partial optic. Returns `Maybe` - `Nothing` for missing/nil, `Just(value)` for present. Primary use: sum types (variants).
+* Atoms - Convenience syntax that uses `Prism.key/1` under the hood.
+
+## Explicit Prism Projections
+
+Prisms are primarily for sum types (variants), but also handle optional values safely.
+
+### With or_else (Tuple Syntax)
+
+```elixir
+ord_score_fallback =
+  ord do
+    asc {Prism.key(:score), 0}
+  end
+
+List.sort([alice, bob, charlie], ord_score_fallback)
+```
+
+### Bare Prism (Maybe.lift_ord)
+
+```elixir
+ord_bare_prism =
+  ord do
+    asc Prism.key(:score)
+  end
+
+# Nothing sorts before Just with asc
+List.sort([alice, bob, charlie], ord_bare_prism)
+```
+
+### Reversed with desc
+
+```elixir
+ord_bare_prism_desc =
+  ord do
+    desc Prism.key(:score)
+  end
+
+# Nothing sorts after Just with desc (reversed)
+List.sort([alice, bob, charlie], ord_bare_prism_desc)
+```
+
+## Function Projections
+
+Use functions for custom transformations.
+
+### Anonymous Functions
+
+```elixir
+people_with_bio = [
+  %Person{name: "Alice", score: 100, address: "Software engineer at Acme"},
+  %Person{name: "Bob", score: 50, address: "Developer"}
+]
+
+ord_bio_length =
+  ord do
+    asc &String.length(&1.address)
+  end
+
+List.sort(people_with_bio, ord_bio_length)
+```
+
+### Captured Functions
+
+```elixir
+strings = ["apple", "kiwi", "banana", "pear"]
+
+ord_by_length =
+  ord do
+    asc &String.length/1
+  end
+
+List.sort(strings, ord_by_length)
+```
+
+## Helper Function Projections
+
+Define reusable projections as 0-arity helper functions.
+
+```elixir
+defmodule ProjectionHelpers do
+  alias Funx.Optics.{Lens, Prism}
+
+  def name_lens, do: Lens.key(:name)
+  def age_lens, do: Lens.key(:age)
+  def score_prism, do: Prism.key(:score)
+  def score_with_default, do: {Prism.key(:score), 0}
+end
+```
+
+### Using Helper Functions
+
+```elixir
+ord_by_helpers =
+  ord do
+    asc ProjectionHelpers.age_lens()
+    asc ProjectionHelpers.name_lens()
+  end
+
+List.sort([charlie, alice, bob], ord_by_helpers)
+```
+
+### Helper Functions with or_else
+
+```elixir
+ord_score_helper =
+  ord do
+    asc ProjectionHelpers.score_prism(), or_else: 0
+  end
+
+List.sort([alice, bob, charlie], ord_score_helper)
+```
+
+## Behaviour Module Projections
+
+For complex projection logic, implement the `Funx.Ord.Dsl.Behaviour`.
+
+```elixir
+defmodule NameLength do
+  @behaviour Funx.Ord.Dsl.Behaviour
+
+  @impl true
+  def project(person, _opts) do
+    String.length(person.name)
+  end
+end
+
+defmodule WeightedScore do
+  @behaviour Funx.Ord.Dsl.Behaviour
+
+  @impl true
+  def project(person, opts) do
+    weight = Keyword.get(opts, :weight, 1.0)
+    (person.score || 0) * weight
+  end
+end
+```
+
+### Using Behaviour Modules
+
+```elixir
+ord_name_length =
+  ord do
+    asc NameLength
+  end
+
+List.sort([alice, bob, charlie], ord_name_length)
+```
+
+### With Options
+
+```elixir
+ord_weighted =
+  ord do
+    desc WeightedScore, weight: 2.0
+  end
+
+List.sort([alice, bob, charlie], ord_weighted)
+```
+
+## Bare Struct Modules (Type Filtering)
+
+Bare struct modules (e.g., `asc MyStruct`) compile to a predicate function that returns `true` for matching types, `false` otherwise. This partitions heterogeneous lists by type without comparing struct field values.
+
+```elixir
+defmodule CreditCard do
+  defstruct [:name, :number, :amount]
+end
+
+defmodule Check do
+  defstruct [:name, :routing_number, :amount]
+end
+```
+
+```elixir
+payments = [
+  %CreditCard{name: "Alice", number: "4242", amount: 300},
+  %Check{name: "Frank", routing_number: "111000025", amount: 100},
+  %CreditCard{name: "Bob", number: "4111", amount: 100},
+  %Check{name: "Edith", routing_number: "121042882", amount: 400}
+]
+```
+
+### Type-Based Sorting
+
+```elixir
+# Sort: Checks first, then by name
+ord_checks_first =
+  ord do
+    desc Check
+    asc Lens.key(:name)
+  end
+
+List.sort(payments, ord_checks_first)
+```
+
+This puts all `Check` structs before all `CreditCard` structs, then sorts each group by name.
+
+## Complex Compositions
+
+Combine multiple projection types for sophisticated sorting.
+
+```elixir
+complex_people = [
+  %Person{name: "Charlie", age: 30, score: nil},
+  %Person{name: "Alice", age: 25, score: 100},
+  %Person{name: "Bob", age: 30, score: 50},
+  %Person{name: "Alice", age: 30, score: 100}
+]
+
+ord_complex =
+  ord do
+    asc :name
+    desc :age
+    asc :score, or_else: 0
+  end
+
+List.sort(complex_people, ord_complex)
+```
+
+## Working with Nested Data
+
+```elixir
+defmodule Company do
+  defstruct [:name, :address]
+end
+
+defmodule Employee do
+  defstruct [:name, :company]
+end
+```
+
+```elixir
+employees = [
+  %Employee{
+    name: "Alice",
+    company: %Company{
+      name: "Acme",
+      address: %Address{city: "Austin", state: "TX"}
+    }
+  },
+  %Employee{
+    name: "Bob",
+    company: %Company{
+      name: "Widgets Inc",
+      address: %Address{city: "Boston", state: "MA"}
+    }
+  }
+]
+
+ord_by_company_city =
+  ord do
+    asc Lens.path([:company, :address, :city])
+  end
+
+List.sort(employees, ord_by_company_city)
+```
+
+## Empty Ord (Identity Ordering)
+
+An empty `ord` block returns an identity ordering where all values are equal:
+
+```elixir
+ord_identity =
+  ord do
+  end
+
+Utils.compare(alice, bob, ord_identity)
+```
+
+This always returns `:eq`, treating all values as equal.
+
+## Using with Enum.sort/2
+
+Wrap the Ord in a comparator function for use with `Enum.sort/2`:
+
+```elixir
+ord_by_age =
+  ord do
+    asc :age
+  end
+
+Enum.sort([charlie, alice, bob], Utils.comparator(ord_by_age))
+```
+
+## Finding Min and Max
+
+```elixir
+ord_by_score =
+  ord do
+    asc :score, or_else: 0
+  end
+
+List.min!([alice, bob, charlie], ord_by_score)
+```
+
+```elixir
+List.max!([alice, bob, charlie], ord_by_score)
+```
+
+## Compile-Time Validation
+
+The DSL validates projections at compile time:
+
+### Invalid Projection Type
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+# This will raise a CompileError:
+ord do
+  asc %{invalid: :map}
+end
+```
+
+### Incorrect or_else Usage
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+# or_else only works with atoms and Prisms, not Lens:
+ord do
+  asc Lens.key(:name), or_else: "Unknown"
+end
+```
+
+### Redundant or_else
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+# Can't use or_else when the projection already has one:
+ord do
+  asc {Prism.key(:score), 0}, or_else: 10
+end
+```
+
+## Summary
+
+The Ord DSL provides a declarative, type-safe way to build complex orderings:
+
+* Atoms for simple fields with safe nil handling
+* Lenses for total access (raises on nil)
+* Prisms for partial access (safe with nil)
+* Functions for custom transformations
+* Behaviours for reusable projection logic
+* Bare structs for type-based partitioning
+
+All projections compose lexicographically, making it easy to express "sort by X, then by Y" logic without nested comparisons or multiple sort passes.
