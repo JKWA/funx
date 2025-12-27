@@ -12,7 +12,7 @@ The `Funx.Ord.Dsl` module provides a declarative syntax for building complex ord
 
 The DSL combines the power of Lens and Prism optics with lexicographic sorting rules, allowing you to express "sort by X, then by Y, then by Z" in a clear, composable way.
 
-**Key Features:**
+Key Features:
 
 * Declarative `asc` and `desc` directives for sorting
 * Support for atoms, lenses, prisms, functions, and custom behaviours
@@ -22,7 +22,9 @@ The DSL combines the power of Lens and Prism optics with lexicographic sorting r
 
 ## Quick Reference
 
-**DSL Syntax:**
+### DSL Syntax:
+
+<!-- livebook:{"force_markdown":true} -->
 
 ```elixir
 ord do
@@ -31,9 +33,9 @@ ord do
 end
 ```
 
-**Valid Projections:**
+### Valid Projections:
 
-* Atoms: `:field_name`
+* Atoms: `:field_name`, converts to `Prism.key(:field_name)`
 * Lenses: `Lens.key(:field)`, `Lens.path([:a, :b])`
 * Prisms: `Prism.key(:field)`, `Prism.path([{Struct, :field}])`
 * Functions: `&String.length/1`, `fn x -> x.field end`
@@ -41,7 +43,7 @@ end
 * Behaviour modules: `MyBehaviour`
 * Bare struct modules: `MyStruct` (for type filtering)
 
-**Options:**
+### Options:
 
 * `or_else: value` - Fallback value for nil (only with atoms and Prisms)
 
@@ -227,11 +229,11 @@ ord_prism =
 Utils.compare(c1, c2, ord_prism)
 ```
 
-**Lens vs Prism:**
+### Lens vs Prism:
 
-- **Lens** - Lawful total optic. Extracts the focus unconditionally. Raises on missing keys or nil intermediate path values.
-- **Prism** - Lawful partial optic. Returns `Maybe` - `Nothing` for missing/nil, `Just(value)` for present. Primary use: sum types (variants).
-- **Atoms** - Convenience syntax that uses `Prism.key/1` under the hood.
+* Lens - Lawful total optic. Extracts the focus unconditionally. Raises on missing keys or nil intermediate path values.
+* Prism - Lawful partial optic. Returns `Maybe` - `Nothing` for missing/nil, `Just(value)` for present. Primary use: sum types (variants).
+* Atoms - Convenience syntax that uses `Prism.key/1` under the hood.
 
 ## Explicit Prism Projections
 
@@ -536,40 +538,46 @@ The DSL validates projections at compile time:
 
 ### Invalid Projection Type
 
+<!-- livebook:{"force_markdown":true} -->
+
 ```elixir
 # This will raise a CompileError:
-# ord do
-#   asc %{invalid: :map}
-# end
+ord do
+  asc %{invalid: :map}
+end
 ```
 
 ### Incorrect or_else Usage
 
+<!-- livebook:{"force_markdown":true} -->
+
 ```elixir
 # or_else only works with atoms and Prisms, not Lens:
-# ord do
-#   asc Lens.key(:name), or_else: "Unknown"
-# end
+ord do
+  asc Lens.key(:name), or_else: "Unknown"
+end
 ```
 
 ### Redundant or_else
 
+<!-- livebook:{"force_markdown":true} -->
+
 ```elixir
 # Can't use or_else when the projection already has one:
-# ord do
-#   asc {Prism.key(:score), 0}, or_else: 10
-# end
+ord do
+  asc {Prism.key(:score), 0}, or_else: 10
+end
 ```
 
 ## Summary
 
 The Ord DSL provides a declarative, type-safe way to build complex orderings:
 
-* **Atoms** for simple fields with safe nil handling
-* **Lenses** for total access (raises on nil)
-* **Prisms** for partial access (safe with nil)
-* **Functions** for custom transformations
-* **Behaviours** for reusable projection logic
-* **Bare structs** for type-based partitioning
+* Atoms for simple fields with safe nil handling
+* Lenses for total access (raises on nil)
+* Prisms for partial access (safe with nil)
+* Functions for custom transformations
+* Behaviours for reusable projection logic
+* Bare structs for type-based partitioning
 
 All projections compose lexicographically, making it easy to express "sort by X, then by Y" logic without nested comparisons or multiple sort passes.
