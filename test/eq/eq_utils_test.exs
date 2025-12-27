@@ -513,6 +513,55 @@ defmodule Funx.Eq.UtilsTest do
     end
   end
 
+  describe "to_eq_map/1" do
+    test "returns Eq map unchanged when already an Eq map" do
+      eq_map = %{
+        eq?: fn a, b -> a == b end,
+        not_eq?: fn a, b -> a != b end
+      }
+
+      result = Utils.to_eq_map(eq_map)
+
+      assert result == eq_map
+    end
+
+    test "converts module with eq?/2 to Eq map" do
+      defmodule CustomEqModule do
+        def eq?(a, b), do: a == b
+        def not_eq?(a, b), do: a != b
+      end
+
+      eq_map = Utils.to_eq_map(CustomEqModule)
+
+      assert eq_map.eq?.(42, 42)
+      refute eq_map.eq?.(42, 99)
+      refute eq_map.not_eq?.(42, 42)
+      assert eq_map.not_eq?.(42, 99)
+    end
+
+    test "converts module without eq?/2 to Eq map using protocol" do
+      # String module doesn't have eq?/2, so should use Funx.Eq protocol
+      eq_map = Utils.to_eq_map(String)
+
+      assert eq_map.eq?.("hello", "hello")
+      refute eq_map.eq?.("hello", "world")
+      refute eq_map.not_eq?.("hello", "hello")
+      assert eq_map.not_eq?.("hello", "world")
+    end
+
+    test "protocol-based Eq map works with custom structs" do
+      # Person doesn't have eq?/2, should use Funx.Eq protocol
+      eq_map = Utils.to_eq_map(Person)
+
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 30}
+      bob = %Person{name: "Bob", age: 30}
+
+      assert eq_map.eq?.(alice1, alice2)
+      refute eq_map.eq?.(alice1, bob)
+    end
+  end
+
   describe "contramap/2 with Traversal" do
     test "all foci present and all match" do
       traversal = Traversal.combine([Lens.key(:name), Lens.key(:age)])

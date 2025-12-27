@@ -80,7 +80,9 @@ defmodule Funx.Eq.Dsl.Parser do
     # Separate DSL-reserved options from behaviour options
     behaviour_opts = Keyword.drop(opts, [:or_else, :eq])
 
-    {projection_ast, type} = build_projection_ast(projection_value, or_else, behaviour_opts, meta, caller_env)
+    {projection_ast, type} =
+      build_projection_ast(projection_value, or_else, behaviour_opts, meta, caller_env)
+
     eq_ast = custom_eq || quote(do: Funx.Eq)
     metadata = extract_meta(meta)
 
@@ -89,18 +91,22 @@ defmodule Funx.Eq.Dsl.Parser do
 
   # Atom without or_else
   defp build_projection_ast(atom, nil, _behaviour_opts, _meta, _caller_env) when is_atom(atom) do
-    ast = quote do
-      Prism.key(unquote(atom))
-    end
+    ast =
+      quote do
+        Prism.key(unquote(atom))
+      end
+
     {ast, :projection}
   end
 
   # Atom with or_else
   defp build_projection_ast(atom, or_else, _behaviour_opts, _meta, _caller_env)
        when is_atom(atom) and not is_nil(or_else) do
-    ast = quote do
-      {Prism.key(unquote(atom)), unquote(or_else)}
-    end
+    ast =
+      quote do
+        {Prism.key(unquote(atom)), unquote(or_else)}
+      end
+
     {ast, :projection}
   end
 
@@ -140,9 +146,11 @@ defmodule Funx.Eq.Dsl.Parser do
       {fun_ast, :dynamic}
     else
       # With or_else - creates tuple {result, or_else} which contramap handles
-      ast = quote do
-        {unquote(fun_ast), unquote(or_else)}
-      end
+      ast =
+        quote do
+          {unquote(fun_ast), unquote(or_else)}
+        end
+
       {ast, :projection}
     end
   end
@@ -189,13 +197,15 @@ defmodule Funx.Eq.Dsl.Parser do
          _meta,
          _caller_env
        ) do
-    ast = if is_nil(or_else) do
-      prism_ast
-    else
-      quote do
-        {unquote(prism_ast), unquote(or_else)}
+    ast =
+      if is_nil(or_else) do
+        prism_ast
+      else
+        quote do
+          {unquote(prism_ast), unquote(or_else)}
+        end
       end
-    end
+
     {ast, :projection}
   end
 
@@ -218,20 +228,34 @@ defmodule Funx.Eq.Dsl.Parser do
 
   # Tuple with prism and or_else
   defp build_projection_ast({prism_ast, or_else_ast}, nil, _behaviour_opts, _meta, _caller_env) do
-    ast = quote do
-      {unquote(prism_ast), unquote(or_else_ast)}
-    end
+    ast =
+      quote do
+        {unquote(prism_ast), unquote(or_else_ast)}
+      end
+
     {ast, :projection}
   end
 
-  defp build_projection_ast({_prism_ast, _or_else_ast}, _extra_or_else, _behaviour_opts, meta, _caller_env) do
+  defp build_projection_ast(
+         {_prism_ast, _or_else_ast},
+         _extra_or_else,
+         _behaviour_opts,
+         meta,
+         _caller_env
+       ) do
     raise CompileError,
       line: Keyword.get(meta, :line),
       description: Errors.redundant_or_else()
   end
 
   # Module (with eq?/2, behaviour eq/1, or struct type filter)
-  defp build_projection_ast({:__aliases__, _, _} = module_alias, or_else, behaviour_opts, meta, caller_env) do
+  defp build_projection_ast(
+         {:__aliases__, _, _} = module_alias,
+         or_else,
+         behaviour_opts,
+         meta,
+         caller_env
+       ) do
     unless is_nil(or_else) do
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -261,7 +285,8 @@ defmodule Funx.Eq.Dsl.Parser do
       true ->
         raise CompileError,
           line: Keyword.get(meta, :line),
-          description: "Module #{inspect(expanded_module)} does not have eq?/2, eq/1, or __struct__/0"
+          description:
+            "Module #{inspect(expanded_module)} does not have eq?/2, eq/1, or __struct__/0"
     end
   end
 

@@ -35,7 +35,7 @@ defmodule Funx.Eq.DslTest do
 
     @impl true
     def eq(_opts) do
-      Utils.contramap(&(&1.id))
+      Utils.contramap(& &1.id)
     end
   end
 
@@ -48,7 +48,7 @@ defmodule Funx.Eq.DslTest do
       case_sensitive = Keyword.get(opts, :case_sensitive, true)
 
       if case_sensitive do
-        Utils.contramap(&(&1.name))
+        Utils.contramap(& &1.name)
       else
         Utils.contramap(fn person -> String.downcase(person.name) end)
       end
@@ -439,13 +439,24 @@ defmodule Funx.Eq.DslTest do
       assert Utils.eq?(%Person{score: nil}, %Person{score: nil}, eq_prism)
     end
 
-    test "Prism with or_else" do
+    test "Prism with or_else tuple syntax" do
       eq_prism_default =
         eq do
           on {Prism.key(:score), 0}
         end
 
       assert Utils.eq?(%Person{score: nil}, %Person{score: 0}, eq_prism_default)
+    end
+
+    test "Prism with or_else option syntax" do
+      eq_prism_with_option =
+        eq do
+          on Prism.key(:score), or_else: 0
+        end
+
+      assert Utils.eq?(%Person{score: nil}, %Person{score: 0}, eq_prism_with_option)
+      assert Utils.eq?(%Person{score: 10}, %Person{score: 10}, eq_prism_with_option)
+      refute Utils.eq?(%Person{score: nil}, %Person{score: 10}, eq_prism_with_option)
     end
 
     test "mixed projection types" do
@@ -557,9 +568,23 @@ defmodule Funx.Eq.DslTest do
         end
 
       # Same id OR same email
-      assert Utils.eq?(%Person{id: 1, email: "a@test.com"}, %Person{id: 1, email: "b@test.com"}, eq_any)
-      assert Utils.eq?(%Person{id: 1, email: "a@test.com"}, %Person{id: 2, email: "a@test.com"}, eq_any)
-      refute Utils.eq?(%Person{id: 1, email: "a@test.com"}, %Person{id: 2, email: "b@test.com"}, eq_any)
+      assert Utils.eq?(
+               %Person{id: 1, email: "a@test.com"},
+               %Person{id: 1, email: "b@test.com"},
+               eq_any
+             )
+
+      assert Utils.eq?(
+               %Person{id: 1, email: "a@test.com"},
+               %Person{id: 2, email: "a@test.com"},
+               eq_any
+             )
+
+      refute Utils.eq?(
+               %Person{id: 1, email: "a@test.com"},
+               %Person{id: 2, email: "b@test.com"},
+               eq_any
+             )
     end
   end
 
@@ -690,8 +715,10 @@ defmodule Funx.Eq.DslTest do
       eq_any =
         eq do
           any do
-            on Funx.Eq     # Default equality
-            on :special_id # OR special_id match
+            # Default equality
+            on Funx.Eq
+            # OR special_id match
+            on :special_id
           end
         end
 

@@ -32,7 +32,7 @@ defmodule Funx.Eq.Dsl do
     - Lens - Explicit lens for nested access (raises on missing)
     - Prism - Explicit prism for optional fields
     - Prism with or_else - `{Prism.t(), or_else}` for optional with fallback
-    - Behaviour - Custom projection via `c:Funx.Eq.Dsl.Behaviour.project/2`
+    - Behaviour - Custom equality via `c:Funx.Eq.Dsl.Behaviour.eq/1`
 
   ## Examples
 
