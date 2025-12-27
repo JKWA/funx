@@ -53,7 +53,27 @@ defmodule Funx.Eq.Dsl.Executor do
     end
   end
 
-  defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: false}) do
+  # Projection type - use contramap (non-negated)
+  defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: false, type: :projection}) do
+    quote do
+      Utils.contramap(unquote(projection_ast), unquote(eq_ast))
+    end
+  end
+
+  # Module with eq?/2 - convert to Eq map (non-negated)
+  defp node_to_ast(%Step{projection: module_ast, negate: false, type: :module_eq}) do
+    quote do
+      Utils.to_eq_map(unquote(module_ast))
+    end
+  end
+
+  # Eq map from behaviour - use directly (non-negated)
+  defp node_to_ast(%Step{projection: eq_map_ast, negate: false, type: :eq_map}) do
+    eq_map_ast
+  end
+
+  # Dynamic type - runtime detection (non-negated)
+  defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: false, type: :dynamic}) do
     quote do
       projection = unquote(projection_ast)
 
@@ -64,7 +84,7 @@ defmodule Funx.Eq.Dsl.Executor do
           projection
 
         module when is_atom(module) ->
-          # It's a module - check if it implements Eq protocol or convert it
+          # It's a module - convert to Eq map
           Utils.to_eq_map(module)
 
         _ ->
@@ -74,7 +94,41 @@ defmodule Funx.Eq.Dsl.Executor do
     end
   end
 
-  defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: true}) do
+  # Projection type - use contramap with negated eq (negated)
+  defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: true, type: :projection}) do
+    negated_eq_ast = build_negated_eq_ast(eq_ast)
+
+    quote do
+      Utils.contramap(unquote(projection_ast), unquote(negated_eq_ast))
+    end
+  end
+
+  # Module with eq?/2 - convert to Eq map and negate (negated)
+  defp node_to_ast(%Step{projection: module_ast, negate: true, type: :module_eq}) do
+    quote do
+      eq_map = Utils.to_eq_map(unquote(module_ast))
+
+      %{
+        eq?: eq_map.not_eq?,
+        not_eq?: eq_map.eq?
+      }
+    end
+  end
+
+  # Eq map from behaviour - negate it (negated)
+  defp node_to_ast(%Step{projection: eq_map_ast, negate: true, type: :eq_map}) do
+    quote do
+      eq_map = unquote(eq_map_ast)
+
+      %{
+        eq?: eq_map.not_eq?,
+        not_eq?: eq_map.eq?
+      }
+    end
+  end
+
+  # Dynamic type - runtime detection (negated)
+  defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: true, type: :dynamic}) do
     negated_eq_ast = build_negated_eq_ast(eq_ast)
 
     quote do

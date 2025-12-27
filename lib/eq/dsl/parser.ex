@@ -77,32 +77,37 @@ defmodule Funx.Eq.Dsl.Parser do
     or_else = Keyword.get(opts, :or_else)
     custom_eq = Keyword.get(opts, :eq)
 
-    projection_ast = build_projection_ast(projection_value, or_else, meta, caller_env)
+    # Separate DSL-reserved options from behaviour options
+    behaviour_opts = Keyword.drop(opts, [:or_else, :eq])
+
+    {projection_ast, type} = build_projection_ast(projection_value, or_else, behaviour_opts, meta, caller_env)
     eq_ast = custom_eq || quote(do: Funx.Eq)
     metadata = extract_meta(meta)
 
-    Step.new(projection_ast, eq_ast, negate, metadata)
+    Step.new(projection_ast, eq_ast, negate, type, metadata)
   end
 
   # Atom without or_else
-  defp build_projection_ast(atom, nil, _meta, _caller_env) when is_atom(atom) do
-    quote do
+  defp build_projection_ast(atom, nil, _behaviour_opts, _meta, _caller_env) when is_atom(atom) do
+    ast = quote do
       Prism.key(unquote(atom))
     end
+    {ast, :projection}
   end
 
   # Atom with or_else
-  defp build_projection_ast(atom, or_else, _meta, _caller_env)
+  defp build_projection_ast(atom, or_else, _behaviour_opts, _meta, _caller_env)
        when is_atom(atom) and not is_nil(or_else) do
-    quote do
+    ast = quote do
       {Prism.key(unquote(atom)), unquote(or_else)}
     end
+    {ast, :projection}
   end
 
   # Captured function
-  defp build_projection_ast({:&, _, _} = fun_ast, or_else, meta, _caller_env) do
+  defp build_projection_ast({:&, _, _} = fun_ast, or_else, _behaviour_opts, meta, _caller_env) do
     if is_nil(or_else) do
-      fun_ast
+      {fun_ast, :projection}
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -111,9 +116,9 @@ defmodule Funx.Eq.Dsl.Parser do
   end
 
   # Anonymous function
-  defp build_projection_ast({:fn, _, _} = fun_ast, or_else, meta, _caller_env) do
+  defp build_projection_ast({:fn, _, _} = fun_ast, or_else, _behaviour_opts, meta, _caller_env) do
     if is_nil(or_else) do
-      fun_ast
+      {fun_ast, :projection}
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -125,16 +130,20 @@ defmodule Funx.Eq.Dsl.Parser do
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, _}, _]}, _, args} = fun_ast,
          or_else,
+         _behaviour_opts,
          _meta,
          _caller_env
        )
        when args == [] or is_nil(args) do
     if is_nil(or_else) do
-      fun_ast
+      # No or_else - could be projection or Eq map, use runtime detection
+      {fun_ast, :dynamic}
     else
-      quote do
+      # With or_else - creates tuple {result, or_else} which contramap handles
+      ast = quote do
         {unquote(fun_ast), unquote(or_else)}
       end
+      {ast, :projection}
     end
   end
 
@@ -142,11 +151,12 @@ defmodule Funx.Eq.Dsl.Parser do
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Lens]}, :key]}, _, _} = lens_ast,
          or_else,
+         _behaviour_opts,
          meta,
          _caller_env
        ) do
     if is_nil(or_else) do
-      lens_ast
+      {lens_ast, :projection}
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -158,11 +168,12 @@ defmodule Funx.Eq.Dsl.Parser do
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Lens]}, :path]}, _, _} = lens_ast,
          or_else,
+         _behaviour_opts,
          meta,
          _caller_env
        ) do
     if is_nil(or_else) do
-      lens_ast
+      {lens_ast, :projection}
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -174,27 +185,30 @@ defmodule Funx.Eq.Dsl.Parser do
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Prism]}, _]}, _, _} = prism_ast,
          or_else,
+         _behaviour_opts,
          _meta,
          _caller_env
        ) do
-    if is_nil(or_else) do
+    ast = if is_nil(or_else) do
       prism_ast
     else
       quote do
         {unquote(prism_ast), unquote(or_else)}
       end
     end
+    {ast, :projection}
   end
 
   # Traversal (any Traversal function)
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Traversal]}, _]}, _, _} = traversal_ast,
          or_else,
+         _behaviour_opts,
          meta,
          _caller_env
        ) do
     if is_nil(or_else) do
-      traversal_ast
+      {traversal_ast, :projection}
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -203,20 +217,21 @@ defmodule Funx.Eq.Dsl.Parser do
   end
 
   # Tuple with prism and or_else
-  defp build_projection_ast({prism_ast, or_else_ast}, nil, _meta, _caller_env) do
-    quote do
+  defp build_projection_ast({prism_ast, or_else_ast}, nil, _behaviour_opts, _meta, _caller_env) do
+    ast = quote do
       {unquote(prism_ast), unquote(or_else_ast)}
     end
+    {ast, :projection}
   end
 
-  defp build_projection_ast({_prism_ast, _or_else_ast}, _extra_or_else, meta, _caller_env) do
+  defp build_projection_ast({_prism_ast, _or_else_ast}, _extra_or_else, _behaviour_opts, meta, _caller_env) do
     raise CompileError,
       line: Keyword.get(meta, :line),
       description: Errors.redundant_or_else()
   end
 
-  # Module (struct with Eq protocol, struct for type filtering, or behaviour)
-  defp build_projection_ast({:__aliases__, _, _} = module_alias, or_else, meta, caller_env) do
+  # Module (with eq?/2, behaviour eq/1, or struct type filter)
+  defp build_projection_ast({:__aliases__, _, _} = module_alias, or_else, behaviour_opts, meta, caller_env) do
     unless is_nil(or_else) do
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -226,33 +241,32 @@ defmodule Funx.Eq.Dsl.Parser do
     expanded_module = Macro.expand(module_alias, caller_env)
 
     cond do
-      # Check if module has eq?/2 directly (like Funx.Eq itself)
+      # Check if module has eq?/2 directly (like Funx.Eq, custom Eq modules)
       function_exported?(expanded_module, :eq?, 2) ->
         # Return the module directly - executor will use it as Eq
-        module_alias
+        {module_alias, :module_eq}
 
-      # Check if it's a struct - could implement Eq protocol or be for type filtering
+      # Check if module has eq/1 (Behaviour)
+      function_exported?(expanded_module, :eq, 1) ->
+        # Call the behaviour's eq/1 to get Eq map
+        ast = build_behaviour_eq_ast(expanded_module, behaviour_opts, meta)
+        {ast, :eq_map}
+
+      # Check if it's a struct without Behaviour - use as type filter
       function_exported?(expanded_module, :__struct__, 0) ->
-        # Check if Eq protocol is implemented for this struct
-        protocol_impl_module = Module.concat(Funx.Eq, expanded_module)
+        ast = build_struct_filter_ast(expanded_module)
+        {ast, :projection}
 
-        if Code.ensure_loaded?(protocol_impl_module) and
-             function_exported?(protocol_impl_module, :eq?, 2) do
-          # Protocol is implemented - use the struct module, executor will handle it
-          module_alias
-        else
-          # No protocol implementation - use as type filter
-          build_struct_filter_ast(expanded_module)
-        end
-
-      # Otherwise treat as a behaviour module
+      # Unknown module type
       true ->
-        build_behaviour_projection_ast(expanded_module, meta)
+        raise CompileError,
+          line: Keyword.get(meta, :line),
+          description: "Module #{inspect(expanded_module)} does not have eq?/2, eq/1, or __struct__/0"
     end
   end
 
   # Unknown projection type
-  defp build_projection_ast(other, _or_else, meta, _caller_env) do
+  defp build_projection_ast(other, _or_else, _behaviour_opts, meta, _caller_env) do
     raise CompileError,
       line: Keyword.get(meta, :line),
       description: Errors.invalid_projection_type(other)
@@ -267,25 +281,10 @@ defmodule Funx.Eq.Dsl.Parser do
     end
   end
 
-  defp build_behaviour_projection_ast(behaviour_module, meta) do
-    validate_behaviour_implementation!(behaviour_module, meta)
-
+  defp build_behaviour_eq_ast(behaviour_module, behaviour_opts, _meta) do
     quote do
-      fn value -> unquote(behaviour_module).project(value, []) end
+      unquote(behaviour_module).eq(unquote(behaviour_opts))
     end
-  end
-
-  defp validate_behaviour_implementation!(module, meta) do
-    Code.ensure_compiled!(module)
-    behaviours = module.module_info(:attributes)[:behaviour] || []
-
-    unless Funx.Eq.Dsl.Behaviour in behaviours do
-      raise CompileError,
-        line: Keyword.get(meta, :line),
-        description: Errors.missing_behaviour_implementation(module)
-    end
-
-    :ok
   end
 
   defp extract_meta(meta) when is_list(meta) do

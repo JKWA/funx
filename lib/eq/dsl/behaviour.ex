@@ -1,94 +1,105 @@
 defmodule Funx.Eq.Dsl.Behaviour do
   @moduledoc """
-  Behaviour for custom projection logic in the Eq DSL.
+  Behaviour for custom equality logic in the Eq DSL.
 
-  A module implementing this behaviour must define `project/2`. The DSL calls
-  `project/2` with the current value and any options given alongside the module
-  inside the DSL.
+  Implement this behaviour to define reusable Eq comparators that can be
+  used with `on` directives in the DSL without implementing the Eq protocol.
 
-  ## Examples
+  This is useful for teams that want to avoid teaching developers about protocols,
+  or want struct-specific equality without global protocol implementations.
 
-  A simple projection that extracts string length:
+  ## Basic Example
 
-      iex> defmodule StringLength do
-      ...>   @behaviour Funx.Eq.Dsl.Behaviour
-      ...>
-      ...>   @impl true
-      ...>   def project(value, _opts) when is_binary(value) do
-      ...>     String.length(value)
-      ...>   end
-      ...> end
-      iex> StringLength.project("hello", [])
-      5
+      defmodule UserById do
+        @behaviour Funx.Eq.Dsl.Behaviour
 
-  A projection with configurable options:
+        @impl true
+        def eq(_opts) do
+          Funx.Eq.Utils.contramap(&(&1.id))
+        end
+      end
 
-      iex> defmodule NormalizedValue do
-      ...>   @behaviour Funx.Eq.Dsl.Behaviour
-      ...>
-      ...>   @impl true
-      ...>   def project(value, opts) do
-      ...>     case_sensitive = Keyword.get(opts, :case_sensitive, true)
-      ...>     if case_sensitive, do: value, else: String.downcase(value)
-      ...>   end
-      ...> end
-      iex> NormalizedValue.project("Hello", case_sensitive: false)
-      "hello"
+      # In DSL
+      use Funx.Eq.Dsl
 
-  ## Usage in the DSL
+      eq do
+        on UserById  # Compares by id
+      end
 
-      iex> defmodule NameLength do
-      ...>   @behaviour Funx.Eq.Dsl.Behaviour
-      ...>   @impl true
-      ...>   def project(person, _opts) do
-      ...>     String.length(person.name)
-      ...>   end
-      ...> end
-      iex> use Funx.Eq.Dsl
-      iex> eq do
-      ...>   on NameLength
-      ...> end
+  ## With Options
 
-  The projection extracts a single comparable value from the input. The returned
-  value will be compared using the `Funx.Eq` protocol.
+      defmodule UserByName do
+        @behaviour Funx.Eq.Dsl.Behaviour
+
+        @impl true
+        def eq(opts) do
+          case_sensitive = Keyword.get(opts, :case_sensitive, true)
+
+          if case_sensitive do
+            Funx.Eq.Utils.contramap(&(&1.name))
+          else
+            Funx.Eq.Utils.contramap(fn u -> String.downcase(u.name) end)
+          end
+        end
+      end
+
+      # In DSL
+      eq do
+        on UserByName, case_sensitive: false
+      end
+
+  ## Why Use This Instead of Protocols?
+
+  - **Simpler**: Just one function returning an Eq map
+  - **No protocol knowledge required**: Easier for team onboarding
+  - **Module-specific**: Override struct equality without global protocol
+  - **Options support**: Built-in support for configuration
+
+  The returned Eq map typically uses `Funx.Eq.Utils.contramap/2` to build
+  projection-based equality, but can implement any custom comparison logic.
   """
 
   @doc """
-  Projects a value to extract a comparable value.
+  Returns an Eq map for comparison.
 
-  Arguments:
+  Takes options and returns an Eq map (with `:eq?` and `:not_eq?` functions).
 
-    * value
-      The current value to project.
+  ## Arguments
 
-    * opts
-      Module-specific options passed in the DSL, for example:
+    * `opts` - Keyword list of options passed from the DSL
 
-          on MyProjection, case_sensitive: false
+  ## Return Value
 
-  Return value:
+  An Eq map with the structure:
 
-    The projected value that will be used for comparison. The returned value
-    should implement `Funx.Eq` or be comparable using Elixir's built-in
-    equality operators.
+      %{
+        eq?: (any(), any() -> boolean()),
+        not_eq?: (any(), any() -> boolean())
+      }
 
-  Examples:
+  ## Examples
 
-      # Extract a field
-      def project(person, _opts) do
-        person.name
+      # Simple projection-based equality
+      def eq(_opts) do
+        Funx.Eq.Utils.contramap(&(&1.id))
       end
 
-      # Transform before comparison
-      def project(value, _opts) do
-        String.downcase(value)
+      # With options
+      def eq(opts) do
+        field = Keyword.get(opts, :field, :id)
+        Funx.Eq.Utils.contramap(&Map.get(&1, field))
       end
 
-      # Use options
-      def project(value, opts) do
-        default = Keyword.get(opts, :default, "")
-        value || default
+      # Custom comparison logic
+      def eq(_opts) do
+        %{
+          eq?: fn a, b -> normalize(a) == normalize(b) end,
+          not_eq?: fn a, b -> normalize(a) != normalize(b) end
+        }
       end
+
+  Most implementations use `Funx.Eq.Utils.contramap/2` for projection-based
+  equality, which handles the Eq map creation automatically.
   """
-  @callback project(value :: any(), opts :: keyword()) :: any()
+  @callback eq(opts :: keyword()) :: Funx.Eq.Utils.eq_map()
 end

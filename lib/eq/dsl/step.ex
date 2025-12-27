@@ -30,27 +30,31 @@ defmodule Funx.Eq.Dsl.Step do
 
   @type projection :: Macro.t()
   @type eq :: module() | Macro.t()
+  @type projection_type :: :projection | :module_eq | :eq_map | :dynamic
 
   @type t :: %__MODULE__{
           projection: projection(),
           eq: eq(),
           negate: boolean(),
+          type: projection_type(),
           __meta__: map()
         }
 
-  defstruct [:projection, :eq, :negate, :__meta__]
+  defstruct [:projection, :eq, :negate, :type, :__meta__]
 
   @doc """
-  Creates a new step with the given projection AST, eq module, negate flag, and metadata.
+  Creates a new step with the given projection AST, eq module, negate flag, type, and metadata.
 
   The projection AST must evaluate to one of contramap's canonical types.
+  The type indicates what kind of projection this is for compile-time optimization.
   """
-  @spec new(projection(), eq(), boolean(), map()) :: t()
-  def new(projection, eq, negate \\ false, meta \\ %{}) do
+  @spec new(projection(), eq(), boolean(), projection_type(), map()) :: t()
+  def new(projection, eq, negate \\ false, type \\ :projection, meta \\ %{}) do
     %__MODULE__{
       projection: projection,
       eq: eq,
       negate: negate,
+      type: type,
       __meta__: meta
     }
   end

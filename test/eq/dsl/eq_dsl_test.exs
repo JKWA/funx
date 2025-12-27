@@ -29,12 +29,29 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
-  defmodule NameLength do
+  # Behaviour that returns an Eq map (not a projection!)
+  defmodule UserById do
     @behaviour Funx.Eq.Dsl.Behaviour
 
     @impl true
-    def project(person, _opts) do
-      String.length(person.name)
+    def eq(_opts) do
+      Utils.contramap(&(&1.id))
+    end
+  end
+
+  # Behaviour with options support
+  defmodule UserByName do
+    @behaviour Funx.Eq.Dsl.Behaviour
+
+    @impl true
+    def eq(opts) do
+      case_sensitive = Keyword.get(opts, :case_sensitive, true)
+
+      if case_sensitive do
+        Utils.contramap(&(&1.name))
+      else
+        Utils.contramap(fn person -> String.downcase(person.name) end)
+      end
     end
   end
 
@@ -499,14 +516,50 @@ defmodule Funx.Eq.DslTest do
   end
 
   describe "behaviour modules" do
-    test "simple behaviour without options" do
-      eq_name_length =
+    test "behaviour returns Eq map (compares by id)" do
+      eq_by_id =
         eq do
-          on NameLength
+          on UserById
         end
 
-      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "Bobby"}, eq_name_length)
-      refute Utils.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_name_length)
+      assert Utils.eq?(%Person{id: 1, name: "Alice"}, %Person{id: 1, name: "Bob"}, eq_by_id)
+      refute Utils.eq?(%Person{id: 1, name: "Alice"}, %Person{id: 2, name: "Alice"}, eq_by_id)
+    end
+
+    test "behaviour with options - case sensitive (default)" do
+      eq_by_name =
+        eq do
+          on UserByName
+        end
+
+      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_by_name)
+      refute Utils.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_by_name)
+    end
+
+    test "behaviour with options - case insensitive" do
+      eq_by_name_ci =
+        eq do
+          on UserByName, case_sensitive: false
+        end
+
+      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_by_name_ci)
+      assert Utils.eq?(%Person{name: "BOB"}, %Person{name: "bob"}, eq_by_name_ci)
+      refute Utils.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_by_name_ci)
+    end
+
+    test "behaviour in any block" do
+      eq_any =
+        eq do
+          any do
+            on UserById
+            on :email
+          end
+        end
+
+      # Same id OR same email
+      assert Utils.eq?(%Person{id: 1, email: "a@test.com"}, %Person{id: 1, email: "b@test.com"}, eq_any)
+      assert Utils.eq?(%Person{id: 1, email: "a@test.com"}, %Person{id: 2, email: "a@test.com"}, eq_any)
+      refute Utils.eq?(%Person{id: 1, email: "a@test.com"}, %Person{id: 2, email: "b@test.com"}, eq_any)
     end
   end
 
@@ -614,49 +667,39 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
-  describe "Eq protocol implementations" do
-    test "module implementing Eq protocol" do
-      eq_protocol =
+  describe "using Funx.Eq for protocol dispatch" do
+    test "on Funx.Eq uses default protocol" do
+      eq_default =
         eq do
-          on CaseInsensitiveString
+          on Funx.Eq
         end
 
+      # Uses Eq protocol for CaseInsensitiveString
       assert Utils.eq?(
                %CaseInsensitiveString{value: "Hello"},
                %CaseInsensitiveString{value: "hello"},
-               eq_protocol
+               eq_default
              )
 
-      assert Utils.eq?(
-               %CaseInsensitiveString{value: "WORLD"},
-               %CaseInsensitiveString{value: "world"},
-               eq_protocol
-             )
-
-      refute Utils.eq?(
-               %CaseInsensitiveString{value: "Hello"},
-               %CaseInsensitiveString{value: "World"},
-               eq_protocol
-             )
+      # Uses default == for other types
+      assert Utils.eq?(42, 42, eq_default)
+      refute Utils.eq?(42, 99, eq_default)
     end
 
-    test "not_on with Eq protocol implementation" do
-      eq_not =
+    test "on Funx.Eq in any block" do
+      eq_any =
         eq do
-          not_on CaseInsensitiveString
+          any do
+            on Funx.Eq     # Default equality
+            on :special_id # OR special_id match
+          end
         end
 
-      refute Utils.eq?(
-               %CaseInsensitiveString{value: "Hello"},
-               %CaseInsensitiveString{value: "hello"},
-               eq_not
-             )
-
-      assert Utils.eq?(
-               %CaseInsensitiveString{value: "Hello"},
-               %CaseInsensitiveString{value: "World"},
-               eq_not
-             )
+      # Test shows composability with default Eq
+      # Maps differ in :id but match in :special_id, so any returns true
+      assert Utils.eq?(%{id: 999, special_id: 100}, %{id: 1, special_id: 100}, eq_any)
+      # Both conditions false (different overall, different special_id)
+      refute Utils.eq?(%{id: 1, special_id: 100}, %{id: 1, special_id: 200}, eq_any)
     end
   end
 
@@ -790,12 +833,12 @@ defmodule Funx.Eq.DslTest do
       end
     end
 
-    test "rejects module without Behaviour implementation" do
+    test "rejects module without eq?/2, eq/1, or __struct__/0" do
       defmodule NotABehaviour do
         def some_function, do: :ok
       end
 
-      assert_raise CompileError, ~r/must implement Funx\.Eq\.Dsl\.Behaviour/, fn ->
+      assert_raise CompileError, ~r/does not have eq\?\/2, eq\/1, or __struct__\/0/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Eq.Dsl
