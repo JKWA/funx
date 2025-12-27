@@ -1,18 +1,33 @@
 defmodule Funx.Eq.Dsl.Executor do
   @moduledoc false
-  # Compile-time executor for Eq DSL - converts steps/blocks to quoted AST
+  # Compile-time code generator that converts parsed DSL nodes into quoted AST.
   #
-  # ## Recursive Tree Execution
+  # ## Architecture
   #
-  # This executor recursively walks a tree of Steps (leaf nodes) and Blocks (containers).
-  # Each node type generates different AST:
+  # The executor is the second phase of DSL compilation:
+  #   1. Parser - Normalizes syntax → typed Step/Block nodes
+  #   2. Executor (this module) - Converts nodes → quoted runtime code
+  #   3. Runtime - Executes compiled equality checks
   #
-  #   - Step → `Utils.contramap(projection, eq)` (or negated version)
-  #   - Block (all) → `Utils.concat_all([children...])`
-  #   - Block (any) → `Utils.concat_any([children...])`
+  # ## Type-Specific Code Generation
   #
-  # The tree structure is built by the parser, and this executor just translates
-  # it into quoted code.
+  # The executor uses the type information from the parser to generate
+  # specific code paths for each projection type, eliminating runtime
+  # branching and compiler warnings:
+  #
+  #   - :projection → `Utils.contramap(projection, eq)`
+  #   - :module_eq  → `Utils.to_eq_map(module)`
+  #   - :eq_map     → Use Eq map directly (no wrapping)
+  #   - :dynamic    → Runtime case statement (0-arity helpers only)
+  #
+  # ## Tree Walking
+  #
+  # The executor recursively walks the node tree:
+  #   - Step nodes → Generate contramap/to_eq_map calls
+  #   - Block nodes → Generate concat_all/concat_any calls
+  #   - Negate flag → Swap eq?/not_eq? functions
+  #
+  # Top-level nodes are implicitly combined with concat_all (AND logic).
 
   alias Funx.Eq.Dsl.{Block, Step}
   alias Funx.Eq.Utils
@@ -37,6 +52,7 @@ defmodule Funx.Eq.Dsl.Executor do
   def execute_nodes([]), do: empty_eq_ast()
   def execute_nodes(nodes), do: build_all_ast(nodes)
 
+  # Block combinators - recursively process children
   defp build_all_ast(nodes) do
     eq_asts = Enum.map(nodes, &node_to_ast/1)
 
@@ -52,6 +68,10 @@ defmodule Funx.Eq.Dsl.Executor do
       Utils.concat_any([unquote_splicing(eq_asts)])
     end
   end
+
+  # === Non-negated Step nodes ===
+  #
+  # Each type generates specific code based on compile-time type information.
 
   # Projection type - use contramap (non-negated)
   defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: false, type: :projection}) do
@@ -93,6 +113,10 @@ defmodule Funx.Eq.Dsl.Executor do
       end
     end
   end
+
+  # === Negated Step nodes ===
+  #
+  # Same as non-negated but swaps eq?/not_eq? functions.
 
   # Projection type - use contramap with negated eq (negated)
   defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: true, type: :projection}) do
@@ -159,6 +183,10 @@ defmodule Funx.Eq.Dsl.Executor do
     end
   end
 
+  # === Block nodes ===
+  #
+  # Recursively process children with appropriate combinator.
+
   defp node_to_ast(%Block{strategy: :all, children: children}) do
     build_all_ast(children)
   end
@@ -167,12 +195,18 @@ defmodule Funx.Eq.Dsl.Executor do
     build_any_ast(children)
   end
 
+  # === Helpers ===
+
+  # Empty eq block returns identity Eq (all comparisons pass).
   defp empty_eq_ast do
     quote do
       %All{}
     end
   end
 
+  # Creates an Eq map that swaps eq?/not_eq? functions for negation.
+  #
+  # Handles both module atoms (converted via to_eq_map) and Eq maps.
   defp build_negated_eq_ast(eq_ast) do
     quote do
       %{

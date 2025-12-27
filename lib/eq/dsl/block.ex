@@ -1,19 +1,27 @@
 defmodule Funx.Eq.Dsl.Block do
   @moduledoc false
-  # Represents a nested block (all/any) in the Eq DSL compilation pipeline.
+  # Data structure representing a nested logical block in the Eq DSL.
   #
-  # A Block contains a composition strategy (:all or :any) and a list of children,
-  # where each child is either a Step (leaf) or another Block (nested).
+  # ## Purpose
+  #
+  # Blocks group multiple equality checks with a composition strategy:
+  #   - `:all` → All children must pass (AND logic) via concat_all
+  #   - `:any` → At least one child must pass (OR logic) via concat_any
+  #
+  # ## Structure
+  #
+  # Children can be Steps (leaf comparisons) or nested Blocks, forming a tree.
+  # The executor recursively walks this tree to generate the final Eq code.
   #
   # ## Examples
   #
-  # Simple any block:
+  # Simple any block (match email OR username):
   #   any do
   #     on :email
   #     on :username
   #   end
   #
-  # Nested blocks:
+  # Nested blocks (name AND (email OR username)):
   #   all do
   #     on :name
   #     any do

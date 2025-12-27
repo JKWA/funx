@@ -1,23 +1,61 @@
 defmodule Funx.Eq.DslTest do
-  use ExUnit.Case
+  @moduledoc false
+  # Comprehensive test suite for the Eq DSL
+  #
+  # Test Organization:
+  #   - Basic on directive (atom projections)
+  #   - not_on directive (negated equality)
+  #   - or_else option (handling nil/missing values)
+  #   - Nested any blocks (OR logic)
+  #   - Nested all blocks (explicit AND logic)
+  #   - Deep nesting (complex compositions)
+  #   - Function projections (anonymous and captured)
+  #   - Explicit optics (Lens, Prism, Traversal)
+  #   - Helper function projections (0-arity helpers)
+  #   - Behaviour modules (custom Eq maps)
+  #   - Protocol dispatch (Funx.Eq)
+  #   - Struct module type filtering
+  #   - Custom eq option
+  #   - Empty blocks
+  #   - Compile-time error handling
+
+  use ExUnit.Case, async: true
   use Funx.Eq.Dsl
+
   alias Funx.Eq.Utils
-  alias Funx.Optics.Lens
-  alias Funx.Optics.Prism
-  alias Funx.Optics.Traversal
+  alias Funx.Optics.{Lens, Prism, Traversal}
+
+  # ============================================================================
+  # Test Domain Structs
+  # ============================================================================
 
   defmodule Person do
     defstruct [:name, :age, :email, :username, :score, :id]
   end
 
-  defmodule Check, do: defstruct([:id])
-  defmodule CreditCard, do: defstruct([:id])
-  defmodule Address, do: defstruct([:city])
-  defmodule PersonWithAddress, do: defstruct([:name, :address])
+  defmodule Check do
+    defstruct [:id]
+  end
+
+  defmodule CreditCard do
+    defstruct [:id]
+  end
+
+  defmodule Address do
+    defstruct [:city]
+  end
+
+  defmodule PersonWithAddress do
+    defstruct [:name, :address]
+  end
 
   defmodule CaseInsensitiveString do
     defstruct [:value]
   end
+
+  # ============================================================================
+  # Protocol Implementations
+  # ============================================================================
 
   defimpl Funx.Eq, for: CaseInsensitiveString do
     def eq?(a, b) do
@@ -29,8 +67,14 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
-  # Behaviour that returns an Eq map (not a projection!)
+  # ============================================================================
+  # Custom Behaviour Modules
+  # ============================================================================
+  # Behaviours return Eq maps (not projections) for custom equality logic
+
   defmodule UserById do
+    @moduledoc false
+    # Compares users by ID only (ignores other fields)
     @behaviour Funx.Eq.Dsl.Behaviour
 
     @impl true
@@ -39,8 +83,9 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
-  # Behaviour with options support
   defmodule UserByName do
+    @moduledoc false
+    # Compares users by name with optional case sensitivity
     @behaviour Funx.Eq.Dsl.Behaviour
 
     @impl true
@@ -55,7 +100,14 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
+  # ============================================================================
+  # Helper Functions
+  # ============================================================================
+  # 0-arity helper functions for testing dynamic type detection
+
   defmodule ProjectionHelpers do
+    @moduledoc false
+    # Helpers that return optics (projections)
     alias Funx.Optics.{Lens, Prism}
 
     def name_prism, do: Prism.key(:name)
@@ -63,6 +115,10 @@ defmodule Funx.Eq.DslTest do
   end
 
   defmodule EqHelpers do
+    @moduledoc false
+    # Helpers that return Eq maps
+    alias Funx.Eq.Utils
+
     def name_case_insensitive do
       Utils.contramap(fn person -> String.downcase(person.name) end)
     end
@@ -71,6 +127,10 @@ defmodule Funx.Eq.DslTest do
       Utils.contramap(fn person -> rem(person.age, 10) end)
     end
   end
+
+  # ============================================================================
+  # Basic on Directive Tests
+  # ============================================================================
 
   describe "basic on directive" do
     test "single field" do
@@ -125,6 +185,10 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
+  # ============================================================================
+  # not_on Directive Tests
+  # ============================================================================
+
   describe "not_on directive" do
     test "fields must differ" do
       eq_same_person_diff_record =
@@ -168,6 +232,10 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
+  # ============================================================================
+  # or_else Option Tests
+  # ============================================================================
+
   describe "or_else option" do
     test "nil treated as default" do
       eq_score =
@@ -200,6 +268,10 @@ defmodule Funx.Eq.DslTest do
              )
     end
   end
+
+  # ============================================================================
+  # Nested any Blocks Tests
+  # ============================================================================
 
   describe "nested any blocks" do
     test "at least one must match" do
@@ -326,6 +398,10 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
+  # ============================================================================
+  # Deep Nesting Tests
+  # ============================================================================
+
   describe "deep nesting" do
     test "arbitrary depth" do
       eq_deep =
@@ -385,6 +461,10 @@ defmodule Funx.Eq.DslTest do
              )
     end
   end
+
+  # ============================================================================
+  # Projection Types Tests
+  # ============================================================================
 
   describe "projection types" do
     test "function projection" do
@@ -514,6 +594,10 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
+  # ============================================================================
+  # Empty Block Tests
+  # ============================================================================
+
   describe "empty block" do
     test "identity - always equal" do
       eq_empty =
@@ -525,6 +609,10 @@ defmodule Funx.Eq.DslTest do
       assert Utils.eq?("hello", "world", eq_empty)
     end
   end
+
+  # ============================================================================
+  # Behaviour Modules Tests
+  # ============================================================================
 
   describe "behaviour modules" do
     test "behaviour returns Eq map (compares by id)" do
@@ -588,6 +676,10 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
+  # ============================================================================
+  # Helper Functions Tests
+  # ============================================================================
+
   describe "helper functions" do
     test "0-arity helper returning Prism" do
       eq_helper =
@@ -616,6 +708,10 @@ defmodule Funx.Eq.DslTest do
       assert Utils.eq?(%Person{name: nil}, %Person{name: "Unknown"}, eq_helper)
     end
   end
+
+  # ============================================================================
+  # Eq Map Helpers Tests
+  # ============================================================================
 
   describe "Eq map helpers" do
     test "0-arity helper returning Eq map" do
@@ -692,6 +788,10 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
+  # ============================================================================
+  # Protocol Dispatch Tests
+  # ============================================================================
+
   describe "using Funx.Eq for protocol dispatch" do
     test "on Funx.Eq uses default protocol" do
       eq_default =
@@ -730,6 +830,10 @@ defmodule Funx.Eq.DslTest do
     end
   end
 
+  # ============================================================================
+  # Struct Modules Tests
+  # ============================================================================
+
   describe "struct modules" do
     test "bare struct module filters by type" do
       eq_check =
@@ -741,6 +845,10 @@ defmodule Funx.Eq.DslTest do
       refute Utils.eq?(%Check{id: 1}, %CreditCard{id: 1}, eq_check)
     end
   end
+
+  # ============================================================================
+  # Compile-Time Error Tests
+  # ============================================================================
 
   describe "compile-time errors" do
     test "rejects invalid syntax" do

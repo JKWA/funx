@@ -1,38 +1,48 @@
 defmodule Funx.Eq.Dsl.Parser do
   @moduledoc false
-  # Internal parser for Eq DSL - converts AST into Step and Block structs
+  # Compile-time parser that converts Eq DSL syntax into typed AST nodes.
   #
-  # ## Normalization Contract
+  # ## Architecture Overview
   #
-  # This parser normalizes all projection syntax into one of four canonical types
-  # that contramap/2 accepts:
+  # The parser is the first phase of DSL compilation:
+  #   1. Parser (this module) - Normalizes syntax → typed Step/Block nodes
+  #   2. Executor - Converts nodes → quoted runtime code
+  #   3. Runtime - Executes compiled equality checks
   #
-  #   1. Lens.t()              - bare Lens struct
-  #   2. Prism.t()             - bare Prism struct
-  #   3. {Prism.t(), or_else}  - Prism with or_else value
-  #   4. (a -> b)              - projection function
+  # ## Type-Based Optimization
   #
-  # All syntax sugar resolves to these types:
+  # The parser detects projection types at compile time to eliminate runtime
+  # branching and warnings. Each Step is tagged with one of:
+  #
+  #   - :projection - Optics (Lens/Prism/Traversal) or functions → contramap
+  #   - :module_eq  - Module with eq?/2 (like Funx.Eq) → to_eq_map
+  #   - :eq_map     - Behaviour returning Eq map → use directly
+  #   - :dynamic    - 0-arity helpers (unknown type) → runtime detection
+  #
+  # This allows the executor to generate specific code paths instead of
+  # runtime case statements that trigger compiler warnings.
+  #
+  # ## Syntax Normalization
+  #
+  # All user syntax is normalized to canonical forms that contramap/2 accepts:
   #
   #   - :atom              → Prism.key(:atom)
   #   - :atom, or_else: x  → {Prism.key(:atom), x}
-  #   - Lens.key(...)      → Lens.key(...) (pass through)
-  #   - Prism.key(...)     → Prism.key(...) (pass through)
-  #   - {Prism, x}         → {Prism, x} (pass through)
-  #   - fn -> ... end      → fn -> ... end (pass through)
-  #   - Behaviour          → fn v -> Behaviour.project(v, []) end
+  #   - Lens.key(...)      → pass through
+  #   - Prism.key(...)     → pass through (or tuple with or_else)
+  #   - fn x -> ... end    → pass through
+  #   - Module with eq?/2  → module atom (converted by executor)
+  #   - Module with eq/1   → Module.eq(opts) call (returns Eq map)
+  #   - Struct module      → type filter function
   #
-  # ## Nesting Support
+  # ## Nested Blocks
   #
-  # Unlike Ord DSL, Eq DSL supports nested blocks:
+  # The DSL supports nested any/all blocks for complex logic:
   #
-  #   - any do ... end     → Block with strategy: :any
-  #   - all do ... end     → Block with strategy: :all
+  #   - any do ... end  → Block{strategy: :any, children: [...]}
+  #   - all do ... end  → Block{strategy: :all, children: [...]}
   #
-  # These create a tree structure instead of a flat list.
-  #
-  # contramap/2 is the ONLY place that converts optics to functions.
-  # The parser never creates function wrappers around optics.
+  # Top-level is implicitly "all" (AND logic).
 
   alias Funx.Eq.Dsl.{Block, Errors, Step}
   alias Funx.Optics.Prism
@@ -73,11 +83,13 @@ defmodule Funx.Eq.Dsl.Parser do
     raise CompileError, description: Errors.invalid_dsl_syntax(other)
   end
 
+  # Parses a single projection (on/not_on directive) into a Step node.
+  #
+  # Separates DSL-reserved options (:or_else, :eq) from behaviour options,
+  # then delegates to build_projection_ast for type-specific handling.
   defp parse_projection(projection_value, opts, negate, meta, caller_env) do
     or_else = Keyword.get(opts, :or_else)
     custom_eq = Keyword.get(opts, :eq)
-
-    # Separate DSL-reserved options from behaviour options
     behaviour_opts = Keyword.drop(opts, [:or_else, :eq])
 
     {projection_ast, type} =
@@ -133,6 +145,13 @@ defmodule Funx.Eq.Dsl.Parser do
   end
 
   # Helper function call (0-arity)
+  #
+  # Handles calls like `EqHelpers.by_name()` which could return either a
+  # projection or an Eq map. We can't determine the return type at compile time.
+  #
+  # Without or_else: Use :dynamic type for runtime detection
+  # With or_else: Creates {result, or_else} tuple → :projection type
+  #   (contramap handles tuples directly)
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, _}, _]}, _, args} = fun_ast,
          or_else,
@@ -142,10 +161,8 @@ defmodule Funx.Eq.Dsl.Parser do
        )
        when args == [] or is_nil(args) do
     if is_nil(or_else) do
-      # No or_else - could be projection or Eq map, use runtime detection
       {fun_ast, :dynamic}
     else
-      # With or_else - creates tuple {result, or_else} which contramap handles
       ast =
         quote do
           {unquote(fun_ast), unquote(or_else)}
@@ -248,7 +265,24 @@ defmodule Funx.Eq.Dsl.Parser do
       description: Errors.redundant_or_else()
   end
 
-  # Module (with eq?/2, behaviour eq/1, or struct type filter)
+  # Module reference - determines module type and generates appropriate code
+  #
+  # Modules can serve three purposes in the DSL, checked in precedence order:
+  #
+  # 1. Eq module (has eq?/2) - e.g., Funx.Eq, custom Eq implementations
+  #    Returns: module atom with :module_eq type
+  #    Executor: Calls Utils.to_eq_map(module)
+  #
+  # 2. Behaviour (has eq/1) - returns Eq map from options
+  #    Returns: Module.eq(opts) call with :eq_map type
+  #    Executor: Uses the returned Eq map directly
+  #
+  # 3. Struct (has __struct__/0) - type filter for structural equality
+  #    Returns: fn %Struct{} -> true; _ -> false end with :projection type
+  #    Executor: Wraps in contramap (always returns true for same type)
+  #
+  # Note: or_else is rejected with modules since it only makes sense with
+  # optional projections (Prisms), not with Eq implementations or type filters.
   defp build_projection_ast(
          {:__aliases__, _, _} = module_alias,
          or_else,
@@ -265,23 +299,17 @@ defmodule Funx.Eq.Dsl.Parser do
     expanded_module = Macro.expand(module_alias, caller_env)
 
     cond do
-      # Check if module has eq?/2 directly (like Funx.Eq, custom Eq modules)
       function_exported?(expanded_module, :eq?, 2) ->
-        # Return the module directly - executor will use it as Eq
         {module_alias, :module_eq}
 
-      # Check if module has eq/1 (Behaviour)
       function_exported?(expanded_module, :eq, 1) ->
-        # Call the behaviour's eq/1 to get Eq map
         ast = build_behaviour_eq_ast(expanded_module, behaviour_opts, meta)
         {ast, :eq_map}
 
-      # Check if it's a struct without Behaviour - use as type filter
       function_exported?(expanded_module, :__struct__, 0) ->
         ast = build_struct_filter_ast(expanded_module)
         {ast, :projection}
 
-      # Unknown module type
       true ->
         raise CompileError,
           line: Keyword.get(meta, :line),
@@ -297,6 +325,12 @@ defmodule Funx.Eq.Dsl.Parser do
       description: Errors.invalid_projection_type(other)
   end
 
+  # Generates a type filter function for struct modules.
+  #
+  # Used when a struct module doesn't implement Eq or Behaviour - creates
+  # a function that returns true only for instances of that struct type.
+  # When wrapped in contramap, this makes equality checks only pass for
+  # values of the same struct type (structural equality).
   defp build_struct_filter_ast(struct_module) do
     quote do
       fn
@@ -306,12 +340,17 @@ defmodule Funx.Eq.Dsl.Parser do
     end
   end
 
+  # Generates a call to the behaviour's eq/1 function with options.
+  #
+  # The behaviour's eq/1 returns an Eq map at runtime, which the executor
+  # uses directly (no contramap wrapping needed).
   defp build_behaviour_eq_ast(behaviour_module, behaviour_opts, _meta) do
     quote do
       unquote(behaviour_module).eq(unquote(behaviour_opts))
     end
   end
 
+  # Extracts line and column metadata for error reporting.
   defp extract_meta(meta) when is_list(meta) do
     %{
       line: Keyword.get(meta, :line),

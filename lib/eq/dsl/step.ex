@@ -1,32 +1,32 @@
 defmodule Funx.Eq.Dsl.Step do
   @moduledoc false
-  # Represents a single normalized equality check step in the Eq DSL compilation pipeline.
+  # Data structure representing a single equality check in the DSL.
   #
-  # ## Normalization Invariant
+  # ## Fields
   #
-  # A Step represents a fully normalized equality operation with all syntax sugar
-  # resolved. Each field contains quoted AST that will be compiled into the final Eq:
+  #   - `projection`: Quoted AST for the projection/Eq map/module
+  #   - `eq`: Module or AST for the Eq implementation to use
+  #   - `negate`: Boolean - true for `not_on` directives (swaps eq?/not_eq?)
+  #   - `type`: Projection type for compile-time optimization
+  #   - `__meta__`: Source location for error reporting
   #
-  #   - `projection`: Quoted AST that evaluates to one of contramap's canonical types:
-  #       * `Lens.t()`
-  #       * `Prism.t()`
-  #       * `{Prism.t(), or_else}`
-  #       * `(a -> b)` function
-  #   - `eq`: Module atom or quoted AST that evaluates to an Eq implementation
-  #   - `negate`: Boolean indicating if this is a `not_on` directive
-  #   - `__meta__`: Compile-time metadata (line, column) for error reporting
+  # ## Type Field
   #
-  # ## Single-Path Guarantee
+  # The `type` field enables compile-time optimization by telling the executor
+  # how to handle the projection without runtime type detection:
   #
-  # After the parser creates Steps, there is no branching on projection type.
-  # The executor simply wraps each step in `Utils.contramap(projection, eq)` and
-  # optionally negates for `not_on` directives.
+  #   - `:projection` - Optics or functions → wrap in contramap
+  #   - `:module_eq` - Module with eq?/2 → convert via to_eq_map
+  #   - `:eq_map` - Behaviour returning Eq map → use directly
+  #   - `:dynamic` - Unknown (0-arity helper) → runtime detection
   #
-  # All projection-type-specific logic lives in:
-  #   1. Parser: syntax → canonical AST
-  #   2. contramap/2: canonical types → executable functions
+  # This eliminates compiler warnings from unreachable case branches.
   #
-  # This module is just a data container with no logic.
+  # ## Responsibilities
+  #
+  # This is a pure data container with no logic:
+  #   - Parser: Creates Steps with normalized AST and type
+  #   - Executor: Pattern matches on type to generate specific code
 
   @type projection :: Macro.t()
   @type eq :: module() | Macro.t()
