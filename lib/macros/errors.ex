@@ -95,6 +95,25 @@ defmodule Funx.Macros.Errors do
   end
 
   @doc """
+  Error: Traversal with `or_else:` option.
+  """
+  def or_else_with_traversal do
+    """
+    The `or_else:` option cannot be used with Traversal. Traversals focus on multiple elements simultaneously.
+
+    Reason: Traversals operate on multiple foci at once, making default value semantics ambiguous.
+    Should the default apply when any focus is missing, or when all are missing?
+
+    If you need optional handling, wrap each element's access in a Prism:
+      # Instead of: Traversal.combine([...]), or_else: default
+      # Use Prism for each element that might be optional
+      Funx.Macros.ord_for(MyStruct, Prism.path([:field, :nested]))
+
+    Or handle the optionality in your data structure design.
+    """
+  end
+
+  @doc """
   Error: {Prism, or_else} tuple already has or_else, can't use option too.
   """
   def redundant_or_else do

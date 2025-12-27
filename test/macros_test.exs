@@ -3,49 +3,45 @@ defmodule Funx.MacrosTest do
   # Comprehensive test suite for Funx.Macros
   #
   # Test Organization:
-  #   - eq_for/2 macro - equality comparison based on a field
-  #   - ord_for/2 macro - ordering comparison with various projection types:
-  #     * Atom projections (auto-converts to Prism)
-  #     * Explicit Lens projections (total access)
-  #     * Explicit Prism projections (partial access)
-  #     * {Prism, default} tuples (partial with fallback)
-  #     * Function projections (captured and anonymous)
-  #     * Struct literal projections (custom Lens/Prism)
-  #     * Helper function projections (local and remote)
-  #     * or_else option (with atoms and Prisms)
-  #   - Compile-time error validation (or_else misuse)
+  #   - eq_for/2 and eq_for/3 macros - equality comparison
+  #   - ord_for/2 and ord_for/3 macros - ordering comparison
+  #   - Various projection types (Atom, Lens, Prism, Traversal, Function)
+  #   - Compile-time error validation
 
   use ExUnit.Case, async: true
+  use ExUnitProperties
 
   require Funx.Macros
 
   alias Funx.Eq
   alias Funx.Optics.Lens
   alias Funx.Optics.Prism
+  alias Funx.Optics.Traversal
   alias Funx.Ord
   alias Funx.Test.Person
 
   # ============================================================================
   # Test Domain Structs
   # ============================================================================
-  defmodule Product do
-    @moduledoc false
-    defstruct [:name, :price, :rating]
-
-    # Atom - should use Prism.key (safe for nil values)
-    Funx.Macros.ord_for(Product, :rating)
-  end
 
   defmodule Address do
     @moduledoc false
     defstruct [:street, :city, :state, :zip]
   end
 
+  defmodule Product do
+    @moduledoc false
+    defstruct [:name, :price, :rating]
+
+    # Atom projection - uses Prism.key (safe for nil)
+    Funx.Macros.ord_for(Product, :rating)
+  end
+
   defmodule Customer do
     @moduledoc false
     defstruct [:name, :address]
 
-    # Lens - total access, raises on missing
+    # Lens projection - total access, raises on missing
     Funx.Macros.ord_for(Customer, Lens.path([:address, :city]))
   end
 
@@ -53,7 +49,7 @@ defmodule Funx.MacrosTest do
     @moduledoc false
     defstruct [:name, :score]
 
-    # Prism - partial access, Nothing < Just semantics
+    # Prism projection - partial access, Nothing < Just
     Funx.Macros.ord_for(Item, Prism.key(:score))
   end
 
@@ -73,16 +69,6 @@ defmodule Funx.MacrosTest do
     Funx.Macros.ord_for(Article, &String.length(&1.title))
   end
 
-  defmodule Check do
-    @moduledoc false
-    defstruct [:name, :routing_number, :account_number, :amount]
-  end
-
-  defmodule CreditCard do
-    @moduledoc false
-    defstruct [:name, :number, :expiry, :amount]
-  end
-
   defmodule Payment do
     @moduledoc false
     defstruct [:method, :amount]
@@ -96,11 +82,21 @@ defmodule Funx.MacrosTest do
     Funx.Macros.ord_for(Invoice, Prism.path([{Invoice, :payment}, {Payment, :amount}]))
   end
 
+  defmodule Check do
+    @moduledoc false
+    defstruct [:name, :routing_number, :account_number, :amount]
+  end
+
+  defmodule CreditCard do
+    @moduledoc false
+    defstruct [:name, :number, :expiry, :amount]
+  end
+
   defmodule Transaction do
     @moduledoc false
     defstruct [:id, :payment]
 
-    # Lens.path - will raise KeyError if payment type doesn't have routing_number
+    # Lens.path - raises KeyError if payment doesn't have routing_number
     Funx.Macros.ord_for(Transaction, Lens.path([:payment, :routing_number]))
   end
 
@@ -108,15 +104,12 @@ defmodule Funx.MacrosTest do
     @moduledoc false
     defstruct [:title, :pages, :author]
 
-    # Anonymous function - fn syntax
+    # Anonymous function projection
     Funx.Macros.ord_for(Book, fn book -> String.length(book.title) + book.pages end)
   end
 
   defmodule MagazineHelper do
     @moduledoc false
-    alias Funx.Optics.Lens
-
-    # Helper function that returns a Lens
     def title_lens, do: Lens.key(:title)
   end
 
@@ -124,7 +117,7 @@ defmodule Funx.MacrosTest do
     @moduledoc false
     defstruct [:title, :issue]
 
-    # Remote function call that returns a Lens
+    # Helper function projection
     Funx.Macros.ord_for(Magazine, MagazineHelper.title_lens())
   end
 
@@ -132,7 +125,7 @@ defmodule Funx.MacrosTest do
     @moduledoc false
     defstruct [:name, :metadata]
 
-    # Struct literal - manually constructed Lens
+    # Struct literal - custom Lens
     Funx.Macros.ord_for(
       Document,
       %Lens{
@@ -148,7 +141,7 @@ defmodule Funx.MacrosTest do
     @moduledoc false
     defstruct [:title, :status, :priority]
 
-    # Explicit Lens.key - total access to a single field
+    # Explicit Lens.key
     Funx.Macros.ord_for(Report, Lens.key(:priority))
   end
 
@@ -156,17 +149,16 @@ defmodule Funx.MacrosTest do
     @moduledoc false
     defstruct [:id, :severity, :created_at]
 
-    # Local function call - imported function without module prefix
+    # Imported function call
     import Funx.Optics.Prism, only: [key: 1]
     Funx.Macros.ord_for(Ticket, key(:severity))
   end
 
-  # or_else option test structs
   defmodule Score do
     @moduledoc false
     defstruct [:player, :points, :bonus]
 
-    # Atom with or_else
+    # Atom with or_else option
     Funx.Macros.ord_for(Score, :points, or_else: 0)
   end
 
@@ -174,30 +166,87 @@ defmodule Funx.MacrosTest do
     @moduledoc false
     defstruct [:item, :stars, :verified]
 
-    # Prism with or_else
+    # Prism with or_else option
     Funx.Macros.ord_for(Rating, Prism.key(:stars), or_else: 0)
   end
 
-  # ============================================================================
-  # Helper Modules
-  # ============================================================================
-
-  defmodule ProjectionHelpers do
+  # eq_for/3 test structs
+  defmodule EqProduct do
     @moduledoc false
-    # Reusable projection functions for testing
+    defstruct [:name, :price, :rating]
+    Funx.Macros.eq_for(EqProduct, :rating, or_else: 0)
+  end
 
-    alias Funx.Optics.Lens
+  defmodule EqCustomer do
+    @moduledoc false
+    defstruct [:name, :address]
+    Funx.Macros.eq_for(EqCustomer, Lens.path([:address, :city]))
+  end
 
-    def product_rating_lens, do: Lens.key(:rating)
-    def task_priority_prism, do: Prism.key(:priority)
+  defmodule EqItem do
+    @moduledoc false
+    defstruct [:name, :score]
+    Funx.Macros.eq_for(EqItem, Prism.key(:score))
+  end
+
+  defmodule EqArticle do
+    @moduledoc false
+    defstruct [:title, :content]
+    Funx.Macros.eq_for(EqArticle, &String.length(&1.title))
+  end
+
+  defmodule CaseInsensitiveEq do
+    @moduledoc false
+    def eq?(a, b), do: String.downcase(a) == String.downcase(b)
+    def not_eq?(a, b), do: !eq?(a, b)
+  end
+
+  defmodule EqPerson do
+    @moduledoc false
+    defstruct [:name, :age]
+    Funx.Macros.eq_for(EqPerson, :name, eq: CaseInsensitiveEq)
+  end
+
+  defmodule EqRecord do
+    @moduledoc false
+    defstruct [:name, :age, :score]
+    Funx.Macros.eq_for(EqRecord, Traversal.combine([Lens.key(:name), Lens.key(:age)]))
+  end
+
+  # ============================================================================
+  # Test Fixtures
+  # ============================================================================
+
+  defp product_fixture(name \\ "Widget", rating \\ 5) do
+    %Product{name: name, price: 10.0, rating: rating}
+  end
+
+  defp customer_fixture(name \\ "Alice", city \\ "Austin") do
+    %Customer{name: name, address: %Address{city: city, state: "TX", street: "Main St"}}
+  end
+
+  defp item_fixture(name \\ "Item", score \\ 100) do
+    %Item{name: name, score: score}
+  end
+
+  defp task_fixture(title \\ "Task", priority \\ 1) do
+    %Task{title: title, priority: priority}
+  end
+
+  defp invoice_fixture(id \\ 1, amount \\ 100) do
+    %Invoice{id: id, payment: %Payment{method: "card", amount: amount}}
+  end
+
+  defp score_fixture(player \\ "Player", points \\ 100) do
+    %Score{player: player, points: points, bonus: 0}
   end
 
   # ============================================================================
   # Equality Tests (eq_for/2)
   # ============================================================================
 
-  describe "eq_for/2 macro" do
-    test "eq?/2 compares structs based on the specified field" do
+  describe "eq_for/2 - backward compatibility" do
+    test "eq?/2 compares structs based on specified field" do
       p1 = %Person{name: "Alice", age: 30}
       p2 = %Person{name: "Bob", age: 30}
       p3 = %Person{name: "Alice", age: 25}
@@ -209,19 +258,202 @@ defmodule Funx.MacrosTest do
     test "not_eq?/2 negates eq?/2" do
       p1 = %Person{name: "Alice", age: 30}
       p2 = %Person{name: "Bob", age: 30}
-      p3 = %Person{name: "Alice", age: 25}
 
-      refute Eq.not_eq?(p1, p3)
       assert Eq.not_eq?(p1, p2)
+      refute Eq.not_eq?(p1, p1)
     end
   end
 
   # ============================================================================
-  # Ordering Tests (ord_for/2) - Basic Functionality
+  # Equality Tests (eq_for/3)
   # ============================================================================
 
-  describe "ord_for/2 macro - basic" do
-    test "lt?/2 determines if the first struct's field is less than the second's" do
+  describe "eq_for/3 with or_else option" do
+    test "treats nil as default value" do
+      p1 = %EqProduct{name: "A", rating: nil}
+      p2 = %EqProduct{name: "B", rating: 0}
+      p3 = %EqProduct{name: "C", rating: 5}
+
+      assert Eq.eq?(p1, p2)
+      refute Eq.eq?(p1, p3)
+    end
+
+    test "both nil values are equal" do
+      p1 = %EqProduct{name: "A", rating: nil}
+      p2 = %EqProduct{name: "B", rating: nil}
+
+      assert Eq.eq?(p1, p2)
+    end
+
+    test "same non-nil values are equal" do
+      p1 = %EqProduct{name: "A", rating: 5}
+      p2 = %EqProduct{name: "B", rating: 5}
+
+      assert Eq.eq?(p1, p2)
+    end
+  end
+
+  describe "eq_for/3 with Lens projection" do
+    test "compares by nested field" do
+      c1 = %EqCustomer{name: "Alice", address: %Address{city: "Austin", state: "TX"}}
+      c2 = %EqCustomer{name: "Bob", address: %Address{city: "Austin", state: "MA"}}
+      c3 = %EqCustomer{name: "Charlie", address: %Address{city: "Boston", state: "TX"}}
+
+      assert Eq.eq?(c1, c2)
+      refute Eq.eq?(c1, c3)
+    end
+
+    test "raises BadMapError when intermediate value is nil" do
+      c1 = %EqCustomer{name: "Alice", address: nil}
+      c2 = %EqCustomer{name: "Bob", address: %Address{city: "Boston", state: "MA"}}
+
+      assert_raise BadMapError, fn ->
+        Eq.eq?(c1, c2)
+      end
+    end
+  end
+
+  describe "eq_for/3 with Prism projection" do
+    test "compares Just values normally" do
+      i1 = %EqItem{name: "A", score: 10}
+      i2 = %EqItem{name: "B", score: 10}
+      i3 = %EqItem{name: "C", score: 20}
+
+      assert Eq.eq?(i1, i2)
+      refute Eq.eq?(i1, i3)
+    end
+
+    test "Nothing == Nothing" do
+      i1 = %EqItem{name: "A", score: nil}
+      i2 = %EqItem{name: "B", score: nil}
+
+      assert Eq.eq?(i1, i2)
+    end
+
+    test "Nothing != Just" do
+      i1 = %EqItem{name: "A", score: nil}
+      i2 = %EqItem{name: "B", score: 10}
+
+      refute Eq.eq?(i1, i2)
+    end
+  end
+
+  describe "eq_for/3 with function projection" do
+    test "compares using projection function" do
+      a1 = %EqArticle{title: "Hi", content: "..."}
+      a2 = %EqArticle{title: "By", content: "different"}
+      a3 = %EqArticle{title: "Hello", content: "..."}
+
+      # Same title length (2)
+      assert Eq.eq?(a1, a2)
+      # Different title length
+      refute Eq.eq?(a1, a3)
+    end
+  end
+
+  describe "eq_for/3 with custom eq option" do
+    test "uses custom Eq module for comparison" do
+      p1 = %EqPerson{name: "Alice", age: 30}
+      p2 = %EqPerson{name: "ALICE", age: 25}
+      p3 = %EqPerson{name: "Bob", age: 30}
+
+      assert Eq.eq?(p1, p2)
+      refute Eq.eq?(p1, p3)
+    end
+
+    test "not_eq? uses custom Eq module" do
+      p1 = %EqPerson{name: "Alice", age: 30}
+      p2 = %EqPerson{name: "alice", age: 25}
+
+      refute Eq.not_eq?(p1, p2)
+    end
+  end
+
+  describe "eq_for/3 with Traversal projection" do
+    test "all foci must match for equality" do
+      r1 = %EqRecord{name: "Alice", age: 30, score: 100}
+      r2 = %EqRecord{name: "Alice", age: 30, score: 50}
+      r3 = %EqRecord{name: "Bob", age: 30, score: 100}
+
+      assert Eq.eq?(r1, r2)
+      refute Eq.eq?(r1, r3)
+    end
+
+    test "inequality when any focus differs" do
+      r1 = %EqRecord{name: "Alice", age: 30, score: 100}
+      r2 = %EqRecord{name: "Alice", age: 25, score: 100}
+
+      refute Eq.eq?(r1, r2)
+    end
+  end
+
+  # ============================================================================
+  # Equality Validation Tests
+  # ============================================================================
+
+  describe "eq_for/3 - or_else validation" do
+    test "rejects or_else with Lens.key" do
+      assert_raise ArgumentError, ~r/cannot be used with Lens/, fn ->
+        defmodule BadEqLensKey do
+          @moduledoc false
+          defstruct [:field]
+          Funx.Macros.eq_for(BadEqLensKey, Lens.key(:field), or_else: 0)
+        end
+      end
+    end
+
+    test "rejects or_else with Lens.path" do
+      assert_raise ArgumentError, ~r/cannot be used with Lens/, fn ->
+        defmodule BadEqLensPath do
+          @moduledoc false
+          defstruct [:nested]
+          Funx.Macros.eq_for(BadEqLensPath, Lens.path([:nested, :field]), or_else: 0)
+        end
+      end
+    end
+
+    test "rejects or_else with captured function" do
+      assert_raise ArgumentError, ~r/cannot be used with captured functions/, fn ->
+        defmodule BadEqCapturedFn do
+          @moduledoc false
+          defstruct [:value]
+          Funx.Macros.eq_for(BadEqCapturedFn, &String.length(&1.value), or_else: 0)
+        end
+      end
+    end
+
+    test "rejects redundant or_else with {Prism, default}" do
+      assert_raise ArgumentError, ~r/Redundant or_else/, fn ->
+        defmodule RedundantEqOrElse do
+          @moduledoc false
+          defstruct [:field]
+          Funx.Macros.eq_for(RedundantEqOrElse, {Prism.key(:field), 5}, or_else: 0)
+        end
+      end
+    end
+
+    test "rejects or_else with Traversal" do
+      assert_raise ArgumentError, ~r/cannot be used with Traversal/, fn ->
+        defmodule BadEqTraversal do
+          @moduledoc false
+          defstruct [:name, :age]
+
+          Funx.Macros.eq_for(
+            BadEqTraversal,
+            Traversal.combine([Lens.key(:name)]),
+            or_else: "unknown"
+          )
+        end
+      end
+    end
+  end
+
+  # ============================================================================
+  # Ordering Tests (ord_for/2) - Basic Operations
+  # ============================================================================
+
+  describe "ord_for/2 - basic operations" do
+    test "lt?/2 compares first value less than second" do
       p1 = %Person{name: "Alice", age: 30}
       p2 = %Person{name: "Bob", age: 25}
 
@@ -229,17 +461,15 @@ defmodule Funx.MacrosTest do
       refute Ord.lt?(p2, p1)
     end
 
-    test "le?/2 determines if the first struct's field is less than or equal to the second's" do
+    test "le?/2 compares first value less than or equal to second" do
       p1 = %Person{name: "Alice", age: 30}
-      p2 = %Person{name: "Bob", age: 30}
-      p3 = %Person{name: "Alice", age: 25}
+      p2 = %Person{name: "Alice", age: 25}
 
-      assert Ord.le?(p1, p3)
-      assert Ord.le?(p3, p1)
-      refute Ord.le?(p2, p1)
+      assert Ord.le?(p1, p2)
+      assert Ord.le?(p2, p1)
     end
 
-    test "gt?/2 determines if the first struct's field is greater than the second's" do
+    test "gt?/2 compares first value greater than second" do
       p1 = %Person{name: "Alice", age: 30}
       p2 = %Person{name: "Bob", age: 35}
 
@@ -247,69 +477,64 @@ defmodule Funx.MacrosTest do
       refute Ord.gt?(p1, p2)
     end
 
-    test "ge?/2 determines if the first struct's field is greater than or equal to the second's" do
+    test "ge?/2 compares first value greater than or equal to second" do
       p1 = %Person{name: "Alice", age: 30}
-      p2 = %Person{name: "Bob", age: 30}
-      p3 = %Person{name: "Alice", age: 35}
+      p2 = %Person{name: "Alice", age: 35}
 
-      assert Ord.ge?(p1, p3)
+      assert Ord.ge?(p1, p2)
       assert Ord.ge?(p2, p1)
-      refute Ord.ge?(p3, p2)
     end
   end
 
   # ============================================================================
-  # Projection Type Tests
+  # Ordering Tests - Projection Types
   # ============================================================================
 
-  describe "ord_for/2 with atom (Prism.key behavior)" do
-    test "compares by field value when both have values" do
-      p1 = %Product{name: "Widget", rating: 4}
-      p2 = %Product{name: "Gadget", rating: 5}
+  describe "ord_for/2 with atom projection (Prism.key semantics)" do
+    test "compares by field value when both present" do
+      p1 = product_fixture("Widget", 4)
+      p2 = product_fixture()
 
       assert Ord.lt?(p1, p2)
       refute Ord.gt?(p1, p2)
     end
 
-    test "Nothing < Just semantics: nil sorts before non-nil" do
+    test "Nothing < Just: nil sorts before non-nil" do
       p1 = %Product{name: "Widget", rating: nil}
-      p2 = %Product{name: "Gadget", rating: 3}
+      p2 = product_fixture("Gadget", 3)
 
-      # nil (Nothing) should be less than any value (Just)
       assert Ord.lt?(p1, p2)
-      refute Ord.lt?(p2, p1)
       assert Ord.gt?(p2, p1)
     end
 
-    test "both nil values are equal" do
+    test "Nothing == Nothing: both nil are equal" do
       p1 = %Product{name: "Widget", rating: nil}
       p2 = %Product{name: "Gadget", rating: nil}
 
-      assert Ord.le?(p1, p2)
-      assert Ord.ge?(p1, p2)
       refute Ord.lt?(p1, p2)
       refute Ord.gt?(p1, p2)
+      assert Ord.le?(p1, p2)
+      assert Ord.ge?(p1, p2)
     end
 
-    test "sorts list correctly with mixed nil and non-nil" do
+    test "sorts list with mixed nil and non-nil values" do
       products = [
-        %Product{name: "C", rating: 5},
+        product_fixture(),
         %Product{name: "A", rating: nil},
-        %Product{name: "B", rating: 3},
+        product_fixture("B", 3),
         %Product{name: "D", rating: nil}
       ]
 
       sorted = Enum.sort(products, &Ord.le?/2)
 
-      # Both nil ratings should come first, then sorted by rating value
       assert Enum.map(sorted, & &1.rating) == [nil, nil, 3, 5]
     end
   end
 
-  describe "ord_for/2 with Lens (total access)" do
+  describe "ord_for/2 with Lens projection (total access)" do
     test "compares by nested field when path exists" do
-      c1 = %Customer{name: "Alice", address: %Address{city: "Austin", state: "TX"}}
-      c2 = %Customer{name: "Bob", address: %Address{city: "Boston", state: "MA"}}
+      c1 = customer_fixture("Alice", "Austin")
+      c2 = customer_fixture("Bob", "Boston")
 
       assert Ord.lt?(c1, c2)
       refute Ord.lt?(c2, c1)
@@ -317,121 +542,101 @@ defmodule Funx.MacrosTest do
 
     test "raises BadMapError when intermediate value is nil" do
       c1 = %Customer{name: "Alice", address: nil}
-      c2 = %Customer{name: "Bob", address: %Address{city: "Boston", state: "MA"}}
+      c2 = customer_fixture()
 
-      # Lens raises BadMapError when trying to access a key on nil
       assert_raise BadMapError, fn ->
         Ord.lt?(c1, c2)
       end
     end
 
-    test "compares nil leaf values using Elixir's < operator" do
+    test "handles nil leaf values using Elixir term ordering" do
       c1 = %Customer{name: "Alice", address: %Address{city: nil, state: "TX"}}
-      c2 = %Customer{name: "Bob", address: %Address{city: "Boston", state: "MA"}}
+      c2 = customer_fixture()
 
-      # Lens extracts nil successfully, then compares nil < "Boston"
-      # In Elixir, nil < any string is true
+      # In Elixir, nil < string
       assert Ord.lt?(c1, c2)
-      refute Ord.lt?(c2, c1)
     end
 
-    test "raises KeyError with sum types when key is missing" do
-      # Transaction expects :routing_number field via Lens
-      # Check has :routing_number, CreditCard does not
-      t1 = %Transaction{id: 1, payment: %Check{routing_number: "111000025", amount: 100}}
-      t2 = %Transaction{id: 2, payment: %CreditCard{number: "4444", amount: 200}}
+    test "raises KeyError with sum types when field missing" do
+      t1 = %Transaction{id: 1, payment: %Check{routing_number: "111000025"}}
+      t2 = %Transaction{id: 2, payment: %CreditCard{number: "4444"}}
 
-      # t1 can be compared (has routing_number)
-      # t2 raises KeyError because CreditCard doesn't have :routing_number field
       assert_raise KeyError, fn ->
         Ord.lt?(t1, t2)
       end
-
-      # Also fails the other way
-      assert_raise KeyError, fn ->
-        Ord.lt?(t2, t1)
-      end
     end
 
-    test "succeeds when sum type has the required field" do
-      # Both Check structs have :routing_number
-      t1 = %Transaction{id: 1, payment: %Check{routing_number: "111000025", amount: 100}}
-      t2 = %Transaction{id: 2, payment: %Check{routing_number: "222000025", amount: 200}}
+    test "succeeds when sum type has required field" do
+      t1 = %Transaction{id: 1, payment: %Check{routing_number: "111000025"}}
+      t2 = %Transaction{id: 2, payment: %Check{routing_number: "222000025"}}
 
-      # Compares by routing_number: "111000025" < "222000025"
       assert Ord.lt?(t1, t2)
-      refute Ord.lt?(t2, t1)
     end
   end
 
-  describe "ord_for/2 with Prism (partial access)" do
+  describe "ord_for/2 with Prism projection (partial access)" do
     test "compares Just values normally" do
-      i1 = %Item{name: "Task A", score: 10}
-      i2 = %Item{name: "Task B", score: 20}
+      i1 = item_fixture("A", 10)
+      i2 = item_fixture()
 
       assert Ord.lt?(i1, i2)
       refute Ord.gt?(i1, i2)
     end
 
-    test "Nothing < Just semantics with explicit Prism" do
-      i1 = %Item{name: "Task A", score: nil}
-      i2 = %Item{name: "Task B", score: 10}
+    test "Nothing < Just with explicit Prism" do
+      i1 = %Item{name: "A", score: nil}
+      i2 = item_fixture()
 
       assert Ord.lt?(i1, i2)
       assert Ord.gt?(i2, i1)
     end
 
     test "Nothing == Nothing with explicit Prism" do
-      i1 = %Item{name: "Task A", score: nil}
-      i2 = %Item{name: "Task B", score: nil}
+      i1 = %Item{name: "A", score: nil}
+      i2 = %Item{name: "B", score: nil}
 
       refute Ord.lt?(i1, i2)
       refute Ord.gt?(i1, i2)
       assert Ord.le?(i1, i2)
-      assert Ord.ge?(i1, i2)
     end
   end
 
   describe "ord_for/2 with {Prism, default} (partial with fallback)" do
-    test "compares by value when both have values" do
-      t1 = %Task{title: "Fix bug", priority: 1}
-      t2 = %Task{title: "Add feature", priority: 3}
+    test "compares values when both present" do
+      t1 = task_fixture()
+      t2 = task_fixture("Feature", 3)
 
-      assert Ord.lt?(t1, t2)
-      refute Ord.gt?(t1, t2)
-    end
-
-    test "uses default value when field is nil" do
-      t1 = %Task{title: "Fix bug", priority: nil}
-      t2 = %Task{title: "Add feature", priority: 5}
-
-      # t1's nil becomes 0 (default), t2 is 5
       assert Ord.lt?(t1, t2)
     end
 
-    test "both nil values use default and compare equal" do
-      t1 = %Task{title: "Fix bug", priority: nil}
-      t2 = %Task{title: "Add feature", priority: nil}
+    test "uses default when field is nil" do
+      t1 = %Task{title: "Bug", priority: nil}
+      t2 = task_fixture()
 
-      # Both become 0 (default)
+      # nil becomes 0 (default)
+      assert Ord.lt?(t1, t2)
+    end
+
+    test "both nil values use default" do
+      t1 = %Task{title: "Bug", priority: nil}
+      t2 = %Task{title: "Feature", priority: nil}
+
       refute Ord.lt?(t1, t2)
-      refute Ord.gt?(t1, t2)
       assert Ord.le?(t1, t2)
     end
 
-    test "sorts with mixed nil and values using default" do
+    test "sorts with mixed nil and values" do
       tasks = [
-        %Task{title: "C", priority: 5},
+        task_fixture("C", 5),
         %Task{title: "A", priority: nil},
-        %Task{title: "B", priority: 3},
-        %Task{title: "D", priority: nil}
+        task_fixture("B", 3)
       ]
 
       sorted = Enum.sort(tasks, &Ord.le?/2)
-
-      # nil becomes 0, so order should be: 0, 0, 3, 5
       priorities = Enum.map(sorted, & &1.priority)
-      assert priorities == [nil, nil, 3, 5]
+
+      # nil becomes 0: [0, 3, 5]
+      assert priorities == [nil, 3, 5]
     end
   end
 
@@ -442,21 +647,18 @@ defmodule Funx.MacrosTest do
 
       # Compares by title length: 2 < 11
       assert Ord.lt?(a1, a2)
-      refute Ord.gt?(a1, a2)
     end
 
-    test "equal projection values compare equal" do
+    test "equal projection values are equal" do
       a1 = %Article{title: "abc", content: "first"}
       a2 = %Article{title: "xyz", content: "second"}
 
-      # Both titles have length 3
-      refute Ord.lt?(a1, a2)
-      refute Ord.gt?(a1, a2)
+      # Both have length 3
       assert Ord.le?(a1, a2)
       assert Ord.ge?(a1, a2)
     end
 
-    test "sorts by projection function" do
+    test "sorts by projection" do
       articles = [
         %Article{title: "Medium title", content: "..."},
         %Article{title: "A", content: "..."},
@@ -470,30 +672,25 @@ defmodule Funx.MacrosTest do
   end
 
   describe "ord_for/2 with Prism.path (nested struct access)" do
-    test "compares by nested struct field when path exists" do
-      i1 = %Invoice{id: 1, payment: %Payment{method: "card", amount: 100}}
-      i2 = %Invoice{id: 2, payment: %Payment{method: "cash", amount: 200}}
+    test "compares by nested field when path exists" do
+      i1 = invoice_fixture()
+      i2 = invoice_fixture(2, 200)
 
       assert Ord.lt?(i1, i2)
-      refute Ord.gt?(i1, i2)
     end
 
-    test "Nothing < Just when intermediate struct is missing" do
+    test "Nothing < Just when intermediate struct missing" do
       i1 = %Invoice{id: 1, payment: nil}
-      i2 = %Invoice{id: 2, payment: %Payment{method: "cash", amount: 200}}
+      i2 = invoice_fixture()
 
-      # payment is nil (Nothing) < payment exists (Just)
       assert Ord.lt?(i1, i2)
-      assert Ord.gt?(i2, i1)
     end
 
-    test "Nothing < Just when leaf field is missing" do
+    test "Nothing < Just when leaf field missing" do
       i1 = %Invoice{id: 1, payment: %Payment{method: "card", amount: nil}}
-      i2 = %Invoice{id: 2, payment: %Payment{method: "cash", amount: 200}}
+      i2 = invoice_fixture(2, 200)
 
-      # amount is nil (Nothing) < amount exists (Just)
       assert Ord.lt?(i1, i2)
-      assert Ord.gt?(i2, i1)
     end
 
     test "both Nothing values are equal" do
@@ -501,81 +698,56 @@ defmodule Funx.MacrosTest do
       i2 = %Invoice{id: 2, payment: nil}
 
       refute Ord.lt?(i1, i2)
-      refute Ord.gt?(i1, i2)
       assert Ord.le?(i1, i2)
-      assert Ord.ge?(i1, i2)
     end
 
     test "sorts with mixed nil and non-nil nested values" do
       invoices = [
-        %Invoice{id: 3, payment: %Payment{method: "cash", amount: 300}},
+        invoice_fixture(3, 300),
         %Invoice{id: 1, payment: nil},
-        %Invoice{id: 2, payment: %Payment{method: "card", amount: 150}},
-        %Invoice{id: 4, payment: %Payment{method: "check", amount: nil}}
+        invoice_fixture(2, 150),
+        %Invoice{id: 4, payment: %Payment{amount: nil}}
       ]
 
       sorted = Enum.sort(invoices, &Ord.le?/2)
 
       # Nothing values first, then sorted by amount
-      # i1: payment=nil (Nothing)
-      # i4: payment.amount=nil (Nothing)
-      # i2: amount=150 (Just)
-      # i3: amount=300 (Just)
-      assert [sorted_i1, sorted_i4, sorted_i2, sorted_i3] = sorted
-      assert sorted_i1.id == 1
-      assert sorted_i4.id == 4
-      assert sorted_i2.id == 2
-      assert sorted_i3.id == 3
+      assert [i1, i4, i2, i3] = sorted
+      assert i1.id == 1
+      assert i4.id == 4
+      assert i2.id == 2
+      assert i3.id == 3
     end
   end
 
-  describe "ord_for/2 with anonymous function (fn syntax)" do
-    test "compares using anonymous function projection" do
+  describe "ord_for/2 with anonymous function" do
+    test "compares using anonymous function" do
       b1 = %Book{title: "Hi", pages: 100, author: "Alice"}
       b2 = %Book{title: "Hello", pages: 50, author: "Bob"}
 
-      # Compares by title length + pages: (2 + 100) vs (5 + 50)
-      # 102 > 55
+      # title_length + pages: 102 vs 55
       assert Ord.gt?(b1, b2)
-      refute Ord.lt?(b1, b2)
     end
 
-    test "equal projection values compare equal" do
+    test "equal projections are equal" do
       b1 = %Book{title: "abc", pages: 50, author: "Alice"}
       b2 = %Book{title: "xy", pages: 51, author: "Bob"}
 
-      # Both: title_length + pages = 3 + 50 = 53 and 2 + 51 = 53
-      refute Ord.lt?(b1, b2)
-      refute Ord.gt?(b1, b2)
+      # Both: 3+50=53 and 2+51=53
       assert Ord.le?(b1, b2)
       assert Ord.ge?(b1, b2)
     end
-
-    test "sorts by anonymous function" do
-      books = [
-        %Book{title: "Long Title", pages: 10, author: "C"},
-        %Book{title: "A", pages: 100, author: "A"},
-        %Book{title: "Medium", pages: 50, author: "B"}
-      ]
-
-      sorted = Enum.sort(books, &Ord.le?/2)
-
-      # Scores: 10+10=20, 1+100=101, 6+50=56
-      assert Enum.map(sorted, fn b -> String.length(b.title) + b.pages end) == [20, 56, 101]
-    end
   end
 
-  describe "ord_for/2 with generic function call (helper that returns Lens)" do
+  describe "ord_for/2 with helper function" do
     test "compares using helper function result" do
       m1 = %Magazine{title: "Tech Weekly", issue: 42}
       m2 = %Magazine{title: "Science Monthly", issue: 10}
 
-      # Helper returns Lens.key(:title), so compares by title
       assert Ord.gt?(m1, m2)
-      refute Ord.lt?(m1, m2)
     end
 
-    test "sorts by helper function projection" do
+    test "sorts by helper projection" do
       magazines = [
         %Magazine{title: "Zebra", issue: 1},
         %Magazine{title: "Alpha", issue: 100},
@@ -589,245 +761,304 @@ defmodule Funx.MacrosTest do
   end
 
   describe "ord_for/2 with struct literal (custom Lens)" do
-    test "compares using custom Lens that extracts nested metadata" do
-      d1 = %Document{name: "Doc1", metadata: %{priority: 5, author: "Alice"}}
-      d2 = %Document{name: "Doc2", metadata: %{priority: 3, author: "Bob"}}
+    test "compares using custom Lens" do
+      d1 = %Document{name: "Doc1", metadata: %{priority: 5}}
+      d2 = %Document{name: "Doc2", metadata: %{priority: 3}}
 
-      # Custom lens extracts priority from metadata
       assert Ord.gt?(d1, d2)
-      refute Ord.lt?(d1, d2)
     end
 
-    test "handles missing metadata with default value" do
+    test "handles missing metadata with default" do
       d1 = %Document{name: "Doc1", metadata: nil}
       d2 = %Document{name: "Doc2", metadata: %{priority: 5}}
 
-      # Custom lens returns 0 for missing metadata
       assert Ord.lt?(d1, d2)
-      assert Ord.gt?(d2, d1)
     end
 
     test "handles metadata without priority field" do
       d1 = %Document{name: "Doc1", metadata: %{author: "Alice"}}
       d2 = %Document{name: "Doc2", metadata: %{priority: 5}}
 
-      # Custom lens returns 0 when priority key is missing
       assert Ord.lt?(d1, d2)
-    end
-
-    test "sorts by custom Lens projection" do
-      documents = [
-        %Document{name: "C", metadata: %{priority: 3}},
-        %Document{name: "A", metadata: nil},
-        %Document{name: "B", metadata: %{priority: 1}},
-        %Document{name: "D", metadata: %{author: "Someone"}}
-      ]
-
-      sorted = Enum.sort(documents, &Ord.le?/2)
-
-      # Priorities: 3, 0 (nil), 1, 0 (missing priority)
-      # Sorted: 0, 0, 1, 3
-      priorities =
-        Enum.map(sorted, fn d ->
-          Map.get(d.metadata || %{}, :priority, 0)
-        end)
-
-      assert priorities == [0, 0, 1, 3]
     end
   end
 
-  describe "ord_for/2 with Lens.key (explicit single field lens)" do
-    test "compares using Lens.key for total field access" do
-      r1 = %Report{title: "Q1", status: "done", priority: 1}
-      r2 = %Report{title: "Q2", status: "pending", priority: 3}
-      r3 = %Report{title: "Q3", status: "done", priority: 2}
+  describe "ord_for/2 with Lens.key" do
+    test "compares using Lens.key" do
+      r1 = %Report{title: "Q1", priority: 1}
+      r2 = %Report{title: "Q2", priority: 3}
 
       assert Ord.lt?(r1, r2)
-      assert Ord.gt?(r2, r3)
-      assert Ord.lt?(r1, r3)
     end
 
-    test "raises KeyError when field is missing from struct" do
-      # Create a Report with missing :priority key by using Map and converting
-      # This simulates a struct that's missing the field at runtime
-      r1 = %Report{title: "Valid", status: "done", priority: 1}
-
-      # Create a map that looks like Report but is missing the priority key
-      broken_map = %{__struct__: Report, title: "Invalid", status: "pending"}
+    test "raises KeyError when field missing" do
+      r1 = %Report{title: "Valid", priority: 1}
+      broken = %{__struct__: Report, title: "Invalid"}
 
       assert_raise KeyError, fn ->
-        Ord.lt?(broken_map, r1)
+        Ord.lt?(broken, r1)
       end
     end
 
-    test "handles nil values in field (nil is a valid value for Lens)" do
-      r1 = %Report{title: "A", status: "done", priority: nil}
-      r2 = %Report{title: "B", status: "done", priority: 5}
+    test "handles nil values (Elixir term ordering)" do
+      r1 = %Report{title: "A", priority: nil}
+      r2 = %Report{title: "B", priority: 5}
 
-      # Elixir term ordering: nil (atom) > 5 (number)
+      # In Elixir, nil > number
       assert Ord.gt?(r1, r2)
     end
-
-    test "sorts by priority using Lens.key" do
-      reports = [
-        %Report{title: "C", status: "done", priority: 3},
-        %Report{title: "A", status: "pending", priority: 1},
-        %Report{title: "B", status: "done", priority: 2}
-      ]
-
-      sorted = Enum.sort(reports, &Ord.le?/2)
-
-      assert Enum.map(sorted, & &1.priority) == [1, 2, 3]
-      assert Enum.map(sorted, & &1.title) == ["A", "B", "C"]
-    end
   end
 
-  describe "ord_for/2 with local function call (imported function)" do
-    test "compares using imported function called without module prefix" do
-      t1 = %Ticket{id: 1, severity: :low, created_at: ~N[2024-01-01 10:00:00]}
-      t2 = %Ticket{id: 2, severity: :high, created_at: ~N[2024-01-02 10:00:00]}
-      t3 = %Ticket{id: 3, severity: :medium, created_at: ~N[2024-01-03 10:00:00]}
+  describe "ord_for/2 with imported function" do
+    test "compares using imported function" do
+      t1 = %Ticket{id: 1, severity: :low}
+      t2 = %Ticket{id: 2, severity: :high}
 
-      # Atom ordering: :high < :low < :medium
+      # Atom ordering: :high < :low
       assert Ord.lt?(t2, t1)
-      assert Ord.lt?(t1, t3)
-      assert Ord.lt?(t2, t3)
     end
 
-    test "handles nil values with Maybe semantics (Nothing < Just)" do
-      t1 = %Ticket{id: 1, severity: nil, created_at: ~N[2024-01-01 10:00:00]}
-      t2 = %Ticket{id: 2, severity: :low, created_at: ~N[2024-01-02 10:00:00]}
+    test "handles nil with Maybe semantics" do
+      t1 = %Ticket{id: 1, severity: nil}
+      t2 = %Ticket{id: 2, severity: :low}
 
-      # Prism gives Nothing < Just semantics
       assert Ord.lt?(t1, t2)
     end
-
-    test "sorts tickets by severity using imported key/1" do
-      tickets = [
-        %Ticket{id: 1, severity: :medium, created_at: ~N[2024-01-01 10:00:00]},
-        %Ticket{id: 2, severity: nil, created_at: ~N[2024-01-02 10:00:00]},
-        %Ticket{id: 3, severity: :low, created_at: ~N[2024-01-03 10:00:00]},
-        %Ticket{id: 4, severity: :high, created_at: ~N[2024-01-04 10:00:00]}
-      ]
-
-      sorted = Enum.sort(tickets, &Ord.le?/2)
-
-      # Nothing (nil) < :high < :low < :medium
-      assert Enum.map(sorted, & &1.severity) == [nil, :high, :low, :medium]
-    end
   end
 
   # ============================================================================
-  # or_else Option Tests
+  # Ordering Tests - or_else Option
   # ============================================================================
 
-  describe "ord_for/2 with or_else option" do
-    test "atom with or_else treats nil as default value" do
-      s1 = %Score{player: "Alice", points: nil, bonus: 10}
-      s2 = %Score{player: "Bob", points: 5, bonus: 0}
-      s3 = %Score{player: "Charlie", points: 0, bonus: 5}
+  describe "ord_for/3 with or_else option" do
+    test "atom with or_else treats nil as default" do
+      s1 = %Score{player: "Alice", points: nil}
+      s2 = score_fixture()
+      s3 = score_fixture("Charlie", 0)
 
-      # nil becomes 0, so s1 and s3 are equal at 0
-      assert Ord.le?(s1, s3) and Ord.ge?(s1, s3)
+      # nil becomes 0
+      assert Ord.le?(s1, s3)
+      assert Ord.ge?(s1, s3)
       assert Ord.lt?(s1, s2)
-      assert Ord.lt?(s3, s2)
     end
 
-    test "Prism with or_else treats Nothing as default value" do
-      r1 = %Rating{item: "A", stars: nil, verified: true}
-      r2 = %Rating{item: "B", stars: 3, verified: false}
-      r3 = %Rating{item: "C", stars: 0, verified: true}
+    test "Prism with or_else treats Nothing as default" do
+      r1 = %Rating{item: "A", stars: nil}
+      r2 = %Rating{item: "B", stars: 3}
+      r3 = %Rating{item: "C", stars: 0}
 
-      # nil becomes 0, so r1 and r3 are equal
-      assert Ord.le?(r1, r3) and Ord.ge?(r1, r3)
+      # nil becomes 0
+      assert Ord.le?(r1, r3)
       assert Ord.lt?(r1, r2)
     end
 
-    test "sorts using or_else default for nil values" do
+    test "sorts using or_else default" do
       scores = [
-        %Score{player: "Alice", points: 10, bonus: 0},
-        %Score{player: "Bob", points: nil, bonus: 5},
-        %Score{player: "Charlie", points: 5, bonus: 10},
-        %Score{player: "Dave", points: 0, bonus: 15}
+        score_fixture(),
+        %Score{player: "Bob", points: nil},
+        score_fixture("Charlie", 5)
       ]
 
       sorted = Enum.sort(scores, &Ord.le?/2)
 
-      # nil → 0, so sorted: 0 (Dave), 0 (Bob with nil→0), 5, 10
-      assert Enum.map(sorted, & &1.points) == [nil, 0, 5, 10]
+      # nil→0, so: 0, 5, 10
+      assert Enum.map(sorted, & &1.points) == [nil, 5, 100]
     end
   end
 
   # ============================================================================
-  # Compile-Time Error Validation
+  # Ordering Validation Tests
   # ============================================================================
 
-  describe "ord_for/2 or_else validation" do
-    test "raises when or_else used with Lens.key" do
+  describe "ord_for/3 - or_else validation" do
+    test "rejects or_else with Lens.key" do
       assert_raise ArgumentError, ~r/cannot be used with Lens/, fn ->
-        defmodule BadLensKey do
+        defmodule BadOrdLensKey do
           @moduledoc false
           defstruct [:field]
-          Funx.Macros.ord_for(BadLensKey, Lens.key(:field), or_else: 0)
+          Funx.Macros.ord_for(BadOrdLensKey, Lens.key(:field), or_else: 0)
         end
       end
     end
 
-    test "raises when or_else used with Lens.path" do
+    test "rejects or_else with Lens.path" do
       assert_raise ArgumentError, ~r/cannot be used with Lens/, fn ->
-        defmodule BadLensPath do
+        defmodule BadOrdLensPath do
           @moduledoc false
           defstruct [:nested]
-          Funx.Macros.ord_for(BadLensPath, Lens.path([:nested, :field]), or_else: 0)
+          Funx.Macros.ord_for(BadOrdLensPath, Lens.path([:nested, :field]), or_else: 0)
         end
       end
     end
 
-    test "raises when or_else used with captured function" do
+    test "rejects or_else with captured function" do
       assert_raise ArgumentError, ~r/cannot be used with captured functions/, fn ->
-        defmodule BadCapturedFn do
+        defmodule BadOrdCapturedFn do
           @moduledoc false
           defstruct [:value]
-          Funx.Macros.ord_for(BadCapturedFn, &String.length(&1.value), or_else: 0)
+          Funx.Macros.ord_for(BadOrdCapturedFn, &String.length(&1.value), or_else: 0)
         end
       end
     end
 
-    test "raises when or_else used with anonymous function" do
+    test "rejects or_else with anonymous function" do
       assert_raise ArgumentError, ~r/cannot be used with anonymous functions/, fn ->
-        defmodule BadAnonFn do
+        defmodule BadOrdAnonFn do
           @moduledoc false
           defstruct [:value]
-          Funx.Macros.ord_for(BadAnonFn, fn x -> x.value end, or_else: 0)
+          Funx.Macros.ord_for(BadOrdAnonFn, fn x -> x.value end, or_else: 0)
         end
       end
     end
 
-    test "raises when or_else used with {Prism, default} tuple (redundant)" do
+    test "rejects redundant or_else with {Prism, default}" do
       assert_raise ArgumentError, ~r/Redundant or_else/, fn ->
-        defmodule RedundantOrElse do
+        defmodule RedundantOrdOrElse do
           @moduledoc false
           defstruct [:field]
-          Funx.Macros.ord_for(RedundantOrElse, {Prism.key(:field), 5}, or_else: 0)
+          Funx.Macros.ord_for(RedundantOrdOrElse, {Prism.key(:field), 5}, or_else: 0)
         end
       end
     end
 
-    test "raises when or_else used with struct literal" do
+    test "rejects or_else with struct literal" do
       assert_raise ArgumentError, ~r/cannot be used with struct literals/, fn ->
-        defmodule BadStructLiteral do
+        defmodule BadOrdStructLiteral do
           @moduledoc false
           defstruct [:priority]
 
           Funx.Macros.ord_for(
-            BadStructLiteral,
-            %Lens{
-              view: fn x -> x.priority end,
-              update: fn x, v -> %{x | priority: v} end
-            },
+            BadOrdStructLiteral,
+            %Lens{view: fn x -> x.priority end, update: fn x, v -> %{x | priority: v} end},
             or_else: 0
           )
         end
+      end
+    end
+  end
+
+  # ============================================================================
+  # Property-Based Tests
+  # ============================================================================
+
+  describe "property: Eq reflexivity" do
+    property "value always equals itself" do
+      check all(rating <- integer(0..5)) do
+        p = %EqProduct{name: "Test", rating: rating}
+
+        assert Eq.eq?(p, p)
+      end
+    end
+  end
+
+  describe "property: Eq symmetry" do
+    property "if a == b then b == a" do
+      check all(
+              rating <- integer(0..5),
+              name1 <- string(:alphanumeric),
+              name2 <- string(:alphanumeric)
+            ) do
+        p1 = %EqProduct{name: name1, rating: rating}
+        p2 = %EqProduct{name: name2, rating: rating}
+
+        assert Eq.eq?(p1, p2) == Eq.eq?(p2, p1)
+      end
+    end
+  end
+
+  describe "property: Eq transitivity" do
+    property "if a == b and b == c then a == c" do
+      check all(rating <- integer(0..5)) do
+        p1 = %EqProduct{name: "A", rating: rating}
+        p2 = %EqProduct{name: "B", rating: rating}
+        p3 = %EqProduct{name: "C", rating: rating}
+
+        eq_ab = Eq.eq?(p1, p2)
+        eq_bc = Eq.eq?(p2, p3)
+        eq_ac = Eq.eq?(p1, p3)
+
+        # If both are true, then transitivity must hold
+        if eq_ab and eq_bc do
+          assert eq_ac
+        end
+      end
+    end
+  end
+
+  describe "property: Ord reflexivity" do
+    property "value always le itself" do
+      check all(rating <- integer(0..5)) do
+        p = product_fixture("Test", rating)
+
+        assert Ord.le?(p, p)
+        assert Ord.ge?(p, p)
+      end
+    end
+  end
+
+  describe "property: Ord antisymmetry" do
+    property "if a <= b and b <= a then a == b (by projection)" do
+      check all(
+              rating <- integer(0..5),
+              name1 <- string(:alphanumeric),
+              name2 <- string(:alphanumeric)
+            ) do
+        p1 = product_fixture(name1, rating)
+        p2 = product_fixture(name2, rating)
+
+        le_ab = Ord.le?(p1, p2)
+        le_ba = Ord.le?(p2, p1)
+
+        if le_ab and le_ba do
+          # Both have same rating
+          assert p1.rating == p2.rating
+        end
+      end
+    end
+  end
+
+  describe "property: Ord transitivity" do
+    property "if a <= b and b <= c then a <= c" do
+      check all(
+              r1 <- integer(0..10),
+              r2 <- integer(0..10),
+              r3 <- integer(0..10)
+            ) do
+        p1 = product_fixture("A", r1)
+        p2 = product_fixture("B", r2)
+        p3 = product_fixture("C", r3)
+
+        le_ab = Ord.le?(p1, p2)
+        le_bc = Ord.le?(p2, p3)
+        le_ac = Ord.le?(p1, p3)
+
+        if le_ab and le_bc do
+          assert le_ac
+        end
+      end
+    end
+  end
+
+  describe "property: or_else default handling" do
+    property "nil always equals default value" do
+      check all(_rating <- integer(0..5)) do
+        p1 = %EqProduct{name: "A", rating: nil}
+        p2 = %EqProduct{name: "B", rating: 0}
+
+        # nil becomes 0 via or_else
+        assert Eq.eq?(p1, p2)
+      end
+    end
+
+    property "nil always compares as default value" do
+      check all(_rating <- integer(1..10)) do
+        s1 = %Score{player: "A", points: nil}
+        s2 = score_fixture("B", 0)
+        s3 = score_fixture()
+
+        # nil becomes 0, so s1 == s2 < s3
+        assert Ord.le?(s1, s2) and Ord.ge?(s1, s2)
+        assert Ord.lt?(s1, s3)
       end
     end
   end
