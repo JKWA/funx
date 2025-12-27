@@ -67,7 +67,7 @@ Multiple steps are combined with `concat([...])` (monoid composition).
 
 ### Implicit Identity Tiebreaker
 
-A final identity projection (`fn x -> x end`) is automatically appended to ensure deterministic total ordering. This uses the value's `Ord` protocol implementation, falling back to `Funx.Ord.Any` if no implementation exists.
+A final identity projection (`fn x -> x end`) is automatically appended to ensure deterministic total ordering. This uses the value's `Ord` protocol implementation.
 
 This means:
 

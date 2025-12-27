@@ -12,7 +12,7 @@ defmodule Funx.Ord.Dsl do
   identity projection as the final tiebreaker. This means:
 
     - When all projections result in equality, the ordering falls back to the value's
-      `Ord` protocol implementation (or `Funx.Ord.Any` if no implementation exists)
+      `Ord` protocol implementation
     - Custom orderings are refinements of the domain's natural ordering
     - No arbitrary tiebreaking via insertion order or Elixir term ordering
     - Sorts are reproducible and deterministic across runs
