@@ -23,7 +23,14 @@ export_locals_without_parens = [
   asc: 1,
   asc: 2,
   desc: 1,
-  desc: 2
+  desc: 2,
+  # Eq DSL
+  on: 1,
+  on: 2,
+  not_on: 1,
+  not_on: 2,
+  any: 1,
+  all: 1
 ]
 
 [
