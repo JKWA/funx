@@ -215,7 +215,7 @@ defmodule Funx.Eq.Dsl.Parser do
       description: Errors.redundant_or_else()
   end
 
-  # Module (either struct or behaviour)
+  # Module (struct with Eq protocol, struct for type filtering, or behaviour)
   defp build_projection_ast({:__aliases__, _, _} = module_alias, or_else, meta, caller_env) do
     unless is_nil(or_else) do
       raise CompileError,
@@ -225,10 +225,29 @@ defmodule Funx.Eq.Dsl.Parser do
 
     expanded_module = Macro.expand(module_alias, caller_env)
 
-    if function_exported?(expanded_module, :__struct__, 0) do
-      build_struct_filter_ast(expanded_module)
-    else
-      build_behaviour_projection_ast(expanded_module, meta)
+    cond do
+      # Check if module has eq?/2 directly (like Funx.Eq itself)
+      function_exported?(expanded_module, :eq?, 2) ->
+        # Return the module directly - executor will use it as Eq
+        module_alias
+
+      # Check if it's a struct - could implement Eq protocol or be for type filtering
+      function_exported?(expanded_module, :__struct__, 0) ->
+        # Check if Eq protocol is implemented for this struct
+        protocol_impl_module = Module.concat(Funx.Eq, expanded_module)
+
+        if Code.ensure_loaded?(protocol_impl_module) and
+             function_exported?(protocol_impl_module, :eq?, 2) do
+          # Protocol is implemented - use the struct module, executor will handle it
+          module_alias
+        else
+          # No protocol implementation - use as type filter
+          build_struct_filter_ast(expanded_module)
+        end
+
+      # Otherwise treat as a behaviour module
+      true ->
+        build_behaviour_projection_ast(expanded_module, meta)
     end
   end
 

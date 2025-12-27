@@ -363,9 +363,19 @@ defmodule Funx.Eq.Utils do
   end
 
   def to_eq_map(module) when is_atom(module) do
-    %{
-      eq?: &module.eq?/2,
-      not_eq?: &module.not_eq?/2
-    }
+    # Check if it implements the protocol or has eq?/2 directly
+    if function_exported?(module, :eq?, 2) do
+      # Module has eq?/2 directly (Eq module like Funx.Eq)
+      %{
+        eq?: &module.eq?/2,
+        not_eq?: &module.not_eq?/2
+      }
+    else
+      # Use the protocol (for structs implementing Funx.Eq protocol)
+      %{
+        eq?: &Funx.Eq.eq?/2,
+        not_eq?: &Funx.Eq.not_eq?/2
+      }
+    end
   end
 end

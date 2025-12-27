@@ -15,6 +15,20 @@ defmodule Funx.Eq.DslTest do
   defmodule Address, do: defstruct([:city])
   defmodule PersonWithAddress, do: defstruct([:name, :address])
 
+  defmodule CaseInsensitiveString do
+    defstruct [:value]
+  end
+
+  defimpl Funx.Eq, for: CaseInsensitiveString do
+    def eq?(a, b) do
+      String.downcase(a.value) == String.downcase(b.value)
+    end
+
+    def not_eq?(a, b) do
+      String.downcase(a.value) != String.downcase(b.value)
+    end
+  end
+
   defmodule NameLength do
     @behaviour Funx.Eq.Dsl.Behaviour
 
@@ -29,6 +43,16 @@ defmodule Funx.Eq.DslTest do
 
     def name_prism, do: Prism.key(:name)
     def age_lens, do: Lens.key(:age)
+  end
+
+  defmodule EqHelpers do
+    def name_case_insensitive do
+      Utils.contramap(fn person -> String.downcase(person.name) end)
+    end
+
+    def age_mod_10 do
+      Utils.contramap(fn person -> rem(person.age, 10) end)
+    end
   end
 
   describe "basic on directive" do
@@ -512,6 +536,127 @@ defmodule Funx.Eq.DslTest do
         end
 
       assert Utils.eq?(%Person{name: nil}, %Person{name: "Unknown"}, eq_helper)
+    end
+  end
+
+  describe "Eq map helpers" do
+    test "0-arity helper returning Eq map" do
+      eq_helper =
+        eq do
+          on EqHelpers.name_case_insensitive()
+        end
+
+      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_helper)
+      assert Utils.eq?(%Person{name: "BOB"}, %Person{name: "bob"}, eq_helper)
+      refute Utils.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_helper)
+    end
+
+    test "mixing Eq maps with regular projections" do
+      eq_mixed =
+        eq do
+          on EqHelpers.name_case_insensitive()
+          on :age
+        end
+
+      assert Utils.eq?(
+               %Person{name: "Alice", age: 30},
+               %Person{name: "ALICE", age: 30},
+               eq_mixed
+             )
+
+      refute Utils.eq?(
+               %Person{name: "Alice", age: 30},
+               %Person{name: "ALICE", age: 25},
+               eq_mixed
+             )
+    end
+
+    test "not_on with Eq map" do
+      eq_not =
+        eq do
+          on :name
+          not_on EqHelpers.age_mod_10()
+        end
+
+      # Same name, different ages with different mod 10
+      assert Utils.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "Alice", age: 36},
+               eq_not
+             )
+
+      # Same name, same mod 10 -> should NOT be equal
+      refute Utils.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "Alice", age: 35},
+               eq_not
+             )
+    end
+
+    test "multiple Eq maps" do
+      eq_both =
+        eq do
+          on EqHelpers.name_case_insensitive()
+          on EqHelpers.age_mod_10()
+        end
+
+      assert Utils.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "ALICE", age: 35},
+               eq_both
+             )
+
+      refute Utils.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "ALICE", age: 36},
+               eq_both
+             )
+    end
+  end
+
+  describe "Eq protocol implementations" do
+    test "module implementing Eq protocol" do
+      eq_protocol =
+        eq do
+          on CaseInsensitiveString
+        end
+
+      assert Utils.eq?(
+               %CaseInsensitiveString{value: "Hello"},
+               %CaseInsensitiveString{value: "hello"},
+               eq_protocol
+             )
+
+      assert Utils.eq?(
+               %CaseInsensitiveString{value: "WORLD"},
+               %CaseInsensitiveString{value: "world"},
+               eq_protocol
+             )
+
+      refute Utils.eq?(
+               %CaseInsensitiveString{value: "Hello"},
+               %CaseInsensitiveString{value: "World"},
+               eq_protocol
+             )
+    end
+
+    test "not_on with Eq protocol implementation" do
+      eq_not =
+        eq do
+          not_on CaseInsensitiveString
+        end
+
+      refute Utils.eq?(
+               %CaseInsensitiveString{value: "Hello"},
+               %CaseInsensitiveString{value: "hello"},
+               eq_not
+             )
+
+      assert Utils.eq?(
+               %CaseInsensitiveString{value: "Hello"},
+               %CaseInsensitiveString{value: "World"},
+               eq_not
+             )
     end
   end
 

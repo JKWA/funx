@@ -55,7 +55,22 @@ defmodule Funx.Eq.Dsl.Executor do
 
   defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: false}) do
     quote do
-      Utils.contramap(unquote(projection_ast), unquote(eq_ast))
+      projection = unquote(projection_ast)
+
+      case projection do
+        %{eq?: eq_fun, not_eq?: not_eq_fun}
+        when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) ->
+          # Already an Eq map - use it directly
+          projection
+
+        module when is_atom(module) ->
+          # It's a module - check if it implements Eq protocol or convert it
+          Utils.to_eq_map(module)
+
+        _ ->
+          # It's a projection - wrap in contramap
+          Utils.contramap(projection, unquote(eq_ast))
+      end
     end
   end
 
@@ -63,7 +78,30 @@ defmodule Funx.Eq.Dsl.Executor do
     negated_eq_ast = build_negated_eq_ast(eq_ast)
 
     quote do
-      Utils.contramap(unquote(projection_ast), unquote(negated_eq_ast))
+      projection = unquote(projection_ast)
+
+      case projection do
+        %{eq?: eq_fun, not_eq?: not_eq_fun}
+        when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) ->
+          # Already an Eq map - negate it
+          %{
+            eq?: projection.not_eq?,
+            not_eq?: projection.eq?
+          }
+
+        module when is_atom(module) ->
+          # It's a module - convert to Eq map and negate it
+          eq_map = Utils.to_eq_map(module)
+
+          %{
+            eq?: eq_map.not_eq?,
+            not_eq?: eq_map.eq?
+          }
+
+        _ ->
+          # It's a projection - wrap in contramap with negated eq
+          Utils.contramap(projection, unquote(negated_eq_ast))
+      end
     end
   end
 
