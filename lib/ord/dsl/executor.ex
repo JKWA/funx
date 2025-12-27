@@ -1,18 +1,19 @@
 defmodule Funx.Ord.Dsl.Executor do
   @moduledoc false
-  # Compile-time executor for Ord DSL - converts steps to quoted AST
+  # Compile-time code generator that converts parsed DSL nodes into quoted AST.
   #
-  # ## Single-Path Execution
+  # ## Type-Specific Code Generation
   #
-  # This executor has ZERO branching on projection type. It follows a single path:
+  # Uses type information from parser to generate specific code paths without
+  # runtime branching. Each Step type gets specialized handling:
   #
-  #   1. Take normalized Steps (parser already resolved all syntax)
-  #   2. Wrap each in `Utils.contramap(projection, ord)`
-  #   3. Optionally wrap in `Utils.reverse(...)` for `:desc`
-  #   4. Combine with `Utils.concat([...])`
+  #   - `:projection` - Optics/functions → wrap in contramap
+  #   - `:module_ord` - Module with compare/2 → convert via to_ord_map
+  #   - `:ord_map` - Behaviour returning Ord map → use directly
+  #   - `:dynamic` - 0-arity helper → runtime type detection
   #
-  # All projection-type-specific logic lives in contramap/2.
-  # This module just orchestrates the composition.
+  # Pattern matching on the `type` field at compile time eliminates unreachable
+  # case branches, avoiding compiler warnings.
 
   alias Funx.Monoid.Ord
   alias Funx.Ord.Dsl.Step
@@ -58,6 +59,7 @@ defmodule Funx.Ord.Dsl.Executor do
       direction: :asc,
       projection: quote(do: fn x -> x end),
       ord: quote(do: Funx.Ord),
+      type: :projection,
       __meta__: %{line: nil, column: nil}
     }
 
@@ -78,8 +80,19 @@ defmodule Funx.Ord.Dsl.Executor do
     end
   end
 
-  defp step_to_ord_ast(%Step{direction: direction, projection: projection_ast, ord: ord_ast}) do
-    base_ord_ast = build_contramap_ast(projection_ast, ord_ast)
+  # === Projection type ===
+  # Optics or functions - wrap in contramap
+
+  defp step_to_ord_ast(%Step{
+         direction: direction,
+         projection: projection_ast,
+         ord: ord_ast,
+         type: :projection
+       }) do
+    base_ord_ast =
+      quote do
+        Utils.contramap(unquote(projection_ast), unquote(ord_ast))
+      end
 
     case direction do
       :asc -> base_ord_ast
@@ -87,11 +100,70 @@ defmodule Funx.Ord.Dsl.Executor do
     end
   end
 
-  defp build_contramap_ast(projection_ast, ord_ast) do
-    quote do
-      Utils.contramap(unquote(projection_ast), unquote(ord_ast))
+  # === Module with compare/2 ===
+  # Convert module to Ord map using to_ord_map
+
+  defp step_to_ord_ast(%Step{direction: direction, projection: module_ast, type: :module_ord}) do
+    base_ord_ast =
+      quote do
+        Utils.to_ord_map(unquote(module_ast))
+      end
+
+    case direction do
+      :asc -> base_ord_ast
+      :desc -> build_reverse_ast(base_ord_ast)
     end
   end
+
+  # === Ord map from behaviour ===
+  # Use the Ord map directly (no contramap needed)
+
+  defp step_to_ord_ast(%Step{direction: direction, projection: ord_map_ast, type: :ord_map}) do
+    base_ord_ast = ord_map_ast
+
+    case direction do
+      :asc -> base_ord_ast
+      :desc -> build_reverse_ast(base_ord_ast)
+    end
+  end
+
+  # === Dynamic type ===
+  # Runtime detection for 0-arity helpers
+
+  defp step_to_ord_ast(%Step{
+         direction: direction,
+         projection: projection_ast,
+         ord: ord_ast,
+         type: :dynamic
+       }) do
+    base_ord_ast =
+      quote do
+        projection = unquote(projection_ast)
+
+        case projection do
+          %{compare: compare_fun} when is_function(compare_fun, 2) ->
+            # Already an Ord map - use it directly
+            projection
+
+          module when is_atom(module) ->
+            # It's a module - convert to Ord map
+            Utils.to_ord_map(module)
+
+          _ ->
+            # It's a projection - wrap in contramap
+            Utils.contramap(projection, unquote(ord_ast))
+        end
+      end
+
+    case direction do
+      :asc -> base_ord_ast
+      :desc -> build_reverse_ast(base_ord_ast)
+    end
+  end
+
+  # ============================================================================
+  # HELPERS
+  # ============================================================================
 
   defp build_reverse_ast(ord_ast) do
     quote do

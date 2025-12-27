@@ -1,0 +1,687 @@
+# Funx.Eq.Dsl
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", ref: "3ea4109"}
+])
+```
+
+## Overview
+
+The `Funx.Eq.Dsl` module provides a declarative syntax for building complex equality comparators using optics and projections.
+
+The DSL combines the power of Lens and Prism optics with logical composition (AND/OR), allowing you to express "equal if X matches AND Y matches" or "equal if X OR Y matches" in a clear, composable way.
+
+Key Features:
+
+* Declarative `on` and `not_on` directives for equality
+* Nested `any` (OR) and `all` (AND) blocks for complex logic
+* Support for atoms, lenses, prisms, functions, and custom behaviours
+* Prisms for sum type projection (variants, optional values, tagged unions)
+* Type-based filtering with bare struct modules
+
+## Quick Reference
+
+### DSL Syntax:
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+eq do
+  on <projection>      # Field/projection must be equal
+  not_on <projection>  # Field/projection must differ
+  any do ... end       # At least one nested check must pass (OR)
+  all do ... end       # All nested checks must pass (AND)
+end
+```
+
+### Valid Projections:
+
+* Atoms: `:field_name`, converts to `Prism.key(:field_name)`
+* Lenses: `Lens.key(:field)`, `Lens.path([:a, :b])`
+* Prisms: `Prism.key(:field)`, `Prism.path([{Struct, :field}])`
+* Functions: `&String.length/1`, `fn x -> x.field end`
+* Helper functions: `MyModule.my_projection()`
+* Behaviour modules: `MyBehaviour` (returns Eq map)
+* Bare struct modules: `MyStruct` (for type filtering)
+
+### Options:
+
+* `or_else: value` - Fallback value when Prism returns Nothing (only with atoms and Prisms)
+* `eq: module` - Custom Eq module for comparison
+
+## Setup
+
+```elixir
+use Funx.Eq.Dsl
+alias Funx.Optics.{Lens, Prism}
+alias Funx.Eq.Utils
+```
+
+Let's create some test data:
+
+```elixir
+defmodule Person do
+  defstruct [:name, :age, :score, :email, :username, :id]
+end
+```
+
+```elixir
+alice = %Person{name: "Alice", age: 30, score: 100, email: "alice@example.com", id: 1}
+bob = %Person{name: "Bob", age: 25, score: 50, email: "bob@example.com", id: 2}
+charlie = %Person{name: "Charlie", age: 30, score: nil, email: "charlie@example.com", id: 3}
+```
+
+## Basic on Directive
+
+The simplest equality checks use atoms to reference struct fields.
+
+### Single Field
+
+```elixir
+eq_by_name =
+  eq do
+    on :name
+  end
+
+Utils.eq?(alice, %Person{name: "Alice", age: 99}, eq_by_name)
+```
+
+```elixir
+Utils.eq?(alice, bob, eq_by_name)
+```
+
+### Multiple Fields (Implicit AND)
+
+When you list multiple `on` directives, ALL fields must match:
+
+```elixir
+eq_name_and_age =
+  eq do
+    on :name
+    on :age
+  end
+
+Utils.eq?(alice, %Person{name: "Alice", age: 30}, eq_name_and_age)
+```
+
+```elixir
+# Different age - not equal
+Utils.eq?(alice, %Person{name: "Alice", age: 99}, eq_name_and_age)
+```
+
+## not_on Directive
+
+The `not_on` directive checks that fields must DIFFER:
+
+```elixir
+# Same person, different records (different IDs)
+eq_same_person_diff_record =
+  eq do
+    on :name
+    on :email
+    not_on :id
+  end
+
+Utils.eq?(
+  %Person{name: "Alice", email: "alice@example.com", id: 1},
+  %Person{name: "Alice", email: "alice@example.com", id: 2},
+  eq_same_person_diff_record
+)
+```
+
+```elixir
+# Same ID - not equal because not_on :id requires different IDs
+Utils.eq?(
+  %Person{name: "Alice", email: "alice@example.com", id: 1},
+  %Person{name: "Alice", email: "alice@example.com", id: 1},
+  eq_same_person_diff_record
+)
+```
+
+## Prisms and Sum Types
+
+Prisms are for **sum types** - when a value can be one of several different variants.
+
+### Payment Method Example
+
+Consider a payment that can be **either** a credit card **or** a check:
+
+```elixir
+defmodule CreditCard do
+  defstruct [:name, :number, :expiry, :amount]
+end
+
+defmodule Check do
+  defstruct [:name, :routing_number, :account_number, :amount]
+end
+
+defmodule Transaction do
+  defstruct [:payment]
+end
+```
+
+```elixir
+cc_payment = %CreditCard{name: "John", number: "4532-1111", expiry: "12/26", amount: 100}
+check_payment = %Check{name: "Dave", routing_number: "111000025", account_number: "987654", amount: 100}
+
+cc_transaction = %Transaction{payment: cc_payment}
+check_transaction = %Transaction{payment: check_payment}
+```
+
+The `payment` field is a **sum type**: `CreditCard | Check`.
+
+### Projecting into One Variant
+
+A Prism projects into **one specific variant** of a sum type:
+
+```elixir
+alias Funx.Optics.Prism
+
+eq_by_card_number =
+  eq do
+    on Lens.path([:payment, :amount])
+  end
+
+Utils.eq?(cc_transaction, check_transaction, eq_by_card_number)
+```
+
+```elixir
+alias Funx.Optics.Prism
+
+eq_by_card_number =
+  eq do
+    on Prism.path([{Transaction, :payment}, {CreditCard, :amount}])
+  end
+
+Utils.eq?(cc_transaction, check_transaction, eq_by_card_number)
+```
+
+```elixir
+# Different variants (CreditCard vs Check) - both return :nothing - equal
+Utils.eq?(
+  %Transaction{payment: %CreditCard{number: "4532-1111"}},
+  %Transaction{payment: %Check{routing_number: "111000025"}},
+  eq_by_card_number
+)
+```
+
+### Comparing by Check Routing Number
+
+```elixir
+# Prism that focuses on Check variant
+check_routing = fn
+  %Check{routing_number: routing} -> {:just, routing}
+  _ -> :nothing
+end
+
+eq_by_routing =
+  eq do
+    on check_routing
+  end
+
+# Both are Check with same routing - equal
+Utils.eq?(
+  %Transaction{payment: %Check{routing_number: "111000025"}},
+  %Transaction{payment: %Check{routing_number: "111000025"}},
+  eq_by_routing
+)
+```
+
+```elixir
+# CreditCard doesn't match Check Prism - returns :nothing - equal
+Utils.eq?(
+  %Transaction{payment: %CreditCard{number: "4532-1111"}},
+  %Transaction{payment: %Check{routing_number: "111000025"}},
+  eq_by_routing
+)
+```
+
+## Nested any Blocks (OR Logic)
+
+The `any` block succeeds if AT LEAST ONE nested check passes:
+
+```elixir
+# Equal if email OR username matches
+eq_contact =
+  eq do
+    any do
+      on :email
+      on :username
+    end
+  end
+
+# Email matches, username differs - equal
+Utils.eq?(
+  %Person{email: "alice@example.com", username: "alice"},
+  %Person{email: "alice@example.com", username: "alice123"},
+  eq_contact
+)
+```
+
+```elixir
+# Neither matches - not equal
+Utils.eq?(
+  %Person{email: "alice@example.com", username: "alice"},
+  %Person{email: "bob@example.com", username: "bob"},
+  eq_contact
+)
+```
+
+### Mixed on and any
+
+```elixir
+eq_mixed =
+  eq do
+    on :name
+    any do
+      on :email
+      on :username
+    end
+  end
+
+# Name matches AND (email OR username matches)
+Utils.eq?(
+  %Person{name: "Alice", email: "a@example.com", username: "alice"},
+  %Person{name: "Alice", email: "a@example.com", username: "different"},
+  eq_mixed
+)
+```
+
+## Nested all Blocks (Explicit AND)
+
+The `all` block makes AND logic explicit (though top-level is already AND):
+
+```elixir
+eq_explicit =
+  eq do
+    all do
+      on :name
+      on :age
+    end
+    any do
+      on :email
+      on :username
+    end
+  end
+
+Utils.eq?(
+  %Person{name: "Alice", age: 30, email: "a@example.com", username: "alice"},
+  %Person{name: "Alice", age: 30, email: "a@example.com", username: "different"},
+  eq_explicit
+)
+```
+
+## Deep Nesting
+
+Blocks can be nested arbitrarily deep for complex logic:
+
+```elixir
+eq_deep =
+  eq do
+    on :name
+    any do
+      on :email
+      all do
+        on :age
+        on :username
+      end
+    end
+  end
+
+# Name matches AND (email matches OR (age AND username match))
+Utils.eq?(
+  %Person{name: "Alice", email: "a@example.com"},
+  %Person{name: "Alice", email: "a@example.com"},
+  eq_deep
+)
+```
+
+## Explicit Lens Projections
+
+Lenses provide total access - they assume fields exist.
+
+### Simple Fields
+
+```elixir
+eq_by_age =
+  eq do
+    on Lens.key(:age)
+  end
+
+Utils.eq?(alice, charlie, eq_by_age)
+```
+
+### Nested Paths
+
+```elixir
+defmodule Address do
+  defstruct [:city, :state]
+end
+```
+
+```elixir
+alice_tx = %Person{
+  name: "Alice",
+  email: %Address{city: "Austin", state: "TX"}
+}
+
+bob_tx = %Person{
+  name: "Bob",
+  email: %Address{city: "Austin", state: "TX"}
+}
+
+eq_by_city =
+  eq do
+    on Lens.path([:email, :city])
+  end
+
+Utils.eq?(alice_tx, bob_tx, eq_by_city)
+```
+
+### Using Prism.key with Built-in Prisms
+
+The DSL also supports using Funx's built-in Prism optics:
+
+```elixir
+# Using Prism.key explicitly
+eq_explicit =
+  eq do
+    on Prism.key(:name)
+  end
+
+Utils.eq?(alice, %Person{name: "Alice"}, eq_explicit)
+```
+
+### Prism Fallback Values
+
+When a Prism returns `:nothing`, you can provide a fallback:
+
+```elixir
+eq_with_fallback =
+  eq do
+    on {Prism.key(:score), 0}
+  end
+
+Utils.eq?(charlie, %Person{score: 0}, eq_with_fallback)
+```
+
+```elixir
+# Or using the or_else option
+eq_with_option =
+  eq do
+    on Prism.key(:score), or_else: 0
+  end
+
+Utils.eq?(charlie, %Person{score: 0}, eq_with_option)
+```
+
+## Function Projections
+
+Use functions for custom transformations.
+
+### Anonymous Functions
+
+```elixir
+eq_name_length =
+  eq do
+    on fn p -> String.length(p.name) end
+  end
+
+Utils.eq?(alice, %Person{name: "Bobby"}, eq_name_length)
+```
+
+### Captured Functions
+
+```elixir
+strings = ["apple", "pear"]
+
+eq_by_length =
+  eq do
+    on &String.length/1
+  end
+
+Utils.eq?(Enum.at(strings, 0), Enum.at(strings, 1), eq_by_length)
+```
+
+## Helper Function Projections
+
+Define reusable projections as 0-arity helper functions.
+
+```elixir
+defmodule ProjectionHelpers do
+  alias Funx.Optics.{Lens, Prism}
+
+  def name_prism, do: Prism.key(:name)
+  def age_lens, do: Lens.key(:age)
+end
+```
+
+### Using Helper Functions
+
+```elixir
+eq_by_helpers =
+  eq do
+    on ProjectionHelpers.age_lens()
+    on ProjectionHelpers.name_prism()
+  end
+
+Utils.eq?(alice, %Person{age: 30, name: "Alice"}, eq_by_helpers)
+```
+
+### Helper Functions with or_else
+
+```elixir
+eq_score_helper =
+  eq do
+    on ProjectionHelpers.name_prism(), or_else: "Unknown"
+  end
+
+Utils.eq?(%Person{name: nil}, %Person{name: "Unknown"}, eq_score_helper)
+```
+
+## Behaviour Module Equality
+
+For complex equality logic, implement the `Funx.Eq.Dsl.Behaviour`.
+
+```elixir
+defmodule UserById do
+  @behaviour Funx.Eq.Dsl.Behaviour
+
+  @impl true
+  def eq(_opts) do
+    Utils.contramap(&(&1.id))
+  end
+end
+
+defmodule UserByName do
+  @behaviour Funx.Eq.Dsl.Behaviour
+
+  @impl true
+  def eq(opts) do
+    case_sensitive = Keyword.get(opts, :case_sensitive, true)
+
+    if case_sensitive do
+      Utils.contramap(&(&1.name))
+    else
+      Utils.contramap(fn p -> String.downcase(p.name) end)
+    end
+  end
+end
+```
+
+### Using Behaviour Modules
+
+```elixir
+eq_by_id =
+  eq do
+    on UserById
+  end
+
+# Same ID, different names - equal
+Utils.eq?(
+  %Person{id: 1, name: "Alice"},
+  %Person{id: 1, name: "Bob"},
+  eq_by_id
+)
+```
+
+### With Options
+
+```elixir
+eq_name_ci =
+  eq do
+    on UserByName, case_sensitive: false
+  end
+
+Utils.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_name_ci)
+```
+
+## Protocol Dispatch
+
+Use `Funx.Eq` module for protocol-based equality:
+
+```elixir
+defmodule CaseInsensitiveString do
+  defstruct [:value]
+end
+
+defimpl Funx.Eq, for: CaseInsensitiveString do
+  def eq?(a, b) do
+    String.downcase(a.value) == String.downcase(b.value)
+  end
+
+  def not_eq?(a, b) do
+    !eq?(a, b)
+  end
+end
+```
+
+```elixir
+eq_default =
+  eq do
+    on Funx.Eq
+  end
+
+Utils.eq?(
+  %CaseInsensitiveString{value: "Hello"},
+  %CaseInsensitiveString{value: "hello"},
+  eq_default
+)
+```
+
+## Bare Struct Modules (Type Filtering)
+
+Bare struct modules compile to a type filter that returns `true` only for matching types:
+
+```elixir
+defmodule CreditCard do
+  defstruct [:id]
+end
+
+defmodule Check do
+  defstruct [:id]
+end
+```
+
+```elixir
+eq_type_check =
+  eq do
+    on Check
+  end
+
+# Both are Check structs - equal (regardless of field values)
+Utils.eq?(%Check{id: 1}, %Check{id: 2}, eq_type_check)
+```
+
+```elixir
+# Different types - not equal
+Utils.eq?(%Check{id: 1}, %CreditCard{id: 1}, eq_type_check)
+```
+
+## Empty eq Block
+
+An empty `eq` block returns an identity equality where all values are equal:
+
+```elixir
+eq_identity =
+  eq do
+  end
+
+Utils.eq?(alice, bob, eq_identity)
+```
+
+This always returns `true`, treating all values as equal.
+
+## Custom Eq Option
+
+Use the `eq:` option to specify a custom Eq module for a field:
+
+```elixir
+defmodule CaseInsensitiveEq do
+  def eq?(a, b), do: String.downcase(a) == String.downcase(b)
+  def not_eq?(a, b), do: !eq?(a, b)
+end
+```
+
+```elixir
+eq_custom =
+  eq do
+    on :name, eq: CaseInsensitiveEq
+  end
+
+Utils.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_custom)
+```
+
+## Compile-Time Validation
+
+The DSL validates projections at compile time:
+
+### Invalid Projection Type
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+# This will raise a CompileError:
+eq do
+  on %{invalid: :map}
+end
+```
+
+### Incorrect or_else Usage
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+# or_else only works with atoms and Prisms, not Lens:
+eq do
+  on Lens.key(:name), or_else: "Unknown"
+end
+```
+
+### Redundant or_else
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+# Can't use or_else when the projection already has one:
+eq do
+  on {Prism.key(:score), 0}, or_else: 10
+end
+```
+
+## Summary
+
+The Eq DSL provides a declarative, type-safe way to build complex equality comparators:
+
+* Atoms for simple fields (uses Prism.key under the hood)
+* Lenses for product types (total access to all fields)
+* Prisms for sum types (projection into one variant)
+* Functions for custom transformations
+* Behaviours for reusable equality logic
+* Bare structs for type-based filtering
+* `any` blocks for OR logic
+* `all` blocks for explicit AND logic
+* `not_on` for inequality checks
+
+All projections compose with AND logic at the top level, while `any` blocks provide OR logic. This makes it easy to express complex equality rules like "equal if (A and B) or (C and D)" without nested conditionals.

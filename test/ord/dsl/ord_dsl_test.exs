@@ -102,35 +102,53 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   end
 
   # ============================================================================
+  # Module with Ord Protocol Functions
+  # ============================================================================
+
+  defmodule ReverseStringOrd do
+    # Module with Ord protocol functions for testing :module_ord type
+    def lt?(a, b), do: String.reverse(a) < String.reverse(b)
+    def le?(a, b), do: String.reverse(a) <= String.reverse(b)
+    def gt?(a, b), do: String.reverse(a) > String.reverse(b)
+    def ge?(a, b), do: String.reverse(a) >= String.reverse(b)
+  end
+
+  # ============================================================================
   # Custom Behaviour Projections
   # ============================================================================
 
   defmodule NameLength do
     @behaviour Funx.Ord.Dsl.Behaviour
 
+    alias Funx.Ord.Utils
+
     @impl true
-    def project(person, _opts) do
-      String.length(person.name)
+    def ord(_opts) do
+      Utils.contramap(&String.length(&1.name))
     end
   end
 
   defmodule WeightedScore do
     @behaviour Funx.Ord.Dsl.Behaviour
 
+    alias Funx.Ord.Utils
+
     @impl true
-    def project(person, opts) do
+    def ord(opts) do
       weight = Keyword.get(opts, :weight, 1.0)
-      (person.score || 0) * weight
+      Utils.contramap(fn person -> (person.score || 0) * weight end)
     end
   end
 
   defmodule OptionalBio do
     @behaviour Funx.Ord.Dsl.Behaviour
 
+    alias Funx.Ord.Utils
+
     @impl true
-    def project(person, _opts) do
+    def ord(_opts) do
       # Returns nil for people without bio
-      person.bio
+      Utils.contramap(& &1.bio)
     end
   end
 
@@ -696,6 +714,58 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   end
 
   # ============================================================================
+  # Module with Ord Protocol Functions Tests
+  # ============================================================================
+
+  describe "module with ord protocol functions" do
+    test "uses module directly with lt?/le?/gt?/ge? in asc" do
+      ord_reverse =
+        ord do
+          asc ReverseStringOrd
+        end
+
+      # Sorts by reversed string: "cba" < "fed" < "zyx"
+      assert Utils.compare("abc", "def", ord_reverse) == :lt
+      assert Utils.compare("xyz", "def", ord_reverse) == :gt
+      assert Utils.compare("abc", "abc", ord_reverse) == :eq
+    end
+
+    test "uses module directly with lt?/le?/gt?/ge? in desc" do
+      ord_reverse_desc =
+        ord do
+          desc ReverseStringOrd
+        end
+
+      # Reversed sort: "zyx" > "fed" > "cba"
+      assert Utils.compare("abc", "def", ord_reverse_desc) == :gt
+      assert Utils.compare("xyz", "def", ord_reverse_desc) == :lt
+    end
+
+    test "combines module ord functions with other projections" do
+      strings = ["xyz", "ab", "def", "abc"]
+
+      ord_combined =
+        ord do
+          asc &String.length/1
+          asc ReverseStringOrd
+        end
+
+      # First by length, then by reversed string
+      # length 2 < 3
+      assert Utils.compare("hi", "abc", ord_combined) == :lt
+      # same length, "cba" < "zyx"
+      assert Utils.compare("abc", "xyz", ord_combined) == :lt
+      # same length, "cba" < "fed"
+      assert Utils.compare("abc", "def", ord_combined) == :lt
+
+      # Sort: by length first (2 < 3), then by reversed string within same length
+      sorted = Enum.sort(strings, &(Utils.compare(&1, &2, ord_combined) == :lt))
+      # "ab" (len 2), then len 3: "cba" < "fed" < "zyx"
+      assert sorted == ["ab", "abc", "def", "xyz"]
+    end
+  end
+
+  # ============================================================================
   # Protocol Dispatch Tests
   # ============================================================================
 
@@ -823,7 +893,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
         def some_function, do: :ok
       end
 
-      assert_raise CompileError, ~r/must implement Funx\.Ord\.Dsl\.Behaviour/, fn ->
+      assert_raise CompileError, ~r/does not have lt\?\/2, ord\/1, or __struct__\/0/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl

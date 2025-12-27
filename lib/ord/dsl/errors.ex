@@ -147,23 +147,4 @@ defmodule Funx.Ord.Dsl.Errors do
     Got: #{inspect(got)}
     """
   end
-
-  @doc """
-  Error: Module doesn't implement Funx.Ord.Dsl.Behaviour.
-  """
-  def missing_behaviour_implementation(module) do
-    """
-    Module #{inspect(module)} must implement Funx.Ord.Dsl.Behaviour.
-
-    To fix, add this to your module:
-      defmodule #{inspect(module)} do
-        @behaviour Funx.Ord.Dsl.Behaviour
-
-        @impl true
-        def project(value, opts) do
-          # Your projection logic here
-        end
-      end
-    """
-  end
 end

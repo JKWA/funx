@@ -1,103 +1,104 @@
 defmodule Funx.Ord.Dsl.Behaviour do
   @moduledoc """
-  Behaviour for custom projection logic in the Ord DSL.
+  Behaviour for custom ordering logic in the Ord DSL.
 
-  A module implementing this behaviour must define `project/2`. The DSL calls
-  `project/2` with the current value and any options given alongside the module
-  inside the DSL.
+  Implement this behaviour to define reusable Ord comparators that can be
+  used with `asc` and `desc` directives in the DSL without implementing the Ord protocol.
 
-  ## Examples
+  This is useful for teams that want to avoid teaching developers about protocols,
+  or want struct-specific ordering without global protocol implementations.
 
-  A simple projection that extracts string length:
+  ## Basic Example
 
-      iex> defmodule StringLength do
-      ...>   @behaviour Funx.Ord.Dsl.Behaviour
-      ...>
-      ...>   @impl true
-      ...>   def project(value, _opts) when is_binary(value) do
-      ...>     String.length(value)
-      ...>   end
-      ...> end
-      iex> StringLength.project("hello", [])
-      5
+      defmodule UserById do
+        @behaviour Funx.Ord.Dsl.Behaviour
 
-  A projection with configurable options:
+        @impl true
+        def ord(_opts) do
+          Funx.Ord.Utils.contramap(&(&1.id))
+        end
+      end
 
-      iex> defmodule WeightedValue do
-      ...>   @behaviour Funx.Ord.Dsl.Behaviour
-      ...>
-      ...>   @impl true
-      ...>   def project(value, opts) do
-      ...>     weight = Keyword.get(opts, :weight, 1.0)
-      ...>     value * weight
-      ...>   end
-      ...> end
-      iex> WeightedValue.project(10, weight: 2.5)
-      25.0
+      # In DSL
+      use Funx.Ord.Dsl
 
-  ## Usage in the DSL
+      ord do
+        asc: UserById  # Orders by id ascending
+      end
 
-      iex> defmodule NameLength do
-      ...>   @behaviour Funx.Ord.Dsl.Behaviour
-      ...>   @impl true
-      ...>   def project(person, _opts) do
-      ...>     String.length(person.name)
-      ...>   end
-      ...> end
-      iex> defmodule ScoreMultiplier do
-      ...>   @behaviour Funx.Ord.Dsl.Behaviour
-      ...>   @impl true
-      ...>   def project(person, opts) do
-      ...>     multiplier = Keyword.get(opts, :multiplier, 1)
-      ...>     person.score * multiplier
-      ...>   end
-      ...> end
-      iex> use Funx.Ord.Dsl
-      iex> ord do
-      ...>   asc: NameLength
-      ...>   desc: ScoreMultiplier, multiplier: 2
-      ...> end
+  ## With Options
 
-  The projection extracts a single comparable value from the input. The returned
-  value will be compared using the `Funx.Ord` protocol.
+      defmodule UserByField do
+        @behaviour Funx.Ord.Dsl.Behaviour
+
+        @impl true
+        def ord(opts) do
+          field = Keyword.get(opts, :field, :id)
+          Funx.Ord.Utils.contramap(&Map.get(&1, field))
+        end
+      end
+
+      # In DSL
+      ord do
+        asc: UserByField, field: :name
+      end
+
+  ## Why Use This Instead of Protocols?
+
+  - **Simpler**: Just one function returning an Ord map
+  - **No protocol knowledge required**: Easier for team onboarding
+  - **Module-specific**: Override struct ordering without global protocol
+  - **Options support**: Built-in support for configuration
+
+  The returned Ord map typically uses `Funx.Ord.Utils.contramap/2` to build
+  projection-based ordering, but can implement any custom comparison logic.
   """
 
   @doc """
-  Projects a value to extract a comparable value.
+  Returns an Ord map for comparison.
 
-  Arguments:
+  Takes options and returns an Ord map (with `:compare` function).
 
-    * value
-      The current value to project.
+  ## Arguments
 
-    * opts
-      Module-specific options passed in the DSL, for example:
+    * `opts` - Keyword list of options passed from the DSL
 
-          asc: MyProjection, weight: 2.5
+  ## Return Value
 
-  Return value:
+  An Ord map with the structure:
 
-    The projected value that will be used for comparison. The returned value
-    should implement `Funx.Ord` or be comparable using Elixir's built-in
-    comparison operators.
+      %{
+        compare: (any(), any() -> :lt | :eq | :gt)
+      }
 
-  Examples:
+  ## Examples
 
-      # Extract a field
-      def project(person, _opts) do
-        person.name
+      # Simple projection-based ordering
+      def ord(_opts) do
+        Funx.Ord.Utils.contramap(&(&1.id))
       end
 
-      # Transform before comparison
-      def project(value, _opts) do
-        String.downcase(value)
+      # With options
+      def ord(opts) do
+        field = Keyword.get(opts, :field, :id)
+        Funx.Ord.Utils.contramap(&Map.get(&1, field))
       end
 
-      # Use options
-      def project(value, opts) do
-        offset = Keyword.get(opts, :offset, 0)
-        value + offset
+      # Custom comparison logic
+      def ord(_opts) do
+        %{
+          compare: fn a, b ->
+            cond do
+              normalize(a) < normalize(b) -> :lt
+              normalize(a) > normalize(b) -> :gt
+              true -> :eq
+            end
+          end
+        }
       end
+
+  Most implementations use `Funx.Ord.Utils.contramap/2` for projection-based
+  ordering, which handles the Ord map creation automatically.
   """
-  @callback project(value :: any(), opts :: keyword()) :: any()
+  @callback ord(opts :: keyword()) :: Funx.Ord.Utils.ord_map()
 end

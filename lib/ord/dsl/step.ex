@@ -1,57 +1,61 @@
 defmodule Funx.Ord.Dsl.Step do
   @moduledoc false
-  # Represents a single normalized ordering step in the Ord DSL compilation pipeline.
+  # Data structure representing a single ordering step in the DSL.
   #
-  # ## Normalization Invariant
-  #
-  # A Step represents a fully normalized ordering operation with all syntax sugar
-  # resolved. Each field contains quoted AST that will be compiled into the final Ord:
+  # ## Fields
   #
   #   - `direction`: Either `:asc` or `:desc`
-  #   - `projection`: Quoted AST that evaluates to one of contramap's canonical types:
-  #       * `Lens.t()`
-  #       * `Prism.t()`
-  #       * `{Prism.t(), or_else}`
-  #       * `(a -> b)` function
-  #   - `ord`: Module atom or quoted AST that evaluates to an Ord implementation
-  #   - `__meta__`: Compile-time metadata (line, column) for error reporting
+  #   - `projection`: Quoted AST for the projection/Ord map/module
+  #   - `ord`: Module or AST for the Ord implementation to use
+  #   - `type`: Projection type for compile-time optimization
+  #   - `__meta__`: Source location for error reporting
   #
-  # ## Single-Path Guarantee
+  # ## Type Field
   #
-  # After the parser creates Steps, there is no branching on projection type.
-  # The executor simply wraps each step in `Utils.contramap(projection, ord)` and
-  # optionally `Utils.reverse(...)` for `:desc` direction.
+  # The `type` field enables compile-time optimization by telling the executor
+  # how to handle the projection without runtime type detection:
   #
-  # All projection-type-specific logic lives in:
-  #   1. Parser: syntax → canonical AST
-  #   2. contramap/2: canonical types → executable functions
+  #   - `:projection` - Optics or functions → wrap in contramap
+  #   - `:module_ord` - Module with compare/2 → convert via to_ord_map
+  #   - `:ord_map` - Behaviour returning Ord map → use directly
+  #   - `:dynamic` - Unknown (0-arity helper) → runtime detection
   #
-  # This module is just a data container with no logic.
+  # This eliminates compiler warnings from unreachable case branches.
+  #
+  # ## Responsibilities
+  #
+  # This is a pure data container with no logic:
+  #   - Parser: Creates Steps with normalized AST and type
+  #   - Executor: Pattern matches on type to generate specific code
 
   @type direction :: :asc | :desc
   @type projection :: Macro.t()
   @type ord :: module() | Macro.t()
+  @type projection_type :: :projection | :module_ord | :ord_map | :dynamic
 
   @type t :: %__MODULE__{
           direction: direction(),
           projection: projection(),
           ord: ord(),
+          type: projection_type(),
           __meta__: map()
         }
 
-  defstruct [:direction, :projection, :ord, :__meta__]
+  defstruct [:direction, :projection, :ord, :type, :__meta__]
 
   @doc """
-  Creates a new step with the given direction, projection AST, ord module, and metadata.
+  Creates a new step with the given direction, projection AST, ord module, type, and metadata.
 
   The projection AST must evaluate to one of contramap's canonical types.
+  The type indicates what kind of projection this is for compile-time optimization.
   """
-  @spec new(direction(), projection(), ord(), map()) :: t()
-  def new(direction, projection, ord, meta \\ %{}) do
+  @spec new(direction(), projection(), ord(), projection_type(), map()) :: t()
+  def new(direction, projection, ord, type \\ :projection, meta \\ %{}) do
     %__MODULE__{
       direction: direction,
       projection: projection,
       ord: ord,
+      type: type,
       __meta__: meta
     }
   end
