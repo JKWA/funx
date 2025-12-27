@@ -14,6 +14,11 @@ export_locals_without_parens = [
   or_else: 1,
   map_left: 1,
   tap: 1,
+  # Maybe DSL
+  maybe: 2,
+  filter: 1,
+  filter_map: 2,
+  guard: 1,
   # Ord DSL
   asc: 1,
   asc: 2,

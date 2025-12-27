@@ -20,6 +20,20 @@ The following Either DSL functions are configured to format without parentheses:
 
 Note that `flip/0` - Swap Left and Right still requires parentheses.
 
+### Maybe DSL
+
+The following Maybe DSL functions are configured to format without parentheses:
+
+- `maybe/2` - DSL entry point
+- `bind/1` - Chain operations that return Maybe, Either, result tuples, or nil (shared with Either DSL)
+- `map/1` - Transform values with plain functions (shared with Either DSL)
+- `ap/1` - Apply function in Maybe to value in Maybe (shared with Either DSL)
+- `or_else/1` - Provide fallback on Nothing (shared with Either DSL)
+- `tap/1` - Run a side-effecting function inside the chain without changing the data (shared with Either DSL)
+- `filter/1` - Filter with a predicate, returns Nothing if predicate fails
+- `filter_map/2` - Filter and transform in one step
+- `guard/1` - Guard with a boolean condition
+
 ### Ord DSL
 
 The following Ord DSL functions are configured to format without parentheses:
@@ -79,6 +93,30 @@ either(user_input) do
   validate([CheckLength, CheckFormat])
   bind(SaveToDatabase)
   or_else(default_user())
+end
+```
+
+### Maybe DSL
+
+Your Maybe pipelines will format cleanly:
+
+```elixir
+maybe user_input do
+  bind ParseInt
+  filter PositiveNumber
+  map Double
+  or_else default_value()
+end
+```
+
+Instead of:
+
+```elixir
+maybe(user_input) do
+  bind(ParseInt)
+  filter(PositiveNumber)
+  map(Double)
+  or_else(default_value())
 end
 ```
 
