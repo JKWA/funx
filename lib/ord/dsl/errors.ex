@@ -111,6 +111,24 @@ defmodule Funx.Ord.Dsl.Errors do
   end
 
   @doc """
+  Error: Ord variable with `or_else:` option.
+  """
+  def or_else_with_ord_variable do
+    """
+    The `or_else:` option cannot be used with ord variables.
+
+    Reason: Ord variables are complete ordering functions that already define
+    their own comparison logic. The or_else option only applies to field
+    projections that might return nil values.
+
+    If you need to customize the ord variable's behavior, modify it before
+    using it in the DSL:
+      base_ord = ord do asc :name, or_else: "Unknown" end
+      combined = ord do asc base_ord end
+    """
+  end
+
+  @doc """
   Error: {Prism, or_else} tuple already has or_else, can't use option too.
   """
   def redundant_or_else do

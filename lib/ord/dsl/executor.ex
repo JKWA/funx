@@ -11,6 +11,7 @@ defmodule Funx.Ord.Dsl.Executor do
   #   - `:module_ord` - Module with compare/2 → convert via to_ord_map
   #   - `:ord_map` - Behaviour returning Ord map → use directly
   #   - `:dynamic` - 0-arity helper → runtime type detection
+  #   - `:ord_variable` - Variable holding ord map → runtime validation
   #
   # Pattern matching on the `type` field at compile time eliminates unreachable
   # case branches, avoiding compiler warnings.
@@ -152,6 +153,48 @@ defmodule Funx.Ord.Dsl.Executor do
           _ ->
             # It's a projection - wrap in contramap
             Utils.contramap(projection, unquote(ord_ast))
+        end
+      end
+
+    case direction do
+      :asc -> base_ord_ast
+      :desc -> build_reverse_ast(base_ord_ast)
+    end
+  end
+
+  # === Ord variable ===
+  # Runtime validation of ord map variable
+
+  defp step_to_ord_ast(%Step{direction: direction, projection: var_ast, type: :ord_variable}) do
+    base_ord_ast =
+      quote do
+        ord_var = unquote(var_ast)
+
+        case ord_var do
+          %{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun}
+          when is_function(lt_fun, 2) and is_function(le_fun, 2) and
+                 is_function(gt_fun, 2) and is_function(ge_fun, 2) ->
+            # Valid ord map - use it directly
+            ord_var
+
+          _ ->
+            raise RuntimeError, """
+            Expected an Ord map, got: #{inspect(ord_var)}
+
+            An Ord map must have the following structure:
+              %{
+                lt?: fn(a, b) -> boolean end,
+                le?: fn(a, b) -> boolean end,
+                gt?: fn(a, b) -> boolean end,
+                ge?: fn(a, b) -> boolean end
+              }
+
+            You can create ord maps using:
+              - ord do ... end
+              - Utils.contramap(...)
+              - Utils.reverse(...)
+              - Utils.concat([...])
+            """
         end
       end
 

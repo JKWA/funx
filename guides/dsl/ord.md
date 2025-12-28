@@ -29,6 +29,13 @@ The parser converts the DSL block into a step list. It normalizes all projection
 * `{Prism.t(), or_else}` - Prism with or_else value
 * `(a -> b)` - Projection function
 
+Plus special types for modules and runtime values:
+
+* Module with `lt?/2` - Converted via `to_ord_map`
+* Behaviour module - Calls `ord/1` at runtime
+* 0-arity helper - Runtime type detection
+* **Ord variable** - Runtime validation of ord map
+
 All syntax sugar resolves to these types:
 
 * `:atom` → `Prism.key(:atom)`
@@ -39,6 +46,7 @@ All syntax sugar resolves to these types:
 * `fn -> ... end` → `fn -> ... end` (pass through)
 * `Behaviour` → `fn v -> Behaviour.project(v, []) end`
 * `StructModule` → `fn v -> match?(%StructModule{}, v) end` (type filtering)
+* `ord_variable` → runtime validation, use directly if valid ord map
 
 The parser validates projections and raises compile-time errors for unsupported syntax, producing the final step list that the executor will compile.
 
@@ -58,10 +66,15 @@ The executor runs at compile time and generates quoted AST. It follows a single,
 
 ### Execution Model
 
-Each step compiles to:
+Each step compiles based on its type:
 
+**Regular projections:**
 * `:asc` → `contramap(projection, ord)`
 * `:desc` → `reverse(contramap(projection, ord))`
+
+**Ord variables:**
+* `:asc` → runtime validation, then use ord directly
+* `:desc` → runtime validation, then `reverse(ord)`
 
 Multiple steps are combined with `concat([...])` (monoid composition).
 
@@ -94,6 +107,109 @@ Utils.concat([
   Utils.reverse(Utils.contramap(Prism.key(:age), Funx.Ord)),
   Utils.contramap(fn x -> x end, Funx.Ord)  # implicit identity
 ])
+```
+
+## Ord Variables
+
+Ord variables allow you to compose and reuse existing ord maps within the DSL. A variable holding an ord map can be used directly as a projection:
+
+```elixir
+base_ord = ord do
+  asc :name
+  desc :age
+end
+
+combined_ord = ord do
+  asc :priority
+  asc base_ord  # Use the ord variable
+end
+
+reversed_ord = ord do
+  desc base_ord  # Reverse the ord variable
+end
+```
+
+### How It Works
+
+When the parser encounters a variable reference (not a module alias or literal), it marks it as `:ord_variable` type. The executor generates runtime validation code:
+
+```elixir
+# asc base_ord compiles to:
+case base_ord do
+  %{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun}
+  when is_function(lt_fun, 2) and is_function(le_fun, 2) and
+       is_function(gt_fun, 2) and is_function(ge_fun, 2) ->
+    base_ord  # Valid ord map, use it directly
+
+  _ ->
+    raise RuntimeError, "Expected an Ord map, got: #{inspect(base_ord)}"
+end
+```
+
+This validation happens when the containing ord is created (not when it's used for comparison).
+
+### What Works as an Ord Variable
+
+Any value that is a valid ord map:
+
+* `ord do ... end` - Ord maps from the DSL
+* `Utils.contramap(...)` - Contramap projections
+* `Utils.reverse(...)` - Reversed orderings
+* `Utils.concat([...])` - Combined orderings
+* `Utils.to_ord_map(module)` - Module-based orderings
+
+### Composition Semantics
+
+When you use an ord variable with `asc` or `desc`:
+
+* `asc ord_var` - Uses the ord variable as-is
+* `desc ord_var` - Reverses the ord variable
+
+Ord variables include their complete ordering semantics, including any implicit identity tiebreaker from their creation.
+
+### Common Patterns
+
+**Reversing complex orderings:**
+
+```elixir
+payment_ord = ord do
+  asc Prism.key(:credit_card_payment)
+  asc Prism.key(:credit_card_refund)
+  asc Prism.key(:check_payment)
+end
+
+payment_desc = ord do
+  desc payment_ord
+end
+```
+
+**Building on base orderings:**
+
+```elixir
+name_age_ord = ord do
+  asc :name
+  desc :age
+end
+
+full_ord = ord do
+  asc :priority
+  asc name_age_ord
+  asc :created_at
+end
+```
+
+**Composing multiple ord variables:**
+
+```elixir
+primary_ord = ord do asc :group end
+secondary_ord = ord do desc :score end
+tertiary_ord = ord do asc :name end
+
+complete_ord = ord do
+  asc primary_ord
+  asc secondary_ord
+  asc tertiary_ord
+end
 ```
 
 ## Behaviours

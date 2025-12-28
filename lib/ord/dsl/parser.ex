@@ -12,6 +12,13 @@ defmodule Funx.Ord.Dsl.Parser do
   #   3. {Prism.t(), or_else}  - Prism with or_else value
   #   4. (a -> b)              - projection function
   #
+  # Plus special types for modules and runtime values:
+  #
+  #   5. Module with lt?/2     - converted via to_ord_map
+  #   6. Behaviour module      - calls ord/1 at runtime
+  #   7. 0-arity helper        - runtime type detection
+  #   8. Ord variable          - runtime validation of ord map
+  #
   # All syntax sugar resolves to these types:
   #
   #   - :atom              → Prism.key(:atom)
@@ -21,6 +28,7 @@ defmodule Funx.Ord.Dsl.Parser do
   #   - {Prism, x}         → {Prism, x} (pass through)
   #   - fn -> ... end      → fn -> ... end (pass through)
   #   - Behaviour          → fn v -> Behaviour.project(v, []) end
+  #   - my_ord (variable)  → runtime ord map validation
   #
   # contramap/2 is the ONLY place that converts optics to functions.
   # The parser never creates function wrappers around optics.
@@ -229,6 +237,26 @@ defmodule Funx.Ord.Dsl.Parser do
     raise CompileError,
       line: Keyword.get(meta, :line),
       description: Errors.redundant_or_else()
+  end
+
+  # Variable reference - runtime ord map
+  # Matches patterns like `my_ord` where my_ord is a variable holding an ord map
+  defp build_projection_ast(
+         {var_name, _meta, context} = var_ast,
+         or_else,
+         _behaviour_opts,
+         meta,
+         _caller_env
+       )
+       when is_atom(var_name) and is_atom(context) do
+    unless is_nil(or_else) do
+      raise CompileError,
+        line: Keyword.get(meta, :line),
+        description: Errors.or_else_with_ord_variable()
+    end
+
+    # Pass through the variable AST - will be evaluated at runtime
+    {var_ast, :ord_variable}
   end
 
   defp build_projection_ast(

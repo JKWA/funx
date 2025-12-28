@@ -50,18 +50,6 @@ defmodule Funx.Eq.Dsl.Executor do
   """
   @spec execute_nodes(list(Step.t() | Block.t())) :: Macro.t()
   def execute_nodes([]) do
-    IO.warn("""
-    Empty eq block always returns true - all values will be considered equal.
-
-    This will cause Enum.uniq/2, MapSet operations, and grouping functions
-    to collapse all values into a single equivalence class.
-
-    If this is intentional, you can suppress this warning by adding a comment:
-      # credo:disable-for-next-line Credo.Check.Warning.IoInspect
-      eq do
-      end
-    """)
-
     empty_eq_ast()
   end
 
