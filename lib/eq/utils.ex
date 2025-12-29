@@ -73,26 +73,9 @@ defmodule Funx.Eq.Utils do
     contramap(fn a -> Lens.view!(a, lens) end, eq)
   end
 
-  # Bare Prism (Nothing == Nothing)
+  # Bare Prism - lift eq over Maybe
   def contramap(%Prism{} = prism, eq) do
-    eq = to_eq_map(eq)
-
-    %{
-      eq?: fn a, b ->
-        case {Prism.preview(a, prism), Prism.preview(b, prism)} do
-          {%Maybe.Nothing{}, %Maybe.Nothing{}} -> true
-          {%Maybe.Just{value: va}, %Maybe.Just{value: vb}} -> eq.eq?.(va, vb)
-          _ -> false
-        end
-      end,
-      not_eq?: fn a, b ->
-        case {Prism.preview(a, prism), Prism.preview(b, prism)} do
-          {%Maybe.Nothing{}, %Maybe.Nothing{}} -> false
-          {%Maybe.Just{value: va}, %Maybe.Just{value: vb}} -> eq.not_eq?.(va, vb)
-          _ -> true
-        end
-      end
-    }
+    contramap(fn a -> Prism.preview(a, prism) end, Maybe.lift_eq(eq))
   end
 
   # Prism with default
@@ -107,14 +90,13 @@ defmodule Funx.Eq.Utils do
 
   # Traversal (both must have all foci)
   def contramap(%Traversal{} = traversal, eq) do
-    eq = to_eq_map(eq)
+    list_eq = list_eq(eq)
 
     %{
       eq?: fn a, b ->
         case {Traversal.to_list_maybe(a, traversal), Traversal.to_list_maybe(b, traversal)} do
           {%Maybe.Just{value: list_a}, %Maybe.Just{value: list_b}} ->
-            Enum.zip(list_a, list_b)
-            |> Enum.all?(fn {va, vb} -> eq.eq?.(va, vb) end)
+            list_eq.eq?.(list_a, list_b)
 
           _ ->
             false
@@ -123,8 +105,7 @@ defmodule Funx.Eq.Utils do
       not_eq?: fn a, b ->
         case {Traversal.to_list_maybe(a, traversal), Traversal.to_list_maybe(b, traversal)} do
           {%Maybe.Just{value: list_a}, %Maybe.Just{value: list_b}} ->
-            Enum.zip(list_a, list_b)
-            |> Enum.any?(fn {va, vb} -> eq.not_eq?.(va, vb) end)
+            list_eq.not_eq?.(list_a, list_b)
 
           _ ->
             true
@@ -355,6 +336,24 @@ defmodule Funx.Eq.Utils do
     eq = to_eq_map(eq)
 
     fn elem -> eq.eq?.(elem, target) end
+  end
+
+  # Private helper: creates an eq for comparing lists element-wise
+  defp list_eq(eq) do
+    eq = to_eq_map(eq)
+
+    %{
+      eq?: fn list_a, list_b ->
+        length(list_a) == length(list_b) and
+          Enum.zip(list_a, list_b)
+          |> Enum.all?(fn {va, vb} -> eq.eq?.(va, vb) end)
+      end,
+      not_eq?: fn list_a, list_b ->
+        length(list_a) != length(list_b) or
+          Enum.zip(list_a, list_b)
+          |> Enum.any?(fn {va, vb} -> eq.not_eq?.(va, vb) end)
+      end
+    }
   end
 
   def to_eq_map(%{eq?: eq_fun, not_eq?: not_eq_fun} = eq_map)
