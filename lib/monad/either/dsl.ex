@@ -104,7 +104,6 @@ defmodule Funx.Monad.Either.Dsl do
       end
 
   Transformers run at compile time and create compile-time dependencies.
-  See `Funx.Monad.Either.Dsl.Transformer` for details on creating custom transformers.
 
   ## Example
 

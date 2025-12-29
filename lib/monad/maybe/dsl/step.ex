@@ -1,19 +1,17 @@
 defmodule Funx.Monad.Maybe.Dsl.Step do
-  @moduledoc """
-  Step types for the Maybe DSL pipeline.
-
-  Following Spark's Entity pattern, each step type is a distinct struct.
-  This provides strong typing, clearer pattern matching, and compile-time guarantees.
-
-  These are internal implementation details - the user-facing API remains unchanged.
-  """
+  @moduledoc false
+  # Step types for the Maybe DSL pipeline.
+  #
+  # Following Spark's Entity pattern, each step type is a distinct struct.
+  # This provides strong typing, clearer pattern matching, and compile-time guarantees.
+  #
+  # These are internal implementation details - the user-facing API remains unchanged.
 
   defmodule Bind do
-    @moduledoc """
-    Represents a bind operation in the pipeline.
-
-    Bind is used for operations that return Maybe or result tuples.
-    """
+    @moduledoc false
+    # Represents a bind operation in the pipeline.
+    #
+    # Bind is used for operations that return Maybe or result tuples.
 
     @enforce_keys [:operation]
     defstruct [:operation, :__meta__, opts: []]
@@ -27,11 +25,10 @@ defmodule Funx.Monad.Maybe.Dsl.Step do
   end
 
   defmodule Map do
-    @moduledoc """
-    Represents a map operation in the pipeline.
-
-    Map is used for pure transformations that return plain values.
-    """
+    @moduledoc false
+    # Represents a map operation in the pipeline.
+    #
+    # Map is used for pure transformations that return plain values.
 
     @enforce_keys [:operation]
     defstruct [:operation, :__meta__, opts: []]
@@ -45,11 +42,10 @@ defmodule Funx.Monad.Maybe.Dsl.Step do
   end
 
   defmodule Ap do
-    @moduledoc """
-    Represents an applicative functor operation.
-
-    Ap applies a function wrapped in a Maybe to a value wrapped in a Maybe.
-    """
+    @moduledoc false
+    # Represents an applicative functor operation.
+    #
+    # Ap applies a function wrapped in a Maybe to a value wrapped in a Maybe.
 
     @enforce_keys [:applicative]
     defstruct [:applicative, :__meta__]
@@ -62,11 +58,10 @@ defmodule Funx.Monad.Maybe.Dsl.Step do
   end
 
   defmodule MaybeFunction do
-    @moduledoc """
-    Represents a call to a Maybe-specific function.
-
-    Maybe functions: or_else.
-    """
+    @moduledoc false
+    # Represents a call to a Maybe-specific function.
+    #
+    # Maybe functions: or_else.
 
     @enforce_keys [:function, :args]
     defstruct [:function, :args, :__meta__]
@@ -80,17 +75,16 @@ defmodule Funx.Monad.Maybe.Dsl.Step do
   end
 
   defmodule ProtocolFunction do
-    @moduledoc """
-    Represents a call to a Funx protocol function.
-
-    Protocol functions are operations implemented via Elixir protocols rather than
-    module functions. This allows the operation to work polymorphically across
-    different types while maintaining a clean API.
-
-    Examples:
-      - tap (Funx.Tappable) - Execute side effects without changing the value
-      - filter, guard, filter_map (Funx.Filterable) - Conditional retention
-    """
+    @moduledoc false
+    # Represents a call to a Funx protocol function.
+    #
+    # Protocol functions are operations implemented via Elixir protocols rather than
+    # module functions. This allows the operation to work polymorphically across
+    # different types while maintaining a clean API.
+    #
+    # Examples:
+    #   - tap (Funx.Tappable) - Execute side effects without changing the value
+    #   - filter, guard, filter_map (Funx.Filterable) - Conditional retention
 
     @enforce_keys [:protocol, :function, :args]
     defstruct [:protocol, :function, :args, :__meta__]

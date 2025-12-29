@@ -88,7 +88,6 @@ defmodule Funx.Monad.Maybe.Dsl do
       end
 
   Transformers run at compile time and create compile-time dependencies.
-  See `Funx.Monad.Maybe.Dsl.Transformer` for details on creating custom transformers.
 
   ## Example
 
