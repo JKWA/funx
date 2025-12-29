@@ -380,6 +380,7 @@ The DSL version:
 - `asc MyBehaviour` - Behaviour module projection
 - `asc MyBehaviour, opt: value` - Behaviour with options
 - `asc MyStruct` - Bare struct module (type filtering)
+- `asc my_ord` / `desc my_ord` - Ord variable (compose or reverse existing ord maps)
 
 ### DSL Examples
 
@@ -644,6 +645,97 @@ ord do
   asc ProjectionHelpers.name_lens()
 end
 ```
+
+### Ord Variables (Composing Orderings)
+
+You can use existing ord maps as projections within the DSL. This allows you to build complex orderings by composing and reusing simpler ones:
+
+```elixir
+# Define a base ordering
+base_ord =
+  ord do
+    asc :name
+    desc :age
+  end
+
+# Reuse it in another ord
+combined_ord =
+  ord do
+    asc :priority
+    asc base_ord  # Uses base_ord directly
+  end
+
+# Reverse an existing ord
+reversed_ord =
+  ord do
+    desc base_ord  # Reverses the base ordering
+  end
+```
+
+**Common Patterns:**
+
+```elixir
+# Build complex orderings from simple ones
+payment_amount_ord =
+  ord do
+    asc Prism.key(:credit_card_payment)
+    asc Prism.key(:credit_card_refund)
+    asc Prism.key(:check_payment)
+    asc Prism.key(:check_refund)
+  end
+
+# Easily reverse without rebuilding
+payment_amount_desc =
+  ord do
+    desc payment_amount_ord
+  end
+
+# Extend a base ordering with additional criteria
+extended_ord =
+  ord do
+    asc base_ord
+    asc :created_at
+    asc :id
+  end
+
+# Compose multiple ord variables
+complex_ord =
+  ord do
+    asc priority_ord
+    desc timestamp_ord
+    asc name_ord
+  end
+```
+
+**What works as an ord variable:**
+
+```elixir
+# ✅ Ord maps created with ord do...end
+my_ord = ord do asc :name end
+
+# ✅ Ord maps from Utils.contramap
+length_ord = Ord.Utils.contramap(&String.length/1)
+
+# ✅ Ord maps from Utils.reverse
+desc_ord = Ord.Utils.reverse(my_ord)
+
+# ✅ Ord maps from Utils.concat
+combined = Ord.Utils.concat([ord1, ord2])
+```
+
+**Runtime validation:**
+
+Ord variables are validated when the ord is created. Invalid values raise helpful errors:
+
+```elixir
+invalid = "not an ord"
+
+ord do
+  asc invalid  # RuntimeError: Expected an Ord map, got: "not an ord"
+end
+```
+
+**Note:** Ord variables include their implicit identity tiebreaker, so composing them preserves their complete ordering semantics.
 
 ### Type Filtering with Bare Struct Modules
 

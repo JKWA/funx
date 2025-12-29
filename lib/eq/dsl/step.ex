@@ -1,12 +1,12 @@
-defmodule Funx.Ord.Dsl.Step do
+defmodule Funx.Eq.Dsl.Step do
   @moduledoc false
-  # Data structure representing a single ordering step in the DSL.
+  # Data structure representing a single equality check in the DSL.
   #
   # ## Fields
   #
-  #   - `direction`: Either `:asc` or `:desc`
-  #   - `projection`: Quoted AST for the projection/Ord map/module
-  #   - `ord`: Module or AST for the Ord implementation to use
+  #   - `projection`: Quoted AST for the projection/Eq map/module
+  #   - `eq`: Module or AST for the Eq implementation to use
+  #   - `negate`: Boolean - true for `not_on` directives (swaps eq?/not_eq?)
   #   - `type`: Projection type for compile-time optimization
   #   - `__meta__`: Source location for error reporting
   #
@@ -16,8 +16,8 @@ defmodule Funx.Ord.Dsl.Step do
   # how to handle the projection without runtime type detection:
   #
   #   - `:projection` - Optics or functions → wrap in contramap
-  #   - `:module_ord` - Module with compare/2 → convert via to_ord_map
-  #   - `:ord_map` - Behaviour returning Ord map → use directly
+  #   - `:module_eq` - Module with eq?/2 → convert via to_eq_map
+  #   - `:eq_map` - Behaviour returning Eq map → use directly
   #   - `:dynamic` - Unknown (0-arity helper) → runtime detection
   #
   # This eliminates compiler warnings from unreachable case branches.
@@ -28,33 +28,32 @@ defmodule Funx.Ord.Dsl.Step do
   #   - Parser: Creates Steps with normalized AST and type
   #   - Executor: Pattern matches on type to generate specific code
 
-  @type direction :: :asc | :desc
   @type projection :: Macro.t()
-  @type ord :: module() | Macro.t()
-  @type projection_type :: :projection | :module_ord | :ord_map | :dynamic
+  @type eq :: module() | Macro.t()
+  @type projection_type :: :projection | :module_eq | :eq_map | :dynamic
 
   @type t :: %__MODULE__{
-          direction: direction(),
           projection: projection(),
-          ord: ord(),
+          eq: eq(),
+          negate: boolean(),
           type: projection_type(),
           __meta__: map()
         }
 
-  defstruct [:direction, :projection, :ord, :type, :__meta__]
+  defstruct [:projection, :eq, :negate, :type, :__meta__]
 
   @doc """
-  Creates a new step with the given direction, projection AST, ord module, type, and metadata.
+  Creates a new step with the given projection AST, eq module, negate flag, type, and metadata.
 
   The projection AST must evaluate to one of contramap's canonical types.
   The type indicates what kind of projection this is for compile-time optimization.
   """
-  @spec new(direction(), projection(), ord(), projection_type(), map()) :: t()
-  def new(direction, projection, ord, type \\ :projection, meta \\ %{}) do
+  @spec new(projection(), eq(), boolean(), projection_type(), map()) :: t()
+  def new(projection, eq, negate \\ false, type \\ :projection, meta \\ %{}) do
     %__MODULE__{
-      direction: direction,
       projection: projection,
-      ord: ord,
+      eq: eq,
+      negate: negate,
       type: type,
       __meta__: meta
     }

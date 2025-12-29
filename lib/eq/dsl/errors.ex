@@ -1,6 +1,6 @@
-defmodule Funx.Ord.Dsl.Errors do
+defmodule Funx.Eq.Dsl.Errors do
   @moduledoc false
-  # Centralized error messages for Ord DSL
+  # Centralized error messages for Eq DSL
   #
   # ## Error Message Contract
   #
@@ -15,19 +15,23 @@ defmodule Funx.Ord.Dsl.Errors do
   # - Examples when helpful
 
   @doc """
-  Error: DSL syntax must be `asc projection` or `desc projection`.
+  Error: DSL syntax must be `on projection`, `not_on projection`, or block syntax.
   """
   def invalid_dsl_syntax(got) do
     """
-    Invalid Ord DSL syntax.
+    Invalid Eq DSL syntax.
 
-    Expected: `asc projection` or `desc projection`
+    Expected: `on projection`, `not_on projection`, or nested blocks
     Got: #{inspect(got)}
 
     Valid examples:
-      asc :name
-      desc :age
-      asc Lens.key(:score)
+      on :name
+      not_on :id
+      on Lens.key(:score)
+      any do
+        on :email
+        on :username
+      end
     """
   end
 
@@ -41,10 +45,10 @@ defmodule Funx.Ord.Dsl.Errors do
     Use one of these alternatives:
       1. Create a 0-arity helper that returns a Prism:
          def score_prism, do: Prism.key(:score)
-         asc score_prism(), or_else: 0
+         on score_prism(), or_else: 0
 
       2. Use inline Prism syntax:
-         asc Prism.key(:score), or_else: 0
+         on Prism.key(:score), or_else: 0
 
     Reason: Captured functions like &fun/1 don't expose their projection type
     at compile time, making or_else semantics ambiguous.
@@ -61,10 +65,10 @@ defmodule Funx.Ord.Dsl.Errors do
     Use one of these alternatives:
       1. Create a 0-arity helper that returns a Prism:
          def score_prism, do: Prism.key(:score)
-         asc score_prism(), or_else: 0
+         on score_prism(), or_else: 0
 
       2. Use inline Prism syntax:
-         asc Prism.key(:score), or_else: 0
+         on Prism.key(:score), or_else: 0
 
     Reason: Anonymous functions like `fn x -> x.field end` don't expose their
     projection type at compile time, making or_else semantics ambiguous.
@@ -82,10 +86,28 @@ defmodule Funx.Ord.Dsl.Errors do
     Adding an or_else would violate this contract.
 
     If you need optional field handling, use a Prism instead:
-      asc Prism.key(:name), or_else: "Unknown"
+      on Prism.key(:name), or_else: "Unknown"
 
     Or use an atom with or_else (automatically becomes a Prism):
-      asc :name, or_else: "Unknown"
+      on :name, or_else: "Unknown"
+    """
+  end
+
+  @doc """
+  Error: Traversal with `or_else:` option.
+  """
+  def or_else_with_traversal do
+    """
+    The `or_else:` option is not supported with Traversal projections.
+
+    Reason: Traversal focuses on multiple values. The semantics of or_else
+    with multiple foci would be ambiguous (apply to each focus? to the list?).
+
+    If you need optional handling, wrap individual optics in the Traversal:
+      Traversal.combine([
+        {Prism.key(:field1), default1},
+        {Prism.key(:field2), default2}
+      ])
     """
   end
 
@@ -101,30 +123,12 @@ defmodule Funx.Ord.Dsl.Errors do
 
     If you need or_else handling, implement it inside your Behaviour:
       defmodule MyProjection do
-        @behaviour Funx.Ord.Dsl.Behaviour
+        @behaviour Funx.Eq.Dsl.Behaviour
 
         def project(value, opts) do
           value.field || Keyword.get(opts, :or_else, 0)
         end
       end
-    """
-  end
-
-  @doc """
-  Error: Ord variable with `or_else:` option.
-  """
-  def or_else_with_ord_variable do
-    """
-    The `or_else:` option cannot be used with ord variables.
-
-    Reason: Ord variables are complete ordering functions that already define
-    their own comparison logic. The or_else option only applies to field
-    projections that might return nil values.
-
-    If you need to customize the ord variable's behavior, modify it before
-    using it in the DSL:
-      base_ord = ord do asc :name, or_else: "Unknown" end
-      combined = ord do asc base_ord end
     """
   end
 
@@ -138,10 +142,10 @@ defmodule Funx.Ord.Dsl.Errors do
 
     Choose one:
       1. Tuple syntax:
-         asc {Prism.key(:score), 0}
+         on {Prism.key(:score), 0}
 
       2. Option syntax:
-         asc Prism.key(:score), or_else: 0
+         on Prism.key(:score), or_else: 0
 
     Both are equivalent and normalize to the same form.
     """

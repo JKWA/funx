@@ -17,6 +17,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   #   - Runtime error handling
   #   - Edge cases
   #   - Bare struct module type filtering
+  #   - Ord variable projections (composing and reusing orderings)
   #   - Property-based law verification
 
   use ExUnit.Case, async: true
@@ -102,35 +103,53 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   end
 
   # ============================================================================
+  # Module with Ord Protocol Functions
+  # ============================================================================
+
+  defmodule ReverseStringOrd do
+    # Module with Ord protocol functions for testing :module_ord type
+    def lt?(a, b), do: String.reverse(a) < String.reverse(b)
+    def le?(a, b), do: String.reverse(a) <= String.reverse(b)
+    def gt?(a, b), do: String.reverse(a) > String.reverse(b)
+    def ge?(a, b), do: String.reverse(a) >= String.reverse(b)
+  end
+
+  # ============================================================================
   # Custom Behaviour Projections
   # ============================================================================
 
   defmodule NameLength do
     @behaviour Funx.Ord.Dsl.Behaviour
 
+    alias Funx.Ord.Utils
+
     @impl true
-    def project(person, _opts) do
-      String.length(person.name)
+    def ord(_opts) do
+      Utils.contramap(&String.length(&1.name))
     end
   end
 
   defmodule WeightedScore do
     @behaviour Funx.Ord.Dsl.Behaviour
 
+    alias Funx.Ord.Utils
+
     @impl true
-    def project(person, opts) do
+    def ord(opts) do
       weight = Keyword.get(opts, :weight, 1.0)
-      (person.score || 0) * weight
+      Utils.contramap(fn person -> (person.score || 0) * weight end)
     end
   end
 
   defmodule OptionalBio do
     @behaviour Funx.Ord.Dsl.Behaviour
 
+    alias Funx.Ord.Utils
+
     @impl true
-    def project(person, _opts) do
+    def ord(_opts) do
       # Returns nil for people without bio
-      person.bio
+      Utils.contramap(& &1.bio)
     end
   end
 
@@ -696,6 +715,58 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   end
 
   # ============================================================================
+  # Module with Ord Protocol Functions Tests
+  # ============================================================================
+
+  describe "module with ord protocol functions" do
+    test "uses module directly with lt?/le?/gt?/ge? in asc" do
+      ord_reverse =
+        ord do
+          asc ReverseStringOrd
+        end
+
+      # Sorts by reversed string: "cba" < "fed" < "zyx"
+      assert Utils.compare("abc", "def", ord_reverse) == :lt
+      assert Utils.compare("xyz", "def", ord_reverse) == :gt
+      assert Utils.compare("abc", "abc", ord_reverse) == :eq
+    end
+
+    test "uses module directly with lt?/le?/gt?/ge? in desc" do
+      ord_reverse_desc =
+        ord do
+          desc ReverseStringOrd
+        end
+
+      # Reversed sort: "zyx" > "fed" > "cba"
+      assert Utils.compare("abc", "def", ord_reverse_desc) == :gt
+      assert Utils.compare("xyz", "def", ord_reverse_desc) == :lt
+    end
+
+    test "combines module ord functions with other projections" do
+      strings = ["xyz", "ab", "def", "abc"]
+
+      ord_combined =
+        ord do
+          asc &String.length/1
+          asc ReverseStringOrd
+        end
+
+      # First by length, then by reversed string
+      # length 2 < 3
+      assert Utils.compare("hi", "abc", ord_combined) == :lt
+      # same length, "cba" < "zyx"
+      assert Utils.compare("abc", "xyz", ord_combined) == :lt
+      # same length, "cba" < "fed"
+      assert Utils.compare("abc", "def", ord_combined) == :lt
+
+      # Sort: by length first (2 < 3), then by reversed string within same length
+      sorted = Enum.sort(strings, &(Utils.compare(&1, &2, ord_combined) == :lt))
+      # "ab" (len 2), then len 3: "cba" < "fed" < "zyx"
+      assert sorted == ["ab", "abc", "def", "xyz"]
+    end
+  end
+
+  # ============================================================================
   # Protocol Dispatch Tests
   # ============================================================================
 
@@ -823,7 +894,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
         def some_function, do: :ok
       end
 
-      assert_raise CompileError, ~r/must implement Funx\.Ord\.Dsl\.Behaviour/, fn ->
+      assert_raise CompileError, ~r/does not have lt\?\/2, ord\/1, or __struct__\/0/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Ord.Dsl
@@ -910,6 +981,25 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
             ord do
               asc NameLength, or_else: 0
+            end
+          end
+        )
+      end
+    end
+
+    test "rejects or_else with ord variable" do
+      assert_raise CompileError, ~r/or_else.*cannot be used with ord variables/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Ord.Dsl
+
+            base_ord =
+              ord do
+                asc :name
+              end
+
+            ord do
+              asc base_ord, or_else: 0
             end
           end
         )
@@ -1810,6 +1900,374 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
         # Empty ord means all values are equal
         assert Utils.compare(p1, p2, ord_empty) == :eq
       end
+    end
+  end
+
+  # ============================================================================
+  # Ord Variable Projection Tests
+  # ============================================================================
+
+  describe "ord variable projections" do
+    test "asc with ord variable preserves base ordering" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      name_ord =
+        ord do
+          asc :name
+        end
+
+      combined_ord =
+        ord do
+          asc name_ord
+        end
+
+      assert Utils.compare(alice, bob, combined_ord) == :lt
+      assert Utils.compare(bob, alice, combined_ord) == :gt
+      assert Utils.compare(alice, alice, combined_ord) == :eq
+    end
+
+    test "desc with ord variable reverses base ordering" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      name_ord =
+        ord do
+          asc :name
+        end
+
+      reversed_ord =
+        ord do
+          desc name_ord
+        end
+
+      assert Utils.compare(alice, bob, reversed_ord) == :gt
+      assert Utils.compare(bob, alice, reversed_ord) == :lt
+      assert Utils.compare(alice, alice, reversed_ord) == :eq
+    end
+
+    test "ord variable preserves multi-field ordering" do
+      people = [
+        %Person{name: "Charlie", age: 30, score: nil},
+        %Person{name: "Alice", age: 25, score: 100},
+        %Person{name: "Bob", age: 30, score: 50}
+      ]
+
+      name_age_ord =
+        ord do
+          asc :name
+          desc :age
+        end
+
+      combined_ord =
+        ord do
+          asc name_age_ord
+        end
+
+      sorted = Enum.sort(people, Utils.comparator(combined_ord))
+
+      assert [
+               %Person{name: "Alice", age: 25, score: 100},
+               %Person{name: "Bob", age: 30, score: 50},
+               %Person{name: "Charlie", age: 30, score: nil}
+             ] = sorted
+    end
+
+    test "double reversal restores original order" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      base_ord =
+        ord do
+          asc :age
+        end
+
+      reversed_once =
+        ord do
+          desc base_ord
+        end
+
+      reversed_twice =
+        ord do
+          desc reversed_once
+        end
+
+      # Should match the original ordering
+      assert Utils.compare(bob, alice, base_ord) == Utils.compare(bob, alice, reversed_twice)
+      assert Utils.compare(alice, bob, base_ord) == Utils.compare(alice, bob, reversed_twice)
+    end
+
+    test "composing two ord variables in sequence" do
+      people = [
+        %Person{name: "Alice", age: 30, score: 100},
+        %Person{name: "Alice", age: 25, score: 50},
+        %Person{name: "Bob", age: 30, score: nil}
+      ]
+
+      name_ord =
+        ord do
+          asc :name
+        end
+
+      age_ord =
+        ord do
+          desc :age
+        end
+
+      combined =
+        ord do
+          asc name_ord
+          asc age_ord
+        end
+
+      sorted = Enum.sort(people, Utils.comparator(combined))
+
+      assert [
+               %Person{name: "Alice", age: 25, score: 50},
+               %Person{name: "Alice", age: 30, score: 100},
+               %Person{name: "Bob", age: 30, score: nil}
+             ] = sorted
+    end
+
+    test "mixing ord variables with regular projections" do
+      people = [
+        %Person{name: "Alice", age: 30, score: nil},
+        %Person{name: "Bob", age: 25, score: 100},
+        %Person{name: "Charlie", age: 30, score: 50}
+      ]
+
+      name_age_ord =
+        ord do
+          asc :name
+          desc :age
+        end
+
+      combined =
+        ord do
+          asc :score, or_else: 0
+          desc name_age_ord
+        end
+
+      sorted = Enum.sort(people, Utils.comparator(combined))
+
+      assert [
+               %Person{name: "Alice", age: 30, score: nil},
+               %Person{name: "Charlie", age: 30, score: 50},
+               %Person{name: "Bob", age: 25, score: 100}
+             ] = sorted
+    end
+
+    test "ord variable before and after other projections" do
+      people = [
+        %Person{name: "Alice", age: 30, score: 100},
+        %Person{name: "Bob", age: 30, score: 100},
+        %Person{name: "Charlie", age: 25, score: 100}
+      ]
+
+      name_ord =
+        ord do
+          asc :name
+        end
+
+      age_ord =
+        ord do
+          desc :age
+        end
+
+      combined =
+        ord do
+          asc age_ord
+          asc :score
+          asc name_ord
+        end
+
+      sorted = Enum.sort(people, Utils.comparator(combined))
+
+      assert [
+               %Person{name: "Alice", age: 30, score: 100},
+               %Person{name: "Bob", age: 30, score: 100},
+               %Person{name: "Charlie", age: 25, score: 100}
+             ] = sorted
+    end
+
+    test "reversing complex multi-prism ordering" do
+      payment_amount_ord =
+        ord do
+          asc Prism.key(:credit_card_payment)
+          asc Prism.key(:credit_card_refund)
+          asc Prism.key(:check_payment)
+          asc Prism.key(:check_refund)
+        end
+
+      payment_amount_rev_ord =
+        ord do
+          desc payment_amount_ord
+        end
+
+      data1 = %{credit_card_payment: 50}
+      data2 = %{credit_card_payment: 100}
+      data3 = %{credit_card_payment: 75}
+
+      # Forward: 50 < 75 < 100
+      assert Utils.compare(data1, data2, payment_amount_ord) == :lt
+      assert Utils.compare(data1, data3, payment_amount_ord) == :lt
+      assert Utils.compare(data3, data2, payment_amount_ord) == :lt
+
+      # Reversed: 100 > 75 > 50
+      assert Utils.compare(data2, data3, payment_amount_rev_ord) == :lt
+      assert Utils.compare(data2, data1, payment_amount_rev_ord) == :lt
+      assert Utils.compare(data3, data1, payment_amount_rev_ord) == :lt
+    end
+
+    test "extending base ordering with additional criteria" do
+      base_ord =
+        ord do
+          asc :age
+        end
+
+      extended_ord =
+        ord do
+          asc base_ord
+          asc :name
+        end
+
+      alice = %Person{name: "Alice", age: 30, score: nil}
+      bob = %Person{name: "Bob", age: 30, score: nil}
+
+      assert Utils.compare(alice, bob, extended_ord) == :lt
+    end
+
+    test "empty ord variable falls through to next projection" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      empty_ord =
+        ord do
+        end
+
+      combined =
+        ord do
+          asc empty_ord
+          asc :name
+        end
+
+      assert Utils.compare(alice, bob, combined) == :lt
+    end
+
+    test "nested ord variables compose correctly" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      ord_level1 =
+        ord do
+          asc :name
+        end
+
+      ord_level2 =
+        ord do
+          desc ord_level1
+        end
+
+      ord_level3 =
+        ord do
+          asc ord_level2
+        end
+
+      assert Utils.compare(alice, bob, ord_level3) == :gt
+    end
+
+    test "raises when variable is not an ord map" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+      invalid_value = "not an ord"
+
+      assert_raise RuntimeError, ~r/Expected an Ord map/, fn ->
+        combined =
+          ord do
+            asc invalid_value
+          end
+
+        Utils.compare(alice, bob, combined)
+      end
+    end
+
+    test "raises when variable is nil" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+      nil_value = nil
+
+      assert_raise RuntimeError, ~r/Expected an Ord map/, fn ->
+        combined =
+          ord do
+            asc nil_value
+          end
+
+        Utils.compare(alice, bob, combined)
+      end
+    end
+
+    test "raises when variable is a map but not an ord map" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+      fake_ord = %{some: "map"}
+
+      assert_raise RuntimeError, ~r/Expected an Ord map/, fn ->
+        combined =
+          ord do
+            asc fake_ord
+          end
+
+        Utils.compare(alice, bob, combined)
+      end
+    end
+
+    test "ord variable from inline assignment works with asc" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      name_ord =
+        ord do
+          asc :name
+        end
+
+      combined =
+        ord do
+          asc name_ord
+        end
+
+      assert Utils.compare(alice, bob, combined) == :lt
+    end
+
+    test "ord variable from inline assignment works with desc" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      age_desc =
+        ord do
+          desc :age
+        end
+
+      combined =
+        ord do
+          desc age_desc
+        end
+
+      assert Utils.compare(alice, bob, combined) == :gt
+    end
+
+    test "contramap ord works as ord variable" do
+      alice = fixture(:alice)
+      bob = fixture(:bob)
+
+      name_length_ord = Utils.contramap(&String.length(&1.name))
+
+      combined =
+        ord do
+          asc name_length_ord
+        end
+
+      assert Utils.compare(bob, alice, combined) == :lt
+      assert Utils.compare(alice, bob, combined) == :gt
     end
   end
 end

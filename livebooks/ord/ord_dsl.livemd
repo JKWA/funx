@@ -2,23 +2,23 @@
 
 ```elixir
 Mix.install([
-  {:funx, github: "JKWA/funx", ref: "f292d68"}
+  {:funx, github: "JKWA/funx", ref: "8474363"}
 ])
 ```
 
 ## Overview
 
-The `Funx.Ord.Dsl` module provides a declarative syntax for building complex orderings (comparators) using optics and projections.
+The `Funx.Ord.Dsl` module provides a declarative syntax for building complex orderings (comparators) by composing projections into lexicographic orderings.
 
-The DSL combines the power of Lens and Prism optics with lexicographic sorting rules, allowing you to express "sort by X, then by Y, then by Z" in a clear, composable way.
+The DSL builds an Ord instance that consumes projections - functions that extract values for comparison. Lens and Prism optics are one family of reusable projections the DSL accepts, with specific semantics around totality and partiality. The lexicographic composition allows you to express "sort by X, then by Y, then by Z" in a clear, composable way.
 
 Key Features:
 
 * Declarative `asc` and `desc` directives for sorting
 * Support for atoms, lenses, prisms, functions, and custom behaviours
 * Automatic composition into lexicographic orderings
-* Safe handling of nil values with Prism semantics
-* Type-based filtering with bare struct modules
+* Total ordering defined for nil values via Prism semantics (Nothing < Just)
+* Type-based partitioning with bare struct modules
 
 ## Quick Reference
 
@@ -352,20 +352,22 @@ For complex projection logic, implement the `Funx.Ord.Dsl.Behaviour`.
 ```elixir
 defmodule NameLength do
   @behaviour Funx.Ord.Dsl.Behaviour
+  alias Funx.Ord.Utils
 
   @impl true
-  def project(person, _opts) do
-    String.length(person.name)
+  def ord(_opts) do
+    Utils.contramap(fn person -> String.length(person.name) end)
   end
 end
 
 defmodule WeightedScore do
   @behaviour Funx.Ord.Dsl.Behaviour
+  alias Funx.Ord.Utils
 
   @impl true
-  def project(person, opts) do
+  def ord(opts) do
     weight = Keyword.get(opts, :weight, 1.0)
-    (person.score || 0) * weight
+    Utils.contramap(fn person -> (person.score || 0) * weight end)
   end
 end
 ```
@@ -538,8 +540,6 @@ The DSL validates projections at compile time:
 
 ### Invalid Projection Type
 
-<!-- livebook:{"force_markdown":true} -->
-
 ```elixir
 # This will raise a CompileError:
 ord do
@@ -549,8 +549,6 @@ end
 
 ### Incorrect or_else Usage
 
-<!-- livebook:{"force_markdown":true} -->
-
 ```elixir
 # or_else only works with atoms and Prisms, not Lens:
 ord do
@@ -559,8 +557,6 @@ end
 ```
 
 ### Redundant or_else
-
-<!-- livebook:{"force_markdown":true} -->
 
 ```elixir
 # Can't use or_else when the projection already has one:
@@ -573,11 +569,11 @@ end
 
 The Ord DSL provides a declarative, type-safe way to build complex orderings:
 
-* Atoms for simple fields with safe nil handling
-* Lenses for total access (raises on nil)
-* Prisms for partial access (safe with nil)
+* Atoms as projections for simple field access (total ordering via Nothing < Just)
+* Lenses for total projections (raises on missing keys or nil intermediate values)
+* Prisms for partial projections (Nothing < Just semantics)
 * Functions for custom transformations
-* Behaviours for reusable projection logic
+* Behaviours for reusable ordering logic
 * Bare structs for type-based partitioning
 
 All projections compose lexicographically, making it easy to express "sort by X, then by Y" logic without nested comparisons or multiple sort passes.

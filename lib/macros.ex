@@ -10,21 +10,22 @@ defmodule Funx.Macros do
 
   This module is useful for:
 
-    - Implementing `Funx.Eq` protocol for structs with field-based equality
+    - Implementing `Funx.Eq` protocol for structs with projection-based equality
     - Implementing `Funx.Ord` protocol with various projection strategies
     - Handling optional fields with safe defaults via `or_else`
     - Accessing nested structures through Lens and Prism optics
-    - Custom ordering logic via projection functions
+    - Custom comparison logic via projection functions
 
   ## Macros
 
-    - `eq_for/2` - Generate `Funx.Eq` protocol implementation
+    - `eq_for/2` - Generate `Funx.Eq` protocol implementation (basic)
+    - `eq_for/3` - Generate `Funx.Eq` protocol with options (e.g., `or_else`, `eq`)
     - `ord_for/2` - Generate `Funx.Ord` protocol implementation (basic)
     - `ord_for/3` - Generate `Funx.Ord` protocol with options (e.g., `or_else`)
 
   ## Projection Types
 
-  The `ord_for` macro supports multiple projection types, all normalized at compile time:
+  Both `eq_for` and `ord_for` macros support multiple projection types, all normalized at compile time:
 
     - **Atom** - Converted to `Prism.key(atom)`. Safe for nil values with `Nothing < Just` semantics.
     - **Atom with or_else** - `ord_for(Struct, :field, or_else: default)` → `{Prism.key(:field), default}`.
@@ -32,6 +33,7 @@ defmodule Funx.Macros do
     - **Prism** - Partial access via `Prism.key/1` or `Prism.path/1`. Returns `Maybe` with `Nothing < Just` semantics.
     - **Prism with or_else** - `ord_for(Struct, Prism.key(:field), or_else: default)` → `{prism, default}`.
     - **{Prism, default}** - Tuple syntax for partial access with explicit fallback value.
+    - **Traversal** - Multiple foci via `Traversal.combine/1`. All foci must match for equality.
     - **Function** - Custom projection `fn x -> ... end` or `&fun/1`. Must return a comparable value.
 
   > Note: Atoms use Prism by default for safety. Use explicit `Lens.key(:field)` when you need
@@ -42,8 +44,8 @@ defmodule Funx.Macros do
   The `or_else` option provides fallback values for optional fields:
 
     - **Valid with:** Atoms, Prisms, and helper functions returning Prisms
-    - **Invalid with:** Lens (always returns a value), functions (must handle own defaults),
-      struct literals, or `{Prism, default}` tuples (redundant)
+    - **Invalid with:** Lens (always returns a value), Traversal (focuses on multiple elements),
+      functions (must handle own defaults), struct literals, or `{Prism, default}` tuples (redundant)
 
   When `or_else` is used with an incompatible projection type, a clear compile-time
   error is raised with actionable guidance.
@@ -60,6 +62,20 @@ defmodule Funx.Macros do
       ...> end
       iex> alias Funx.Eq
       iex> Eq.eq?(%Person{name: "Alice", age: 30}, %Person{name: "Bob", age: 30})
+      true
+
+  Equality with optional field:
+
+      iex> defmodule Item do
+      ...>   defstruct [:name, :score]
+      ...>
+      ...>   require Funx.Macros
+      ...>   Funx.Macros.eq_for(Item, :score, or_else: 0)
+      ...> end
+      iex> alias Funx.Eq
+      iex> i1 = %Item{name: "A", score: nil}
+      iex> i2 = %Item{name: "B", score: 0}
+      iex> Eq.eq?(i1, i2)  # nil becomes 0, so equal
       true
 
   Ordering by field with Prism (safe for nil):
@@ -192,37 +208,78 @@ defmodule Funx.Macros do
 
   @doc """
   Generates an implementation of the `Funx.Eq` protocol for the given struct,
-  using the specified field as the basis for equality comparison.
+  using the specified projection as the basis for equality comparison.
+
+  ## Projection Types
+
+  The macro supports the same projection types as `ord_for`:
+
+  - **Atom** - Converted to `Prism.key(atom)`. Safe for nil values.
+  - **Atom with or_else** - `eq_for(Struct, :field, or_else: default)` → `{Prism.key(:field), default}`.
+  - **Lens** - Total access via `Lens.key/1` or `Lens.path/1`. Raises on missing values.
+  - **Prism** - Partial access via `Prism.key/1` or `Prism.path/1`.
+  - **Prism with or_else** - `eq_for(Struct, Prism.key(:field), or_else: default)` → `{prism, default}`.
+  - **{Prism, default}** - Partial access with fallback value.
+  - **Traversal** - Multiple foci via `Traversal.combine/1`. All foci must match.
+  - **Function** - Custom projection function `(struct -> value)`.
+
+  ## Options
+
+  - `:or_else` - Fallback value for optional fields. Only valid with atoms and Prisms.
+  - `:eq` - Custom Eq module or map for comparison. Defaults to `Funx.Eq`.
 
   ## Examples
 
+      # Atom (backward compatible)
       defmodule Person do
         defstruct [:name, :age]
       end
-
-      require Funx.Macros
       Funx.Macros.eq_for(Person, :age)
 
-      iex> Eq.eq?(%Person{age: 30}, %Person{age: 30})
-      true
+      # Atom with or_else
+      Funx.Macros.eq_for(Person, :score, or_else: 0)
 
-      iex> Eq.eq?(%Person{age: 25}, %Person{age: 30})
-      false
+      # Lens - total access
+      Funx.Macros.eq_for(Customer, Lens.path([:address, :city]))
+
+      # Prism - partial access
+      Funx.Macros.eq_for(Item, Prism.key(:rating))
+
+      # Traversal - multiple foci
+      Funx.Macros.eq_for(Person, Traversal.combine([Lens.key(:name), Lens.key(:age)]))
+
+      # Function projection
+      Funx.Macros.eq_for(Article, &String.length(&1.title))
+
+      # Custom Eq module
+      Funx.Macros.eq_for(Person, :name, eq: CaseInsensitiveEq)
   """
-  defmacro eq_for(for_struct, field) do
+  defmacro eq_for(for_struct, projection, opts \\ []) do
+    or_else = Keyword.get(opts, :or_else)
+    custom_eq = Keyword.get(opts, :eq)
+    projection_ast = normalize_projection(projection, or_else)
+    eq_module_ast = custom_eq || quote(do: Funx.Eq)
+
     quote do
       alias Funx.Eq
+      alias Funx.Eq.Utils
+      alias Funx.Optics.Prism
 
       defimpl Funx.Eq, for: unquote(for_struct) do
-        def eq?(%unquote(for_struct){unquote(field) => v1}, %unquote(for_struct){
-              unquote(field) => v2
-            }),
-            do: Eq.eq?(v1, v2)
+        # Private function to build the eq_map once at module compile time
+        defp __eq_map__ do
+          Utils.contramap(unquote(projection_ast), unquote(eq_module_ast))
+        end
 
-        def not_eq?(%unquote(for_struct){unquote(field) => v1}, %unquote(for_struct){
-              unquote(field) => v2
-            }),
-            do: Eq.not_eq?(v1, v2)
+        def eq?(a, b)
+            when is_struct(a, unquote(for_struct)) and is_struct(b, unquote(for_struct)) do
+          __eq_map__().eq?.(a, b)
+        end
+
+        def not_eq?(a, b)
+            when is_struct(a, unquote(for_struct)) and is_struct(b, unquote(for_struct)) do
+          __eq_map__().not_eq?.(a, b)
+        end
       end
     end
   end
@@ -398,6 +455,18 @@ defmodule Funx.Macros do
       quote do
         {unquote(prism_ast), unquote(or_else)}
       end
+    end
+  end
+
+  # Traversal.* (any Traversal function) - cannot use or_else
+  defp normalize_projection(
+         {{:., _, [{:__aliases__, _, [:Traversal]}, _]}, _, _} = traversal_ast,
+         or_else
+       ) do
+    if is_nil(or_else) do
+      traversal_ast
+    else
+      raise ArgumentError, Errors.or_else_with_traversal()
     end
   end
 

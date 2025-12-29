@@ -36,7 +36,7 @@ defmodule Funx.Ord.Dsl do
 
   ### Projection Types
 
-  The DSL supports seven projection forms, all normalized at compile time:
+  The DSL supports eight projection forms, all normalized at compile time:
 
     - Atom - Field access via `Prism.key(atom)`. Safe for nil values with `Nothing < Just` semantics.
     - Atom with or_else - Optional field via `{Prism.key(atom), or_else}`. Treats `nil` as the fallback value.
@@ -44,7 +44,8 @@ defmodule Funx.Ord.Dsl do
     - Lens - Explicit lens for nested access. Total but raises on missing keys or nil intermediate values. Must be explicit: `Lens.key(:field)`.
     - Prism - Explicit prism for optional fields. Returns `Maybe` with `Nothing < Just` semantics.
     - Prism with or_else - Explicit prism `{Prism.t(), or_else}` for optional with fallback.
-    - Behaviour - Custom projection via `c:Funx.Ord.Dsl.Behaviour.project/2`.
+    - Behaviour - Custom ordering via `c:Funx.Ord.Dsl.Behaviour.ord/1`.
+    - Ord variable - Existing ord map to compose or reverse. Enables reusable ordering definitions.
 
   > Note: Atoms use Prism by default for safety. Use explicit `Lens.key(:field)` when you need
   > total access that raises on missing keys.
@@ -96,6 +97,22 @@ defmodule Funx.Ord.Dsl do
       iex> items = ["apple", "kiwi", "banana"]
       iex> Enum.sort(items, Funx.Ord.Utils.comparator(ord_length))
       ["kiwi", "apple", "banana"]
+
+  Composing ord variables:
+
+      iex> use Funx.Ord.Dsl
+      iex> defmodule Item, do: defstruct [:name, :priority, :created_at]
+      iex> base_ord = ord do
+      ...>   asc :name
+      ...> end
+      iex> combined_ord = ord do
+      ...>   desc :priority, or_else: 0
+      ...>   asc base_ord
+      ...> end
+      iex> item1 = %Item{name: "A", priority: 1, created_at: nil}
+      iex> item2 = %Item{name: "B", priority: 1, created_at: nil}
+      iex> Funx.Ord.Utils.compare(item1, item2, combined_ord)
+      :lt
 
   ## Compile-Time Behavior
 

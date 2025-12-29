@@ -6,6 +6,8 @@ defmodule Funx.Eq.UtilsTest do
   alias Funx.Eq.Utils
   alias Funx.Monad.Maybe
   alias Funx.Optics.Lens
+  alias Funx.Optics.Prism
+  alias Funx.Optics.Traversal
   alias Funx.Test.Person
 
   doctest Funx.Eq.Utils
@@ -468,5 +470,185 @@ defmodule Funx.Eq.UtilsTest do
 
     refute Utils.not_eq?(alice1, alice2, eq_concat_any_default())
     assert Utils.not_eq?(alice1, bob, eq_concat_any_default())
+  end
+
+  describe "contramap/2 with bare Prism" do
+    test "Nothing equals Nothing" do
+      prism = Prism.key(:ticket)
+      eq = Utils.contramap(prism)
+
+      assert Utils.eq?(%Person{ticket: nil}, %Person{ticket: nil}, eq)
+    end
+
+    test "Just equals Just when values match" do
+      prism = Prism.key(:ticket)
+      eq = Utils.contramap(prism)
+
+      assert Utils.eq?(%Person{ticket: :premium}, %Person{ticket: :premium}, eq)
+    end
+
+    test "Just not equals Just when values differ" do
+      prism = Prism.key(:ticket)
+      eq = Utils.contramap(prism)
+
+      refute Utils.eq?(%Person{ticket: :premium}, %Person{ticket: :basic}, eq)
+    end
+
+    test "Nothing not equals Just" do
+      prism = Prism.key(:ticket)
+      eq = Utils.contramap(prism)
+
+      refute Utils.eq?(%Person{ticket: nil}, %Person{ticket: :premium}, eq)
+      refute Utils.eq?(%Person{ticket: :premium}, %Person{ticket: nil}, eq)
+    end
+
+    test "not_eq? with bare Prism" do
+      prism = Prism.key(:ticket)
+      eq = Utils.contramap(prism)
+
+      refute Utils.not_eq?(%Person{ticket: nil}, %Person{ticket: nil}, eq)
+      refute Utils.not_eq?(%Person{ticket: :premium}, %Person{ticket: :premium}, eq)
+      assert Utils.not_eq?(%Person{ticket: :premium}, %Person{ticket: :basic}, eq)
+      assert Utils.not_eq?(%Person{ticket: nil}, %Person{ticket: :premium}, eq)
+    end
+  end
+
+  describe "to_eq_map/1" do
+    test "returns Eq map unchanged when already an Eq map" do
+      eq_map = %{
+        eq?: fn a, b -> a == b end,
+        not_eq?: fn a, b -> a != b end
+      }
+
+      result = Utils.to_eq_map(eq_map)
+
+      assert result == eq_map
+    end
+
+    test "converts module with eq?/2 to Eq map" do
+      defmodule CustomEqModule do
+        def eq?(a, b), do: a == b
+        def not_eq?(a, b), do: a != b
+      end
+
+      eq_map = Utils.to_eq_map(CustomEqModule)
+
+      assert eq_map.eq?.(42, 42)
+      refute eq_map.eq?.(42, 99)
+      refute eq_map.not_eq?.(42, 42)
+      assert eq_map.not_eq?.(42, 99)
+    end
+
+    test "converts module without eq?/2 to Eq map using protocol" do
+      # String module doesn't have eq?/2, so should use Funx.Eq protocol
+      eq_map = Utils.to_eq_map(String)
+
+      assert eq_map.eq?.("hello", "hello")
+      refute eq_map.eq?.("hello", "world")
+      refute eq_map.not_eq?.("hello", "hello")
+      assert eq_map.not_eq?.("hello", "world")
+    end
+
+    test "protocol-based Eq map works with custom structs" do
+      # Person doesn't have eq?/2, should use Funx.Eq protocol
+      eq_map = Utils.to_eq_map(Person)
+
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 30}
+      bob = %Person{name: "Bob", age: 30}
+
+      assert eq_map.eq?.(alice1, alice2)
+      refute eq_map.eq?.(alice1, bob)
+    end
+  end
+
+  describe "contramap/2 with Traversal" do
+    test "all foci present and all match" do
+      traversal = Traversal.combine([Lens.key(:name), Lens.key(:age)])
+      eq = Utils.contramap(traversal)
+
+      assert Utils.eq?(
+               %Person{name: "Alice", age: 30},
+               %Person{name: "Alice", age: 30},
+               eq
+             )
+    end
+
+    test "all foci present but one differs" do
+      traversal = Traversal.combine([Lens.key(:name), Lens.key(:age)])
+      eq = Utils.contramap(traversal)
+
+      refute Utils.eq?(
+               %Person{name: "Alice", age: 30},
+               %Person{name: "Alice", age: 25},
+               eq
+             )
+    end
+
+    test "all foci present but all differ" do
+      traversal = Traversal.combine([Lens.key(:name), Lens.key(:age)])
+      eq = Utils.contramap(traversal)
+
+      refute Utils.eq?(
+               %Person{name: "Alice", age: 30},
+               %Person{name: "Bob", age: 25},
+               eq
+             )
+    end
+
+    test "one structure missing a focus" do
+      traversal = Traversal.combine([Prism.key(:name), Prism.key(:missing)])
+      eq = Utils.contramap(traversal)
+
+      refute Utils.eq?(
+               %Person{name: "Alice"},
+               %Person{name: "Alice"},
+               eq
+             )
+    end
+
+    test "both structures missing the same focus" do
+      traversal = Traversal.combine([Prism.key(:name), Prism.key(:missing)])
+      eq = Utils.contramap(traversal)
+
+      refute Utils.eq?(
+               %Person{name: "Alice"},
+               %Person{name: "Bob"},
+               eq
+             )
+    end
+
+    test "not_eq? with all foci matching" do
+      traversal = Traversal.combine([Lens.key(:name), Lens.key(:age)])
+      eq = Utils.contramap(traversal)
+
+      refute Utils.not_eq?(
+               %Person{name: "Alice", age: 30},
+               %Person{name: "Alice", age: 30},
+               eq
+             )
+    end
+
+    test "not_eq? with one focus differing" do
+      traversal = Traversal.combine([Lens.key(:name), Lens.key(:age)])
+      eq = Utils.contramap(traversal)
+
+      assert Utils.not_eq?(
+               %Person{name: "Alice", age: 30},
+               %Person{name: "Alice", age: 25},
+               eq
+             )
+    end
+
+    test "not_eq? with missing focus" do
+      traversal = Traversal.combine([Prism.key(:name), Prism.key(:missing)])
+      eq = Utils.contramap(traversal)
+
+      assert Utils.not_eq?(
+               %Person{name: "Alice"},
+               %Person{name: "Alice"},
+               eq
+             )
+    end
   end
 end

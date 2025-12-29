@@ -12,6 +12,13 @@ defmodule Funx.Ord.Dsl.Parser do
   #   3. {Prism.t(), or_else}  - Prism with or_else value
   #   4. (a -> b)              - projection function
   #
+  # Plus special types for modules and runtime values:
+  #
+  #   5. Module with lt?/2     - converted via to_ord_map
+  #   6. Behaviour module      - calls ord/1 at runtime
+  #   7. 0-arity helper        - runtime type detection
+  #   8. Ord variable          - runtime validation of ord map
+  #
   # All syntax sugar resolves to these types:
   #
   #   - :atom              → Prism.key(:atom)
@@ -21,6 +28,7 @@ defmodule Funx.Ord.Dsl.Parser do
   #   - {Prism, x}         → {Prism, x} (pass through)
   #   - fn -> ... end      → fn -> ... end (pass through)
   #   - Behaviour          → fn v -> Behaviour.project(v, []) end
+  #   - my_ord (variable)  → runtime ord map validation
   #
   # contramap/2 is the ONLY place that converts optics to functions.
   # The parser never creates function wrappers around optics.
@@ -77,34 +85,43 @@ defmodule Funx.Ord.Dsl.Parser do
   defp parse_projection(direction, projection_value, opts, meta, caller_env) do
     or_else = Keyword.get(opts, :or_else)
     custom_ord = Keyword.get(opts, :ord)
+    behaviour_opts = Keyword.drop(opts, [:or_else, :ord])
 
-    projection_ast = build_projection_ast(projection_value, or_else, meta, caller_env)
+    {projection_ast, type} =
+      build_projection_ast(projection_value, or_else, behaviour_opts, meta, caller_env)
+
     ord_ast = custom_ord || quote(do: Funx.Ord)
     metadata = extract_meta(meta)
 
-    Step.new(direction, projection_ast, ord_ast, metadata)
+    Step.new(direction, projection_ast, ord_ast, type, metadata)
   end
 
   # ============================================================================
   # PROJECTION AST BUILDING
   # ============================================================================
 
-  defp build_projection_ast(atom, nil, _meta, _caller_env) when is_atom(atom) do
-    quote do
-      Prism.key(unquote(atom))
-    end
+  defp build_projection_ast(atom, nil, _behaviour_opts, _meta, _caller_env) when is_atom(atom) do
+    ast =
+      quote do
+        Prism.key(unquote(atom))
+      end
+
+    {ast, :projection}
   end
 
-  defp build_projection_ast(atom, or_else, _meta, _caller_env)
+  defp build_projection_ast(atom, or_else, _behaviour_opts, _meta, _caller_env)
        when is_atom(atom) and not is_nil(or_else) do
-    quote do
-      {Prism.key(unquote(atom)), unquote(or_else)}
-    end
+    ast =
+      quote do
+        {Prism.key(unquote(atom)), unquote(or_else)}
+      end
+
+    {ast, :projection}
   end
 
-  defp build_projection_ast({:&, _, _} = fun_ast, or_else, meta, _caller_env) do
+  defp build_projection_ast({:&, _, _} = fun_ast, or_else, _behaviour_opts, meta, _caller_env) do
     if is_nil(or_else) do
-      fun_ast
+      {fun_ast, :projection}
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -112,9 +129,9 @@ defmodule Funx.Ord.Dsl.Parser do
     end
   end
 
-  defp build_projection_ast({:fn, _, _} = fun_ast, or_else, meta, _caller_env) do
+  defp build_projection_ast({:fn, _, _} = fun_ast, or_else, _behaviour_opts, meta, _caller_env) do
     if is_nil(or_else) do
-      fun_ast
+      {fun_ast, :projection}
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -122,31 +139,43 @@ defmodule Funx.Ord.Dsl.Parser do
     end
   end
 
+  # Helper function call (0-arity)
+  #
+  # Handles calls like `OrdHelpers.by_name()` which could return either a
+  # projection or an Ord map. We can't determine the return type at compile time.
+  #
+  # Without or_else: Use :dynamic type for runtime detection
+  # With or_else: Creates {result, or_else} tuple → :projection type
+  #   (contramap handles tuples directly)
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, _}, _]}, _, args} = fun_ast,
          or_else,
+         _behaviour_opts,
          _meta,
          _caller_env
        )
        when args == [] or is_nil(args) do
     if is_nil(or_else) do
-      fun_ast
+      {fun_ast, :dynamic}
     else
-      # Runtime: if helper returns Lens, contramap will raise
-      quote do
-        {unquote(fun_ast), unquote(or_else)}
-      end
+      ast =
+        quote do
+          {unquote(fun_ast), unquote(or_else)}
+        end
+
+      {ast, :projection}
     end
   end
 
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Lens]}, :key]}, _, _} = lens_ast,
          or_else,
+         _behaviour_opts,
          meta,
          _caller_env
        ) do
     if is_nil(or_else) do
-      lens_ast
+      {lens_ast, :projection}
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -157,11 +186,12 @@ defmodule Funx.Ord.Dsl.Parser do
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Lens]}, :path]}, _, _} = lens_ast,
          or_else,
+         _behaviour_opts,
          meta,
          _caller_env
        ) do
     if is_nil(or_else) do
-      lens_ast
+      {lens_ast, :projection}
     else
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -172,31 +202,70 @@ defmodule Funx.Ord.Dsl.Parser do
   defp build_projection_ast(
          {{:., _, [{:__aliases__, _, [:Prism]}, _]}, _, _} = prism_ast,
          or_else,
+         _behaviour_opts,
          _meta,
          _caller_env
        ) do
-    if is_nil(or_else) do
-      prism_ast
-    else
-      quote do
-        {unquote(prism_ast), unquote(or_else)}
+    ast =
+      if is_nil(or_else) do
+        prism_ast
+      else
+        quote do
+          {unquote(prism_ast), unquote(or_else)}
+        end
       end
-    end
+
+    {ast, :projection}
   end
 
-  defp build_projection_ast({prism_ast, or_else_ast}, nil, _meta, _caller_env) do
-    quote do
-      {unquote(prism_ast), unquote(or_else_ast)}
-    end
+  defp build_projection_ast({prism_ast, or_else_ast}, nil, _behaviour_opts, _meta, _caller_env) do
+    ast =
+      quote do
+        {unquote(prism_ast), unquote(or_else_ast)}
+      end
+
+    {ast, :projection}
   end
 
-  defp build_projection_ast({_prism_ast, _or_else_ast}, _extra_or_else, meta, _caller_env) do
+  defp build_projection_ast(
+         {_prism_ast, _or_else_ast},
+         _extra_or_else,
+         _behaviour_opts,
+         meta,
+         _caller_env
+       ) do
     raise CompileError,
       line: Keyword.get(meta, :line),
       description: Errors.redundant_or_else()
   end
 
-  defp build_projection_ast({:__aliases__, _, _} = module_alias, or_else, meta, caller_env) do
+  # Variable reference - runtime ord map
+  # Matches patterns like `my_ord` where my_ord is a variable holding an ord map
+  defp build_projection_ast(
+         {var_name, _meta, context} = var_ast,
+         or_else,
+         _behaviour_opts,
+         meta,
+         _caller_env
+       )
+       when is_atom(var_name) and is_atom(context) do
+    unless is_nil(or_else) do
+      raise CompileError,
+        line: Keyword.get(meta, :line),
+        description: Errors.or_else_with_ord_variable()
+    end
+
+    # Pass through the variable AST - will be evaluated at runtime
+    {var_ast, :ord_variable}
+  end
+
+  defp build_projection_ast(
+         {:__aliases__, _, _} = module_alias,
+         or_else,
+         behaviour_opts,
+         meta,
+         caller_env
+       ) do
     unless is_nil(or_else) do
       raise CompileError,
         line: Keyword.get(meta, :line),
@@ -205,14 +274,27 @@ defmodule Funx.Ord.Dsl.Parser do
 
     expanded_module = Macro.expand(module_alias, caller_env)
 
-    if function_exported?(expanded_module, :__struct__, 0) do
-      build_struct_filter_ast(expanded_module)
-    else
-      build_behaviour_projection_ast(expanded_module, meta)
+    cond do
+      function_exported?(expanded_module, :lt?, 2) ->
+        {module_alias, :module_ord}
+
+      function_exported?(expanded_module, :ord, 1) ->
+        ast = build_behaviour_ord_ast(expanded_module, behaviour_opts, meta)
+        {ast, :ord_map}
+
+      function_exported?(expanded_module, :__struct__, 0) ->
+        ast = build_struct_filter_ast(expanded_module)
+        {ast, :projection}
+
+      true ->
+        raise CompileError,
+          line: Keyword.get(meta, :line),
+          description:
+            "Module #{inspect(expanded_module)} does not have lt?/2, ord/1, or __struct__/0"
     end
   end
 
-  defp build_projection_ast(other, _or_else, meta, _caller_env) do
+  defp build_projection_ast(other, _or_else, _behaviour_opts, meta, _caller_env) do
     raise CompileError,
       line: Keyword.get(meta, :line),
       description: Errors.invalid_projection_type(other)
@@ -234,30 +316,14 @@ defmodule Funx.Ord.Dsl.Parser do
     end
   end
 
-  # Build a behaviour projection that calls the module's project/2 function
-  defp build_behaviour_projection_ast(behaviour_module, meta) do
-    validate_behaviour_implementation!(behaviour_module, meta)
-
+  # Generates a call to the behaviour's ord/1 function with options.
+  #
+  # The behaviour's ord/1 returns an Ord map at runtime, which the executor
+  # uses directly (no contramap wrapping needed).
+  defp build_behaviour_ord_ast(behaviour_module, behaviour_opts, _meta) do
     quote do
-      fn value -> unquote(behaviour_module).project(value, []) end
+      unquote(behaviour_module).ord(unquote(behaviour_opts))
     end
-  end
-
-  # ============================================================================
-  # VALIDATION
-  # ============================================================================
-
-  defp validate_behaviour_implementation!(module, meta) do
-    Code.ensure_compiled!(module)
-    behaviours = module.module_info(:attributes)[:behaviour] || []
-
-    unless Funx.Ord.Dsl.Behaviour in behaviours do
-      raise CompileError,
-        line: Keyword.get(meta, :line),
-        description: Errors.missing_behaviour_implementation(module)
-    end
-
-    :ok
   end
 
   # ============================================================================

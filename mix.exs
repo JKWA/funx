@@ -28,7 +28,8 @@ defmodule Funx.MixProject do
           "guides/dsl/overview.md",
           "guides/dsl/either.md",
           "guides/dsl/maybe.md",
-          "guides/dsl/ord.md"
+          "guides/dsl/ord.md",
+          "guides/dsl/eq.md"
         ],
         filter_prefix: "Examples",
         source_url: "https://github.com/JKWA/funx",
@@ -42,7 +43,8 @@ defmodule Funx.MixProject do
             "guides/dsl/overview.md",
             "guides/dsl/either.md",
             "guides/dsl/maybe.md",
-            "guides/dsl/ord.md"
+            "guides/dsl/ord.md",
+            "guides/dsl/eq.md"
           ]
         ]
       ],
