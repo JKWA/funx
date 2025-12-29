@@ -10,7 +10,7 @@
 
 ### Breaking
 
-* `Funx.List.maybe_head/1` renamed to `Funx.List.head/1` for consistency with `head!/1`. The function still returns `Maybe.t()` for safe head access.
+* `Funx.List.maybe_head` renamed to `Funx.List.head/1` for consistency with `head!/1`. The function still returns `Maybe.t()` for safe head access.
 
 ## [0.4.2] - Unreleased
 
