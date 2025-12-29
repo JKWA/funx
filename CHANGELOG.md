@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0] - Unreleased
+
+### Added
+
+* `Funx.Optics.Traversal` – A composable optic for accessing multiple foci simultaneously. Supports filtering, combining multiple optics, and working with collections.
+* `Funx.Ord.Dsl` – A declarative DSL for building custom ordering comparators with support for multiple projections, ascending/descending order, and automatic identity tiebreakers.
+* `Funx.Eq.Dsl` – A declarative DSL for building equality comparators with support for projections, boolean logic (`all`/`any` blocks), and negation (`diff_on`).
+
+### Breaking
+
+* `Funx.List.maybe_head` renamed to `Funx.List.head/1` for consistency with `head!/1`. The function still returns `Maybe.t()` for safe head access.
+
 ## [0.4.2] - Unreleased
 
 ### Added

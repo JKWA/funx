@@ -22,7 +22,7 @@ To use Funx, add it to the list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:funx, "~> 0.4"}
+    {:funx, "~> 0.5"}
   ]
 end
 ```
@@ -48,11 +48,60 @@ The `Eq` protocol defines how two values are compared, making equality explicit 
 
 ## Ordering
 
-The `Ord` protocol defines ordering relationships in a structured way, without relying on Elixir’s built-in comparison operators.
+The `Ord` protocol defines ordering relationships in a structured way, without relying on Elixir's built-in comparison operators.
 
 - Define comparisons based on properties like size, age, or priority.
 - Chain orderings to create fallback tiebreakers.
 - Implement for any type, including custom structs.
+
+### Ord DSL
+
+The Ord module includes a DSL for building custom ordering comparators declaratively:
+
+```elixir
+use Funx.Ord.Dsl
+
+user_ord = ord do
+  desc :priority
+  asc :name
+  desc :created_at
+end
+
+Enum.sort(users, Funx.Ord.Utils.comparator(user_ord))
+```
+
+Features:
+
+- Multiple projections with `asc` and `desc` directions
+- Automatic identity tiebreaker for deterministic ordering
+- Support for optics (Lens, Prism), functions, and modules
+- Ord variables for composing and reversing orderings
+
+### Eq DSL
+
+The Eq module includes a DSL for building equality comparators with boolean logic:
+
+```elixir
+use Funx.Eq.Dsl
+
+contact_eq = eq do
+  on :name
+  any do
+    on :email
+    on :username
+  end
+end
+
+Funx.Eq.Utils.eq?(user1, user2, contact_eq)
+```
+
+Features:
+
+- `on` - Field must be equal
+- `diff_on` - Field must differ (non-equivalence constraint)
+- `all` blocks - All checks must pass (AND logic)
+- `any` blocks - At least one check must pass (OR logic)
+- Support for optics, functions, and custom comparators
 
 ## Monads
 
@@ -104,6 +153,7 @@ Optics provide composable, lawful abstractions for focusing on and transforming 
 
 - `Lens`: Total optic for required fields—raises if focus is missing. Use for fields that should always exist.
 - `Prism`: Partial optic for optional fields—returns `Maybe`. Use for fields that may be absent or for selecting struct types.
+- `Traversal`: Optic for accessing multiple foci simultaneously. Use for filtering collections, combining multiple optics, or working with list-like structures.
 - `Iso`: Total optic for reversible representation changes. Use when two shapes carry the same information and you need guaranteed round trip conversion (`view` then `review`).
 
 ## Monoids
