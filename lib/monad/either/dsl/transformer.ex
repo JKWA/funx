@@ -1,70 +1,69 @@
 defmodule Funx.Monad.Either.Dsl.Transformer do
-  @moduledoc """
-  Behaviour for transforming Either DSL pipelines after parsing.
-
-  Transformers allow post-parse optimization and validation of the pipeline.
-  They receive a list of Step structs and can modify, validate, or optimize them.
-
-  ## Compile-Time Dependencies
-
-  ⚠️ Transformers run at **compile time** and create compile-time dependencies.
-
-  When you use a transformer:
-
-      either user_id, transformers: [MyTransformer] do
-        bind GetUser
-      end
-
-  The `MyTransformer.transform/2` function is called during macro expansion.
-  This means:
-
-  - The transformer output is baked into the compiled code
-  - Changes to the transformer may require recompiling modules that use it
-  - Run `mix clean && mix compile` if transformer changes aren't reflected
-
-  This is intentional and allows for compile-time optimization. The DSL
-  uses `Code.ensure_compiled!/1` to track these dependencies, so most changes
-  will trigger automatic recompilation.
-
-  ## Example
-
-      defmodule ValidateNoBareModules do
-        @behaviour Funx.Monad.Either.Dsl.Transformer
-
-        alias Funx.Monad.Either.Dsl.Step
-
-        @impl true
-        def transform(steps, _opts) do
-          # Validate that no steps use bare module atoms without options
-          case find_bare_module(steps) do
-            nil -> {:ok, steps}
-            bad_step -> {:error, "Step \#{inspect(bad_step)} should use {Module, opts} syntax"}
-          end
-        end
-
-        defp find_bare_module(steps) do
-          Enum.find(steps, fn
-            %Step.Bind{operation: op} when is_atom(op) -> true
-            %Step.Map{operation: op} when is_atom(op) -> true
-            _ -> false
-          end)
-        end
-      end
-
-  ## Built-in Transformers
-
-  Currently, no built-in transformers are provided. Transformers are opt-in and can
-  be created for project-specific optimizations or validations.
-
-  ## Usage
-
-  Transformers are applied automatically during pipeline compilation.
-  They can be configured via the `:transformers` option:
-
-      either input, transformers: [MyTransformer] do
-        bind SomeModule
-      end
-  """
+  @moduledoc false
+  # Behaviour for transforming Either DSL pipelines after parsing.
+  #
+  # Transformers allow post-parse optimization and validation of the pipeline.
+  # They receive a list of Step structs and can modify, validate, or optimize them.
+  #
+  # ## Compile-Time Dependencies
+  #
+  # ⚠️ Transformers run at **compile time** and create compile-time dependencies.
+  #
+  # When you use a transformer:
+  #
+  #     either user_id, transformers: [MyTransformer] do
+  #       bind GetUser
+  #     end
+  #
+  # The `MyTransformer.transform/2` function is called during macro expansion.
+  # This means:
+  #
+  # - The transformer output is baked into the compiled code
+  # - Changes to the transformer may require recompiling modules that use it
+  # - Run `mix clean && mix compile` if transformer changes aren't reflected
+  #
+  # This is intentional and allows for compile-time optimization. The DSL
+  # uses `Code.ensure_compiled!/1` to track these dependencies, so most changes
+  # will trigger automatic recompilation.
+  #
+  # ## Example
+  #
+  #     defmodule ValidateNoBareModules do
+  #       @behaviour Funx.Monad.Either.Dsl.Transformer
+  #
+  #       alias Funx.Monad.Either.Dsl.Step
+  #
+  #       @impl true
+  #       def transform(steps, _opts) do
+  #         # Validate that no steps use bare module atoms without options
+  #         case find_bare_module(steps) do
+  #           nil -> {:ok, steps}
+  #           bad_step -> {:error, "Step #{inspect(bad_step)} should use {Module, opts} syntax"}
+  #         end
+  #       end
+  #
+  #       defp find_bare_module(steps) do
+  #         Enum.find(steps, fn
+  #           %Step.Bind{operation: op} when is_atom(op) -> true
+  #           %Step.Map{operation: op} when is_atom(op) -> true
+  #           _ -> false
+  #         end)
+  #       end
+  #     end
+  #
+  # ## Built-in Transformers
+  #
+  # Currently, no built-in transformers are provided. Transformers are opt-in and can
+  # be created for project-specific optimizations or validations.
+  #
+  # ## Usage
+  #
+  # Transformers are applied automatically during pipeline compilation.
+  # They can be configured via the `:transformers` option:
+  #
+  #     either input, transformers: [MyTransformer] do
+  #       bind SomeModule
+  #     end
 
   alias Funx.Monad.Either.Dsl.Step
 
