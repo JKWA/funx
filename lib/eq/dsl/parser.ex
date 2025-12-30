@@ -95,7 +95,7 @@ defmodule Funx.Eq.Dsl.Parser do
     {projection_ast, type} =
       build_projection_ast(projection_value, or_else, behaviour_opts, meta, caller_env)
 
-    eq_ast = custom_eq || quote(do: Funx.Eq)
+    eq_ast = custom_eq || quote(do: Funx.Eq.Protocol)
     metadata = extract_meta(meta)
 
     Step.new(projection_ast, eq_ast, negate, type, metadata)

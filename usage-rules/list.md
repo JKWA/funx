@@ -7,7 +7,7 @@
 * `Ord` is used for: `sort/2` and `strict_sort/2`.
 * `strict_sort/2` combines `Ord` (for sorting) and `Eq` (for deduplication).
 * All functions default to protocol dispatch; no wiring needed if instances exist.
-* Ad-hoc comparators can be passed using `Eq.Utils.contramap/1` or `Ord.Utils.contramap/1`.
+* Ad-hoc comparators can be passed using `Eq.contramap/1` or `Ord.Utils.contramap/1`.
 
 ## Overview
 
@@ -30,7 +30,7 @@ Funx.List.uniq([%Car{vin: "A"}, %Car{vin: "A"}])
 With custom comparator:
 
 ```elixir
-eq = Eq.Utils.contramap(& &1.make)
+eq = Eq.contramap(& &1.make)
 Funx.List.uniq(cars, eq)
 ```
 

@@ -18,7 +18,7 @@ defmodule Funx.Monad.Identity do
     - `String.Chars`: Converts an `Identity` value into a string representation.
   """
 
-  alias Funx.Eq
+  alias Funx.Eq.Protocol
   alias Funx.Ord
 
   @enforce_keys [:value]
@@ -48,9 +48,9 @@ defmodule Funx.Monad.Identity do
   @spec extract(t(value)) :: value when value: term()
   def extract(%__MODULE__{value: value}), do: value
 
-  @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
+  @spec lift_eq(Funx.Eq.eq_map()) :: Funx.Eq.eq_map()
   def lift_eq(custom_eq) do
-    custom_eq = Eq.Utils.to_eq_map(custom_eq)
+    custom_eq = Funx.Eq.to_eq_map(custom_eq)
 
     %{
       eq?: fn
@@ -112,15 +112,15 @@ defimpl String.Chars, for: Funx.Monad.Identity do
   def to_string(%Identity{value: value}), do: "Identity(#{value})"
 end
 
-defimpl Funx.Eq, for: Funx.Monad.Identity do
+defimpl Funx.Eq.Protocol, for: Funx.Monad.Identity do
   alias Funx.Monad.Identity
-  alias Funx.Eq
+  alias Funx.Eq.Protocol
 
   @spec eq?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.eq?(v1, v2)
+  def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.eq?(v1, v2)
 
   @spec not_eq?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.not_eq?(v1, v2)
+  def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.not_eq?(v1, v2)
 end
 
 defimpl Funx.Ord, for: Funx.Monad.Identity do

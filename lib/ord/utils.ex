@@ -280,7 +280,7 @@ defmodule Funx.Ord.Utils do
       iex> eq.eq?.(5, 5)
       true
   """
-  @spec to_eq(ord_t()) :: Funx.Eq.Utils.eq_map()
+  @spec to_eq(ord_t()) :: Funx.Eq.eq_map()
   def to_eq(ord \\ Ord) do
     %{
       eq?: fn a, b -> compare(a, b, ord) == :eq end,

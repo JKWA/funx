@@ -77,7 +77,7 @@ defimpl Funx.Filterable, for: Funx.Monad.Maybe.Nothing do
   def filter_map(%Nothing{}, _func), do: %Nothing{}
 end
 
-defimpl Funx.Eq, for: Funx.Monad.Maybe.Nothing do
+defimpl Funx.Eq.Protocol, for: Funx.Monad.Maybe.Nothing do
   alias Funx.Monad.Maybe.{Nothing, Just}
 
   def eq?(%Nothing{}, %Nothing{}), do: true

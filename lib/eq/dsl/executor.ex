@@ -15,8 +15,8 @@ defmodule Funx.Eq.Dsl.Executor do
   # specific code paths for each projection type, eliminating runtime
   # branching and compiler warnings:
   #
-  #   - :projection → `Utils.contramap(projection, eq)`
-  #   - :module_eq  → `Utils.to_eq_map(module)`
+  #   - :projection → `Eq.contramap(projection, eq)`
+  #   - :module_eq  → `Eq.to_eq_map(module)`
   #   - :eq_map     → Use Eq map directly (no wrapping)
   #   - :dynamic    → Runtime case statement (0-arity helpers only)
   #
@@ -29,8 +29,8 @@ defmodule Funx.Eq.Dsl.Executor do
   #
   # Top-level nodes are implicitly combined with concat_all (AND logic).
 
+  alias Funx.Eq
   alias Funx.Eq.Dsl.{Block, Step}
-  alias Funx.Eq.Utils
   alias Funx.Monoid.Eq.All
 
   @doc """
@@ -60,7 +60,7 @@ defmodule Funx.Eq.Dsl.Executor do
     eq_asts = Enum.map(nodes, &node_to_ast/1)
 
     quote do
-      Utils.concat_all([unquote_splicing(eq_asts)])
+      Eq.concat_all([unquote_splicing(eq_asts)])
     end
   end
 
@@ -68,7 +68,7 @@ defmodule Funx.Eq.Dsl.Executor do
     eq_asts = Enum.map(nodes, &node_to_ast/1)
 
     quote do
-      Utils.concat_any([unquote_splicing(eq_asts)])
+      Eq.concat_any([unquote_splicing(eq_asts)])
     end
   end
 
@@ -79,14 +79,14 @@ defmodule Funx.Eq.Dsl.Executor do
   # Projection type - use contramap (non-negated)
   defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: false, type: :projection}) do
     quote do
-      Utils.contramap(unquote(projection_ast), unquote(eq_ast))
+      Eq.contramap(unquote(projection_ast), unquote(eq_ast))
     end
   end
 
   # Module with eq?/2 - convert to Eq map (non-negated)
   defp node_to_ast(%Step{projection: module_ast, negate: false, type: :module_eq}) do
     quote do
-      Utils.to_eq_map(unquote(module_ast))
+      Eq.to_eq_map(unquote(module_ast))
     end
   end
 
@@ -108,11 +108,11 @@ defmodule Funx.Eq.Dsl.Executor do
 
         module when is_atom(module) ->
           # It's a module - convert to Eq map
-          Utils.to_eq_map(module)
+          Eq.to_eq_map(module)
 
         _ ->
           # It's a projection - wrap in contramap
-          Utils.contramap(projection, unquote(eq_ast))
+          Eq.contramap(projection, unquote(eq_ast))
       end
     end
   end
@@ -126,14 +126,14 @@ defmodule Funx.Eq.Dsl.Executor do
     negated_eq_ast = build_negated_eq_ast(eq_ast)
 
     quote do
-      Utils.contramap(unquote(projection_ast), unquote(negated_eq_ast))
+      Eq.contramap(unquote(projection_ast), unquote(negated_eq_ast))
     end
   end
 
   # Module with eq?/2 - convert to Eq map and negate (negated)
   defp node_to_ast(%Step{projection: module_ast, negate: true, type: :module_eq}) do
     quote do
-      eq_map = Utils.to_eq_map(unquote(module_ast))
+      eq_map = Eq.to_eq_map(unquote(module_ast))
 
       %{
         eq?: eq_map.not_eq?,
@@ -172,7 +172,7 @@ defmodule Funx.Eq.Dsl.Executor do
 
         module when is_atom(module) ->
           # It's a module - convert to Eq map and negate it
-          eq_map = Utils.to_eq_map(module)
+          eq_map = Eq.to_eq_map(module)
 
           %{
             eq?: eq_map.not_eq?,
@@ -181,7 +181,7 @@ defmodule Funx.Eq.Dsl.Executor do
 
         _ ->
           # It's a projection - wrap in contramap with negated eq
-          Utils.contramap(projection, unquote(negated_eq_ast))
+          Eq.contramap(projection, unquote(negated_eq_ast))
       end
     end
   end
@@ -215,12 +215,12 @@ defmodule Funx.Eq.Dsl.Executor do
       %{
         eq?: fn a, b ->
           eq = unquote(eq_ast)
-          eq_map = if is_atom(eq), do: Utils.to_eq_map(eq), else: eq
+          eq_map = if is_atom(eq), do: Eq.to_eq_map(eq), else: eq
           eq_map.not_eq?.(a, b)
         end,
         not_eq?: fn a, b ->
           eq = unquote(eq_ast)
-          eq_map = if is_atom(eq), do: Utils.to_eq_map(eq), else: eq
+          eq_map = if is_atom(eq), do: Eq.to_eq_map(eq), else: eq
           eq_map.eq?.(a, b)
         end
       }

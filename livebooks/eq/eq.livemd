@@ -6,7 +6,7 @@ Mix.install([
 ])
 ```
 
-The `Funx.Eq` protocol defines an equality function, `eq?/2`, for comparing two values,
+The `Funx.Eq.Protocol` defines an equality function, `eq?/2`, for comparing two values,
 and its complement, `not_eq?/2`, for checking inequality.
 
 Types that implement this protocol can define custom equality logic, allowing for
@@ -15,7 +15,7 @@ domain-specific comparisons.
 ## Fallback
 
 The protocol uses `@fallback_to_any true`, meaning that if a specific type does not
-implement `Funx.Eq`, it falls back to the default implementation for `Any`, which
+implement `Funx.Eq.Protocol`, it falls back to the default implementation for `Any`, which
 uses Elixir's built-in equality operator (`==`).
 
 ## Examples

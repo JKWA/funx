@@ -64,14 +64,14 @@ defimpl Funx.Foldable, for: Funx.Monad.Either.Left do
   end
 end
 
-defimpl Funx.Eq, for: Funx.Monad.Either.Left do
+defimpl Funx.Eq.Protocol, for: Funx.Monad.Either.Left do
   alias Funx.Monad.Either.{Left, Right}
-  alias Funx.Eq
+  alias Funx.Eq.Protocol
 
-  def eq?(%Left{left: v1}, %Left{left: v2}), do: Eq.eq?(v1, v2)
+  def eq?(%Left{left: v1}, %Left{left: v2}), do: Protocol.eq?(v1, v2)
   def eq?(%Left{}, %Right{}), do: false
 
-  def not_eq?(%Left{left: v1}, %Left{left: v2}), do: Eq.not_eq?(v1, v2)
+  def not_eq?(%Left{left: v1}, %Left{left: v2}), do: Protocol.not_eq?(v1, v2)
   def not_eq?(%Left{}, %Right{}), do: true
 end
 

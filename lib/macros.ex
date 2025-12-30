@@ -258,17 +258,16 @@ defmodule Funx.Macros do
     or_else = Keyword.get(opts, :or_else)
     custom_eq = Keyword.get(opts, :eq)
     projection_ast = normalize_projection(projection, or_else)
-    eq_module_ast = custom_eq || quote(do: Funx.Eq)
+    eq_module_ast = custom_eq || quote(do: Funx.Eq.Protocol)
 
     quote do
       alias Funx.Eq
-      alias Funx.Eq.Utils
       alias Funx.Optics.Prism
 
-      defimpl Funx.Eq, for: unquote(for_struct) do
+      defimpl Funx.Eq.Protocol, for: unquote(for_struct) do
         # Private function to build the eq_map once at module compile time
         defp __eq_map__ do
-          Utils.contramap(unquote(projection_ast), unquote(eq_module_ast))
+          Funx.Eq.contramap(unquote(projection_ast), unquote(eq_module_ast))
         end
 
         def eq?(a, b)

@@ -18,7 +18,6 @@ defmodule Funx.Monoid.Eq.Any do
 end
 
 defimpl Funx.Monoid, for: Funx.Monoid.Eq.Any do
-  alias Funx.Eq.Utils
   alias Funx.Monoid.Eq.Any
 
   def empty(_), do: %Any{}
@@ -31,7 +30,7 @@ defimpl Funx.Monoid, for: Funx.Monoid.Eq.Any do
   end
 
   def wrap(%Any{}, eq) do
-    eq = Utils.to_eq_map(eq)
+    eq = Funx.Eq.to_eq_map(eq)
 
     %Any{
       eq?: eq.eq?,

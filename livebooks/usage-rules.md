@@ -263,7 +263,7 @@ After initial transcription, livebook examples must be optimized for interactive
 #### 3. Use Imported Function Names
 
 - **Leverage import statements** to use short function names
-- If `import Funx.Eq.Utils` is present, use `eq?()` instead of `Funx.Eq.Utils.eq?()`
+- If `import Funx.Eq` is present, use `eq?()` instead of `Funx.Eq.eq?()`
 - If `import Funx.Monad.Maybe` is present, use `just()` instead of `Funx.Monad.Maybe.just()`
 - Makes examples cleaner and demonstrates import benefits
 
@@ -275,10 +275,10 @@ After initial transcription, livebook examples must be optimized for interactive
 ### Examples
 
 ```elixir
-Funx.Eq.Utils.eq?(42, 42)
+Funx.Eq.eq?(42, 42)
 # true
 
-Funx.Eq.Utils.eq?("foo", "bar")
+Funx.Eq.eq?("foo", "bar")
 # false
 ```
 
@@ -321,7 +321,7 @@ Some files may require manual processing:
 
 Map fully qualified names to short names based on imports:
 
-- `import Funx.Eq.Utils` → `Funx.Eq.Utils.eq?` becomes `eq?`
+- `import Funx.Eq` → `Funx.Eq.eq?` becomes `eq?`
 - `import Funx.Monad.Maybe` → `Funx.Monad.Maybe.just` becomes `just`
 - `import Funx.Predicate` → `Funx.Predicate.p_and` becomes `p_and`
 - `import Funx.Ord.Utils` → `Funx.Ord.Utils.max` becomes `max`
@@ -334,7 +334,7 @@ Map fully qualified names to short names based on imports:
 - **Independent execution**: Each code block should be runnable on its own
 
 ### Leverage Language Features
-- **Use imports effectively**: `contramap()` is cleaner than `Funx.Eq.Utils.contramap()`
+- **Use imports effectively**: `contramap()` is cleaner than `Funx.Eq.contramap()`
 - **Demonstrate setup benefits**: Show why the import/alias blocks matter
 - **Clean, readable examples**: Focus on the functionality, not boilerplate
 

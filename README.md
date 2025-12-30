@@ -82,7 +82,7 @@ Features:
 The Eq module includes a DSL for building equality comparators with boolean logic:
 
 ```elixir
-use Funx.Eq.Dsl
+use Funx.Eq
 
 contact_eq = eq do
   on :name
@@ -92,7 +92,7 @@ contact_eq = eq do
   end
 end
 
-Funx.Eq.Utils.eq?(user1, user2, contact_eq)
+Funx.Eq.eq?(user1, user2, contact_eq)
 ```
 
 Features:

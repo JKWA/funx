@@ -1,4 +1,4 @@
-# Funx.Eq.Dsl
+# Funx.Eq DSL
 
 ```elixir
 Mix.install([
@@ -8,7 +8,7 @@ Mix.install([
 
 ## Overview
 
-The `Funx.Eq.Dsl` module provides a declarative syntax for building complex equality comparators by composing projections and boolean structure.
+The `Funx.Eq` module provides a declarative DSL syntax for building complex equality comparators by composing projections and boolean structure.
 
 The DSL defines Eq logic that consumes projections - functions that extract values for comparison. Lens and Prism optics are one family of reusable projections the DSL accepts. The boolean structure (AND/OR) allows you to express "equal if X matches AND Y matches" or "equal if X OR Y matches" in a clear, composable way.
 
@@ -56,9 +56,9 @@ end
 Import the DSL and helper modules:
 
 ```elixir
-use Funx.Eq.Dsl
+use Funx.Eq
 alias Funx.Optics.{Lens, Prism}
-alias Funx.Eq.Utils
+alias Funx.Eq
 ```
 
 Define a test struct:
@@ -89,11 +89,11 @@ eq_by_name =
     on :name
   end
 
-Utils.eq?(alice, %Person{name: "Alice", age: 99}, eq_by_name)
+Eq.eq?(alice, %Person{name: "Alice", age: 99}, eq_by_name)
 ```
 
 ```elixir
-Utils.eq?(alice, bob, eq_by_name)
+Eq.eq?(alice, bob, eq_by_name)
 ```
 
 ### Multiple Fields (Implicit AND)
@@ -107,13 +107,13 @@ eq_name_and_age =
     on :age
   end
 
-Utils.eq?(alice, %Person{name: "Alice", age: 30}, eq_name_and_age)
+Eq.eq?(alice, %Person{name: "Alice", age: 30}, eq_name_and_age)
 ```
 
 Different age returns false:
 
 ```elixir
-Utils.eq?(alice, %Person{name: "Alice", age: 99}, eq_name_and_age)
+Eq.eq?(alice, %Person{name: "Alice", age: 99}, eq_name_and_age)
 ```
 
 ## diff_on Directive
@@ -129,7 +129,7 @@ eq_same_person_diff_record =
     diff_on :id
   end
 
-Utils.eq?(
+Eq.eq?(
   %Person{name: "Alice", email: "alice@example.com", id: 1},
   %Person{name: "Alice", email: "alice@example.com", id: 2},
   eq_same_person_diff_record
@@ -139,7 +139,7 @@ Utils.eq?(
 Same ID means not equal (diff_on requires IDs to differ):
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Person{name: "Alice", email: "alice@example.com", id: 1},
   %Person{name: "Alice", email: "alice@example.com", id: 1},
   eq_same_person_diff_record
@@ -171,9 +171,9 @@ eq_diff_id =
     diff_on :id
   end
 
-IO.puts("a == b: #{Utils.eq?(a, b, eq_diff_id)}")
-IO.puts("b == c: #{Utils.eq?(b, c, eq_diff_id)}")
-IO.puts("a == c: #{Utils.eq?(a, c, eq_diff_id)}")
+IO.puts("a == b: #{Eq.eq?(a, b, eq_diff_id)}")
+IO.puts("b == c: #{Eq.eq?(b, c, eq_diff_id)}")
+IO.puts("a == c: #{Eq.eq?(a, c, eq_diff_id)}")
 ```
 
 Even though `a == b` and `b == c`, we have `a != c`, violating transitivity.
@@ -226,7 +226,7 @@ eq_by_card_number =
     on Lens.path([:payment, :amount])
   end
 
-Utils.eq?(cc_transaction, check_transaction, eq_by_card_number)
+Eq.eq?(cc_transaction, check_transaction, eq_by_card_number)
 ```
 
 Using a Prism instead focuses on a specific variant. This returns false because one is a Check and the other is a CreditCard:
@@ -237,13 +237,13 @@ eq_by_card_number =
     on Prism.path([{Transaction, :payment}, {CreditCard, :amount}])
   end
 
-Utils.eq?(cc_transaction, check_transaction, eq_by_card_number)
+Eq.eq?(cc_transaction, check_transaction, eq_by_card_number)
 ```
 
 When both projections return Nothing (both are the wrong variant), the Eq succeeds. This represents "this Eq does not apply to these variants":
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Transaction{payment: %CreditCard{number: "4532-1111"}},
   %Transaction{payment: %Check{routing_number: "111000025"}},
   eq_by_card_number
@@ -269,7 +269,7 @@ eq_by_routing =
 Two Check payments with the same routing number are equal:
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Transaction{payment: %Check{routing_number: "111000025"}},
   %Transaction{payment: %Check{routing_number: "111000025"}},
   eq_by_routing
@@ -279,7 +279,7 @@ Utils.eq?(
 CreditCard doesn't match the Check Prism (returns Nothing), so CreditCard and Check are considered equal under this Eq:
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Transaction{payment: %CreditCard{number: "4532-1111"}},
   %Transaction{payment: %Check{routing_number: "111000025"}},
   eq_by_routing
@@ -303,7 +303,7 @@ eq_contact =
 Email matches, username differs:
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Person{email: "alice@example.com", username: "alice"},
   %Person{email: "alice@example.com", username: "alice123"},
   eq_contact
@@ -313,7 +313,7 @@ Utils.eq?(
 Neither field matches:
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Person{email: "alice@example.com", username: "alice"},
   %Person{email: "bob@example.com", username: "bob"},
   eq_contact
@@ -334,7 +334,7 @@ eq_mixed =
     end
   end
 
-Utils.eq?(
+Eq.eq?(
   %Person{name: "Alice", email: "a@example.com", username: "alice"},
   %Person{name: "Alice", email: "a@example.com", username: "different"},
   eq_mixed
@@ -358,7 +358,7 @@ eq_explicit =
     end
   end
 
-Utils.eq?(
+Eq.eq?(
   %Person{name: "Alice", age: 30, email: "a@example.com", username: "alice"},
   %Person{name: "Alice", age: 30, email: "a@example.com", username: "different"},
   eq_explicit
@@ -382,7 +382,7 @@ eq_deep =
     end
   end
 
-Utils.eq?(
+Eq.eq?(
   %Person{name: "Alice", email: "a@example.com"},
   %Person{name: "Alice", email: "a@example.com"},
   eq_deep
@@ -401,7 +401,7 @@ eq_by_age =
     on Lens.key(:age)
   end
 
-Utils.eq?(alice, charlie, eq_by_age)
+Eq.eq?(alice, charlie, eq_by_age)
 ```
 
 ### Nested Paths
@@ -432,7 +432,7 @@ eq_by_city =
     on Lens.path([:email, :city])
   end
 
-Utils.eq?(alice_tx, bob_tx, eq_by_city)
+Eq.eq?(alice_tx, bob_tx, eq_by_city)
 ```
 
 ### Using Prism.key with Built-in Prisms
@@ -445,7 +445,7 @@ eq_explicit =
     on Prism.key(:name)
   end
 
-Utils.eq?(alice, %Person{name: "Alice"}, eq_explicit)
+Eq.eq?(alice, %Person{name: "Alice"}, eq_explicit)
 ```
 
 ### Prism Fallback Values
@@ -458,7 +458,7 @@ eq_with_fallback =
     on {Prism.key(:score), 0}
   end
 
-Utils.eq?(charlie, %Person{score: 0}, eq_with_fallback)
+Eq.eq?(charlie, %Person{score: 0}, eq_with_fallback)
 ```
 
 Alternatively, use the `or_else:` option for the same effect:
@@ -469,7 +469,7 @@ eq_with_option =
     on Prism.key(:score), or_else: 0
   end
 
-Utils.eq?(charlie, %Person{score: 0}, eq_with_option)
+Eq.eq?(charlie, %Person{score: 0}, eq_with_option)
 ```
 
 ## Traversal Projections
@@ -488,7 +488,7 @@ eq_name_and_age =
     on Traversal.combine([Lens.key(:name), Lens.key(:age)])
   end
 
-Utils.eq?(
+Eq.eq?(
   %Person{name: "Alice", age: 30},
   %Person{name: "Alice", age: 30},
   eq_name_and_age
@@ -498,7 +498,7 @@ Utils.eq?(
 Age differs (ALL foci must match):
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Person{name: "Alice", age: 30},
   %Person{name: "Alice", age: 25},
   eq_name_and_age
@@ -519,7 +519,7 @@ eq_traversal_prism =
 When both projections return Just and the values match, equality succeeds:
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Person{name: "Alice", score: 100},
   %Person{name: "Alice", score: 100},
   eq_traversal_prism
@@ -529,7 +529,7 @@ Utils.eq?(
 When one projection returns Nothing (nil score), equality fails:
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Person{name: "Alice", score: nil},
   %Person{name: "Alice", score: 100},
   eq_traversal_prism
@@ -548,7 +548,7 @@ eq_name_length =
     on fn p -> String.length(p.name) end
   end
 
-Utils.eq?(alice, %Person{name: "Bobby"}, eq_name_length)
+Eq.eq?(alice, %Person{name: "Bobby"}, eq_name_length)
 ```
 
 ### Captured Functions
@@ -561,7 +561,7 @@ eq_by_length =
     on &String.length/1
   end
 
-Utils.eq?(Enum.at(strings, 0), Enum.at(strings, 1), eq_by_length)
+Eq.eq?(Enum.at(strings, 0), Enum.at(strings, 1), eq_by_length)
 ```
 
 ## Helper Function Projections
@@ -588,7 +588,7 @@ eq_by_helpers =
     on ProjectionHelpers.name_prism()
   end
 
-Utils.eq?(alice, %Person{age: 30, name: "Alice"}, eq_by_helpers)
+Eq.eq?(alice, %Person{age: 30, name: "Alice"}, eq_by_helpers)
 ```
 
 ### Helper Functions with or_else
@@ -601,7 +601,7 @@ eq_score_helper =
     on ProjectionHelpers.name_prism(), or_else: "Unknown"
   end
 
-Utils.eq?(%Person{name: nil}, %Person{name: "Unknown"}, eq_score_helper)
+Eq.eq?(%Person{name: nil}, %Person{name: "Unknown"}, eq_score_helper)
 ```
 
 ## Behaviour Module Equality
@@ -618,7 +618,7 @@ defmodule UserById do
 
   @impl true
   def eq(_opts) do
-    Utils.contramap(&(&1.id))
+    Eq.contramap(&(&1.id))
   end
 end
 ```
@@ -636,9 +636,9 @@ defmodule UserByName do
     case_sensitive = Keyword.get(opts, :case_sensitive, true)
 
     if case_sensitive do
-      Utils.contramap(&(&1.name))
+      Eq.contramap(&(&1.name))
     else
-      Utils.contramap(fn p -> String.downcase(p.name) end)
+      Eq.contramap(fn p -> String.downcase(p.name) end)
     end
   end
 end
@@ -658,7 +658,7 @@ eq_by_id =
 Same ID means equal, even with different names:
 
 ```elixir
-Utils.eq?(
+Eq.eq?(
   %Person{id: 1, name: "Alice"},
   %Person{id: 1, name: "Bob"},
   eq_by_id
@@ -675,14 +675,14 @@ eq_name_ci =
     on UserByName, case_sensitive: false
   end
 
-Utils.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_name_ci)
+Eq.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_name_ci)
 ```
 
 ## Protocol Dispatch
 
 LiveBook does not handle creating new protocols
 
-Use `Funx.Eq` module for protocol-based equality:
+Use `Funx.Eq.Protocol` for protocol-based equality:
 
 <!-- livebook:{"force_markdown":true} -->
 
@@ -691,7 +691,7 @@ defmodule CaseInsensitiveString do
   defstruct [:value]
 end
 
-defimpl Funx.Eq, for: CaseInsensitiveString do
+defimpl Funx.Eq.Protocol, for: CaseInsensitiveString do
   def eq?(a, b) do
     String.downcase(a.value) == String.downcase(b.value)
   end
@@ -710,7 +710,7 @@ eq_default =
     on Funx.Eq
   end
 
-Utils.eq?(
+Eq.eq?(
   %CaseInsensitiveString{value: "Hello"},
   %CaseInsensitiveString{value: "hello"},
   eq_default
@@ -731,13 +731,13 @@ eq_type_check =
 Both values are Check structs, so they're equal (field values are ignored):
 
 ```elixir
-Utils.eq?(%Check{id: 1}, %Check{id: 2}, eq_type_check)
+Eq.eq?(%Check{id: 1}, %Check{id: 2}, eq_type_check)
 ```
 
 Different types are not equal:
 
 ```elixir
-Utils.eq?(%Check{id: 1}, %CreditCard{id: 1}, eq_type_check)
+Eq.eq?(%Check{id: 1}, %CreditCard{id: 1}, eq_type_check)
 ```
 
 ## Empty eq Block
@@ -749,7 +749,7 @@ eq_identity =
   eq do
   end
 
-Utils.eq?(alice, bob, eq_identity)
+Eq.eq?(alice, bob, eq_identity)
 ```
 
 This always returns `true`, treating all values as equal.
@@ -775,12 +775,12 @@ eq_custom =
     on :name, eq: CaseInsensitiveEq
   end
 
-Utils.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_custom)
+Eq.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_custom)
 ```
 
 ## Using Ord for Equality
 
-Any `Ord` (ordering) can be converted to an `Eq` using `Funx.Ord.Utils.to_eq/1`. This is useful when you have an existing ordering and want to derive equality from it.
+Any `Ord` (ordering) can be converted to an `Eq` using `Funx.Ord.Eq.to_eq/1`. This is useful when you have an existing ordering and want to derive equality from it.
 
 Key insight: Two values are equal if and only if their comparison returns `:eq`.
 
@@ -791,8 +791,8 @@ Create an Ord and convert it to an Eq:
 ```elixir
 alias Funx.Ord.Utils, as: OrdUtils
 
-length_ord = OrdUtils.contramap(&String.length/1)
-length_eq = OrdUtils.to_eq(length_ord)
+length_ord = OrdEq.contramap(&String.length/1)
+length_eq = OrdEq.to_eq(length_ord)
 
 length_eq.eq?.("hello", "world")
 ```
@@ -808,19 +808,19 @@ length_eq.eq?.("hi", "hello")
 You can use an Ord-derived Eq in the DSL with the `eq:` option:
 
 ```elixir
-name_ord = OrdUtils.contramap(fn name -> String.downcase(name) end)
+name_ord = OrdEq.contramap(fn name -> String.downcase(name) end)
 
 eq_by_name =
   eq do
-    on :name, eq: OrdUtils.to_eq(name_ord)
+    on :name, eq: OrdEq.to_eq(name_ord)
   end
 
-Utils.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_by_name)
+Eq.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_by_name)
 ```
 
 ### When to Use Ord-derived Eq
 
-Use `Ord.Utils.to_eq/1` when:
+Use `Ord.Eq.to_eq/1` when:
 
 * You already have an `Ord` defined for your domain
 * You want equality to match the ordering semantics
