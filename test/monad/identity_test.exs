@@ -7,8 +7,9 @@ defmodule Funx.Monad.IdentityTest do
   import Funx.Monad, only: [ap: 2, bind: 2, map: 2]
   import Funx.Summarizable, only: [summarize: 1]
 
-  alias Funx.{Eq, Ord}
+  alias Funx.Eq
   alias Funx.Monad.Identity
+  alias Funx.Ord.Protocol
   alias Funx.Tappable
 
   doctest Funx.Monad.Identity
@@ -185,59 +186,59 @@ defmodule Funx.Monad.IdentityTest do
     end
   end
 
-  describe "Ord.lt?/2" do
+  describe "Protocol.lt?/2" do
     test "Identity returns true for less value" do
-      assert Ord.lt?(pure(1), pure(2)) == true
+      assert Protocol.lt?(pure(1), pure(2)) == true
     end
 
     test "Identity returns false for more value" do
-      assert Ord.lt?(pure(2), pure(1)) == false
+      assert Protocol.lt?(pure(2), pure(1)) == false
     end
 
     test "Identity returns false for equal values" do
-      assert Ord.lt?(pure(1), pure(1)) == false
+      assert Protocol.lt?(pure(1), pure(1)) == false
     end
   end
 
-  describe "Ord.le?/2" do
+  describe "Protocol.le?/2" do
     test "Identity returns true for less value" do
-      assert Ord.le?(pure(1), pure(2)) == true
+      assert Protocol.le?(pure(1), pure(2)) == true
     end
 
     test "Identity returns true for equal values" do
-      assert Ord.le?(pure(1), pure(1)) == true
+      assert Protocol.le?(pure(1), pure(1)) == true
     end
 
     test "Identity returns false for greater value" do
-      assert Ord.le?(pure(2), pure(1)) == false
+      assert Protocol.le?(pure(2), pure(1)) == false
     end
   end
 
-  describe "Ord.gt?/2" do
+  describe "Protocol.gt?/2" do
     test "Identity returns true for greater value" do
-      assert Ord.gt?(pure(2), pure(1)) == true
+      assert Protocol.gt?(pure(2), pure(1)) == true
     end
 
     test "Identity returns false for less value" do
-      assert Ord.gt?(pure(1), pure(2)) == false
+      assert Protocol.gt?(pure(1), pure(2)) == false
     end
 
     test "Identity returns false for equal values" do
-      assert Ord.gt?(pure(1), pure(1)) == false
+      assert Protocol.gt?(pure(1), pure(1)) == false
     end
   end
 
-  describe "Ord.ge?/2" do
+  describe "Protocol.ge?/2" do
     test "Identity returns true for greater value" do
-      assert Ord.ge?(pure(2), pure(1)) == true
+      assert Protocol.ge?(pure(2), pure(1)) == true
     end
 
     test "Identity returns true for equal values" do
-      assert Ord.ge?(pure(1), pure(1)) == true
+      assert Protocol.ge?(pure(1), pure(1)) == true
     end
 
     test "Identity returns false for less value" do
-      assert Ord.ge?(pure(1), pure(2)) == false
+      assert Protocol.ge?(pure(1), pure(2)) == false
     end
   end
 

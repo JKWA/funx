@@ -19,7 +19,6 @@ defmodule Funx.Monad.Identity do
   """
 
   alias Funx.Eq.Protocol
-  alias Funx.Ord
 
   @enforce_keys [:value]
   defstruct [:value]
@@ -62,9 +61,9 @@ defmodule Funx.Monad.Identity do
     }
   end
 
-  @spec lift_ord(Ord.Utils.ord_map()) :: Ord.Utils.ord_map()
+  @spec lift_ord(Funx.Ord.ord_t()) :: Funx.Ord.ord_map()
   def lift_ord(custom_ord) do
-    custom_ord = Ord.Utils.to_ord_map(custom_ord)
+    custom_ord = Funx.Ord.to_ord_map(custom_ord)
 
     %{
       lt?: fn
@@ -123,21 +122,21 @@ defimpl Funx.Eq.Protocol, for: Funx.Monad.Identity do
   def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.not_eq?(v1, v2)
 end
 
-defimpl Funx.Ord, for: Funx.Monad.Identity do
-  alias Funx.Ord
+defimpl Funx.Ord.Protocol, for: Funx.Monad.Identity do
+  alias Funx.Ord.Protocol
   alias Funx.Monad.Identity
 
   @spec lt?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def lt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.lt?(v1, v2)
+  def lt?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.lt?(v1, v2)
 
   @spec le?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def le?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.le?(v1, v2)
+  def le?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.le?(v1, v2)
 
   @spec gt?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def gt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.gt?(v1, v2)
+  def gt?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.gt?(v1, v2)
 
   @spec ge?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def ge?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.ge?(v1, v2)
+  def ge?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.ge?(v1, v2)
 end
 
 defimpl Funx.Summarizable, for: Funx.Monad.Identity do

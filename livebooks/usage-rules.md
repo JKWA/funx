@@ -324,7 +324,7 @@ Map fully qualified names to short names based on imports:
 - `import Funx.Eq` → `Funx.Eq.eq?` becomes `eq?`
 - `import Funx.Monad.Maybe` → `Funx.Monad.Maybe.just` becomes `just`
 - `import Funx.Predicate` → `Funx.Predicate.p_and` becomes `p_and`
-- `import Funx.Ord.Utils` → `Funx.Ord.Utils.max` becomes `max`
+- `import Funx.Ord` → `Funx.Ord.max` becomes `max`
 
 ## Key Principles Learned
 

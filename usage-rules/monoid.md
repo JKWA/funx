@@ -62,7 +62,7 @@
 
 - **Built-in types**: Use existing monoids (Sum, Product, Max, Min, ListConcat)
 - **Custom combination**: Define new monoid struct and protocol implementation  
-- **Application code**: Use high-level utilities (`Math`, `Eq`, `Ord.Utils`)
+- **Application code**: Use high-level utilities (`Math`, `Eq`, `Ord`)
 - **Library code**: Expose monoids through utility functions, not raw protocol
 
 **⚙️ Function Choice Guide (Mathematical Purpose):**
@@ -89,7 +89,7 @@
 - Identities must be true identities (e.g. `0` for sum, `1` for product, `[]` for concatenation).  
 - `wrap/2` and `unwrap/1` exist for infrastructure, not daily use.  
 - `m_append/3` and `m_concat/2` are low-level helpers that power higher abstractions.  
-- Application code should prefer helpers in `Math`, `Eq`, `Ord.Utils`, or `Predicate`.
+- Application code should prefer helpers in `Math`, `Eq`, `Ord`, or `Predicate`.
 
 ## Overview
 
@@ -102,7 +102,7 @@ Each monoid is represented by a struct (e.g. `%Sum{}`, `%Product{}`, `%Eq.All{}`
 
 **Important Implementation Detail**: Unlike Haskell's separate Semigroup and Monoid typeclasses, Elixir's protocol system limitations require all operations under the single `Funx.Monoid` protocol.
 
-Monoids are rarely used directly in application code. Instead, they support utilities like `Math.sum/1`, `Eq.concat_all/1`, and `Ord.Utils.concat/1`.
+Monoids are rarely used directly in application code. Instead, they support utilities like `Math.sum/1`, `Eq.concat_all/1`, and `Ord.concat/1`.
 
 ## Protocol Rules
 
@@ -121,7 +121,7 @@ Use high-level helpers instead of wiring monoids manually:
 
 - **Numbers** → `Math.sum/1`, `Math.product/1`, `Math.max/1`, `Math.min/1`  
 - **Equality** → `Eq.concat_all/1`, `Eq.concat_any/1`  
-- **Ordering** → `Ord.Utils.concat/1`, `Ord.Utils.append/2`  
+- **Ordering** → `Ord.concat/1`, `Ord.append/2`  
 - **Predicates** → `Predicate.p_and/2`, `Predicate.p_or/2`, `Predicate.p_all/1`, `Predicate.p_any/1`
 
 These functions already call `m_concat/2` and `m_append/3`.  
@@ -144,7 +144,7 @@ EqU.concat_any([name_eq, age_eq])  # OR semantics
 #### Ordering Composition
 
 ```elixir
-alias Funx.Ord.Utils, as: OrdU
+alias Funx.Ord, as: OrdU
 
 age  = OrdU.contramap(& &1.age)
 name = OrdU.contramap(& &1.name)
@@ -166,7 +166,7 @@ Math.min([7, 3, 5])     # => 3
 ## Interop
 
 - `Eq` relies on `Eq.All` and `Eq.Any` monoids for composition.
-- `Ord.Utils` uses the `Ord` monoid for lexicographic comparison.
+- `Ord` uses the `Ord` monoid for lexicographic comparison.
 - `Math` uses monoids for numeric folds.
 
 **Rule of thumb:** application code never wires `%Monoid.*{}` directly—always go through the utility combinators.
@@ -196,7 +196,7 @@ append(%Sum{}, 1, 2)                   # OK: both values are integers
 
 ## Good Patterns
 
-- Use `Math`, `Eq`, `Ord.Utils`, or `Predicate` instead of raw monoids.
+- Use `Math`, `Eq`, `Ord`, or `Predicate` instead of raw monoids.
 - Keep identities explicit in library code (`0`, `1`, `[]`, `Float.min_finite()` / `Float.max_finite()`).
 - Let `m_concat/2` and `m_append/3` handle the wrapping/combining logic.
 
@@ -224,7 +224,7 @@ Expose it through a utility module—application code should not use it raw.
 - `%Funx.Monoid.Eq.All{}` / `%Funx.Monoid.Eq.Any{}` — equality composition
 - `%Funx.Monoid.Ord{}` — ordering composition
 
-These back the higher-level helpers. Use `Math`, `Eq`, `Ord.Utils`, or `Predicate` instead.
+These back the higher-level helpers. Use `Math`, `Eq`, `Ord`, or `Predicate` instead.
 
 ## LLM Code Templates
 
@@ -723,7 +723,7 @@ end
 
 - **Build reusable combination logic**: Define monoids for custom data types that need merging
 - **Enable parallel computation**: Monoid laws guarantee safe parallelization and chunking
-- **Power utility functions**: `Math`, `Eq`, `Ord.Utils`, and `Predicate` all use monoids internally
+- **Power utility functions**: `Math`, `Eq`, `Ord`, and `Predicate` all use monoids internally
 - **Compose complex operations**: Chain monoid operations for sophisticated data processing
 - **Ensure mathematical correctness**: Monoid laws provide guarantees about behavior
 

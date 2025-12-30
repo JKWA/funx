@@ -1,4 +1,4 @@
-# Funx.Ord.Utils
+# Funx.Ord
 
 ```elixir
 Mix.install([
@@ -13,7 +13,7 @@ or implement the `Funx.Ord` protocol.
 ## Function Examples
 
 ```elixir
-import Funx.Ord.Utils
+import Funx.Ord
 ```
 
 ## contramap/2
@@ -27,7 +27,7 @@ If a custom comparator map is provided, it wraps the functions in the map to app
 ### Examples
 
 ```elixir
-ord = Funx.Ord.Utils.contramap(&String.length/1, Funx.Ord.Any)
+ord = Funx.Ord.contramap(&String.length/1, Funx.Ord.Any)
 ord.lt?.("cat", "zebra")
 # true
 ```
@@ -39,11 +39,11 @@ Returns the maximum of two values, with an optional custom `Ord`.
 ### Examples
 
 ```elixir
-Funx.Ord.Utils.max(3, 5)
+Funx.Ord.max(3, 5)
 # 5
 
-ord = Funx.Ord.Utils.contramap(&String.length/1, Funx.Ord.Any)
-Funx.Ord.Utils.max("cat", "zebra", ord)
+ord = Funx.Ord.contramap(&String.length/1, Funx.Ord.Any)
+Funx.Ord.max("cat", "zebra", ord)
 # "zebra"
 ```
 
@@ -54,11 +54,11 @@ Returns the minimum of two values, with an optional custom `Ord`.
 ### Examples
 
 ```elixir
-Funx.Ord.Utils.min(10, 7)
+Funx.Ord.min(10, 7)
 # 7
 
-ord = Funx.Ord.Utils.contramap(&String.length/1, Funx.Ord.Any)
-Funx.Ord.Utils.min("apple", "kiwi", ord)
+ord = Funx.Ord.contramap(&String.length/1, Funx.Ord.Any)
+Funx.Ord.min("apple", "kiwi", ord)
 # "kiwi"
 ```
 
@@ -69,13 +69,13 @@ Clamps a value between `min` and `max`, with an optional custom `Ord`.
 ### Examples
 
 ```elixir
-Funx.Ord.Utils.clamp(5, 1, 10)
+Funx.Ord.clamp(5, 1, 10)
 # 5
 
-Funx.Ord.Utils.clamp(0, 1, 10)
+Funx.Ord.clamp(0, 1, 10)
 # 1
 
-Funx.Ord.Utils.clamp(15, 1, 10)
+Funx.Ord.clamp(15, 1, 10)
 # 10
 ```
 
@@ -86,13 +86,13 @@ Checks if `value` is between `min` and `max`, inclusive, with an optional custom
 ### Examples
 
 ```elixir
-Funx.Ord.Utils.between(5, 1, 10)
+Funx.Ord.between(5, 1, 10)
 # true
 
-Funx.Ord.Utils.between(0, 1, 10)
+Funx.Ord.between(0, 1, 10)
 # false
 
-Funx.Ord.Utils.between(11, 1, 10)
+Funx.Ord.between(11, 1, 10)
 # false
 ```
 
@@ -103,13 +103,13 @@ Compares two values and returns `:lt`, `:eq`, or `:gt`, with an optional custom 
 ### Examples
 
 ```elixir
-Funx.Ord.Utils.compare(3, 5)
+Funx.Ord.compare(3, 5)
 # :lt
 
-Funx.Ord.Utils.compare(7, 7)
+Funx.Ord.compare(7, 7)
 # :eq
 
-Funx.Ord.Utils.compare(9, 4)
+Funx.Ord.compare(9, 4)
 # :gt
 ```
 
@@ -120,7 +120,7 @@ Reverses the ordering logic.
 ### Examples
 
 ```elixir
-ord = Funx.Ord.Utils.reverse(Funx.Ord.Any)
+ord = Funx.Ord.reverse(Funx.Ord.Any)
 ord.lt?.(10, 5)
 # true
 ```
@@ -135,7 +135,7 @@ Useful for sorting with `Enum.sort/2` or similar functions.
 ### Examples
 
 ```elixir
-comparator = Funx.Ord.Utils.comparator(Funx.Ord.Any)
+comparator = Funx.Ord.comparator(Funx.Ord.Any)
 Enum.sort([3, 1, 2], comparator)
 # [1, 2, 3]
 ```
@@ -151,7 +151,7 @@ This function creates a map containing two functions:
 ### Examples
 
 ```elixir
-eq = Funx.Ord.Utils.to_eq(Funx.Ord.Any)
+eq = Funx.Ord.to_eq(Funx.Ord.Any)
 eq.eq?.(5, 5)
 # true
 ```
@@ -166,9 +166,9 @@ If not, the second comparator is used as a fallback.
 ### Examples
 
 ```elixir
-ord1 = Funx.Ord.Utils.contramap(& &1.age, Funx.Ord.Any)
-ord2 = Funx.Ord.Utils.contramap(& &1.name, Funx.Ord.Any)
-combined = Funx.Ord.Utils.append(ord1, ord2)
+ord1 = Funx.Ord.contramap(& &1.age, Funx.Ord.Any)
+ord2 = Funx.Ord.contramap(& &1.name, Funx.Ord.Any)
+combined = Funx.Ord.append(ord1, ord2)
 combined.lt?.(%{age: 30, name: "Alice"}, %{age: 30, name: "Bob"})
 # true
 ```
@@ -184,10 +184,10 @@ applying them in sequence until an order is determined.
 
 ```elixir
 ord_list = [
-  Funx.Ord.Utils.contramap(& &1.age, Funx.Ord.Any),
-  Funx.Ord.Utils.contramap(& &1.name, Funx.Ord.Any)
+  Funx.Ord.contramap(& &1.age, Funx.Ord.Any),
+  Funx.Ord.contramap(& &1.name, Funx.Ord.Any)
 ]
-combined = Funx.Ord.Utils.concat(ord_list)
+combined = Funx.Ord.concat(ord_list)
 combined.gt?.(%{age: 25, name: "Charlie"}, %{age: 25, name: "Bob"})
 # true
 ```

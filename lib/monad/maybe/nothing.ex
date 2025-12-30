@@ -87,7 +87,7 @@ defimpl Funx.Eq.Protocol, for: Funx.Monad.Maybe.Nothing do
   def not_eq?(%Nothing{}, %Just{}), do: true
 end
 
-defimpl Funx.Ord, for: Funx.Monad.Maybe.Nothing do
+defimpl Funx.Ord.Protocol, for: Funx.Monad.Maybe.Nothing do
   alias Funx.Monad.Maybe.{Nothing, Just}
 
   def lt?(%Nothing{}, %Just{}), do: true

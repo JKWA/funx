@@ -17,8 +17,8 @@ defmodule Funx.Ord.Dsl.Executor do
   # case branches, avoiding compiler warnings.
 
   alias Funx.Monoid.Ord
+  alias Funx.Ord
   alias Funx.Ord.Dsl.Step
-  alias Funx.Ord.Utils
 
   @doc """
   Execute (compile) a list of steps into quoted code that builds an Ord.
@@ -59,7 +59,7 @@ defmodule Funx.Ord.Dsl.Executor do
     identity_step = %Step{
       direction: :asc,
       projection: quote(do: fn x -> x end),
-      ord: quote(do: Funx.Ord),
+      ord: quote(do: Funx.Ord.Protocol),
       type: :projection,
       __meta__: %{line: nil, column: nil}
     }
@@ -77,7 +77,7 @@ defmodule Funx.Ord.Dsl.Executor do
     ord_asts = Enum.map(steps, &step_to_ord_ast/1)
 
     quote do
-      Utils.concat([unquote_splicing(ord_asts)])
+      Ord.concat([unquote_splicing(ord_asts)])
     end
   end
 
@@ -92,7 +92,7 @@ defmodule Funx.Ord.Dsl.Executor do
        }) do
     base_ord_ast =
       quote do
-        Utils.contramap(unquote(projection_ast), unquote(ord_ast))
+        Ord.contramap(unquote(projection_ast), unquote(ord_ast))
       end
 
     case direction do
@@ -107,7 +107,7 @@ defmodule Funx.Ord.Dsl.Executor do
   defp step_to_ord_ast(%Step{direction: direction, projection: module_ast, type: :module_ord}) do
     base_ord_ast =
       quote do
-        Utils.to_ord_map(unquote(module_ast))
+        Ord.to_ord_map(unquote(module_ast))
       end
 
     case direction do
@@ -148,11 +148,11 @@ defmodule Funx.Ord.Dsl.Executor do
 
           module when is_atom(module) ->
             # It's a module - convert to Ord map
-            Utils.to_ord_map(module)
+            Ord.to_ord_map(module)
 
           _ ->
             # It's a projection - wrap in contramap
-            Utils.contramap(projection, unquote(ord_ast))
+            Ord.contramap(projection, unquote(ord_ast))
         end
       end
 
@@ -191,9 +191,9 @@ defmodule Funx.Ord.Dsl.Executor do
 
             You can create ord maps using:
               - ord do ... end
-              - Utils.contramap(...)
-              - Utils.reverse(...)
-              - Utils.concat([...])
+              - Ord.contramap(...)
+              - Ord.reverse(...)
+              - Ord.concat([...])
             """
         end
       end
@@ -210,14 +210,14 @@ defmodule Funx.Ord.Dsl.Executor do
 
   defp build_reverse_ast(ord_ast) do
     quote do
-      Utils.reverse(unquote(ord_ast))
+      Ord.reverse(unquote(ord_ast))
     end
   end
 
   # Monoid identity: everything compares equal
   defp empty_ord_ast do
     quote do
-      %Ord{}
+      %Funx.Monoid.Ord{}
     end
   end
 end

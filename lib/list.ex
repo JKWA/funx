@@ -62,7 +62,6 @@ defmodule Funx.List do
 
   alias Funx.Monad.Maybe
   alias Funx.Monoid.ListConcat
-  alias Funx.Ord
 
   @doc """
   Removes duplicate elements from a list based on the given equality module.
@@ -179,9 +178,9 @@ defmodule Funx.List do
       iex> Funx.List.sort([3, 1, 4, 1, 5])
       [1, 1, 3, 4, 5]
   """
-  @spec sort([term()], Ord.Utils.ord_t()) :: [term()]
-  def sort(list, ord \\ Funx.Ord) when is_list(list) do
-    Enum.sort(list, Ord.Utils.comparator(ord))
+  @spec sort([term()], Funx.Ord.ord_t()) :: [term()]
+  def sort(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
+    Enum.sort(list, Funx.Ord.comparator(ord))
   end
 
   @doc """
@@ -192,10 +191,10 @@ defmodule Funx.List do
       iex> Funx.List.strict_sort([3, 1, 4, 1, 5])
       [1, 3, 4, 5]
   """
-  @spec strict_sort([term()], Ord.Utils.ord_t()) :: [term()]
-  def strict_sort(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec strict_sort([term()], Funx.Ord.ord_t()) :: [term()]
+  def strict_sort(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     list
-    |> uniq(Ord.Utils.to_eq(ord))
+    |> uniq(Funx.Ord.to_eq(ord))
     |> sort(ord)
   end
 
@@ -292,17 +291,17 @@ defmodule Funx.List do
       iex> Funx.List.max([])
       %Funx.Monad.Maybe.Nothing{}
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> ord = Funx.Ord.contramap(&String.length/1)
       iex> Funx.List.max(["cat", "elephant", "ox"], ord)
       %Funx.Monad.Maybe.Just{value: "elephant"}
   """
-  @spec max([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
-  def max(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec max([a], Funx.Ord.ord_t()) :: Maybe.t(a) when a: term()
+  def max(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     import Funx.Monad, only: [map: 2]
 
     head(list)
     |> map(fn first ->
-      fold_l(tail(list), first, fn item, acc -> Ord.Utils.max(item, acc, ord) end)
+      fold_l(tail(list), first, fn item, acc -> Funx.Ord.max(item, acc, ord) end)
     end)
   end
 
@@ -316,12 +315,12 @@ defmodule Funx.List do
       iex> Funx.List.max!([3, 1, 4, 1, 5])
       5
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> ord = Funx.Ord.contramap(&String.length/1)
       iex> Funx.List.max!(["cat", "elephant", "ox"], ord)
       "elephant"
   """
-  @spec max!([a], Ord.Utils.ord_t()) :: a when a: term()
-  def max!(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec max!([a], Funx.Ord.ord_t()) :: a when a: term()
+  def max!(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     Maybe.to_try!(max(list, ord), Enum.EmptyError)
   end
 
@@ -341,17 +340,17 @@ defmodule Funx.List do
       iex> Funx.List.min([])
       %Funx.Monad.Maybe.Nothing{}
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> ord = Funx.Ord.contramap(&String.length/1)
       iex> Funx.List.min(["cat", "elephant", "ox"], ord)
       %Funx.Monad.Maybe.Just{value: "ox"}
   """
-  @spec min([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
-  def min(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec min([a], Funx.Ord.ord_t()) :: Maybe.t(a) when a: term()
+  def min(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     import Funx.Monad, only: [map: 2]
 
     head(list)
     |> map(fn first ->
-      fold_l(tail(list), first, fn item, acc -> Ord.Utils.min(item, acc, ord) end)
+      fold_l(tail(list), first, fn item, acc -> Funx.Ord.min(item, acc, ord) end)
     end)
   end
 
@@ -365,12 +364,12 @@ defmodule Funx.List do
       iex> Funx.List.min!([3, 1, 4, 1, 5])
       1
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> ord = Funx.Ord.contramap(&String.length/1)
       iex> Funx.List.min!(["cat", "elephant", "ox"], ord)
       "ox"
   """
-  @spec min!([a], Ord.Utils.ord_t()) :: a when a: term()
-  def min!(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec min!([a], Funx.Ord.ord_t()) :: a when a: term()
+  def min!(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     Maybe.to_try!(min(list, ord), Enum.EmptyError)
   end
 end

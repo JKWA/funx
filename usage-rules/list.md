@@ -7,7 +7,7 @@
 * `Ord` is used for: `sort/2` and `strict_sort/2`.
 * `strict_sort/2` combines `Ord` (for sorting) and `Eq` (for deduplication).
 * All functions default to protocol dispatch; no wiring needed if instances exist.
-* Ad-hoc comparators can be passed using `Eq.contramap/1` or `Ord.Utils.contramap/1`.
+* Ad-hoc comparators can be passed using `Eq.contramap/1` or `Ord.contramap/1`.
 
 ## Overview
 
@@ -96,7 +96,7 @@ Funx.List.sort([3, 1, 2])
 With ad-hoc ordering:
 
 ```elixir
-ord = Ord.Utils.contramap(& &1.price)
+ord = Ord.contramap(& &1.price)
 Funx.List.sort(cars, ord)
 ```
 

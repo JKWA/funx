@@ -3,23 +3,22 @@ defmodule Funx.Monoid.Max do
   A Monoid implementation for maximum values.
   """
 
-  defstruct value: nil, ord: Funx.Ord
+  defstruct value: nil, ord: Funx.Ord.Protocol
 end
 
 defimpl Funx.Monoid, for: Funx.Monoid.Max do
   alias Funx.Monoid.Max
-  alias Funx.Ord.Utils
 
   def empty(%Max{value: min_value, ord: ord}) do
     %Max{value: min_value, ord: ord}
   end
 
   def append(%Max{value: a, ord: ord}, %Max{value: b}) do
-    %Max{value: Utils.max(a, b, ord), ord: ord}
+    %Max{value: Funx.Ord.max(a, b, ord), ord: ord}
   end
 
   def wrap(%Max{ord: ord}, value) do
-    %Max{value: value, ord: Utils.to_ord_map(ord)}
+    %Max{value: value, ord: Funx.Ord.to_ord_map(ord)}
   end
 
   def unwrap(%Max{value: value}), do: value

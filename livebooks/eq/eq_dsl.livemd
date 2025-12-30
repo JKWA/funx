@@ -789,7 +789,7 @@ Key insight: Two values are equal if and only if their comparison returns `:eq`.
 Create an Ord and convert it to an Eq:
 
 ```elixir
-alias Funx.Ord.Utils, as: OrdUtils
+alias Funx.Ord, as: OrdUtils
 
 length_ord = OrdEq.contramap(&String.length/1)
 length_eq = OrdEq.to_eq(length_ord)

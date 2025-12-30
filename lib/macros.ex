@@ -163,7 +163,7 @@ defmodule Funx.Macros do
 
   All macros expand at compile time into direct protocol implementations with zero
   runtime overhead. The `ord_for` macro normalizes all projection types into one of
-  four canonical forms that `Funx.Ord.Utils.contramap/2` accepts:
+  four canonical forms that `Funx.Ord.contramap/2` accepts:
 
     1. `Lens.t()` - Bare Lens struct
     2. `Prism.t()` - Bare Prism struct (uses `Maybe.lift_ord`)
@@ -178,7 +178,7 @@ defmodule Funx.Macros do
 
       defimpl Funx.Ord, for: Product do
         defp __ord_map__ do
-          Funx.Ord.Utils.contramap({Prism.key(:rating), 0})
+          Funx.Ord.contramap({Prism.key(:rating), 0})
         end
 
         def lt?(a, b) when is_struct(a, Product) and is_struct(b, Product) do
@@ -344,12 +344,11 @@ defmodule Funx.Macros do
     quote do
       alias Funx.Optics.Prism
       alias Funx.Ord
-      alias Funx.Ord.Utils
 
-      defimpl Funx.Ord, for: unquote(for_struct) do
+      defimpl Funx.Ord.Protocol, for: unquote(for_struct) do
         # Private function to build the ord_map once at module compile time
         defp __ord_map__ do
-          Utils.contramap(unquote(projection_ast))
+          Funx.Ord.contramap(unquote(projection_ast))
         end
 
         def lt?(a, b)

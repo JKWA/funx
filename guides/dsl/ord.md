@@ -59,9 +59,9 @@ The Ord DSL does not currently support transformers. All compilation is handled 
 The executor runs at compile time and generates quoted AST. It follows a single, non-branching path:
 
 1. Take normalized steps from the parser
-2. Wrap each in `Utils.contramap(projection, ord)`
-3. Optionally wrap in `Utils.reverse(...)` for `:desc` direction
-4. Combine all with `Utils.concat([...])`
+2. Wrap each in `Ord.contramap(projection, ord)`
+3. Optionally wrap in `Ord.reverse(...)` for `:desc` direction
+4. Combine all with `Ord.concat([...])`
 5. Automatically append an identity tiebreaker step
 
 ### Execution Model
@@ -102,10 +102,10 @@ end
 Compiles to:
 
 ```elixir
-Utils.concat([
-  Utils.contramap(Prism.key(:name), Funx.Ord),
-  Utils.reverse(Utils.contramap(Prism.key(:age), Funx.Ord)),
-  Utils.contramap(fn x -> x end, Funx.Ord)  # implicit identity
+Ord.concat([
+  Ord.contramap(Prism.key(:name), Funx.Ord),
+  Ord.reverse(Ord.contramap(Prism.key(:age), Funx.Ord)),
+  Ord.contramap(fn x -> x end, Funx.Ord)  # implicit identity
 ])
 ```
 
@@ -153,10 +153,10 @@ This validation happens when the containing ord is created (not when it's used f
 Any value that is a valid ord map:
 
 * `ord do ... end` - Ord maps from the DSL
-* `Utils.contramap(...)` - Contramap projections
-* `Utils.reverse(...)` - Reversed orderings
-* `Utils.concat([...])` - Combined orderings
-* `Utils.to_ord_map(module)` - Module-based orderings
+* `Ord.contramap(...)` - Contramap projections
+* `Ord.reverse(...)` - Reversed orderings
+* `Ord.concat([...])` - Combined orderings
+* `Ord.to_ord_map(module)` - Module-based orderings
 
 ### Composition Semantics
 

@@ -17,7 +17,7 @@ defmodule Funx.MacrosTest do
   alias Funx.Optics.Lens
   alias Funx.Optics.Prism
   alias Funx.Optics.Traversal
-  alias Funx.Ord
+  alias Funx.Ord.Protocol
   alias Funx.Test.Person
 
   # ============================================================================
@@ -457,32 +457,32 @@ defmodule Funx.MacrosTest do
       p1 = %Person{name: "Alice", age: 30}
       p2 = %Person{name: "Bob", age: 25}
 
-      assert Ord.lt?(p1, p2)
-      refute Ord.lt?(p2, p1)
+      assert Protocol.lt?(p1, p2)
+      refute Protocol.lt?(p2, p1)
     end
 
     test "le?/2 compares first value less than or equal to second" do
       p1 = %Person{name: "Alice", age: 30}
       p2 = %Person{name: "Alice", age: 25}
 
-      assert Ord.le?(p1, p2)
-      assert Ord.le?(p2, p1)
+      assert Protocol.le?(p1, p2)
+      assert Protocol.le?(p2, p1)
     end
 
     test "gt?/2 compares first value greater than second" do
       p1 = %Person{name: "Alice", age: 30}
       p2 = %Person{name: "Bob", age: 35}
 
-      assert Ord.gt?(p2, p1)
-      refute Ord.gt?(p1, p2)
+      assert Protocol.gt?(p2, p1)
+      refute Protocol.gt?(p1, p2)
     end
 
     test "ge?/2 compares first value greater than or equal to second" do
       p1 = %Person{name: "Alice", age: 30}
       p2 = %Person{name: "Alice", age: 35}
 
-      assert Ord.ge?(p1, p2)
-      assert Ord.ge?(p2, p1)
+      assert Protocol.ge?(p1, p2)
+      assert Protocol.ge?(p2, p1)
     end
   end
 
@@ -495,26 +495,26 @@ defmodule Funx.MacrosTest do
       p1 = product_fixture("Widget", 4)
       p2 = product_fixture()
 
-      assert Ord.lt?(p1, p2)
-      refute Ord.gt?(p1, p2)
+      assert Protocol.lt?(p1, p2)
+      refute Protocol.gt?(p1, p2)
     end
 
     test "Nothing < Just: nil sorts before non-nil" do
       p1 = %Product{name: "Widget", rating: nil}
       p2 = product_fixture("Gadget", 3)
 
-      assert Ord.lt?(p1, p2)
-      assert Ord.gt?(p2, p1)
+      assert Protocol.lt?(p1, p2)
+      assert Protocol.gt?(p2, p1)
     end
 
     test "Nothing == Nothing: both nil are equal" do
       p1 = %Product{name: "Widget", rating: nil}
       p2 = %Product{name: "Gadget", rating: nil}
 
-      refute Ord.lt?(p1, p2)
-      refute Ord.gt?(p1, p2)
-      assert Ord.le?(p1, p2)
-      assert Ord.ge?(p1, p2)
+      refute Protocol.lt?(p1, p2)
+      refute Protocol.gt?(p1, p2)
+      assert Protocol.le?(p1, p2)
+      assert Protocol.ge?(p1, p2)
     end
 
     test "sorts list with mixed nil and non-nil values" do
@@ -525,7 +525,7 @@ defmodule Funx.MacrosTest do
         %Product{name: "D", rating: nil}
       ]
 
-      sorted = Enum.sort(products, &Ord.le?/2)
+      sorted = Enum.sort(products, &Protocol.le?/2)
 
       assert Enum.map(sorted, & &1.rating) == [nil, nil, 3, 5]
     end
@@ -536,8 +536,8 @@ defmodule Funx.MacrosTest do
       c1 = customer_fixture("Alice", "Austin")
       c2 = customer_fixture("Bob", "Boston")
 
-      assert Ord.lt?(c1, c2)
-      refute Ord.lt?(c2, c1)
+      assert Protocol.lt?(c1, c2)
+      refute Protocol.lt?(c2, c1)
     end
 
     test "raises BadMapError when intermediate value is nil" do
@@ -545,7 +545,7 @@ defmodule Funx.MacrosTest do
       c2 = customer_fixture()
 
       assert_raise BadMapError, fn ->
-        Ord.lt?(c1, c2)
+        Protocol.lt?(c1, c2)
       end
     end
 
@@ -554,7 +554,7 @@ defmodule Funx.MacrosTest do
       c2 = customer_fixture()
 
       # In Elixir, nil < string
-      assert Ord.lt?(c1, c2)
+      assert Protocol.lt?(c1, c2)
     end
 
     test "raises KeyError with sum types when field missing" do
@@ -562,7 +562,7 @@ defmodule Funx.MacrosTest do
       t2 = %Transaction{id: 2, payment: %CreditCard{number: "4444"}}
 
       assert_raise KeyError, fn ->
-        Ord.lt?(t1, t2)
+        Protocol.lt?(t1, t2)
       end
     end
 
@@ -570,7 +570,7 @@ defmodule Funx.MacrosTest do
       t1 = %Transaction{id: 1, payment: %Check{routing_number: "111000025"}}
       t2 = %Transaction{id: 2, payment: %Check{routing_number: "222000025"}}
 
-      assert Ord.lt?(t1, t2)
+      assert Protocol.lt?(t1, t2)
     end
   end
 
@@ -579,25 +579,25 @@ defmodule Funx.MacrosTest do
       i1 = item_fixture("A", 10)
       i2 = item_fixture()
 
-      assert Ord.lt?(i1, i2)
-      refute Ord.gt?(i1, i2)
+      assert Protocol.lt?(i1, i2)
+      refute Protocol.gt?(i1, i2)
     end
 
     test "Nothing < Just with explicit Prism" do
       i1 = %Item{name: "A", score: nil}
       i2 = item_fixture()
 
-      assert Ord.lt?(i1, i2)
-      assert Ord.gt?(i2, i1)
+      assert Protocol.lt?(i1, i2)
+      assert Protocol.gt?(i2, i1)
     end
 
     test "Nothing == Nothing with explicit Prism" do
       i1 = %Item{name: "A", score: nil}
       i2 = %Item{name: "B", score: nil}
 
-      refute Ord.lt?(i1, i2)
-      refute Ord.gt?(i1, i2)
-      assert Ord.le?(i1, i2)
+      refute Protocol.lt?(i1, i2)
+      refute Protocol.gt?(i1, i2)
+      assert Protocol.le?(i1, i2)
     end
   end
 
@@ -606,7 +606,7 @@ defmodule Funx.MacrosTest do
       t1 = task_fixture()
       t2 = task_fixture("Feature", 3)
 
-      assert Ord.lt?(t1, t2)
+      assert Protocol.lt?(t1, t2)
     end
 
     test "uses default when field is nil" do
@@ -614,15 +614,15 @@ defmodule Funx.MacrosTest do
       t2 = task_fixture()
 
       # nil becomes 0 (default)
-      assert Ord.lt?(t1, t2)
+      assert Protocol.lt?(t1, t2)
     end
 
     test "both nil values use default" do
       t1 = %Task{title: "Bug", priority: nil}
       t2 = %Task{title: "Feature", priority: nil}
 
-      refute Ord.lt?(t1, t2)
-      assert Ord.le?(t1, t2)
+      refute Protocol.lt?(t1, t2)
+      assert Protocol.le?(t1, t2)
     end
 
     test "sorts with mixed nil and values" do
@@ -632,7 +632,7 @@ defmodule Funx.MacrosTest do
         task_fixture("B", 3)
       ]
 
-      sorted = Enum.sort(tasks, &Ord.le?/2)
+      sorted = Enum.sort(tasks, &Protocol.le?/2)
       priorities = Enum.map(sorted, & &1.priority)
 
       # nil becomes 0: [0, 3, 5]
@@ -646,7 +646,7 @@ defmodule Funx.MacrosTest do
       a2 = %Article{title: "Hello World", content: "..."}
 
       # Compares by title length: 2 < 11
-      assert Ord.lt?(a1, a2)
+      assert Protocol.lt?(a1, a2)
     end
 
     test "equal projection values are equal" do
@@ -654,8 +654,8 @@ defmodule Funx.MacrosTest do
       a2 = %Article{title: "xyz", content: "second"}
 
       # Both have length 3
-      assert Ord.le?(a1, a2)
-      assert Ord.ge?(a1, a2)
+      assert Protocol.le?(a1, a2)
+      assert Protocol.ge?(a1, a2)
     end
 
     test "sorts by projection" do
@@ -665,7 +665,7 @@ defmodule Funx.MacrosTest do
         %Article{title: "Very long title here", content: "..."}
       ]
 
-      sorted = Enum.sort(articles, &Ord.le?/2)
+      sorted = Enum.sort(articles, &Protocol.le?/2)
 
       assert Enum.map(sorted, &String.length(&1.title)) == [1, 12, 20]
     end
@@ -676,29 +676,29 @@ defmodule Funx.MacrosTest do
       i1 = invoice_fixture()
       i2 = invoice_fixture(2, 200)
 
-      assert Ord.lt?(i1, i2)
+      assert Protocol.lt?(i1, i2)
     end
 
     test "Nothing < Just when intermediate struct missing" do
       i1 = %Invoice{id: 1, payment: nil}
       i2 = invoice_fixture()
 
-      assert Ord.lt?(i1, i2)
+      assert Protocol.lt?(i1, i2)
     end
 
     test "Nothing < Just when leaf field missing" do
       i1 = %Invoice{id: 1, payment: %Payment{method: "card", amount: nil}}
       i2 = invoice_fixture(2, 200)
 
-      assert Ord.lt?(i1, i2)
+      assert Protocol.lt?(i1, i2)
     end
 
     test "both Nothing values are equal" do
       i1 = %Invoice{id: 1, payment: nil}
       i2 = %Invoice{id: 2, payment: nil}
 
-      refute Ord.lt?(i1, i2)
-      assert Ord.le?(i1, i2)
+      refute Protocol.lt?(i1, i2)
+      assert Protocol.le?(i1, i2)
     end
 
     test "sorts with mixed nil and non-nil nested values" do
@@ -709,7 +709,7 @@ defmodule Funx.MacrosTest do
         %Invoice{id: 4, payment: %Payment{amount: nil}}
       ]
 
-      sorted = Enum.sort(invoices, &Ord.le?/2)
+      sorted = Enum.sort(invoices, &Protocol.le?/2)
 
       # Nothing values first, then sorted by amount
       assert [i1, i4, i2, i3] = sorted
@@ -726,7 +726,7 @@ defmodule Funx.MacrosTest do
       b2 = %Book{title: "Hello", pages: 50, author: "Bob"}
 
       # title_length + pages: 102 vs 55
-      assert Ord.gt?(b1, b2)
+      assert Protocol.gt?(b1, b2)
     end
 
     test "equal projections are equal" do
@@ -734,8 +734,8 @@ defmodule Funx.MacrosTest do
       b2 = %Book{title: "xy", pages: 51, author: "Bob"}
 
       # Both: 3+50=53 and 2+51=53
-      assert Ord.le?(b1, b2)
-      assert Ord.ge?(b1, b2)
+      assert Protocol.le?(b1, b2)
+      assert Protocol.ge?(b1, b2)
     end
   end
 
@@ -744,7 +744,7 @@ defmodule Funx.MacrosTest do
       m1 = %Magazine{title: "Tech Weekly", issue: 42}
       m2 = %Magazine{title: "Science Monthly", issue: 10}
 
-      assert Ord.gt?(m1, m2)
+      assert Protocol.gt?(m1, m2)
     end
 
     test "sorts by helper projection" do
@@ -754,7 +754,7 @@ defmodule Funx.MacrosTest do
         %Magazine{title: "Beta", issue: 50}
       ]
 
-      sorted = Enum.sort(magazines, &Ord.le?/2)
+      sorted = Enum.sort(magazines, &Protocol.le?/2)
 
       assert Enum.map(sorted, & &1.title) == ["Alpha", "Beta", "Zebra"]
     end
@@ -765,21 +765,21 @@ defmodule Funx.MacrosTest do
       d1 = %Document{name: "Doc1", metadata: %{priority: 5}}
       d2 = %Document{name: "Doc2", metadata: %{priority: 3}}
 
-      assert Ord.gt?(d1, d2)
+      assert Protocol.gt?(d1, d2)
     end
 
     test "handles missing metadata with default" do
       d1 = %Document{name: "Doc1", metadata: nil}
       d2 = %Document{name: "Doc2", metadata: %{priority: 5}}
 
-      assert Ord.lt?(d1, d2)
+      assert Protocol.lt?(d1, d2)
     end
 
     test "handles metadata without priority field" do
       d1 = %Document{name: "Doc1", metadata: %{author: "Alice"}}
       d2 = %Document{name: "Doc2", metadata: %{priority: 5}}
 
-      assert Ord.lt?(d1, d2)
+      assert Protocol.lt?(d1, d2)
     end
   end
 
@@ -788,7 +788,7 @@ defmodule Funx.MacrosTest do
       r1 = %Report{title: "Q1", priority: 1}
       r2 = %Report{title: "Q2", priority: 3}
 
-      assert Ord.lt?(r1, r2)
+      assert Protocol.lt?(r1, r2)
     end
 
     test "raises KeyError when field missing" do
@@ -796,7 +796,7 @@ defmodule Funx.MacrosTest do
       broken = %{__struct__: Report, title: "Invalid"}
 
       assert_raise KeyError, fn ->
-        Ord.lt?(broken, r1)
+        Protocol.lt?(broken, r1)
       end
     end
 
@@ -805,7 +805,7 @@ defmodule Funx.MacrosTest do
       r2 = %Report{title: "B", priority: 5}
 
       # In Elixir, nil > number
-      assert Ord.gt?(r1, r2)
+      assert Protocol.gt?(r1, r2)
     end
   end
 
@@ -815,14 +815,14 @@ defmodule Funx.MacrosTest do
       t2 = %Ticket{id: 2, severity: :high}
 
       # Atom ordering: :high < :low
-      assert Ord.lt?(t2, t1)
+      assert Protocol.lt?(t2, t1)
     end
 
     test "handles nil with Maybe semantics" do
       t1 = %Ticket{id: 1, severity: nil}
       t2 = %Ticket{id: 2, severity: :low}
 
-      assert Ord.lt?(t1, t2)
+      assert Protocol.lt?(t1, t2)
     end
   end
 
@@ -837,9 +837,9 @@ defmodule Funx.MacrosTest do
       s3 = score_fixture("Charlie", 0)
 
       # nil becomes 0
-      assert Ord.le?(s1, s3)
-      assert Ord.ge?(s1, s3)
-      assert Ord.lt?(s1, s2)
+      assert Protocol.le?(s1, s3)
+      assert Protocol.ge?(s1, s3)
+      assert Protocol.lt?(s1, s2)
     end
 
     test "Prism with or_else treats Nothing as default" do
@@ -848,8 +848,8 @@ defmodule Funx.MacrosTest do
       r3 = %Rating{item: "C", stars: 0}
 
       # nil becomes 0
-      assert Ord.le?(r1, r3)
-      assert Ord.lt?(r1, r2)
+      assert Protocol.le?(r1, r3)
+      assert Protocol.lt?(r1, r2)
     end
 
     test "sorts using or_else default" do
@@ -859,7 +859,7 @@ defmodule Funx.MacrosTest do
         score_fixture("Charlie", 5)
       ]
 
-      sorted = Enum.sort(scores, &Ord.le?/2)
+      sorted = Enum.sort(scores, &Protocol.le?/2)
 
       # nil→0, so: 0, 5, 10
       assert Enum.map(sorted, & &1.points) == [nil, 5, 100]
@@ -990,8 +990,8 @@ defmodule Funx.MacrosTest do
       check all(rating <- integer(0..5)) do
         p = product_fixture("Test", rating)
 
-        assert Ord.le?(p, p)
-        assert Ord.ge?(p, p)
+        assert Protocol.le?(p, p)
+        assert Protocol.ge?(p, p)
       end
     end
   end
@@ -1006,8 +1006,8 @@ defmodule Funx.MacrosTest do
         p1 = product_fixture(name1, rating)
         p2 = product_fixture(name2, rating)
 
-        le_ab = Ord.le?(p1, p2)
-        le_ba = Ord.le?(p2, p1)
+        le_ab = Protocol.le?(p1, p2)
+        le_ba = Protocol.le?(p2, p1)
 
         if le_ab and le_ba do
           # Both have same rating
@@ -1028,9 +1028,9 @@ defmodule Funx.MacrosTest do
         p2 = product_fixture("B", r2)
         p3 = product_fixture("C", r3)
 
-        le_ab = Ord.le?(p1, p2)
-        le_bc = Ord.le?(p2, p3)
-        le_ac = Ord.le?(p1, p3)
+        le_ab = Protocol.le?(p1, p2)
+        le_bc = Protocol.le?(p2, p3)
+        le_ac = Protocol.le?(p1, p3)
 
         if le_ab and le_bc do
           assert le_ac
@@ -1057,8 +1057,8 @@ defmodule Funx.MacrosTest do
         s3 = score_fixture()
 
         # nil becomes 0, so s1 == s2 < s3
-        assert Ord.le?(s1, s2) and Ord.ge?(s1, s2)
-        assert Ord.lt?(s1, s3)
+        assert Protocol.le?(s1, s2) and Protocol.ge?(s1, s2)
+        assert Protocol.lt?(s1, s3)
       end
     end
   end

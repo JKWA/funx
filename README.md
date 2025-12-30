@@ -59,7 +59,7 @@ The `Ord` protocol defines ordering relationships in a structured way, without r
 The Ord module includes a DSL for building custom ordering comparators declaratively:
 
 ```elixir
-use Funx.Ord.Dsl
+use Funx.Ord
 
 user_ord = ord do
   desc :priority
@@ -67,7 +67,7 @@ user_ord = ord do
   desc :created_at
 end
 
-Enum.sort(users, Funx.Ord.Utils.comparator(user_ord))
+Enum.sort(users, Funx.Ord.comparator(user_ord))
 ```
 
 Features:

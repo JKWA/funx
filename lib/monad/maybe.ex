@@ -91,7 +91,6 @@ defmodule Funx.Monad.Maybe do
 
   alias Funx.Monad.{Either, Identity, Maybe}
   alias Funx.Optics.Iso
-  alias Funx.Ord
 
   alias Either.{Left, Right}
   alias Maybe.{Just, Nothing}
@@ -250,9 +249,9 @@ defmodule Funx.Monad.Maybe do
       iex> ord.lt?.(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(5))
       true
   """
-  @spec lift_ord(Ord.Utils.ord_t()) :: Ord.Utils.ord_map()
+  @spec lift_ord(Funx.Ord.ord_t()) :: Funx.Ord.ord_map()
   def lift_ord(custom_ord) do
-    custom_ord = Ord.Utils.to_ord_map(custom_ord)
+    custom_ord = Funx.Ord.to_ord_map(custom_ord)
 
     %{
       lt?: fn

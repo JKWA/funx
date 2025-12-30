@@ -50,9 +50,9 @@ end
 ## Setup
 
 ```elixir
-use Funx.Ord.Dsl
+use Funx.Ord
 alias Funx.Optics.{Lens, Prism}
-alias Funx.Ord.Utils
+alias Funx.Ord
 alias Funx.List
 ```
 
@@ -216,7 +216,7 @@ ord_lens =
     asc Lens.key(:value)
   end
 
-Utils.compare(c1, c2, ord_lens)
+Ord.compare(c1, c2, ord_lens)
 ```
 
 ```elixir
@@ -226,7 +226,7 @@ ord_prism =
     asc :value
   end
 
-Utils.compare(c1, c2, ord_prism)
+Ord.compare(c1, c2, ord_prism)
 ```
 
 ### Lens vs Prism:
@@ -352,22 +352,22 @@ For complex projection logic, implement the `Funx.Ord.Dsl.Behaviour`.
 ```elixir
 defmodule NameLength do
   @behaviour Funx.Ord.Dsl.Behaviour
-  alias Funx.Ord.Utils
+  alias Funx.Ord
 
   @impl true
   def ord(_opts) do
-    Utils.contramap(fn person -> String.length(person.name) end)
+    Ord.contramap(fn person -> String.length(person.name) end)
   end
 end
 
 defmodule WeightedScore do
   @behaviour Funx.Ord.Dsl.Behaviour
-  alias Funx.Ord.Utils
+  alias Funx.Ord
 
   @impl true
   def ord(opts) do
     weight = Keyword.get(opts, :weight, 1.0)
-    Utils.contramap(fn person -> (person.score || 0) * weight end)
+    Ord.contramap(fn person -> (person.score || 0) * weight end)
   end
 end
 ```
@@ -501,7 +501,7 @@ ord_identity =
   ord do
   end
 
-Utils.compare(alice, bob, ord_identity)
+Ord.compare(alice, bob, ord_identity)
 ```
 
 This always returns `:eq`, treating all values as equal.
@@ -516,7 +516,7 @@ ord_by_age =
     asc :age
   end
 
-Enum.sort([charlie, alice, bob], Utils.comparator(ord_by_age))
+Enum.sort([charlie, alice, bob], Ord.comparator(ord_by_age))
 ```
 
 ## Finding Min and Max

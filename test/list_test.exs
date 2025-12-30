@@ -6,7 +6,7 @@ defmodule Funx.ListTest do
 
   alias Funx.List
   alias Funx.Monad.Maybe.{Just, Nothing}
-  alias Funx.Ord.Utils, as: OrdUtils
+  alias Funx.Ord, as: OrdUtils
 
   doctest Funx.List
 

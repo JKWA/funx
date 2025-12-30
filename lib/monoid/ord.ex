@@ -24,7 +24,6 @@ end
 
 defimpl Funx.Monoid, for: Funx.Monoid.Ord do
   alias Funx.Monoid.Ord
-  alias Funx.Ord.Utils
 
   @spec empty(any()) :: Ord.t()
   def empty(_) do
@@ -66,7 +65,7 @@ defimpl Funx.Monoid, for: Funx.Monoid.Ord do
   end
 
   def wrap(%Ord{}, ord) do
-    ord = Utils.to_ord_map(ord)
+    ord = Funx.Ord.to_ord_map(ord)
 
     %Ord{
       lt?: ord.lt?,
