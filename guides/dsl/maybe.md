@@ -1,5 +1,7 @@
 # Maybe
 
+The Maybe DSL is a pipeline DSL that executes a sequence of operations on an input value. See the [DSL Overview](overview.md) for the distinction between builder and pipeline DSLs.
+
 ## Structure
 
 A `maybe` block compiles to a struct containing the pipeline input, ordered steps, return mode (`:maybe`, `:nil`, or `:raise`), and user-supplied options. This struct is the complete representation of the DSL expression and is what the executor receives at runtime.

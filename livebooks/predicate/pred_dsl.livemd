@@ -1,0 +1,732 @@
+# Funx.Predicate DSL
+
+```elixir
+Mix.install([
+  {:funx, github: "JKWA/funx", ref: "ca3ddab"}
+])
+```
+
+## Overview
+
+The `Funx.Predicate` module provides a declarative DSL syntax for building complex predicates (boolean filters) by composing conditions with logical operators.
+
+The DSL defines predicate logic that can consume projections - functions that extract values for testing. Lens and Prism optics are one family of reusable projections the DSL accepts. The boolean structure (AND/OR) allows you to express "true if X passes AND Y passes" or "true if X OR Y passes" in a clear, composable way.
+
+Key Features:
+
+* Declarative predicate composition with implicit AND
+* `negate` directive for negating predicates
+* `check` directive for projection-based predicates
+* Nested `any` (OR) and `all` (AND) blocks for complex logic
+* Support for atoms, lenses, prisms, traversals, functions, and custom behaviours
+* Works seamlessly with `Enum.filter/2`, `Enum.find/2`, and other predicate-accepting functions
+
+## Quick Reference
+
+### DSL Syntax:
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+pred do
+  <predicate>              # Bare predicate must pass
+  negate <predicate>       # Predicate must fail
+  check <projection>, <pred>  # Projection + predicate composition
+  any do ... end           # At least one nested predicate must pass (OR)
+  all do ... end           # All nested predicates must pass (AND)
+end
+```
+
+### Valid Predicates:
+
+* Functions: `&adult?/1`, `fn user -> user.age >= 18 end`
+* Variables: `is_verified`, `check_active`
+* Helper functions: `MyModule.adult?()`
+* Behaviour modules: `IsActive`, `{HasMinimumAge, minimum: 21}`
+
+### Valid Projections (for `check` directive):
+
+* Atoms: `:field_name`, converts to `Prism.key(:field_name)`
+* Lenses: `Lens.key(:field)`, `Lens.path([:a, :b])`
+* Prisms: `Prism.key(:field)`, `Prism.path([{Struct, :field}])`
+* Traversals: `Traversal.all()`, `Traversal.filter(pred)`
+* Functions: `&(&1.field)`, `fn x -> x.value end`
+
+## Setup
+
+Use the DSL and alias helper modules:
+
+```elixir
+use Funx.Predicate
+alias Funx.Optics.{Lens, Prism, Traversal}
+```
+
+Define test structs:
+
+```elixir
+defmodule User do
+  defstruct [:name, :age, :active, :verified, :email, :role]
+end
+
+defmodule Order do
+  defstruct [:id, :total, :status, :items]
+end
+
+defmodule Product do
+  defstruct [:name, :price, :in_stock, :category]
+end
+```
+
+Create sample data:
+
+```elixir
+alice = %User{name: "Alice", age: 30, active: true, verified: true, email: "alice@example.com", role: :admin}
+bob = %User{name: "Bob", age: 17, active: true, verified: false, email: "bob@example.com", role: :user}
+charlie = %User{name: "Charlie", age: 25, active: false, verified: true, email: "charlie@example.com", role: :moderator}
+
+users = [alice, bob, charlie]
+```
+
+## Basic Predicates
+
+The simplest predicates are functions that return boolean values.
+
+### Single Predicate
+
+```elixir
+adult? = fn user -> user.age >= 18 end
+
+check_adult =
+  pred do
+    adult?
+  end
+
+check_adult.(alice)
+```
+
+```elixir
+check_adult.(bob)
+```
+
+### Using with Enum.filter
+
+Predicates work seamlessly with Enum functions:
+
+```elixir
+Enum.filter(users, check_adult)
+```
+
+### Multiple Predicates (Implicit AND)
+
+When you list multiple predicates, ALL must pass:
+
+```elixir
+active? = fn user -> user.active end
+verified? = fn user -> user.verified end
+
+check_active_verified =
+  pred do
+    active?
+    verified?
+  end
+
+check_active_verified.(alice)
+```
+
+```elixir
+check_active_verified.(bob)
+```
+
+### Filtering with Multiple Conditions
+
+```elixir
+Enum.filter(users, check_active_verified)
+```
+
+## The negate Directive
+
+The `negate` directive inverts a predicate:
+
+```elixir
+minor? = fn user -> user.age < 18 end
+
+check_not_minor =
+  pred do
+    negate minor?
+  end
+
+check_not_minor.(alice)
+```
+
+```elixir
+check_not_minor.(bob)
+```
+
+### Combining negate with Other Predicates
+
+```elixir
+check_adult_active =
+  pred do
+    negate minor?
+    active?
+  end
+
+Enum.filter(users, check_adult_active)
+```
+
+## The on Directive (Projections)
+
+The `check` directive composes a projection with a predicate, allowing you to test focused values.
+
+### check with Atom Fields
+
+Atoms are automatically converted to `Prism.key` for safe nil handling:
+
+```elixir
+is_long = fn name -> String.length(name) > 5 end
+
+check_long_name =
+  pred do
+    check :name, is_long
+  end
+
+check_long_name.(alice)
+```
+
+```elixir
+check_long_name.(%User{name: "Joe"})
+```
+
+### check with Lens
+
+Lenses provide total access to fields:
+
+```elixir
+check_adult_by_age =
+  pred do
+    check Lens.key(:age), fn age -> age >= 18 end
+  end
+
+check_adult_by_age.(alice)
+```
+
+### check with Prism
+
+Prisms handle optional values safely:
+
+```elixir
+check_active_role =
+  pred do
+    check Prism.key(:role), fn role -> role in [:admin, :moderator] end
+  end
+
+check_active_role.(alice)
+```
+
+```elixir
+check_active_role.(bob)
+```
+
+### check with Function Projection
+
+```elixir
+check_gmail =
+  pred do
+    check &(&1.email), fn email -> String.ends_with?(email, "@example.com") end
+  end
+
+Enum.filter(users, check_gmail)
+```
+
+### check with Traversal
+
+Traversals focus on multiple elements:
+
+```elixir
+defmodule Team do
+  defstruct [:name, :members]
+end
+```
+
+```elixir
+team = %Team{
+  name: "Engineering",
+  members: [alice, bob, charlie]
+}
+
+# Check if ANY team member is an admin
+check_has_admin =
+  pred do
+    check Lens.key(:members), fn members ->
+      Enum.any?(members, fn user -> user.role == :admin end)
+    end
+  end
+
+check_has_admin.(team)
+```
+
+## any Blocks (OR Logic)
+
+The `any` block succeeds if AT LEAST ONE nested predicate passes.
+
+### Simple any Block
+
+```elixir
+check_admin_or_verified =
+  pred do
+    any do
+      fn user -> user.role == :admin end
+      fn user -> user.verified end
+    end
+  end
+
+check_admin_or_verified.(alice)
+```
+
+Admin user passes even though not verified:
+
+```elixir
+check_admin_or_verified.(%User{role: :admin, verified: false})
+```
+
+Neither condition passes:
+
+```elixir
+check_admin_or_verified.(%User{role: :user, verified: false})
+```
+
+### any with Multiple Conditions
+
+```elixir
+check_special_user =
+  pred do
+    any do
+      fn user -> user.role == :admin end
+      fn user -> user.role == :moderator end
+      fn user -> user.verified and user.age >= 21 end
+    end
+  end
+
+Enum.filter(users, check_special_user)
+```
+
+### Mixed Predicates with any
+
+Active AND (admin OR verified):
+
+```elixir
+check_active_special =
+  pred do
+    active?
+    any do
+      fn user -> user.role == :admin end
+      verified?
+    end
+  end
+
+Enum.filter(users, check_active_special)
+```
+
+## all Blocks (Explicit AND)
+
+The `all` block makes AND logic explicit (though top-level is already AND):
+
+```elixir
+check_eligible =
+  pred do
+    all do
+      adult?
+      active?
+      verified?
+    end
+  end
+
+check_eligible.(alice)
+```
+
+```elixir
+check_eligible.(bob)
+```
+
+### Combining all and any
+
+All of (active, verified) AND any of (admin, moderator):
+
+```elixir
+check_staff =
+  pred do
+    all do
+      active?
+      verified?
+    end
+    any do
+      fn user -> user.role == :admin end
+      fn user -> user.role == :moderator end
+    end
+  end
+
+Enum.filter(users, check_staff)
+```
+
+## Deep Nesting
+
+Blocks can be nested arbitrarily deep for complex logic.
+
+### Complex Nested Logic
+
+Active AND (admin OR (verified AND adult)):
+
+```elixir
+check_complex =
+  pred do
+    active?
+    any do
+      fn user -> user.role == :admin end
+      all do
+        verified?
+        adult?
+      end
+    end
+  end
+
+Enum.filter(users, check_complex)
+```
+
+### any Containing all Blocks
+
+(Admin AND verified) OR (moderator AND adult):
+
+```elixir
+check_senior_staff =
+  pred do
+    any do
+      all do
+        fn user -> user.role == :admin end
+        verified?
+      end
+      all do
+        fn user -> user.role == :moderator end
+        adult?
+      end
+    end
+  end
+
+Enum.filter(users, check_senior_staff)
+```
+
+## Behaviour Modules
+
+For reusable validation logic, implement the `Funx.Predicate.Dsl.Behaviour`.
+
+### Simple Behaviour Module
+
+The `pred/1` callback receives options and returns a predicate function:
+
+```elixir
+defmodule IsActive do
+  @behaviour Funx.Predicate.Dsl.Behaviour
+
+  @impl true
+  def pred(_opts) do
+    fn user -> user.active end
+  end
+end
+```
+
+### Behaviour with Options
+
+The options parameter allows runtime configuration:
+
+```elixir
+defmodule HasMinimumAge do
+  @behaviour Funx.Predicate.Dsl.Behaviour
+
+  @impl true
+  def pred(opts) do
+    minimum = Keyword.get(opts, :minimum, 18)
+    fn user -> user.age >= minimum end
+  end
+end
+```
+
+### Using Behaviour Modules
+
+Reference the behaviour module directly in the DSL:
+
+```elixir
+check_active =
+  pred do
+    IsActive
+  end
+
+check_active.(alice)
+```
+
+```elixir
+check_active.(charlie)
+```
+
+### Behaviour with Options
+
+Pass options using tuple syntax:
+
+```elixir
+check_21_plus =
+  pred do
+    {HasMinimumAge, minimum: 21}
+  end
+
+check_21_plus.(alice)
+```
+
+```elixir
+check_21_plus.(%User{age: 19})
+```
+
+### Combining Behaviours with Other Predicates
+
+```elixir
+check_active_adult =
+  pred do
+    IsActive
+    {HasMinimumAge, minimum: 18}
+  end
+
+Enum.filter(users, check_active_adult)
+```
+
+## Helper Functions
+
+Define reusable predicates as 0-arity helper functions:
+
+```elixir
+defmodule PredicateHelpers do
+  def adult?, do: fn user -> user.age >= 18 end
+  def verified?, do: fn user -> user.verified end
+  def admin?, do: fn user -> user.role == :admin end
+end
+```
+
+### Using Helper Functions
+
+Call the helper functions in the DSL:
+
+```elixir
+check_verified_adult =
+  pred do
+    PredicateHelpers.adult?()
+    PredicateHelpers.verified?()
+  end
+
+Enum.filter(users, check_verified_adult)
+```
+
+## Projection Helpers
+
+Define reusable projections (optics) as helper functions:
+
+```elixir
+defmodule OpticHelpers do
+  alias Funx.Optics.{Lens, Prism}
+
+  def age_lens, do: Lens.key(:age)
+  def name_prism, do: Prism.key(:name)
+  def role_prism, do: Prism.key(:role)
+end
+```
+
+### Using Projection Helpers with on
+
+```elixir
+check_long_name_helper =
+  pred do
+    check OpticHelpers.name_prism(), fn name -> String.length(name) > 5 end
+  end
+
+Enum.filter(users, check_long_name_helper)
+```
+
+## Real-World Example: Order Filtering
+
+Define order-related predicates:
+
+```elixir
+orders = [
+  %Order{id: 1, total: 100, status: :pending, items: 3},
+  %Order{id: 2, total: 500, status: :completed, items: 10},
+  %Order{id: 3, total: 50, status: :cancelled, items: 2},
+  %Order{id: 4, total: 1000, status: :completed, items: 15}
+]
+```
+
+### Complex Order Filtering
+
+Find high-value completed orders or any pending order:
+
+```elixir
+check_important_order =
+  pred do
+    any do
+      all do
+        fn order -> order.status == :completed end
+        fn order -> order.total >= 500 end
+      end
+      fn order -> order.status == :pending end
+    end
+  end
+
+Enum.filter(orders, check_important_order)
+```
+
+### Using on with Orders
+
+```elixir
+check_bulk_order =
+  pred do
+    check Lens.key(:items), fn items -> items >= 10 end
+  end
+
+Enum.filter(orders, check_bulk_order)
+```
+
+## Edge Cases
+
+### Empty pred Block
+
+An empty `pred` block returns a predicate that always returns `true`:
+
+```elixir
+check_any =
+  pred do
+  end
+
+check_any.(alice)
+```
+
+```elixir
+check_any.(bob)
+```
+
+This is useful as a default or for composing predicates dynamically.
+
+### Single Predicate in any Block
+
+```elixir
+check_single_any =
+  pred do
+    any do
+      adult?
+    end
+  end
+
+check_single_any.(alice)
+```
+
+### Single Predicate in all Block
+
+```elixir
+check_single_all =
+  pred do
+    all do
+      adult?
+    end
+  end
+
+check_single_all.(alice)
+```
+
+## Compile-Time Validation
+
+The DSL validates structure at compile time and raises helpful errors.
+
+### Empty Blocks
+
+Empty `any` or `all` blocks raise a CompileError:
+
+```elixir
+pred do
+  any do
+  end
+end
+```
+
+### negate Without Predicate
+
+Using `negate` without a predicate raises an error:
+
+```elixir
+pred do
+  negate
+end
+```
+
+## Pattern: Find First Match
+
+Use predicates with `Enum.find/2`:
+
+```elixir
+first_admin = Enum.find(users, fn user -> user.role == :admin end)
+```
+
+Or with the DSL:
+
+```elixir
+check_admin =
+  pred do
+    fn user -> user.role == :admin end
+  end
+
+Enum.find(users, check_admin)
+```
+
+## Pattern: Partition by Condition
+
+Use predicates with `Enum.split_with/2`:
+
+```elixir
+{adults, minors} = Enum.split_with(users, check_adult)
+
+IO.inspect(adults, label: "Adults")
+IO.inspect(minors, label: "Minors")
+```
+
+## Pattern: Count Matching Items
+
+```elixir
+active_users =
+  pred do
+    active?
+  end
+
+Enum.count(users, active_users)
+```
+
+## Pattern: Check if Any/All Match
+
+```elixir
+# Any user is an admin
+Enum.any?(users, fn user -> user.role == :admin end)
+```
+
+```elixir
+# All users are active
+Enum.all?(users, active?)
+```
+
+## Summary
+
+The Predicate DSL provides a declarative, composable way to build complex boolean filters:
+
+* Bare predicates for simple function composition
+* `negate` for logical negation
+* `check` directive for projection-based predicates
+* Atoms, Lenses, Prisms, Traversals for optic projections
+* Functions for custom transformations
+* Behaviours for reusable validation logic
+* `any` blocks for OR logic
+* `all` blocks for explicit AND logic
+* Works seamlessly with `Enum.filter`, `Enum.find`, and other predicate-accepting functions
+
+All predicates compose with AND logic at the top level, while `any` blocks provide OR logic. This makes it easy to express complex filtering rules like "pass if (A and B) or (C and D)" without nested conditionals.
+
+The DSL integrates naturally with Elixir's Enum module, making it ideal for filtering collections, finding elements, and partitioning data based on complex boolean conditions.

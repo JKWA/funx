@@ -1,15 +1,17 @@
 # Eq
 
+The Eq DSL is a builder DSL that constructs equality comparators for later use. See the [DSL Overview](overview.md) for the distinction between builder and pipeline DSLs.
+
 ## Structure
 
-An `eq` block compiles entirely at compile time to quoted AST that builds an `%Funx.Monoid.Eq.All{}` struct. Unlike the Maybe and Either DSLs, there is no runtime executor—the DSL produces static composition of `contramap`, `concat_all`, and `concat_any` calls that execute directly.
+An `eq` block compiles entirely at compile time to quoted AST that builds an `%Funx.Monoid.Eq.All{}` struct. Unlike pipeline DSLs (Maybe, Either), there is no runtime executor—the DSL produces static composition of `contramap`, `concat_all`, and `concat_any` calls that execute directly.
 
-## Nodes
+## Internal Representation
 
-The Eq DSL uses two node types to represent the equality tree:
+The Eq DSL uses two structure types to represent the equality composition:
 
 * `Step` - Contains projection AST, eq module, negate flag, type, and metadata
-* `Block` - Contains strategy (`:all` or `:any`), children nodes, and metadata
+* `Block` - Contains strategy (`:all` or `:any`), children, and metadata
 
 Each Step describes a single equality check (on a field or projection). Each Block groups multiple checks with AND/OR logic. The compiler pattern-matches on these structs to generate the final quoted AST.
 
@@ -25,7 +27,7 @@ Compilation
 
 ## Parser
 
-The parser converts the DSL block into a tree of Step and Block nodes. It normalizes all projection syntax into one of four canonical types that `contramap/2` accepts:
+The parser converts the DSL block into a tree of Step and Block structures. It normalizes all projection syntax into one of four canonical types that `contramap/2` accepts:
 
 * `Lens.t()` - Bare lens struct
 * `Prism.t()` - Bare prism struct (Nothing == Nothing)
@@ -50,7 +52,7 @@ Additionally, the parser tracks a `type` field for each Step to enable compile-t
 * `:eq_map` - Behaviour returning Eq map → use directly
 * `:dynamic` - Unknown (0-arity helper) → runtime detection
 
-The parser validates projections and raises compile-time errors for unsupported syntax, producing the final node tree that the executor will compile.
+The parser validates projections and raises compile-time errors for unsupported syntax, producing the final structure tree that the executor will compile.
 
 ## Transformers
 
@@ -58,16 +60,16 @@ The Eq DSL does not currently support transformers. All compilation is handled b
 
 ## Execution
 
-The executor runs at compile time and generates quoted AST. It recursively walks the node tree:
+The executor runs at compile time and generates quoted AST. It recursively walks the structure tree:
 
-1. Take normalized nodes from the parser
+1. Take normalized structures from the parser
 2. For each Step:
    * If `negate: false` → `Utils.contramap(projection, eq)`
    * If `negate: true` → `Utils.contramap(projection, negated_eq)`
 3. For each Block:
    * If `strategy: :all` → `Utils.concat_all([children...])`
    * If `strategy: :any` → `Utils.concat_any([children...])`
-4. Top-level nodes are implicitly combined with `concat_all` (AND logic)
+4. Top-level operations are implicitly combined with `concat_all` (AND logic)
 
 ### Execution Model
 
