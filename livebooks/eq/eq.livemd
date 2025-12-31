@@ -1,10 +1,22 @@
 # Funx.Eq
 
+## Section
+
 ```elixir
 Mix.install([
   {:funx, "0.5.0"}
 ])
 ```
+
+The `Funx.Eq` module provides utilities for working with equality comparisons.
+It combines protocol-based equality (via `Funx.Eq.Protocol`) with powerful utility
+functions for composing and transforming equality checks.
+
+```elixir
+import Funx.Eq
+```
+
+## Protocol Basics
 
 The `Funx.Eq.Protocol` defines an equality function, `eq?/2`, for comparing two values,
 and its complement, `not_eq?/2`, for checking inequality.
@@ -12,17 +24,13 @@ and its complement, `not_eq?/2`, for checking inequality.
 Types that implement this protocol can define custom equality logic, allowing for
 domain-specific comparisons.
 
-## Fallback
+### Fallback Behavior
 
 The protocol uses `@fallback_to_any true`, meaning that if a specific type does not
 implement `Funx.Eq.Protocol`, it falls back to the default implementation for `Any`, which
 uses Elixir's built-in equality operator (`==`).
 
-## Examples
-
-```elixir
-import Funx.Eq
-```
+### Protocol Examples
 
 With a custom implementation for a `Funx.Monad.Maybe` type:
 
@@ -60,30 +68,160 @@ not_eq?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.nothing())
 not_eq?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(5))
 ```
 
-## eq?/2
+## Utility Functions
 
-Returns `true` if `a` is equal to `b`, otherwise returns `false`.
+### eq?/3
 
-### Examples
+Returns `true` if two values are equal, using a specified or default `Eq`.
 
 ```elixir
-eq?(1, 1)
+eq?(42, 42)
 ```
 
 ```elixir
-eq?(1, 2)
+eq?("foo", "bar")
 ```
 
-## not_eq?/2
+### not_eq?/3
 
-Returns `true` if `a` is not equal to `b`, otherwise returns `false`.
-
-### Examples
+Returns `false` if two values are not equal, using a specified or default `Eq`.
 
 ```elixir
-not_eq?(1, 1)
+not_eq?(42, 99)
 ```
 
 ```elixir
-not_eq?(1, 2)
+not_eq?("foo", "foo")
+```
+
+### contramap/2
+
+Transforms an equality check by applying a function `f` to values before comparison.
+
+The `eq` parameter can be an `Eq` module or a custom comparator map with an `:eq?` function.
+If an `Eq` module is provided, it wraps the module's function to apply `f` to each value before invoking the equality check.
+If a custom comparator map is provided, it wraps the function in the map to apply `f` to each value.
+
+```elixir
+eq = contramap(& &1.age)
+eq.eq?.(%{age: 30}, %{age: 30})
+```
+
+```elixir
+eq = contramap(& &1.age)
+eq.eq?.(%{age: 30}, %{age: 25})
+```
+
+### eq_by?/4
+
+Checks equality of values by applying a projection function, using a specified or default `Eq`.
+
+The `eq` parameter can be an `Eq` module or a custom comparator map with an `:eq?` function.
+
+```elixir
+eq_by?(& &1.age, %{age: 30}, %{age: 30})
+```
+
+```elixir
+eq_by?(& &1.age, %{age: 30}, %{age: 25})
+```
+
+## Monoid Operations
+
+### append_all/2
+
+Combines two equality comparators using the `Eq.All` monoid.
+
+This function merges two equality comparisons, requiring **both** to return `true`
+for the final result to be considered equal. This enforces a **strict** equality rule,
+where all comparators must agree.
+
+```elixir
+eq1 = contramap(& &1.name)
+eq2 = contramap(& &1.age)
+combined = append_all(eq1, eq2)
+eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
+```
+
+```elixir
+eq1 = contramap(& &1.name)
+eq2 = contramap(& &1.age)
+combined = append_all(eq1, eq2)
+eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+```
+
+### append_any/2
+
+Combines two equality comparators using the `Eq.Any` monoid.
+
+This function merges two equality comparisons, where **at least one**
+must return `true` for the final result to be considered equal.
+
+```elixir
+eq1 = contramap(& &1.name)
+eq2 = contramap(& &1.age)
+combined = append_any(eq1, eq2)
+eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+```
+
+```elixir
+eq1 = contramap(& &1.name)
+eq2 = contramap(& &1.age)
+combined = append_any(eq1, eq2)
+eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
+```
+
+### concat_all/1
+
+Concatenates a list of equality comparators using the `Eq.All` monoid.
+
+The resulting comparator requires **all** comparators in the list to agree
+that two values are equal.
+
+```elixir
+eq1 = contramap(& &1.name)
+eq2 = contramap(& &1.age)
+combined = concat_all([eq1, eq2])
+eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
+```
+
+```elixir
+eq1 = contramap(& &1.name)
+eq2 = contramap(& &1.age)
+combined = concat_all([eq1, eq2])
+eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+```
+
+### concat_any/1
+
+Concatenates a list of equality comparators using the `Eq.Any` monoid.
+
+The resulting comparator allows **any** comparator in the list to determine
+equality, making it more permissive.
+
+```elixir
+eq1 = contramap(& &1.name)
+eq2 = contramap(& &1.age)
+combined = concat_any([eq1, eq2])
+eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+```
+
+```elixir
+eq1 = contramap(& &1.name)
+eq2 = contramap(& &1.age)
+combined = concat_any([eq1, eq2])
+eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
+```
+
+## to_predicate/2
+
+Converts an `Eq` comparator into a single-argument predicate function for use in `Enum` functions.
+
+The resulting predicate takes a single element and returns `true` if it matches the `target`
+based on the specified `Eq`. If no custom `Eq` is provided, it defaults to `Funx.Eq.Protocol`.
+
+```elixir
+eq = contramap(& &1.name)
+predicate = to_predicate(%{name: "Alice"}, eq)
+Funx.Filterable.filter([%{name: "Alice"}, %{name: "Bob"}], predicate)
 ```

@@ -6,87 +6,231 @@ Mix.install([
 ])
 ```
 
-The `Funx.Ord` protocol defines a set of comparison functions: `lt?/2`, `le?/2`, `gt?/2`, and `ge?/2`.
-
-This protocol is intended for types that can be ordered, allowing values to be compared for their relative positions in a total order.
-
-By implementing this protocol, you can provide custom logic for how values of a certain type are compared.
-
-## Fallback
-
-The protocol uses `@fallback_to_any true`, which means if a specific type does not implement `Funx.Ord`,
-the default implementation for `Any` will be used, which relies on Elixir's built-in comparison operators.
-
-## Function Examples
+The `Funx.Ord` module provides utilities for working with ordering comparisons.
+It combines protocol-based ordering (via `Funx.Ord.Protocol`) with powerful utility
+functions for composing and transforming orderings.
 
 ```elixir
 import Funx.Ord
 ```
 
-## lt?/2
+## Protocol Basics
 
-Returns `true` if `a` is less than `b`, otherwise returns `false`.
+The `Funx.Ord.Protocol` defines a set of comparison functions: `lt?/2`, `le?/2`, `gt?/2`, and `ge?/2`.
 
-### Examples
+This protocol is intended for types that can be ordered, allowing values to be compared for their relative positions in a total order.
+
+By implementing this protocol, you can provide custom logic for how values of a certain type are compared.
+
+### Fallback Behavior
+
+The protocol uses `@fallback_to_any true`, which means if a specific type does not implement `Funx.Ord.Protocol`,
+the default implementation for `Any` will be used, which relies on Elixir's built-in comparison operators.
+
+### Protocol Examples
+
+With a custom implementation for a `Funx.Monad.Maybe` type:
 
 ```elixir
-Funx.Ord.lt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
-# true
-
-Funx.Ord.lt?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
-# false
-
-Funx.Ord.lt?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(3))
-# true
+Funx.Ord.Protocol.lt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
 ```
 
-## le?/2
-
-Returns `true` if `a` is less than or equal to `b`, otherwise returns `false`.
-
-### Examples
-
 ```elixir
-Funx.Ord.le?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
-# true
-
-Funx.Ord.le?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(5))
-# true
-
-Funx.Ord.le?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
-# false
+Funx.Ord.Protocol.lt?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
 ```
 
-## gt?/2
-
-Returns `true` if `a` is greater than `b`, otherwise returns `false`.
-
-### Examples
-
 ```elixir
-Funx.Ord.gt?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
-# true
-
-Funx.Ord.gt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
-# false
-
-Funx.Ord.gt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.nothing())
-# true
+Funx.Ord.Protocol.lt?(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(3))
 ```
 
-## ge?/2
-
-Returns `true` if `a` is greater than or equal to `b`, otherwise returns `false`.
-
-### Examples
+```elixir
+Funx.Ord.Protocol.le?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
+```
 
 ```elixir
-Funx.Ord.ge?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
-# true
+Funx.Ord.Protocol.le?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(5))
+```
 
-Funx.Ord.ge?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(5))
-# true
+```elixir
+Funx.Ord.Protocol.le?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
+```
 
-Funx.Ord.ge?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
-# false
+```elixir
+Funx.Ord.Protocol.gt?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
+```
+
+```elixir
+Funx.Ord.Protocol.gt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
+```
+
+```elixir
+Funx.Ord.Protocol.gt?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.nothing())
+```
+
+```elixir
+Funx.Ord.Protocol.ge?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(3))
+```
+
+```elixir
+Funx.Ord.Protocol.ge?(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.just(5))
+```
+
+```elixir
+Funx.Ord.Protocol.ge?(Funx.Monad.Maybe.just(3), Funx.Monad.Maybe.just(5))
+```
+
+## Utility Functions
+
+These functions assume that types passed in either support Elixir's comparison operators
+or implement the `Funx.Ord.Protocol`.
+
+### contramap/2
+
+Transforms an ordering by applying a function `f` to values before comparison.
+
+The `ord` parameter can be an `Ord` module or a custom comparator map with comparison functions (`:lt?`, `:le?`, `:gt?`, and `:ge?`).
+When an `Ord` module is provided, it wraps the module's functions to apply `f` to each value before invoking the comparison.
+If a custom comparator map is provided, it wraps the functions in the map to apply `f` to each value.
+
+```elixir
+ord = contramap(&String.length/1, Funx.Ord.Protocol)
+ord.lt?.("cat", "zebra")
+```
+
+### max/3
+
+Returns the maximum of two values, with an optional custom `Ord`.
+
+```elixir
+max(3, 5)
+```
+
+```elixir
+ord = contramap(&String.length/1, Funx.Ord.Protocol)
+max("cat", "zebra", ord)
+```
+
+### min/3
+
+Returns the minimum of two values, with an optional custom `Ord`.
+
+```elixir
+min(10, 7)
+```
+
+```elixir
+ord = contramap(&String.length/1, Funx.Ord.Protocol)
+min("apple", "kiwi", ord)
+```
+
+### clamp/4
+
+Clamps a value between `min` and `max`, with an optional custom `Ord`.
+
+```elixir
+clamp(5, 1, 10)
+```
+
+```elixir
+clamp(0, 1, 10)
+```
+
+```elixir
+clamp(15, 1, 10)
+```
+
+### between/4
+
+Checks if `value` is between `min` and `max`, inclusive, with an optional custom `Ord`.
+
+```elixir
+between(5, 1, 10)
+```
+
+```elixir
+between(0, 1, 10)
+```
+
+```elixir
+between(11, 1, 10)
+```
+
+### compare/3
+
+Compares two values and returns `:lt`, `:eq`, or `:gt`, with an optional custom `Ord`.
+
+```elixir
+compare(3, 5)
+```
+
+```elixir
+compare(7, 7)
+```
+
+```elixir
+compare(9, 4)
+```
+
+### reverse/1
+
+Reverses the ordering logic.
+
+```elixir
+ord = reverse(Funx.Ord.Protocol)
+ord.lt?.(10, 5)
+```
+
+### comparator/1
+
+Creates a comparator function from the given `Ord` module, returning `true`
+if `a` is less than or equal to `b` according to the module's ordering.
+
+Useful for sorting with `Enum.sort/2` or similar functions.
+
+```elixir
+comparator_fn = comparator(Funx.Ord.Protocol)
+Enum.sort([3, 1, 2], comparator_fn)
+```
+
+### to_eq/1
+
+Converts an `Ord` instance into an equality comparator.
+
+This function creates a map containing two functions:
+  - `eq?/2`: Returns `true` if `a` and `b` are considered equal by the given `Ord`.
+  - `not_eq?/2`: Returns `true` if `a` and `b` are not considered equal by the given `Ord`.
+
+```elixir
+eq = to_eq(Funx.Ord.Protocol)
+eq.eq?.(5, 5)
+```
+
+### append/2
+
+Appends two `Ord` instances, combining their comparison logic.
+
+If the first `Ord` comparator determines an order, that result is used.
+If not, the second comparator is used as a fallback.
+
+```elixir
+ord1 = contramap(& &1.age, Funx.Ord.Protocol)
+ord2 = contramap(& &1.name, Funx.Ord.Protocol)
+combined = append(ord1, ord2)
+combined.lt?.(%{age: 30, name: "Alice"}, %{age: 30, name: "Bob"})
+```
+
+### concat/1
+
+Concatenates a list of `Ord` instances into a single composite comparator.
+
+This function reduces a list of `Ord` comparators into a single `Ord`,
+applying them in sequence until an order is determined.
+
+```elixir
+ord_list = [
+  contramap(& &1.age, Funx.Ord.Protocol),
+  contramap(& &1.name, Funx.Ord.Protocol)
+]
+combined = concat(ord_list)
+combined.gt?.(%{age: 25, name: "Charlie"}, %{age: 25, name: "Bob"})
 ```

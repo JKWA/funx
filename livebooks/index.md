@@ -10,10 +10,8 @@ For the stable API reference, use the project's [hex documentation](https://hexd
 
 ### Equality & Ordering
 
-- ▶️ [Eq Protocol](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Feq%2Feq.livemd) - Domain-specific equality
-- ▶️ [Eq Utils](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Feq%2Futils.livemd) - Equality utilities and combinators
-- ▶️ [Ord Protocol](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ford%2Ford.livemd) - Context-aware ordering
-- ▶️ [Ord Utils](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ford%2Futils.livemd) - Ordering utilities and combinators
+- ▶️ [Eq](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Feq%2Feq.livemd) - Equality protocol and utilities
+- ▶️ [Ord](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ford%2Ford.livemd) - Ordering protocol and utilities
 
 ### Structure Operations
 
@@ -109,7 +107,7 @@ For the stable API reference, use the project's [hex documentation](https://hexd
 
 ## Getting Started
 
-1. **New to functional programming?** Start with ▶️ [Eq Protocol](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Feq%2Feq.livemd) and ▶️ [Utils](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Futilities%2Futils.livemd)
+1. **New to functional programming?** Start with ▶️ [Eq](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Feq%2Feq.livemd) and ▶️ [Utils](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Futilities%2Futils.livemd)
 2. **Want to handle errors elegantly?** Explore ▶️ [Maybe](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Fmaybe%2Fmaybe.livemd) and ▶️ [Either](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Feither%2Feither.livemd)
 3. **Need to combine values?** Check out ▶️ [Monoid Protocol](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonoid%2Fmonoid.livemd) and its implementations
 4. **Working with collections?** See ▶️ [Foldable](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ffoldable%2Ffoldable.livemd) and ▶️ [List](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Flist%2Flist.livemd)

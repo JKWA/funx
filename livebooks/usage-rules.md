@@ -25,8 +25,7 @@ lib/**/*.ex
 The livebook structure uses **topic-based organization** for optimal browsing experience:
 
 ```
-lib/eq.ex → livebooks/eq/eq.livemd
-lib/eq/utils.ex → livebooks/eq/utils.livemd
+lib/eq.ex → livebooks/eq/eq.livemd (combined protocol + utilities)
 lib/monad/maybe.ex → livebooks/monad/maybe/maybe.livemd
 lib/monad/maybe/just.ex → livebooks/monad/maybe/just.livemd
 ```
@@ -46,8 +45,8 @@ livebooks/
 ├── index.md                    # Navigation index with conditional links
 ├── usage-rules.md              # Process documentation
 ├── eq/                         # Equality concept
-│   ├── eq.livemd              
-│   └── utils.livemd           
+│   ├── eq.livemd               # Protocol + utilities (combined)
+│   └── eq_dsl.livemd           # Equality DSL
 ├── monad/                      # All monad types
 │   ├── monad.livemd           
 │   ├── maybe/                  # Maybe monad + implementations
@@ -167,8 +166,8 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 
 ### Protocols and Main Modules
 
-- [x] `eq.ex`, `eq/utils.ex` (Equality protocol)
-- [x] `ord.ex`, `ord/utils.ex` (Ordering protocol)
+- [x] `eq.ex` (Equality protocol + utilities, combined)
+- [x] `ord.ex` (Ordering protocol + utilities, combined)
 - [x] `predicate.ex` (Predicate combinators)
 - [x] `foldable.ex` (Folding protocol)
 - [x] `filterable.ex` (Filtering protocol)
