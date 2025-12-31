@@ -1,8 +1,10 @@
 # Funx.Ord
 
+## Section
+
 ```elixir
 Mix.install([
-  {:funx, "0.5.0"}
+  {:funx, github: "JKWA/funx", ref: "feeaaf3"}
 ])
 ```
 
@@ -102,6 +104,8 @@ ord.lt?.("cat", "zebra")
 Returns the maximum of two values, with an optional custom `Ord`.
 
 ```elixir
+import Kernel, except: [max: 2, min: 2]
+
 max(3, 5)
 ```
 
@@ -197,8 +201,9 @@ Enum.sort([3, 1, 2], comparator_fn)
 Converts an `Ord` instance into an equality comparator.
 
 This function creates a map containing two functions:
-  - `eq?/2`: Returns `true` if `a` and `b` are considered equal by the given `Ord`.
-  - `not_eq?/2`: Returns `true` if `a` and `b` are not considered equal by the given `Ord`.
+
+* `eq?/2`: Returns `true` if `a` and `b` are considered equal by the given `Ord`.
+* `not_eq?/2`: Returns `true` if `a` and `b` are not considered equal by the given `Ord`.
 
 ```elixir
 eq = to_eq(Funx.Ord.Protocol)

@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:funx, "0.5.0"}
+  {:funx, github: "JKWA/funx", ref: "feeaaf3"}
 ])
 ```
 
@@ -53,7 +53,7 @@ end
 
 ## Setup
 
-Import the DSL and helper modules:
+Use the DSL and alias helper modules:
 
 ```elixir
 use Funx.Eq
@@ -758,12 +758,19 @@ This always returns `true`, treating all values as equal.
 
 Use the `eq:` option to specify a custom Eq module for a field.
 
-Define a custom Eq module:
+Define a custom Eq module by implementing the behaviour:
 
 ```elixir
 defmodule CaseInsensitiveEq do
-  def eq?(a, b), do: String.downcase(a) == String.downcase(b)
-  def not_eq?(a, b), do: !eq?(a, b)
+  @behaviour Funx.Eq.Dsl.Behaviour
+
+  @impl true
+  def eq(_opts) do
+    %{
+      eq?: fn a, b -> String.downcase(a) == String.downcase(b) end,
+      not_eq?: fn a, b -> String.downcase(a) != String.downcase(b) end
+    }
+  end
 end
 ```
 
