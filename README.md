@@ -12,8 +12,50 @@
 
 ⚠️ **Beta:** Funx is in active development. APIs may change until version 1.0. Feedback and contributions are welcome.
 
-**Official website:** [https://www.funxlib.com](https://www.funxlib.com)  
+**Official website:** [https://www.funxlib.com](https://www.funxlib.com)
 **Code and API documentation:** [https://hex.pm/packages/funx](https://hex.pm/packages/funx)
+
+## Breaking Changes in 0.6.0
+
+If you're upgrading from 0.5.0 or earlier, be aware of the module reorganization:
+
+### Eq changes
+
+```elixir
+# Change protocol implementations
+defimpl Funx.Eq, for: MyStruct          # Old
+defimpl Funx.Eq.Protocol, for: MyStruct  # New
+
+# Change imports and aliases
+alias Funx.Eq.Utils  # Old
+use Funx.Eq.Dsl      # Old
+
+use Funx.Eq          # New (imports eq DSL macro)
+alias Funx.Eq        # New (for utility functions)
+
+# Example usage
+Eq.contramap(&(&1.age))
+```
+
+### Ord changes
+
+```elixir
+# Change protocol implementations
+defimpl Funx.Ord, for: MyStruct          # Old
+defimpl Funx.Ord.Protocol, for: MyStruct  # New
+
+# Change imports and aliases
+alias Funx.Ord.Utils  # Old
+use Funx.Ord.Dsl      # Old
+
+use Funx.Ord          # New (imports ord DSL macro)
+alias Funx.Ord        # New (for utility functions)
+
+# Example usage
+Ord.contramap(&(&1.score))
+```
+
+See the [CHANGELOG](CHANGELOG.md) for more details.
 
 ## Installation  
 

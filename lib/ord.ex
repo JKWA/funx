@@ -78,7 +78,7 @@ defmodule Funx.Ord do
 
   defmacro __using__(_opts) do
     quote do
-      import Funx.Ord
+      import Funx.Ord, only: [ord: 1]
     end
   end
 

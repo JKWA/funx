@@ -58,7 +58,7 @@ defmodule Funx.Eq do
 
   defmacro __using__(_opts) do
     quote do
-      import Funx.Eq
+      import Funx.Eq, only: [eq: 1]
     end
   end
 
