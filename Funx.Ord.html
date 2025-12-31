@@ -14,7 +14,7 @@
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Ord.html" />
 
-    <script defer src="dist/sidebar_items-9D932445.js"></script>
+    <script defer src="dist/sidebar_items-7B7B9937.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -49,7 +49,7 @@ funx
 
 <output role="status" id="toast"></output>
 
-<main class="content page-protocol" id="main" data-type="modules">
+<main class="content page-module" id="main" data-type="modules">
   <div id="content" class="content-inner">
     <div class="top-search">
       <div class="search-settings">
@@ -95,7 +95,7 @@ funx
 <div id="top-content">
   <div class="heading-with-actions top-heading">
     <h1>
-      <span translate="no">Funx.Ord</span> <small>protocol</small>
+      <span translate="no">Funx.Ord</span> 
       <small class="app-vsn" translate="no">(funx v0.5.0)</small>
 
     </h1>
@@ -109,8 +109,14 @@ funx
 
 
     <section id="moduledoc">
-<p>The <a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a> protocol defines a set of comparison functions: <a href="#lt?/2"><code class="inline">lt?/2</code></a>, <a href="#le?/2"><code class="inline">le?/2</code></a>, <a href="#gt?/2"><code class="inline">gt?/2</code></a>, and <a href="#ge?/2"><code class="inline">ge?/2</code></a>.</p><p>This protocol is intended for types that can be ordered, allowing values to be compared for their relative positions in a total order.</p><p>By implementing this protocol, you can provide custom logic for how values of a certain type are compared.</p><h2 id="module-fallback" class="section-heading"><a href="#module-fallback" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Fallback</span></h2><p>The protocol uses <code class="inline">@fallback_to_any true</code>, which means if a specific type does not implement <a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>,
-the default implementation for <code class="inline">Any</code> will be used, which relies on Elixir's built-in comparison operators.</p>
+<p>Provides utilities and DSL for working with the <a href="Funx.Ord.Protocol.html"><code class="inline">Funx.Ord.Protocol</code></a>.</p><p>This module combines:</p><ul><li>Utility functions for ordering and comparison</li><li>A declarative DSL for building complex orderings</li></ul><h2 id="module-utility-functions" class="section-heading"><a href="#module-utility-functions" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Utility Functions</span></h2><p>These functions work with types that support Elixir's comparison operators
+or implement the <a href="Funx.Ord.Protocol.html"><code class="inline">Funx.Ord.Protocol</code></a>:</p><ul><li><a href="#contramap/2"><code class="inline">contramap/2</code></a> - Transform ordering by applying a projection</li><li><a href="#compare/3"><code class="inline">compare/3</code></a> - Compare two values, returns <code class="inline">:lt</code>, <code class="inline">:eq</code>, or <code class="inline">:gt</code></li><li><a href="#max/3"><code class="inline">max/3</code></a>, <a href="#min/3"><code class="inline">min/3</code></a> - Find maximum or minimum of two values</li><li><a href="#clamp/4"><code class="inline">clamp/4</code></a>, <a href="#between/4"><code class="inline">between/4</code></a> - Range operations</li><li><a href="#reverse/1"><code class="inline">reverse/1</code></a> - Reverse ordering logic</li><li><a href="#comparator/1"><code class="inline">comparator/1</code></a> - Convert to Elixir comparator for <a href="https://hexdocs.pm/elixir/Enum.html#sort/2"><code class="inline">Enum.sort/2</code></a></li><li><a href="#to_eq/1"><code class="inline">to_eq/1</code></a> - Convert to equality comparator</li><li><a href="#append/2"><code class="inline">append/2</code></a>, <a href="#concat/1"><code class="inline">concat/1</code></a> - Combine multiple orderings</li></ul><h2 id="module-dsl" class="section-heading"><a href="#module-dsl" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">DSL</span></h2><p>The DSL provides a declarative syntax for building total orderings over complex data structures.</p><p>Use <code class="inline">use Funx.Ord</code> to import both utilities and DSL:</p><pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="w">
+
+</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="9344247972-1">do</span><span class="w">
+  </span><span class="n">asc</span><span class="w"> </span><span class="ss">:name</span><span class="w">
+  </span><span class="n">desc</span><span class="w"> </span><span class="ss">:age</span><span class="w">
+</span><span class="k" data-group-id="9344247972-1">end</span></code></pre><p>The DSL compiles at compile time into efficient compositions using <code class="inline">contramap</code>, <code class="inline">reverse</code>, and <code class="inline">concat</code>,
+eliminating the need to manually compose ordering functions.</p><h3 id="module-directions" class="section-heading"><a href="#module-directions" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Directions</span></h3><ul><li><code class="inline">:asc</code> - Ascending order (smallest to largest)</li><li><code class="inline">:desc</code> - Descending order (largest to smallest)</li></ul><h3 id="module-projection-types" class="section-heading"><a href="#module-projection-types" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Projection Types</span></h3><ul><li>Atom - Field access via <code class="inline">Prism.key(atom)</code>. Safe for nil values.</li><li>Atom with or_else - Optional field with fallback value</li><li>Function - Direct projection <code class="inline">fn x -&gt; ... end</code> or <code class="inline">&amp;fun/1</code></li><li>Lens - Explicit lens for nested access</li><li>Prism - Explicit prism for optional fields</li><li>Prism with or_else - Optional with fallback</li><li>Behaviour - Custom ordering via <a href="Funx.Ord.Dsl.Behaviour.html"><code class="inline">Funx.Ord.Dsl.Behaviour</code></a></li><li>Ord variable - Existing ord map to compose</li></ul><p>See <a href="Funx.Ord.Dsl.Behaviour.html"><code class="inline">Funx.Ord.Dsl.Behaviour</code></a> for implementing custom ordering logic.</p>
     </section>
 
 </div>
@@ -129,11 +135,17 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
+        <a href="#t:ord_map/0" data-no-tooltip="" translate="no">ord_map()</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>All the types that implement this protocol.</p></div>
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#t:ord_t/0" data-no-tooltip="" translate="no">ord_t()</a>
+
+      </div>
 
     </div>
 
@@ -145,41 +157,130 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#ge?/2" data-no-tooltip="" translate="no">ge?(a, b)</a>
+        <a href="#append/2" data-no-tooltip="" translate="no">append(a, b)</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Returns <code class="inline">true</code> if <code class="inline">a</code> is greater than or equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p></div>
+        <div class="summary-synopsis"><p>Appends two <code class="inline">Ord</code> instances, combining their comparison logic.</p></div>
 
     </div>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#gt?/2" data-no-tooltip="" translate="no">gt?(a, b)</a>
+        <a href="#between/4" data-no-tooltip="" translate="no">between(value, min, max, ord \\ Funx.Ord.Protocol)</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Returns <code class="inline">true</code> if <code class="inline">a</code> is greater than <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p></div>
+        <div class="summary-synopsis"><p>Checks if <code class="inline">value</code> is between <code class="inline">min</code> and <code class="inline">max</code>, inclusive, with an optional custom <code class="inline">Ord</code>.</p></div>
 
     </div>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#le?/2" data-no-tooltip="" translate="no">le?(a, b)</a>
+        <a href="#clamp/4" data-no-tooltip="" translate="no">clamp(value, min, max, ord \\ Funx.Ord.Protocol)</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Returns <code class="inline">true</code> if <code class="inline">a</code> is less than or equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p></div>
+        <div class="summary-synopsis"><p>Clamps a value between <code class="inline">min</code> and <code class="inline">max</code>, with an optional custom <code class="inline">Ord</code>.</p></div>
 
     </div>
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#lt?/2" data-no-tooltip="" translate="no">lt?(a, b)</a>
+        <a href="#comparator/1" data-no-tooltip="" translate="no">comparator(ord_module)</a>
 
       </div>
 
-        <div class="summary-synopsis"><p>Returns <code class="inline">true</code> if <code class="inline">a</code> is less than <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p></div>
+        <div class="summary-synopsis"><p>Creates a comparator function from the given <code class="inline">Ord</code> module, returning <code class="inline">true</code>
+if <code class="inline">a</code> is less than or equal to <code class="inline">b</code> according to the module's ordering.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#compare/3" data-no-tooltip="" translate="no">compare(a, b, ord \\ Funx.Ord.Protocol)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Compares two values and returns <code class="inline">:lt</code>, <code class="inline">:eq</code>, or <code class="inline">:gt</code>, with an optional custom <code class="inline">Ord</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#concat/1" data-no-tooltip="" translate="no">concat(ord_list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Concatenates a list of <code class="inline">Ord</code> instances into a single composite comparator.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#contramap/2" data-no-tooltip="" translate="no">contramap(projection, ord \\ Funx.Ord.Protocol)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Transforms an ordering by applying a projection before comparison.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#max/3" data-no-tooltip="" translate="no">max(a, b, ord \\ Funx.Ord.Protocol)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns the maximum of two values, with an optional custom <code class="inline">Ord</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#min/3" data-no-tooltip="" translate="no">min(a, b, ord \\ Funx.Ord.Protocol)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Returns the minimum of two values, with an optional custom <code class="inline">Ord</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#ord/1" data-no-tooltip="" translate="no">ord(list)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Creates an ordering from a block of projection specifications.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#reverse/1" data-no-tooltip="" translate="no">reverse(ord \\ Funx.Ord.Protocol)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Reverses the ordering logic.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_eq/1" data-no-tooltip="" translate="no">to_eq(ord \\ Funx.Ord.Protocol)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Converts an <code class="inline">Ord</code> instance into an equality comparator.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#to_ord_map/1" data-no-tooltip="" translate="no">to_ord_map(ord_map)</a>
+
+      </div>
 
     </div>
 
@@ -197,17 +298,17 @@ the default implementation for <code class="inline">Any</code> will be used, whi
     </h1>
 
     <div class="types-list">
-<section class="detail" id="t:t/0">
+<section class="detail" id="t:ord_map/0">
 
   <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
+    <a href="#t:ord_map/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">t()</h1>
+      <h1 class="signature" translate="no">ord_map()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L1" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L58" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -218,11 +319,44 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@type</span> t() :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+          <pre translate="no"><span class="attribute">@type</span> ord_map() :: %{
+  lt?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()),
+  le?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()),
+  gt?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()),
+  ge?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>())
+}</pre>
 
       </div>
 
-<p>All the types that implement this protocol.</p>
+
+  </section>
+</section>
+<section class="detail" id="t:ord_t/0">
+
+  <div class="detail-header">
+    <a href="#t:ord_t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">ord_t()</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L65" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@type</span> ord_t() :: <a href="Funx.Ord.Protocol.html#t:t/0">Funx.Ord.Protocol.t</a>() | <a href="#t:ord_map/0">ord_map</a>()</pre>
+
+      </div>
+
+
   </section>
 </section>
 
@@ -238,17 +372,17 @@ the default implementation for <code class="inline">Any</code> will be used, whi
     </h1>
 
     <div class="functions-list">
-<section class="detail" id="ge?/2">
+<section class="detail" id="append/2">
 
   <div class="detail-header">
-    <a href="#ge?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+    <a href="#append/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">ge?(a, b)</h1>
+      <h1 class="signature" translate="no">append(a, b)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L78" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L401" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -257,56 +391,33 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
   <section class="docstring">
 
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is greater than or equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="ge?/2-examples" class="section-heading"><a href="#ge?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">ge?</span><span class="p" data-group-id="0827169369-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0827169369-2">(</span><span class="mi">5</span><span class="p" data-group-id="0827169369-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0827169369-3">(</span><span class="mi">3</span><span class="p" data-group-id="0827169369-3">)</span><span class="p" data-group-id="0827169369-1">)</span><span class="w">
-</span><span class="no">true</span><span class="w">
+      <div class="specs">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">ge?</span><span class="p" data-group-id="0827169369-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0827169369-5">(</span><span class="mi">5</span><span class="p" data-group-id="0827169369-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0827169369-6">(</span><span class="mi">5</span><span class="p" data-group-id="0827169369-6">)</span><span class="p" data-group-id="0827169369-4">)</span><span class="w">
-</span><span class="no">true</span><span class="w">
+          <pre translate="no"><span class="attribute">@spec</span> append(<a href="Funx.Monoid.Ord.html#t:t/0">Funx.Monoid.Ord.t</a>(), <a href="Funx.Monoid.Ord.html#t:t/0">Funx.Monoid.Ord.t</a>()) :: <a href="Funx.Monoid.Ord.html#t:t/0">Funx.Monoid.Ord.t</a>()</pre>
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">ge?</span><span class="p" data-group-id="0827169369-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0827169369-8">(</span><span class="mi">3</span><span class="p" data-group-id="0827169369-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0827169369-9">(</span><span class="mi">5</span><span class="p" data-group-id="0827169369-9">)</span><span class="p" data-group-id="0827169369-7">)</span><span class="w">
-</span><span class="no">false</span></code></pre>
-  </section>
-</section>
-<section class="detail" id="gt?/2">
+      </div>
 
-  <div class="detail-header">
-    <a href="#gt?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
-      <i class="ri-link-m" aria-hidden="true"></i>
-    </a>
-    <div class="heading-with-actions">
-      <h1 class="signature" translate="no">gt?(a, b)</h1>
-
-
-        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L62" class="icon-action" rel="help" aria-label="View Source">
-          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-        </a>
-
-    </div>
-  </div>
-
-  <section class="docstring">
-
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is greater than <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="gt?/2-examples" class="section-heading"><a href="#gt?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="6141587772-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6141587772-2">(</span><span class="mi">5</span><span class="p" data-group-id="6141587772-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6141587772-3">(</span><span class="mi">3</span><span class="p" data-group-id="6141587772-3">)</span><span class="p" data-group-id="6141587772-1">)</span><span class="w">
-</span><span class="no">true</span><span class="w">
-
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="6141587772-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6141587772-5">(</span><span class="mi">3</span><span class="p" data-group-id="6141587772-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6141587772-6">(</span><span class="mi">5</span><span class="p" data-group-id="6141587772-6">)</span><span class="p" data-group-id="6141587772-4">)</span><span class="w">
-</span><span class="no">false</span><span class="w">
-
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">gt?</span><span class="p" data-group-id="6141587772-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="6141587772-8">(</span><span class="mi">3</span><span class="p" data-group-id="6141587772-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="6141587772-9">(</span><span class="p" data-group-id="6141587772-9">)</span><span class="p" data-group-id="6141587772-7">)</span><span class="w">
+<p>Appends two <code class="inline">Ord</code> instances, combining their comparison logic.</p><p>If the first <code class="inline">Ord</code> comparator determines an order, that result is used.
+If not, the second comparator is used as a fallback.</p><h2 id="append/2-examples" class="section-heading"><a href="#append/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="3222547767-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="3222547767-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="3222547767-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="3222547767-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">append</span><span class="p" data-group-id="3222547767-3">(</span><span class="n">ord1</span><span class="p">,</span><span class="w"> </span><span class="n">ord2</span><span class="p" data-group-id="3222547767-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="3222547767-4">(</span><span class="p" data-group-id="3222547767-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="3222547767-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3222547767-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="3222547767-6">}</span><span class="p" data-group-id="3222547767-4">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
-<section class="detail" id="le?/2">
+<section class="detail" id="between/4">
+
+    <span id="between/3"></span>
 
   <div class="detail-header">
-    <a href="#le?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+    <a href="#between/4" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">le?(a, b)</h1>
+      <h1 class="signature" translate="no">between(value, min, max, ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L46" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L297" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -315,27 +426,35 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
   <section class="docstring">
 
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is less than or equal to <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="le?/2-examples" class="section-heading"><a href="#le?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">le?</span><span class="p" data-group-id="9792062653-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9792062653-2">(</span><span class="mi">3</span><span class="p" data-group-id="9792062653-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9792062653-3">(</span><span class="mi">5</span><span class="p" data-group-id="9792062653-3">)</span><span class="p" data-group-id="9792062653-1">)</span><span class="w">
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> between(a, a, a, <a href="#t:ord_t/0">ord_t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>() when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Checks if <code class="inline">value</code> is between <code class="inline">min</code> and <code class="inline">max</code>, inclusive, with an optional custom <code class="inline">Ord</code>.</p><h2 id="between/4-examples" class="section-heading"><a href="#between/4-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="4222961628-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4222961628-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">le?</span><span class="p" data-group-id="9792062653-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9792062653-5">(</span><span class="mi">5</span><span class="p" data-group-id="9792062653-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9792062653-6">(</span><span class="mi">5</span><span class="p" data-group-id="9792062653-6">)</span><span class="p" data-group-id="9792062653-4">)</span><span class="w">
-</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="4222961628-2">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4222961628-2">)</span><span class="w">
+</span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">le?</span><span class="p" data-group-id="9792062653-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9792062653-8">(</span><span class="mi">5</span><span class="p" data-group-id="9792062653-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9792062653-9">(</span><span class="mi">3</span><span class="p" data-group-id="9792062653-9">)</span><span class="p" data-group-id="9792062653-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="4222961628-3">(</span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4222961628-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
-<section class="detail" id="lt?/2">
+<section class="detail" id="clamp/4">
+
+    <span id="clamp/3"></span>
 
   <div class="detail-header">
-    <a href="#lt?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+    <a href="#clamp/4" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">lt?(a, b)</h1>
+      <h1 class="signature" translate="no">clamp(value, min, max, ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L30" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L275" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -344,14 +463,373 @@ the default implementation for <code class="inline">Any</code> will be used, whi
 
   <section class="docstring">
 
-<p>Returns <code class="inline">true</code> if <code class="inline">a</code> is less than <code class="inline">b</code>, otherwise returns <code class="inline">false</code>.</p><h2 id="lt?/2-examples" class="section-heading"><a href="#lt?/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5994607201-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5994607201-2">(</span><span class="mi">3</span><span class="p" data-group-id="5994607201-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5994607201-3">(</span><span class="mi">5</span><span class="p" data-group-id="5994607201-3">)</span><span class="p" data-group-id="5994607201-1">)</span><span class="w">
-</span><span class="no">true</span><span class="w">
+      <div class="specs">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5994607201-4">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5994607201-5">(</span><span class="mi">5</span><span class="p" data-group-id="5994607201-5">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5994607201-6">(</span><span class="mi">3</span><span class="p" data-group-id="5994607201-6">)</span><span class="p" data-group-id="5994607201-4">)</span><span class="w">
-</span><span class="no">false</span><span class="w">
+          <pre translate="no"><span class="attribute">@spec</span> clamp(a, a, a, <a href="#t:ord_t/0">ord_t</a>()) :: a when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">lt?</span><span class="p" data-group-id="5994607201-7">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="5994607201-8">(</span><span class="p" data-group-id="5994607201-8">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5994607201-9">(</span><span class="mi">3</span><span class="p" data-group-id="5994607201-9">)</span><span class="p" data-group-id="5994607201-7">)</span><span class="w">
+      </div>
+
+<p>Clamps a value between <code class="inline">min</code> and <code class="inline">max</code>, with an optional custom <code class="inline">Ord</code>.</p><h2 id="clamp/4-examples" class="section-heading"><a href="#clamp/4-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="5077377746-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="5077377746-1">)</span><span class="w">
+</span><span class="mi">5</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="5077377746-2">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="5077377746-2">)</span><span class="w">
+</span><span class="mi">1</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="5077377746-3">(</span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="5077377746-3">)</span><span class="w">
+</span><span class="mi">10</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="comparator/1">
+
+  <div class="detail-header">
+    <a href="#comparator/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">comparator(ord_module)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L361" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> comparator(<a href="#t:ord_t/0">ord_t</a>()) :: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>())</pre>
+
+      </div>
+
+<p>Creates a comparator function from the given <code class="inline">Ord</code> module, returning <code class="inline">true</code>
+if <code class="inline">a</code> is less than or equal to <code class="inline">b</code> according to the module's ordering.</p><p>Useful for sorting with <a href="https://hexdocs.pm/elixir/Enum.html#sort/2"><code class="inline">Enum.sort/2</code></a> or similar functions.</p><h2 id="comparator/1-examples" class="section-heading"><a href="#comparator/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">comparator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">comparator</span><span class="p" data-group-id="7966390420-1">(</span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="7966390420-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Enum</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="7966390420-2">(</span><span class="p" data-group-id="7966390420-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7966390420-3">]</span><span class="p">,</span><span class="w"> </span><span class="n">comparator</span><span class="p" data-group-id="7966390420-2">)</span><span class="w">
+</span><span class="p" data-group-id="7966390420-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7966390420-4">]</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="compare/3">
+
+    <span id="compare/2"></span>
+
+  <div class="detail-header">
+    <a href="#compare/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">compare(a, b, ord \\ Funx.Ord.Protocol)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L317" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> compare(a, a, <a href="#t:ord_t/0">ord_t</a>()) :: :lt | :eq | :gt when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Compares two values and returns <code class="inline">:lt</code>, <code class="inline">:eq</code>, or <code class="inline">:gt</code>, with an optional custom <code class="inline">Ord</code>.</p><h2 id="compare/3-examples" class="section-heading"><a href="#compare/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="7280022813-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7280022813-1">)</span><span class="w">
+</span><span class="ss">:lt</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="7280022813-2">(</span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="7280022813-2">)</span><span class="w">
+</span><span class="ss">:eq</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="7280022813-3">(</span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7280022813-3">)</span><span class="w">
+</span><span class="ss">:gt</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="concat/1">
+
+  <div class="detail-header">
+    <a href="#concat/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">concat(ord_list)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L422" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> concat([<a href="Funx.Monoid.Ord.html#t:t/0">Funx.Monoid.Ord.t</a>()]) :: <a href="Funx.Monoid.Ord.html#t:t/0">Funx.Monoid.Ord.t</a>()</pre>
+
+      </div>
+
+<p>Concatenates a list of <code class="inline">Ord</code> instances into a single composite comparator.</p><p>This function reduces a list of <code class="inline">Ord</code> comparators into a single <code class="inline">Ord</code>,
+applying them in sequence until an order is determined.</p><h2 id="concat/1-examples" class="section-heading"><a href="#concat/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="8338338817-1">[</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8338338817-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="8338338817-2">)</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8338338817-3">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="8338338817-3">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="8338338817-1">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="8338338817-4">(</span><span class="n">ord_list</span><span class="p" data-group-id="8338338817-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="8338338817-5">(</span><span class="p" data-group-id="8338338817-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Charlie&quot;</span><span class="p" data-group-id="8338338817-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8338338817-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="8338338817-7">}</span><span class="p" data-group-id="8338338817-5">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="contramap/2">
+
+    <span id="contramap/1"></span>
+
+  <div class="detail-header">
+    <a href="#contramap/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">contramap(projection, ord \\ Funx.Ord.Protocol)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L183" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> contramap(
+  (a -&gt; b)
+  | <a href="Funx.Optics.Lens.html#t:t/0">Funx.Optics.Lens.t</a>()
+  | <a href="Funx.Optics.Prism.html#t:t/0">Funx.Optics.Prism.t</a>()
+  | {<a href="Funx.Optics.Prism.html#t:t/0">Funx.Optics.Prism.t</a>(), b},
+  <a href="#t:ord_t/0">ord_t</a>()
+) :: <a href="#t:ord_map/0">ord_map</a>()
+when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), b: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Transforms an ordering by applying a projection before comparison.</p><h2 id="contramap/2-canonical-normalization-layer" class="section-heading"><a href="#contramap/2-canonical-normalization-layer" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Canonical Normalization Layer</span></h2><p>This function defines the <strong>single normalization point</strong> for all projections
+in the Ord DSL. Every projection type resolves to one of these four forms:</p><ul><li><code class="inline">Lens.t()</code> - Uses <code class="inline">view!/2</code> to extract the focused value (raises on missing)</li><li><code class="inline">Prism.t()</code> - Uses <code class="inline">preview/2</code>, returns <code class="inline">Maybe</code>, with <code class="inline">Nothing &lt; Just(_)</code> ordering</li><li><code class="inline">{Prism.t(), or_else}</code> - Uses <code class="inline">preview/2</code>, falling back to <code class="inline">or_else</code> on <code class="inline">Nothing</code></li><li><code class="inline">(a -&gt; b)</code> - Projection function applied directly</li></ul><p>All DSL syntax sugar (atoms, helpers, etc.) normalizes to these types in the parser.
+This function is the <strong>only place</strong> that converts optics to executable functions.</p><p>The <code class="inline">ord</code> parameter may be an <code class="inline">Ord</code> module or a custom comparator map
+with <code class="inline">:lt?</code>, <code class="inline">:le?</code>, <code class="inline">:gt?</code>, and <code class="inline">:ge?</code> functions. The projection is applied
+to both inputs before invoking the underlying comparator.</p><h2 id="contramap/2-examples" class="section-heading"><a href="#contramap/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><p>Using a projection function:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4416107728-1">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4416107728-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="4416107728-2">(</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;zebra&quot;</span><span class="p" data-group-id="4416107728-2">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="4416107728-3">(</span><span class="s">&quot;zebra&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cat&quot;</span><span class="p" data-group-id="4416107728-3">)</span><span class="w">
+</span><span class="no">true</span></code></pre><p>Using a lens for single key access:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4215452150-1">(</span><span class="nc">Funx.Optics.Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4215452150-2">(</span><span class="ss">:age</span><span class="p" data-group-id="4215452150-2">)</span><span class="p" data-group-id="4215452150-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="4215452150-3">(</span><span class="p" data-group-id="4215452150-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="p" data-group-id="4215452150-4">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4215452150-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4215452150-5">}</span><span class="p" data-group-id="4215452150-3">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="4215452150-6">(</span><span class="p" data-group-id="4215452150-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4215452150-7">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4215452150-8">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="p" data-group-id="4215452150-8">}</span><span class="p" data-group-id="4215452150-6">)</span><span class="w">
+</span><span class="no">true</span></code></pre><p>Using a bare prism (Nothing &lt; Just):</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">prism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="5060381090-1">(</span><span class="ss">:score</span><span class="p" data-group-id="5060381090-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="5060381090-2">(</span><span class="n">prism</span><span class="p" data-group-id="5060381090-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="5060381090-3">(</span><span class="p" data-group-id="5060381090-4">%{</span><span class="p" data-group-id="5060381090-4">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5060381090-5">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="5060381090-5">}</span><span class="p" data-group-id="5060381090-3">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="5060381090-6">(</span><span class="p" data-group-id="5060381090-7">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="5060381090-7">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5060381090-8">%{</span><span class="p" data-group-id="5060381090-8">}</span><span class="p" data-group-id="5060381090-6">)</span><span class="w">
+</span><span class="no">true</span></code></pre><p>Using a prism with an or_else value:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">prism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="1452681369-1">(</span><span class="ss">:score</span><span class="p" data-group-id="1452681369-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="1452681369-2">(</span><span class="p" data-group-id="1452681369-3">{</span><span class="n">prism</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1452681369-3">}</span><span class="p" data-group-id="1452681369-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1452681369-4">(</span><span class="p" data-group-id="1452681369-5">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="1452681369-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1452681369-6">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="1452681369-6">}</span><span class="p" data-group-id="1452681369-4">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1452681369-7">(</span><span class="p" data-group-id="1452681369-8">%{</span><span class="p" data-group-id="1452681369-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1452681369-9">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="1452681369-9">}</span><span class="p" data-group-id="1452681369-7">)</span><span class="w">
+</span><span class="no">true</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="1452681369-10">(</span><span class="p" data-group-id="1452681369-11">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="1452681369-11">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1452681369-12">%{</span><span class="p" data-group-id="1452681369-12">}</span><span class="p" data-group-id="1452681369-10">)</span><span class="w">
+</span><span class="no">true</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="max/3">
+
+    <span id="max/2"></span>
+
+  <div class="detail-header">
+    <a href="#max/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">max(a, b, ord \\ Funx.Ord.Protocol)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L231" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> max(a, a, <a href="#t:ord_t/0">ord_t</a>()) :: a when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Returns the maximum of two values, with an optional custom <code class="inline">Ord</code>.</p><h2 id="max/3-examples" class="section-heading"><a href="#max/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="0180091757-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0180091757-1">)</span><span class="w">
+</span><span class="mi">5</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="0180091757-2">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="0180091757-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="0180091757-3">(</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;zebra&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="0180091757-3">)</span><span class="w">
+</span><span class="s">&quot;zebra&quot;</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="min/3">
+
+    <span id="min/2"></span>
+
+  <div class="detail-header">
+    <a href="#min/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">min(a, b, ord \\ Funx.Ord.Protocol)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L252" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> min(a, a, <a href="#t:ord_t/0">ord_t</a>()) :: a when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()</pre>
+
+      </div>
+
+<p>Returns the minimum of two values, with an optional custom <code class="inline">Ord</code>.</p><h2 id="min/3-examples" class="section-heading"><a href="#min/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="0447483799-1">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="0447483799-1">)</span><span class="w">
+</span><span class="mi">7</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="0447483799-2">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="0447483799-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="0447483799-3">(</span><span class="s">&quot;apple&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;kiwi&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="0447483799-3">)</span><span class="w">
+</span><span class="s">&quot;kiwi&quot;</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="ord/1">
+
+  <div class="detail-header">
+    <a href="#ord/1" class="detail-link" data-no-tooltip="" aria-label="Link to this macro">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">ord(list)</h1>
+
+        <span class="note">(macro)</span>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L103" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+<p>Creates an ordering from a block of projection specifications.</p><p>Returns a <code class="inline">%Funx.Monoid.Ord{}</code> struct that can be used with <a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>
+functions like <a href="#compare/3"><code class="inline">compare/3</code></a>, <a href="#max/3"><code class="inline">max/3</code></a>, <a href="#min/3"><code class="inline">min/3</code></a>, or <a href="#comparator/1"><code class="inline">comparator/1</code></a>.</p><h2 id="ord/1-examples" class="section-heading"><a href="#ord/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="3568620395-1">do</span><span class="w">
+  </span><span class="n">asc</span><span class="w"> </span><span class="ss">:name</span><span class="w">
+  </span><span class="n">desc</span><span class="w"> </span><span class="ss">:age</span><span class="w">
+</span><span class="k" data-group-id="3568620395-1">end</span><span class="w">
+
+</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="3568620395-2">do</span><span class="w">
+  </span><span class="n">asc</span><span class="w"> </span><span class="ss">:score</span><span class="p">,</span><span class="w"> </span><span class="ss">or_else</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+  </span><span class="n">desc</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="p" data-group-id="3568620395-3">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">bio</span><span class="p" data-group-id="3568620395-3">)</span><span class="w">
+</span><span class="k" data-group-id="3568620395-2">end</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="reverse/1">
+
+    <span id="reverse/0"></span>
+
+  <div class="detail-header">
+    <a href="#reverse/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">reverse(ord \\ Funx.Ord.Protocol)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L337" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> reverse(<a href="#t:ord_t/0">ord_t</a>()) :: <a href="#t:ord_map/0">ord_map</a>()</pre>
+
+      </div>
+
+<p>Reverses the ordering logic.</p><h2 id="reverse/1-examples" class="section-heading"><a href="#reverse/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">reverse</span><span class="p" data-group-id="4017183746-1">(</span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="4017183746-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="4017183746-2">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4017183746-2">)</span><span class="w">
+</span><span class="no">true</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_eq/1">
+
+    <span id="to_eq/0"></span>
+
+  <div class="detail-header">
+    <a href="#to_eq/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">to_eq(ord \\ Funx.Ord.Protocol)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L379" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> to_eq(<a href="#t:ord_t/0">ord_t</a>()) :: <a href="Funx.Eq.html#t:eq_map/0">Funx.Eq.eq_map</a>()</pre>
+
+      </div>
+
+<p>Converts an <code class="inline">Ord</code> instance into an equality comparator.</p><p>This function creates a map containing two functions:</p><ul><li><code class="inline">eq?/2</code>: Returns <code class="inline">true</code> if <code class="inline">a</code> and <code class="inline">b</code> are considered equal by the given <code class="inline">Ord</code>.</li><li><code class="inline">not_eq?/2</code>: Returns <code class="inline">true</code> if <code class="inline">a</code> and <code class="inline">b</code> are not considered equal by the given <code class="inline">Ord</code>.</li></ul><h2 id="to_eq/1-examples" class="section-heading"><a href="#to_eq/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">to_eq</span><span class="p" data-group-id="3819647501-1">(</span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="3819647501-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="3819647501-2">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3819647501-2">)</span><span class="w">
+</span><span class="no">true</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="to_ord_map/1">
+
+  <div class="detail-header">
+    <a href="#to_ord_map/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">to_ord_map(ord_map)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.5.0/lib/ord.ex#L426" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+
   </section>
 </section>
 
