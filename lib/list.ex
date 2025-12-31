@@ -60,10 +60,8 @@ defmodule Funx.List do
   import Funx.Filterable, only: [filter: 2]
   import Funx.Monoid.Utils, only: [m_concat: 2]
 
-  alias Funx.Eq
   alias Funx.Monad.Maybe
   alias Funx.Monoid.ListConcat
-  alias Funx.Ord
 
   @doc """
   Removes duplicate elements from a list based on the given equality module.
@@ -73,11 +71,11 @@ defmodule Funx.List do
       iex> Funx.List.uniq([1, 2, 2, 3, 1, 4, 5])
       [1, 2, 3, 4, 5]
   """
-  @spec uniq([term()], Eq.Utils.eq_t()) :: [term()]
-  def uniq(list, eq \\ Funx.Eq) when is_list(list) do
+  @spec uniq([term()], Funx.Eq.eq_t()) :: [term()]
+  def uniq(list, eq \\ Funx.Eq.Protocol) when is_list(list) do
     list
     |> fold_l([], fn item, acc ->
-      if Enum.any?(acc, &Eq.Utils.eq?(item, &1, eq)), do: acc, else: [item | acc]
+      if Enum.any?(acc, &Funx.Eq.eq?(item, &1, eq)), do: acc, else: [item | acc]
     end)
     |> :lists.reverse()
   end
@@ -90,8 +88,8 @@ defmodule Funx.List do
       iex> Funx.List.union([1, 2, 3], [3, 4, 5])
       [1, 2, 3, 4, 5]
   """
-  @spec union([term()], [term()], Eq.Utils.eq_t()) :: [term()]
-  def union(list1, list2, eq \\ Funx.Eq) when is_list(list1) and is_list(list2) do
+  @spec union([term()], [term()], Funx.Eq.eq_t()) :: [term()]
+  def union(list1, list2, eq \\ Funx.Eq.Protocol) when is_list(list1) and is_list(list2) do
     (list1 ++ list2) |> uniq(eq)
   end
 
@@ -103,10 +101,10 @@ defmodule Funx.List do
       iex> Funx.List.intersection([1, 2, 3, 4], [3, 4, 5])
       [3, 4]
   """
-  @spec intersection([term()], [term()], Eq.Utils.eq_t()) :: [term()]
-  def intersection(list1, list2, eq \\ Funx.Eq) when is_list(list1) and is_list(list2) do
+  @spec intersection([term()], [term()], Funx.Eq.eq_t()) :: [term()]
+  def intersection(list1, list2, eq \\ Funx.Eq.Protocol) when is_list(list1) and is_list(list2) do
     list1
-    |> filter(fn item -> Enum.any?(list2, &Eq.Utils.eq?(item, &1, eq)) end)
+    |> filter(fn item -> Enum.any?(list2, &Funx.Eq.eq?(item, &1, eq)) end)
     |> uniq(eq)
   end
 
@@ -118,10 +116,10 @@ defmodule Funx.List do
       iex> Funx.List.difference([1, 2, 3, 4], [3, 4, 5])
       [1, 2]
   """
-  @spec difference([term()], [term()], Eq.Utils.eq_t()) :: [term()]
-  def difference(list1, list2, eq \\ Funx.Eq) when is_list(list1) and is_list(list2) do
+  @spec difference([term()], [term()], Funx.Eq.eq_t()) :: [term()]
+  def difference(list1, list2, eq \\ Funx.Eq.Protocol) when is_list(list1) and is_list(list2) do
     list1
-    |> Enum.reject(fn item -> Enum.any?(list2, &Eq.Utils.eq?(item, &1, eq)) end)
+    |> Enum.reject(fn item -> Enum.any?(list2, &Funx.Eq.eq?(item, &1, eq)) end)
     |> uniq(eq)
   end
 
@@ -133,8 +131,8 @@ defmodule Funx.List do
       iex> Funx.List.symmetric_difference([1, 2, 3], [3, 4, 5])
       [1, 2, 4, 5]
   """
-  @spec symmetric_difference([term()], [term()], Eq.Utils.eq_t()) :: [term()]
-  def symmetric_difference(list1, list2, eq \\ Funx.Eq)
+  @spec symmetric_difference([term()], [term()], Funx.Eq.eq_t()) :: [term()]
+  def symmetric_difference(list1, list2, eq \\ Funx.Eq.Protocol)
       when is_list(list1) and is_list(list2) do
     (difference(list1, list2, eq) ++ difference(list2, list1, eq))
     |> uniq(eq)
@@ -151,9 +149,9 @@ defmodule Funx.List do
       iex> Funx.List.subset?([1, 5], [1, 2, 3, 4])
       false
   """
-  @spec subset?([term()], [term()], Eq.Utils.eq_t()) :: boolean()
-  def subset?(small, large, eq \\ Funx.Eq) when is_list(small) and is_list(large) do
-    Enum.all?(small, fn item -> Enum.any?(large, &Eq.Utils.eq?(item, &1, eq)) end)
+  @spec subset?([term()], [term()], Funx.Eq.eq_t()) :: boolean()
+  def subset?(small, large, eq \\ Funx.Eq.Protocol) when is_list(small) and is_list(large) do
+    Enum.all?(small, fn item -> Enum.any?(large, &Funx.Eq.eq?(item, &1, eq)) end)
   end
 
   @doc """
@@ -167,8 +165,8 @@ defmodule Funx.List do
       iex> Funx.List.superset?([1, 2, 3, 4], [1, 5])
       false
   """
-  @spec superset?([term()], [term()], Eq.Utils.eq_t()) :: boolean()
-  def superset?(large, small, eq \\ Funx.Eq) when is_list(small) and is_list(large) do
+  @spec superset?([term()], [term()], Funx.Eq.eq_t()) :: boolean()
+  def superset?(large, small, eq \\ Funx.Eq.Protocol) when is_list(small) and is_list(large) do
     subset?(small, large, eq)
   end
 
@@ -180,9 +178,9 @@ defmodule Funx.List do
       iex> Funx.List.sort([3, 1, 4, 1, 5])
       [1, 1, 3, 4, 5]
   """
-  @spec sort([term()], Ord.Utils.ord_t()) :: [term()]
-  def sort(list, ord \\ Funx.Ord) when is_list(list) do
-    Enum.sort(list, Ord.Utils.comparator(ord))
+  @spec sort([term()], Funx.Ord.ord_t()) :: [term()]
+  def sort(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
+    Enum.sort(list, Funx.Ord.comparator(ord))
   end
 
   @doc """
@@ -193,10 +191,10 @@ defmodule Funx.List do
       iex> Funx.List.strict_sort([3, 1, 4, 1, 5])
       [1, 3, 4, 5]
   """
-  @spec strict_sort([term()], Ord.Utils.ord_t()) :: [term()]
-  def strict_sort(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec strict_sort([term()], Funx.Ord.ord_t()) :: [term()]
+  def strict_sort(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     list
-    |> uniq(Ord.Utils.to_eq(ord))
+    |> uniq(Funx.Ord.to_eq(ord))
     |> sort(ord)
   end
 
@@ -293,17 +291,17 @@ defmodule Funx.List do
       iex> Funx.List.max([])
       %Funx.Monad.Maybe.Nothing{}
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> ord = Funx.Ord.contramap(&String.length/1)
       iex> Funx.List.max(["cat", "elephant", "ox"], ord)
       %Funx.Monad.Maybe.Just{value: "elephant"}
   """
-  @spec max([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
-  def max(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec max([a], Funx.Ord.ord_t()) :: Maybe.t(a) when a: term()
+  def max(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     import Funx.Monad, only: [map: 2]
 
     head(list)
     |> map(fn first ->
-      fold_l(tail(list), first, fn item, acc -> Ord.Utils.max(item, acc, ord) end)
+      fold_l(tail(list), first, fn item, acc -> Funx.Ord.max(item, acc, ord) end)
     end)
   end
 
@@ -317,12 +315,12 @@ defmodule Funx.List do
       iex> Funx.List.max!([3, 1, 4, 1, 5])
       5
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> ord = Funx.Ord.contramap(&String.length/1)
       iex> Funx.List.max!(["cat", "elephant", "ox"], ord)
       "elephant"
   """
-  @spec max!([a], Ord.Utils.ord_t()) :: a when a: term()
-  def max!(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec max!([a], Funx.Ord.ord_t()) :: a when a: term()
+  def max!(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     Maybe.to_try!(max(list, ord), Enum.EmptyError)
   end
 
@@ -342,17 +340,17 @@ defmodule Funx.List do
       iex> Funx.List.min([])
       %Funx.Monad.Maybe.Nothing{}
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> ord = Funx.Ord.contramap(&String.length/1)
       iex> Funx.List.min(["cat", "elephant", "ox"], ord)
       %Funx.Monad.Maybe.Just{value: "ox"}
   """
-  @spec min([a], Ord.Utils.ord_t()) :: Maybe.t(a) when a: term()
-  def min(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec min([a], Funx.Ord.ord_t()) :: Maybe.t(a) when a: term()
+  def min(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     import Funx.Monad, only: [map: 2]
 
     head(list)
     |> map(fn first ->
-      fold_l(tail(list), first, fn item, acc -> Ord.Utils.min(item, acc, ord) end)
+      fold_l(tail(list), first, fn item, acc -> Funx.Ord.min(item, acc, ord) end)
     end)
   end
 
@@ -366,12 +364,12 @@ defmodule Funx.List do
       iex> Funx.List.min!([3, 1, 4, 1, 5])
       1
 
-      iex> ord = Funx.Ord.Utils.contramap(&String.length/1)
+      iex> ord = Funx.Ord.contramap(&String.length/1)
       iex> Funx.List.min!(["cat", "elephant", "ox"], ord)
       "ox"
   """
-  @spec min!([a], Ord.Utils.ord_t()) :: a when a: term()
-  def min!(list, ord \\ Funx.Ord) when is_list(list) do
+  @spec min!([a], Funx.Ord.ord_t()) :: a when a: term()
+  def min!(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
     Maybe.to_try!(min(list, ord), Enum.EmptyError)
   end
 end

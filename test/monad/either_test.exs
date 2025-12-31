@@ -15,7 +15,7 @@ defmodule Funx.Monad.EitherTest do
 
   alias Funx.Eq
   alias Funx.Monad.{Either, Maybe}
-  alias Funx.Ord
+  alias Funx.Ord.Protocol
   alias Funx.Tappable
 
   alias Either.{Left, Right}
@@ -808,121 +808,121 @@ defmodule Funx.Monad.EitherTest do
     end
   end
 
-  describe "Ord.lt?/2" do
+  describe "Protocol.lt?/2" do
     test "returns true when Right value is less than another Right value" do
-      assert Ord.lt?(right(1), right(2)) == true
+      assert Protocol.lt?(right(1), right(2)) == true
     end
 
     test "returns false when Right value is greater than another Right value" do
-      assert Ord.lt?(right(2), right(1)) == false
+      assert Protocol.lt?(right(2), right(1)) == false
     end
 
     test "returns false when Right values are equal" do
-      assert Ord.lt?(right(2), right(2)) == false
+      assert Protocol.lt?(right(2), right(2)) == false
     end
 
     test "returns true for Left compared to Right" do
-      assert Ord.lt?(left(1), right(1)) == true
+      assert Protocol.lt?(left(1), right(1)) == true
     end
 
     test "returns true for Left value less than another Left value" do
-      assert Ord.lt?(left(1), left(2)) == true
+      assert Protocol.lt?(left(1), left(2)) == true
     end
 
     test "returns false for Left value greater than another Left value" do
-      assert Ord.lt?(left(2), left(1)) == false
+      assert Protocol.lt?(left(2), left(1)) == false
     end
 
     test "returns false for Left values that are equal" do
-      assert Ord.lt?(left(2), left(2)) == false
+      assert Protocol.lt?(left(2), left(2)) == false
     end
 
     test "returns false for Right compared to Left" do
-      assert Ord.lt?(right(1), left(1)) == false
+      assert Protocol.lt?(right(1), left(1)) == false
     end
   end
 
-  describe "Ord.le?/2" do
+  describe "Protocol.le?/2" do
     test "returns true when Right value is less than or equal to another Right value" do
-      assert Ord.le?(right(1), right(2)) == true
-      assert Ord.le?(right(2), right(2)) == true
+      assert Protocol.le?(right(1), right(2)) == true
+      assert Protocol.le?(right(2), right(2)) == true
     end
 
     test "returns false when Right value is greater than another Right value" do
-      assert Ord.le?(right(2), right(1)) == false
+      assert Protocol.le?(right(2), right(1)) == false
     end
 
     test "returns true for Left compared to Right" do
-      assert Ord.le?(left(100), right(1)) == true
+      assert Protocol.le?(left(100), right(1)) == true
     end
 
     test "returns true when Left value is less than or equal to another Left value" do
-      assert Ord.le?(left(1), left(2)) == true
-      assert Ord.le?(left(2), left(2)) == true
+      assert Protocol.le?(left(1), left(2)) == true
+      assert Protocol.le?(left(2), left(2)) == true
     end
 
     test "returns false when Left value is greater than another Left value" do
-      assert Ord.le?(left(2), left(1)) == false
+      assert Protocol.le?(left(2), left(1)) == false
     end
 
     test "returns false for Right compared to Left" do
-      assert Ord.le?(right(1), left(100)) == false
+      assert Protocol.le?(right(1), left(100)) == false
     end
   end
 
-  describe "Ord.gt?/2" do
+  describe "Protocol.gt?/2" do
     test "returns true when Right value is greater than another Right value" do
-      assert Ord.gt?(right(2), right(1)) == true
+      assert Protocol.gt?(right(2), right(1)) == true
     end
 
     test "returns false when Right value is less than or equal to another Right value" do
-      assert Ord.gt?(right(1), right(2)) == false
-      assert Ord.gt?(right(2), right(2)) == false
+      assert Protocol.gt?(right(1), right(2)) == false
+      assert Protocol.gt?(right(2), right(2)) == false
     end
 
     test "returns false for Left compared to Right" do
-      assert Ord.gt?(left(100), right(1)) == false
+      assert Protocol.gt?(left(100), right(1)) == false
     end
 
     test "returns true when Left value is greater than another Left value" do
-      assert Ord.gt?(left(2), left(1)) == true
+      assert Protocol.gt?(left(2), left(1)) == true
     end
 
     test "returns false when Left value is less than or equal to another Left value" do
-      assert Ord.gt?(left(1), left(2)) == false
-      assert Ord.gt?(left(2), left(2)) == false
+      assert Protocol.gt?(left(1), left(2)) == false
+      assert Protocol.gt?(left(2), left(2)) == false
     end
 
     test "returns true for Right compared to Left" do
-      assert Ord.gt?(right(1), left(100)) == true
+      assert Protocol.gt?(right(1), left(100)) == true
     end
   end
 
-  describe "Ord.ge?/2" do
+  describe "Protocol.ge?/2" do
     test "returns true when Right value is greater than or equal to another Right value" do
-      assert Ord.ge?(right(2), right(1)) == true
-      assert Ord.ge?(right(2), right(2)) == true
+      assert Protocol.ge?(right(2), right(1)) == true
+      assert Protocol.ge?(right(2), right(2)) == true
     end
 
     test "returns false when Right value is less than another Right value" do
-      assert Ord.ge?(right(1), right(2)) == false
+      assert Protocol.ge?(right(1), right(2)) == false
     end
 
     test "returns true for Right compared to Left" do
-      assert Ord.ge?(right(1), left(1)) == true
+      assert Protocol.ge?(right(1), left(1)) == true
     end
 
     test "returns true when Left value is greater than or equal to another Left value" do
-      assert Ord.ge?(left(2), left(1)) == true
-      assert Ord.ge?(left(2), left(2)) == true
+      assert Protocol.ge?(left(2), left(1)) == true
+      assert Protocol.ge?(left(2), left(2)) == true
     end
 
     test "returns false when Left value is less than another Left value" do
-      assert Ord.ge?(left(1), left(2)) == false
+      assert Protocol.ge?(left(1), left(2)) == false
     end
 
     test "returns false for Left compared to Right" do
-      assert Ord.ge?(left(1), right(1)) == false
+      assert Protocol.ge?(left(1), right(1)) == false
     end
   end
 

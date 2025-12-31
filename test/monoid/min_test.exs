@@ -6,7 +6,7 @@ defmodule Funx.Monoid.MinTest do
 
   def min_value(numbers) do
     m_concat(
-      %Monoid.Min{value: nil, ord: Funx.Ord},
+      %Monoid.Min{value: nil, ord: Funx.Ord.Protocol},
       numbers
     )
   end

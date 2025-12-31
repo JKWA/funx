@@ -16,8 +16,8 @@
 
 **Utils Pattern**: Inject custom Ord logic or default to protocol
 
-- `Ord.Utils.compare(a, b, custom_ord)` - uses custom_ord
-- `Ord.Utils.compare(a, b)` - uses protocol dispatch
+- `Ord.compare(a, b, custom_ord)` - uses custom_ord
+- `Ord.compare(a, b)` - uses protocol dispatch
 
 **Monoid Composition**: Combine ordering logic lexicographically
 
@@ -40,14 +40,14 @@ Ord.lt?(user1, user2)  # Uses protocol (by joined_at)
 List.sort(users)       # Uses protocol default
 
 # STEP 3: Inject custom Ord for specific contexts
-by_age = Ord.Utils.contramap(& &1.age)
-Ord.Utils.compare(user1, user2, by_age)  # Compare by age instead
+by_age = Ord.contramap(& &1.age)
+Ord.compare(user1, user2, by_age)  # Compare by age instead
 List.sort(users, by_age)                 # Sort by age, not joined_at
 
 # Combine fields lexicographically
-age_then_name = Ord.Utils.concat([
-  Ord.Utils.contramap(& &1.age),
-  Ord.Utils.contramap(& &1.name)
+age_then_name = Ord.concat([
+  Ord.contramap(& &1.age),
+  Ord.contramap(& &1.name)
 ])
 
 # Use with Funx.List
@@ -92,7 +92,7 @@ contramap(fn result -> not result end)  # Wrong!
 # ❌ Don't mix protocols inconsistently
 def process(a, b) do
   if a < b do  # Raw operator
-    Ord.Utils.max(a, b)  # Protocol-based
+    Ord.max(a, b)  # Protocol-based
   end
 end
 ```
@@ -103,7 +103,7 @@ end
 test "Ord laws hold" do
   # Antisymmetry: a <= b and b <= a implies a == b
   assert Ord.le?(user1, user2) and Ord.le?(user2, user1) 
-    implies Ord.Utils.compare(user1, user2) == :eq
+    implies Ord.compare(user1, user2) == :eq
   
   # Transitivity: a <= b and b <= c implies a <= c
   assert Ord.le?(user1, user2) and Ord.le?(user2, user3)
@@ -114,7 +114,7 @@ test "Ord laws hold" do
 end
 
 test "contramap preserves Ord laws" do
-  by_age = Ord.Utils.contramap(& &1.age)
+  by_age = Ord.contramap(& &1.age)
   user1 = %User{age: 25, name: "Alice"}
   user2 = %User{age: 30, name: "Bob"}
   
@@ -124,11 +124,11 @@ test "contramap preserves Ord laws" do
 end
 
 test "monoid composition laws" do
-  ord1 = Ord.Utils.contramap(& &1.age)
-  ord2 = Ord.Utils.contramap(& &1.name)
+  ord1 = Ord.contramap(& &1.age)
+  ord2 = Ord.contramap(& &1.name)
   
   # Lexicographic: age first, then name
-  combined = Ord.Utils.append(ord1, ord2)
+  combined = Ord.append(ord1, ord2)
   
   # Same age, different names
   alice = %User{age: 30, name: "Alice"}
@@ -157,14 +157,14 @@ Ord.lt?(user1, user2)       # uses User implementation
 
 ```elixir
 # Comparison and utilities
-Ord.Utils.compare(a, b)           # :lt | :eq | :gt
-Ord.Utils.min(a, b)               # minimum value
-Ord.Utils.max(a, b)               # maximum value
-Ord.Utils.clamp(value, min, max)  # bound value within range
-Ord.Utils.between(value, min, max) # check if in range
+Ord.compare(a, b)           # :lt | :eq | :gt
+Ord.min(a, b)               # minimum value
+Ord.max(a, b)               # maximum value
+Ord.clamp(value, min, max)  # bound value within range
+Ord.between(value, min, max) # check if in range
 
 # For Enum.sort/2 compatibility  
-comparator = Ord.Utils.comparator(custom_ord)
+comparator = Ord.comparator(custom_ord)
 Enum.sort(list, comparator)
 ```
 
@@ -172,15 +172,15 @@ Enum.sort(list, comparator)
 
 ```elixir
 # Transform inputs before comparison
-by_length = Ord.Utils.contramap(&String.length/1)
-Ord.Utils.max("cat", "zebra", by_length)  # "zebra" (longer)
+by_length = Ord.contramap(&String.length/1)
+Ord.max("cat", "zebra", by_length)  # "zebra" (longer)
 
 # Reverse ordering
-desc = Ord.Utils.reverse()
-Ord.Utils.min(3, 7, desc)  # 7 (max in normal order)
+desc = Ord.reverse()
+Ord.min(3, 7, desc)  # 7 (max in normal order)
 
 # Convert to equality
-eq = Ord.Utils.to_eq()
+eq = Ord.to_eq()
 eq.eq?.(5, 5)  # true (compare(5,5) == :eq)
 ```
 
@@ -188,16 +188,16 @@ eq.eq?.(5, 5)  # true (compare(5,5) == :eq)
 
 ```elixir
 # Combine orderings lexicographically
-age_then_name = Ord.Utils.append(
-  Ord.Utils.contramap(& &1.age),
-  Ord.Utils.contramap(& &1.name)
+age_then_name = Ord.append(
+  Ord.contramap(& &1.age),
+  Ord.contramap(& &1.name)
 )
 
 # Combine list of orderings
-multi_sort = Ord.Utils.concat([
-  Ord.Utils.contramap(& &1.priority),
-  Ord.Utils.contramap(& &1.created_at), 
-  Ord.Utils.contramap(& &1.id)
+multi_sort = Ord.concat([
+  Ord.contramap(& &1.priority),
+  Ord.contramap(& &1.created_at), 
+  Ord.contramap(& &1.id)
 ])
 ```
 
@@ -209,16 +209,16 @@ Funx.List.sort([3, 1, 4])  # [1, 3, 4]
 
 # Custom ordering
 users = [%User{age: 30}, %User{age: 25}]
-by_age = Ord.Utils.contramap(& &1.age)
+by_age = Ord.contramap(& &1.age)
 Funx.List.sort(users, by_age)
 
 # Sort and remove duplicates
-Funx.List.strict_sort(users, by_age)  # uses Ord.Utils.to_eq for dedup
+Funx.List.strict_sort(users, by_age)  # uses Ord.to_eq for dedup
 
 # Multi-field sort
-by_age_then_name = Ord.Utils.concat([
-  Ord.Utils.contramap(& &1.age),
-  Ord.Utils.contramap(& &1.name)
+by_age_then_name = Ord.concat([
+  Ord.contramap(& &1.age),
+  Ord.contramap(& &1.name)
 ])
 Funx.List.sort(users, by_age_then_name)
 ```
@@ -232,7 +232,7 @@ Funx.List.sort(users, by_age_then_name)
 events = [%Event{occurred_at: ~U[2024-01-02 10:00:00Z]}, 
           %Event{occurred_at: ~U[2024-01-01 10:00:00Z]}]
 
-by_time = Ord.Utils.contramap(& &1.occurred_at)
+by_time = Ord.contramap(& &1.occurred_at)
 Funx.List.sort(events, by_time)  # chronological order
 ```
 
@@ -254,9 +254,9 @@ Ord.lt?([1], [1,2])  # true
 
 ```elixir
 # Sort by priority (high first), then by created date (old first)
-task_ordering = Ord.Utils.concat([
-  Ord.Utils.reverse(Ord.Utils.contramap(& &1.priority)),
-  Ord.Utils.contramap(& &1.created_at)
+task_ordering = Ord.concat([
+  Ord.reverse(Ord.contramap(& &1.priority)),
+  Ord.contramap(& &1.created_at)
 ])
 
 Funx.List.sort(tasks, task_ordering)
@@ -266,13 +266,13 @@ Funx.List.sort(tasks, task_ordering)
 
 ```elixir
 # Clamp values within bounds
-score = Ord.Utils.clamp(user_score, 0, 100)
+score = Ord.clamp(user_score, 0, 100)
 
 # Check if value is in acceptable range  
-valid = Ord.Utils.between(temperature, min_temp, max_temp)
+valid = Ord.between(temperature, min_temp, max_temp)
 
 # Find extreme values
-oldest_user = Enum.reduce(users, &Ord.Utils.min(&1, &2, by_age))
+oldest_user = Enum.reduce(users, &Ord.min(&1, &2, by_age))
 ```
 
 ### Domain-Specific Ordering
@@ -285,7 +285,7 @@ defmodule Priority do
 end
 
 # Order by priority level
-by_priority = Ord.Utils.contramap(&Priority.to_index/1)
+by_priority = Ord.contramap(&Priority.to_index/1)
 Funx.List.sort(tasks, by_priority)
 ```
 
@@ -329,7 +329,7 @@ The Ord DSL provides a declarative syntax for building complex lexicographic ord
 ### Basic Usage
 
 ```elixir
-use Funx.Ord.Dsl
+use Funx.Ord
 
 ord do
   asc :name
@@ -342,10 +342,10 @@ end
 **With Utils functions (manual composition):**
 
 ```elixir
-Ord.Utils.concat([
-  Ord.Utils.contramap(Prism.key(:routing_number)),
-  Ord.Utils.reverse(Ord.Utils.contramap(Prism.key(:amount))),
-  Ord.Utils.contramap(Lens.key(:name))
+Ord.concat([
+  Ord.contramap(Prism.key(:routing_number)),
+  Ord.reverse(Ord.contramap(Prism.key(:amount))),
+  Ord.contramap(Lens.key(:name))
 ])
 ```
 
@@ -584,9 +584,9 @@ end
 Compiles to:
 
 ```elixir
-Ord.Utils.concat([
-  Ord.Utils.contramap(Prism.key(:name)),
-  Ord.Utils.contramap(fn x -> x end)  # implicit identity
+Ord.concat([
+  Ord.contramap(Prism.key(:name)),
+  Ord.contramap(fn x -> x end)  # implicit identity
 ])
 ```
 
@@ -617,7 +617,7 @@ ord_person =
 Funx.List.sort(people, ord_person)
 
 # With Enum.sort/2
-Enum.sort(people, Ord.Utils.comparator(ord_person))
+Enum.sort(people, Ord.comparator(ord_person))
 
 # Find min/max
 Funx.List.min!(people, ord_person)
@@ -714,13 +714,13 @@ complex_ord =
 my_ord = ord do asc :name end
 
 # ✅ Ord maps from Utils.contramap
-length_ord = Ord.Utils.contramap(&String.length/1)
+length_ord = Ord.contramap(&String.length/1)
 
 # ✅ Ord maps from Utils.reverse
-desc_ord = Ord.Utils.reverse(my_ord)
+desc_ord = Ord.reverse(my_ord)
 
 # ✅ Ord maps from Utils.concat
-combined = Ord.Utils.concat([ord1, ord2])
+combined = Ord.concat([ord1, ord2])
 ```
 
 **Runtime validation:**
@@ -798,7 +798,7 @@ ord_identity =
   ord do
   end
 
-Ord.Utils.compare(a, b, ord_identity)  # Always :eq
+Ord.compare(a, b, ord_identity)  # Always :eq
 ```
 
 ### When to Use the DSL
@@ -895,11 +895,11 @@ ord do
 end
 
 # Equivalent Utils composition
-Ord.Utils.concat([
-  Ord.Utils.contramap(Prism.key(:name)),
-  Ord.Utils.reverse(Ord.Utils.contramap(Prism.key(:age))),
-  Ord.Utils.contramap({Prism.key(:score), 0}),
-  Ord.Utils.contramap(fn x -> x end)  # implicit identity
+Ord.concat([
+  Ord.contramap(Prism.key(:name)),
+  Ord.reverse(Ord.contramap(Prism.key(:age))),
+  Ord.contramap({Prism.key(:score), 0}),
+  Ord.contramap(fn x -> x end)  # implicit identity
 ])
 ```
 
@@ -920,13 +920,13 @@ test "multi-field ordering" do
     end
 
   # Alice comes before Bob (name)
-  assert Ord.Utils.compare(alice_30, bob_30, ord_person) == :lt
+  assert Ord.compare(alice_30, bob_30, ord_person) == :lt
 
   # Same name, 30 > 25 in desc age
-  assert Ord.Utils.compare(alice_30, alice_25, ord_person) == :lt
+  assert Ord.compare(alice_30, alice_25, ord_person) == :lt
 
   # Verify identity tiebreaker
-  assert Ord.Utils.compare(alice_30, alice_30, ord_person) == :eq
+  assert Ord.compare(alice_30, alice_30, ord_person) == :eq
 end
 
 test "nil handling with or_else" do
@@ -939,7 +939,7 @@ test "nil handling with or_else" do
     end
 
   # nil becomes 0, so 0 < 100
-  assert Ord.Utils.compare(without_score, with_score, ord_item) == :lt
+  assert Ord.compare(without_score, with_score, ord_item) == :lt
 end
 
 test "type filtering" do
@@ -953,7 +953,7 @@ test "type filtering" do
     end
 
   # All Checks before CreditCards
-  assert Ord.Utils.compare(check, cc, ord_checks_first) == :lt
+  assert Ord.compare(check, cc, ord_checks_first) == :lt
 end
 ```
 

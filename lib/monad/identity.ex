@@ -18,8 +18,7 @@ defmodule Funx.Monad.Identity do
     - `String.Chars`: Converts an `Identity` value into a string representation.
   """
 
-  alias Funx.Eq
-  alias Funx.Ord
+  alias Funx.Eq.Protocol
 
   @enforce_keys [:value]
   defstruct [:value]
@@ -48,9 +47,9 @@ defmodule Funx.Monad.Identity do
   @spec extract(t(value)) :: value when value: term()
   def extract(%__MODULE__{value: value}), do: value
 
-  @spec lift_eq(Eq.Utils.eq_map()) :: Eq.Utils.eq_map()
+  @spec lift_eq(Funx.Eq.eq_map()) :: Funx.Eq.eq_map()
   def lift_eq(custom_eq) do
-    custom_eq = Eq.Utils.to_eq_map(custom_eq)
+    custom_eq = Funx.Eq.to_eq_map(custom_eq)
 
     %{
       eq?: fn
@@ -62,9 +61,9 @@ defmodule Funx.Monad.Identity do
     }
   end
 
-  @spec lift_ord(Ord.Utils.ord_map()) :: Ord.Utils.ord_map()
+  @spec lift_ord(Funx.Ord.ord_t()) :: Funx.Ord.ord_map()
   def lift_ord(custom_ord) do
-    custom_ord = Ord.Utils.to_ord_map(custom_ord)
+    custom_ord = Funx.Ord.to_ord_map(custom_ord)
 
     %{
       lt?: fn
@@ -112,32 +111,32 @@ defimpl String.Chars, for: Funx.Monad.Identity do
   def to_string(%Identity{value: value}), do: "Identity(#{value})"
 end
 
-defimpl Funx.Eq, for: Funx.Monad.Identity do
+defimpl Funx.Eq.Protocol, for: Funx.Monad.Identity do
   alias Funx.Monad.Identity
-  alias Funx.Eq
+  alias Funx.Eq.Protocol
 
   @spec eq?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.eq?(v1, v2)
+  def eq?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.eq?(v1, v2)
 
   @spec not_eq?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: Eq.not_eq?(v1, v2)
+  def not_eq?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.not_eq?(v1, v2)
 end
 
-defimpl Funx.Ord, for: Funx.Monad.Identity do
-  alias Funx.Ord
+defimpl Funx.Ord.Protocol, for: Funx.Monad.Identity do
+  alias Funx.Ord.Protocol
   alias Funx.Monad.Identity
 
   @spec lt?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def lt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.lt?(v1, v2)
+  def lt?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.lt?(v1, v2)
 
   @spec le?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def le?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.le?(v1, v2)
+  def le?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.le?(v1, v2)
 
   @spec gt?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def gt?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.gt?(v1, v2)
+  def gt?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.gt?(v1, v2)
 
   @spec ge?(Identity.t(a), Identity.t(a)) :: boolean() when a: term()
-  def ge?(%Identity{value: v1}, %Identity{value: v2}), do: Ord.ge?(v1, v2)
+  def ge?(%Identity{value: v1}, %Identity{value: v2}), do: Protocol.ge?(v1, v2)
 end
 
 defimpl Funx.Summarizable, for: Funx.Monad.Identity do

@@ -8,7 +8,7 @@ defmodule Funx.Errors.ValidationErrorTest do
   import Funx.Appendable
 
   alias Funx.Eq
-  alias Funx.Ord
+  alias Funx.Ord.Protocol
 
   alias Funx.Errors.ValidationError
 
@@ -156,59 +156,59 @@ defmodule Funx.Errors.ValidationErrorTest do
     end
   end
 
-  describe "Ord.lt?/2" do
+  describe "Protocol.lt?/2" do
     test "Identity returns true for less value" do
-      assert Ord.lt?(new(1), new(2)) == true
+      assert Protocol.lt?(new(1), new(2)) == true
     end
 
     test "Identity returns false for more value" do
-      assert Ord.lt?(new(2), new(1)) == false
+      assert Protocol.lt?(new(2), new(1)) == false
     end
 
     test "Identity returns false for equal values" do
-      assert Ord.lt?(new(1), new(1)) == false
+      assert Protocol.lt?(new(1), new(1)) == false
     end
   end
 
-  describe "Ord.le?/2" do
+  describe "Protocol.le?/2" do
     test "Identity returns true for less value" do
-      assert Ord.le?(new(1), new(2)) == true
+      assert Protocol.le?(new(1), new(2)) == true
     end
 
     test "Identity returns true for equal values" do
-      assert Ord.le?(new(1), new(1)) == true
+      assert Protocol.le?(new(1), new(1)) == true
     end
 
     test "Identity returns false for greater value" do
-      assert Ord.le?(new(2), new(1)) == false
+      assert Protocol.le?(new(2), new(1)) == false
     end
   end
 
-  describe "Ord.gt?/2" do
+  describe "Protocol.gt?/2" do
     test "Identity returns true for greater value" do
-      assert Ord.gt?(new(2), new(1)) == true
+      assert Protocol.gt?(new(2), new(1)) == true
     end
 
     test "Identity returns false for less value" do
-      assert Ord.gt?(new(1), new(2)) == false
+      assert Protocol.gt?(new(1), new(2)) == false
     end
 
     test "Identity returns false for equal values" do
-      assert Ord.gt?(new(1), new(1)) == false
+      assert Protocol.gt?(new(1), new(1)) == false
     end
   end
 
-  describe "Ord.ge?/2" do
+  describe "Protocol.ge?/2" do
     test "Identity returns true for greater value" do
-      assert Ord.ge?(new(2), new(1)) == true
+      assert Protocol.ge?(new(2), new(1)) == true
     end
 
     test "Identity returns true for equal values" do
-      assert Ord.ge?(new(1), new(1)) == true
+      assert Protocol.ge?(new(1), new(1)) == true
     end
 
     test "Identity returns false for less value" do
-      assert Ord.ge?(new(1), new(2)) == false
+      assert Protocol.ge?(new(1), new(2)) == false
     end
   end
 end

@@ -89,10 +89,8 @@ defmodule Funx.Monad.Maybe do
   import Funx.Monad, only: [map: 2]
   import Funx.Foldable, only: [fold_l: 3]
 
-  alias Funx.Eq
   alias Funx.Monad.{Either, Identity, Maybe}
   alias Funx.Optics.Iso
-  alias Funx.Ord
 
   alias Either.{Left, Right}
   alias Maybe.{Just, Nothing}
@@ -213,9 +211,9 @@ defmodule Funx.Monad.Maybe do
       iex> eq.eq?.(Funx.Monad.Maybe.just(5), Funx.Monad.Maybe.nothing())
       false
   """
-  @spec lift_eq(Eq.Utils.eq_t()) :: Eq.Utils.eq_map()
+  @spec lift_eq(Funx.Eq.eq_t()) :: Funx.Eq.eq_map()
   def lift_eq(custom_eq) do
-    custom_eq = Eq.Utils.to_eq_map(custom_eq)
+    custom_eq = Funx.Eq.to_eq_map(custom_eq)
 
     %{
       eq?: fn
@@ -251,9 +249,9 @@ defmodule Funx.Monad.Maybe do
       iex> ord.lt?.(Funx.Monad.Maybe.nothing(), Funx.Monad.Maybe.just(5))
       true
   """
-  @spec lift_ord(Ord.Utils.ord_t()) :: Ord.Utils.ord_map()
+  @spec lift_ord(Funx.Ord.ord_t()) :: Funx.Ord.ord_map()
   def lift_ord(custom_ord) do
-    custom_ord = Ord.Utils.to_ord_map(custom_ord)
+    custom_ord = Funx.Ord.to_ord_map(custom_ord)
 
     %{
       lt?: fn

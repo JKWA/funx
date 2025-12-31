@@ -20,9 +20,8 @@ defmodule Funx.Eq.DslTest do
   #   - Compile-time error handling
 
   use ExUnit.Case, async: true
-  use Funx.Eq.Dsl
+  use Funx.Eq
 
-  alias Funx.Eq.Utils
   alias Funx.Optics.{Lens, Prism, Traversal}
 
   # ============================================================================
@@ -57,7 +56,7 @@ defmodule Funx.Eq.DslTest do
   # Protocol Implementations
   # ============================================================================
 
-  defimpl Funx.Eq, for: CaseInsensitiveString do
+  defimpl Funx.Eq.Protocol, for: CaseInsensitiveString do
     def eq?(a, b) do
       String.downcase(a.value) == String.downcase(b.value)
     end
@@ -79,7 +78,7 @@ defmodule Funx.Eq.DslTest do
 
     @impl true
     def eq(_opts) do
-      Utils.contramap(& &1.id)
+      Funx.Eq.contramap(& &1.id)
     end
   end
 
@@ -93,9 +92,9 @@ defmodule Funx.Eq.DslTest do
       case_sensitive = Keyword.get(opts, :case_sensitive, true)
 
       if case_sensitive do
-        Utils.contramap(& &1.name)
+        Funx.Eq.contramap(& &1.name)
       else
-        Utils.contramap(fn person -> String.downcase(person.name) end)
+        Funx.Eq.contramap(fn person -> String.downcase(person.name) end)
       end
     end
   end
@@ -117,14 +116,13 @@ defmodule Funx.Eq.DslTest do
   defmodule EqHelpers do
     @moduledoc false
     # Helpers that return Eq maps
-    alias Funx.Eq.Utils
 
     def name_case_insensitive do
-      Utils.contramap(fn person -> String.downcase(person.name) end)
+      Funx.Eq.contramap(fn person -> String.downcase(person.name) end)
     end
 
     def age_mod_10 do
-      Utils.contramap(fn person -> rem(person.age, 10) end)
+      Funx.Eq.contramap(fn person -> rem(person.age, 10) end)
     end
   end
 
@@ -139,8 +137,8 @@ defmodule Funx.Eq.DslTest do
           on :name
         end
 
-      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_name)
-      refute Utils.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_name)
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_name)
+      refute Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_name)
     end
 
     test "multiple fields (implicit all)" do
@@ -150,13 +148,13 @@ defmodule Funx.Eq.DslTest do
           on :age
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 30},
                %Person{name: "Alice", age: 30},
                eq_person
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", age: 30},
                %Person{name: "Alice", age: 25},
                eq_person
@@ -171,13 +169,13 @@ defmodule Funx.Eq.DslTest do
           on :email
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 30, email: "a@test.com"},
                %Person{name: "Alice", age: 30, email: "a@test.com"},
                eq_person
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", age: 30, email: "a@test.com"},
                %Person{name: "Alice", age: 30, email: "b@test.com"},
                eq_person
@@ -198,13 +196,13 @@ defmodule Funx.Eq.DslTest do
           diff_on(:id)
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", email: "a@test.com", id: 1},
                %Person{name: "Alice", email: "a@test.com", id: 2},
                eq_same_person_diff_record
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", email: "a@test.com", id: 1},
                %Person{name: "Alice", email: "a@test.com", id: 1},
                eq_same_person_diff_record
@@ -218,13 +216,13 @@ defmodule Funx.Eq.DslTest do
           diff_on(:id)
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", id: 1},
                %Person{name: "Alice", id: 2},
                eq_person
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", id: 1},
                %Person{name: "Bob", id: 2},
                eq_person
@@ -243,9 +241,9 @@ defmodule Funx.Eq.DslTest do
           on :score, or_else: 0
         end
 
-      assert Utils.eq?(%Person{score: nil}, %Person{score: 0}, eq_score)
-      assert Utils.eq?(%Person{score: 10}, %Person{score: 10}, eq_score)
-      refute Utils.eq?(%Person{score: nil}, %Person{score: 10}, eq_score)
+      assert Funx.Eq.eq?(%Person{score: nil}, %Person{score: 0}, eq_score)
+      assert Funx.Eq.eq?(%Person{score: 10}, %Person{score: 10}, eq_score)
+      refute Funx.Eq.eq?(%Person{score: nil}, %Person{score: 10}, eq_score)
     end
 
     test "or_else with multiple fields" do
@@ -255,13 +253,13 @@ defmodule Funx.Eq.DslTest do
           on :score, or_else: 0
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", score: nil},
                %Person{name: "Alice", score: 0},
                eq_person
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", score: nil},
                %Person{name: "Bob", score: 0},
                eq_person
@@ -283,19 +281,19 @@ defmodule Funx.Eq.DslTest do
           end
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{email: "a@test.com", username: "alice"},
                %Person{email: "a@test.com", username: "bob"},
                eq_contact
              )
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{email: "a@test.com", username: "alice"},
                %Person{email: "b@test.com", username: "alice"},
                eq_contact
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{email: "a@test.com", username: "alice"},
                %Person{email: "b@test.com", username: "bob"},
                eq_contact
@@ -313,13 +311,13 @@ defmodule Funx.Eq.DslTest do
           end
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", email: "a@test.com", username: "alice"},
                %Person{name: "Alice", email: "a@test.com", username: "different"},
                eq_mixed
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", email: "a@test.com"},
                %Person{name: "Bob", email: "a@test.com"},
                eq_mixed
@@ -335,7 +333,7 @@ defmodule Funx.Eq.DslTest do
           end
         end
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{email: "a@test.com", username: "alice"},
                %Person{email: "b@test.com", username: "bob"},
                eq_contact
@@ -358,13 +356,13 @@ defmodule Funx.Eq.DslTest do
           end
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 30, email: "a@test.com", username: "alice"},
                %Person{name: "Alice", age: 30, email: "a@test.com", username: "different"},
                eq_explicit
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", age: 30, email: "a@test.com"},
                %Person{name: "Alice", age: 25, email: "a@test.com"},
                eq_explicit
@@ -384,13 +382,13 @@ defmodule Funx.Eq.DslTest do
           end
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 30, email: "a@test.com"},
                %Person{name: "Alice", age: 30, email: "a@test.com"},
                eq_nested
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", age: 30, email: "a@test.com"},
                %Person{name: "Alice", age: 25, email: "a@test.com"},
                eq_nested
@@ -418,19 +416,19 @@ defmodule Funx.Eq.DslTest do
           end
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", email: "a@test.com"},
                %Person{name: "Alice", email: "a@test.com"},
                eq_deep
              )
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 30, username: "alice"},
                %Person{name: "Alice", age: 30, username: "alice"},
                eq_deep
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", email: "a@test.com"},
                %Person{name: "Bob", email: "a@test.com"},
                eq_deep
@@ -454,7 +452,7 @@ defmodule Funx.Eq.DslTest do
           end
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", email: "a@test.com"},
                %Person{name: "Alice", email: "a@test.com"},
                eq_very_deep
@@ -473,8 +471,8 @@ defmodule Funx.Eq.DslTest do
           on &String.length/1
         end
 
-      assert Utils.eq?("hello", "world", eq_length)
-      refute Utils.eq?("hi", "world", eq_length)
+      assert Funx.Eq.eq?("hello", "world", eq_length)
+      refute Funx.Eq.eq?("hi", "world", eq_length)
     end
 
     test "anonymous function projection" do
@@ -483,8 +481,8 @@ defmodule Funx.Eq.DslTest do
           on fn person -> person.name end
         end
 
-      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_anon)
-      refute Utils.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_anon)
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_anon)
+      refute Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_anon)
     end
 
     test "explicit Lens" do
@@ -493,7 +491,7 @@ defmodule Funx.Eq.DslTest do
           on Lens.key(:name)
         end
 
-      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_lens)
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_lens)
     end
 
     test "Lens.path for nested access" do
@@ -502,7 +500,7 @@ defmodule Funx.Eq.DslTest do
           on Lens.path([:address, :city])
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %PersonWithAddress{address: %Address{city: "NYC"}},
                %PersonWithAddress{address: %Address{city: "NYC"}},
                eq_city
@@ -515,8 +513,8 @@ defmodule Funx.Eq.DslTest do
           on Prism.key(:score)
         end
 
-      assert Utils.eq?(%Person{score: 10}, %Person{score: 10}, eq_prism)
-      assert Utils.eq?(%Person{score: nil}, %Person{score: nil}, eq_prism)
+      assert Funx.Eq.eq?(%Person{score: 10}, %Person{score: 10}, eq_prism)
+      assert Funx.Eq.eq?(%Person{score: nil}, %Person{score: nil}, eq_prism)
     end
 
     test "Prism with or_else tuple syntax" do
@@ -525,7 +523,7 @@ defmodule Funx.Eq.DslTest do
           on {Prism.key(:score), 0}
         end
 
-      assert Utils.eq?(%Person{score: nil}, %Person{score: 0}, eq_prism_default)
+      assert Funx.Eq.eq?(%Person{score: nil}, %Person{score: 0}, eq_prism_default)
     end
 
     test "Prism with or_else option syntax" do
@@ -534,9 +532,9 @@ defmodule Funx.Eq.DslTest do
           on Prism.key(:score), or_else: 0
         end
 
-      assert Utils.eq?(%Person{score: nil}, %Person{score: 0}, eq_prism_with_option)
-      assert Utils.eq?(%Person{score: 10}, %Person{score: 10}, eq_prism_with_option)
-      refute Utils.eq?(%Person{score: nil}, %Person{score: 10}, eq_prism_with_option)
+      assert Funx.Eq.eq?(%Person{score: nil}, %Person{score: 0}, eq_prism_with_option)
+      assert Funx.Eq.eq?(%Person{score: 10}, %Person{score: 10}, eq_prism_with_option)
+      refute Funx.Eq.eq?(%Person{score: nil}, %Person{score: 10}, eq_prism_with_option)
     end
 
     test "mixed projection types" do
@@ -547,7 +545,7 @@ defmodule Funx.Eq.DslTest do
           on & &1.email
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 30, email: "a@test.com"},
                %Person{name: "Alice", age: 30, email: "a@test.com"},
                eq_mixed
@@ -560,7 +558,7 @@ defmodule Funx.Eq.DslTest do
           on Traversal.combine([Lens.key(:name), Lens.key(:age)])
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 30},
                %Person{name: "Alice", age: 30},
                eq_traversal
@@ -573,7 +571,7 @@ defmodule Funx.Eq.DslTest do
           on Traversal.combine([Lens.key(:name), Lens.key(:age)])
         end
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", age: 30},
                %Person{name: "Alice", age: 25},
                eq_traversal
@@ -586,7 +584,7 @@ defmodule Funx.Eq.DslTest do
           on Traversal.combine([Prism.key(:name), Prism.key(:missing_field)])
         end
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice"},
                %Person{name: "Alice"},
                eq_traversal
@@ -604,9 +602,9 @@ defmodule Funx.Eq.DslTest do
         eq do
         end
 
-      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_empty)
-      assert Utils.eq?(42, 99, eq_empty)
-      assert Utils.eq?("hello", "world", eq_empty)
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_empty)
+      assert Funx.Eq.eq?(42, 99, eq_empty)
+      assert Funx.Eq.eq?("hello", "world", eq_empty)
     end
   end
 
@@ -621,8 +619,8 @@ defmodule Funx.Eq.DslTest do
           on UserById
         end
 
-      assert Utils.eq?(%Person{id: 1, name: "Alice"}, %Person{id: 1, name: "Bob"}, eq_by_id)
-      refute Utils.eq?(%Person{id: 1, name: "Alice"}, %Person{id: 2, name: "Alice"}, eq_by_id)
+      assert Funx.Eq.eq?(%Person{id: 1, name: "Alice"}, %Person{id: 1, name: "Bob"}, eq_by_id)
+      refute Funx.Eq.eq?(%Person{id: 1, name: "Alice"}, %Person{id: 2, name: "Alice"}, eq_by_id)
     end
 
     test "behaviour with options - case sensitive (default)" do
@@ -631,8 +629,8 @@ defmodule Funx.Eq.DslTest do
           on UserByName
         end
 
-      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_by_name)
-      refute Utils.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_by_name)
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_by_name)
+      refute Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_by_name)
     end
 
     test "behaviour with options - case insensitive" do
@@ -641,9 +639,9 @@ defmodule Funx.Eq.DslTest do
           on UserByName, case_sensitive: false
         end
 
-      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_by_name_ci)
-      assert Utils.eq?(%Person{name: "BOB"}, %Person{name: "bob"}, eq_by_name_ci)
-      refute Utils.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_by_name_ci)
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_by_name_ci)
+      assert Funx.Eq.eq?(%Person{name: "BOB"}, %Person{name: "bob"}, eq_by_name_ci)
+      refute Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_by_name_ci)
     end
 
     test "behaviour in any block" do
@@ -656,19 +654,19 @@ defmodule Funx.Eq.DslTest do
         end
 
       # Same id OR same email
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{id: 1, email: "a@test.com"},
                %Person{id: 1, email: "b@test.com"},
                eq_any
              )
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{id: 1, email: "a@test.com"},
                %Person{id: 2, email: "a@test.com"},
                eq_any
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{id: 1, email: "a@test.com"},
                %Person{id: 2, email: "b@test.com"},
                eq_any
@@ -687,7 +685,7 @@ defmodule Funx.Eq.DslTest do
           on ProjectionHelpers.name_prism()
         end
 
-      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_helper)
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_helper)
     end
 
     test "0-arity helper returning Lens" do
@@ -696,7 +694,7 @@ defmodule Funx.Eq.DslTest do
           on ProjectionHelpers.age_lens()
         end
 
-      assert Utils.eq?(%Person{age: 30}, %Person{age: 30}, eq_helper)
+      assert Funx.Eq.eq?(%Person{age: 30}, %Person{age: 30}, eq_helper)
     end
 
     test "helper with or_else" do
@@ -705,7 +703,7 @@ defmodule Funx.Eq.DslTest do
           on ProjectionHelpers.name_prism(), or_else: "Unknown"
         end
 
-      assert Utils.eq?(%Person{name: nil}, %Person{name: "Unknown"}, eq_helper)
+      assert Funx.Eq.eq?(%Person{name: nil}, %Person{name: "Unknown"}, eq_helper)
     end
   end
 
@@ -720,9 +718,9 @@ defmodule Funx.Eq.DslTest do
           on EqHelpers.name_case_insensitive()
         end
 
-      assert Utils.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_helper)
-      assert Utils.eq?(%Person{name: "BOB"}, %Person{name: "bob"}, eq_helper)
-      refute Utils.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_helper)
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_helper)
+      assert Funx.Eq.eq?(%Person{name: "BOB"}, %Person{name: "bob"}, eq_helper)
+      refute Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_helper)
     end
 
     test "mixing Eq maps with regular projections" do
@@ -732,13 +730,13 @@ defmodule Funx.Eq.DslTest do
           on :age
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 30},
                %Person{name: "ALICE", age: 30},
                eq_mixed
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", age: 30},
                %Person{name: "ALICE", age: 25},
                eq_mixed
@@ -753,14 +751,14 @@ defmodule Funx.Eq.DslTest do
         end
 
       # Same name, different ages with different mod 10
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 25},
                %Person{name: "Alice", age: 36},
                eq_not
              )
 
       # Same name, same mod 10 -> should NOT be equal
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", age: 25},
                %Person{name: "Alice", age: 35},
                eq_not
@@ -774,13 +772,13 @@ defmodule Funx.Eq.DslTest do
           on EqHelpers.age_mod_10()
         end
 
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %Person{name: "Alice", age: 25},
                %Person{name: "ALICE", age: 35},
                eq_both
              )
 
-      refute Utils.eq?(
+      refute Funx.Eq.eq?(
                %Person{name: "Alice", age: 25},
                %Person{name: "ALICE", age: 36},
                eq_both
@@ -800,15 +798,15 @@ defmodule Funx.Eq.DslTest do
         end
 
       # Uses Eq protocol for CaseInsensitiveString
-      assert Utils.eq?(
+      assert Funx.Eq.eq?(
                %CaseInsensitiveString{value: "Hello"},
                %CaseInsensitiveString{value: "hello"},
                eq_default
              )
 
       # Uses default == for other types
-      assert Utils.eq?(42, 42, eq_default)
-      refute Utils.eq?(42, 99, eq_default)
+      assert Funx.Eq.eq?(42, 42, eq_default)
+      refute Funx.Eq.eq?(42, 99, eq_default)
     end
 
     test "on Funx.Eq in any block" do
@@ -824,9 +822,9 @@ defmodule Funx.Eq.DslTest do
 
       # Test shows composability with default Eq
       # Maps differ in :id but match in :special_id, so any returns true
-      assert Utils.eq?(%{id: 999, special_id: 100}, %{id: 1, special_id: 100}, eq_any)
+      assert Funx.Eq.eq?(%{id: 999, special_id: 100}, %{id: 1, special_id: 100}, eq_any)
       # Both conditions false (different overall, different special_id)
-      refute Utils.eq?(%{id: 1, special_id: 100}, %{id: 1, special_id: 200}, eq_any)
+      refute Funx.Eq.eq?(%{id: 1, special_id: 100}, %{id: 1, special_id: 200}, eq_any)
     end
   end
 
@@ -841,8 +839,8 @@ defmodule Funx.Eq.DslTest do
           on Check
         end
 
-      assert Utils.eq?(%Check{id: 1}, %Check{id: 2}, eq_check)
-      refute Utils.eq?(%Check{id: 1}, %CreditCard{id: 1}, eq_check)
+      assert Funx.Eq.eq?(%Check{id: 1}, %Check{id: 2}, eq_check)
+      refute Funx.Eq.eq?(%Check{id: 1}, %CreditCard{id: 1}, eq_check)
     end
   end
 
@@ -855,7 +853,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, fn ->
         Code.compile_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             eq do
               check(:name)
@@ -869,7 +867,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, fn ->
         Code.compile_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             eq do
               on &String.length/1, or_else: 0
@@ -883,7 +881,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, fn ->
         Code.compile_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             eq do
               on(fn x -> x.name end, or_else: "unknown")
@@ -897,7 +895,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, fn ->
         Code.compile_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             eq do
               on Lens.key(:name), or_else: "unknown"
@@ -911,7 +909,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, fn ->
         Code.compile_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             eq do
               on Lens.path([:name]), or_else: "unknown"
@@ -925,7 +923,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, fn ->
         Code.compile_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             eq do
               on Traversal.combine([Lens.key(:name)]), or_else: "unknown"
@@ -939,7 +937,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, fn ->
         Code.compile_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             eq do
               on {Prism.key(:score), 0}, or_else: 1
@@ -953,7 +951,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, fn ->
         Code.compile_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             defmodule TestBehaviour do
               @behaviour Funx.Eq.Dsl.Behaviour
@@ -976,7 +974,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, ~r/does not have eq\?\/2, eq\/1, or __struct__\/0/, fn ->
         Code.eval_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             eq do
               on NotABehaviour
@@ -990,7 +988,7 @@ defmodule Funx.Eq.DslTest do
       assert_raise CompileError, fn ->
         Code.compile_quoted(
           quote do
-            use Funx.Eq.Dsl
+            use Funx.Eq
 
             eq do
               on [1, 2, 3]

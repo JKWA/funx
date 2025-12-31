@@ -16,8 +16,8 @@
 
 **Utils Pattern**: Inject custom Eq logic or default to protocol
 
-- `Eq.Utils.eq?(a, b, custom_eq)` - uses custom_eq
-- `Eq.Utils.eq?(a, b)` - uses protocol dispatch
+- `Eq.eq?(a, b, custom_eq)` - uses custom_eq
+- `Eq.eq?(a, b)` - uses protocol dispatch
 
 **Monoid Composition**: Combine equality checks
 
@@ -38,14 +38,14 @@ Eq.eq?(user1, user2)  # Uses protocol (by ID)
 List.uniq(users)      # Uses protocol default
 
 # STEP 3: Inject custom Eq for specific contexts
-by_name = Eq.Utils.contramap(& &1.name)
-Eq.Utils.eq?(user1, user2, by_name)  # Compare by name instead
+by_name = Eq.contramap(& &1.name)
+Eq.eq?(user1, user2, by_name)  # Compare by name instead
 List.uniq(users, by_name)            # Dedupe by name, not ID
 
 # Combine fields
-name_and_age = Eq.Utils.concat_all([
-  Eq.Utils.contramap(& &1.name),
-  Eq.Utils.contramap(& &1.age)
+name_and_age = Eq.concat_all([
+  Eq.contramap(& &1.name),
+  Eq.contramap(& &1.age)
 ])
 
 # Use with Funx.List
@@ -101,7 +101,7 @@ test "Eq laws hold" do
 end
 
 test "contramap preserves Eq laws" do
-  by_id = Eq.Utils.contramap(& &1.id)
+  by_id = Eq.contramap(& &1.id)
   user1 = %User{id: 1, name: "Alice"}
   user2 = %User{id: 1, name: "Bob"}  # Same ID, different name
   
@@ -111,12 +111,12 @@ test "contramap preserves Eq laws" do
 end
 
 test "monoid composition laws" do
-  eq1 = Eq.Utils.contramap(& &1.name)
-  eq2 = Eq.Utils.contramap(& &1.age)
+  eq1 = Eq.contramap(& &1.name)
+  eq2 = Eq.contramap(& &1.age)
   
   # Monoid bias behavior
-  all_eq = Eq.Utils.concat_all([eq1, eq2])  # FALSE-biased
-  any_eq = Eq.Utils.concat_any([eq1, eq2])  # TRUE-biased
+  all_eq = Eq.concat_all([eq1, eq2])  # FALSE-biased
+  any_eq = Eq.concat_any([eq1, eq2])  # TRUE-biased
   
   person1 = %{name: "Alice", age: 25}
   person2 = %{name: "Alice", age: 30}  # Name matches, age differs
@@ -155,7 +155,7 @@ The Eq DSL provides a declarative syntax for building complex equality compariso
 ### Basic Usage
 
 ```elixir
-use Funx.Eq.Dsl
+use Funx.Eq
 
 eq do
   on :name
@@ -168,9 +168,9 @@ end
 **With Utils functions (manual composition):**
 
 ```elixir
-Eq.Utils.concat_all([
-  Eq.Utils.contramap(Prism.key(:name), Funx.Eq),
-  Eq.Utils.contramap(Prism.key(:age), Funx.Eq)
+Eq.concat_all([
+  Eq.contramap(Prism.key(:name), Funx.Eq),
+  Eq.contramap(Prism.key(:age), Funx.Eq)
 ])
 ```
 
@@ -518,7 +518,7 @@ eq_by_city = eq do
   on Lens.path([:company, :address, :city])
 end
 
-Eq.Utils.eq?(emp1, emp2, eq_by_city)
+Eq.eq?(emp1, emp2, eq_by_city)
 ```
 
 ### Empty Eq Block
@@ -529,7 +529,7 @@ An empty `eq` block creates an identity equality (all values are equal):
 eq_identity = eq do
 end
 
-Eq.Utils.eq?(anything, anything_else, eq_identity)  # Always true
+Eq.eq?(anything, anything_else, eq_identity)  # Always true
 ```
 
 **Warning**: This will cause `Funx.List.uniq/2` and `MapSet` to collapse all values into a single equivalence class.
@@ -641,12 +641,12 @@ eq do
 end
 
 # Equivalent Utils composition
-Eq.Utils.concat_all([
-  Eq.Utils.contramap(Prism.key(:name), Funx.Eq),
-  Eq.Utils.contramap(Prism.key(:age), Funx.Eq),
-  Eq.Utils.concat_any([
-    Eq.Utils.contramap(Prism.key(:email), Funx.Eq),
-    Eq.Utils.contramap(Prism.key(:username), Funx.Eq)
+Eq.concat_all([
+  Eq.contramap(Prism.key(:name), Funx.Eq),
+  Eq.contramap(Prism.key(:age), Funx.Eq),
+  Eq.concat_any([
+    Eq.contramap(Prism.key(:email), Funx.Eq),
+    Eq.contramap(Prism.key(:username), Funx.Eq)
   ])
 ])
 ```
@@ -667,10 +667,10 @@ test "multi-field equality" do
   end
 
   # Same name and age
-  assert Eq.Utils.eq?(alice1, alice2, eq_person)
+  assert Eq.eq?(alice1, alice2, eq_person)
 
   # Different name
-  refute Eq.Utils.eq?(alice1, bob, eq_person)
+  refute Eq.eq?(alice1, bob, eq_person)
 end
 
 test "nil handling with or_else" do
@@ -682,7 +682,7 @@ test "nil handling with or_else" do
   end
 
   # nil becomes 0, 0 != 100
-  refute Eq.Utils.eq?(without_score, with_score, eq_item)
+  refute Eq.eq?(without_score, with_score, eq_item)
 end
 
 test "any block (OR logic)" do
@@ -698,10 +698,10 @@ test "any block (OR logic)" do
   end
 
   # Username matches (OR logic)
-  assert Eq.Utils.eq?(alice_email, alice_username, eq_contact)
+  assert Eq.eq?(alice_email, alice_username, eq_contact)
 
   # Neither matches
-  refute Eq.Utils.eq?(alice_email, bob, eq_contact)
+  refute Eq.eq?(alice_email, bob, eq_contact)
 end
 
 test "diff_on directive" do
@@ -715,10 +715,10 @@ test "diff_on directive" do
   end
 
   # Same person, different records
-  assert Eq.Utils.eq?(alice1, alice2, eq_same_person_diff_record)
+  assert Eq.eq?(alice1, alice2, eq_same_person_diff_record)
 
   # Same record (id matches - violates diff_on)
-  refute Eq.Utils.eq?(alice1, alice1, eq_same_person_diff_record)
+  refute Eq.eq?(alice1, alice1, eq_same_person_diff_record)
 end
 ```
 
@@ -768,7 +768,7 @@ The Eq DSL provides declarative multi-field equality:
 
 - **Contramap** (contravariant functor): Transform inputs before comparison
 - **Monoid composition**: Combine equality checks with FALSE/TRUE-biased operations
-- **Utils injection**: `Eq.Utils.eq?(a, b, custom_eq)` pattern for flexible equality
+- **Utils injection**: `Eq.eq?(a, b, custom_eq)` pattern for flexible equality
 - **Protocol + fallback**: Custom domain logic with `Any` fallback for primitives
 - **Mathematical foundation**: Preserves equality laws through transformations and composition
 - **Eq DSL**: Declarative syntax for complex multi-field equality with boolean structure

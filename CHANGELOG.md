@@ -1,5 +1,97 @@
 # Changelog
 
+## [0.6.0] - Unreleased
+
+### Breaking Changes
+
+**Module reorganization** for cleaner separation of protocols and utilities:
+
+#### Eq Module Changes
+
+- **`Funx.Eq` (protocol) → `Funx.Eq.Protocol`**
+  - The equality protocol is now `Funx.Eq.Protocol`
+  - Protocol implementations must use `defimpl Funx.Eq.Protocol, for: YourType`
+
+- **`Funx.Eq.Utils` → `Funx.Eq`**
+  - Utility functions moved from `Funx.Eq.Utils` to `Funx.Eq`
+  - DSL merged into `Funx.Eq` (no more separate `Funx.Eq.Dsl`)
+  - `use Funx.Eq` imports the `eq` DSL macro
+  - `alias Funx.Eq` for utility functions (optional, or use fully qualified)
+
+#### Ord Module Changes
+
+- **`Funx.Ord` (protocol) → `Funx.Ord.Protocol`**
+  - The ordering protocol is now `Funx.Ord.Protocol`
+  - Protocol implementations must use `defimpl Funx.Ord.Protocol, for: YourType`
+
+- **`Funx.Ord.Utils` → `Funx.Ord`**
+  - Utility functions moved from `Funx.Ord.Utils` to `Funx.Ord`
+  - DSL merged into `Funx.Ord` (no more separate `Funx.Ord.Dsl`)
+  - `use Funx.Ord` imports the `ord` DSL macro
+  - `alias Funx.Ord` for utility functions (optional, or use fully qualified)
+
+#### Migration Guide
+
+**Eq changes:**
+
+```elixir
+# Before
+alias Funx.Eq.Utils
+use Funx.Eq.Dsl
+Utils.contramap(&(&1.age))
+
+defimpl Funx.Eq, for: MyStruct do
+  def eq?(a, b), do: a.id == b.id
+end
+
+# After
+use Funx.Eq              # Imports eq DSL macro
+alias Funx.Eq            # For utility functions
+
+Eq.contramap(&(&1.age))
+
+defimpl Funx.Eq.Protocol, for: MyStruct do
+  def eq?(a, b), do: a.id == b.id
+end
+```
+
+**Ord changes:**
+
+```elixir
+# Before
+alias Funx.Ord.Utils
+use Funx.Ord.Dsl
+Utils.contramap(&(&1.score))
+
+defimpl Funx.Ord, for: MyStruct do
+  def lt?(a, b), do: a.score < b.score
+end
+
+# After
+use Funx.Ord             # Imports ord DSL macro
+alias Funx.Ord           # For utility functions
+
+Ord.contramap(&(&1.score))
+
+defimpl Funx.Ord.Protocol, for: MyStruct do
+  def lt?(a, b), do: a.score < b.score
+end
+```
+
+**Default parameter changes:**
+
+- Functions with `ord \\ Ord` now use `ord \\ Funx.Ord.Protocol`
+- DSL parser defaults to `Funx.Ord.Protocol` for comparison checks
+
+### Rationale
+
+This reorganization provides:
+
+- Clear separation: Protocols (`*.Protocol`) vs utilities (`Funx.Eq`, `Funx.Ord`)
+- Minimal imports: `use` imports only the DSL macro, not all functions
+- Better discoverability: Main modules contain the utilities users interact with
+- User control: Users decide whether to alias or use fully qualified names
+
 ## [0.5.0] - Unreleased
 
 ### Added

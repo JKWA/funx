@@ -90,7 +90,7 @@ defmodule Funx.Ord.Dsl.Parser do
     {projection_ast, type} =
       build_projection_ast(projection_value, or_else, behaviour_opts, meta, caller_env)
 
-    ord_ast = custom_ord || quote(do: Funx.Ord)
+    ord_ast = custom_ord || quote(do: Funx.Ord.Protocol)
     metadata = extract_meta(meta)
 
     Step.new(direction, projection_ast, ord_ast, type, metadata)

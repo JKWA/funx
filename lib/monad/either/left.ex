@@ -64,31 +64,31 @@ defimpl Funx.Foldable, for: Funx.Monad.Either.Left do
   end
 end
 
-defimpl Funx.Eq, for: Funx.Monad.Either.Left do
+defimpl Funx.Eq.Protocol, for: Funx.Monad.Either.Left do
   alias Funx.Monad.Either.{Left, Right}
-  alias Funx.Eq
+  alias Funx.Eq.Protocol
 
-  def eq?(%Left{left: v1}, %Left{left: v2}), do: Eq.eq?(v1, v2)
+  def eq?(%Left{left: v1}, %Left{left: v2}), do: Protocol.eq?(v1, v2)
   def eq?(%Left{}, %Right{}), do: false
 
-  def not_eq?(%Left{left: v1}, %Left{left: v2}), do: Eq.not_eq?(v1, v2)
+  def not_eq?(%Left{left: v1}, %Left{left: v2}), do: Protocol.not_eq?(v1, v2)
   def not_eq?(%Left{}, %Right{}), do: true
 end
 
-defimpl Funx.Ord, for: Funx.Monad.Either.Left do
+defimpl Funx.Ord.Protocol, for: Funx.Monad.Either.Left do
   alias Funx.Monad.Either.{Left, Right}
-  alias Funx.Ord
+  alias Funx.Ord.Protocol
 
-  def lt?(%Left{left: v1}, %Left{left: v2}), do: Ord.lt?(v1, v2)
+  def lt?(%Left{left: v1}, %Left{left: v2}), do: Protocol.lt?(v1, v2)
   def lt?(%Left{}, %Right{}), do: true
 
-  def le?(%Left{left: v1}, %Left{left: v2}), do: Ord.le?(v1, v2)
+  def le?(%Left{left: v1}, %Left{left: v2}), do: Protocol.le?(v1, v2)
   def le?(%Left{}, %Right{}), do: true
 
-  def gt?(%Left{left: v1}, %Left{left: v2}), do: Ord.gt?(v1, v2)
+  def gt?(%Left{left: v1}, %Left{left: v2}), do: Protocol.gt?(v1, v2)
   def gt?(%Left{}, %Right{}), do: false
 
-  def ge?(%Left{left: v1}, %Left{left: v2}), do: Ord.ge?(v1, v2)
+  def ge?(%Left{left: v1}, %Left{left: v2}), do: Protocol.ge?(v1, v2)
   def ge?(%Left{}, %Right{}), do: false
 end
 

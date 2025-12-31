@@ -15,12 +15,12 @@ defmodule Funx.Eq.Dsl.Behaviour do
 
         @impl true
         def eq(_opts) do
-          Funx.Eq.Utils.contramap(&(&1.id))
+          Funx.Eq.contramap(&(&1.id))
         end
       end
 
       # In DSL
-      use Funx.Eq.Dsl
+      use Funx.Eq
 
       eq do
         on UserById  # Compares by id
@@ -36,9 +36,9 @@ defmodule Funx.Eq.Dsl.Behaviour do
           case_sensitive = Keyword.get(opts, :case_sensitive, true)
 
           if case_sensitive do
-            Funx.Eq.Utils.contramap(&(&1.name))
+            Funx.Eq.contramap(&(&1.name))
           else
-            Funx.Eq.Utils.contramap(fn u -> String.downcase(u.name) end)
+            Funx.Eq.contramap(fn u -> String.downcase(u.name) end)
           end
         end
       end
@@ -55,7 +55,7 @@ defmodule Funx.Eq.Dsl.Behaviour do
   - **Module-specific**: Override struct equality without global protocol
   - **Options support**: Built-in support for configuration
 
-  The returned Eq map typically uses `Funx.Eq.Utils.contramap/2` to build
+  The returned Eq map typically uses `Funx.Eq.contramap/2` to build
   projection-based equality, but can implement any custom comparison logic.
   """
 
@@ -81,13 +81,13 @@ defmodule Funx.Eq.Dsl.Behaviour do
 
       # Simple projection-based equality
       def eq(_opts) do
-        Funx.Eq.Utils.contramap(&(&1.id))
+        Funx.Eq.contramap(&(&1.id))
       end
 
       # With options
       def eq(opts) do
         field = Keyword.get(opts, :field, :id)
-        Funx.Eq.Utils.contramap(&Map.get(&1, field))
+        Funx.Eq.contramap(&Map.get(&1, field))
       end
 
       # Custom comparison logic
@@ -98,8 +98,8 @@ defmodule Funx.Eq.Dsl.Behaviour do
         }
       end
 
-  Most implementations use `Funx.Eq.Utils.contramap/2` for projection-based
+  Most implementations use `Funx.Eq.contramap/2` for projection-based
   equality, which handles the Eq map creation automatically.
   """
-  @callback eq(opts :: keyword()) :: Funx.Eq.Utils.eq_map()
+  @callback eq(opts :: keyword()) :: Funx.Eq.eq_map()
 end

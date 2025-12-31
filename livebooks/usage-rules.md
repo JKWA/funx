@@ -25,8 +25,7 @@ lib/**/*.ex
 The livebook structure uses **topic-based organization** for optimal browsing experience:
 
 ```
-lib/eq.ex → livebooks/eq/eq.livemd
-lib/eq/utils.ex → livebooks/eq/utils.livemd
+lib/eq.ex → livebooks/eq/eq.livemd (combined protocol + utilities)
 lib/monad/maybe.ex → livebooks/monad/maybe/maybe.livemd
 lib/monad/maybe/just.ex → livebooks/monad/maybe/just.livemd
 ```
@@ -46,8 +45,8 @@ livebooks/
 ├── index.md                    # Navigation index with conditional links
 ├── usage-rules.md              # Process documentation
 ├── eq/                         # Equality concept
-│   ├── eq.livemd              
-│   └── utils.livemd           
+│   ├── eq.livemd               # Protocol + utilities (combined)
+│   └── eq_dsl.livemd           # Equality DSL
 ├── monad/                      # All monad types
 │   ├── monad.livemd           
 │   ├── maybe/                  # Maybe monad + implementations
@@ -167,8 +166,8 @@ Process files by extracting all @moduledoc and @doc strings exactly as they appe
 
 ### Protocols and Main Modules
 
-- [x] `eq.ex`, `eq/utils.ex` (Equality protocol)
-- [x] `ord.ex`, `ord/utils.ex` (Ordering protocol)
+- [x] `eq.ex` (Equality protocol + utilities, combined)
+- [x] `ord.ex` (Ordering protocol + utilities, combined)
 - [x] `predicate.ex` (Predicate combinators)
 - [x] `foldable.ex` (Folding protocol)
 - [x] `filterable.ex` (Filtering protocol)
@@ -263,7 +262,7 @@ After initial transcription, livebook examples must be optimized for interactive
 #### 3. Use Imported Function Names
 
 - **Leverage import statements** to use short function names
-- If `import Funx.Eq.Utils` is present, use `eq?()` instead of `Funx.Eq.Utils.eq?()`
+- If `import Funx.Eq` is present, use `eq?()` instead of `Funx.Eq.eq?()`
 - If `import Funx.Monad.Maybe` is present, use `just()` instead of `Funx.Monad.Maybe.just()`
 - Makes examples cleaner and demonstrates import benefits
 
@@ -275,10 +274,10 @@ After initial transcription, livebook examples must be optimized for interactive
 ### Examples
 
 ```elixir
-Funx.Eq.Utils.eq?(42, 42)
+Funx.Eq.eq?(42, 42)
 # true
 
-Funx.Eq.Utils.eq?("foo", "bar")
+Funx.Eq.eq?("foo", "bar")
 # false
 ```
 
@@ -321,10 +320,10 @@ Some files may require manual processing:
 
 Map fully qualified names to short names based on imports:
 
-- `import Funx.Eq.Utils` → `Funx.Eq.Utils.eq?` becomes `eq?`
+- `import Funx.Eq` → `Funx.Eq.eq?` becomes `eq?`
 - `import Funx.Monad.Maybe` → `Funx.Monad.Maybe.just` becomes `just`
 - `import Funx.Predicate` → `Funx.Predicate.p_and` becomes `p_and`
-- `import Funx.Ord.Utils` → `Funx.Ord.Utils.max` becomes `max`
+- `import Funx.Ord` → `Funx.Ord.max` becomes `max`
 
 ## Key Principles Learned
 
@@ -334,7 +333,7 @@ Map fully qualified names to short names based on imports:
 - **Independent execution**: Each code block should be runnable on its own
 
 ### Leverage Language Features
-- **Use imports effectively**: `contramap()` is cleaner than `Funx.Eq.Utils.contramap()`
+- **Use imports effectively**: `contramap()` is cleaner than `Funx.Eq.contramap()`
 - **Demonstrate setup benefits**: Show why the import/alias blocks matter
 - **Clean, readable examples**: Focus on the functionality, not boilerplate
 

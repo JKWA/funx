@@ -1135,7 +1135,7 @@ def build_monadic_equality_operations() do
       equals: fn expected_value ->
         fn monad_value ->
           Monad.bind(monad_value, fn actual_value ->
-            if Eq.Utils.eq?(actual_value, expected_value, eq_instance) do
+            if Eq.eq?(actual_value, expected_value, eq_instance) do
               Maybe.just(actual_value)
             else
               Maybe.nothing()
@@ -1147,7 +1147,7 @@ def build_monadic_equality_operations() do
       not_equals: fn forbidden_value ->
         fn monad_value ->
           Monad.bind(monad_value, fn actual_value ->
-            if Eq.Utils.not_eq?(actual_value, forbidden_value, eq_instance) do
+            if Eq.not_eq?(actual_value, forbidden_value, eq_instance) do
               Maybe.just(actual_value)
             else
               Maybe.nothing()
@@ -1159,7 +1159,7 @@ def build_monadic_equality_operations() do
   end
   
   # Use with custom Eq instances
-  by_id_eq = Eq.Utils.contramap(fn user -> user.id end)
+  by_id_eq = Eq.contramap(fn user -> user.id end)
   validators = create_equality_validators(by_id_eq)
   
   target_user = %{id: 123, name: "Alice"}
@@ -1180,7 +1180,7 @@ def build_comprehensive_pipeline() do
   # Setup components
   age_predicate = Predicate.Utils.between(18, 65)
   email_predicate = Predicate.Utils.matches(~r/\A[^@\s]+@[^@\s]+\z/)
-  user_eq = Eq.Utils.contramap(fn user -> {user.id, user.email} end)
+  user_eq = Eq.contramap(fn user -> {user.id, user.email} end)
   
   # Curried operations
   validate_with = Funx.Utils.curry_r(fn predicate, value ->
@@ -1209,7 +1209,7 @@ def build_comprehensive_pipeline() do
     |> Monad.bind(fn processed_user ->
       # Check for duplicates using custom Eq
       duplicate = Enum.find(existing_users, fn existing ->
-        Eq.Utils.eq?(processed_user, existing, user_eq)
+        Eq.eq?(processed_user, existing, user_eq)
       end)
       
       if duplicate do

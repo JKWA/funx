@@ -15,7 +15,7 @@ defmodule Funx.Ord.Dsl.Behaviour do
 
         @impl true
         def ord(_opts) do
-          Funx.Ord.Utils.contramap(&(&1.id))
+          Funx.Ord.contramap(&(&1.id))
         end
       end
 
@@ -34,7 +34,7 @@ defmodule Funx.Ord.Dsl.Behaviour do
         @impl true
         def ord(opts) do
           field = Keyword.get(opts, :field, :id)
-          Funx.Ord.Utils.contramap(&Map.get(&1, field))
+          Funx.Ord.contramap(&Map.get(&1, field))
         end
       end
 
@@ -50,7 +50,7 @@ defmodule Funx.Ord.Dsl.Behaviour do
   - **Module-specific**: Override struct ordering without global protocol
   - **Options support**: Built-in support for configuration
 
-  The returned Ord map typically uses `Funx.Ord.Utils.contramap/2` to build
+  The returned Ord map typically uses `Funx.Ord.contramap/2` to build
   projection-based ordering, but can implement any custom comparison logic.
   """
 
@@ -75,13 +75,13 @@ defmodule Funx.Ord.Dsl.Behaviour do
 
       # Simple projection-based ordering
       def ord(_opts) do
-        Funx.Ord.Utils.contramap(&(&1.id))
+        Funx.Ord.contramap(&(&1.id))
       end
 
       # With options
       def ord(opts) do
         field = Keyword.get(opts, :field, :id)
-        Funx.Ord.Utils.contramap(&Map.get(&1, field))
+        Funx.Ord.contramap(&Map.get(&1, field))
       end
 
       # Custom comparison logic
@@ -97,8 +97,8 @@ defmodule Funx.Ord.Dsl.Behaviour do
         }
       end
 
-  Most implementations use `Funx.Ord.Utils.contramap/2` for projection-based
+  Most implementations use `Funx.Ord.contramap/2` for projection-based
   ordering, which handles the Ord map creation automatically.
   """
-  @callback ord(opts :: keyword()) :: Funx.Ord.Utils.ord_map()
+  @callback ord(opts :: keyword()) :: Funx.Ord.ord_map()
 end

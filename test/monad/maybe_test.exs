@@ -16,7 +16,7 @@ defmodule Funx.Monad.MaybeTest do
   alias Funx.Eq
   alias Funx.Monad.{Either, Identity}
   alias Funx.Monad.Maybe.{Just, Nothing}
-  alias Funx.Ord
+  alias Funx.Ord.Protocol
   alias Funx.Tappable
 
   describe "Just.pure/1" do
@@ -414,98 +414,98 @@ defmodule Funx.Monad.MaybeTest do
     end
   end
 
-  describe "Ord.lt?/2" do
+  describe "Protocol.lt?/2" do
     test "returns true for less Just value" do
-      assert Ord.lt?(just(1), just(2)) == true
+      assert Protocol.lt?(just(1), just(2)) == true
     end
 
     test "returns false for more Just value" do
-      assert Ord.lt?(just(2), just(1)) == false
+      assert Protocol.lt?(just(2), just(1)) == false
     end
 
     test "returns false for equal Just values" do
-      assert Ord.lt?(just(1), just(1)) == false
+      assert Protocol.lt?(just(1), just(1)) == false
     end
 
     test "returns true for Nothing compared to Just value" do
-      assert Ord.lt?(nothing(), just(1)) == true
+      assert Protocol.lt?(nothing(), just(1)) == true
     end
 
     test "returns false for Just compared to Nothing value" do
-      assert Ord.lt?(just(1), nothing()) == false
+      assert Protocol.lt?(just(1), nothing()) == false
     end
 
     test "returns false for two Nothing values" do
-      assert Ord.lt?(nothing(), nothing()) == false
+      assert Protocol.lt?(nothing(), nothing()) == false
     end
   end
 
-  describe "Ord.le?/2" do
+  describe "Protocol.le?/2" do
     test "returns true when Just value is less than or equal to another Just value" do
-      assert Ord.le?(just(1), just(2)) == true
-      assert Ord.le?(just(2), just(2)) == true
+      assert Protocol.le?(just(1), just(2)) == true
+      assert Protocol.le?(just(2), just(2)) == true
     end
 
     test "returns false when Just value is greater than another Just value" do
-      assert Ord.le?(just(2), just(1)) == false
+      assert Protocol.le?(just(2), just(1)) == false
     end
 
     test "returns true for Nothing compared to Just" do
-      assert Ord.le?(nothing(), just(1)) == true
+      assert Protocol.le?(nothing(), just(1)) == true
     end
 
     test "returns true for Nothing compared to Nothing" do
-      assert Ord.le?(nothing(), nothing()) == true
+      assert Protocol.le?(nothing(), nothing()) == true
     end
 
     test "returns false for Just compared to Nothing" do
-      assert Ord.le?(just(1), nothing()) == false
+      assert Protocol.le?(just(1), nothing()) == false
     end
   end
 
-  describe "Ord.gt?/2" do
+  describe "Protocol.gt?/2" do
     test "returns true when Just value is greater than another Just value" do
-      assert Ord.gt?(just(2), just(1)) == true
+      assert Protocol.gt?(just(2), just(1)) == true
     end
 
     test "returns false when Just value is less than or equal to another Just value" do
-      assert Ord.gt?(just(1), just(2)) == false
-      assert Ord.gt?(just(2), just(2)) == false
+      assert Protocol.gt?(just(1), just(2)) == false
+      assert Protocol.gt?(just(2), just(2)) == false
     end
 
     test "returns false for Nothing compared to Just" do
-      assert Ord.gt?(nothing(), just(1)) == false
+      assert Protocol.gt?(nothing(), just(1)) == false
     end
 
     test "returns false for Nothing compared to Nothing" do
-      assert Ord.gt?(nothing(), nothing()) == false
+      assert Protocol.gt?(nothing(), nothing()) == false
     end
 
     test "returns true for Just compared to Nothing" do
-      assert Ord.gt?(just(1), nothing()) == true
+      assert Protocol.gt?(just(1), nothing()) == true
     end
   end
 
-  describe "Ord.ge?/2" do
+  describe "Protocol.ge?/2" do
     test "returns true when Just value is greater than or equal to another Just value" do
-      assert Ord.ge?(just(2), just(1)) == true
-      assert Ord.ge?(just(2), just(2)) == true
+      assert Protocol.ge?(just(2), just(1)) == true
+      assert Protocol.ge?(just(2), just(2)) == true
     end
 
     test "returns false when Just value is less than another Just value" do
-      assert Ord.ge?(just(1), just(2)) == false
+      assert Protocol.ge?(just(1), just(2)) == false
     end
 
     test "returns true for Just compared to Nothing" do
-      assert Ord.ge?(just(1), nothing()) == true
+      assert Protocol.ge?(just(1), nothing()) == true
     end
 
     test "returns true for Nothing compared to Nothing" do
-      assert Ord.ge?(nothing(), nothing()) == true
+      assert Protocol.ge?(nothing(), nothing()) == true
     end
 
     test "returns false for Nothing compared to Just" do
-      assert Ord.ge?(nothing(), just(1)) == false
+      assert Protocol.ge?(nothing(), just(1)) == false
     end
   end
 
