@@ -395,7 +395,7 @@ docs: [
 
 # Custom processor converts:
 # FROM: https://livebook.dev/run?url=...github.com/JKWA/funx/blob/main/livebooks/eq/eq.livemd
-# TO:   https://livebook.dev/run?url=...hexdocs.pm/funx/0.5.0/livebooks/eq/eq.livemd
+# TO:   https://livebook.dev/run?url=...hexdocs.pm/funx/0.6.0/livebooks/eq/eq.livemd
 ```
 
 ### Benefits

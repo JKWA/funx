@@ -17,7 +17,7 @@
 
 ## Breaking Changes in 0.6.0
 
-If you're upgrading from 0.5.0 or earlier, be aware of the module reorganization:
+If you're upgrading from 0.6.0 or earlier, be aware of the module reorganization:
 
 ### Eq changes
 
@@ -64,7 +64,7 @@ To use Funx, add it to the list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:funx, "~> 0.5"}
+    {:funx, "~> 0.6"}
   ]
 end
 ```
