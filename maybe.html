@@ -14,7 +14,7 @@
 
       <link rel="canonical" href="https://hexdocs.pm/funx/maybe.html" />
 
-    <script defer src="dist/sidebar_items-7B7B9937.js"></script>
+    <script defer src="dist/sidebar_items-DFF5F66D.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -105,7 +105,7 @@ funx
   </div>
 
 
-<h2 id="structure" class="section-heading"><a href="#structure" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Structure</span></h2><p>A <code class="inline">maybe</code> block compiles to a struct containing the pipeline input, ordered steps, return mode (<code class="inline">:maybe</code>, <code class="inline">:nil</code>, or <code class="inline">:raise</code>), and user-supplied options. This struct is the complete representation of the DSL expression and is what the executor receives at runtime.</p><h2 id="steps" class="section-heading"><a href="#steps" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Steps</span></h2><p>The Maybe DSL uses a small set of step types, each represented by its own struct:</p><ul><li><code class="inline">Step.Bind</code></li><li><code class="inline">Step.Map</code></li><li><code class="inline">Step.Ap</code></li><li><code class="inline">Step.MaybeFunction</code></li><li><code class="inline">Step.ProtocolFunction</code></li></ul><p>Each step describes a single operation. The executor pattern-matches on these structs to determine how the pipeline proceeds.</p><pre><code class="text">Pipeline
+<p>The Maybe DSL is a pipeline DSL that executes a sequence of operations on an input value. See the <a href="overview.html">DSL Overview</a> for the distinction between builder and pipeline DSLs.</p><h2 id="structure" class="section-heading"><a href="#structure" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Structure</span></h2><p>A <code class="inline">maybe</code> block compiles to a struct containing the pipeline input, ordered steps, return mode (<code class="inline">:maybe</code>, <code class="inline">:nil</code>, or <code class="inline">:raise</code>), and user-supplied options. This struct is the complete representation of the DSL expression and is what the executor receives at runtime.</p><h2 id="steps" class="section-heading"><a href="#steps" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Steps</span></h2><p>The Maybe DSL uses a small set of step types, each represented by its own struct:</p><ul><li><code class="inline">Step.Bind</code></li><li><code class="inline">Step.Map</code></li><li><code class="inline">Step.Ap</code></li><li><code class="inline">Step.MaybeFunction</code></li><li><code class="inline">Step.ProtocolFunction</code></li></ul><p>Each step describes a single operation. The executor pattern-matches on these structs to determine how the pipeline proceeds.</p><pre><code class="text">Pipeline
     ├── Step.Bind
     ├── Step.Map
     ├── Step.Ap
