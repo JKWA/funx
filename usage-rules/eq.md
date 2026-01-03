@@ -134,7 +134,9 @@ end
 
 ## Eq DSL
 
-The Eq DSL provides a declarative syntax for building complex equality comparisons without explicit `contramap`, `concat_all`, and `concat_any` calls.
+The Eq DSL is a builder DSL that constructs equality comparators for later use. See the [DSL guides](../guides/dsl/overview.md) for the distinction between builder and pipeline DSLs.
+
+The DSL provides a declarative syntax for building complex equality comparisons without explicit `contramap`, `concat_all`, and `concat_any` calls.
 
 **Design Philosophy:**
 
@@ -734,7 +736,7 @@ end
 
 - **No direction field** - Equality is symmetric (no asc/desc)
 - **No implicit tiebreaker** - Empty eq block is identity (all equal)
-- **Tree structure** - Nested `all`/`any` blocks vs linear steps
+- **Tree structure** - Nested `all`/`any` blocks vs linear operations
 - **diff_on directive** - Check inequality (breaks transitivity)
 - **Different monoids** - `Eq.All` (AND) and `Eq.Any` (OR) vs `Ord` monoid
 

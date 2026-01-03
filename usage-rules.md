@@ -53,6 +53,12 @@ These rules provide guidance on how to effectively apply functional patterns in 
 - Funx.Monoid Usage Rules - **funx:monoid usage**
   Identity and associative combination, enabling folds, logs, and accumulation.
 
+- Funx.Optics.Iso Usage Rules - **funx:optics_iso usage**
+  Bidirectional lossless optic for converting between equivalent representations—type conversions and format transformations.
+
+- Funx.Optics.Lens Usage Rules - **funx:optics_lens usage**
+  Total optic for focusing on required fields—structure-preserving updates and transformations.
+
 - Funx.Optics.Prism Usage Rules - **funx:optics_prism usage**
   Partial optic for focusing on branches—optional fields, sum types, and compositional partial access.
 
@@ -91,6 +97,8 @@ usage-rules/
   monad_reader.md             # ← Funx.Monad.Reader rules
   monad_writer.md             # ← Funx.Monad.Writer rules
   monoid.md                   # ← Funx.Monoid rules
+  optics_iso.md               # ← Funx.Optics.Iso rules
+  optics_lens.md              # ← Funx.Optics.Lens rules
   optics_prism.md             # ← Funx.Optics.Prism rules
   optics_traversal.md         # ← Funx.Optics.Traversal rules
   ord.md                      # ← Funx.Ord rules

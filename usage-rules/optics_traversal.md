@@ -113,17 +113,19 @@
 
 `Funx.Optics.Traversal` provides a multi-focus optic for targeting multiple locations in a data structure as a single operation.
 
+**A Traversal is rarely used to test each element independently. Its real power is collecting multiple related foci so a single rule can relate them to each other.**
+
 Use Traversal for:
 
-- Extracting values from multiple locations at once
+- **Relating multiple foci to each other** (e.g., "refund matches charge amount")
 - Enforcing structural requirements: "these fields must all exist together"
-- Validating relationships between multiple foci
-- Collecting from mixed required/optional fields
-- Making applicability rules first-class data
+- Validating relationships between multiple values
+- Collecting from multiple locations for comparison or aggregation
+- Making structural dependencies first-class data
 
 **Key insight**: Traversals serve two purposes:
-1. **Collection**: Extract from whatever foci match (`to_list/2`)
-2. **Enforcement**: Require all foci to exist together (`to_list_maybe/2`)
+1. **Collection mode** (`to_list/2`): Collect whatever foci exist (partial information, skips missing Prism foci)
+2. **Enforcement mode** (`to_list_maybe/2`): Require all foci to exist (all-or-nothing, returns Nothing if any Prism focus missing)
 
 The difference between these modes lets you express both "collect what you can" and "all or nothing" semantics.
 

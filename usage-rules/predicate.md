@@ -113,6 +113,293 @@ These functions enable building complex boolean logic from simple predicate func
 
 **Predicate Arity**: Predicates used in `and_all/1` and `or_any/1` must be unary (1-arity). If more context is needed, use partially applied closures or higher-order predicate factories.
 
+## Predicate DSL
+
+The Predicate DSL is a builder DSL that constructs boolean predicates for later use. See the [DSL guides](../guides/dsl/overview.md) for the distinction between builder and pipeline DSLs.
+
+The DSL provides a declarative syntax for building complex boolean predicates without explicit `p_all`, `p_any`, and `p_not` calls.
+
+**Design Philosophy:**
+
+- **Declarative boolean logic** - Describe what conditions to check, not how to check them
+- **Compile-time composition** - DSL expands to static predicate compositions at compile time
+- **Boolean structure** - Bare predicates, `negate`, `check`, `all`, `any` directives for flexible logic
+- **Type-safe projections** - Leverages Lens and Prism for safe data access in `check` directive
+
+**Key Benefits:**
+
+- Clean, readable multi-condition predicates
+- Automatic handling of nil values with Prism semantics
+- Explicit Lens for required fields, atoms for optional fields
+- Nested `any`/`all` blocks for OR/AND logic
+- Zero runtime overhead - compiles to direct function calls
+- Works seamlessly with `Enum.filter`, `Enum.find`, and other predicate-accepting functions
+
+### Basic Usage
+
+```elixir
+use Funx.Predicate
+
+pred do
+  is_adult
+  is_verified
+end
+```
+
+### Practical Comparison: Before and After
+
+**With combinator functions (manual composition):**
+
+```elixir
+Predicate.p_all([
+  fn user -> user.age >= 18 end,
+  fn user -> user.verified end,
+  Predicate.p_any([
+    fn user -> user.role == :admin end,
+    fn user -> user.role == :moderator end
+  ])
+])
+```
+
+**With Predicate DSL (declarative):**
+
+```elixir
+pred do
+  fn user -> user.age >= 18 end
+  fn user -> user.verified end
+  any do
+    fn user -> user.role == :admin end
+    fn user -> user.role == :moderator end
+  end
+end
+```
+
+The DSL version:
+
+- ✅ More readable (clear conditional intent)
+- ✅ More concise (no manual p_all/p_any)
+- ✅ Type-safe (compile-time validation)
+- ✅ Same performance (expands to identical code)
+
+### Directives
+
+- Bare predicate - Include predicate in composition (implicit AND at top level)
+- `negate <predicate>` - Negate the predicate (logical NOT)
+- `check <projection>, <predicate>` - Compose projection with predicate (check projected value)
+- `negate check <projection>, <predicate>` - Negated projection (value must NOT match)
+- `any do ... end` - At least one nested predicate must pass (OR logic)
+- `all do ... end` - All nested predicates must pass (AND logic, explicit)
+- `negate_all do ... end` - NOT (all predicates pass) - applies De Morgan's Laws
+- `negate_any do ... end` - NOT (any predicate passes) - applies De Morgan's Laws
+
+### Supported Predicate Forms
+
+**Bare Predicates:**
+
+- `fn user -> user.age >= 18 end` - Anonymous function
+- `&adult?/1` - Captured function
+- `is_verified` - Variable reference
+- `MyModule.adult?()` - Helper function (0-arity, must call with `()`)
+- `MyBehaviour` - Behaviour module implementing `Funx.Predicate.Dsl.Behaviour`
+- `{MyBehaviour, opt: value}` - Behaviour with options
+
+**Projections (for `check` directive):**
+
+- `check :atom, pred` - Atom field (converts to `Prism.key/1`, degenerate sum: present | absent)
+- `check Lens.key(:field), pred` - Explicit Lens (total accessor, raises on missing keys)
+- `check Prism.key(:field), pred` - Explicit Prism (branch selector, Nothing fails the predicate)
+- `check Prism.struct(Module), pred` - Sum type branch selection (selects one case)
+- `check Traversal.combine([...]), pred` - Multiple foci (relates values to each other)
+- `check &(&1.field), pred` - Function projection
+- `check fn x -> x.field end, pred` - Anonymous function projection
+
+### DSL Examples
+
+**Basic multi-condition predicate:**
+
+```elixir
+pred do
+  fn user -> user.active end
+  fn user -> user.verified end
+end
+```
+
+**Using negate:**
+
+```elixir
+pred do
+  fn user -> user.age >= 18 end
+  negate fn user -> user.banned end
+end
+```
+
+**Using check with projections:**
+
+```elixir
+pred do
+  check :email, fn email -> String.contains?(email, "@") end
+  check :age, fn age -> age >= 18 end
+end
+```
+
+**Using negate check (negated projections):**
+
+```elixir
+pred do
+  check :age, fn age -> age >= 18 end
+  negate check :banned, fn b -> b == true end  # Must NOT be banned
+end
+```
+
+**OR logic with any blocks:**
+
+```elixir
+# Match if user is admin OR moderator
+pred do
+  any do
+    fn user -> user.role == :admin end
+    fn user -> user.role == :moderator end
+  end
+end
+```
+
+**Mixed AND/OR logic:**
+
+```elixir
+# Active AND (admin OR verified)
+pred do
+  fn user -> user.active end
+  any do
+    fn user -> user.role == :admin end
+    fn user -> user.verified end
+  end
+end
+```
+
+**Nested blocks:**
+
+```elixir
+pred do
+  fn user -> user.active end
+  any do
+    fn user -> user.role == :admin end
+    all do
+      fn user -> user.verified end
+      fn user -> user.age >= 18 end
+    end
+  end
+end
+```
+
+**Negating blocks with De Morgan's Laws:**
+
+```elixir
+# negate_all - NOT (all conditions pass) = (at least one fails)
+# Rejects premium users (adult AND verified AND vip)
+pred do
+  negate_all do
+    fn user -> user.age >= 18 end
+    fn user -> user.verified end
+    fn user -> user.vip end
+  end
+end
+
+# negate_any - NOT (any condition passes) = (all fail)
+# Regular users only (not vip, not sponsor, not admin)
+pred do
+  negate_any do
+    fn user -> user.vip end
+    fn user -> user.sponsor end
+    fn user -> user.role == :admin end
+  end
+end
+```
+
+**Using behaviour modules:**
+
+```elixir
+defmodule IsActive do
+  @behaviour Funx.Predicate.Dsl.Behaviour
+
+  @impl true
+  def pred(_opts) do
+    fn user -> user.active end
+  end
+end
+
+pred do
+  IsActive
+  {HasMinimumAge, minimum: 21}
+end
+```
+
+**Integration with Enum:**
+
+```elixir
+check_eligible = pred do
+  fn user -> user.age >= 18 end
+  fn user -> user.verified end
+end
+
+# Filter
+Enum.filter(users, check_eligible)
+
+# Find
+Enum.find(users, check_eligible)
+
+# Count
+Enum.count(users, check_eligible)
+```
+
+### When to Use the DSL
+
+**✅ Use the DSL when:**
+
+- Building complex multi-condition predicates
+- Need nested AND/OR logic
+- Want declarative, readable boolean composition
+- Combining projection-based checks with predicates
+- Need compile-time validation
+
+**❌ Don't use the DSL when:**
+
+- Simple single predicate (just use the function directly)
+- Dynamic predicate construction at runtime
+- Performance is absolutely critical (minimal overhead but exists)
+
+### Key Differences from Eq/Ord DSLs
+
+- **No direction field** - Predicates return boolean, not ordering
+- **No implicit tiebreaker** - Empty pred block returns `fn _ -> true end`
+- **Tree structure** - Nested `all`/`any` blocks for complex boolean logic
+- **check directive** - Compose projections with predicates (2 arguments)
+- **Different monoids** - `Predicate.All` (AND) and `Predicate.Any` (OR)
+
+### DSL Summary
+
+The Predicate DSL provides declarative multi-condition boolean logic:
+
+**Core Directives:**
+
+- Bare predicate - Must pass (AND)
+- `negate <predicate>` - Must fail (NOT)
+- `check <projection>, <predicate>` - Project then test
+- `negate check <projection>, <predicate>` - Projected value must NOT match
+- `any do ... end` - OR logic (at least one must match)
+- `all do ... end` - AND logic (all must match)
+- `negate_all do ... end` - NOT (all pass) = at least one fails (De Morgan)
+- `negate_any do ... end` - NOT (any passes) = all fail (De Morgan)
+
+**Key Patterns:**
+
+- **Atoms** with `check` for optional fields (degenerate sum: present | absent, Nothing fails the predicate)
+- **Lens** with `check` for required fields (total accessor, raises on missing keys)
+- **Prism** with `check` for sum type branch selection (selects one case, Nothing fails the predicate)
+- **Traversal** with `check` for relating multiple foci (collect values to compare or validate together)
+- Use behaviour modules for reusable, configurable predicate logic
+- Nested `any`/`all` blocks for complex boolean expressions
+- Works seamlessly with Enum functions for filtering and searching
+
 ## Correct Usage Patterns
 
 ### Combining Predicates

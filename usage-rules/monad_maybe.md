@@ -117,7 +117,9 @@
 
 ## Maybe DSL
 
-The Maybe monad includes a declarative DSL for writing optional-value pipelines without explicit `bind`, `map`, or `ap` calls.
+The Maybe DSL is a pipeline DSL that executes a sequence of operations on an input value. See the [DSL guides](../guides/dsl/overview.md) for the distinction between builder and pipeline DSLs.
+
+The DSL provides a declarative syntax for writing optional-value pipelines without explicit `bind`, `map`, or `ap` calls.
 
 **Design Philosophy:**
 

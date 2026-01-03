@@ -308,7 +308,9 @@ Funx.List.sort(tasks, by_priority)
 
 ## Ord DSL
 
-The Ord DSL provides a declarative syntax for building complex lexicographic orderings without explicit `contramap`, `concat`, and `reverse` calls.
+The Ord DSL is a builder DSL that constructs ordering comparators for later use. See the [DSL guides](../guides/dsl/overview.md) for the distinction between builder and pipeline DSLs.
+
+The DSL provides a declarative syntax for building complex lexicographic orderings without explicit `contramap`, `concat`, and `reverse` calls.
 
 **Design Philosophy:**
 

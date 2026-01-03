@@ -1,16 +1,18 @@
 # Ord
 
+The Ord DSL is a builder DSL that constructs ordering comparators for later use. See the [DSL Overview](overview.md) for the distinction between builder and pipeline DSLs.
+
 ## Structure
 
-An `ord` block compiles entirely at compile time to quoted AST that builds an `%Funx.Monoid.Ord{}` struct. Unlike the Maybe and Either DSLs, there is no runtime executor—the DSL produces static composition of `contramap`, `reverse`, and `concat` calls that execute directly.
+An `ord` block compiles entirely at compile time to quoted AST that builds an `%Funx.Monoid.Ord{}` struct. Unlike pipeline DSLs (Maybe, Either), there is no runtime executor—the DSL produces static composition of `contramap`, `reverse`, and `concat` calls that execute directly.
 
-## Steps
+## Internal Representation
 
-The Ord DSL uses a single step type represented by `Step`:
+The Ord DSL uses a single structure type represented by `Step`:
 
 * `Step` - Contains direction (`:asc` or `:desc`), projection AST, ord module, and metadata
 
-Each step describes a single ordering projection. The compiler pattern-matches on these structs to generate the final quoted AST.
+Each Step describes a single ordering projection. The compiler pattern-matches on these structs to generate the final quoted AST.
 
 ```text
 Compilation
@@ -22,7 +24,7 @@ Compilation
 
 ## Parser
 
-The parser converts the DSL block into a step list. It normalizes all projection syntax into one of four canonical types that `contramap/2` accepts:
+The parser converts the DSL block into a list of structures. It normalizes all projection syntax into one of four canonical types that `contramap/2` accepts:
 
 * `Lens.t()` - Bare lens struct
 * `Prism.t()` - Bare prism struct (uses `Maybe.lift_ord`)
@@ -48,7 +50,7 @@ All syntax sugar resolves to these types:
 * `StructModule` → `fn v -> match?(%StructModule{}, v) end` (type filtering)
 * `ord_variable` → runtime validation, use directly if valid ord map
 
-The parser validates projections and raises compile-time errors for unsupported syntax, producing the final step list that the executor will compile.
+The parser validates projections and raises compile-time errors for unsupported syntax, producing the final list of structures that the executor will compile.
 
 ## Transformers
 
@@ -58,15 +60,15 @@ The Ord DSL does not currently support transformers. All compilation is handled 
 
 The executor runs at compile time and generates quoted AST. It follows a single, non-branching path:
 
-1. Take normalized steps from the parser
+1. Take normalized structures from the parser
 2. Wrap each in `Ord.contramap(projection, ord)`
 3. Optionally wrap in `Ord.reverse(...)` for `:desc` direction
 4. Combine all with `Ord.concat([...])`
-5. Automatically append an identity tiebreaker step
+5. Automatically append an identity tiebreaker
 
 ### Execution Model
 
-Each step compiles based on its type:
+Each operation compiles based on its type:
 
 **Regular projections:**
 * `:asc` → `contramap(projection, ord)`
@@ -76,7 +78,7 @@ Each step compiles based on its type:
 * `:asc` → runtime validation, then use ord directly
 * `:desc` → runtime validation, then `reverse(ord)`
 
-Multiple steps are combined with `concat([...])` (monoid composition).
+Multiple operations are combined with `concat([...])` (monoid composition).
 
 ### Implicit Identity Tiebreaker
 
