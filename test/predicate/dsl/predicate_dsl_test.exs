@@ -447,6 +447,300 @@ defmodule Funx.Predicate.DslTest do
   end
 
   # ============================================================================
+  # negate check Tests (Negated Projections)
+  # ============================================================================
+
+  describe "negate check directive" do
+    test "negate check with atom field" do
+      not_long_name =
+        pred do
+          negate(check(:name, fn name -> String.length(name) > 5 end))
+        end
+
+      assert not_long_name.(%{name: "Joe"})
+      refute not_long_name.(%{name: "Alexander"})
+      # Missing field passes (prism returns Nothing, predicate never runs)
+      assert not_long_name.(%{})
+    end
+
+    test "negate check with Prism.key" do
+      not_adult =
+        pred do
+          negate(check(Prism.key(:age), fn age -> age >= 18 end))
+        end
+
+      assert not_adult.(%{age: 16})
+      refute not_adult.(%{age: 20})
+      # Missing field passes (Nothing case)
+      assert not_adult.(%{})
+    end
+
+    test "negate check with Lens.key" do
+      low_score =
+        pred do
+          negate(check(Lens.key(:score), fn score -> score > 100 end))
+        end
+
+      assert low_score.(%{score: 50})
+      refute low_score.(%{score: 150})
+    end
+
+    test "negate check with function projection" do
+      not_verified =
+        pred do
+          negate(check(fn user -> user.verified end, fn v -> v == true end))
+        end
+
+      assert not_verified.(%{verified: false})
+      refute not_verified.(%{verified: true})
+    end
+
+    test "negate check with Traversal" do
+      no_high_scores =
+        pred do
+          negate(
+            check(
+              Traversal.combine([Lens.key(:score1), Lens.key(:score2)]),
+              fn score -> score > 100 end
+            )
+          )
+        end
+
+      # Neither score > 100
+      assert no_high_scores.(%{score1: 50, score2: 50})
+
+      # At least one score > 100 (negated traversal fails)
+      refute no_high_scores.(%{score1: 150, score2: 50})
+      refute no_high_scores.(%{score1: 50, score2: 150})
+    end
+
+    test "multiple negate check directives" do
+      safe_user =
+        pred do
+          negate(check(:banned, fn b -> b == true end))
+          negate(check(:suspended, fn s -> s == true end))
+        end
+
+      assert safe_user.(%{banned: false, suspended: false})
+      refute safe_user.(%{banned: true, suspended: false})
+      refute safe_user.(%{banned: false, suspended: true})
+    end
+
+    test "mixed check and negate check" do
+      valid_user =
+        pred do
+          check(:age, fn age -> age >= 18 end)
+          negate(check(:banned, fn b -> b == true end))
+        end
+
+      assert valid_user.(%{age: 20, banned: false})
+      refute valid_user.(%{age: 16, banned: false})
+      refute valid_user.(%{age: 20, banned: true})
+    end
+
+    test "negate check with bare predicates" do
+      can_enter =
+        pred do
+          &adult?/1
+          negate(check(:banned, fn b -> b == true end))
+        end
+
+      assert can_enter.(%{age: 20, tickets: 1, banned: false})
+      refute can_enter.(%{age: 16, tickets: 1, banned: false})
+      refute can_enter.(%{age: 20, tickets: 1, banned: true})
+    end
+
+    test "negate check within any block" do
+      has_access =
+        pred do
+          any do
+            &vip?/1
+            negate(check(:suspended, fn s -> s == true end))
+          end
+        end
+
+      # VIP passes even if suspended
+      assert has_access.(%{vip: true, sponsor: false, suspended: true})
+      # Not suspended and not VIP passes
+      assert has_access.(%{vip: false, sponsor: false, suspended: false})
+      # Suspended and not VIP fails
+      refute has_access.(%{vip: false, sponsor: false, suspended: true})
+    end
+
+    test "negate check within all block" do
+      verified_user =
+        pred do
+          all do
+            check(:age, fn age -> age >= 18 end)
+            negate(check(:banned, fn b -> b == true end))
+          end
+        end
+
+      assert verified_user.(%{age: 20, banned: false})
+      refute verified_user.(%{age: 16, banned: false})
+      refute verified_user.(%{age: 20, banned: true})
+    end
+  end
+
+  # ============================================================================
+  # negate all/any Block Tests (De Morgan's Laws)
+  # ============================================================================
+
+  describe "negate_all blocks" do
+    test "negate_all with two predicates" do
+      # negate_all(A, B) = any(not A, not B)
+      # Not (adult AND has_ticket) = (not adult) OR (not has_ticket)
+      reject_entry =
+        pred do
+          negate_all do
+            &adult?/1
+            &has_ticket/1
+          end
+        end
+
+      # Fails both
+      assert reject_entry.(%{age: 16, tickets: 0})
+      # Fails adult only
+      assert reject_entry.(%{age: 16, tickets: 1})
+      # Fails ticket only
+      assert reject_entry.(%{age: 20, tickets: 0})
+      # Passes both (fails the negation)
+      refute reject_entry.(%{age: 20, tickets: 1})
+    end
+
+    test "negate_all with three predicates" do
+      not_premium =
+        pred do
+          negate_all do
+            &adult?/1
+            &verified?/1
+            &vip?/1
+          end
+        end
+
+      # At least one fails
+      assert not_premium.(%{age: 16, verified: true, vip: true})
+      assert not_premium.(%{age: 20, verified: false, vip: true})
+      assert not_premium.(%{age: 20, verified: true, vip: false})
+      # All pass (fails the negation)
+      refute not_premium.(%{age: 20, verified: true, vip: true})
+    end
+
+    test "negate_all with check directives" do
+      invalid_user =
+        pred do
+          negate_all do
+            check :age, fn age -> age >= 18 end
+            check :verified, fn v -> v == true end
+          end
+        end
+
+      assert invalid_user.(%{age: 16, verified: true})
+      assert invalid_user.(%{age: 20, verified: false})
+      refute invalid_user.(%{age: 20, verified: true})
+    end
+  end
+
+  describe "negate_any blocks" do
+    test "negate_any with two predicates" do
+      # negate_any(A, B) = all(not A, not B)
+      # Not (vip OR sponsor) = (not vip) AND (not sponsor)
+      regular_user =
+        pred do
+          negate_any do
+            &vip?/1
+            &sponsor?/1
+          end
+        end
+
+      # Neither vip nor sponsor
+      assert regular_user.(%{vip: false, sponsor: false})
+      # Is vip (fails)
+      refute regular_user.(%{vip: true, sponsor: false})
+      # Is sponsor (fails)
+      refute regular_user.(%{vip: false, sponsor: true})
+      # Both (fails)
+      refute regular_user.(%{vip: true, sponsor: true})
+    end
+
+    test "negate_any with three predicates" do
+      no_special_access =
+        pred do
+          negate_any do
+            &vip?/1
+            &sponsor?/1
+            &admin?/1
+          end
+        end
+
+      # None are true
+      assert no_special_access.(%{vip: false, sponsor: false, role: :user})
+      # At least one is true (fails)
+      refute no_special_access.(%{vip: true, sponsor: false, role: :user})
+      refute no_special_access.(%{vip: false, sponsor: true, role: :user})
+      refute no_special_access.(%{vip: false, sponsor: false, role: :admin})
+    end
+
+    test "negate_any with check directives" do
+      no_flags =
+        pred do
+          negate_any do
+            check :banned, fn b -> b == true end
+            check :suspended, fn s -> s == true end
+          end
+        end
+
+      assert no_flags.(%{banned: false, suspended: false})
+      refute no_flags.(%{banned: true, suspended: false})
+      refute no_flags.(%{banned: false, suspended: true})
+    end
+  end
+
+  describe "negate_all/negate_any nested" do
+    test "negate_all within any block" do
+      special_or_incomplete =
+        pred do
+          any do
+            &vip?/1
+
+            negate_all do
+              &adult?/1
+              &verified?/1
+            end
+          end
+        end
+
+      # VIP passes
+      assert special_or_incomplete.(%{vip: true, age: 16, verified: false})
+      # Not adult passes (fails the all)
+      assert special_or_incomplete.(%{vip: false, age: 16, verified: true})
+      # Adult and verified, not VIP fails
+      refute special_or_incomplete.(%{vip: false, age: 20, verified: true})
+    end
+
+    test "negate_any within all block" do
+      verified_regular =
+        pred do
+          all do
+            &verified?/1
+
+            negate_any do
+              &vip?/1
+              &admin?/1
+            end
+          end
+        end
+
+      # Verified and regular user
+      assert verified_regular.(%{verified: true, vip: false, role: :user})
+      # Not verified fails
+      refute verified_regular.(%{verified: false, vip: false, role: :user})
+      # VIP fails (passes the any, fails the negation)
+      refute verified_regular.(%{verified: true, vip: true, role: :user})
+    end
+  end
+
+  # ============================================================================
   # any Block Tests (OR Logic)
   # ============================================================================
 

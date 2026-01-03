@@ -82,29 +82,38 @@ Each directive compiles to:
 * Bare predicate → `predicate.(value)`
 * `check projection, pred` → `compose_projection(projection, pred).(value)`
 * `negate predicate` → `not predicate.(value)`
+* `negate check proj, pred` → `not compose_projection(projection, pred).(value)`
 * `all do ... end` → `pred1.(value) and pred2.(value) and ...`
 * `any do ... end` → `pred1.(value) or pred2.(value) or ...`
+* `negate_all do ... end` → `not pred1.(value) or not pred2.(value) or ...` (De Morgan)
+* `negate_any do ... end` → `not pred1.(value) and not pred2.(value) and ...` (De Morgan)
 
 ### Projection Composition
 
 The `check` directive composes projections with predicates:
 
 **With Lens:**
+
 ```elixir
 check Lens.key(:age), fn age -> age >= 18 end
 ```
+
 Compiles to a function that gets the value, then tests it.
 
 **With Prism:**
+
 ```elixir
 check Prism.key(:email), fn email -> String.contains?(email, "@") end
 ```
+
 Compiles to a function that returns `false` if the prism returns `Nothing`, otherwise tests the focused value.
 
 **With atom (sugar for Prism.key):**
+
 ```elixir
 check :name, fn name -> String.length(name) > 5 end
 ```
+
 Equivalent to `check Prism.key(:name), fn name -> String.length(name) > 5 end`.
 
 ### Compilation Example
@@ -225,6 +234,90 @@ end
 ```
 
 This reads as: "active AND (admin OR (verified AND adult))"
+
+## Negation
+
+The Predicate DSL supports negation at multiple levels using the `negate`, `negate_all`, and `negate_any` directives.
+
+### Simple Negation
+
+Use `negate` to invert any bare predicate:
+
+```elixir
+pred do
+  negate is_banned
+end
+```
+
+Compiles to: `not is_banned.(value)`
+
+### Negating Projections
+
+Use `negate check` to test that a projected value does NOT match a condition:
+
+```elixir
+pred do
+  negate check :age, fn age -> age < 18 end
+end
+```
+
+This is equivalent to checking that age >= 18, but handles missing fields safely (returns true if field is missing).
+
+### Negating Blocks (De Morgan's Laws)
+
+The `negate_all` and `negate_any` directives apply De Morgan's Laws to negate entire blocks:
+
+**negate_all** - NOT (A AND B) = (NOT A) OR (NOT B)
+
+```elixir
+pred do
+  negate_all do
+    is_adult
+    is_verified
+  end
+end
+```
+
+Compiles to: `not is_adult.(value) or not is_verified.(value)`
+
+Returns `true` if at least one condition fails.
+
+**negate_any** - NOT (A OR B) = (NOT A) AND (NOT B)
+
+```elixir
+pred do
+  negate_any do
+    is_vip
+    is_admin
+  end
+end
+```
+
+Compiles to: `not is_vip.(value) and not is_admin.(value)`
+
+Returns `true` only if all conditions fail (regular user, not special).
+
+### Parser Transformation
+
+The parser applies De Morgan's Laws at compile time:
+
+* `negate_all do ... end` → `Block{strategy: :any, children: [negated...]}`
+* `negate_any do ... end` → `Block{strategy: :all, children: [negated...]}`
+
+This means negated blocks transform into their logical equivalent without requiring runtime negation of the entire block result.
+
+### Execution Model (Updated)
+
+Each directive compiles to:
+
+* Bare predicate → `predicate.(value)`
+* `check projection, pred` → `compose_projection(projection, pred).(value)`
+* `negate predicate` → `not predicate.(value)`
+* `negate check proj, pred` → `not compose_projection(projection, pred).(value)`
+* `all do ... end` → `pred1.(value) and pred2.(value) and ...`
+* `any do ... end` → `pred1.(value) or pred2.(value) or ...`
+* `negate_all do ... end` → `not pred1.(value) or not pred2.(value) or ...`
+* `negate_any do ... end` → `not pred1.(value) and not pred2.(value) and ...`
 
 ## Integration with Enum
 

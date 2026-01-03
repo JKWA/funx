@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:funx, github: "JKWA/funx", ref: "ca3ddab"}
+  {:funx, path: "/Users/josephkoski/Repos/funx"}
 ])
 ```
 
@@ -29,11 +29,14 @@ Key Features:
 
 ```elixir
 pred do
-  <predicate>              # Bare predicate must pass
-  negate <predicate>       # Predicate must fail
-  check <projection>, <pred>  # Projection + predicate composition
-  any do ... end           # At least one nested predicate must pass (OR)
-  all do ... end           # All nested predicates must pass (AND)
+  <predicate>                       # Bare predicate must pass
+  negate <predicate>                # Predicate must fail
+  check <projection>, <pred>        # Projection + predicate composition
+  negate check <projection>, <pred> # Negated projection (value must NOT match)
+  any do ... end                    # At least one nested predicate must pass (OR)
+  all do ... end                    # All nested predicates must pass (AND)
+  negate_all do ... end             # NOT (all predicates pass) - applies De Morgan's Laws
+  negate_any do ... end             # NOT (any predicate passes) - applies De Morgan's Laws
 end
 ```
 
@@ -265,6 +268,78 @@ check_has_admin =
 check_has_admin.(team)
 ```
 
+## Negating Projections (negate check)
+
+You can negate `check` directives to test that a projected value does NOT match a condition.
+
+### negate check with Atom Fields
+
+```elixir
+# Check that name is NOT long
+is_long = fn name -> String.length(name) > 5 end
+
+not_long_name =
+  pred do
+    negate check :name, is_long
+  end
+
+not_long_name.(alice)
+```
+
+```elixir
+not_long_name.(%User{name: "Joe"})
+```
+
+### negate check with Age
+
+```elixir
+# Check user is NOT a senior (< 65)
+not_senior =
+  pred do
+    negate check :age, fn age -> age >= 65 end
+  end
+
+not_senior.(alice)
+```
+
+### Combining check and negate check
+
+```elixir
+# Adult who is NOT banned
+valid_user =
+  pred do
+    check :age, fn age -> age >= 18 end
+    negate check :active, fn active -> active == false end
+  end
+
+valid_user.(alice)
+```
+
+```elixir
+valid_user.(bob)
+```
+
+### negate check with Prism (handles missing fields)
+
+```elixir
+# User does NOT have admin role
+not_admin =
+  pred do
+    negate check Prism.key(:role), fn role -> role == :admin end
+  end
+
+not_admin.(alice)
+```
+
+```elixir
+not_admin.(bob)
+```
+
+```elixir
+# Missing field passes (prism returns Nothing, so negation succeeds)
+not_admin.(%{name: "Dave"})
+```
+
 ## any Blocks (OR Logic)
 
 The `any` block succeeds if AT LEAST ONE nested predicate passes.
@@ -412,6 +487,122 @@ check_senior_staff =
   end
 
 Enum.filter(users, check_senior_staff)
+```
+
+## Negating Blocks (De Morgan's Laws)
+
+The `negate_all` and `negate_any` directives apply De Morgan's Laws to negate entire blocks:
+
+* `negate_all` transforms: NOT (A AND B) → (NOT A) OR (NOT B)
+* `negate_any` transforms: NOT (A OR B) → (NOT A) AND (NOT B)
+
+### negate_all - Reject if all conditions pass
+
+Use `negate_all` when you want to reject entries where ALL conditions are true:
+
+```elixir
+# Reject premium users (adult AND verified AND vip)
+not_premium =
+  pred do
+    negate_all do
+      adult?
+      verified?
+      fn user -> user.vip end
+    end
+  end
+
+# Passes if at least one condition fails
+not_premium.(%{age: 16, verified: true, vip: true})  # true (not adult)
+```
+
+```elixir
+not_premium.(%{age: 30, verified: false, vip: true})  # true (not verified)
+```
+
+```elixir
+not_premium.(%{age: 30, verified: true, vip: false})  # true (not vip)
+```
+
+```elixir
+not_premium.(%{age: 30, verified: true, vip: true})   # false (all pass)
+```
+
+### negate_any - Reject if any condition passes
+
+Use `negate_any` when you want to reject entries where ANY condition is true:
+
+```elixir
+# Regular users only (not vip, not sponsor, not admin)
+regular_user =
+  pred do
+    negate_any do
+      fn user -> user.vip end
+      fn user -> user.sponsor end
+      fn user -> user.role == :admin end
+    end
+  end
+
+# Passes only if ALL conditions fail
+regular_user.(%{vip: false, sponsor: false, role: :user})
+```
+
+```elixir
+regular_user.(%{vip: true, sponsor: false, role: :user})  # false (vip)
+```
+
+```elixir
+regular_user.(%{vip: false, sponsor: true, role: :user})  # false (sponsor)
+```
+
+### negate_all with check directives
+
+```elixir
+# Invalid if both age >= 18 AND verified
+invalid_user =
+  pred do
+    negate_all do
+      check :age, fn age -> age >= 18 end
+      check :verified, fn v -> v == true end
+    end
+  end
+
+invalid_user.(%{age: 16, verified: true})   # true (not adult)
+```
+
+```elixir
+invalid_user.(%{age: 30, verified: false})  # true (not verified)
+```
+
+```elixir
+invalid_user.(%{age: 30, verified: true})   # false (both pass)
+```
+
+### Nesting negate blocks
+
+You can nest `negate_all` and `negate_any` within other blocks:
+
+```elixir
+# VIP OR not (adult AND verified)
+special_or_incomplete =
+  pred do
+    any do
+      fn user -> user.vip end
+      negate_all do
+        adult?
+        verified?
+      end
+    end
+  end
+
+special_or_incomplete.(%{vip: true, age: 16, verified: false})  # true (vip)
+```
+
+```elixir
+special_or_incomplete.(%{vip: false, age: 16, verified: true})  # true (not adult)
+```
+
+```elixir
+special_or_incomplete.(%{vip: false, age: 30, verified: true})  # false
 ```
 
 ## Behaviour Modules

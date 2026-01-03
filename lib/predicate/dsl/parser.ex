@@ -15,10 +15,13 @@ defmodule Funx.Predicate.Dsl.Parser do
   #
   #   - Bare predicate                   → Step{predicate: ast, negate: false}
   #   - negate predicate                 → Step{predicate: ast, negate: true}
-  #   - check projection, predicate      → Step{projection: proj, predicate: pred}
+  #   - check projection, predicate      → Step{projection: proj, predicate: pred, negate: false}
+  #   - negate check projection, pred    → Step{projection: proj, predicate: pred, negate: true}
   #   - check projection, do: predicate  → Step{projection: proj, predicate: pred}
   #   - all do ... end                   → Block{strategy: :all, children: [...]}
   #   - any do ... end                   → Block{strategy: :any, children: [...]}
+  #   - negate_all do ... end            → Block{strategy: :any, children: [negated...]} (De Morgan)
+  #   - negate_any do ... end            → Block{strategy: :all, children: [negated...]} (De Morgan)
   #
   # ## Projections
   #
@@ -43,6 +46,40 @@ defmodule Funx.Predicate.Dsl.Parser do
   defp extract_operations({:__block__, _meta, lines}) when is_list(lines), do: lines
   defp extract_operations(single_line), do: [single_line]
 
+  # Parse "negate_all do ... end"
+  # Apply De Morgan's Laws: not(A and B) = (not A) or (not B)
+  defp parse_entry_to_node({:negate_all, meta, [[do: block]]}, caller_env) do
+    children = parse_operations(block, caller_env)
+
+    if Enum.empty?(children) do
+      raise CompileError,
+        line: Keyword.get(meta, :line),
+        description: Errors.empty_block(:negate_all)
+    end
+
+    # Flip to :any and negate children
+    negated_children = Enum.map(children, &negate_node/1)
+    metadata = extract_meta(meta)
+    Block.new(:any, negated_children, metadata)
+  end
+
+  # Parse "negate_any do ... end"
+  # Apply De Morgan's Laws: not(A or B) = (not A) and (not B)
+  defp parse_entry_to_node({:negate_any, meta, [[do: block]]}, caller_env) do
+    children = parse_operations(block, caller_env)
+
+    if Enum.empty?(children) do
+      raise CompileError,
+        line: Keyword.get(meta, :line),
+        description: Errors.empty_block(:negate_any)
+    end
+
+    # Flip to :all and negate children
+    negated_children = Enum.map(children, &negate_node/1)
+    metadata = extract_meta(meta)
+    Block.new(:all, negated_children, metadata)
+  end
+
   # Parse "any do ... end" or "all do ... end"
   defp parse_entry_to_node({directive, meta, [[do: block]]}, caller_env)
        when directive in [:any, :all] do
@@ -65,7 +102,17 @@ defmodule Funx.Predicate.Dsl.Parser do
     Step.new_with_projection(normalized_projection, predicate_ast, false, metadata)
   end
 
-  # Parse "negate predicate"
+  # Parse "negate check projection, predicate" - negated projection
+  defp parse_entry_to_node(
+         {:negate, meta, [{:check, _check_meta, [projection_ast, predicate_ast]}]},
+         _caller_env
+       ) do
+    normalized_projection = normalize_projection(projection_ast)
+    metadata = extract_meta(meta)
+    Step.new_with_projection(normalized_projection, predicate_ast, true, metadata)
+  end
+
+  # Parse "negate predicate" - bare negation
   defp parse_entry_to_node({:negate, meta, [predicate_ast]}, _caller_env) do
     metadata = extract_meta(meta)
     Step.new(predicate_ast, true, metadata)
@@ -196,4 +243,25 @@ defmodule Funx.Predicate.Dsl.Parser do
 
   # Everything else - pass through (will be evaluated at runtime)
   defp normalize_projection(other_ast), do: other_ast
+
+  # ============================================================================
+  # De Morgan's Law Helpers
+  # ============================================================================
+
+  # Flip strategy for De Morgan's transformation
+  defp flip_strategy(:any), do: :all
+  defp flip_strategy(:all), do: :any
+
+  # Negate a node (Step or Block)
+  defp negate_node(%Step{negate: negate} = step) do
+    # Flip the negate flag
+    %{step | negate: not negate}
+  end
+
+  defp negate_node(%Block{strategy: strategy, children: children} = block) do
+    # Apply De Morgan's recursively: flip strategy and negate children
+    flipped_strategy = flip_strategy(strategy)
+    negated_children = Enum.map(children, &negate_node/1)
+    %{block | strategy: flipped_strategy, children: negated_children}
+  end
 end

@@ -186,8 +186,11 @@ The DSL version:
 - Bare predicate - Include predicate in composition (implicit AND at top level)
 - `negate <predicate>` - Negate the predicate (logical NOT)
 - `check <projection>, <predicate>` - Compose projection with predicate (check projected value)
+- `negate check <projection>, <predicate>` - Negated projection (value must NOT match)
 - `any do ... end` - At least one nested predicate must pass (OR logic)
 - `all do ... end` - All nested predicates must pass (AND logic, explicit)
+- `negate_all do ... end` - NOT (all predicates pass) - applies De Morgan's Laws
+- `negate_any do ... end` - NOT (any predicate passes) - applies De Morgan's Laws
 
 ### Supported Predicate Forms
 
@@ -237,6 +240,15 @@ pred do
 end
 ```
 
+**Using negate check (negated projections):**
+
+```elixir
+pred do
+  check :age, fn age -> age >= 18 end
+  negate check :banned, fn b -> b == true end  # Must NOT be banned
+end
+```
+
 **OR logic with any blocks:**
 
 ```elixir
@@ -273,6 +285,30 @@ pred do
       fn user -> user.verified end
       fn user -> user.age >= 18 end
     end
+  end
+end
+```
+
+**Negating blocks with De Morgan's Laws:**
+
+```elixir
+# negate_all - NOT (all conditions pass) = (at least one fails)
+# Rejects premium users (adult AND verified AND vip)
+pred do
+  negate_all do
+    fn user -> user.age >= 18 end
+    fn user -> user.verified end
+    fn user -> user.vip end
+  end
+end
+
+# negate_any - NOT (any condition passes) = (all fail)
+# Regular users only (not vip, not sponsor, not admin)
+pred do
+  negate_any do
+    fn user -> user.vip end
+    fn user -> user.sponsor end
+    fn user -> user.role == :admin end
   end
 end
 ```
@@ -346,8 +382,11 @@ The Predicate DSL provides declarative multi-condition boolean logic:
 - Bare predicate - Must pass (AND)
 - `negate <predicate>` - Must fail (NOT)
 - `check <projection>, <predicate>` - Project then test
+- `negate check <projection>, <predicate>` - Projected value must NOT match
 - `any do ... end` - OR logic (at least one must match)
 - `all do ... end` - AND logic (all must match)
+- `negate_all do ... end` - NOT (all pass) = at least one fails (De Morgan)
+- `negate_any do ... end` - NOT (any passes) = all fail (De Morgan)
 
 **Key Patterns:**
 

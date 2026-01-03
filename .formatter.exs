@@ -30,7 +30,13 @@ export_locals_without_parens = [
   not_on: 1,
   not_on: 2,
   any: 1,
-  all: 1
+  all: 1,
+  # Predicate DSL
+  pred: 1,
+  check: 2,
+  negate: 1,
+  negate_all: 1,
+  negate_any: 1
 ]
 
 [

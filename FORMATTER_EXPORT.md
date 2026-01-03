@@ -43,6 +43,29 @@ The following Ord DSL functions are configured to format without parentheses:
 - `desc/1` - Descending order for a projection
 - `desc/2` - Descending order with options (e.g., `default:`)
 
+### Eq DSL
+
+The following Eq DSL functions are configured to format without parentheses:
+
+- `on/1` - Compare on a projection
+- `on/2` - Compare on a projection with options
+- `not_on/1` - Exclude a projection from comparison
+- `not_on/2` - Exclude a projection from comparison with options
+- `any/1` - Match any of the given comparisons (shared with Predicate DSL)
+- `all/1` - Match all of the given comparisons (shared with Predicate DSL)
+
+### Predicate DSL
+
+The following Predicate DSL functions are configured to format without parentheses:
+
+- `pred/1` - DSL entry point for defining predicates
+- `check/2` - Project and test a value (e.g., `check :field, predicate`)
+- `negate/1` - Negate a predicate or block
+- `negate_all/1` - Negate an AND block (applies De Morgan's Laws)
+- `negate_any/1` - Negate an OR block (applies De Morgan's Laws)
+- `any/1` - OR logic - at least one predicate must pass (shared with Eq DSL)
+- `all/1` - AND logic - all predicates must pass (shared with Eq DSL)
+
 ## Usage in Dependent Projects
 
 ### Step 1: Add to Dependencies
@@ -139,6 +162,42 @@ ord do
   asc(:name)
   desc(:age)
   asc(:score, default: 0)
+end
+```
+
+### Predicate DSL
+
+Your predicate definitions will format cleanly:
+
+```elixir
+pred do
+  check :age, fn age -> age >= 18 end
+  negate check :banned, fn b -> b == true end
+  any do
+    check :role, fn r -> r == :admin end
+    check :verified, fn v -> v == true end
+  end
+  negate_all do
+    check :suspended, fn s -> s == true end
+    check :deleted, fn d -> d == true end
+  end
+end
+```
+
+Instead of:
+
+```elixir
+pred do
+  check(:age, fn age -> age >= 18 end)
+  negate(check(:banned, fn b -> b == true end))
+  any do
+    check(:role, fn r -> r == :admin end)
+    check(:verified, fn v -> v == true end)
+  end
+  negate_all do
+    check(:suspended, fn s -> s == true end)
+    check(:deleted, fn d -> d == true end)
+  end
 end
 ```
 

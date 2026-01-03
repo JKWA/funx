@@ -209,6 +209,12 @@ defmodule Funx.Predicate do
         check :email, fn email -> String.contains?(email, "@") end
       end
 
+      # With negated projection
+      pred do
+        is_adult
+        negate check :banned, fn b -> b == true end
+      end
+
       # Complex nesting
       pred do
         any do
