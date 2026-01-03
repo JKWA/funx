@@ -18,6 +18,7 @@ defmodule Funx.Predicate.DslTest do
 
   use ExUnit.Case, async: true
   use Funx.Predicate
+  use ExUnitProperties
 
   alias Funx.Optics.{Lens, Prism, Traversal}
 
@@ -108,40 +109,116 @@ defmodule Funx.Predicate.DslTest do
   defp suspended?(person), do: person.suspended
 
   # ============================================================================
+  # Common Test Fixtures
+  # ============================================================================
+
+  setup do
+    %{
+      # Standard test users with various attributes
+      adult_active: %{
+        age: 30,
+        verified: true,
+        active: true,
+        role: :user,
+        vip: false,
+        sponsor: false,
+        banned: false
+      },
+      minor_active: %{
+        age: 16,
+        verified: false,
+        active: true,
+        role: :user,
+        vip: false,
+        sponsor: false,
+        banned: false
+      },
+      admin_user: %{
+        age: 25,
+        verified: true,
+        active: true,
+        role: :admin,
+        vip: false,
+        sponsor: false,
+        banned: false
+      },
+      vip_user: %{
+        age: 35,
+        verified: true,
+        active: true,
+        role: :user,
+        vip: true,
+        sponsor: false,
+        banned: false
+      },
+      inactive_user: %{
+        age: 28,
+        verified: true,
+        active: false,
+        role: :user,
+        vip: false,
+        sponsor: false,
+        banned: false
+      },
+      banned_user: %{
+        age: 22,
+        verified: false,
+        active: false,
+        role: :user,
+        vip: false,
+        sponsor: false,
+        banned: true
+      },
+
+      # Simple maps for specific tests
+      has_name: %{name: "Alexander"},
+      short_name: %{name: "Joe"},
+      no_name: %{},
+      high_score: %{score: 150},
+      low_score: %{score: 50},
+
+      # Age-specific maps
+      age_20: %{age: 20},
+      age_16: %{age: 16},
+      age_empty: %{}
+    }
+  end
+
+  # ============================================================================
   # on Directive Tests
   # ============================================================================
 
   describe "check directive (projections)" do
-    test "on with atom field" do
-      check =
+    test "check with atom field", %{age_20: age_20, age_16: age_16, age_empty: age_empty} do
+      age_check =
         pred do
           check(:age, fn age -> age >= 18 end)
         end
 
-      assert check.(%{age: 20})
-      refute check.(%{age: 16})
-      refute check.(%{})
+      assert age_check.(age_20)
+      refute age_check.(age_16)
+      refute age_check.(age_empty)
     end
 
-    test "on with Prism.key" do
-      check =
+    test "check with Prism.key", %{has_name: has_name, short_name: short_name, no_name: no_name} do
+      name_length_check =
         pred do
           check(Prism.key(:name), fn name -> String.length(name) > 3 end)
         end
 
-      assert check.(%{name: "Alexander"})
-      refute check.(%{name: "Joe"})
-      refute check.(%{})
+      assert name_length_check.(has_name)
+      refute name_length_check.(short_name)
+      refute name_length_check.(no_name)
     end
 
-    test "on with Lens.key" do
-      check =
+    test "check with Lens.key", %{high_score: high_score, low_score: low_score} do
+      score_check =
         pred do
           check(Lens.key(:score), fn score -> score > 100 end)
         end
 
-      assert check.(%{score: 150})
-      refute check.(%{score: 50})
+      assert score_check.(high_score)
+      refute score_check.(low_score)
     end
 
     test "on with captured function projection" do
@@ -738,6 +815,155 @@ defmodule Funx.Predicate.DslTest do
       # VIP fails (passes the any, fails the negation)
       refute verified_regular.(%{verified: true, vip: true, role: :user})
     end
+
+    test "negate_all containing all block (recursive block negation)" do
+      # Tests recursive application of De Morgan's Laws on nested blocks
+      #
+      # Original: NOT (adult AND (verified AND vip))
+      # Step 1:   NOT adult OR NOT (verified AND vip)     [De Morgan on outer]
+      # Step 2:   NOT adult OR (NOT verified OR NOT vip)  [De Morgan on inner]
+      # Result:   Passes if ANY condition fails (at least one NOT is true)
+      #
+      # This tests that negate_node recursively transforms nested Block structures
+      not_premium =
+        pred do
+          negate_all do
+            &adult?/1
+
+            all do
+              &verified?/1
+              &vip?/1
+            end
+          end
+        end
+
+      # Not adult - passes (first condition fails)
+      assert not_premium.(%{age: 16, verified: true, vip: true})
+      # Adult but not verified - passes (inner block fails)
+      assert not_premium.(%{age: 30, verified: false, vip: true})
+      # Adult but not vip - passes (inner block fails)
+      assert not_premium.(%{age: 30, verified: true, vip: false})
+      # Adult AND verified AND vip - fails (all conditions pass)
+      refute not_premium.(%{age: 30, verified: true, vip: true})
+    end
+
+    test "negate_any containing any block (recursive block negation)" do
+      # Tests recursive De Morgan's transformation with opposite strategy
+      #
+      # Original: NOT (vip OR (admin OR sponsor))
+      # Step 1:   NOT vip AND NOT (admin OR sponsor)     [De Morgan flips OR to AND]
+      # Step 2:   NOT vip AND (NOT admin AND NOT sponsor) [De Morgan on inner]
+      # Result:   Passes only if ALL conditions fail
+      #
+      # This tests flip_strategy recursively changes nested blocks
+      regular_only =
+        pred do
+          negate_any do
+            &vip?/1
+
+            any do
+              &admin?/1
+              &sponsor?/1
+            end
+          end
+        end
+
+      # Regular user - passes (all conditions fail)
+      assert regular_only.(%{vip: false, role: :user, sponsor: false})
+      # VIP - fails (first condition passes)
+      refute regular_only.(%{vip: true, role: :user, sponsor: false})
+      # Admin - fails (inner block passes)
+      refute regular_only.(%{vip: false, role: :admin, sponsor: false})
+      # Sponsor - fails (inner block passes)
+      refute regular_only.(%{vip: false, role: :user, sponsor: true})
+    end
+
+    test "negate_all with negated steps (double negation)" do
+      # Tests that negate_node correctly flips Step negate flags
+      #
+      # Original: NOT (NOT adult AND NOT verified)
+      # Step 1:   NOT (NOT adult) OR NOT (NOT verified)  [De Morgan on block]
+      # Step 2:   adult OR verified                      [Double negation cancels]
+      # Result:   Passes if at least one is true
+      #
+      # This tests negate_node(%Step{negate: true}) -> %Step{negate: false}
+      adult_or_verified =
+        pred do
+          negate_all do
+            negate &adult?/1
+            negate &verified?/1
+          end
+        end
+
+      # Adult only - passes
+      assert adult_or_verified.(%{age: 30, verified: false})
+      # Verified only - passes
+      assert adult_or_verified.(%{age: 16, verified: true})
+      # Both - passes
+      assert adult_or_verified.(%{age: 30, verified: true})
+      # Neither - fails
+      refute adult_or_verified.(%{age: 16, verified: false})
+    end
+
+    test "deeply nested block negation (3 levels)" do
+      # Tests De Morgan's Laws applied recursively through 3 levels of nesting
+      #
+      # Original: NOT (adult AND (verified OR (vip AND sponsor)))
+      # Step 1:   NOT adult OR NOT (verified OR (vip AND sponsor))
+      # Step 2:   NOT adult OR (NOT verified AND NOT (vip AND sponsor))
+      # Step 3:   NOT adult OR (NOT verified AND (NOT vip OR NOT sponsor))
+      # Result:   Passes if adult fails OR (verified fails AND (vip OR sponsor fails))
+      #
+      # This is a comprehensive test of recursive negate_node through multiple levels
+      complex_negation =
+        pred do
+          negate_all do
+            &adult?/1
+
+            any do
+              &verified?/1
+
+              all do
+                &vip?/1
+                &sponsor?/1
+              end
+            end
+          end
+        end
+
+      # Not adult - passes (first condition fails, short-circuits)
+      assert complex_negation.(%{age: 16, verified: true, vip: true, sponsor: true})
+      # Adult but nothing else - passes (inner conditions all fail)
+      assert complex_negation.(%{age: 30, verified: false, vip: false, sponsor: false})
+      # Adult and verified - fails (both top-level conditions pass)
+      refute complex_negation.(%{age: 30, verified: true, vip: false, sponsor: false})
+      # Adult and (vip AND sponsor) - fails (both top-level conditions pass)
+      refute complex_negation.(%{age: 30, verified: false, vip: true, sponsor: true})
+    end
+
+    test "negate_any with check directives containing blocks" do
+      # NOT (banned OR (age < 18 OR no email))
+      valid_user =
+        pred do
+          negate_any do
+            check :banned, fn b -> b == true end
+
+            any do
+              check :age, fn age -> age < 18 end
+              negate check :email, fn e -> String.contains?(e, "@") end
+            end
+          end
+        end
+
+      # Valid user - passes
+      assert valid_user.(%{banned: false, age: 30, email: "user@test.com"})
+      # Banned - fails
+      refute valid_user.(%{banned: true, age: 30, email: "user@test.com"})
+      # Minor - fails
+      refute valid_user.(%{banned: false, age: 16, email: "user@test.com"})
+      # No email - fails
+      refute valid_user.(%{banned: false, age: 30, email: "invalid"})
+    end
   end
 
   # ============================================================================
@@ -1061,6 +1287,36 @@ defmodule Funx.Predicate.DslTest do
       end
     end
 
+    test "raises on empty negate_all block" do
+      assert_raise CompileError, ~r/Empty `negate_all` block detected/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Predicate
+
+            pred do
+              negate_all do
+              end
+            end
+          end
+        )
+      end
+    end
+
+    test "raises on empty negate_any block" do
+      assert_raise CompileError, ~r/Empty `negate_any` block detected/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Predicate
+
+            pred do
+              negate_any do
+              end
+            end
+          end
+        )
+      end
+    end
+
     test "raises on negate without predicate (empty args)" do
       assert_raise CompileError, ~r/The `negate` directive requires a predicate/, fn ->
         Code.eval_quoted(
@@ -1116,6 +1372,152 @@ defmodule Funx.Predicate.DslTest do
       assert warning =~ "does not implement Predicate.Dsl.Behaviour"
       assert warning =~ "BadFunctionError at runtime"
       assert warning =~ "Implement the Predicate.Dsl.Behaviour"
+    end
+  end
+
+  # ============================================================================
+  # Property Tests - De Morgan's Laws
+  # ============================================================================
+
+  describe "property: De Morgan's Laws in DSL" do
+    property "negate_all applies De Morgan's Law 1: NOT (A AND B) = (NOT A) OR (NOT B)" do
+      check all(
+              x <- integer(),
+              threshold_a <- integer(),
+              threshold_b <- integer()
+            ) do
+        # Create two simple predicates
+        pred_a = fn n -> n > threshold_a end
+        pred_b = fn n -> n > threshold_b end
+
+        # DSL version: negate_all do pred_a; pred_b end
+        # Should equal: (NOT pred_a) OR (NOT pred_b)
+        dsl_result =
+          pred do
+            negate_all do
+              pred_a
+              pred_b
+            end
+          end
+
+        # Manual De Morgan's transformation
+        manual_result =
+          pred do
+            any do
+              negate pred_a
+              negate pred_b
+            end
+          end
+
+        # Both should produce the same result
+        assert dsl_result.(x) == manual_result.(x)
+      end
+    end
+
+    property "negate_any applies De Morgan's Law 2: NOT (A OR B) = (NOT A) AND (NOT B)" do
+      check all(
+              x <- integer(),
+              threshold_a <- integer(),
+              threshold_b <- integer()
+            ) do
+        # Create two simple predicates
+        pred_a = fn n -> n > threshold_a end
+        pred_b = fn n -> n > threshold_b end
+
+        # DSL version: negate_any do pred_a; pred_b end
+        # Should equal: (NOT pred_a) AND (NOT pred_b)
+        dsl_result =
+          pred do
+            negate_any do
+              pred_a
+              pred_b
+            end
+          end
+
+        # Manual De Morgan's transformation
+        manual_result =
+          pred do
+            all do
+              negate pred_a
+              negate pred_b
+            end
+          end
+
+        # Both should produce the same result
+        assert dsl_result.(x) == manual_result.(x)
+      end
+    end
+
+    property "nested negate_all applies De Morgan's recursively" do
+      check all(
+              x <- integer(),
+              t1 <- integer(),
+              t2 <- integer(),
+              t3 <- integer()
+            ) do
+        pred_a = fn n -> n > t1 end
+        pred_b = fn n -> n > t2 end
+        pred_c = fn n -> n > t3 end
+
+        # DSL: NOT (A AND (B AND C))
+        dsl_nested =
+          pred do
+            negate_all do
+              pred_a
+
+              all do
+                pred_b
+                pred_c
+              end
+            end
+          end
+
+        # Manual: NOT A OR NOT (B AND C) = NOT A OR (NOT B OR NOT C)
+        manual_expanded =
+          pred do
+            any do
+              negate pred_a
+
+              any do
+                negate pred_b
+                negate pred_c
+              end
+            end
+          end
+
+        assert dsl_nested.(x) == manual_expanded.(x)
+      end
+    end
+
+    property "double negation in negate_all cancels: NOT (NOT A AND NOT B) = A OR B" do
+      check all(
+              x <- integer(),
+              threshold_a <- integer(),
+              threshold_b <- integer()
+            ) do
+        pred_a = fn n -> n > threshold_a end
+        pred_b = fn n -> n > threshold_b end
+
+        # DSL: negate_all with negated predicates
+        double_neg =
+          pred do
+            negate_all do
+              negate pred_a
+              negate pred_b
+            end
+          end
+
+        # Should equal: A OR B
+        simple_or =
+          pred do
+            any do
+              pred_a
+              pred_b
+            end
+          end
+
+        assert double_neg.(x) == simple_or.(x)
+      end
     end
   end
 end
