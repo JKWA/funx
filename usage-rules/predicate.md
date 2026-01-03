@@ -205,9 +205,11 @@ The DSL version:
 
 **Projections (for `check` directive):**
 
-- `check :atom, pred` - Field access via `Prism.key/1` (Nothing fails the predicate)
-- `check Lens.key(:field), pred` - Explicit Lens (total access, raises on missing keys)
-- `check Prism.key(:field), pred` - Explicit Prism (Nothing fails the predicate)
+- `check :atom, pred` - Atom field (converts to `Prism.key/1`, degenerate sum: present | absent)
+- `check Lens.key(:field), pred` - Explicit Lens (total accessor, raises on missing keys)
+- `check Prism.key(:field), pred` - Explicit Prism (branch selector, Nothing fails the predicate)
+- `check Prism.struct(Module), pred` - Sum type branch selection (selects one case)
+- `check Traversal.combine([...]), pred` - Multiple foci (relates values to each other)
 - `check &(&1.field), pred` - Function projection
 - `check fn x -> x.field end, pred` - Anonymous function projection
 
@@ -390,8 +392,10 @@ The Predicate DSL provides declarative multi-condition boolean logic:
 
 **Key Patterns:**
 
-- Use atoms with `check` for optional fields (Nothing fails the predicate)
-- Use Lens with `check` for required fields (raises on missing keys)
+- **Atoms** with `check` for optional fields (degenerate sum: present | absent, Nothing fails the predicate)
+- **Lens** with `check` for required fields (total accessor, raises on missing keys)
+- **Prism** with `check` for sum type branch selection (selects one case, Nothing fails the predicate)
+- **Traversal** with `check` for relating multiple foci (collect values to compare or validate together)
 - Use behaviour modules for reusable, configurable predicate logic
 - Nested `any`/`all` blocks for complex boolean expressions
 - Works seamlessly with Enum functions for filtering and searching

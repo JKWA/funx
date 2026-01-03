@@ -50,14 +50,6 @@ defmodule Funx.Predicate.Dsl.Parser do
   # Apply De Morgan's Laws: not(A and B) = (not A) or (not B)
   defp parse_entry_to_node({:negate_all, meta, [[do: block]]}, caller_env) do
     children = parse_operations(block, caller_env)
-
-    if Enum.empty?(children) do
-      raise CompileError,
-        line: Keyword.get(meta, :line),
-        description: Errors.empty_block(:negate_all)
-    end
-
-    # Flip to :any and negate children
     negated_children = Enum.map(children, &negate_node/1)
     metadata = extract_meta(meta)
     Block.new(:any, negated_children, metadata)
@@ -67,14 +59,6 @@ defmodule Funx.Predicate.Dsl.Parser do
   # Apply De Morgan's Laws: not(A or B) = (not A) and (not B)
   defp parse_entry_to_node({:negate_any, meta, [[do: block]]}, caller_env) do
     children = parse_operations(block, caller_env)
-
-    if Enum.empty?(children) do
-      raise CompileError,
-        line: Keyword.get(meta, :line),
-        description: Errors.empty_block(:negate_any)
-    end
-
-    # Flip to :all and negate children
     negated_children = Enum.map(children, &negate_node/1)
     metadata = extract_meta(meta)
     Block.new(:all, negated_children, metadata)
@@ -84,13 +68,6 @@ defmodule Funx.Predicate.Dsl.Parser do
   defp parse_entry_to_node({directive, meta, [[do: block]]}, caller_env)
        when directive in [:any, :all] do
     children = parse_operations(block, caller_env)
-
-    if Enum.empty?(children) do
-      raise CompileError,
-        line: Keyword.get(meta, :line),
-        description: Errors.empty_block(directive)
-    end
-
     metadata = extract_meta(meta)
     Block.new(directive, children, metadata)
   end
@@ -150,41 +127,16 @@ defmodule Funx.Predicate.Dsl.Parser do
         if function_exported?(expanded_module, :pred, 1) do
           parse_behaviour_module(module_alias, [], meta, caller_env)
         else
-          # Warn: bare module reference without pred/1 will cause runtime error
-          emit_bare_module_warning(expanded_module, meta)
-          # Not a behaviour, treat as regular predicate (will fail at runtime)
-          Step.new(predicate_ast, false, %{})
+          # Error: bare module reference without pred/1 will cause runtime error
+          raise CompileError,
+            line: Keyword.get(meta, :line),
+            description: Errors.bare_module_without_behaviour(expanded_module)
         end
 
       _ ->
         # Not a module alias, treat as regular predicate
         Step.new(predicate_ast, false, %{})
     end
-  end
-
-  defp emit_bare_module_warning(module, meta) do
-    IO.warn(
-      """
-      Bare module reference #{inspect(module)} does not implement Predicate.Dsl.Behaviour.
-
-      This will cause a BadFunctionError at runtime because module atoms are not functions.
-
-      To fix, choose one of:
-        1. Implement the Predicate.Dsl.Behaviour:
-           @behaviour Funx.Predicate.Dsl.Behaviour
-           def pred(_opts), do: fn value -> ... end
-
-        2. Use tuple syntax to pass options:
-           {#{inspect(module)}, []}
-
-        3. Call a function explicitly:
-           #{inspect(module)}.my_predicate_function()
-
-        4. Use a variable or captured function instead:
-           my_predicate  # where my_predicate is bound to a function
-      """,
-      Keyword.take(meta, [:line, :file])
-    )
   end
 
   defp parse_behaviour_module(module_alias, opts, meta, caller_env) do
@@ -217,7 +169,7 @@ defmodule Funx.Predicate.Dsl.Parser do
   # Normalize projection AST to canonical form
   #
   # Atoms are converted to Prism.key calls for safe nil handling.
-  # Optics and functions are passed through as-is.
+  # Optics and functions are validated and passed through.
   defp normalize_projection(atom) when is_atom(atom) do
     quote do
       Prism.key(unquote(atom))
@@ -241,8 +193,22 @@ defmodule Funx.Predicate.Dsl.Parser do
   defp normalize_projection({:&, _, _} = fun_ast), do: fun_ast
   defp normalize_projection({:fn, _, _} = fun_ast), do: fun_ast
 
-  # Everything else - pass through (will be evaluated at runtime)
-  defp normalize_projection(other_ast), do: other_ast
+  # Variables - pass through (runtime values)
+  defp normalize_projection({var_name, _, context} = var_ast)
+       when is_atom(var_name) and is_atom(context) do
+    var_ast
+  end
+
+  # Module function calls - pass through (e.g., OpticHelpers.my_lens())
+  defp normalize_projection({{:., _, _}, _, _} = call_ast) do
+    call_ast
+  end
+
+  # Invalid projection type
+  defp normalize_projection(other_ast) do
+    raise CompileError,
+      description: Errors.invalid_projection_type(other_ast)
+  end
 
   # ============================================================================
   # De Morgan's Law Helpers

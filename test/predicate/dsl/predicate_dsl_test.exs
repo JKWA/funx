@@ -38,6 +38,24 @@ defmodule Funx.Predicate.DslTest do
     defstruct [:name, :price, :in_stock, :category]
   end
 
+  # Sum type for Order status (demonstrates Prism branch selection)
+  defmodule OrderStatus.Pending do
+    defstruct []
+  end
+
+  defmodule OrderStatus.Completed do
+    defstruct [:total, :completed_at]
+  end
+
+  defmodule OrderStatus.Cancelled do
+    defstruct [:reason]
+  end
+
+  # Transaction for Traversal examples (relating multiple foci)
+  defmodule Transaction do
+    defstruct [:charge_amount, :refund_amount, :status]
+  end
+
   # ============================================================================
   # Custom Behaviour Modules
   # ============================================================================
@@ -87,8 +105,9 @@ defmodule Funx.Predicate.DslTest do
     def age_lens, do: Lens.key(:age)
     def name_prism, do: Prism.key(:name)
 
-    def scores_traversal do
-      Traversal.combine([Lens.key(:score1), Lens.key(:score2)])
+    def amounts_traversal do
+      # Traversal for relating charge and refund amounts
+      Traversal.combine([Lens.key(:charge_amount), Lens.key(:refund_amount)])
     end
   end
 
@@ -200,7 +219,11 @@ defmodule Funx.Predicate.DslTest do
       refute age_check.(age_empty)
     end
 
-    test "check with Prism.key", %{has_name: has_name, short_name: short_name, no_name: no_name} do
+    test "check with Prism.key (degenerate sum: present | absent)", %{
+      has_name: has_name,
+      short_name: short_name,
+      no_name: no_name
+    } do
       name_length_check =
         pred do
           check(Prism.key(:name), fn name -> String.length(name) > 3 end)
@@ -208,7 +231,33 @@ defmodule Funx.Predicate.DslTest do
 
       assert name_length_check.(has_name)
       refute name_length_check.(short_name)
+      # absent case
       refute name_length_check.(no_name)
+    end
+
+    test "check with Prism.struct (sum type branch selection)" do
+      # Only applies to Completed orders (branch selection)
+      check_high_value_completed =
+        pred do
+          check(Prism.path([:status, OrderStatus.Completed]), fn completed ->
+            completed.total >= 500
+          end)
+        end
+
+      completed_order = %Order{
+        id: 1,
+        status: %OrderStatus.Completed{total: 600, completed_at: ~U[2024-01-01 00:00:00Z]}
+      }
+
+      pending_order = %Order{id: 2, status: %OrderStatus.Pending{}}
+      cancelled_order = %Order{id: 3, status: %OrderStatus.Cancelled{reason: "Stock"}}
+
+      # matches branch AND predicate
+      assert check_high_value_completed.(completed_order)
+      # branch doesn't match
+      refute check_high_value_completed.(pending_order)
+      # branch doesn't match
+      refute check_high_value_completed.(cancelled_order)
     end
 
     test "check with Lens.key", %{high_score: high_score, low_score: low_score} do
@@ -241,22 +290,53 @@ defmodule Funx.Predicate.DslTest do
       refute check.(%{age: 16})
     end
 
-    test "on with Traversal (evaluated)" do
+    test "check with variable projection (runtime optic)" do
+      # Variable bound to optic at runtime
+      my_lens = Lens.key(:score)
+
       check =
         pred do
+          check(my_lens, fn score -> score > 100 end)
+        end
+
+      assert check.(%{score: 150})
+      refute check.(%{score: 50})
+    end
+
+    test "check with Traversal (relating multiple foci)" do
+      # Traversal collects foci so predicate can relate them to each other
+      check_matching_amounts =
+        pred do
           check(
-            Traversal.combine([Lens.key(:score1), Lens.key(:score2)]),
-            fn score -> score > 100 end
+            Traversal.combine([Lens.key(:charge_amount), Lens.key(:refund_amount)]),
+            fn amounts ->
+              case amounts do
+                [charge, refund] -> charge == refund
+                _ -> false
+              end
+            end
           )
         end
 
-      # At least one score is > 100
-      assert check.(%{score1: 150, score2: 50})
-      assert check.(%{score1: 50, score2: 150})
-      assert check.(%{score1: 150, score2: 150})
+      # Amounts match - valid refund
+      assert check_matching_amounts.(%Transaction{
+               charge_amount: 100,
+               refund_amount: 100,
+               status: :refunded
+             })
 
-      # No scores > 100
-      refute check.(%{score1: 50, score2: 50})
+      # Amounts don't match - invalid refund
+      refute check_matching_amounts.(%Transaction{
+               charge_amount: 100,
+               refund_amount: 50,
+               status: :refunded
+             })
+
+      refute check_matching_amounts.(%Transaction{
+               charge_amount: 200,
+               refund_amount: 100,
+               status: :refunded
+             })
     end
 
     test "on with multiple projections" do
@@ -297,14 +377,19 @@ defmodule Funx.Predicate.DslTest do
       refute check.(%{age: 18})
     end
 
-    test "0-arity helper returning Traversal" do
+    test "0-arity helper returning Traversal (relating foci)" do
       check =
         pred do
-          check(OpticHelpers.scores_traversal(), fn score -> score > 100 end)
+          check(OpticHelpers.amounts_traversal(), fn amounts ->
+            case amounts do
+              [charge, refund] -> charge == refund
+              _ -> false
+            end
+          end)
         end
 
-      assert check.(%{score1: 150, score2: 50})
-      refute check.(%{score1: 50, score2: 50})
+      assert check.(%Transaction{charge_amount: 100, refund_amount: 100, status: :refunded})
+      refute check.(%Transaction{charge_amount: 100, refund_amount: 50, status: :refunded})
     end
 
     test "0-arity helper returning predicate" do
@@ -365,35 +450,28 @@ defmodule Funx.Predicate.DslTest do
 
     # Note: Bare module references that don't implement the behaviour are treated
     # as regular predicates (fall through to bare predicate handling), so they don't error.
-    # Only tuple syntax with options explicitly requires the behaviour.
-    test "non-behaviour module alias is treated as bare predicate" do
-      # This test exercises the parser path where a module alias without pred/1
-      # is treated as a regular predicate (line 107 in parser.ex).
+    test "rejects bare module without behaviour at compile time" do
+      # Bare module references without pred/1 are now compile errors
 
       defmodule NonBehaviourCallable do
-        # Module without pred/1 but callable as a 1-arity function
-        def __call__(user), do: user.age >= 18
+        # Module without pred/1
+        def some_function(user), do: user.age >= 18
       end
 
-      # Use Code.eval_quoted to test the compilation phase properly
-      # NonBehaviourCallable doesn't have pred/1, so it will hit the else clause
-      # at line 107 and be treated as a bare predicate
-      # At runtime, trying to call a module as a function will raise BadFunctionError
-      assert_raise BadFunctionError, ~r/expected a function, got/, fn ->
-        {_check, _binding} =
-          Code.eval_quoted(
-            quote do
-              use Funx.Predicate
+      # Should raise CompileError, not BadFunctionError at runtime
+      assert_raise CompileError,
+                   ~r/Bare module reference.*does not implement Predicate.Dsl.Behaviour/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         use Funx.Predicate
 
-              check =
-                pred do
-                  NonBehaviourCallable
-                end
-
-              check.(%{age: 20})
-            end
-          )
-      end
+                         pred do
+                           NonBehaviourCallable
+                         end
+                       end
+                     )
+                   end
     end
 
     test "rejects module without behaviour when using tuple syntax" do
@@ -528,7 +606,7 @@ defmodule Funx.Predicate.DslTest do
   # ============================================================================
 
   describe "negate check directive" do
-    test "negate check with atom field" do
+    test "negate check with atom field (degenerate sum)" do
       not_long_name =
         pred do
           negate(check(:name, fn name -> String.length(name) > 5 end))
@@ -536,11 +614,11 @@ defmodule Funx.Predicate.DslTest do
 
       assert not_long_name.(%{name: "Joe"})
       refute not_long_name.(%{name: "Alexander"})
-      # Missing field passes (prism returns Nothing, predicate never runs)
+      # Absent case passes negation (degenerate sum: present | absent)
       assert not_long_name.(%{})
     end
 
-    test "negate check with Prism.key" do
+    test "negate check with Prism.key (degenerate sum)" do
       not_adult =
         pred do
           negate(check(Prism.key(:age), fn age -> age >= 18 end))
@@ -548,7 +626,7 @@ defmodule Funx.Predicate.DslTest do
 
       assert not_adult.(%{age: 16})
       refute not_adult.(%{age: 20})
-      # Missing field passes (Nothing case)
+      # Absent case passes negation
       assert not_adult.(%{})
     end
 
@@ -572,23 +650,35 @@ defmodule Funx.Predicate.DslTest do
       refute not_verified.(%{verified: true})
     end
 
-    test "negate check with Traversal" do
-      no_high_scores =
+    test "negate check with Traversal (relating foci)" do
+      amounts_dont_match =
         pred do
           negate(
             check(
-              Traversal.combine([Lens.key(:score1), Lens.key(:score2)]),
-              fn score -> score > 100 end
+              Traversal.combine([Lens.key(:charge_amount), Lens.key(:refund_amount)]),
+              fn amounts ->
+                case amounts do
+                  [charge, refund] -> charge == refund
+                  _ -> false
+                end
+              end
             )
           )
         end
 
-      # Neither score > 100
-      assert no_high_scores.(%{score1: 50, score2: 50})
+      # Amounts don't match - inner predicate false, negation true
+      assert amounts_dont_match.(%Transaction{
+               charge_amount: 100,
+               refund_amount: 50,
+               status: :refunded
+             })
 
-      # At least one score > 100 (negated traversal fails)
-      refute no_high_scores.(%{score1: 150, score2: 50})
-      refute no_high_scores.(%{score1: 50, score2: 150})
+      # Amounts match - inner predicate true, negation false
+      refute amounts_dont_match.(%Transaction{
+               charge_amount: 100,
+               refund_amount: 100,
+               status: :refunded
+             })
     end
 
     test "multiple negate check directives" do
@@ -1256,65 +1346,47 @@ defmodule Funx.Predicate.DslTest do
   # Error Cases
   # ============================================================================
 
-  describe "error cases" do
-    test "raises on empty any block" do
-      assert_raise CompileError, ~r/Empty `any` block detected/, fn ->
-        Code.eval_quoted(
-          quote do
-            use Funx.Predicate
-
-            pred do
-              any do
-              end
-            end
+  describe "empty blocks return identity" do
+    test "empty any block returns false (OR identity)" do
+      empty_any =
+        pred do
+          any do
           end
-        )
-      end
+        end
+
+      refute empty_any.(:anything)
     end
 
-    test "raises on empty all block" do
-      assert_raise CompileError, ~r/Empty `all` block detected/, fn ->
-        Code.eval_quoted(
-          quote do
-            use Funx.Predicate
-
-            pred do
-              all do
-              end
-            end
+    test "empty all block returns true (AND identity)" do
+      empty_all =
+        pred do
+          all do
           end
-        )
-      end
+        end
+
+      assert empty_all.(:anything)
     end
 
-    test "raises on empty negate_all block" do
-      assert_raise CompileError, ~r/Empty `negate_all` block detected/, fn ->
-        Code.eval_quoted(
-          quote do
-            use Funx.Predicate
-
-            pred do
-              negate_all do
-              end
-            end
+    test "empty negate_all returns false (NOT true)" do
+      empty_negate_all =
+        pred do
+          negate_all do
           end
-        )
-      end
+        end
+
+      # negate_all with empty -> any with empty -> false
+      refute empty_negate_all.(:anything)
     end
 
-    test "raises on empty negate_any block" do
-      assert_raise CompileError, ~r/Empty `negate_any` block detected/, fn ->
-        Code.eval_quoted(
-          quote do
-            use Funx.Predicate
-
-            pred do
-              negate_any do
-              end
-            end
+    test "empty negate_any returns true (NOT false)" do
+      empty_negate_any =
+        pred do
+          negate_any do
           end
-        )
-      end
+        end
+
+      # negate_any with empty -> all with empty -> true
+      assert empty_negate_any.(:anything)
     end
 
     test "raises on negate without predicate (empty args)" do
@@ -1347,31 +1419,69 @@ defmodule Funx.Predicate.DslTest do
       end
     end
 
-    test "warns on bare module reference without pred/1" do
-      import ExUnit.CaptureIO
+    test "raises compile error on bare module reference without pred/1" do
+      assert_raise CompileError,
+                   ~r/Bare module reference.*does not implement Predicate.Dsl.Behaviour/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         defmodule NotABehaviour do
+                           def some_function, do: :ok
+                         end
 
-      warning =
-        capture_io(:stderr, fn ->
-          Code.eval_quoted(
-            quote do
-              defmodule NotABehaviour do
-                def some_function, do: :ok
-              end
+                         use Funx.Predicate
 
-              use Funx.Predicate
+                         pred do
+                           NotABehaviour
+                         end
+                       end
+                     )
+                   end
+    end
 
-              pred do
-                NotABehaviour
-              end
+    test "raises compile error on invalid projection type in check" do
+      assert_raise CompileError, ~r/Invalid projection type in `check` directive/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Predicate
+
+            pred do
+              # String literal is not a valid projection type
+              check "invalid", fn _ -> true end
             end
-          )
-        end)
+          end
+        )
+      end
+    end
 
-      assert warning =~ "Bare module reference"
-      assert warning =~ "NotABehaviour"
-      assert warning =~ "does not implement Predicate.Dsl.Behaviour"
-      assert warning =~ "BadFunctionError at runtime"
-      assert warning =~ "Implement the Predicate.Dsl.Behaviour"
+    test "raises compile error on invalid projection type (number)" do
+      assert_raise CompileError, ~r/Invalid projection type in `check` directive/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Predicate
+
+            pred do
+              # Number is not a valid projection type
+              check 123, fn _ -> true end
+            end
+          end
+        )
+      end
+    end
+
+    test "raises compile error on invalid projection type (list)" do
+      assert_raise CompileError, ~r/Invalid projection type in `check` directive/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Predicate
+
+            pred do
+              # List is not a valid projection type
+              check [:foo, :bar], fn _ -> true end
+            end
+          end
+        )
+      end
     end
   end
 

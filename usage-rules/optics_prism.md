@@ -44,12 +44,12 @@
 
 **✅ Use Prism when:**
 
-- Accessing optional/nullable fields (user profile, config value)
-- Working with variants or sum types (selecting one case from many)
-- Selecting specific struct types from mixed data
+- **Working with sum types / variants** (selecting one branch from multiple possibilities)
+- **Selecting specific struct types** from mixed data (CreditCard | BankAccount | Check)
+- Accessing optional/nullable fields (degenerate sum: present | absent)
 - Absence is normal and expected in the domain
 - Need to compose partial accessors
-- User says: "optional", "might not have", "only if", "when present", "extract from type"
+- User says: "select this case", "only for X type", "branch on", "variant", "optional", "might not have"
 
 **❌ Use Lens when:**
 
@@ -109,17 +109,17 @@
 
 ## Overview
 
-`Funx.Optics.Prism` provides lawful partial optics for focusing on branches of data structures.
+`Funx.Optics.Prism` provides lawful partial optics for selecting branches of sum types and handling optional data.
 
-Use Prism for:
+**A Prism does not extract a field. It selects a case.** Use Prism for:
 
-- Optional fields where absence is normal
-- Variant selection (choosing one case from many possibilities)
-- Filtered data access (only process matching values)
+- **Sum type branch selection** (choosing one variant from multiple possibilities: Completed | Pending | Cancelled)
+- **Struct type discrimination** (CreditCard | BankAccount | Check)
+- **Optional fields** (degenerate sum: present | absent)
+- Filtered data access (only process values matching a specific case)
 - Compositional partial access
-- Situations where failure to find a value is expected
 
-**Key insight**: Prisms model *partial* access where the focus may not exist. Unlike Lens (which always succeeds), Prism returns Maybe to represent presence/absence. Review constructs the minimal structure needed for the focus, not the full original structure.
+**Key insight**: Prisms model *branch selection* where a value either matches the selected case or doesn't. Unlike Lens (which always succeeds for total fields), Prism returns Maybe to represent case match/mismatch. Review constructs the minimal structure needed for the focus, not the full original structure.
 
 ## Constructors
 

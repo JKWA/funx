@@ -29,9 +29,12 @@ defmodule Funx.Predicate do
   - `p_any([])` returns a predicate that always returns `false` (OR identity)
   - `p_none([])` returns a predicate that always returns `true` (negated OR identity)
 
-  **Note**: The Predicate DSL enforces non-empty `any` and `all` blocks at compile time,
-  while the algebra combinators intentionally permit empty lists for composability.
-  This distinction is deliberate: the algebra supports identity elements, the DSL enforces intent.
+  The Predicate DSL also supports empty blocks, returning the same identity values:
+
+  - `all do end` returns `fn _ -> true end` (AND identity)
+  - `any do end` returns `fn _ -> false end` (OR identity)
+  - `negate_all do end` returns `fn _ -> false end` (NOT true)
+  - `negate_any do end` returns `fn _ -> true end` (NOT false)
 
   ## Examples
 
@@ -422,15 +425,15 @@ defmodule Funx.Predicate do
       false
 
       iex> alias Funx.Optics.Traversal
-      iex> # Existential: true if ANY score > 90
-      iex> high_score = fn score -> score > 90 end
+      iex> # Traversal: predicate receives list of foci to relate them
+      iex> has_high_score = fn scores -> Enum.any?(scores, fn score -> score > 90 end) end
       iex> check = Funx.Predicate.compose_projection(
       ...>   Traversal.combine([Lens.key(:score1), Lens.key(:score2)]),
-      ...>   high_score
+      ...>   has_high_score
       ...> )
-      iex> check.(%{score1: 95, score2: 80})  # At least one passes
+      iex> check.(%{score1: 95, score2: 80})  # At least one score > 90
       true
-      iex> check.(%{score1: 80, score2: 85})  # None pass
+      iex> check.(%{score1: 80, score2: 85})  # No scores > 90
       false
   """
   @spec compose_projection(term(), t()) :: t()
@@ -477,7 +480,7 @@ defmodule Funx.Predicate do
   defp compose_with_traversal(traversal, predicate) do
     fn value ->
       focused_values = Traversal.to_list(value, traversal)
-      Enum.any?(focused_values, predicate)
+      predicate.(focused_values)
     end
   end
 

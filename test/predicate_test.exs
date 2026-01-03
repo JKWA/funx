@@ -427,13 +427,15 @@ defmodule Funx.PredicateTest do
   end
 
   describe "compose_projection/2 with Traversal" do
-    test "returns true if any focused value matches predicate" do
+    test "predicate receives list of foci to relate them" do
       traversal = Traversal.combine([Lens.key(:member1), Lens.key(:member2)])
 
       check_has_adult =
         Predicate.compose_projection(
           traversal,
-          fn member -> member.age >= 18 end
+          fn members ->
+            Enum.any?(members, fn member -> member.age >= 18 end)
+          end
         )
 
       assert check_has_adult.(%Team{
@@ -450,7 +452,7 @@ defmodule Funx.PredicateTest do
     test "works with empty foci" do
       traversal = Traversal.combine([])
 
-      check = Predicate.compose_projection(traversal, fn _ -> true end)
+      check = Predicate.compose_projection(traversal, fn list -> not Enum.empty?(list) end)
 
       refute check.(%EmptyTeam{members: []})
     end
@@ -472,9 +474,12 @@ defmodule Funx.PredicateTest do
       prism_nil_check = Predicate.compose_projection(Prism.key(:name), always_true)
       refute prism_nil_check.(%User{name: nil})
 
-      # Traversal: empty foci returns false
+      # Traversal: empty foci passes empty list to predicate
       empty_traversal = Traversal.combine([])
-      traversal_check = Predicate.compose_projection(empty_traversal, always_true)
+
+      traversal_check =
+        Predicate.compose_projection(empty_traversal, fn list -> not Enum.empty?(list) end)
+
       refute traversal_check.(%User{})
 
       # Traversal: all foci fail returns false

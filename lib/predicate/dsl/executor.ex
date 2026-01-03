@@ -84,7 +84,7 @@ defmodule Funx.Predicate.Dsl.Executor do
          negate: false
        }) do
     quote do
-      Funx.Predicate.compose_projection(unquote(projection_ast), unquote(predicate_ast))
+      Predicate.compose_projection(unquote(projection_ast), unquote(predicate_ast))
     end
   end
 
@@ -97,7 +97,7 @@ defmodule Funx.Predicate.Dsl.Executor do
        }) do
     quote do
       Predicate.p_not(
-        Funx.Predicate.compose_projection(unquote(projection_ast), unquote(predicate_ast))
+        Predicate.compose_projection(unquote(projection_ast), unquote(predicate_ast))
       )
     end
   end
