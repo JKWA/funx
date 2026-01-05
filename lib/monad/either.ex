@@ -631,6 +631,31 @@ defmodule Funx.Monad.Either do
     validate(value, [validator])
   end
 
+  def validate(value, validator) when is_function(validator, 2) do
+    validate(value, validator, [])
+  end
+
+  @doc """
+  Validates a value using validators that accept options.
+
+  Supports validators with arity 2: `(value, opts) -> Either.t()`.
+
+  ## Examples
+
+      Either.validate(%{name: "Alice"}, validator, env: %{db: conn})
+  """
+  @spec validate(value, validator | [validator], keyword()) :: t([error], value)
+        when error: term(), value: term(), validator: (value, keyword() -> t(error, any()))
+
+  def validate(value, validators, opts) when is_list(validators) and is_list(opts) do
+    traverse_a(validators, fn validator -> validator.(value, opts) end)
+    |> map(fn _ -> value end)
+  end
+
+  def validate(value, validator, opts) when is_function(validator, 2) and is_list(opts) do
+    validate(value, [validator], opts)
+  end
+
   @doc """
   Converts a `Maybe` value to an `Either`. If the `Maybe` is `Nothing`, a `Left` is returned using `on_none`.
 

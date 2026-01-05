@@ -27,17 +27,17 @@ defmodule Funx.Monad.Either.Dsl do
 
       iex> defmodule GetUser do
       ...>   use Funx.Monad.Either
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(_value, _env, _opts), do: left("not found")
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
+      ...>   def bind(_value, _opts, _env), do: left("not found")
       ...> end
       iex> defmodule CheckPermissions do
       ...>   use Funx.Monad.Either
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(value, _env, _opts), do: right(value)
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
+      ...>   def bind(value, _opts, _env), do: right(value)
       ...> end
       iex> defmodule FormatUser do
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(value, _env, _opts), do: "formatted: \#{value}"
+      ...>   @behaviour Funx.Monad.Behaviour.Map
+      ...>   def map(value, _opts, _env), do: "formatted: \#{value}"
       ...> end
       iex> use Funx.Monad.Either
       iex> either 123 do
@@ -71,8 +71,8 @@ defmodule Funx.Monad.Either.Dsl do
 
       iex> defmodule ParseInt do
       ...>   use Funx.Monad.Either
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(value, _env, _opts) when is_binary(value) do
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
+      ...>   def bind(value, _opts, _env) when is_binary(value) do
       ...>     case Integer.parse(value) do
       ...>       {int, ""} -> right(int)
       ...>       _ -> left("invalid integer")
@@ -80,8 +80,8 @@ defmodule Funx.Monad.Either.Dsl do
       ...>   end
       ...> end
       iex> defmodule Double do
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(value, _env, _opts), do: value * 2
+      ...>   @behaviour Funx.Monad.Behaviour.Map
+      ...>   def map(value, _opts, _env), do: value * 2
       ...> end
       iex> use Funx.Monad.Either
       iex> either "42" do

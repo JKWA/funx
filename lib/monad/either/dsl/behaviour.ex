@@ -74,9 +74,9 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
 
       iex> defmodule DslParseInt do
       ...>   use Funx.Monad.Either
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
       ...>   @impl true
-      ...>   def run(value, _opts, _env) when is_binary(value) do
+      ...>   def bind(value, _opts, _env) when is_binary(value) do
       ...>     case Integer.parse(value) do
       ...>       {int, ""} -> right(int)
       ...>       _ -> left("Invalid integer")
@@ -85,17 +85,17 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...> end
       iex> defmodule DslPositive do
       ...>   use Funx.Monad.Either
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
       ...>   @impl true
-      ...>   def run(value, opts, _env) do
+      ...>   def bind(value, opts, _env) do
       ...>     min = Keyword.get(opts, :min, 0)
       ...>     if value > min, do: right(value), else: left("too small")
       ...>   end
       ...> end
       iex> defmodule DslDouble do
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
+      ...>   @behaviour Funx.Monad.Behaviour.Map
       ...>   @impl true
-      ...>   def run(value, _opts, _env), do: value * 2
+      ...>   def map(value, _opts, _env), do: value * 2
       ...> end
       iex> use Funx.Monad.Either
       iex> either "42" do
@@ -105,8 +105,8 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...> end
       %Funx.Monad.Either.Right{right: 84}
 
-  `bind` unwraps the current Either value, calls `run/3`, and normalizes the
-  result back into Either. `map` unwraps the value, calls `run/3`, and wraps the
+  `bind` unwraps the current Either value, calls `bind/3`, and normalizes the
+  result back into Either. `map` unwraps the value, calls `map/3`, and wraps the
   plain result back into Either.
   """
 

@@ -70,21 +70,27 @@ defmodule Funx.Monad.Either.Dsl.ExecutorTest do
     end
 
     test "raises ArgumentError for invalid return value" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
-        Executor.normalize_run_result(:invalid)
-      end
+      assert_raise ArgumentError,
+                   ~r/Operation must return either an Either struct or a result tuple/,
+                   fn ->
+                     Executor.normalize_run_result(:invalid)
+                   end
     end
 
     test "raises ArgumentError for plain value" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
-        Executor.normalize_run_result(42)
-      end
+      assert_raise ArgumentError,
+                   ~r/Operation must return either an Either struct or a result tuple/,
+                   fn ->
+                     Executor.normalize_run_result(42)
+                   end
     end
 
     test "raises ArgumentError for list" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
-        Executor.normalize_run_result([1, 2, 3])
-      end
+      assert_raise ArgumentError,
+                   ~r/Operation must return either an Either struct or a result tuple/,
+                   fn ->
+                     Executor.normalize_run_result([1, 2, 3])
+                   end
     end
 
     test "includes operation type in error message when provided" do

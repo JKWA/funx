@@ -1,0 +1,285 @@
+# Funx: Validator
+
+```elixir
+Mix.install([
+   {:funx, path: Path.expand("../..", __DIR__)}                                                   
+])
+```
+
+## Start
+
+```elixir
+alias Funx.Optics.{Lens, Prism}
+require Logger
+use Funx.Monad.Maybe
+
+defmodule CreditCard do
+  defstruct [:name, :number, :expiry, :amount]
+  alias Funx.Optics.Prism
+
+  def amount_prism do
+    Prism.path([{__MODULE__, :amount}])
+  end
+end
+
+defmodule Check do
+  defstruct [:name, :routing_number, :account_number, :amount]
+  alias Funx.Optics.Prism
+
+  def amount_prism do
+    Prism.path([{__MODULE__, :amount}])
+  end
+end
+
+defmodule Item do
+  defstruct [:name, :price]
+end
+
+defmodule Charge do
+  defstruct [:payment, :status]
+  alias Funx.Optics.Prism
+
+  def payment_prism do
+    Prism.path([{__MODULE__, :payment}])
+  end
+end
+
+defmodule Refund do
+  defstruct [:payment, :status]
+  alias Funx.Optics.Prism
+
+  def payment_prism do
+    Prism.path([{__MODULE__, :payment}])
+  end
+end
+
+defmodule Transaction do
+  defstruct [:item, :type]
+  alias Funx.Optics.Prism
+
+  def type_prism do
+    Prism.path([{__MODULE__, :type}])
+  end
+end
+```
+
+Next, some transactions:
+
+```elixir
+charge_cc =
+  %Transaction{
+    item: %Item{name: "Camera", price: 500},
+    type: %Charge{
+      payment: %CreditCard{name: "Alice", number: "4111", expiry: "12/26", amount: 500},
+      status: :pending
+    }
+  }
+
+invalid_charge_cc =
+  %Transaction{
+    item: %Item{name: "Camera", price: 500},
+    type: %Charge{
+      payment: %CreditCard{name: "Alice", number: "4111", expiry: "12/26", amount: 400},
+      status: :pending
+    }
+  }
+
+charge_check =
+  %Transaction{
+    item: %Item{name: "Lens", price: 300},
+    type: %Charge{
+      payment: %Check{name: "Bob", routing_number: "111000025", account_number: "987654", amount: 300},
+      status: :pending
+    }
+  }
+
+refund_cc =
+  %Transaction{
+    item: %Item{name: "Tripod", price: 150},
+    type: %Refund{
+      payment: %CreditCard{name: "Carol", number: "4333", expiry: "10/27", amount: 150},
+      status: :pending
+    }
+  }
+
+refund_check =
+  %Transaction{
+    item: %Item{name: "Flash", price: 200},
+    type: %Refund{
+      payment: %Check{name: "Dave", routing_number: "222000025", account_number: "123456", amount: 200},
+      status: :pending
+    }
+  }
+
+transactions = [charge_cc, charge_check, refund_cc, refund_check]
+```
+
+```elixir
+use Funx.Validation
+use Funx.Monad.Either
+
+alias Funx.Validator.{Negative, Positive, Required, AllEqual, Range, LiftPredicate}
+alias Funx.Optics.{Lens, Prism, Traversal}
+alias Funx.Monad.Either
+
+cc_prism = 
+  Prism.path([
+      {Transaction, :type}, 
+      :payment, 
+    {CreditCard, :amount}
+  ])
+
+price_lens = Lens.path([:item, :price])
+
+amount_trav = Traversal.combine([price_lens, cc_prism])
+    
+
+cc_val = 
+  validation do
+    at price_lens, Positive
+    at cc_prism, [{Required, message: fn _ -> "Must be CreditCard" end}, Positive]
+    at amount_trav, {AllEqual, message: fn _ -> "Amounts must match" end}
+  end
+
+
+
+Either.validate(refund_cc, cc_val)
+```
+
+```elixir
+Either.validate(refund_check, cc_val)
+```
+
+```elixir
+Either.validate(invalid_charge_cc, cc_val)
+```
+
+```elixir
+defmodule Slow.Validation do
+  alias Funx.Monad.Either
+  alias Funx.Errors.ValidationError
+
+  require Logger
+
+    @behaviour Funx.Validation.Behaviour
+
+
+  @impl true
+  def validate(value, _opts) do
+    Either.lift_predicate(
+      value,
+      &slow_check?/1,
+      fn _value -> ValidationError.new("Slow check failed") end
+    )
+  end
+
+  # Simulated expensive check (50-250ms) - randomly fails 1 out of 5 times
+  defp slow_check?(_value) do
+    delay_ms = 500
+    :timer.sleep(delay_ms)
+    Logger.info("Completed slow check in #{delay_ms}ms")
+    # Enum.random(1..5) != 1
+    true
+  end
+end
+
+```
+
+```elixir
+either 101 do
+  validate [Positive, {Range, min: 1, max: 100}]
+end
+```
+
+```elixir
+seq_slow_val = 
+  validation do
+    Slow.Validation
+    Slow.Validation
+    Slow.Validation
+    Slow.Validation
+    Slow.Validation
+  end
+```
+
+```elixir
+Either.validate(invalid_charge_cc, seq_slow_val)
+```
+
+```elixir
+parallel_slow_val = 
+  validation mode: :parallel do
+    Slow.Validation
+    Slow.Validation
+    Slow.Validation
+    Slow.Validation
+    Slow.Validation
+  end
+```
+
+```elixir
+Either.validate(invalid_charge_cc, parallel_slow_val)
+```
+
+```elixir
+either charge_cc, as: :tuple do
+  validate cc_val
+  validate parallel_slow_val
+end
+```
+
+```elixir
+either invalid_charge_cc, as: :tuple do
+  validate cc_val
+  validate parallel_slow_val
+end
+```
+
+```elixir
+use Funx.Predicate
+
+max_pred =
+    pred do
+      check cc_prism, fn amount -> amount < 100 end
+    end
+
+
+```
+
+```elixir
+either invalid_charge_cc, as: :tuple do
+  validate {LiftPredicate, pred: max_pred}
+end
+```
+
+```elixir
+val = validation do
+   at cc_prism, {LiftPredicate, pred: fn amount -> amount > 100 end}
+end
+
+either invalid_charge_cc, as: :tuple do
+  validate val
+end
+```
+
+```elixir
+either invalid_charge_cc, as: :tuple do
+  validate val
+end
+```
+
+```elixir
+alias Funx.Validator.{Any, Negative, Positive}
+
+either 10, as: :tuple do
+  validate [{Range, min: 11}, {Any, validators: [Negative, Slow.Validation]}]
+end
+```
+
+```elixir
+alias Funx.Validator.Not
+
+either 0, as: :tuple do
+  validate [{Not, validator: Positive}, {Not, validator: Negative}]
+end
+```

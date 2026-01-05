@@ -62,7 +62,17 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   end
 
   defp execute_step(either_value, %Step.Ap{applicative: applicative}, _user_env) do
-    Funx.Monad.ap(either_value, applicative)
+    # When applicative is a function (module transformed to fn), call it to produce wrapped function
+    # then apply that function to the value
+    if is_function(applicative) do
+      Funx.Monad.bind(either_value, fn value ->
+        wrapped_func = applicative.(value)
+        Funx.Monad.ap(wrapped_func, Either.pure(value))
+      end)
+    else
+      # When applicative is a raw Either value (like `right(42)`), apply pipeline function to it
+      Funx.Monad.ap(either_value, applicative)
+    end
   end
 
   defp execute_step(
@@ -94,10 +104,6 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   # ============================================================================
   # OPERATION CALLING
   # ============================================================================
-
-  defp call_operation(module, value, opts, user_env) when is_atom(module) do
-    module.run(value, opts, user_env)
-  end
 
   defp call_operation(func, value, _opts, _user_env) when is_function(func) do
     func.(value)
@@ -136,7 +142,7 @@ defmodule Funx.Monad.Either.Dsl.Executor do
         op_info = if operation_type, do: " in #{operation_type} operation", else: ""
 
         raise ArgumentError, """
-        Module run/3 callback must return either an Either struct or a result tuple#{op_info}.#{location}
+        Operation must return either an Either struct or a result tuple#{op_info}.#{location}
         Got: #{inspect(other)}
 
         Expected return types:
