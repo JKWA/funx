@@ -71,13 +71,19 @@ defmodule Funx.Validator do
   alias Funx.Validator.Any
   alias Funx.Validator.Confirmation
   alias Funx.Validator.Email
+  alias Funx.Validator.GreaterThan
+  alias Funx.Validator.GreaterThanOrEqual
   alias Funx.Validator.In
   alias Funx.Validator.Integer
+  alias Funx.Validator.LessThan
+  alias Funx.Validator.LessThanOrEqual
   alias Funx.Validator.LiftPredicate
   alias Funx.Validator.MaxLength
   alias Funx.Validator.MinLength
   alias Funx.Validator.Negative
   alias Funx.Validator.Not
+  alias Funx.Validator.NotEqual
+  alias Funx.Validator.NotIn
   alias Funx.Validator.Pattern
   alias Funx.Validator.Positive
   alias Funx.Validator.Range
@@ -90,13 +96,19 @@ defmodule Funx.Validator do
       Any,
       Confirmation,
       Email,
+      GreaterThan,
+      GreaterThanOrEqual,
       In,
       Integer,
+      LessThan,
+      LessThanOrEqual,
       LiftPredicate,
       MaxLength,
       MinLength,
       Negative,
       Not,
+      NotEqual,
+      NotIn,
       Pattern,
       Positive,
       Range,

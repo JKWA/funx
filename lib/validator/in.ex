@@ -1,50 +1,91 @@
 defmodule Funx.Validator.In do
   @moduledoc """
-  Validates that a value is a member of a given list.
+  Validates that a value is a member of a given collection using an `Eq`
+  comparator.
 
-  ## Required Options
+  `In` enforces a membership constraint of the form:
+  "value must be one of these".
 
-  - `:values` - List of allowed values
+  Membership is defined by an `Eq` instance, not by structural equality or
+  Elixir’s `in` operator.
 
-  ## Optional Options
+  Options
 
-  - `:message` - Custom error message callback `(value -> String.t())`
+  - `:values` (required)
+    The list of allowed values to compare against.
 
-  ## Examples
+  - `:eq` (optional)
+    An equality comparator. Defaults to `Funx.Eq.Protocol`.
 
-      iex> Funx.Validator.In.validate("red", values: ["red", "green", "blue"])
-      %Funx.Monad.Either.Right{right: "red"}
+  - `:message` (optional)
+    A custom error message callback `(value -> String.t())`.
 
-      iex> Funx.Validator.In.validate("yellow", values: ["red", "green", "blue"])
-      %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["must be one of: red, green, blue"]}}
+  Semantics
+
+  - Succeeds if the value equals any element in `:values` under `Eq`.
+  - Fails otherwise.
+  - `Nothing` passes through.
+  - `Just` is unwrapped before comparison.
+
+  Examples
+
+      iex> Funx.Validator.In.validate("active", values: ["active", "inactive", "pending"])
+      %Funx.Monad.Either.Right{right: "active"}
+
+      iex> Funx.Validator.In.validate("deleted", values: ["active", "inactive"])
+      %Funx.Monad.Either.Left{
+        left: %Funx.Errors.ValidationError{
+          errors: ["must be one of: \\"active\\", \\"inactive\\""]
+        }
+      }
+
+      iex> Funx.Validator.In.validate(:ok, values: [:ok, :error])
+      %Funx.Monad.Either.Right{right: :ok}
+
+      iex> Funx.Validator.In.validate(%Funx.Monad.Maybe.Nothing{}, values: ["a", "b"])
+      %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}
+
+      iex> Funx.Validator.In.validate(
+      ...>   %Funx.Monad.Maybe.Just{value: "active"},
+      ...>   values: ["active", "inactive"]
+      ...> )
+      %Funx.Monad.Either.Right{right: "active"}
+
+      iex> Funx.Validator.In.validate(
+      ...>   %Funx.Monad.Maybe.Just{value: "deleted"},
+      ...>   values: ["active", "inactive"]
+      ...> )
+      %Funx.Monad.Either.Left{
+        left: %Funx.Errors.ValidationError{
+          errors: ["must be one of: \\"active\\", \\"inactive\\""]
+        }
+      }
   """
 
   @behaviour Funx.Validation.Behaviour
 
   alias Funx.Errors.ValidationError
+  alias Funx.List
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
 
-  # Convenience overload for default opts (raises on missing required options)
   def validate(value) do
     validate(value, [])
   end
 
-  # Convenience overload for easier direct usage
   def validate(value, opts) when is_list(opts) do
     validate(value, opts, %{})
   end
 
-  # Behaviour implementation (arity-3)
   @impl true
-  def validate(value, opts, env)
+  def validate(value, opts, _env)
 
-  def validate(%Nothing{}, _opts, _env) do
-    Either.right(%Nothing{})
+  def validate(%Nothing{} = value, _opts, _env) do
+    Either.right(value)
   end
 
-  def validate(%Just{value: inner_value}, opts, _env) do
-    validate_value(inner_value, opts)
+  def validate(%Just{value: v}, opts, _env) do
+    validate_value(v, opts)
   end
 
   def validate(value, opts, _env) do
@@ -53,12 +94,14 @@ defmodule Funx.Validator.In do
 
   defp validate_value(value, opts) do
     values = Keyword.fetch!(opts, :values)
+    eq = Keyword.get(opts, :eq, Funx.Eq.Protocol)
 
     Either.lift_predicate(
       value,
-      fn v -> v in values end,
+      fn v -> List.elem?(values, v, eq) end,
       fn v ->
-        ValidationError.new(build_message(opts, v, "must be one of: #{Enum.join(values, ", ")}"))
+        rendered = Enum.map_join(values, ", ", &inspect/1)
+        ValidationError.new(build_message(opts, v, "must be one of: #{rendered}"))
       end
     )
   end

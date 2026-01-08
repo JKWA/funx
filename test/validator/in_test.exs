@@ -5,6 +5,7 @@ defmodule Funx.Validator.InTest do
 
   alias Funx.Monad.Either
   alias Funx.Monad.Either.Right
+  alias Funx.Monad.Maybe.{Just, Nothing}
   alias Funx.Validator.In
 
   describe "In validator (membership)" do
@@ -41,13 +42,11 @@ defmodule Funx.Validator.InTest do
           message: fn _ -> "invalid status" end
         )
 
-      assert Either.left?(result)
+      assert %Either.Left{} = result
     end
   end
 
   describe "In validator with Maybe types" do
-    alias Funx.Monad.Maybe.{Just, Nothing}
-
     test "passes for Nothing (optional field without value)" do
       assert In.validate(%Nothing{}, values: ["a", "b", "c"]) ==
                %Right{right: %Nothing{}}
@@ -63,14 +62,14 @@ defmodule Funx.Validator.InTest do
       assert Either.left?(result)
     end
 
-    test "works with custom message on Just values" do
+    test "custom message is applied for Just failures" do
       result =
         In.validate(%Just{value: "deleted"},
           values: ["active", "inactive"],
           message: fn _ -> "invalid status" end
         )
 
-      assert Either.left?(result)
+      assert %Either.Left{} = result
     end
 
     test "Nothing passes regardless of custom message" do
@@ -79,6 +78,65 @@ defmodule Funx.Validator.InTest do
                message: fn _ -> "should not see this" end
              ) ==
                %Right{right: %Nothing{}}
+    end
+  end
+
+  describe "In validator with custom Eq" do
+    test "uses Eq for case-insensitive string membership" do
+      case_insensitive = %{
+        eq?: fn a, b -> String.downcase(a) == String.downcase(b) end,
+        not_eq?: fn a, b -> String.downcase(a) != String.downcase(b) end
+      }
+
+      assert In.validate("RED",
+               values: ["red", "green", "blue"],
+               eq: case_insensitive
+             ) == %Right{right: "RED"}
+    end
+
+    test "fails when Eq does not match any value" do
+      case_insensitive = %{
+        eq?: fn a, b -> String.downcase(a) == String.downcase(b) end,
+        not_eq?: fn a, b -> String.downcase(a) != String.downcase(b) end
+      }
+
+      result =
+        In.validate("yellow",
+          values: ["red", "green", "blue"],
+          eq: case_insensitive
+        )
+
+      assert Either.left?(result)
+    end
+  end
+
+  describe "In validator with domain equality" do
+    defmodule Person do
+      defstruct [:id]
+    end
+
+    test "uses Eq instead of structural equality" do
+      eq_by_id = %{
+        eq?: fn a, b -> a.id == b.id end,
+        not_eq?: fn a, b -> a.id != b.id end
+      }
+
+      alice = %Person{id: 1}
+      bob = %Person{id: 1}
+      carol = %Person{id: 2}
+
+      assert In.validate(bob,
+               values: [alice],
+               eq: eq_by_id
+             ) == %Right{right: bob}
+
+      result =
+        In.validate(carol,
+          values: [alice],
+          eq: eq_by_id
+        )
+
+      assert Either.left?(result)
     end
   end
 end

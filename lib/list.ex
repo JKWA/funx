@@ -139,6 +139,24 @@ defmodule Funx.List do
   end
 
   @doc """
+  Returns true if the given value is an element of the list under the provided `Eq`.
+
+  This is the Eq-based equivalent of Haskell's `elem`.
+
+  ## Examples
+
+      iex> Funx.List.elem?([1, 2, 3], 1)
+      true
+
+      iex> Funx.List.elem?([1, 3], 2)
+      false
+  """
+  @spec elem?(term(), [term()], Funx.Eq.eq_t()) :: boolean()
+  def elem?(list, value, eq \\ Funx.Eq.Protocol) when is_list(list) do
+    Enum.any?(list, &Funx.Eq.eq?(value, &1, eq))
+  end
+
+  @doc """
   Checks if the first list is a subset of the second.
 
   ## Examples

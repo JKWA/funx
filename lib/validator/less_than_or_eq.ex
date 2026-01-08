@@ -1,51 +1,30 @@
 defmodule Funx.Validator.LessThanOrEqual do
   @moduledoc """
-  Validates that a number is less than or equal to a given threshold.
+  Validates that a value is less than or equal to a given reference value
+  using an `Ord` comparator.
 
   `LessThanOrEqual` enforces an ordering constraint of the form:
   “value must be less than or equal to X”.
 
+  Ordering is defined by an `Ord` instance.
+
   Options
 
   - `:value` (required)
-    The threshold value that the input must be less than or equal to.
+    The reference value to compare against.
+
+  - `:ord` (optional)
+    An ordering comparator. Defaults to `Funx.Ord.Protocol`.
 
   - `:message` (optional)
-    A custom error message callback `(value -> String.t())` used to override the
-    default error message on failure.
+    A custom error message callback `(value -> String.t())`.
 
   Semantics
 
-  - If the value is less than or equal to the threshold, validation succeeds.
-  - If the value is greater than the threshold, validation fails.
-  - `Nothing` values are preserved and treated as not applicable.
-  - `Just` values are unwrapped before validation.
-  - Non-numeric values result in a validation error.
-
-  Examples
-
-      iex> Funx.Validator.LessThanOrEqual.validate(5, value: 5)
-      %Funx.Monad.Either.Right{right: 5}
-
-      iex> Funx.Validator.LessThanOrEqual.validate(7, value: 5)
-      %Funx.Monad.Either.Left{
-        left: %Funx.Errors.ValidationError{
-          errors: ["must be less than or equal to 5"]
-        }
-      }
-
-      iex> Funx.Validator.LessThanOrEqual.validate(%Funx.Monad.Maybe.Nothing{}, value: 5)
-      %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}
-
-      iex> Funx.Validator.LessThanOrEqual.validate(7,
-      ...>   value: 5,
-      ...>   message: fn v -> "\#{v} is too large" end
-      ...> )
-      %Funx.Monad.Either.Left{
-        left: %Funx.Errors.ValidationError{
-          errors: ["7 is too large"]
-        }
-      }
+  - If the value compares as `:lt` or `:eq`, validation succeeds.
+  - If the value compares as `:gt`, validation fails.
+  - `Nothing` values pass unchanged.
+  - `Just` values are unwrapped before comparison.
   """
 
   @behaviour Funx.Validation.Behaviour
@@ -53,13 +32,16 @@ defmodule Funx.Validator.LessThanOrEqual do
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Ord
 
-  # Convenience overload for easier direct usage
+  def validate(value) do
+    validate(value, [])
+  end
+
   def validate(value, opts) when is_list(opts) do
     validate(value, opts, %{})
   end
 
-  # Behaviour implementation (arity-3)
   @impl true
   def validate(value, opts, env)
 
@@ -67,32 +49,25 @@ defmodule Funx.Validator.LessThanOrEqual do
     Either.right(value)
   end
 
-  def validate(%Just{value: number}, opts, _env) when is_number(number) do
-    validate_number(number, opts)
-  end
-
-  def validate(%Just{value: value}, opts, _env) do
-    message = build_message(opts, value, "must be a number")
-    Either.left(ValidationError.new(message))
-  end
-
-  def validate(value, opts, _env) when is_number(value) do
-    validate_number(value, opts)
+  def validate(%Just{value: v}, opts, _env) do
+    validate_value(v, opts)
   end
 
   def validate(value, opts, _env) do
-    message = build_message(opts, value, "must be a number")
-    Either.left(ValidationError.new(message))
+    validate_value(value, opts)
   end
 
-  defp validate_number(value, opts) do
-    threshold = Keyword.fetch!(opts, :value)
+  defp validate_value(value, opts) do
+    reference = Keyword.fetch!(opts, :value)
+    ord = Keyword.get(opts, :ord, Ord.Protocol)
 
     Either.lift_predicate(
       value,
-      fn v -> v <= threshold end,
+      fn v -> Ord.compare(v, reference, ord) in [:lt, :eq] end,
       fn v ->
-        ValidationError.new(build_message(opts, v, "must be less than or equal to #{threshold}"))
+        ValidationError.new(
+          build_message(opts, v, "must be less than or equal to #{inspect(reference)}")
+        )
       end
     )
   end

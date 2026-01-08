@@ -1,10 +1,10 @@
-defmodule Funx.Validator.GreaterThan do
+defmodule Funx.Validator.GreaterThanOrEqual do
   @moduledoc """
-  Validates that a value is strictly greater than a given reference value
+  Validates that a value is greater than or equal to a given reference value
   using an `Ord` comparator.
 
-  `GreaterThan` enforces an ordering constraint of the form:
-  “value must be greater than X”.
+  `GreaterThanOrEqual` enforces an ordering constraint of the form:
+  “value must be greater than or equal to X”.
 
   Ordering is defined by an `Ord` instance, not by numeric comparison or
   structural operators.
@@ -23,28 +23,28 @@ defmodule Funx.Validator.GreaterThan do
 
   Semantics
 
-  - If the value compares as `:gt` relative to the reference value under
+  - If the value compares as `:gt` or `:eq` relative to the reference value under
     the given `Ord`, validation succeeds.
-  - If the value compares as `:lt` or `:eq`, validation fails.
+  - If the value compares as `:lt`, validation fails.
   - `Nothing` values are preserved and treated as not applicable.
   - `Just` values are unwrapped before comparison.
 
   Examples
 
-      iex> Funx.Validator.GreaterThan.validate(7, value: 5)
+      iex> Funx.Validator.GreaterThanOrEqual.validate(7, value: 5)
       %Funx.Monad.Either.Right{right: 7}
 
-      iex> Funx.Validator.GreaterThan.validate("b", value: "a")
+      iex> Funx.Validator.GreaterThanOrEqual.validate("b", value: "a")
       %Funx.Monad.Either.Right{right: "b"}
 
-      iex> Funx.Validator.GreaterThan.validate("a", value: "a")
+      iex> Funx.Validator.GreaterThanOrEqual.validate("a", value: "b")
       %Funx.Monad.Either.Left{
         left: %Funx.Errors.ValidationError{
-          errors: ["must be greater than \\\"a\\\""]
+          errors: ["must be greater than or equal to \\\"b\\\""]
         }
       }
 
-      iex> Funx.Validator.GreaterThan.validate(%Funx.Monad.Maybe.Nothing{}, value: 5)
+      iex> Funx.Validator.GreaterThanOrEqual.validate(%Funx.Monad.Maybe.Nothing{}, value: 5)
       %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}
   """
 
@@ -84,9 +84,11 @@ defmodule Funx.Validator.GreaterThan do
 
     Either.lift_predicate(
       value,
-      fn v -> Ord.compare(v, reference, ord) == :gt end,
+      fn v -> Ord.compare(v, reference, ord) in [:gt, :eq] end,
       fn v ->
-        ValidationError.new(build_message(opts, v, "must be greater than #{inspect(reference)}"))
+        ValidationError.new(
+          build_message(opts, v, "must be greater than or equal to #{inspect(reference)}")
+        )
       end
     )
   end

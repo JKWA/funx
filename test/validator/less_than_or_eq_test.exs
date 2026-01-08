@@ -6,11 +6,24 @@ defmodule Funx.Validator.LessThanOrEqualTest do
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Ord
 
   alias Funx.Validator.LessThanOrEqual
 
-  describe "LessThanOrEqual validator with numeric values" do
-    test "passes when value is less than threshold" do
+  defmodule Person do
+    @moduledoc false
+    require Funx.Macros
+
+    defstruct [:first_name, :last_name, :age]
+    Funx.Macros.ord_for(Person, :last_name)
+
+    def age_ord do
+      Ord.contramap(& &1.age)
+    end
+  end
+
+  describe "LessThanOrEqual validator with ordered values" do
+    test "passes when value is less than reference" do
       result =
         LessThanOrEqual.validate(3,
           value: 5
@@ -19,7 +32,7 @@ defmodule Funx.Validator.LessThanOrEqualTest do
       assert result == Either.right(3)
     end
 
-    test "passes when value is equal to threshold" do
+    test "passes when value is equal to reference" do
       result =
         LessThanOrEqual.validate(5,
           value: 5
@@ -28,10 +41,39 @@ defmodule Funx.Validator.LessThanOrEqualTest do
       assert result == Either.right(5)
     end
 
-    test "fails when value is greater than threshold" do
+    test "fails when value is greater than reference" do
       result =
         LessThanOrEqual.validate(7,
           value: 5
+        )
+
+      assert Either.left?(result)
+    end
+  end
+
+  describe "LessThanOrEqual validator with non-numeric ordered values" do
+    test "passes for strings ordered lexicographically" do
+      result =
+        LessThanOrEqual.validate("a",
+          value: "b"
+        )
+
+      assert result == Either.right("a")
+    end
+
+    test "passes for equal strings" do
+      result =
+        LessThanOrEqual.validate("a",
+          value: "a"
+        )
+
+      assert result == Either.right("a")
+    end
+
+    test "fails for strings ordered lexicographically" do
+      result =
+        LessThanOrEqual.validate("b",
+          value: "a"
         )
 
       assert Either.left?(result)
@@ -48,7 +90,16 @@ defmodule Funx.Validator.LessThanOrEqualTest do
       assert result == Either.right(%Nothing{})
     end
 
-    test "passes for Just when inner value is equal to threshold" do
+    test "passes for Just when inner value is less" do
+      result =
+        LessThanOrEqual.validate(%Just{value: 3},
+          value: 5
+        )
+
+      assert result == Either.right(3)
+    end
+
+    test "passes for Just when inner value is equal" do
       result =
         LessThanOrEqual.validate(%Just{value: 5},
           value: 5
@@ -57,7 +108,7 @@ defmodule Funx.Validator.LessThanOrEqualTest do
       assert result == Either.right(5)
     end
 
-    test "fails for Just when inner value is greater than threshold" do
+    test "fails for Just when inner value is greater" do
       result =
         LessThanOrEqual.validate(%Just{value: 7},
           value: 5
@@ -67,20 +118,52 @@ defmodule Funx.Validator.LessThanOrEqualTest do
     end
   end
 
-  describe "LessThanOrEqual validator type errors" do
-    test "fails for Just with non-number value" do
+  describe "LessThanOrEqual validator with custom Ord (Person)" do
+    test "uses default Person Ord (by last_name)" do
+      alice = %Person{first_name: "Alice", last_name: "Smith", age: 30}
+      bob = %Person{first_name: "Bob", last_name: "Brown", age: 25}
+
       result =
-        LessThanOrEqual.validate(%Just{value: "abc"},
-          value: 5
+        LessThanOrEqual.validate(bob,
+          value: alice
         )
 
-      assert Either.left?(result)
+      assert result == Either.right(bob)
     end
 
-    test "fails for non-number value" do
+    test "passes when Person is equal by default Ord" do
+      alice = %Person{first_name: "Alice", last_name: "Smith", age: 30}
+      bob = %Person{first_name: "Bob", last_name: "Smith", age: 25}
+
       result =
-        LessThanOrEqual.validate("abc",
-          value: 5
+        LessThanOrEqual.validate(bob,
+          value: alice
+        )
+
+      assert result == Either.right(bob)
+    end
+
+    test "uses custom Ord via :ord option (age)" do
+      younger = %Person{first_name: "Alice", last_name: "Smith", age: 20}
+      older = %Person{first_name: "Bob", last_name: "Brown", age: 30}
+
+      result =
+        LessThanOrEqual.validate(younger,
+          value: older,
+          ord: Person.age_ord()
+        )
+
+      assert result == Either.right(younger)
+    end
+
+    test "fails using custom Ord via :ord option (age)" do
+      younger = %Person{first_name: "Alice", last_name: "Smith", age: 20}
+      older = %Person{first_name: "Bob", last_name: "Brown", age: 30}
+
+      result =
+        LessThanOrEqual.validate(older,
+          value: younger,
+          ord: Person.age_ord()
         )
 
       assert Either.left?(result)
@@ -88,7 +171,7 @@ defmodule Funx.Validator.LessThanOrEqualTest do
   end
 
   describe "LessThanOrEqual validator with custom message" do
-    test "uses custom message on failure" do
+    test "uses custom message on ordering failure" do
       result =
         LessThanOrEqual.validate(7,
           value: 5,
@@ -104,6 +187,12 @@ defmodule Funx.Validator.LessThanOrEqualTest do
     test "raises when :value option is missing" do
       assert_raise KeyError, fn ->
         LessThanOrEqual.validate(3, [])
+      end
+    end
+
+    test "raises when called with default arity" do
+      assert_raise KeyError, fn ->
+        LessThanOrEqual.validate(3)
       end
     end
   end
