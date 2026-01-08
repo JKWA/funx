@@ -184,6 +184,7 @@ defmodule Funx.Monad.Either.DslTest do
   # Tests applicative functor semantics for applying wrapped functions
   describe "ap keyword" do
     alias Funx.Monad.Either
+
     test "applies a function in Right to a value in Right" do
       result =
         either Either.right(&(&1 + 1)) do
@@ -982,7 +983,6 @@ defmodule Funx.Monad.Either.DslTest do
   describe "auto-pipe lifting in validate lists" do
     # Helper module with zero-arity validator function
     defmodule ValidatorHelpers do
-
       def positive?(x) do
         if x > 0, do: Either.right(x), else: Either.left("must be positive: #{x}")
       end

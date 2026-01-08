@@ -24,7 +24,6 @@ defmodule Funx.Monad.Maybe.DslTest do
   use Funx.Monad.Either
   alias Funx.Monad.Either
 
-
   alias Funx.Monad.Maybe.Dsl
 
   alias Funx.Monad.Maybe.Dsl.Examples.{
