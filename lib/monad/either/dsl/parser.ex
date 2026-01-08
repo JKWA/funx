@@ -142,9 +142,14 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   # Matches qualified calls like String.pad_leading(3, "0")
   defp ast_lift_call_to_unary({{:., _, [mod_ast, fun_atom]}, _, args_ast}, _caller_env)
        when is_atom(fun_atom) and is_list(args_ast) and args_ast != [] do
-    quote do
-      fn x ->
-        unquote(mod_ast).unquote(fun_atom)(x, unquote_splicing(args_ast))
+    # Skip Either/Maybe constructors even when module-qualified
+    if fun_atom in [:right, :left, :just, :nothing] do
+      nil
+    else
+      quote do
+        fn x ->
+          unquote(mod_ast).unquote(fun_atom)(x, unquote_splicing(args_ast))
+        end
       end
     end
   end

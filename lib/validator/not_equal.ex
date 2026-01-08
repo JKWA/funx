@@ -29,7 +29,7 @@ defmodule Funx.Validator.NotEqual do
   - `Just` values are unwrapped before comparison.
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Eq
   alias Funx.Errors.ValidationError

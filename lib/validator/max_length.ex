@@ -22,7 +22,7 @@ defmodule Funx.Validator.MaxLength do
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["'hello world' is too long"]}}
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

@@ -19,7 +19,7 @@ defmodule Funx.Validator.Pattern do
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["has invalid format"]}}
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

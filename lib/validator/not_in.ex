@@ -44,7 +44,7 @@ defmodule Funx.Validator.NotIn do
     %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.List

@@ -19,7 +19,7 @@ defmodule Funx.Validator.MinLength do
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["must be at least 5 characters"]}}
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

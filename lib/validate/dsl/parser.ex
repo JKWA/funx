@@ -1,4 +1,4 @@
-defmodule Funx.Validation.Dsl.Parser do
+defmodule Funx.Validate.Dsl.Parser do
   @moduledoc false
   # Compile-time parser that converts Validation DSL syntax into Step nodes.
   #
@@ -19,7 +19,7 @@ defmodule Funx.Validation.Dsl.Parser do
   #   - List: [Required, {MinLength, min: 3}, Email]
 
   alias Funx.Optics.Prism
-  alias Funx.Validation.Dsl.Step
+  alias Funx.Validate.Dsl.Step
 
   @doc """
   Parse a DSL block into a list of Step nodes.

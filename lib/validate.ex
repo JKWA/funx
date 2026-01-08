@@ -1,4 +1,4 @@
-defmodule Funx.Validation do
+defmodule Funx.Validate do
   @moduledoc """
   Declarative validation DSL using optics and applicative error accumulation.
 
@@ -12,10 +12,10 @@ defmodule Funx.Validation do
 
   ## Usage
 
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, [Required, {MinLength, min: 3}]
           at :email, [Required, Email]
         end
@@ -25,7 +25,7 @@ defmodule Funx.Validation do
 
   ## Laws
 
-  1. **Identity**: `validation do end` returns `Right(value)`
+  1. **Identity**: `validate do end` returns `Right(value)`
   2. **Structure Preservation**: Successful validation returns original structure
   3. **Applicative**: All validators run; all errors accumulate
 
@@ -36,11 +36,11 @@ defmodule Funx.Validation do
   2. **Executor** - Converts Step nodes into executable validator function
   """
 
-  alias Funx.Validation.Dsl.{Executor, Parser}
+  alias Funx.Validate.Dsl.{Executor, Parser}
 
   defmacro __using__(_opts) do
     quote do
-      import Funx.Validation, only: [validation: 1, validation: 2]
+      import Funx.Validate, only: [validate: 1, validate: 2]
     end
   end
 
@@ -53,14 +53,14 @@ defmodule Funx.Validation do
 
   ### Root Validators
 
-      validation do
+      validate do
         HasContactMethod
         ValidTimezone
       end
 
   ### Field Validation with `at`
 
-      validation do
+      validate do
         at :name, Required
         at :email, Email
       end
@@ -69,7 +69,7 @@ defmodule Funx.Validation do
 
   ### Explicit Optics
 
-      validation do
+      validate do
         # Prism: optional field
         at Prism.key(:email), Email
 
@@ -79,13 +79,13 @@ defmodule Funx.Validation do
 
   ### Validator Options
 
-      validation do
+      validate do
         at :name, {MinLength, min: 3}
       end
 
   ### Multiple Validators per Field
 
-      validation do
+      validate do
         at :name, [Required, {MinLength, min: 3}]
       end
 
@@ -94,13 +94,13 @@ defmodule Funx.Validation do
   ### Validation Modes
 
       # Sequential mode (default): fail-fast, short-circuits on first error
-      validation mode: :sequential do
+      validate mode: :sequential do
         at :name, Required
         at :email, Email
       end
 
       # Parallel mode: runs all validations, accumulates all errors
-      validation mode: :parallel do
+      validate mode: :parallel do
         at :name, Required
         at :email, Email
       end
@@ -108,29 +108,29 @@ defmodule Funx.Validation do
   ### Return Type Options
 
       # Either (default): returns Either.t()
-      validation as: :either do
+      validate as: :either do
         at :name, Required
       end
 
       # Tuple: returns {:ok, value} or {:error, error}
-      validation as: :tuple do
+      validate as: :tuple do
         at :name, Required
       end
 
       # Raise: returns value or raises on error
-      validation as: :raise do
+      validate as: :raise do
         at :name, Required
       end
 
   ## Examples
 
-      validation do
+      validate do
         at :name, Required
         at :email, [Required, Email]
         at :age, Positive
       end
   """
-  defmacro validation(opts \\ [], do: block) do
+  defmacro validate(opts \\ [], do: block) do
     mode = Keyword.get(opts, :mode, :sequential)
     as = Keyword.get(opts, :as, :either)
 

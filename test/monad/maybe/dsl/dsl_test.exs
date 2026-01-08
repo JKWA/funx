@@ -22,6 +22,8 @@ defmodule Funx.Monad.Maybe.DslTest do
 
   use Funx.Monad.Maybe
   use Funx.Monad.Either
+  alias Funx.Monad.Either
+
 
   alias Funx.Monad.Maybe.Dsl
 
@@ -741,8 +743,8 @@ defmodule Funx.Monad.Maybe.DslTest do
         {{:ok, 42}, %Just{value: 84}, "{:ok, value} converted to Just"},
         {{:error, "failed"}, %Nothing{}, "{:error, reason} converted to Nothing"},
         {nil, %Nothing{}, "nil converted to Nothing"},
-        {right(42), %Just{value: 84}, "Either Right converted to Just"},
-        {left("error"), %Nothing{}, "Either Left converted to Nothing"}
+        {Either.right(42), %Just{value: 84}, "Either Right converted to Just"},
+        {Either.left("error"), %Nothing{}, "Either Left converted to Nothing"}
       ]
 
       for {input, expected, description} <- test_cases do

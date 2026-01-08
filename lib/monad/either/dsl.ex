@@ -27,13 +27,15 @@ defmodule Funx.Monad.Either.Dsl do
 
       iex> defmodule GetUser do
       ...>   use Funx.Monad.Either
+      ...>   alias Funx.Monad.Either
       ...>   @behaviour Funx.Monad.Behaviour.Bind
-      ...>   def bind(_value, _opts, _env), do: left("not found")
+      ...>   def bind(_value, _opts, _env), do: Either.left("not found")
       ...> end
       iex> defmodule CheckPermissions do
       ...>   use Funx.Monad.Either
+      ...>   alias Funx.Monad.Either
       ...>   @behaviour Funx.Monad.Behaviour.Bind
-      ...>   def bind(value, _opts, _env), do: right(value)
+      ...>   def bind(value, _opts, _env), do: Either.right(value)
       ...> end
       iex> defmodule FormatUser do
       ...>   @behaviour Funx.Monad.Behaviour.Map
@@ -53,9 +55,9 @@ defmodule Funx.Monad.Either.Dsl do
   Example:
 
       iex> use Funx.Monad.Either
-      iex> positive? = fn x -> if x > 0, do: right(x), else: left("not positive") end
-      iex> even? = fn x -> if rem(x, 2) == 0, do: right(x), else: left("not even") end
-      iex> less_than_100? = fn x -> if x < 100, do: right(x), else: left("too large") end
+      iex> positive? = fn x -> if x > 0, do: Funx.Monad.Either.right(x), else: Funx.Monad.Either.left("not positive") end
+      iex> even? = fn x -> if rem(x, 2) == 0, do: Funx.Monad.Either.right(x), else: Funx.Monad.Either.left("not even") end
+      iex> less_than_100? = fn x -> if x < 100, do: Funx.Monad.Either.right(x), else: Funx.Monad.Either.left("too large") end
       iex> either -5 do
       ...>   validate [positive?, even?, less_than_100?]
       ...> end
@@ -71,11 +73,12 @@ defmodule Funx.Monad.Either.Dsl do
 
       iex> defmodule ParseInt do
       ...>   use Funx.Monad.Either
+      ...>   alias Funx.Monad.Either
       ...>   @behaviour Funx.Monad.Behaviour.Bind
       ...>   def bind(value, _opts, _env) when is_binary(value) do
       ...>     case Integer.parse(value) do
-      ...>       {int, ""} -> right(int)
-      ...>       _ -> left("invalid integer")
+      ...>       {int, ""} -> Either.right(int)
+      ...>       _ -> Either.left("invalid integer")
       ...>     end
       ...>   end
       ...> end

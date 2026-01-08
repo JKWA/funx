@@ -13,7 +13,7 @@ defmodule Funx.Validator.Not do
 
   - `:validator` (required)
     A single validator to negate. This may be:
-    - a validator module implementing `Funx.Validation.Behaviour`
+    - a validator module implementing `Funx.Validate.Behaviour`
     - a `{Validator, opts}` tuple for optioned validators
 
   - `:message` (optional)
@@ -61,7 +61,7 @@ defmodule Funx.Validator.Not do
       }
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad

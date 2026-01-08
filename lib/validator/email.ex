@@ -20,7 +20,7 @@ defmodule Funx.Validator.Email do
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["must be a valid email"]}}
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

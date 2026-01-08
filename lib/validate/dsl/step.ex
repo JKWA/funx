@@ -1,4 +1,4 @@
-defmodule Funx.Validation.Dsl.Step do
+defmodule Funx.Validate.Dsl.Step do
   @moduledoc false
   # Represents a single validation step in the Validation DSL.
   #

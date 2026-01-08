@@ -21,8 +21,8 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...>     base = Keyword.get(opts, :base, 10)
       ...>
       ...>     case Integer.parse(value, base) do
-      ...>       {int, ""} -> right(int)
-      ...>       _ -> left("Invalid integer")
+      ...>       {int, ""} -> Funx.Monad.Either.right(int)
+      ...>       _ -> Funx.Monad.Either.left("Invalid integer")
       ...>     end
       ...>   end
       ...> end
@@ -57,9 +57,9 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...>     min = Keyword.get(opts, :min, 0)
       ...>
       ...>     if value > min do
-      ...>       right(value)
+      ...>       Funx.Monad.Either.right(value)
       ...>     else
-      ...>       left("must be > \#{min}, got: \#{value}")
+      ...>       Funx.Monad.Either.left("must be > \#{min}, got: \#{value}")
       ...>     end
       ...>   end
       ...> end
@@ -78,8 +78,8 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...>   @impl true
       ...>   def bind(value, _opts, _env) when is_binary(value) do
       ...>     case Integer.parse(value) do
-      ...>       {int, ""} -> right(int)
-      ...>       _ -> left("Invalid integer")
+      ...>       {int, ""} -> Funx.Monad.Either.right(int)
+      ...>       _ -> Funx.Monad.Either.left("Invalid integer")
       ...>     end
       ...>   end
       ...> end
@@ -89,7 +89,7 @@ defmodule Funx.Monad.Either.Dsl.Behaviour do
       ...>   @impl true
       ...>   def bind(value, opts, _env) do
       ...>     min = Keyword.get(opts, :min, 0)
-      ...>     if value > min, do: right(value), else: left("too small")
+      ...>     if value > min, do: Funx.Monad.Either.right(value), else: Funx.Monad.Either.left("too small")
       ...>   end
       ...> end
       iex> defmodule DslDouble do

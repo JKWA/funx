@@ -27,7 +27,7 @@ defmodule Funx.Validator.Confirmation do
       }
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Eq
   alias Funx.Errors.ValidationError

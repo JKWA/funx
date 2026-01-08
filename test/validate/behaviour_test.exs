@@ -1,4 +1,4 @@
-defmodule Funx.Validation.BehaviourTest do
+defmodule Funx.Validate.BehaviourTest do
   @moduledoc """
   Tests for the Validation.Behaviour contract.
 
@@ -55,7 +55,7 @@ defmodule Funx.Validation.BehaviourTest do
 
   describe "Validation.Behaviour contract" do
     defmodule WellBehavedValidator do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       @impl true
       def validate(value, opts, env) do
@@ -100,7 +100,7 @@ defmodule Funx.Validation.BehaviourTest do
 
   describe "alternative return patterns" do
     defmodule TaggedTupleValidator do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       # Convenience overload for easier direct usage
       def validate(value, opts) when is_list(opts) do
@@ -135,7 +135,7 @@ defmodule Funx.Validation.BehaviourTest do
 
   describe "validator composition" do
     defmodule ComposableValidator1 do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       # Convenience overload for direct usage
       def validate(value) do
@@ -158,7 +158,7 @@ defmodule Funx.Validation.BehaviourTest do
     end
 
     defmodule ComposableValidator2 do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       # Convenience overload for direct usage
       def validate(value) do
@@ -206,7 +206,7 @@ defmodule Funx.Validation.BehaviourTest do
 
   describe "async-safe validators" do
     defmodule AsyncSafeValidator do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       @impl true
       def validate(value, _opts, env) do
@@ -242,7 +242,7 @@ defmodule Funx.Validation.BehaviourTest do
 
   describe "stateful validators using env" do
     defmodule DatabaseValidator do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       @impl true
       def validate(email, _opts, env) do
@@ -283,7 +283,7 @@ defmodule Funx.Validation.BehaviourTest do
 
   describe "validators with complex error structures" do
     defmodule FieldMappedValidator do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       # Convenience overload for direct usage
       def validate(value) do

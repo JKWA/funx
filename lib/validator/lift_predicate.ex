@@ -3,7 +3,7 @@ defmodule Funx.Validator.LiftPredicate do
   Lifts a predicate into the validation context.
 
   `LiftPredicate` adapts a predicate function into a validator that conforms to
-  `Funx.Validation.Behaviour`. It allows predicate-style logic to participate in
+  `Funx.Validate.Behaviour`. It allows predicate-style logic to participate in
   the validation pipeline, producing `Either` results and `ValidationError`s
   instead of booleans.
 
@@ -48,7 +48,7 @@ defmodule Funx.Validator.LiftPredicate do
       }
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

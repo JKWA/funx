@@ -169,7 +169,7 @@ defmodule Funx.Validator.ExamplesTest do
 
   describe "Custom validator with tagged tuple returns" do
     defmodule CustomValidator do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       # Convenience overload for default opts
       def validate(value) do
@@ -234,7 +234,7 @@ defmodule Funx.Validator.ExamplesTest do
 
   describe "validators with transformation" do
     defmodule TrimAndLowercase do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       # Convenience overload for default opts
       def validate(value) do

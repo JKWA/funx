@@ -25,7 +25,7 @@ defmodule Funx.Validator.Range do
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["must be at most 10"]}}
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

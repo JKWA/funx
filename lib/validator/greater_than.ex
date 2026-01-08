@@ -48,7 +48,7 @@ defmodule Funx.Validator.GreaterThan do
       %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

@@ -18,7 +18,7 @@ defmodule Funx.Validator.Negative do
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["must be negative"]}}
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

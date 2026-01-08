@@ -1,4 +1,4 @@
-defmodule Funx.Validation.Behaviour do
+defmodule Funx.Validate.Behaviour do
   @moduledoc """
   Behaviour for validation functions.
 
@@ -53,7 +53,7 @@ defmodule Funx.Validation.Behaviour do
 
   ```elixir
   defmodule MyValidator do
-    @behaviour Funx.Validation.Behaviour
+    @behaviour Funx.Validate.Behaviour
     alias Funx.Monad.Either
     alias Funx.Errors.ValidationError
 

@@ -46,7 +46,7 @@ defmodule Funx.Validator.Equal do
       %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Eq
   alias Funx.Errors.ValidationError

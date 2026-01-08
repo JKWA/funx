@@ -2,7 +2,7 @@ defmodule Funx.Validator do
   @moduledoc ~S"""
   Built-in validators for common validation scenarios.
 
-  All validators implement the `Funx.Validation.Behaviour` contract and expose
+  All validators implement the `Funx.Validate.Behaviour` contract and expose
   `validate(input, opts, env)`. Convenience arities are provided for direct usage
   and delegate to `validate/3`, allowing validators to compose cleanly with
   `Funx.Monad.Either.validate/2`.

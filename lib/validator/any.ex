@@ -14,7 +14,7 @@ defmodule Funx.Validator.Any do
 
   - `:validators` (required)
     A non-empty list of validators. Each entry may be:
-    - a validator module implementing `Funx.Validation.Behaviour`
+    - a validator module implementing `Funx.Validate.Behaviour`
     - a `{Validator, opts}` tuple for optioned validators
 
   - `:message` (optional)
@@ -57,7 +57,7 @@ defmodule Funx.Validator.Any do
       }
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

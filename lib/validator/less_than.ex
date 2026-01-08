@@ -27,7 +27,7 @@ defmodule Funx.Validator.LessThan do
   - `Just` values are unwrapped before comparison.
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either

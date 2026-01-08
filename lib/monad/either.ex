@@ -91,7 +91,7 @@ defmodule Funx.Monad.Either do
 
   defmacro __using__(_opts) do
     quote do
-      import Funx.Monad.Either
+      # import Funx.Monad.Either
       import Funx.Monad.Either.Dsl
     end
   end

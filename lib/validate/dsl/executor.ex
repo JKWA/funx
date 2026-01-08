@@ -1,4 +1,4 @@
-defmodule Funx.Validation.Dsl.Executor do
+defmodule Funx.Validate.Dsl.Executor do
   @moduledoc false
   # Converts Step nodes into executable validator functions.
   #
@@ -17,7 +17,7 @@ defmodule Funx.Validation.Dsl.Executor do
   alias Funx.Monad.Either.{Left, Right}
   alias Funx.Monad.Maybe.{Just, Nothing}
   alias Funx.Optics.{Lens, Prism, Traversal}
-  alias Funx.Validation.Dsl.Step
+  alias Funx.Validate.Dsl.Step
 
   @doc """
   Execute a list of Step nodes and generate a validator function.

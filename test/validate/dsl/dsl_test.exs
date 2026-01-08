@@ -1,4 +1,4 @@
-defmodule Funx.Validation.DSL.DSLTest do
+defmodule Funx.Validate.DSL.DSLTest do
   @moduledoc """
   Tests for the Validation DSL core semantics.
 
@@ -17,7 +17,7 @@ defmodule Funx.Validation.DSL.DSLTest do
      - No `as :value` or extraction (deferred)
 
   4. **Empty validation is the identity element**
-     - `validation do end` always returns Right(structure)
+     - `validate do end` always returns Right(structure)
      - Law: validate(x, identity) == Right(x)
 
   5. **Applicative error accumulation**
@@ -39,7 +39,7 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   # Custom validator for date range validation (not a built-in)
   defmodule DateRange do
-    @behaviour Funx.Validation.Behaviour
+    @behaviour Funx.Validate.Behaviour
     alias Funx.Monad.Maybe.Nothing
 
     def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
@@ -59,7 +59,7 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "root validators (no `at`)" do
     defmodule HasContactMethod do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
 
@@ -77,7 +77,7 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     defmodule ValidTimezone do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
 
@@ -95,10 +95,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "runs a single root validator against the entire structure" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation =
-        validation do
+        validate do
           HasContactMethod
         end
 
@@ -108,10 +108,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "root validator can fail validation" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation =
-        validation do
+        validate do
           HasContactMethod
         end
 
@@ -122,10 +122,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "multiple root validators run applicatively" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation =
-        validation do
+        validate do
           HasContactMethod
           ValidTimezone
         end
@@ -143,10 +143,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "root validators compose with `at` clauses" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation =
-        validation do
+        validate do
           HasContactMethod
           at :age, Positive
         end
@@ -161,10 +161,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "root validator failures accumulate with projected failures" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation =
-        validation do
+        validate do
           HasContactMethod
           at :age, Positive
         end
@@ -182,12 +182,12 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "root validators preserve identity on success" do
-      use Funx.Validation
+      use Funx.Validate
 
       input = %{email: "alice@example.com", timezone: "UTC"}
 
       validation =
-        validation do
+        validate do
           HasContactMethod
           ValidTimezone
         end
@@ -199,7 +199,7 @@ defmodule Funx.Validation.DSL.DSLTest do
 
     test "root validators receive env" do
       defmodule EnvAware do
-        @behaviour Funx.Validation.Behaviour
+        @behaviour Funx.Validate.Behaviour
 
         def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
 
@@ -213,10 +213,10 @@ defmodule Funx.Validation.DSL.DSLTest do
         end
       end
 
-      use Funx.Validation
+      use Funx.Validate
 
       validation =
-        validation do
+        validate do
           EnvAware
         end
 
@@ -230,7 +230,7 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "top-level predicate validators (lift_predicate)" do
     defmodule HasMinimumFields do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       def validate(data, opts) when is_list(opts), do: validate(data, opts, %{})
 
@@ -245,10 +245,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "passes and returns original structure on success" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation_def =
-        validation do
+        validate do
           HasMinimumFields
         end
 
@@ -261,10 +261,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "fails with contextual error derived from value" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation_def =
-        validation do
+        validate do
           HasMinimumFields
         end
 
@@ -279,7 +279,7 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "top-level Maybe validators (lift_maybe)" do
     defmodule RequiresTimezone do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       def validate(data, opts) when is_list(opts), do: validate(data, opts, %{})
 
@@ -296,10 +296,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "passes when Maybe is Just and returns original structure" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation_def =
-        validation do
+        validate do
           RequiresTimezone
         end
 
@@ -311,10 +311,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "fails with contextual error when Maybe is Nothing" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation_def =
-        validation do
+        validate do
           RequiresTimezone
         end
 
@@ -330,11 +330,11 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "contextual errors accumulate applicatively" do
     test "multiple lifted validators contribute independent contextual errors" do
-      use Funx.Validation
+      use Funx.Validate
       alias __MODULE__.{HasMinimumFields, RequiresTimezone}
 
       validation_def =
-        validation do
+        validate do
           HasMinimumFields
           RequiresTimezone
         end
@@ -352,10 +352,10 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "basic at with Prism (at :key lowers to Prism by default)" do
     test "validates present field successfully" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, Required
         end
 
@@ -365,10 +365,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "fails when required field is missing (Required sees Nothing)" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, Required
         end
 
@@ -380,10 +380,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "validates with validator returning error on empty value" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, Required
         end
 
@@ -393,10 +393,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "validates multiple fields independently" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, Required
           at :email, Required
         end
@@ -407,10 +407,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "accumulates all errors from multiple fields" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, Required
           at :email, Required
         end
@@ -425,10 +425,10 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "explicit Lens (for required structural fields)" do
     test "validates present field successfully" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at Lens.key(:name), Required
         end
 
@@ -438,10 +438,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "raises KeyError when required field is structurally missing" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at Lens.key(:name), Required
         end
 
@@ -454,10 +454,10 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "at with Prism (optional fields)" do
     test "passes validation when optional field is missing (using Positive)" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at Prism.key(:age), Positive
         end
 
@@ -467,10 +467,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "validates when optional field is present and valid" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at Prism.key(:age), Positive
         end
 
@@ -480,10 +480,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "fails when optional field is present but invalid" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at Prism.key(:age), Positive
         end
 
@@ -495,10 +495,10 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "projection applicability (critical semantic)" do
     test "at :key with non-Required validator on missing key" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :age, Positive
         end
 
@@ -509,10 +509,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "at :key with Required fails when key is missing" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :email, [Required, Email]
         end
 
@@ -526,10 +526,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "at :key with Required validates when present" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :email, [Required, Email]
         end
 
@@ -540,10 +540,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "at :key with Required accumulates errors from both validators" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :email, [Required, Email]
         end
 
@@ -559,10 +559,10 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "validator options" do
     test "passes options to validator using tuple syntax" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, {MinLength, min: 3}
         end
 
@@ -572,10 +572,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "fails when validator with options doesn't pass" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, {MinLength, min: 10}
         end
 
@@ -585,10 +585,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "combines multiple validators with options" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, [Required, {MinLength, min: 3}]
         end
 
@@ -598,10 +598,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "accumulates errors from multiple validators" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, [Required, {MinLength, min: 3}]
         end
 
@@ -615,10 +615,10 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "Lens composition (nested paths)" do
     test "validates nested field using Lens.compose" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at Lens.compose([Lens.key(:user), Lens.key(:name)]), Required
         end
 
@@ -628,10 +628,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "fails when nested field is invalid" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at Lens.compose([Lens.key(:user), Lens.key(:name)]), Required
         end
 
@@ -643,11 +643,11 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "projection types" do
     test "atom projections are normalized to Prism by parser" do
-      use Funx.Validation
+      use Funx.Validate
 
       # Atom :email is normalized to Prism.key(:email) by the parser
       user_validation =
-        validation do
+        validate do
           at :email, Required
         end
 
@@ -660,13 +660,13 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "plain function projections are supported" do
-      use Funx.Validation
+      use Funx.Validate
 
       # Plain functions can be used as projections
       email_getter = fn data -> Map.get(data, :email) end
 
       user_validation =
-        validation do
+        validate do
           at email_getter, Required
         end
 
@@ -682,11 +682,11 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "Traversal for relating foci" do
     test "validates relationship between two fields" do
-      use Funx.Validation
+      use Funx.Validate
       alias Funx.Optics.Traversal
 
       booking_validation =
-        validation do
+        validate do
           at Traversal.combine([Lens.key(:start_date), Lens.key(:end_date)]), DateRange
         end
 
@@ -700,11 +700,11 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "fails when relationship validation fails" do
-      use Funx.Validation
+      use Funx.Validate
       alias Funx.Optics.Traversal
 
       booking_validation =
-        validation do
+        validate do
           at Traversal.combine([Lens.key(:start_date), Lens.key(:end_date)]), DateRange
         end
 
@@ -721,7 +721,7 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "environment passing" do
     defmodule UniqueEmail do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
       alias Funx.Monad.Maybe.Nothing
 
       def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
@@ -742,10 +742,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "passes environment to validators" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :email, UniqueEmail
         end
 
@@ -757,10 +757,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "validator can fail based on environment" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :email, UniqueEmail
         end
 
@@ -774,7 +774,7 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "tagged tuple return pattern" do
     defmodule LegacyValidator do
-      @behaviour Funx.Validation.Behaviour
+      @behaviour Funx.Validate.Behaviour
 
       def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
 
@@ -789,10 +789,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "normalizes :ok return" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation_def =
-        validation do
+        validate do
           at :score, LegacyValidator
         end
 
@@ -802,10 +802,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "normalizes {:error, ValidationError.t()} return" do
-      use Funx.Validation
+      use Funx.Validate
 
       validation_def =
-        validation do
+        validate do
           at :score, LegacyValidator
         end
 
@@ -817,10 +817,10 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "complex validation scenarios" do
     test "validates multiple fields with multiple validators each" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, [Required, {MinLength, min: 3}]
           at :email, [Required, Email]
           at :age, Positive
@@ -836,10 +836,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "accumulates all errors from complex validation" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, [Required, {MinLength, min: 3}]
           at :email, [Required, Email]
           at :age, Positive
@@ -855,10 +855,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "mixes Lens and Prism projections" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, Required
           at Prism.key(:age), Positive
         end
@@ -872,10 +872,10 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "return value semantics" do
     test "returns original structure by default (identity on success)" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, Required
         end
 
@@ -888,12 +888,12 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "identity validation (empty validation)" do
     test "empty validation is identity (returns Right with original structure)" do
-      use Funx.Validation
+      use Funx.Validate
 
       # Empty validation is the identity element for validation composition
       # It always succeeds and returns the structure unchanged
       empty_validation =
-        validation do
+        validate do
         end
 
       result = Either.validate(%{name: "Alice", age: 30}, empty_validation)
@@ -902,10 +902,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "empty validation succeeds on empty structure" do
-      use Funx.Validation
+      use Funx.Validate
 
       empty_validation =
-        validation do
+        validate do
         end
 
       result = Either.validate(%{}, empty_validation)
@@ -916,11 +916,11 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "parallel mode validation" do
     test "root validators run in parallel mode" do
-      use Funx.Validation
+      use Funx.Validate
       alias __MODULE__.{HasContactMethod, ValidTimezone}
 
       validation_def =
-        validation mode: :parallel do
+        validate mode: :parallel do
           HasContactMethod
           ValidTimezone
         end
@@ -934,10 +934,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "validates all fields in parallel and accumulates errors" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation mode: :parallel do
+        validate mode: :parallel do
           at :name, [Required, {MinLength, min: 3}]
           at :email, [Required, Email]
           at :age, Positive
@@ -954,10 +954,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "parallel mode succeeds when all validations pass" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation mode: :parallel do
+        validate mode: :parallel do
           at :name, [Required, {MinLength, min: 3}]
           at :email, [Required, Email]
           at :age, Positive
@@ -973,12 +973,12 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "parallel mode returns original structure on success" do
-      use Funx.Validation
+      use Funx.Validate
 
       input = %{name: "Alice", email: "alice@example.com", age: 30, extra: "field"}
 
       user_validation =
-        validation mode: :parallel do
+        validate mode: :parallel do
           at :name, Required
           at :email, Email
         end
@@ -991,8 +991,8 @@ defmodule Funx.Validation.DSL.DSLTest do
 
   describe "executor default parameter" do
     test "execute_steps/1 defaults to sequential mode" do
-      alias Funx.Validation.Dsl.Executor
-      alias Funx.Validation.Dsl.Step
+      alias Funx.Validate.Dsl.Executor
+      alias Funx.Validate.Dsl.Step
 
       # Create a simple step
       steps = [%Step{optic: nil, validators: [Required]}]
@@ -1020,10 +1020,10 @@ defmodule Funx.Validation.DSL.DSLTest do
                    fn ->
                      Code.eval_quoted(
                        quote do
-                         require Funx.Validation
-                         import Funx.Validation
+                         require Funx.Validate
+                         import Funx.Validate
 
-                         validation as: :invalid_type do
+                         validate as: :invalid_type do
                            at :name, Required
                          end
                        end,
@@ -1034,10 +1034,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "default is :either" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation do
+        validate do
           at :name, Required
         end
 
@@ -1047,10 +1047,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "as: :either (explicit)" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation as: :either do
+        validate as: :either do
           at :name, Required
         end
 
@@ -1060,10 +1060,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "as: :tuple - success case" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation as: :tuple do
+        validate as: :tuple do
           at :name, Required
           at :email, Email
         end
@@ -1074,10 +1074,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "as: :tuple - failure case" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation as: :tuple do
+        validate as: :tuple do
           at :name, Required
           at :email, Email
         end
@@ -1090,10 +1090,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "as: :raise - success case" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation as: :raise do
+        validate as: :raise do
           at :name, Required
         end
 
@@ -1103,10 +1103,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "as: :raise - failure case" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation as: :raise do
+        validate as: :raise do
           at :name, Required
         end
 
@@ -1116,10 +1116,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "as: :tuple works with parallel mode" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation mode: :parallel, as: :tuple do
+        validate mode: :parallel, as: :tuple do
           at :name, Required
           at :email, Email
         end
@@ -1134,10 +1134,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     end
 
     test "as: :raise works with parallel mode" do
-      use Funx.Validation
+      use Funx.Validate
 
       user_validation =
-        validation mode: :parallel, as: :raise do
+        validate mode: :parallel, as: :raise do
           at :name, Required
         end
 

@@ -62,7 +62,7 @@ defmodule Funx.Validator.In do
       }
   """
 
-  @behaviour Funx.Validation.Behaviour
+  @behaviour Funx.Validate.Behaviour
 
   alias Funx.Errors.ValidationError
   alias Funx.List
