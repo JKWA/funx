@@ -1,6 +1,7 @@
 defmodule Funx.Validator.AllEqualTest do
   use ExUnit.Case, async: true
 
+  doctest Funx.Validator
   doctest Funx.Validator.AllEqual
 
   alias Funx.Monad.Either

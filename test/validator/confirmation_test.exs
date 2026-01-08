@@ -4,107 +4,163 @@ defmodule Funx.Validator.ConfirmationTest do
   doctest Funx.Validator.Confirmation
 
   alias Funx.Monad.Either
-  alias Funx.Monad.Either.Right
+  alias Funx.Monad.Maybe.{Just, Nothing}
   alias Funx.Validator.Confirmation
 
-  describe "Confirmation validator" do
-    test "passes when value matches confirmation field" do
-      data = %{password: "secret123", password_confirmation: "secret123"}
+  defp case_insensitive_eq do
+    %{
+      eq?: fn a, b when is_binary(a) and is_binary(b) ->
+        String.downcase(a) == String.downcase(b)
+      end,
+      not_eq?: fn a, b when is_binary(a) and is_binary(b) ->
+        String.downcase(a) != String.downcase(b)
+      end
+    }
+  end
 
-      assert Confirmation.validate("secret123", field: :password_confirmation, data: data) ==
-               %Right{right: "secret123"}
+  describe "Confirmation validator with matching values" do
+    test "passes when value matches referenced field" do
+      data = %{password: "secret", password_confirmation: "secret"}
+
+      assert Confirmation.validate(
+               "secret",
+               field: :password,
+               data: data
+             ) == Either.right("secret")
     end
 
-    test "fails when value doesn't match confirmation" do
-      data = %{password: "secret123", password_confirmation: "different"}
+    test "passes for identical non-string values" do
+      data = %{count: 5, count_confirmation: 5}
+
+      assert Confirmation.validate(
+               5,
+               field: :count,
+               data: data
+             ) == Either.right(5)
+    end
+  end
+
+  describe "Confirmation validator with non-matching values" do
+    test "fails when value does not match referenced field" do
+      data = %{password: "secret", password_confirmation: "wrong"}
 
       result =
-        Confirmation.validate("secret123", field: :password_confirmation, data: data)
-
-      assert Either.left?(result)
-    end
-
-    test "requires :field option" do
-      assert_raise KeyError, fn ->
-        Confirmation.validate("secret", data: %{})
-      end
-    end
-
-    test "requires :data option" do
-      assert_raise KeyError, fn ->
-        Confirmation.validate("secret", field: :password_confirmation)
-      end
-    end
-
-    test "raises when called with single argument (default opts)" do
-      assert_raise KeyError, fn ->
-        Confirmation.validate("secret")
-      end
-    end
-
-    test "supports custom message callback" do
-      data = %{password: "secret123", password_confirmation: "different"}
-
-      result =
-        Confirmation.validate("secret123",
-          field: :password_confirmation,
-          data: data,
-          message: fn _ -> "passwords do not match" end
+        Confirmation.validate(
+          "wrong",
+          field: :password,
+          data: data
         )
 
       assert Either.left?(result)
     end
   end
 
-  describe "Confirmation validator with Maybe types" do
-    alias Funx.Monad.Maybe.{Just, Nothing}
+  describe "Confirmation validator with custom Eq" do
+    test "passes using case-insensitive equality" do
+      data = %{password: "hello", password_confirmation: "HELLO"}
 
-    test "passes for Nothing (optional field without value)" do
-      data = %{password: "secret"}
-
-      assert Confirmation.validate(%Nothing{}, field: :password, data: data) ==
-               %Right{right: %Nothing{}}
+      assert Confirmation.validate(
+               "HELLO",
+               field: :password,
+               data: data,
+               eq: case_insensitive_eq()
+             ) == Either.right("HELLO")
     end
 
-    test "passes for Just containing matching value" do
-      data = %{password: "secret123", password_confirmation: "secret123"}
-
-      assert Confirmation.validate(%Just{value: "secret123"},
-               field: :password_confirmation,
-               data: data
-             ) == %Right{right: "secret123"}
-    end
-
-    test "fails for Just containing non-matching value" do
-      data = %{password: "secret123", password_confirmation: "different"}
+    test "fails when values differ under custom Eq" do
+      data = %{password: "hello", password_confirmation: "world"}
 
       result =
-        Confirmation.validate(%Just{value: "different"}, field: :password, data: data)
+        Confirmation.validate(
+          "world",
+          field: :password,
+          data: data,
+          eq: case_insensitive_eq()
+        )
 
       assert Either.left?(result)
     end
+  end
 
-    test "works with custom message on Just values" do
-      data = %{password: "secret123", password_confirmation: "different"}
+  describe "Confirmation validator with custom message" do
+    test "uses custom message on failure" do
+      data = %{password: "secret", password_confirmation: "wrong"}
 
       result =
-        Confirmation.validate(%Just{value: "different"},
+        Confirmation.validate(
+          "wrong",
           field: :password,
           data: data,
-          message: fn _ -> "passwords do not match" end
+          message: fn _ -> "does not match password" end
+        )
+
+      assert %Either.Left{left: %{errors: ["does not match password"]}} = result
+    end
+  end
+
+  describe "Confirmation validator with Maybe values" do
+    test "passes for Nothing" do
+      data = %{password: "secret"}
+
+      assert Confirmation.validate(
+               %Nothing{},
+               field: :password,
+               data: data
+             ) == Either.right(%Nothing{})
+    end
+
+    test "passes for Just when values match" do
+      data = %{password: 5}
+
+      assert Confirmation.validate(
+               %Just{value: 5},
+               field: :password,
+               data: data
+             ) == Either.right(5)
+    end
+
+    test "fails for Just when values differ" do
+      data = %{password: 5}
+
+      result =
+        Confirmation.validate(
+          %Just{value: 6},
+          field: :password,
+          data: data
         )
 
       assert Either.left?(result)
     end
 
-    test "Nothing passes regardless of custom message" do
-      data = %{password: "secret"}
+    test "works with custom Eq on Just values" do
+      data = %{password: "hello"}
 
-      assert Confirmation.validate(%Nothing{},
+      assert Confirmation.validate(
+               %Just{value: "HELLO"},
                field: :password,
                data: data,
-               message: fn _ -> "should not see this" end
-             ) == %Right{right: %Nothing{}}
+               eq: case_insensitive_eq()
+             ) == Either.right("HELLO")
+    end
+  end
+
+  describe "Confirmation validator argument validation" do
+    test "raises when :field option is missing" do
+      assert_raise KeyError, fn ->
+        Confirmation.validate("secret", data: %{})
+      end
+    end
+
+    test "raises when :data option is missing" do
+      assert_raise KeyError, fn ->
+        Confirmation.validate("secret", field: :password)
+      end
+    end
+
+    test "raises when called with default arity" do
+      assert_raise KeyError, fn ->
+        Confirmation.validate("secret")
+      end
     end
   end
 end
