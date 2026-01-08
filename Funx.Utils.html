@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.6.0">
+    <meta name="project" content="funx v0.6.1">
 
 
-    <title>Funx.Utils — funx v0.6.0</title>
+    <title>Funx.Utils — funx v0.6.1</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Utils.html" />
 
-    <script defer src="dist/sidebar_items-DFF5F66D.js"></script>
+    <script defer src="dist/sidebar_items-4A58368C.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.6.0
+          v0.6.1
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Utils</span> 
-      <small class="app-vsn" translate="no">(funx v0.6.0)</small>
+      <small class="app-vsn" translate="no">(funx v0.6.1)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.6.0/lib/utils.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/utils.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -201,7 +201,7 @@ applying arguments from right to left.</p></div>
       <h1 class="signature" translate="no">curry(fun)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.0/lib/utils.ex#L26" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/utils.ex#L26" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -217,10 +217,10 @@ applying arguments from right to left.</p></div>
       </div>
 
 <p>Transforms a function of arity <code class="inline">n</code> into a curried version,
-allowing it to be applied one argument at a time.</p><h2 id="curry/1-example" class="section-heading"><a href="#curry/1-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5530899719-1">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="5530899719-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">curried_add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">FunPark.Utils</span><span class="o">.</span><span class="n">curry</span><span class="p" data-group-id="5530899719-2">(</span><span class="n">add</span><span class="p" data-group-id="5530899719-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">add_three</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curried_add</span><span class="o">.</span><span class="p" data-group-id="5530899719-3">(</span><span class="mi">3</span><span class="p" data-group-id="5530899719-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">add_three</span><span class="o">.</span><span class="p" data-group-id="5530899719-4">(</span><span class="mi">2</span><span class="p" data-group-id="5530899719-4">)</span><span class="w">
+allowing it to be applied one argument at a time.</p><h2 id="curry/1-example" class="section-heading"><a href="#curry/1-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0961307960-1">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="0961307960-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">curried_add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">FunPark.Utils</span><span class="o">.</span><span class="n">curry</span><span class="p" data-group-id="0961307960-2">(</span><span class="n">add</span><span class="p" data-group-id="0961307960-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">add_three</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curried_add</span><span class="o">.</span><span class="p" data-group-id="0961307960-3">(</span><span class="mi">3</span><span class="p" data-group-id="0961307960-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">add_three</span><span class="o">.</span><span class="p" data-group-id="0961307960-4">(</span><span class="mi">2</span><span class="p" data-group-id="0961307960-4">)</span><span class="w">
 </span><span class="mi">5</span></code></pre>
   </section>
 </section>
@@ -234,7 +234,7 @@ allowing it to be applied one argument at a time.</p><h2 id="curry/1-example" cl
       <h1 class="signature" translate="no">curry_l(fun)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.0/lib/utils.ex#L51" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/utils.ex#L51" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -249,10 +249,10 @@ allowing it to be applied one argument at a time.</p><h2 id="curry/1-example" cl
 
       </div>
 
-<p>Alias for <a href="#curry/1"><code class="inline">curry/1</code></a>, explicitly denoting left-to-right argument application.</p><h2 id="curry_l/1-example" class="section-heading"><a href="#curry_l/1-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">subtract</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="7402537843-1">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="7402537843-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">curried_subtract</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">FunPark.Utils</span><span class="o">.</span><span class="n">curry_l</span><span class="p" data-group-id="7402537843-2">(</span><span class="n">subtract</span><span class="p" data-group-id="7402537843-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">subtract_five</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curried_subtract</span><span class="o">.</span><span class="p" data-group-id="7402537843-3">(</span><span class="mi">5</span><span class="p" data-group-id="7402537843-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">subtract_five</span><span class="o">.</span><span class="p" data-group-id="7402537843-4">(</span><span class="mi">3</span><span class="p" data-group-id="7402537843-4">)</span><span class="w">
+<p>Alias for <a href="#curry/1"><code class="inline">curry/1</code></a>, explicitly denoting left-to-right argument application.</p><h2 id="curry_l/1-example" class="section-heading"><a href="#curry_l/1-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">subtract</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="1283891057-1">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="1283891057-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">curried_subtract</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">FunPark.Utils</span><span class="o">.</span><span class="n">curry_l</span><span class="p" data-group-id="1283891057-2">(</span><span class="n">subtract</span><span class="p" data-group-id="1283891057-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">subtract_five</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curried_subtract</span><span class="o">.</span><span class="p" data-group-id="1283891057-3">(</span><span class="mi">5</span><span class="p" data-group-id="1283891057-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">subtract_five</span><span class="o">.</span><span class="p" data-group-id="1283891057-4">(</span><span class="mi">3</span><span class="p" data-group-id="1283891057-4">)</span><span class="w">
 </span><span class="mi">2</span></code></pre>
   </section>
 </section>
@@ -266,7 +266,7 @@ allowing it to be applied one argument at a time.</p><h2 id="curry/1-example" cl
       <h1 class="signature" translate="no">curry_r(fun)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.0/lib/utils.ex#L66" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/utils.ex#L66" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -282,10 +282,10 @@ allowing it to be applied one argument at a time.</p><h2 id="curry/1-example" cl
       </div>
 
 <p>Transforms a function of arity <code class="inline">n</code> into a right-curried version,
-applying arguments from right to left.</p><h2 id="curry_r/1-example" class="section-heading"><a href="#curry_r/1-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">divide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="5054252372-1">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="5054252372-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">curried_divide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">FunPark.Utils</span><span class="o">.</span><span class="n">curry_r</span><span class="p" data-group-id="5054252372-2">(</span><span class="n">divide</span><span class="p" data-group-id="5054252372-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">divide_by_two</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curried_divide</span><span class="o">.</span><span class="p" data-group-id="5054252372-3">(</span><span class="mi">2</span><span class="p" data-group-id="5054252372-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">divide_by_two</span><span class="o">.</span><span class="p" data-group-id="5054252372-4">(</span><span class="mi">10</span><span class="p" data-group-id="5054252372-4">)</span><span class="w">
+applying arguments from right to left.</p><h2 id="curry_r/1-example" class="section-heading"><a href="#curry_r/1-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">divide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4104177789-1">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="4104177789-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">curried_divide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">FunPark.Utils</span><span class="o">.</span><span class="n">curry_r</span><span class="p" data-group-id="4104177789-2">(</span><span class="n">divide</span><span class="p" data-group-id="4104177789-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">divide_by_two</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curried_divide</span><span class="o">.</span><span class="p" data-group-id="4104177789-3">(</span><span class="mi">2</span><span class="p" data-group-id="4104177789-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">divide_by_two</span><span class="o">.</span><span class="p" data-group-id="4104177789-4">(</span><span class="mi">10</span><span class="p" data-group-id="4104177789-4">)</span><span class="w">
 </span><span class="mf">5.0</span></code></pre>
   </section>
 </section>
@@ -299,7 +299,7 @@ applying arguments from right to left.</p><h2 id="curry_r/1-example" class="sect
       <h1 class="signature" translate="no">flip(fun)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.0/lib/utils.ex#L93" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/utils.ex#L93" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -315,9 +315,9 @@ applying arguments from right to left.</p><h2 id="curry_r/1-example" class="sect
       </div>
 
 <p>Reverses the argument order of a two-argument function.</p><p>The <a href="#flip/1"><code class="inline">flip/1</code></a> function takes a function of arity 2 and returns a new function
-where the first and second arguments are swapped.</p><h2 id="flip/1-examples" class="section-heading"><a href="#flip/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">divide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4416415197-1">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="4416415197-1">end</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">flipped_divide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Utils</span><span class="o">.</span><span class="n">flip</span><span class="p" data-group-id="4416415197-2">(</span><span class="n">divide</span><span class="p" data-group-id="4416415197-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">flipped_divide</span><span class="o">.</span><span class="p" data-group-id="4416415197-3">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4416415197-3">)</span><span class="w">
+where the first and second arguments are swapped.</p><h2 id="flip/1-examples" class="section-heading"><a href="#flip/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">divide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="0659496941-1">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k" data-group-id="0659496941-1">end</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">flipped_divide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Utils</span><span class="o">.</span><span class="n">flip</span><span class="p" data-group-id="0659496941-2">(</span><span class="n">divide</span><span class="p" data-group-id="0659496941-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">flipped_divide</span><span class="o">.</span><span class="p" data-group-id="0659496941-3">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="0659496941-3">)</span><span class="w">
 </span><span class="mf">5.0</span></code></pre>
   </section>
 </section>
@@ -333,7 +333,7 @@ where the first and second arguments are swapped.</p><h2 id="flip/1-examples" cl
       <h1 class="signature" translate="no">summarize_string(value, max_len \\ 50)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.0/lib/utils.ex#L98" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/utils.ex#L98" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -354,9 +354,9 @@ where the first and second arguments are swapped.</p><h2 id="flip/1-examples" cl
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.6.0" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.6.1" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.6.0">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.6.1">Hex Preview</a>
 
             </span>
 
