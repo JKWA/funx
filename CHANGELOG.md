@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.1] - Unreleased
+
+### Added
+
+* `Funx.Predicate.DSL` – A declarative DSL for building boolean predicates with support for logical operators (`all`/`any`/`negate`), projections via optics or functions (`check`), and reusable validation modules.
+
 ## [0.6.0] - Unreleased
 
 ### Breaking Changes
