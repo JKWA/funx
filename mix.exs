@@ -7,7 +7,7 @@ defmodule Funx.MixProject do
     [
       app: :funx,
       version: @version,
-      elixir: "~> 1.16 or ~> 1.17",
+      elixir: "~> 1.16 or ~> 1.17 or ~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       consolidate_protocols: Mix.env() != :test,
