@@ -31,32 +31,38 @@ defmodule Funx.Validator.Range do
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
 
-  @impl true
-  def validate(value, opts \\ [])
+  # Convenience overload for default opts (raises on missing required options)
+  def validate(value) do
+    validate(value, [])
+  end
 
-  # Skip Nothing values (optional fields without value)
-  def validate(%Nothing{}, _opts) do
+  # Convenience overload for easier direct usage
+  def validate(value, opts) when is_list(opts) do
+    validate(value, opts, %{})
+  end
+
+  # Behaviour implementation (arity-3)
+  @impl true
+  def validate(value, opts, env)
+
+  def validate(%Nothing{}, _opts, _env) do
     Either.right(%Nothing{})
   end
 
-  # Handle Just(number) - extract and validate
-  def validate(%Just{value: number}, opts) when is_number(number) do
+  def validate(%Just{value: number}, opts, _env) when is_number(number) do
     validate_number(number, opts)
   end
 
-  # Handle Just(non-number) - type error
-  def validate(%Just{value: value}, opts) do
+  def validate(%Just{value: value}, opts, _env) do
     message = build_message(opts, value, "must be a number")
     Either.left(ValidationError.new(message))
   end
 
-  # Handle plain numbers (backward compatibility)
-  def validate(value, opts) when is_number(value) do
+  def validate(value, opts, _env) when is_number(value) do
     validate_number(value, opts)
   end
 
-  # Handle non-number, non-Maybe values
-  def validate(value, opts) do
+  def validate(value, opts, _env) do
     message = build_message(opts, value, "must be a number")
     Either.left(ValidationError.new(message))
   end

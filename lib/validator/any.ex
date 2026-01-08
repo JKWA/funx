@@ -62,8 +62,19 @@ defmodule Funx.Validator.Any do
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either
 
+  # Convenience overload for default opts (raises on missing required options)
+  def validate(value) do
+    validate(value, [])
+  end
+
+  # Convenience overload for easier direct usage
+  def validate(value, opts) when is_list(opts) do
+    validate(value, opts, %{})
+  end
+
+  # Behaviour implementation (arity-3)
   @impl true
-  def validate(value, opts \\ []) do
+  def validate(value, opts, env) do
     validators = Keyword.get(opts, :validators)
 
     if is_nil(validators) do
@@ -72,18 +83,18 @@ defmodule Funx.Validator.Any do
 
     validators
     |> Either.traverse(fn validation ->
-      run(validation, value) |> Either.flip()
+      run(validation, value, env) |> Either.flip()
     end)
     |> Either.flip()
     |> finalize(opts)
   end
 
-  defp run({validator, opts}, value) do
-    validator.validate(value, opts)
+  defp run({validator, opts}, value, env) do
+    validator.validate(value, opts, env)
   end
 
-  defp run(validator, value) do
-    validator.validate(value, [])
+  defp run(validator, value, env) do
+    validator.validate(value, [], env)
   end
 
   defp finalize(%Either.Right{} = ok, _opts), do: ok

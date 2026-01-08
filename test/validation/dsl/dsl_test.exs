@@ -42,11 +42,13 @@ defmodule Funx.Validation.DSL.DSLTest do
     @behaviour Funx.Validation.Behaviour
     alias Funx.Monad.Maybe.Nothing
 
-    @impl true
-    def validate(value, opts \\ [])
-    def validate(%Nothing{} = value, _opts), do: Either.right(value)
+    def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
 
-    def validate([start_date, end_date], _opts) do
+    @impl true
+    def validate(value, opts, env)
+    def validate(%Nothing{} = value, _opts, _env), do: Either.right(value)
+
+    def validate([start_date, end_date], _opts, _env) do
       if Date.compare(start_date, end_date) == :lt do
         Either.right([start_date, end_date])
       else
@@ -59,32 +61,36 @@ defmodule Funx.Validation.DSL.DSLTest do
     defmodule HasContactMethod do
       @behaviour Funx.Validation.Behaviour
 
+      def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
+
       @impl true
-      def validate(value, opts \\ [])
+      def validate(value, opts, env)
 
-      def validate(%{email: email} = value, _opts) when is_binary(email),
+      def validate(%{email: email} = value, _opts, _env) when is_binary(email),
         do: Either.right(value)
 
-      def validate(%{phone: phone} = value, _opts) when is_binary(phone),
+      def validate(%{phone: phone} = value, _opts, _env) when is_binary(phone),
         do: Either.right(value)
 
-      def validate(_, _opts),
+      def validate(_, _opts, _env),
         do: Either.left(ValidationError.new("must have a contact method"))
     end
 
     defmodule ValidTimezone do
       @behaviour Funx.Validation.Behaviour
 
-      @impl true
-      def validate(value, opts \\ [])
+      def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
 
-      def validate(%{timezone: tz} = value, _opts) when tz in ["UTC", "PST", "EST"],
+      @impl true
+      def validate(value, opts, env)
+
+      def validate(%{timezone: tz} = value, _opts, _env) when tz in ["UTC", "PST", "EST"],
         do: Either.right(value)
 
-      def validate(%{timezone: _}, _opts),
+      def validate(%{timezone: _}, _opts, _env),
         do: Either.left(ValidationError.new("invalid timezone"))
 
-      def validate(value, _opts),
+      def validate(value, _opts, _env),
         do: Either.right(value)
     end
 
@@ -195,10 +201,10 @@ defmodule Funx.Validation.DSL.DSLTest do
       defmodule EnvAware do
         @behaviour Funx.Validation.Behaviour
 
-        @impl true
-        def validate(value, opts \\ []) do
-          env = Keyword.get(opts, :env, %{})
+        def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
 
+        @impl true
+        def validate(value, _opts, env) do
           if env[:ok?] do
             Either.right(value)
           else
@@ -226,8 +232,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     defmodule HasMinimumFields do
       @behaviour Funx.Validation.Behaviour
 
+      def validate(data, opts) when is_list(opts), do: validate(data, opts, %{})
+
       @impl true
-      def validate(data, _opts \\ []) do
+      def validate(data, _opts, _env) do
         Either.lift_predicate(
           data,
           fn d -> map_size(d) >= 2 end,
@@ -273,8 +281,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     defmodule RequiresTimezone do
       @behaviour Funx.Validation.Behaviour
 
+      def validate(data, opts) when is_list(opts), do: validate(data, opts, %{})
+
       @impl true
-      def validate(data, _opts \\ []) do
+      def validate(data, _opts, _env) do
         case Map.get(data, :timezone) do
           nil ->
             Either.left(ValidationError.new("timezone missing for user #{inspect(data)}"))
@@ -714,12 +724,13 @@ defmodule Funx.Validation.DSL.DSLTest do
       @behaviour Funx.Validation.Behaviour
       alias Funx.Monad.Maybe.Nothing
 
-      @impl true
-      def validate(value, opts \\ [])
-      def validate(%Nothing{} = value, _opts), do: Either.right(value)
+      def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
 
-      def validate(email, opts) do
-        env = Keyword.get(opts, :env, %{})
+      @impl true
+      def validate(value, opts, env)
+      def validate(%Nothing{} = value, _opts, _env), do: Either.right(value)
+
+      def validate(email, _opts, env) do
         existing_emails = Map.get(env, :existing_emails, [])
 
         if email in existing_emails do
@@ -765,8 +776,10 @@ defmodule Funx.Validation.DSL.DSLTest do
     defmodule LegacyValidator do
       @behaviour Funx.Validation.Behaviour
 
+      def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
+
       @impl true
-      def validate(value, _opts \\ []) do
+      def validate(value, _opts, _env) do
         if value > 0 do
           :ok
         else

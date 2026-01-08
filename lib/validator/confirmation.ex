@@ -30,21 +30,29 @@ defmodule Funx.Validator.Confirmation do
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
 
-  @impl true
-  def validate(value, opts \\ [])
+  # Convenience overload for default opts (raises on missing required options)
+  def validate(value) do
+    validate(value, [])
+  end
 
-  # Skip Nothing values (optional fields without value)
-  def validate(%Nothing{}, _opts) do
+  # Convenience overload for easier direct usage
+  def validate(value, opts) when is_list(opts) do
+    validate(value, opts, %{})
+  end
+
+  # Behaviour implementation (arity-3)
+  @impl true
+  def validate(value, opts, env)
+
+  def validate(%Nothing{}, _opts, _env) do
     Either.right(%Nothing{})
   end
 
-  # Handle Just(value) - extract and validate
-  def validate(%Just{value: inner_value}, opts) do
+  def validate(%Just{value: inner_value}, opts, _env) do
     validate_value(inner_value, opts)
   end
 
-  # Handle plain values (backward compatibility)
-  def validate(value, opts) do
+  def validate(value, opts, _env) do
     validate_value(value, opts)
   end
 

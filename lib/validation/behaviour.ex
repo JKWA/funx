@@ -2,7 +2,7 @@ defmodule Funx.Validation.Behaviour do
   @moduledoc """
   Behaviour for validation functions.
 
-  Validators are pure functions that check a value and return either success or failure.
+  All validators follow a consistent arity-3 signature, matching other DSL behaviours in Funx.
 
   ## Contract
 
@@ -18,7 +18,7 @@ defmodule Funx.Validation.Behaviour do
 
   - `value` - The value to validate (may be transformed by previous validators)
   - `opts` - Keyword list of options (validator-specific configuration)
-  - `env` - Map of environmental context (database connections, existing records, etc.)
+  - `env` - Environment map (runtime context like database connections, session data)
 
   ## Return Values
 
@@ -34,13 +34,11 @@ defmodule Funx.Validation.Behaviour do
   ## Semantic Rules
 
   1. **Arguments strictly ordered**: value, opts, env
-  2. **env always passed** (even if empty map)
-  3. **Either is canonical** (tagged tuples normalized by DSL)
-  4. **Value transformation allowed** (sequential within focus)
-  5. **Referentially transparent** w.r.t. env
-  6. **Never raise for validation failure** (use Left/error tuple)
-  7. **Return ValidationError** for errors (not raw strings)
-  8. **Concurrency-safe** by contract
+  2. **Either is canonical** (tagged tuples normalized by DSL)
+  3. **Value transformation allowed** (sequential within focus)
+  4. **Never raise for validation failure** (use Left/error tuple)
+  5. **Return ValidationError** for errors (not raw strings)
+  6. **Concurrency-safe** by contract
 
   ## Message Option
 
@@ -83,7 +81,7 @@ defmodule Funx.Validation.Behaviour do
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either
 
-  @callback validate(value :: any(), opts :: keyword()) ::
+  @callback validate(value :: any(), opts :: keyword(), env :: map()) ::
               Either.t(any(), ValidationError.t())
               | :ok
               | {:ok, any()}

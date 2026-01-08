@@ -102,8 +102,13 @@ defmodule Funx.Validation.BehaviourTest do
     defmodule TaggedTupleValidator do
       @behaviour Funx.Validation.Behaviour
 
+      # Convenience overload for easier direct usage
+      def validate(value, opts) when is_list(opts) do
+        validate(value, opts, %{})
+      end
+
       @impl true
-      def validate(value, opts \\ []) do
+      def validate(value, opts, _env) do
         mode = Keyword.get(opts, :mode, :ok)
 
         case mode do
@@ -132,8 +137,18 @@ defmodule Funx.Validation.BehaviourTest do
     defmodule ComposableValidator1 do
       @behaviour Funx.Validation.Behaviour
 
+      # Convenience overload for direct usage
+      def validate(value) do
+        validate(value, [])
+      end
+
+      # Convenience overload for easier direct usage
+      def validate(value, opts) when is_list(opts) do
+        validate(value, opts, %{})
+      end
+
       @impl true
-      def validate(value, _opts \\ []) do
+      def validate(value, _opts, _env) do
         if String.length(value) >= 3 do
           Either.right(value)
         else
@@ -145,8 +160,18 @@ defmodule Funx.Validation.BehaviourTest do
     defmodule ComposableValidator2 do
       @behaviour Funx.Validation.Behaviour
 
+      # Convenience overload for direct usage
+      def validate(value) do
+        validate(value, [])
+      end
+
+      # Convenience overload for easier direct usage
+      def validate(value, opts) when is_list(opts) do
+        validate(value, opts, %{})
+      end
+
       @impl true
-      def validate(value, _opts \\ []) do
+      def validate(value, _opts, _env) do
         if String.contains?(value, "@") do
           Either.right(value)
         else
@@ -260,8 +285,18 @@ defmodule Funx.Validation.BehaviourTest do
     defmodule FieldMappedValidator do
       @behaviour Funx.Validation.Behaviour
 
+      # Convenience overload for direct usage
+      def validate(value) do
+        validate(value, [])
+      end
+
+      # Convenience overload for easier direct usage
+      def validate(value, opts) when is_list(opts) do
+        validate(value, opts, %{})
+      end
+
       @impl true
-      def validate(value, _opts \\ []) do
+      def validate(value, _opts, _env) do
         errors =
           []
           |> then(fn errs ->

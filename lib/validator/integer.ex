@@ -8,10 +8,10 @@ defmodule Funx.Validator.Integer do
 
   ## Examples
 
-      iex> Funx.Validator.Integer.validate(5, [])
+      iex> Funx.Validator.Integer.validate(5)
       %Funx.Monad.Either.Right{right: 5}
 
-      iex> Funx.Validator.Integer.validate(5.5, [])
+      iex> Funx.Validator.Integer.validate(5.5)
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["must be an integer"]}}
   """
 
@@ -21,21 +21,28 @@ defmodule Funx.Validator.Integer do
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
 
-  @impl true
-  def validate(value, opts \\ [])
+  # Convenience overloads for easier direct usage
+  def validate(value) do
+    validate(value, [], %{})
+  end
 
-  # Skip Nothing values (optional fields without value)
-  def validate(%Nothing{}, _opts) do
+  def validate(value, opts) when is_list(opts) do
+    validate(value, opts, %{})
+  end
+
+  # Behaviour implementation (arity-3)
+  @impl true
+  def validate(value, opts, env)
+
+  def validate(%Nothing{}, _opts, _env) do
     Either.right(%Nothing{})
   end
 
-  # Handle Just(value) - extract and validate
-  def validate(%Just{value: inner_value}, opts) do
+  def validate(%Just{value: inner_value}, opts, _env) do
     validate_value(inner_value, opts)
   end
 
-  # Handle plain values (backward compatibility)
-  def validate(value, opts) do
+  def validate(value, opts, _env) do
     validate_value(value, opts)
   end
 

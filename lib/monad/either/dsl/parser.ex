@@ -249,9 +249,14 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   end
 
   # Generates AST for module with options
+  # All validators are arity-3: validate(value, opts, env)
   defp ast_module_with_opts_to_function(module_alias, opts_ast, _user_env, true) do
     quote do
-      fn value -> unquote(module_alias).validate(value, unquote(opts_ast)) end
+      fn value, runtime_opts, env ->
+        # Merge compile-time validator opts with runtime opts (runtime takes precedence)
+        merged_opts = Keyword.merge(unquote(opts_ast), runtime_opts)
+        unquote(module_alias).validate(value, merged_opts, env)
+      end
     end
   end
 
@@ -262,9 +267,12 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   end
 
   # Generates AST for bare module
+  # All validators are arity-3: validate(value, opts, env)
   defp ast_bare_module_to_function(module_alias, _user_env, true) do
     quote do
-      fn value -> unquote(module_alias).validate(value, []) end
+      fn value, runtime_opts, env ->
+        unquote(module_alias).validate(value, runtime_opts, env)
+      end
     end
   end
 

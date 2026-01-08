@@ -1,14 +1,11 @@
 defmodule Funx.Validation.Behaviour.WithEnv do
   @moduledoc """
-  Behaviour for validators that need access to environmental context.
+  Alias for `Funx.Validation.Behaviour`.
 
-  Use this behaviour when your validator needs to access external state like:
-  - Database connections
-  - Existing records (for uniqueness checks)
-  - Runtime configuration
-  - Session data
+  As of the arity-3 standardization, all validators accept env as the third parameter,
+  so this module is now equivalent to `Funx.Validation.Behaviour`.
 
-  For simple validators that don't need external context, use `Funx.Validation.Behaviour`.
+  Kept for backwards compatibility. New code should use `Funx.Validation.Behaviour` directly.
 
   ## Contract
 

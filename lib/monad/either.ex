@@ -619,12 +619,21 @@ defmodule Funx.Monad.Either do
   ```
   """
 
-  @spec validate(value, [(value -> t(error, any))]) :: t([error], value)
-        when error: term(), value: term()
+  @spec validate(
+          value,
+          validator
+          | [validator]
+        ) :: t([error], value)
+        when error: term(),
+             value: term(),
+             validator:
+               (value -> t(error, any()))
+               | (value, keyword() -> t(error, any()))
+               | (value, keyword(), map() -> t(error, any()))
 
   def validate(value, validators) when is_list(validators) do
-    traverse_a(validators, fn validator -> validator.(value) end)
-    |> map(fn _ -> value end)
+    # Call validators with empty opts and env
+    validate(value, validators, [])
   end
 
   def validate(value, validator) when is_function(validator, 1) do
@@ -635,24 +644,43 @@ defmodule Funx.Monad.Either do
     validate(value, validator, [])
   end
 
-  @doc """
-  Validates a value using validators that accept options.
+  def validate(value, validator) when is_function(validator, 3) do
+    validate(value, validator, [])
+  end
 
-  Supports validators with arity 2: `(value, opts) -> Either.t()`.
+  @doc """
+  Validates a value using validators that accept options and environment.
+
+  Supports validators with arity 3: `(value, opts, env) -> Either.t()`.
+  Also supports arity 1 and 2 for backwards compatibility.
 
   ## Examples
 
       Either.validate(%{name: "Alice"}, validator, env: %{db: conn})
   """
   @spec validate(value, validator | [validator], keyword()) :: t([error], value)
-        when error: term(), value: term(), validator: (value, keyword() -> t(error, any()))
+        when error: term(),
+             value: term(),
+             validator:
+               (value -> t(error, any()))
+               | (value, keyword() -> t(error, any()))
+               | (value, keyword(), map() -> t(error, any()))
 
   def validate(value, validators, opts) when is_list(validators) and is_list(opts) do
-    traverse_a(validators, fn validator -> validator.(value, opts) end)
+    env = Keyword.get(opts, :env, %{})
+
+    traverse_a(validators, fn validator ->
+      cond do
+        is_function(validator, 3) -> validator.(value, opts, env)
+        is_function(validator, 2) -> validator.(value, opts)
+        is_function(validator, 1) -> validator.(value)
+        true -> raise ArgumentError, "Validator must be a function with arity 1, 2, or 3"
+      end
+    end)
     |> map(fn _ -> value end)
   end
 
-  def validate(value, validator, opts) when is_function(validator, 2) and is_list(opts) do
+  def validate(value, validator, opts) when is_function(validator) and is_list(opts) do
     validate(value, [validator], opts)
   end
 

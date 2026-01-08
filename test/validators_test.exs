@@ -171,8 +171,18 @@ defmodule Funx.Validator.ExamplesTest do
     defmodule CustomValidator do
       @behaviour Funx.Validation.Behaviour
 
+      # Convenience overload for default opts
+      def validate(value) do
+        validate(value, [])
+      end
+
+      # Convenience overload for easier direct usage
+      def validate(value, opts) when is_list(opts) do
+        validate(value, opts, %{})
+      end
+
       @impl true
-      def validate(value, opts \\ []) do
+      def validate(value, opts, _env) do
         mode = Keyword.get(opts, :mode, :either)
 
         case mode do
@@ -226,8 +236,18 @@ defmodule Funx.Validator.ExamplesTest do
     defmodule TrimAndLowercase do
       @behaviour Funx.Validation.Behaviour
 
+      # Convenience overload for default opts
+      def validate(value) do
+        validate(value, [])
+      end
+
+      # Convenience overload for easier direct usage
+      def validate(value, opts) when is_list(opts) do
+        validate(value, opts, %{})
+      end
+
       @impl true
-      def validate(value, _opts \\ []) when is_binary(value) do
+      def validate(value, _opts, _env) when is_binary(value) do
         transformed = value |> String.trim() |> String.downcase()
         Either.right(transformed)
       end

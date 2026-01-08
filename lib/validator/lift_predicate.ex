@@ -54,18 +54,29 @@ defmodule Funx.Validator.LiftPredicate do
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
 
-  @impl true
-  def validate(value, opts \\ [])
+  # Convenience overload for default opts (raises on missing required options)
+  def validate(value) do
+    validate(value, [])
+  end
 
-  def validate(%Nothing{}, _opts) do
+  # Convenience overload for easier direct usage
+  def validate(value, opts) when is_list(opts) do
+    validate(value, opts, %{})
+  end
+
+  # Behaviour implementation (arity-3)
+  @impl true
+  def validate(value, opts, env)
+
+  def validate(%Nothing{}, _opts, _env) do
     Either.right(%Nothing{})
   end
 
-  def validate(%Just{value: value}, opts) do
+  def validate(%Just{value: value}, opts, _env) do
     validate_number(value, opts)
   end
 
-  def validate(value, opts) do
+  def validate(value, opts, _env) do
     validate_number(value, opts)
   end
 

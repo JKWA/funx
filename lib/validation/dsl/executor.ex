@@ -200,13 +200,17 @@ defmodule Funx.Validation.Dsl.Executor do
 
   # Compile a single validator call
   # Handles: Module, {Module, opts}
+  # All validators are arity-3: validate(value, opts, env)
   defp compile_validator_call({validator_module, validator_opts}) when is_list(validator_opts) do
     quote do
       fn value, runtime_opts ->
         # Merge validator-specific opts with runtime opts
         # Runtime opts (like env) take precedence
         merged_opts = Keyword.merge(unquote(validator_opts), runtime_opts)
-        result = unquote(validator_module).validate(value, merged_opts)
+        env = Keyword.get(merged_opts, :env, %{})
+
+        # All validators are arity-3: validate(value, opts, env)
+        result = unquote(validator_module).validate(value, merged_opts, env)
 
         # Normalize validator return values to Either
         case result do
@@ -222,7 +226,10 @@ defmodule Funx.Validation.Dsl.Executor do
   defp compile_validator_call(validator_module) do
     quote do
       fn value, opts ->
-        result = unquote(validator_module).validate(value, opts)
+        env = Keyword.get(opts, :env, %{})
+
+        # All validators are arity-3: validate(value, opts, env)
+        result = unquote(validator_module).validate(value, opts, env)
 
         # Normalize validator return values to Either
         case result do

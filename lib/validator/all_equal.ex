@@ -59,34 +59,39 @@ defmodule Funx.Validator.AllEqual do
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
 
-  @impl true
-  def validate(value, opts \\ [])
+  # Convenience overloads for easier direct usage
+  def validate(value) do
+    validate(value, [], %{})
+  end
 
-  # Skip Nothing values (optional fields without value)
-  def validate(%Nothing{}, _opts) do
+  def validate(value, opts) when is_list(opts) do
+    validate(value, opts, %{})
+  end
+
+  # Behaviour implementation (arity-3)
+  @impl true
+  def validate(value, opts, env)
+
+  def validate(%Nothing{}, _opts, _env) do
     Either.right(%Nothing{})
   end
 
-  # Handle Just(list) - extract and validate the list
-  def validate(%Just{value: list}, opts) when is_list(list) do
+  def validate(%Just{value: list}, opts, _env) when is_list(list) do
     eq = Keyword.get(opts, :eq, Funx.Eq.Protocol)
     validate_list(list, opts, eq)
   end
 
-  # Handle Just(non-list) - type error
-  def validate(%Just{value: value}, opts) do
+  def validate(%Just{value: value}, opts, _env) do
     message = build_message(opts, value, "must be a list")
     Either.left(ValidationError.new(message))
   end
 
-  # Handle plain lists (backward compatibility)
-  def validate(value, opts) when is_list(value) do
+  def validate(value, opts, _env) when is_list(value) do
     eq = Keyword.get(opts, :eq, Funx.Eq.Protocol)
     validate_list(value, opts, eq)
   end
 
-  # Handle non-list, non-Maybe values
-  def validate(value, opts) do
+  def validate(value, opts, _env) do
     message = build_message(opts, value, "must be a list")
     Either.left(ValidationError.new(message))
   end

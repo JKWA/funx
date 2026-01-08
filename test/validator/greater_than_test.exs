@@ -107,4 +107,12 @@ defmodule Funx.Validator.GreaterThanTest do
       end
     end
   end
+
+  describe "GreaterThan validator default arity" do
+    test "raises when called without options" do
+      assert_raise KeyError, fn ->
+        GreaterThan.validate(10)
+      end
+    end
+  end
 end

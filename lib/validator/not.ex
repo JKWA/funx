@@ -67,10 +67,16 @@ defmodule Funx.Validator.Not do
   alias Funx.Monad
   alias Funx.Monad.Either
 
+  # Convenience overload for easier direct usage
+  def validate(value, opts) when is_list(opts) do
+    validate(value, opts, %{})
+  end
+
+  # Behaviour implementation (arity-3)
   @impl true
-  def validate(value, opts) do
+  def validate(value, opts, env) do
     validator = Keyword.fetch!(opts, :validator)
-    result = run(validator, value)
+    result = run(validator, value, env)
 
     case result do
       %Either.Right{right: %Monad.Maybe.Nothing{}} ->
@@ -85,12 +91,12 @@ defmodule Funx.Validator.Not do
     end
   end
 
-  defp run({validator, opts}, value) do
-    validator.validate(value, opts)
+  defp run({validator, opts}, value, env) do
+    validator.validate(value, opts, env)
   end
 
-  defp run(validator, value) do
-    validator.validate(value, [])
+  defp run(validator, value, env) do
+    validator.validate(value, [], env)
   end
 
   defp finalize(%Either.Right{} = ok, _opts), do: ok

@@ -94,10 +94,12 @@ defmodule Funx.Monad.Either.Dsl.Executor do
   defp execute_step(
          either_value,
          %Step.BindableFunction{function: func_name, args: args},
-         _user_env
+         user_env
        ) do
     Funx.Monad.bind(either_value, fn value ->
-      apply(Either, func_name, [value | args])
+      # Always pass user_env as opts (even if empty)
+      # All validators are now arity-3 and expect env
+      apply(Either, func_name, [value | args] ++ [user_env])
     end)
   end
 

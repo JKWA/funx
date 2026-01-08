@@ -26,13 +26,13 @@ defmodule Funx.Validator.Required do
 
   ## Examples
 
-      iex> Funx.Validator.Required.validate("hello", [])
+      iex> Funx.Validator.Required.validate("hello")
       %Funx.Monad.Either.Right{right: "hello"}
 
-      iex> Funx.Validator.Required.validate(nil, [])
+      iex> Funx.Validator.Required.validate(nil)
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["is required"]}}
 
-      iex> Funx.Validator.Required.validate(0, [])
+      iex> Funx.Validator.Required.validate(0)
       %Funx.Monad.Either.Right{right: 0}
   """
 
@@ -42,15 +42,25 @@ defmodule Funx.Validator.Required do
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.Nothing
 
-  @impl true
-  def validate(value, opts \\ [])
+  # Convenience overloads for easier direct usage
+  def validate(value) do
+    validate(value, [], %{})
+  end
 
-  def validate(%Nothing{}, opts) do
+  def validate(value, opts) when is_list(opts) do
+    validate(value, opts, %{})
+  end
+
+  # Behaviour implementation (arity-3)
+  @impl true
+  def validate(value, opts, env)
+
+  def validate(%Nothing{}, opts, _env) do
     message = build_message(opts, nil, "is required")
     Either.left(ValidationError.new(message))
   end
 
-  def validate(value, opts) do
+  def validate(value, opts, _env) do
     Either.lift_predicate(
       value,
       fn v -> not is_nil(v) and v != "" end,
