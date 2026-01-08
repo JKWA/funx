@@ -55,7 +55,7 @@ defmodule Funx.Validation.BehaviourTest do
 
   describe "Validation.Behaviour contract" do
     defmodule WellBehavedValidator do
-      @behaviour Funx.Validation.Behaviour.WithEnv
+      @behaviour Funx.Validation.Behaviour
 
       @impl true
       def validate(value, opts, env) do
@@ -206,7 +206,7 @@ defmodule Funx.Validation.BehaviourTest do
 
   describe "async-safe validators" do
     defmodule AsyncSafeValidator do
-      @behaviour Funx.Validation.Behaviour.WithEnv
+      @behaviour Funx.Validation.Behaviour
 
       @impl true
       def validate(value, _opts, env) do
@@ -242,7 +242,7 @@ defmodule Funx.Validation.BehaviourTest do
 
   describe "stateful validators using env" do
     defmodule DatabaseValidator do
-      @behaviour Funx.Validation.Behaviour.WithEnv
+      @behaviour Funx.Validation.Behaviour
 
       @impl true
       def validate(email, _opts, env) do
