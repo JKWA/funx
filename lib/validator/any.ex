@@ -8,7 +8,7 @@ defmodule Funx.Validator.Any do
   with a single aggregated `ValidationError`.
 
   This validator is useful for expressing alternatives such as:
-  “value must satisfy rule A or rule B”.
+  "value must satisfy rule A or rule B".
 
   Options
 
@@ -16,6 +16,8 @@ defmodule Funx.Validator.Any do
     A non-empty list of validators. Each entry may be:
     - a validator module implementing `Funx.Validate.Behaviour`
     - a `{Validator, opts}` tuple for optioned validators
+    - a validator function with arity 1, 2, or 3 (e.g., result of `validate do...end`)
+    - a `{validator_function, opts}` tuple for optioned function validators
 
   - `:message` (optional)
     A zero-arity callback `(() -> String.t())` used to override the default error
@@ -89,12 +91,28 @@ defmodule Funx.Validator.Any do
     |> finalize(opts)
   end
 
+  # Run validator with options
   defp run({validator, opts}, value, env) do
-    validator.validate(value, opts, env)
+    cond do
+      # Function validator with options
+      is_function(validator, 3) -> validator.(value, opts, env)
+      is_function(validator, 2) -> validator.(value, opts)
+      is_function(validator, 1) -> validator.(value)
+      # Module validator with options
+      true -> validator.validate(value, opts, env)
+    end
   end
 
+  # Run validator without options
   defp run(validator, value, env) do
-    validator.validate(value, [], env)
+    cond do
+      # Function validator without options
+      is_function(validator, 3) -> validator.(value, [], env)
+      is_function(validator, 2) -> validator.(value, [])
+      is_function(validator, 1) -> validator.(value)
+      # Module validator without options
+      true -> validator.validate(value, [], env)
+    end
   end
 
   defp finalize(%Either.Right{} = ok, _opts), do: ok
