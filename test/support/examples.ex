@@ -256,12 +256,13 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     @moduledoc """
     Wraps an error message with a prefix, used with map_left.
 
-    Demonstrates map_left with module.
+    Demonstrates map_left with module using Map behavior.
+    Note: env is not used since error transformations are pure.
     """
-    @behaviour Funx.Monad.Either.Dsl.Behaviour
+    @behaviour Funx.Monad.Behaviour.Map
 
     @impl true
-    def run(error, opts, _env) do
+    def map(error, opts, _env) do
       prefix = Keyword.get(opts, :prefix, "Error")
       "#{prefix}: #{error}"
     end
@@ -271,34 +272,34 @@ defmodule Funx.Monad.Either.Dsl.Examples do
     @moduledoc """
     Predicate that checks if a number is positive.
 
-    Demonstrates filter_or_else with module predicate.
+    Demonstrates filter_or_else with module predicate using Predicate behavior.
     """
-    @behaviour Funx.Monad.Either.Dsl.Behaviour
+    @behaviour Funx.Monad.Behaviour.Predicate
 
     @impl true
-    def run(value, _opts, _env) when is_number(value) do
+    def predicate(value, _opts, _env) when is_number(value) do
       value > 0
     end
 
-    def run(_value, _opts, _env), do: false
+    def predicate(_value, _opts, _env), do: false
   end
 
   defmodule InRange do
     @moduledoc """
     Predicate that checks if a value is within a range.
 
-    Demonstrates filter_or_else with module predicate and options.
+    Demonstrates filter_or_else with module predicate and options using Predicate behavior.
     """
-    @behaviour Funx.Monad.Either.Dsl.Behaviour
+    @behaviour Funx.Monad.Behaviour.Predicate
 
     @impl true
-    def run(value, opts, _env) when is_number(value) do
+    def predicate(value, opts, _env) when is_number(value) do
       min = Keyword.get(opts, :min, 0)
       max = Keyword.get(opts, :max, 100)
       value >= min and value <= max
     end
 
-    def run(_value, _opts, _env), do: false
+    def predicate(_value, _opts, _env), do: false
   end
 
   defmodule Adder do

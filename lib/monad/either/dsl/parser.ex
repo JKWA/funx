@@ -74,27 +74,7 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   end
 
   defp parse_either_function_to_step(func_name, args, meta, user_env, caller_env) do
-    # Lift function calls and transform modules in arguments
-    # validate uses validate/2, tap uses bind/3, others use run/3
-    use_validate? = func_name == :validate
-    use_bind? = func_name == :tap
-
-    transformed_args =
-      Enum.map(args, fn arg ->
-        lifted = ast_lift_call_to_unary(arg, caller_env) || arg
-
-        cond do
-          use_validate? ->
-            ast_transform_modules_to_functions(lifted, user_env, caller_env, true)
-
-          use_bind? ->
-            ast_transform_module_to_bind(lifted, user_env, caller_env)
-
-          true ->
-            ast_transform_modules_to_functions(lifted, user_env, caller_env, false)
-        end
-      end)
-
+    transformed_args = transform_function_args(func_name, args, user_env, caller_env)
     metadata = extract_meta(meta)
 
     cond do
@@ -115,6 +95,53 @@ defmodule Funx.Monad.Either.Dsl.Parser do
       true ->
         raise_invalid_function_error(func_name)
     end
+  end
+
+  # Transform arguments based on the function type
+  # validate uses validate/3, tap uses bind/3, map_left uses map/3, filter_or_else uses predicate/3, others use run/3
+  defp transform_function_args(func_name, args, user_env, caller_env) do
+    # filter_or_else has a predicate as first arg and error function as second arg
+    # Only transform the predicate (first arg), leave error function as-is
+    if func_name == :filter_or_else do
+      case args do
+        [predicate_arg | rest] ->
+          lifted = ast_lift_call_to_unary(predicate_arg, caller_env) || predicate_arg
+
+          transformed_predicate =
+            transform_arg_for_function(:filter_or_else, lifted, user_env, caller_env)
+
+          [transformed_predicate | rest]
+
+        [] ->
+          []
+      end
+    else
+      Enum.map(args, fn arg ->
+        lifted = ast_lift_call_to_unary(arg, caller_env) || arg
+        transform_arg_for_function(func_name, lifted, user_env, caller_env)
+      end)
+    end
+  end
+
+  defp transform_arg_for_function(:validate, arg, user_env, caller_env) do
+    ast_transform_modules_to_functions(arg, user_env, caller_env)
+  end
+
+  defp transform_arg_for_function(:tap, arg, user_env, caller_env) do
+    ast_transform_module_to_bind(arg, user_env, caller_env)
+  end
+
+  defp transform_arg_for_function(:map_left, arg, _user_env, caller_env) do
+    ast_transform_module_to_map(arg, caller_env)
+  end
+
+  defp transform_arg_for_function(:filter_or_else, arg, user_env, caller_env) do
+    ast_transform_module_to_predicate(arg, user_env, caller_env)
+  end
+
+  # Default case: pass through as-is (for functions like or_else that don't accept modules)
+  defp transform_arg_for_function(_func_name, arg, _user_env, _caller_env) do
+    arg
   end
 
   # Parses operation arguments: {Module, opts} or Module -> {Module, opts}
@@ -188,20 +215,21 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   # Non-liftable expressions return nil
   defp ast_lift_call_to_unary(_other, _caller_env), do: nil
 
-  # Transform modules in validator lists and arguments
-  defp ast_transform_modules_to_functions(arg, user_env, caller_env, use_validate?) do
+  # Transform modules in validator lists and arguments (for validate function only)
+  # All validators use validate/3 behavior
+  defp ast_transform_modules_to_functions(arg, user_env, caller_env) do
     case arg do
       # Transform list of validators
       items when is_list(items) ->
-        Enum.map(items, &ast_transform_list_item(&1, user_env, caller_env, use_validate?))
+        Enum.map(items, &ast_transform_list_item(&1, user_env, caller_env))
 
       # Transform {Module, opts} tuple syntax to function calls
       {{:__aliases__, _, _} = module_alias, opts_ast} when is_list(opts_ast) ->
-        ast_module_with_opts_to_function(module_alias, opts_ast, user_env, use_validate?)
+        ast_module_with_opts_to_function(module_alias, opts_ast)
 
       # Transform bare module syntax to function calls
       {:__aliases__, _, _} = module_alias ->
-        ast_bare_module_to_function(module_alias, user_env, use_validate?)
+        ast_bare_module_to_function(module_alias)
 
       other ->
         other
@@ -253,9 +281,54 @@ defmodule Funx.Monad.Either.Dsl.Parser do
     end
   end
 
+  # Transform modules to call map/3 (for map_left operations)
+  # Note: map_left is a pure transformation, so we pass empty env
+  defp ast_transform_module_to_map(arg, _caller_env) do
+    case arg do
+      # Module with options: {Module, opts}
+      {{:__aliases__, _, _} = module_alias, opts_ast} when is_list(opts_ast) ->
+        quote do
+          fn error -> unquote(module_alias).map(error, unquote(opts_ast), %{}) end
+        end
+
+      # Bare module: Module
+      {:__aliases__, _, _} = module_alias ->
+        quote do
+          fn error -> unquote(module_alias).map(error, [], %{}) end
+        end
+
+      # Not a module - return as-is (function, etc.)
+      other ->
+        other
+    end
+  end
+
+  # Transform modules to call predicate/3 (for filter_or_else operations)
+  defp ast_transform_module_to_predicate(arg, user_env, _caller_env) do
+    case arg do
+      # Module with options: {Module, opts}
+      {{:__aliases__, _, _} = module_alias, opts_ast} when is_list(opts_ast) ->
+        quote do
+          fn value ->
+            unquote(module_alias).predicate(value, unquote(opts_ast), unquote(user_env))
+          end
+        end
+
+      # Bare module: Module
+      {:__aliases__, _, _} = module_alias ->
+        quote do
+          fn value -> unquote(module_alias).predicate(value, [], unquote(user_env)) end
+        end
+
+      # Not a module - return as-is (function, etc.)
+      other ->
+        other
+    end
+  end
+
   # Generates AST for module with options
   # All validators are arity-3: validate(value, opts, env)
-  defp ast_module_with_opts_to_function(module_alias, opts_ast, _user_env, true) do
+  defp ast_module_with_opts_to_function(module_alias, opts_ast) do
     quote do
       fn value, runtime_opts, env ->
         # Merge compile-time validator opts with runtime opts (runtime takes precedence)
@@ -265,15 +338,9 @@ defmodule Funx.Monad.Either.Dsl.Parser do
     end
   end
 
-  defp ast_module_with_opts_to_function(module_alias, opts_ast, user_env, false) do
-    quote do
-      fn value -> unquote(module_alias).run(value, unquote(opts_ast), unquote(user_env)) end
-    end
-  end
-
   # Generates AST for bare module
   # All validators are arity-3: validate(value, opts, env)
-  defp ast_bare_module_to_function(module_alias, _user_env, true) do
+  defp ast_bare_module_to_function(module_alias) do
     quote do
       fn value, runtime_opts, env ->
         unquote(module_alias).validate(value, runtime_opts, env)
@@ -281,35 +348,27 @@ defmodule Funx.Monad.Either.Dsl.Parser do
     end
   end
 
-  defp ast_bare_module_to_function(module_alias, user_env, false) do
-    quote do
-      fn value -> unquote(module_alias).run(value, [], unquote(user_env)) end
-    end
-  end
-
   # Transforms {Module, opts} tuple syntax to function calls
   defp ast_transform_list_item(
          {{:__aliases__, _, _} = module_alias, opts_ast},
-         user_env,
-         _caller_env,
-         use_validate?
+         _user_env,
+         _caller_env
        )
        when is_list(opts_ast) do
-    ast_module_with_opts_to_function(module_alias, opts_ast, user_env, use_validate?)
+    ast_module_with_opts_to_function(module_alias, opts_ast)
   end
 
   # Transforms bare module syntax to function calls
   defp ast_transform_list_item(
          {:__aliases__, _, _} = module_alias,
-         user_env,
-         _caller_env,
-         use_validate?
+         _user_env,
+         _caller_env
        ) do
-    ast_bare_module_to_function(module_alias, user_env, use_validate?)
+    ast_bare_module_to_function(module_alias)
   end
 
   # Try to lift function calls, or validate that it's a valid validator
-  defp ast_transform_list_item(other, _user_env, caller_env, _use_validate?) do
+  defp ast_transform_list_item(other, _user_env, caller_env) do
     # First validate - reject literals before attempting to lift
     validate_list_item!(other)
 

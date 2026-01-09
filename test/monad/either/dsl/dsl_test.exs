@@ -468,6 +468,16 @@ defmodule Funx.Monad.Either.DslTest do
       assert result == %Either.Right{right: 50}
     end
 
+    test "validate with bare module (not in list)" do
+      result =
+        either "50" do
+          bind ParseInt
+          validate Positive
+        end
+
+      assert result == %Either.Right{right: 50}
+    end
+
     test "validate options are isolated per validator" do
       result =
         either "5" do
@@ -887,6 +897,16 @@ defmodule Funx.Monad.Either.DslTest do
         end
 
       assert result == %Either.Right{right: 42}
+    end
+
+    test "filter_or_else with no arguments raises UndefinedFunctionError" do
+      assert_raise UndefinedFunctionError,
+                   ~r/function Funx.Monad.Either.filter_or_else\/1 is undefined/,
+                   fn ->
+                     either 5 do
+                       filter_or_else()
+                     end
+                   end
     end
   end
 
