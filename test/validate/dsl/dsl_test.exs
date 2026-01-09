@@ -1149,4 +1149,276 @@ defmodule Funx.Validate.DSL.DSLTest do
       end
     end
   end
+
+  describe "composable validators" do
+    test "can use validator functions in at statements" do
+      use Funx.Validate
+
+      item_val =
+        validate do
+          at :name, Required
+          at :price, [Required, Positive]
+        end
+
+      transaction_val =
+        validate do
+          at :item, item_val
+        end
+
+      # Success case
+      result =
+        Either.validate(
+          %{item: %{name: "Widget", price: 10}},
+          transaction_val
+        )
+
+      assert result == %Right{right: %{item: %{name: "Widget", price: 10}}}
+
+      # Failure case - missing name
+      result =
+        Either.validate(
+          %{item: %{name: "", price: 10}},
+          transaction_val
+        )
+
+      assert %Left{left: %ValidationError{}} = result
+
+      # Failure case - negative price
+      result =
+        Either.validate(
+          %{item: %{name: "Widget", price: -5}},
+          transaction_val
+        )
+
+      assert %Left{left: %ValidationError{}} = result
+    end
+
+    test "composable validators work with lists of validators" do
+      use Funx.Validate
+
+      email_val =
+        validate do
+          at :email, [Required, Email]
+        end
+
+      user_val =
+        validate do
+          at :name, Required
+          email_val
+        end
+
+      # Success case
+      result =
+        Either.validate(
+          %{name: "Alice", email: "alice@example.com"},
+          user_val
+        )
+
+      assert result == %Right{right: %{name: "Alice", email: "alice@example.com"}}
+
+      # Failure case
+      result =
+        Either.validate(
+          %{name: "Alice", email: "bad-email"},
+          user_val
+        )
+
+      assert %Left{left: %ValidationError{}} = result
+    end
+
+    test "multiple levels of composition" do
+      use Funx.Validate
+
+      name_val =
+        validate do
+          at :name, [Required, {MinLength, min: 3}]
+        end
+
+      contact_val =
+        validate do
+          name_val
+          at :email, [Required, Email]
+        end
+
+      user_val =
+        validate do
+          contact_val
+          at :age, Positive
+        end
+
+      # Success case
+      result =
+        Either.validate(
+          %{name: "Alice", email: "alice@example.com", age: 30},
+          user_val
+        )
+
+      assert result ==
+               %Right{right: %{name: "Alice", email: "alice@example.com", age: 30}}
+
+      # Failure case - name too short
+      result =
+        Either.validate(
+          %{name: "Al", email: "alice@example.com", age: 30},
+          user_val
+        )
+
+      assert %Left{left: %ValidationError{}} = result
+    end
+
+    test "composable validators work in parallel mode" do
+      use Funx.Validate
+
+      item_val =
+        validate mode: :parallel do
+          at :name, Required
+          at :price, Positive
+        end
+
+      transaction_val =
+        validate mode: :parallel do
+          at :item, item_val
+          at :quantity, Positive
+        end
+
+      # Failure case - accumulates errors from nested validator
+      result =
+        Either.validate(
+          %{item: %{name: "", price: -5}, quantity: 0},
+          transaction_val
+        )
+
+      assert %Left{left: %ValidationError{errors: errors}} = result
+      assert length(errors) >= 2
+    end
+
+    test "composable validators with function syntax {validator, opts}" do
+      use Funx.Validate
+
+      item_val =
+        validate do
+          at :name, Required
+          at :price, Positive
+        end
+
+      # Should be able to use {validator, opts} syntax with function validators
+      # This tests that function validators work in tuple form
+      transaction_val =
+        validate do
+          at :item, {item_val, []}
+        end
+
+      result =
+        Either.validate(
+          %{item: %{name: "Widget", price: 10}},
+          transaction_val
+        )
+
+      assert result == %Right{right: %{item: %{name: "Widget", price: 10}}}
+    end
+
+    test "arity-3 function validator receives env from opts" do
+      use Funx.Validate
+
+      # Create an arity-3 validator that uses the env parameter
+      arity_3_validator = fn value, _opts, env ->
+        max = Map.get(env, :max_value, 100)
+
+        if value > max do
+          Either.left(ValidationError.new("value exceeds max from env"))
+        else
+          Either.right(value)
+        end
+      end
+
+      validation =
+        validate do
+          at :price, arity_3_validator
+        end
+
+      # Success case with default env
+      result = Either.validate(%{price: 50}, validation)
+      assert result == %Right{right: %{price: 50}}
+
+      # Failure case with custom env
+      result = Either.validate(%{price: 150}, validation, env: %{max_value: 100})
+      assert %Left{left: %ValidationError{}} = result
+
+      # Success case with higher max in env
+      result = Either.validate(%{price: 150}, validation, env: %{max_value: 200})
+      assert result == %Right{right: %{price: 150}}
+    end
+
+    test "arity-2 function validator receives opts" do
+      use Funx.Validate
+
+      # Create an arity-2 validator that uses opts
+      arity_2_validator = fn value, opts ->
+        min = Keyword.get(opts, :min, 0)
+
+        if value < min do
+          Either.left(ValidationError.new("value below minimum"))
+        else
+          Either.right(value)
+        end
+      end
+
+      validation =
+        validate do
+          at :price, {arity_2_validator, min: 10}
+        end
+
+      # Success case
+      result = Either.validate(%{price: 20}, validation)
+      assert result == %Right{right: %{price: 20}}
+
+      # Failure case
+      result = Either.validate(%{price: 5}, validation)
+      assert %Left{left: %ValidationError{}} = result
+    end
+
+    test "arity-1 function validator receives only value" do
+      use Funx.Validate
+
+      # Create an arity-1 validator
+      arity_1_validator = fn value ->
+        if value > 0 do
+          Either.right(value)
+        else
+          Either.left(ValidationError.new("must be positive"))
+        end
+      end
+
+      validation =
+        validate do
+          at :price, arity_1_validator
+        end
+
+      # Success case
+      result = Either.validate(%{price: 10}, validation)
+      assert result == %Right{right: %{price: 10}}
+
+      # Failure case
+      result = Either.validate(%{price: -5}, validation)
+      assert %Left{left: %ValidationError{}} = result
+    end
+
+    test "raises ArgumentError for invalid validator arity" do
+      use Funx.Validate
+
+      # Create a function with arity 4 (invalid)
+      invalid_validator = fn _a, _b, _c, _d -> Either.right(nil) end
+
+      validation =
+        validate do
+          at :price, invalid_validator
+        end
+
+      assert_raise ArgumentError,
+                   "Validator must be a function with arity 1, 2, or 3, or a module",
+                   fn ->
+                     Either.validate(%{price: 10}, validation)
+                   end
+    end
+  end
 end

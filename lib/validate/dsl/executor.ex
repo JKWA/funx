@@ -199,46 +199,99 @@ defmodule Funx.Validate.Dsl.Executor do
   end
 
   # Compile a single validator call
-  # Handles: Module, {Module, opts}
-  # All validators are arity-3: validate(value, opts, env)
-  defp compile_validator_call({validator_module, validator_opts}) when is_list(validator_opts) do
+  # Handles: Module, {Module, opts}, or function validators
+  defp compile_validator_call({validator_spec, validator_opts}) when is_list(validator_opts) do
+    if module_spec?(validator_spec) do
+      compile_module_validator_with_opts(validator_spec, validator_opts)
+    else
+      compile_function_validator_with_opts(validator_spec, validator_opts)
+    end
+  end
+
+  defp compile_validator_call(validator_spec) do
+    if module_spec?(validator_spec) do
+      compile_module_validator(validator_spec)
+    else
+      compile_function_validator(validator_spec)
+    end
+  end
+
+  # Check if validator_spec is a module (AST or atom)
+  defp module_spec?({:__aliases__, _, _}), do: true
+  defp module_spec?(spec) when is_atom(spec), do: true
+  defp module_spec?(_), do: false
+
+  # Compile module validator with options
+  defp compile_module_validator_with_opts(module_spec, validator_opts) do
     quote do
       fn value, runtime_opts ->
-        # Merge validator-specific opts with runtime opts
-        # Runtime opts (like env) take precedence
         merged_opts = Keyword.merge(unquote(validator_opts), runtime_opts)
         env = Keyword.get(merged_opts, :env, %{})
-
-        # All validators are arity-3: validate(value, opts, env)
-        result = unquote(validator_module).validate(value, merged_opts, env)
-
-        # Normalize validator return values to Either
-        case result do
-          %Right{} -> result
-          %Left{} -> result
-          :ok -> Either.right(value)
-          {:error, error} -> Either.left(error)
-        end
+        result = unquote(module_spec).validate(value, merged_opts, env)
+        unquote(__MODULE__).normalize_validator_result(result, value)
       end
     end
   end
 
-  defp compile_validator_call(validator_module) do
+  # Compile module validator without options
+  defp compile_module_validator(module_spec) do
     quote do
       fn value, opts ->
         env = Keyword.get(opts, :env, %{})
-
-        # All validators are arity-3: validate(value, opts, env)
-        result = unquote(validator_module).validate(value, opts, env)
-
-        # Normalize validator return values to Either
-        case result do
-          %Right{} -> result
-          %Left{} -> result
-          :ok -> Either.right(value)
-          {:error, error} -> Either.left(error)
-        end
+        result = unquote(module_spec).validate(value, opts, env)
+        unquote(__MODULE__).normalize_validator_result(result, value)
       end
+    end
+  end
+
+  # Compile function validator with options
+  defp compile_function_validator_with_opts(validator_spec, validator_opts) do
+    quote do
+      fn value, runtime_opts ->
+        merged_opts = Keyword.merge(unquote(validator_opts), runtime_opts)
+
+        result =
+          unquote(__MODULE__).call_validator_function(unquote(validator_spec), value, merged_opts)
+
+        unquote(__MODULE__).normalize_validator_result(result, value)
+      end
+    end
+  end
+
+  # Compile function validator without options
+  defp compile_function_validator(validator_spec) do
+    quote do
+      fn value, opts ->
+        result = unquote(__MODULE__).call_validator_function(unquote(validator_spec), value, opts)
+        unquote(__MODULE__).normalize_validator_result(result, value)
+      end
+    end
+  end
+
+  # Normalize validator return values to Either (public for use in quoted code)
+  @doc false
+  def normalize_validator_result(%Right{} = result, _value), do: result
+  def normalize_validator_result(%Left{} = result, _value), do: result
+  def normalize_validator_result(:ok, value), do: Either.right(value)
+  def normalize_validator_result({:error, error}, _value), do: Either.left(error)
+
+  # Call a function validator with appropriate arity (public for use in quoted code)
+  @doc false
+  def call_validator_function(validator, value, opts) do
+    env = Keyword.get(opts, :env, %{})
+
+    cond do
+      is_function(validator, 3) ->
+        validator.(value, opts, env)
+
+      is_function(validator, 2) ->
+        validator.(value, opts)
+
+      is_function(validator, 1) ->
+        validator.(value)
+
+      true ->
+        raise ArgumentError, "Validator must be a function with arity 1, 2, or 3, or a module"
     end
   end
 
