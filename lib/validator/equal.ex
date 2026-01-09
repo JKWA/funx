@@ -24,26 +24,11 @@ defmodule Funx.Validator.Equal do
 
   - If the value equals the expected value under the given `Eq`, validation
     succeeds.
+  - If the expected value is a module and the value is a struct, validation
+    succeeds when `value.__struct__ == expected`.
   - If the value does not equal the expected value, validation fails.
   - `Nothing` values are preserved and treated as not applicable.
   - `Just` values are unwrapped before comparison.
-
-  Examples
-
-      iex> Funx.Validator.Equal.validate(5, value: 5)
-      %Funx.Monad.Either.Right{right: 5}
-
-      iex> Funx.Validator.Equal.validate("HELLO",
-      ...>   value: "hello",
-      ...>   eq: %{
-      ...>     eq?: fn a, b -> String.downcase(a) == String.downcase(b) end,
-      ...>     not_eq?: fn a, b -> String.downcase(a) != String.downcase(b) end
-      ...>   }
-      ...> )
-      %Funx.Monad.Either.Right{right: "HELLO"}
-
-      iex> Funx.Validator.Equal.validate(%Funx.Monad.Maybe.Nothing{}, value: 5)
-      %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}
   """
 
   @behaviour Funx.Validate.Behaviour
@@ -53,19 +38,16 @@ defmodule Funx.Validator.Equal do
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
 
-  # Convenience overload for default opts (raises on missing required options)
   def validate(value) do
     validate(value, [])
   end
 
-  # Convenience overload
   def validate(value, opts) when is_list(opts) do
     validate(value, opts, %{})
   end
 
-  # Behaviour implementation (arity-3)
   @impl true
-  def validate(value, opts, env)
+  def validate(value, opts, _env)
 
   def validate(%Nothing{} = value, _opts, _env) do
     Either.right(value)
@@ -82,10 +64,19 @@ defmodule Funx.Validator.Equal do
   defp validate_value(value, opts) do
     expected = Keyword.fetch!(opts, :value)
     eq = Keyword.get(opts, :eq, Eq.Protocol)
+    expected_is_module = is_atom(expected)
 
     Either.lift_predicate(
       value,
-      fn v -> Eq.eq?(v, expected, eq) end,
+      fn v ->
+        case {v, expected_is_module} do
+          {%{__struct__: mod}, true} ->
+            mod == expected
+
+          _ ->
+            Eq.eq?(v, expected, eq)
+        end
+      end,
       fn v ->
         ValidationError.new(build_message(opts, v, "must be equal to #{inspect(expected)}"))
       end

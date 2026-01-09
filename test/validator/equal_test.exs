@@ -162,6 +162,63 @@ defmodule Funx.Validator.EqualTest do
     end
   end
 
+  describe "Equal validator with struct module equality" do
+    defmodule Purchase do
+      defstruct [:id]
+    end
+
+    defmodule Refund do
+      defstruct [:id]
+    end
+
+    defmodule Charge do
+      defstruct [:id]
+    end
+
+    test "passes when value is a struct and expected value is its module" do
+      assert Equal.validate(%Purchase{id: 1}, value: Purchase) ==
+               Either.right(%Purchase{id: 1})
+
+      assert Equal.validate(%Refund{id: 2}, value: Refund) ==
+               Either.right(%Refund{id: 2})
+    end
+
+    test "fails when value is a struct but module does not match" do
+      result = Equal.validate(%Charge{id: 3}, value: Purchase)
+      assert Either.left?(result)
+    end
+
+    test "fails when expected value is a module but value is not a struct" do
+      result = Equal.validate("purchase", value: Purchase)
+      assert Either.left?(result)
+    end
+
+    test "works with Just wrapping a struct" do
+      assert Equal.validate(%Just{value: %Purchase{id: 1}}, value: Purchase) ==
+               Either.right(%Purchase{id: 1})
+
+      result =
+        Equal.validate(%Just{value: %Charge{id: 2}}, value: Purchase)
+
+      assert Either.left?(result)
+    end
+
+    test "Nothing still passes through when expected value is a module" do
+      assert Equal.validate(%Nothing{}, value: Purchase) ==
+               Either.right(%Nothing{})
+    end
+
+    test "custom message is applied for struct equality failures" do
+      result =
+        Equal.validate(%Charge{id: 1},
+          value: Purchase,
+          message: fn _ -> "wrong type" end
+        )
+
+      assert %Either.Left{left: %{errors: ["wrong type"]}} = result
+    end
+  end
+
   describe "Equal validator argument validation" do
     test "raises when :value option is missing" do
       assert_raise KeyError, fn ->
