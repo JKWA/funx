@@ -139,4 +139,51 @@ defmodule Funx.Validator.InTest do
       assert Either.left?(result)
     end
   end
+
+  describe "In validator with struct module membership" do
+    defmodule Purchase do
+      defstruct [:id]
+    end
+
+    defmodule Refund do
+      defstruct [:id]
+    end
+
+    defmodule Charge do
+      defstruct [:id]
+    end
+
+    test "passes when struct module is in allowed list" do
+      assert In.validate(%Purchase{id: 1}, values: [Purchase, Refund]) ==
+               %Right{right: %Purchase{id: 1}}
+
+      assert In.validate(%Refund{id: 2}, values: [Purchase, Refund]) ==
+               %Right{right: %Refund{id: 2}}
+    end
+
+    test "fails when struct module is not in allowed list" do
+      result = In.validate(%Charge{id: 3}, values: [Purchase, Refund])
+      assert Either.left?(result)
+    end
+
+    test "fails when value is not a struct but values are modules" do
+      result = In.validate("purchase", values: [Purchase, Refund])
+      assert Either.left?(result)
+    end
+
+    test "works with Just wrapping a struct" do
+      assert In.validate(%Just{value: %Purchase{id: 1}}, values: [Purchase, Refund]) ==
+               %Right{right: %Purchase{id: 1}}
+
+      result =
+        In.validate(%Just{value: %Charge{id: 2}}, values: [Purchase, Refund])
+
+      assert Either.left?(result)
+    end
+
+    test "Nothing still passes through" do
+      assert In.validate(%Nothing{}, values: [Purchase, Refund]) ==
+               %Right{right: %Nothing{}}
+    end
+  end
 end

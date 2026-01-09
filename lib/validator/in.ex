@@ -22,44 +22,11 @@ defmodule Funx.Validator.In do
 
   Semantics
 
-  - Succeeds if the value equals any element in `:values` under `Eq`.
+  - Succeeds if the value equals any element in `:values` under `Eq`,
+    or if the value is a struct whose module is listed in `:values`.
   - Fails otherwise.
   - `Nothing` passes through.
   - `Just` is unwrapped before comparison.
-
-  Examples
-
-      iex> Funx.Validator.In.validate("active", values: ["active", "inactive", "pending"])
-      %Funx.Monad.Either.Right{right: "active"}
-
-      iex> Funx.Validator.In.validate("deleted", values: ["active", "inactive"])
-      %Funx.Monad.Either.Left{
-        left: %Funx.Errors.ValidationError{
-          errors: ["must be one of: \\"active\\", \\"inactive\\""]
-        }
-      }
-
-      iex> Funx.Validator.In.validate(:ok, values: [:ok, :error])
-      %Funx.Monad.Either.Right{right: :ok}
-
-      iex> Funx.Validator.In.validate(%Funx.Monad.Maybe.Nothing{}, values: ["a", "b"])
-      %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}
-
-      iex> Funx.Validator.In.validate(
-      ...>   %Funx.Monad.Maybe.Just{value: "active"},
-      ...>   values: ["active", "inactive"]
-      ...> )
-      %Funx.Monad.Either.Right{right: "active"}
-
-      iex> Funx.Validator.In.validate(
-      ...>   %Funx.Monad.Maybe.Just{value: "deleted"},
-      ...>   values: ["active", "inactive"]
-      ...> )
-      %Funx.Monad.Either.Left{
-        left: %Funx.Errors.ValidationError{
-          errors: ["must be one of: \\"active\\", \\"inactive\\""]
-        }
-      }
   """
 
   @behaviour Funx.Validate.Behaviour
@@ -95,10 +62,19 @@ defmodule Funx.Validator.In do
   defp validate_value(value, opts) do
     values = Keyword.fetch!(opts, :values)
     eq = Keyword.get(opts, :eq, Funx.Eq.Protocol)
+    module_values? = is_list(values) and Enum.all?(values, &is_atom/1)
 
     Either.lift_predicate(
       value,
-      fn v -> List.elem?(values, v, eq) end,
+      fn v ->
+        case {v, module_values?} do
+          {%{__struct__: mod}, true} ->
+            mod in values
+
+          _ ->
+            List.elem?(values, v, eq)
+        end
+      end,
       fn v ->
         rendered = Enum.map_join(values, ", ", &inspect/1)
         ValidationError.new(build_message(opts, v, "must be one of: #{rendered}"))
