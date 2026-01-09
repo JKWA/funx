@@ -1,11 +1,12 @@
 defmodule Funx.Monad.Either.Dsl.Examples do
   @moduledoc """
-  Example modules demonstrating the new behavior patterns.
+  Example modules demonstrating the behavior patterns used in Either DSL.
 
   Modules implement one of the following behaviors based on their purpose:
-  - `Funx.Monad.Behaviour.Map` for pure transformations (used with `map`)
-  - `Funx.Monad.Behaviour.Bind` for operations that can fail (used with `bind`)
-  - `Funx.Monad.Either.Dsl.Behaviour` for legacy operations (tap, filter_or_else, etc.)
+  - `Funx.Validate.Behaviour` for validators (used with `validate`)
+  - `Funx.Monad.Behaviour.Bind` for operations that can fail (used with `bind` and `tap`)
+  - `Funx.Monad.Behaviour.Map` for pure transformations (used with `map` and `map_left`)
+  - `Funx.Monad.Behaviour.Predicate` for boolean tests (used with `filter_or_else`)
   """
 
   defmodule ParseInt do

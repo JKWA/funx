@@ -161,7 +161,7 @@ end
 
 ### Using Modules with `tap`, `map_left`, and `filter_or_else`
 
-Just like `bind` and `map`, you can use modules that implement the `run/3` callback with other DSL operations like `tap`, `map_left`, and `filter_or_else`. This is particularly useful for creating reusable logging, error transformation, and validation logic.
+Just like `bind` and `map`, you can use modules that implement specific monad behaviors with other DSL operations like `tap`, `map_left`, and `filter_or_else`. This is particularly useful for creating reusable logging, error transformation, and validation logic.
 
 #### `tap` with Modules
 
@@ -169,13 +169,13 @@ Just like `bind` and `map`, you can use modules that implement the `run/3` callb
 # Example module pattern (works in compiled code):
 
 defmodule HeroLogger do
-  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  @behaviour Funx.Monad.Behaviour.Bind
   use Funx.Monad.Either
 
-  def run(hero, opts, _env) do
+  def bind(hero, opts, _env) do
     prefix = Keyword.get(opts, :prefix, "HERO")
     IO.puts("#{prefix}: #{inspect(hero)}")
-    hero  # tap returns the original value unchanged
+    right(hero)  # tap uses bind/3, must return Either
   end
 end
 
@@ -202,10 +202,9 @@ end
 # Example module pattern (works in compiled code):
 
 defmodule ErrorFormatter do
-  @behaviour Funx.Monad.Either.Dsl.Behaviour
-  use Funx.Monad.Either
+  @behaviour Funx.Monad.Behaviour.Map
 
-  def run(error, opts, _env) do
+  def map(error, opts, _env) do
     context = Keyword.get(opts, :context, "Error")
     severity = Keyword.get(opts, :severity, "ERROR")
     "[#{severity}] #{context}: #{error}"
@@ -231,10 +230,9 @@ end
 # Example module pattern (works in compiled code):
 
 defmodule IsEliteHero do
-  @behaviour Funx.Monad.Either.Dsl.Behaviour
-  use Funx.Monad.Either
+  @behaviour Funx.Monad.Behaviour.Predicate
 
-  def run(hero, opts, _env) do
+  def predicate(hero, opts, _env) do
     min_level = Keyword.get(opts, :min_level, 10)
     hero.level >= min_level
   end
@@ -401,50 +399,50 @@ end
 
 ## Validation
 
-The DSL supports validation with error accumulation using the `validate/2` function. Validators are modules that implement the `run/3` callback.
+The DSL supports validation with error accumulation using the `validate/2` function. Validators are modules that implement the `Funx.Validate.Behaviour` with the `validate/3` callback.
 
 ```elixir
 # Example validator module pattern (works in compiled code):
 
 defmodule PositiveNumber do
-  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  @behaviour Funx.Validate.Behaviour
   use Funx.Monad.Either
 
-  def run(value, _opts, _env) when is_number(value) and value > 0 do
+  def validate(value, _opts, _env) when is_number(value) and value > 0 do
     right(value)
   end
 
-  def run(value, _opts, _env) when is_number(value) do
+  def validate(value, _opts, _env) when is_number(value) do
     left("Must be positive: #{value}")
   end
 
-  def run(value, _opts, _env) do
+  def validate(value, _opts, _env) do
     left("Expected number, got: #{inspect(value)}")
   end
 end
 
 defmodule EvenNumber do
-  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  @behaviour Funx.Validate.Behaviour
   use Funx.Monad.Either
 
-  def run(value, _opts, _env) when is_number(value) and rem(value, 2) == 0 do
+  def validate(value, _opts, _env) when is_number(value) and rem(value, 2) == 0 do
     right(value)
   end
 
-  def run(value, _opts, _env) when is_number(value) do
+  def validate(value, _opts, _env) when is_number(value) do
     left("Must be even: #{value}")
   end
 
-  def run(value, _opts, _env) do
+  def validate(value, _opts, _env) do
     left("Expected number, got: #{inspect(value)}")
   end
 end
 
 defmodule RangeValidator do
-  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  @behaviour Funx.Validate.Behaviour
   use Funx.Monad.Either
 
-  def run(value, opts, _env) when is_number(value) do
+  def validate(value, opts, _env) when is_number(value) do
     min = Keyword.get(opts, :min, 0)
     max = Keyword.get(opts, :max, 100)
 
@@ -455,7 +453,7 @@ defmodule RangeValidator do
     end
   end
 
-  def run(value, _opts, _env) do
+  def validate(value, _opts, _env) do
     left("Expected number, got: #{inspect(value)}")
   end
 end
@@ -538,18 +536,17 @@ end
 
 ## Advanced: Module-Based Operations
 
-You can create reusable operations as modules that implement the `run/3` callback. This is useful for operations you'll use across many pipelines:
+You can create reusable operations as modules that implement specific behaviors. This is useful for operations you'll use across many pipelines:
 
 ```elixir
 defmodule FormatHeroName do
-  @behaviour Funx.Monad.Either.Dsl.Behaviour
-  use Funx.Monad.Either
+  @behaviour Funx.Monad.Behaviour.Map
 
-  def run(hero, opts, _env) do
+  def map(hero, opts, _env) do
     case Keyword.get(opts, :style, :normal) do
-      :uppercase -> {:ok, %{hero | name: String.upcase(hero.name)}}
-      :lowercase -> {:ok, %{hero | name: String.downcase(hero.name)}}
-      :normal -> {:ok, hero}
+      :uppercase -> %{hero | name: String.upcase(hero.name)}
+      :lowercase -> %{hero | name: String.downcase(hero.name)}
+      :normal -> hero
     end
   end
 end

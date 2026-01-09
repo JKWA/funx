@@ -98,7 +98,7 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   end
 
   # Transform arguments based on the function type
-  # validate uses validate/3, tap uses bind/3, map_left uses map/3, filter_or_else uses predicate/3, others use run/3
+  # validate uses validate/3, tap uses bind/3, map_left uses map/3, filter_or_else uses predicate/3
   defp transform_function_args(func_name, args, user_env, caller_env) do
     # filter_or_else has a predicate as first arg and error function as second arg
     # Only transform the predicate (first arg), leave error function as-is
@@ -260,70 +260,44 @@ defmodule Funx.Monad.Either.Dsl.Parser do
   defp behavior_method_for_type(:map), do: :map
   defp behavior_method_for_type(:ap), do: :ap
 
-  # Transform modules to call bind/3 (for tap operations)
-  defp ast_transform_module_to_bind(arg, user_env, _caller_env) do
-    case arg do
-      # Module with options: {Module, opts}
-      {{:__aliases__, _, _} = module_alias, opts_ast} when is_list(opts_ast) ->
-        quote do
-          fn value -> unquote(module_alias).bind(value, unquote(opts_ast), unquote(user_env)) end
-        end
-
-      # Bare module: Module
-      {:__aliases__, _, _} = module_alias ->
-        quote do
-          fn value -> unquote(module_alias).bind(value, [], unquote(user_env)) end
-        end
-
-      # Not a module - return as-is (function, etc.)
-      other ->
-        other
-    end
-  end
-
-  # Transform modules to call map/3 (for map_left operations)
-  # Note: map_left is a pure transformation, so we pass empty env
-  defp ast_transform_module_to_map(arg, _caller_env) do
-    case arg do
-      # Module with options: {Module, opts}
-      {{:__aliases__, _, _} = module_alias, opts_ast} when is_list(opts_ast) ->
-        quote do
-          fn error -> unquote(module_alias).map(error, unquote(opts_ast), %{}) end
-        end
-
-      # Bare module: Module
-      {:__aliases__, _, _} = module_alias ->
-        quote do
-          fn error -> unquote(module_alias).map(error, [], %{}) end
-        end
-
-      # Not a module - return as-is (function, etc.)
-      other ->
-        other
-    end
-  end
-
-  # Transform modules to call predicate/3 (for filter_or_else operations)
-  defp ast_transform_module_to_predicate(arg, user_env, _caller_env) do
+  # Generic helper to transform modules to call a specific behavior method
+  # Used by tap (bind/3), map_left (map/3), and filter_or_else (predicate/3)
+  defp ast_transform_module_to_behavior(arg, method, env) do
     case arg do
       # Module with options: {Module, opts}
       {{:__aliases__, _, _} = module_alias, opts_ast} when is_list(opts_ast) ->
         quote do
           fn value ->
-            unquote(module_alias).predicate(value, unquote(opts_ast), unquote(user_env))
+            unquote(module_alias).unquote(method)(value, unquote(opts_ast), unquote(env))
           end
         end
 
       # Bare module: Module
       {:__aliases__, _, _} = module_alias ->
         quote do
-          fn value -> unquote(module_alias).predicate(value, [], unquote(user_env)) end
+          fn value -> unquote(module_alias).unquote(method)(value, [], unquote(env)) end
         end
 
       # Not a module - return as-is (function, etc.)
       other ->
         other
     end
+  end
+
+  # Transform modules to call bind/3 (for tap operations)
+  defp ast_transform_module_to_bind(arg, user_env, _caller_env) do
+    ast_transform_module_to_behavior(arg, :bind, user_env)
+  end
+
+  # Transform modules to call map/3 (for map_left operations)
+  # Note: map_left is a pure transformation, so we pass empty env
+  defp ast_transform_module_to_map(arg, _caller_env) do
+    ast_transform_module_to_behavior(arg, :map, Macro.escape(%{}))
+  end
+
+  # Transform modules to call predicate/3 (for filter_or_else operations)
+  defp ast_transform_module_to_predicate(arg, user_env, _caller_env) do
+    ast_transform_module_to_behavior(arg, :predicate, user_env)
   end
 
   # Generates AST for module with options
