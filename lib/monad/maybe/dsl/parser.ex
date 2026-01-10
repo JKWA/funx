@@ -38,14 +38,17 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
   defp parse_operation_to_step(operation_ast, user_env, caller_env) do
     case operation_ast do
       {:bind, meta, args} ->
-        parse_monad_operation(:bind, args, meta, caller_env)
+        parse_monad_operation(:bind, args, meta, user_env, caller_env)
 
       {:map, meta, args} ->
-        parse_monad_operation(:map, args, meta, caller_env)
+        parse_monad_operation(:map, args, meta, user_env, caller_env)
 
       {:ap, meta, args} ->
-        {operation, _opts} = parse_operation_args(args)
-        %Step.Ap{applicative: operation, __meta__: extract_meta(meta)}
+        {operation, opts} = parse_operation_args(args)
+        # Don't lift for ap - it takes a Maybe value directly, not a function
+        # Only transform if it's a module
+        transformed_op = ast_transform_module_for_monad_op(operation, opts, :ap, user_env)
+        %Step.Ap{applicative: transformed_op, __meta__: extract_meta(meta)}
 
       {:__aliases__, _, _} = module_alias ->
         raise_bare_module_error(module_alias)
@@ -59,26 +62,42 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
   end
 
   # Extract common logic for bind and map operations
-  defp parse_monad_operation(type, args, meta, caller_env) do
+  defp parse_monad_operation(type, args, meta, user_env, caller_env) do
     {operation, opts} = parse_operation_args(args)
     lifted_op = ast_lift_call_to_unary(operation, caller_env) || operation
-    expanded_op = ast_expand_module_alias(lifted_op, caller_env)
+
+    # Transform modules to call bind/3 or map/3 based on operation type
+    transformed_op = ast_transform_module_for_monad_op(lifted_op, opts, type, user_env)
+
     metadata = extract_meta(meta)
 
     case type do
-      :bind -> %Step.Bind{operation: expanded_op, opts: opts, __meta__: metadata}
-      :map -> %Step.Map{operation: expanded_op, opts: opts, __meta__: metadata}
+      :bind -> %Step.Bind{operation: transformed_op, opts: [], __meta__: metadata}
+      :map -> %Step.Map{operation: transformed_op, opts: [], __meta__: metadata}
+    end
+  end
+
+  # Transform modules for bind/map/ap operations to call behavior methods
+  defp ast_transform_module_for_monad_op(operation, opts, type, user_env) do
+    case operation do
+      # Module: transform to call bind/3, map/3, or ap/3
+      {:__aliases__, _, _} = module_alias ->
+        method = behavior_method_for_type(type)
+
+        quote do
+          fn value ->
+            unquote(module_alias).unquote(method)(value, unquote(opts), unquote(user_env))
+          end
+        end
+
+      # Not a module (function, etc.) - pass through
+      other ->
+        other
     end
   end
 
   defp parse_maybe_function_to_step(func_name, args, meta, user_env, caller_env) do
-    # Lift function calls and transform modules in arguments
-    transformed_args =
-      Enum.map(args, fn arg ->
-        lifted = ast_lift_call_to_unary(arg, caller_env) || arg
-        ast_transform_modules_to_functions(lifted, user_env, caller_env)
-      end)
-
+    transformed_args = transform_function_args(func_name, args, user_env, caller_env)
     metadata = extract_meta(meta)
 
     cond do
@@ -96,6 +115,36 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
       true ->
         raise_invalid_function_error(func_name)
     end
+  end
+
+  # Transform arguments based on the function type
+  defp transform_function_args(func_name, args, user_env, caller_env) do
+    Enum.map(args, fn arg ->
+      lifted = ast_lift_call_to_unary(arg, caller_env) || arg
+      transform_arg_for_function(func_name, lifted, user_env, caller_env)
+    end)
+  end
+
+  defp transform_arg_for_function(:tap, arg, user_env, caller_env) do
+    ast_transform_module_to_bind(arg, user_env, caller_env)
+  end
+
+  defp transform_arg_for_function(:filter, arg, user_env, caller_env) do
+    ast_transform_module_to_predicate(arg, user_env, caller_env)
+  end
+
+  defp transform_arg_for_function(:filter_map, arg, user_env, caller_env) do
+    # filter_map returns Maybe/tuple like bind, not boolean like predicate
+    ast_transform_module_to_bind(arg, user_env, caller_env)
+  end
+
+  defp transform_arg_for_function(:guard, arg, user_env, caller_env) do
+    ast_transform_module_to_predicate(arg, user_env, caller_env)
+  end
+
+  # Default: pass through (for or_else which doesn't accept modules)
+  defp transform_arg_for_function(_func_name, arg, _user_env, _caller_env) do
+    arg
   end
 
   # Parses operation arguments: {Module, opts} or Module -> {Module, opts}
@@ -119,12 +168,44 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
   # AST TRANSFORMATIONS
   # ============================================================================
 
-  # Expand module aliases to actual module atoms at compile time
-  defp ast_expand_module_alias({:__aliases__, _, _} = module_alias, caller_env) do
-    Macro.expand(module_alias, caller_env)
+  # Returns the behavior method name for the operation type
+  defp behavior_method_for_type(:bind), do: :bind
+  defp behavior_method_for_type(:map), do: :map
+  defp behavior_method_for_type(:ap), do: :ap
+
+  # Generic helper to transform modules to call a specific behavior method
+  # Used by bind, map, tap, filter, filter_map, guard, and ap
+  defp ast_transform_module_to_behavior(arg, method, env) do
+    case arg do
+      # Module with options: {Module, opts}
+      {{:__aliases__, _, _} = module_alias, opts_ast} when is_list(opts_ast) ->
+        quote do
+          fn value ->
+            unquote(module_alias).unquote(method)(value, unquote(opts_ast), unquote(env))
+          end
+        end
+
+      # Bare module: Module
+      {:__aliases__, _, _} = module_alias ->
+        quote do
+          fn value -> unquote(module_alias).unquote(method)(value, [], unquote(env)) end
+        end
+
+      # Not a module - return as-is (function, etc.)
+      other ->
+        other
+    end
   end
 
-  defp ast_expand_module_alias(other, _caller_env), do: other
+  # Transform modules to call bind/3 (for bind, tap, filter_map operations)
+  defp ast_transform_module_to_bind(arg, user_env, _caller_env) do
+    ast_transform_module_to_behavior(arg, :bind, user_env)
+  end
+
+  # Transform modules to call predicate/3 (for filter and guard operations)
+  defp ast_transform_module_to_predicate(arg, user_env, _caller_env) do
+    ast_transform_module_to_behavior(arg, :predicate, user_env)
+  end
 
   # Lifts Module.fun(args) to fn x -> Module.fun(x, args) end
   # Matches qualified calls like String.pad_leading(3, "0")
@@ -167,104 +248,6 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
   # Non-liftable expressions return nil
   defp ast_lift_call_to_unary(_other, _caller_env), do: nil
 
-  # Transform modules in validator lists and arguments
-  defp ast_transform_modules_to_functions(arg, user_env, caller_env) do
-    case arg do
-      # Transform list of validators
-      items when is_list(items) ->
-        Enum.map(items, &ast_transform_list_item(&1, user_env, caller_env))
-
-      # Transform {Module, opts} tuple syntax to function calls
-      {{:__aliases__, _, _} = module_alias, opts_ast} when is_list(opts_ast) ->
-        quote do
-          fn value ->
-            unquote(module_alias).run_maybe(value, unquote(opts_ast), unquote(user_env))
-          end
-        end
-
-      # Transform bare module syntax to function calls
-      {:__aliases__, _, _} = module_alias ->
-        quote do
-          fn value -> unquote(module_alias).run_maybe(value, [], unquote(user_env)) end
-        end
-
-      other ->
-        other
-    end
-  end
-
-  # Transforms {Module, opts} tuple syntax to function calls
-  defp ast_transform_list_item(
-         {{:__aliases__, _, _} = module_alias, opts_ast},
-         user_env,
-         _caller_env
-       )
-       when is_list(opts_ast) do
-    quote do
-      fn value -> unquote(module_alias).run_maybe(value, unquote(opts_ast), unquote(user_env)) end
-    end
-  end
-
-  # Transforms bare module syntax to function calls
-  defp ast_transform_list_item({:__aliases__, _, _} = module_alias, user_env, _caller_env) do
-    quote do
-      fn value -> unquote(module_alias).run_maybe(value, [], unquote(user_env)) end
-    end
-  end
-
-  # Try to lift function calls, or validate that it's a valid validator
-  defp ast_transform_list_item(other, _user_env, caller_env) do
-    # First validate - reject literals before attempting to lift
-    validate_list_item!(other)
-
-    case ast_lift_call_to_unary(other, caller_env) do
-      nil -> other
-      lifted -> lifted
-    end
-  end
-
-  # ============================================================================
-  # VALIDATION
-  # ============================================================================
-
-  # Validates that list items are functions, not literals
-  # Note: Module aliases ({:__aliases__, _, _}) are transformed before validation,
-  # so they never reach this function
-  # Anonymous function
-  defp validate_list_item!({:fn, _, _}), do: :ok
-  # Function capture
-  defp validate_list_item!({:&, _, _}), do: :ok
-  defp validate_list_item!({name, _, context}) when is_atom(name) and is_atom(context), do: :ok
-  defp validate_list_item!({{:., _, _}, _, _}), do: :ok
-
-  # Reject literals
-  defp validate_list_item!(literal) when is_number(literal) do
-    raise_invalid_validator(literal)
-  end
-
-  defp validate_list_item!(literal) when is_binary(literal) do
-    raise_invalid_validator(literal)
-  end
-
-  defp validate_list_item!(literal) when is_atom(literal) do
-    raise_invalid_validator(literal)
-  end
-
-  defp validate_list_item!({:%{}, _, _}) do
-    raise_invalid_validator("map literal")
-  end
-
-  defp validate_list_item!([_ | _] = list) do
-    raise_invalid_validator(list)
-  end
-
-  defp validate_list_item!([]) do
-    raise_invalid_validator([])
-  end
-
-  # Allow other AST nodes (these will be validated at runtime)
-  defp validate_list_item!(_), do: :ok
-
   # ============================================================================
   # ERROR HELPERS
   # ============================================================================
@@ -304,23 +287,10 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
       Or use a function capture:
         map &#{func_name}/1
 
-      Or create a module that implements run/3.
-      """
-  end
-
-  defp raise_invalid_validator(literal) do
-    raise CompileError,
-      description: """
-      Invalid validator in list: #{inspect(literal)}
-
-      Validator lists must contain only:
-        - Module names: MyValidator
-        - Module with options: {MyValidator, opts}
-        - Function calls: my_function()
-        - Function captures: &my_function/1
-        - Anonymous functions: fn x -> ... end
-
-      Literals (numbers, strings, maps, etc.) are not allowed.
+      Or create a module that implements the appropriate behavior:
+        - Funx.Monad.Behaviour.Bind for bind operations
+        - Funx.Monad.Behaviour.Map for map operations
+        - Funx.Monad.Behaviour.Predicate for filter operations
       """
   end
 end

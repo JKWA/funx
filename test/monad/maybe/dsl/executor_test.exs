@@ -92,19 +92,19 @@ defmodule Funx.Monad.Maybe.Dsl.ExecutorTest do
     end
 
     test "raises ArgumentError for invalid return value" do
-      assert_raise ArgumentError, ~r/run_maybe\/3 callback must return/, fn ->
+      assert_raise ArgumentError, ~r/bind\/3, map\/3, or predicate\/3 callback must return/, fn ->
         Executor.normalize_run_result(:invalid)
       end
     end
 
     test "raises ArgumentError for plain value" do
-      assert_raise ArgumentError, ~r/run_maybe\/3 callback must return/, fn ->
+      assert_raise ArgumentError, ~r/bind\/3, map\/3, or predicate\/3 callback must return/, fn ->
         Executor.normalize_run_result(42)
       end
     end
 
     test "raises ArgumentError for list" do
-      assert_raise ArgumentError, ~r/run_maybe\/3 callback must return/, fn ->
+      assert_raise ArgumentError, ~r/bind\/3, map\/3, or predicate\/3 callback must return/, fn ->
         Executor.normalize_run_result([1, 2, 3])
       end
     end

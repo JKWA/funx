@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:funx, github: "JKWA/funx", ref: "89f8e6f"}
+   {:funx, path: Path.expand("../../..", __DIR__)}                                                  
 ])
 ```
 
@@ -396,6 +396,7 @@ end
 `Either` values are converted (`Right` → `Just`, `Left` → `Nothing`):
 
 ```elixir
+import Funx.Monad.Either
 use Funx.Monad.Either
 
 maybe right(circle) do
@@ -415,14 +416,26 @@ end
 
 ## Advanced: Module-Based Operations
 
-You can create reusable operations as modules that implement the `run_maybe/3` callback. This is useful for domain boundaries you'll check across many pipelines:
+You can create reusable operations as modules that implement specific monad behaviors. Choose the behavior based on what your operation does:
+
+* **`Funx.Monad.Behaviour.Bind`** - for operations that can fail (used with `bind`, `tap`, `filter_map`)
+* **`Funx.Monad.Behaviour.Map`** - for pure transformations (used with `map`)
+* **`Funx.Monad.Behaviour.Predicate`** - for boolean tests (used with `filter`, `guard`)
+* **`Funx.Monad.Behaviour.Ap`** - for applicative functors (used with `ap`)
+
+All behaviors use the same signature: `(value, opts, env)` where:
+
+* `value` - the current pipeline value
+* `opts` - options passed with `{Module, opts}` syntax
+* `env` - read-only environment for dependency injection
 
 ```elixir
 defmodule ScaleShape do
-  @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+  @behaviour Funx.Monad.Behaviour.Map
   use Funx.Monad.Maybe
 
-  def run_maybe(shape, opts, _env) do
+  @impl true
+  def map(shape, opts, _env) do
     factor = Keyword.get(opts, :factor, 2)
 
     case shape do
@@ -449,6 +462,35 @@ Without options, uses default behavior (2x):
 maybe circle do
   bind ShapeProcessor.as_circle()
   map ScaleShape
+end
+```
+
+Example of a predicate module:
+
+```elixir
+defmodule IsLargeShape do
+  @behaviour Funx.Monad.Behaviour.Predicate
+
+  @impl true
+  def predicate(shape, opts, _env) do
+    min_size = Keyword.get(opts, :min_size, 10)
+
+    case shape do
+      %Circle{radius: r} -> r >= min_size
+      %Rectangle{width: w, height: h} -> w * h >= min_size * min_size
+      %Triangle{base: b, height: h} -> b * h / 2 >= min_size * min_size
+      _ -> false
+    end
+  end
+end
+```
+
+Use with filter:
+
+```elixir
+maybe circle do
+  bind ShapeProcessor.as_circle()
+  filter {IsLargeShape, min_size: 5}
 end
 ```
 
@@ -525,5 +567,18 @@ When you ask "does this value exist as X?", `Maybe` gives you:
 ### Integration
 
 * Auto-lifting - automatic conversion of Maybe, Either, tuples, nil, and plain values
-* Module support - reusable domain boundary checks via `run_maybe/3` callback
+* Module support - reusable operations via specific behaviors (Bind, Map, Predicate, Ap)
 * Options support - pass options to modules using `{Module, opts}` syntax
+
+### Module Support
+
+All these operations support modules that implement the appropriate behavior:
+
+* **`bind Module`** - module implements Bind behavior, returns Maybe or tuple
+* **`map Module`** - module implements Map behavior, returns plain value
+* **`tap Module`** - module implements Bind behavior, performs side effect
+* **`filter Module`** - module implements Predicate behavior, returns boolean
+* **`filter_map Module`** - module implements Bind behavior, returns Maybe or tuple (like bind)
+* **`guard Module`** - module implements Predicate behavior, returns boolean
+
+Use `{Module, key: value}` syntax to pass options to any module's behavior method.

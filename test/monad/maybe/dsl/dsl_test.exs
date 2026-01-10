@@ -498,8 +498,8 @@ defmodule Funx.Monad.Maybe.DslTest do
 
     test "normalizes nil in module returning nil" do
       defmodule ReturnsNil do
-        @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-        def run_maybe(_value, _opts, _user_env), do: nil
+        @behaviour Funx.Monad.Behaviour.Bind
+        def bind(_value, _opts, _env), do: nil
       end
 
       result =
@@ -803,7 +803,7 @@ defmodule Funx.Monad.Maybe.DslTest do
   # Tests runtime error handling for invalid module callbacks
   describe "error handling" do
     test "raises on invalid return value from bind" do
-      assert_raise ArgumentError, ~r/run_maybe\/3 callback must return/, fn ->
+      assert_raise ArgumentError, ~r/bind\/3, map\/3, or predicate\/3 callback must return/, fn ->
         maybe "test" do
           bind InvalidReturn
         end
@@ -811,7 +811,7 @@ defmodule Funx.Monad.Maybe.DslTest do
     end
 
     test "raises on invalid return value from anonymous function" do
-      assert_raise ArgumentError, ~r/run_maybe\/3 callback must return/, fn ->
+      assert_raise ArgumentError, ~r/bind\/3, map\/3, or predicate\/3 callback must return/, fn ->
         maybe "test" do
           bind fn _ -> "not a Maybe or tuple" end
         end
