@@ -229,26 +229,31 @@ end
 
 # Module references
 maybe user_id do
-  bind ParseInt              # Calls: ParseInt.run_maybe(user_id, [], env)
-  bind {ParseInt, base: 16}  # Calls: ParseInt.run_maybe(user_id, [base: 16], env)
+  bind ParseInt              # Calls: ParseInt.bind(user_id, [], env)
+  bind {ParseInt, base: 16}  # Calls: ParseInt.bind(user_id, [base: 16], env)
 end
 ```
 
 ### Module-Based Operations
 
-Create reusable operations as modules with `run_maybe/3`:
+Create reusable operations as modules implementing specific behaviors:
+
+**For bind operations (can fail):**
 
 ```elixir
 defmodule ParseInt do
-  @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+  @behaviour Funx.Monad.Behaviour.Bind
   use Funx.Monad.Maybe
 
-  def run_maybe(str, _opts, _env) do
+  @impl true
+  def bind(str, _opts, _env) when is_binary(str) do
     case Integer.parse(str) do
       {int, ""} -> just(int)
       _ -> nothing()
     end
   end
+
+  def bind(_value, _opts, _env), do: nothing()
 end
 
 # Use in pipelines
@@ -256,19 +261,63 @@ maybe "42" do
   bind ParseInt
   map &(&1 * 2)
 end
+```
 
-# With options
+**For map operations (pure transformations):**
+
+```elixir
+defmodule Double do
+  @behaviour Funx.Monad.Behaviour.Map
+
+  @impl true
+  def map(value, _opts, _env) when is_number(value) do
+    value * 2
+  end
+end
+
+maybe 21 do
+  map Double
+end
+# just(42)
+```
+
+**For filter/guard operations (predicates):**
+
+```elixir
+defmodule IsPositive do
+  @behaviour Funx.Monad.Behaviour.Predicate
+
+  @impl true
+  def predicate(value, _opts, _env) when is_number(value) do
+    value > 0
+  end
+
+  def predicate(_value, _opts, _env), do: false
+end
+
+maybe 10 do
+  filter IsPositive
+end
+# just(10)
+```
+
+**With options:**
+
+```elixir
 defmodule ParseIntWithBase do
-  @behaviour Funx.Monad.Maybe.Dsl.Behaviour
+  @behaviour Funx.Monad.Behaviour.Bind
   use Funx.Monad.Maybe
 
-  def run_maybe(str, opts, _env) do
+  @impl true
+  def bind(str, opts, _env) when is_binary(str) do
     base = Keyword.get(opts, :base, 10)
     case Integer.parse(str, base) do
       {int, ""} -> just(int)
       _ -> nothing()
     end
   end
+
+  def bind(_value, _opts, _env), do: nothing()
 end
 
 maybe "FF" do
@@ -276,6 +325,13 @@ maybe "FF" do
 end
 # just(255)
 ```
+
+**Behavior selection guide:**
+
+- `Funx.Monad.Behaviour.Bind` - for operations that can fail (used with `bind`, `tap`, `filter_map`)
+- `Funx.Monad.Behaviour.Map` - for pure transformations (used with `map`)
+- `Funx.Monad.Behaviour.Predicate` - for boolean tests (used with `filter`, `guard`)
+- `Funx.Monad.Behaviour.Ap` - for applicative functors (used with `ap`)
 
 ### When to Use the DSL
 

@@ -83,6 +83,20 @@ defmodule Funx.Monad.Maybe.Dsl.ParserTest do
       assert_type(step, :ap)
     end
 
+    test "parses ap operation with module" do
+      step = parse_one(quote do: ap(SomeModule))
+
+      # Module is transformed to fn value -> SomeModule.ap(value, [], []) end
+      assert %Step.Ap{applicative: {:fn, _, _}} = step
+    end
+
+    test "parses ap operation with module and options" do
+      step = parse_one(quote do: ap({SomeModule, opt: :value}))
+
+      # Module with options is transformed to fn value -> SomeModule.ap(value, [opt: :value], []) end
+      assert %Step.Ap{applicative: {:fn, _, _}} = step
+    end
+
     test "parses multiple operations in sequence" do
       block =
         quote do
@@ -289,7 +303,6 @@ defmodule Funx.Monad.Maybe.Dsl.ParserTest do
 
   # Note: Maybe DSL's filter operation takes a single predicate, not a list.
   # Validator list validation only applies to Either DSL's validate operation.
-
 
   # Tests {Module, opts} syntax for bind/map operations
   describe "operation with options syntax" do

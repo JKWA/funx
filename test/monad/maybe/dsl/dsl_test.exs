@@ -18,7 +18,6 @@ defmodule Funx.Monad.Maybe.DslTest do
   use Funx.TestCase, async: true
 
   doctest Funx.Monad.Maybe.Dsl
-  doctest Funx.Monad.Maybe.Dsl.Behaviour
 
   use Funx.Monad.Maybe
   use Funx.Monad.Either
