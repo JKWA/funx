@@ -13,6 +13,13 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
     guard: Funx.Filterable
   }
 
+  # DSL operation → Behavior routing:
+  #   bind, tap, filter_map → Bind behavior (bind/3)
+  #   map → Map behavior (map/3)
+  #   filter, guard → Predicate behavior (predicate/3)
+  #   ap → Ap behavior (ap/3)
+  #   or_else → No module support (passes function through)
+
   @all_allowed_functions @maybe_functions ++ Map.keys(@protocol_functions)
 
   # ============================================================================
@@ -45,8 +52,8 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
 
       {:ap, meta, args} ->
         {operation, opts} = parse_operation_args(args)
-        # Don't lift for ap - it takes a Maybe value directly, not a function
-        # Only transform if it's a module
+        # Don't lift for ap - it receives Maybe values directly, not functions
+        # Lifting would incorrectly transform just(42) to fn x -> just(x, 42) end
         transformed_op = ast_transform_module_for_monad_op(operation, opts, :ap, user_env)
         %Step.Ap{applicative: transformed_op, __meta__: extract_meta(meta)}
 
