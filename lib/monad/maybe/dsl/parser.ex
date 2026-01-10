@@ -2,7 +2,7 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
   @moduledoc false
   # Internal parser for Maybe DSL - converts AST into Step structs
 
-  alias Funx.Monad.Maybe.Dsl.Step
+  alias Funx.Monad.Maybe.Dsl.{Errors, Step}
 
   # Operation type classification (for error messages)
   @maybe_functions [:or_else]
@@ -260,44 +260,15 @@ defmodule Funx.Monad.Maybe.Dsl.Parser do
   # ============================================================================
 
   defp raise_bare_module_error(module_alias) do
-    raise CompileError,
-      description: """
-      Invalid operation: #{Macro.to_string(module_alias)}
-
-      Modules must be used with a keyword:
-        bind #{Macro.to_string(module_alias)}
-        map #{Macro.to_string(module_alias)}
-        ap #{Macro.to_string(module_alias)}
-      """
+    raise CompileError, description: Errors.bare_module_error(module_alias)
   end
 
   defp raise_invalid_operation_error(other) do
-    raise CompileError,
-      description:
-        "Invalid operation: #{inspect(other)}. Use 'bind', 'map', 'ap', or Maybe functions."
+    raise CompileError, description: Errors.invalid_operation_error(other)
   end
 
   defp raise_invalid_function_error(func_name) do
     raise CompileError,
-      description: """
-      Invalid operation: #{func_name}
-
-      Bare function calls are not allowed in the DSL pipeline.
-
-      If you meant to call a Maybe function, only these are allowed:
-        #{inspect(@all_allowed_functions)}
-
-      If you meant to use a custom function, you must use 'bind' or 'map':
-        bind #{func_name}(...)
-        map #{func_name}(...)
-
-      Or use a function capture:
-        map &#{func_name}/1
-
-      Or create a module that implements the appropriate behavior:
-        - Funx.Monad.Behaviour.Bind for bind operations
-        - Funx.Monad.Behaviour.Map for map operations
-        - Funx.Monad.Behaviour.Predicate for filter operations
-      """
+      description: Errors.invalid_function_error(func_name, @all_allowed_functions)
   end
 end

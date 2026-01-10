@@ -3,8 +3,7 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
   # Runtime execution engine for Maybe DSL pipelines
 
   alias Funx.Monad.{Either, Maybe}
-  alias Funx.Monad.Maybe.Dsl.Pipeline
-  alias Funx.Monad.Maybe.Dsl.Step
+  alias Funx.Monad.Maybe.Dsl.{Errors, Pipeline, Step}
 
   @doc """
   Execute a pipeline by running each step in sequence
@@ -148,41 +147,8 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
     do: Maybe.nothing()
 
   def normalize_run_result(other, meta, operation_type) do
-    raise_invalid_result_error(other, meta, operation_type)
+    raise ArgumentError, Errors.invalid_result_error(other, meta, operation_type)
   end
-
-  defp raise_invalid_result_error(result, meta, operation_type) do
-    location = format_location(meta)
-    op_info = if operation_type, do: " in #{operation_type} operation", else: ""
-
-    raise ArgumentError, """
-    Module bind/3, map/3, or predicate/3 callback must return a Maybe struct, Either struct, result tuple, or nil#{op_info}.#{location}
-    Got: #{inspect(result)}
-
-    Expected return types:
-      - Maybe: just(value) or nothing()
-      - Either: right(value) or left(error)
-      - Result tuple: {:ok, value} or {:error, reason}
-      - nil (lifted to nothing())
-    """
-  end
-
-  # ============================================================================
-  # METADATA FORMATTING
-  # ============================================================================
-
-  defp format_location(nil), do: ""
-
-  defp format_location(%{line: line, column: column})
-       when not is_nil(line) and not is_nil(column) do
-    "\n  at line #{line}, column #{column}"
-  end
-
-  defp format_location(%{line: line}) when not is_nil(line) do
-    "\n  at line #{line}"
-  end
-
-  defp format_location(_), do: ""
 
   # ============================================================================
   # RESULT WRAPPING
