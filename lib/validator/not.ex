@@ -7,7 +7,7 @@ defmodule Funx.Validator.Not do
   (`Prism`) foci.
 
   This validator is useful for expressing constraints such as:
-  “value must not satisfy rule A”.
+  "value must not satisfy rule A".
 
   Options
 
@@ -17,7 +17,7 @@ defmodule Funx.Validator.Not do
     - a `{Validator, opts}` tuple for optioned validators
 
   - `:message` (optional)
-    A zero-arity callback `(() -> String.t())` used to override the default error
+    Note: Not  uses a zero-arity callback `(() -> String.t())` used to override the default error
     message when the negated validator succeeds.
 
   Semantics
@@ -67,12 +67,10 @@ defmodule Funx.Validator.Not do
   alias Funx.Monad
   alias Funx.Monad.Either
 
-  # Convenience overload for easier direct usage
   def validate(value, opts) when is_list(opts) do
     validate(value, opts, %{})
   end
 
-  # Behaviour implementation (arity-3)
   @impl true
   def validate(value, opts, env) do
     validator = Keyword.fetch!(opts, :validator)
@@ -80,7 +78,6 @@ defmodule Funx.Validator.Not do
 
     case result do
       %Either.Right{right: %Monad.Maybe.Nothing{}} ->
-        # Nothing means "not applicable" - preserve it unchanged
         result
 
       other ->

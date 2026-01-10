@@ -257,4 +257,173 @@ defmodule Funx.Validator.ExamplesTest do
       assert TrimAndLowercase.validate("  HELLO  ") == %Right{right: "hello"}
     end
   end
+
+  describe "use Funx.Validator macro - basic usage" do
+    defmodule BasicMacroValidator do
+      use Funx.Validator
+
+      @impl Funx.Validator
+      def valid?(value, _opts, _env) do
+        value == "valid"
+      end
+
+      @impl Funx.Validator
+      def default_message(_value, _opts) do
+        "must be 'valid'"
+      end
+    end
+
+    test "validates successfully when predicate returns true" do
+      assert BasicMacroValidator.validate("valid") == %Right{right: "valid"}
+    end
+
+    test "fails validation when predicate returns false" do
+      assert %Left{left: %ValidationError{errors: ["must be 'valid'"]}} =
+               BasicMacroValidator.validate("invalid")
+    end
+
+    test "supports all arities (1, 2, 3)" do
+      # Arity 1
+      assert BasicMacroValidator.validate("valid") == %Right{right: "valid"}
+
+      # Arity 2
+      assert BasicMacroValidator.validate("valid", []) == %Right{right: "valid"}
+
+      # Arity 3
+      assert BasicMacroValidator.validate("valid", [], %{}) == %Right{right: "valid"}
+    end
+
+    test "passes Nothing through unchanged" do
+      alias Funx.Monad.Maybe.Nothing
+
+      assert BasicMacroValidator.validate(%Nothing{}) == %Right{right: %Nothing{}}
+    end
+
+    test "unwraps Just before validation" do
+      alias Funx.Monad.Maybe.Just
+
+      assert BasicMacroValidator.validate(%Just{value: "valid"}) == %Right{right: "valid"}
+
+      assert %Left{left: %ValidationError{errors: ["must be 'valid'"]}} =
+               BasicMacroValidator.validate(%Just{value: "invalid"})
+    end
+
+    test "supports custom message via :message option" do
+      result =
+        BasicMacroValidator.validate(
+          "invalid",
+          message: fn value -> "#{value} is not acceptable" end
+        )
+
+      assert %Left{left: %ValidationError{errors: ["invalid is not acceptable"]}} = result
+    end
+  end
+
+  describe "use Funx.Validator macro - with custom type checking" do
+    defmodule NumberValidator do
+      use Funx.Validator
+
+      @impl Funx.Validator
+      def valid?(num, _opts, _env) when is_number(num) do
+        num > 10
+      end
+
+      def valid?(_non_number, _opts, _env), do: false
+
+      @impl Funx.Validator
+      def default_message(value, _opts) when is_number(value) do
+        "must be greater than 10"
+      end
+
+      def default_message(_value, _opts) do
+        "must be a number"
+      end
+    end
+
+    test "validates number successfully" do
+      assert NumberValidator.validate(15) == %Right{right: 15}
+    end
+
+    test "fails validation for number that doesn't pass predicate" do
+      assert %Left{left: %ValidationError{errors: ["must be greater than 10"]}} =
+               NumberValidator.validate(5)
+    end
+
+    test "fails with custom type error for non-number" do
+      assert %Left{left: %ValidationError{errors: ["must be a number"]}} =
+               NumberValidator.validate("not a number")
+    end
+
+    test "unwraps Just with number and validates" do
+      alias Funx.Monad.Maybe.Just
+
+      assert NumberValidator.validate(%Just{value: 15}) == %Right{right: 15}
+    end
+
+    test "fails for Just with non-number" do
+      alias Funx.Monad.Maybe.Just
+
+      assert %Left{left: %ValidationError{errors: ["must be a number"]}} =
+               NumberValidator.validate(%Just{value: "not a number"})
+    end
+  end
+
+  describe "use Funx.Validator macro - with opts parameter" do
+    defmodule OptsValidator do
+      use Funx.Validator
+
+      @impl Funx.Validator
+      def valid?(value, opts, _env) do
+        threshold = Keyword.get(opts, :threshold, 10)
+        value > threshold
+      end
+
+      @impl Funx.Validator
+      def default_message(value, _opts) do
+        "#{value} is too small"
+      end
+    end
+
+    test "uses opts in validation logic" do
+      assert OptsValidator.validate(15, threshold: 10) == %Right{right: 15}
+      assert OptsValidator.validate(5, threshold: 10) != %Right{right: 5}
+    end
+
+    test "uses default opts when not provided" do
+      assert OptsValidator.validate(15) == %Right{right: 15}
+      assert OptsValidator.validate(5) != %Right{right: 5}
+    end
+
+    test "custom message with value interpolation" do
+      result = OptsValidator.validate(3, threshold: 10)
+
+      assert %Left{left: %ValidationError{errors: ["3 is too small"]}} = result
+    end
+  end
+
+  describe "use Funx.Validator macro - without default_message (optional)" do
+    defmodule MinimalValidator do
+      use Funx.Validator
+
+      @impl Funx.Validator
+      def valid?(value, _opts, _env) do
+        value == "good"
+      end
+    end
+
+    test "works without implementing default_message" do
+      assert MinimalValidator.validate("good") == %Right{right: "good"}
+    end
+
+    test "uses generic 'is invalid' message when default_message not implemented" do
+      assert %Left{left: %ValidationError{errors: ["is invalid"]}} =
+               MinimalValidator.validate("bad")
+    end
+
+    test "custom message option still works" do
+      result = MinimalValidator.validate("bad", message: fn _ -> "not good" end)
+
+      assert %Left{left: %ValidationError{errors: ["not good"]}} = result
+    end
+  end
 end

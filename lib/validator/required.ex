@@ -38,9 +38,9 @@ defmodule Funx.Validator.Required do
 
   @behaviour Funx.Validate.Behaviour
 
-  alias Funx.Errors.ValidationError
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.Nothing
+  alias Funx.Validator
 
   # Convenience overloads for easier direct usage
   def validate(value) do
@@ -56,22 +56,15 @@ defmodule Funx.Validator.Required do
   def validate(value, opts, env)
 
   def validate(%Nothing{}, opts, _env) do
-    message = build_message(opts, nil, "is required")
-    Either.left(ValidationError.new(message))
+    error = Validator.validation_error(opts, nil, "is required")
+    Either.left(error)
   end
 
   def validate(value, opts, _env) do
     Either.lift_predicate(
       value,
       fn v -> not is_nil(v) and v != "" end,
-      fn v -> ValidationError.new(build_message(opts, v, "is required")) end
+      fn v -> Validator.validation_error(opts, v, "is required") end
     )
-  end
-
-  defp build_message(opts, value, default) do
-    case Keyword.get(opts, :message) do
-      nil -> default
-      callback -> callback.(value)
-    end
   end
 end

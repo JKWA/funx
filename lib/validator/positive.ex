@@ -18,59 +18,21 @@ defmodule Funx.Validator.Positive do
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["must be positive"]}}
   """
 
-  @behaviour Funx.Validate.Behaviour
+  use Funx.Validator
 
-  alias Funx.Errors.ValidationError
-  alias Funx.Monad.Either
-  alias Funx.Monad.Maybe.{Just, Nothing}
-
-  # Convenience overloads for easier direct usage
-  def validate(value) do
-    validate(value, [], %{})
+  @impl Funx.Validator
+  def valid?(number, _opts, _env) when is_number(number) do
+    number > 0
   end
 
-  def validate(value, opts) when is_list(opts) do
-    validate(value, opts, %{})
+  def valid?(_non_number, _opts, _env), do: false
+
+  @impl Funx.Validator
+  def default_message(value, _opts) when is_number(value) do
+    "must be positive"
   end
 
-  # Behaviour implementation (arity-3)
-  @impl true
-  def validate(value, opts, env)
-
-  def validate(%Nothing{}, _opts, _env) do
-    Either.right(%Nothing{})
-  end
-
-  def validate(%Just{value: number}, opts, _env) when is_number(number) do
-    validate_number(number, opts)
-  end
-
-  def validate(%Just{value: value}, opts, _env) do
-    message = build_message(opts, value, "must be a number")
-    Either.left(ValidationError.new(message))
-  end
-
-  def validate(value, opts, _env) when is_number(value) do
-    validate_number(value, opts)
-  end
-
-  def validate(value, opts, _env) do
-    message = build_message(opts, value, "must be a number")
-    Either.left(ValidationError.new(message))
-  end
-
-  defp validate_number(value, opts) do
-    Either.lift_predicate(
-      value,
-      fn v -> v > 0 end,
-      fn v -> ValidationError.new(build_message(opts, v, "must be positive")) end
-    )
-  end
-
-  defp build_message(opts, value, default) do
-    case Keyword.get(opts, :message) do
-      nil -> default
-      callback -> callback.(value)
-    end
+  def default_message(_value, _opts) do
+    "must be a number"
   end
 end

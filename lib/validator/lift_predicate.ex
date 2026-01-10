@@ -50,9 +50,9 @@ defmodule Funx.Validator.LiftPredicate do
 
   @behaviour Funx.Validate.Behaviour
 
-  alias Funx.Errors.ValidationError
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Validator
 
   # Convenience overload for default opts (raises on missing required options)
   def validate(value) do
@@ -90,14 +90,7 @@ defmodule Funx.Validator.LiftPredicate do
     Either.lift_predicate(
       value,
       fn v -> pred.(v) end,
-      fn v -> ValidationError.new(build_message(opts, v, "invalid value")) end
+      fn v -> Validator.validation_error(opts, v, "invalid value") end
     )
-  end
-
-  defp build_message(opts, value, default) do
-    case Keyword.get(opts, :message) do
-      nil -> default
-      callback -> callback.(value)
-    end
   end
 end

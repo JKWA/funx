@@ -52,67 +52,29 @@ defmodule Funx.Validator.AllEqual do
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["must be all matching"]}}
   """
 
-  @behaviour Funx.Validate.Behaviour
+  use Funx.Validator
 
-  alias Funx.Errors.ValidationError
   alias Funx.List
-  alias Funx.Monad.Either
-  alias Funx.Monad.Maybe.{Just, Nothing}
 
-  # Convenience overloads for easier direct usage
-  def validate(value) do
-    validate(value, [], %{})
-  end
-
-  def validate(value, opts) when is_list(opts) do
-    validate(value, opts, %{})
-  end
-
-  # Behaviour implementation (arity-3)
-  @impl true
-  def validate(value, opts, env)
-
-  def validate(%Nothing{}, _opts, _env) do
-    Either.right(%Nothing{})
-  end
-
-  def validate(%Just{value: list}, opts, _env) when is_list(list) do
+  @impl Funx.Validator
+  def valid?(list, opts, _env) when is_list(list) do
     eq = Keyword.get(opts, :eq, Funx.Eq.Protocol)
-    validate_list(list, opts, eq)
+    all_elements_match?(list, eq)
   end
 
-  def validate(%Just{value: value}, opts, _env) do
-    message = build_message(opts, value, "must be a list")
-    Either.left(ValidationError.new(message))
+  def valid?(_non_list, _opts, _env), do: false
+
+  @impl Funx.Validator
+  def default_message(value, _opts) when is_list(value) do
+    "must be all matching"
   end
 
-  def validate(value, opts, _env) when is_list(value) do
-    eq = Keyword.get(opts, :eq, Funx.Eq.Protocol)
-    validate_list(value, opts, eq)
-  end
-
-  def validate(value, opts, _env) do
-    message = build_message(opts, value, "must be a list")
-    Either.left(ValidationError.new(message))
-  end
-
-  defp validate_list(value, opts, eq) do
-    Either.lift_predicate(
-      value,
-      &all_elements_match?(&1, eq),
-      fn v -> ValidationError.new(build_message(opts, v, "must be all matching")) end
-    )
+  def default_message(_value, _opts) do
+    "must be a list"
   end
 
   defp all_elements_match?(list, eq) do
     unique_count = list |> List.uniq(eq) |> length()
     unique_count == 1
-  end
-
-  defp build_message(opts, value, default) do
-    case Keyword.get(opts, :message) do
-      nil -> default
-      callback -> callback.(value)
-    end
   end
 end

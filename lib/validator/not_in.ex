@@ -46,10 +46,10 @@ defmodule Funx.Validator.NotIn do
 
   @behaviour Funx.Validate.Behaviour
 
-  alias Funx.Errors.ValidationError
   alias Funx.List
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Validator
 
   def validate(value) do
     validate(value, [])
@@ -82,15 +82,8 @@ defmodule Funx.Validator.NotIn do
       value,
       fn v -> not List.elem?(values, v, eq) end,
       fn v ->
-        ValidationError.new(build_message(opts, v, "must not be one of: #{inspect(values)}"))
+        Validator.validation_error(opts, v, "must not be one of: #{inspect(values)}")
       end
     )
-  end
-
-  defp build_message(opts, value, default) do
-    case Keyword.get(opts, :message) do
-      nil -> default
-      callback -> callback.(value)
-    end
   end
 end

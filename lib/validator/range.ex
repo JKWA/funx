@@ -25,49 +25,10 @@ defmodule Funx.Validator.Range do
       %Funx.Monad.Either.Left{left: %Funx.Errors.ValidationError{errors: ["must be at most 10"]}}
   """
 
-  @behaviour Funx.Validate.Behaviour
+  use Funx.Validator
 
-  alias Funx.Errors.ValidationError
-  alias Funx.Monad.Either
-  alias Funx.Monad.Maybe.{Just, Nothing}
-
-  # Convenience overload for default opts (raises on missing required options)
-  def validate(value) do
-    validate(value, [])
-  end
-
-  # Convenience overload for easier direct usage
-  def validate(value, opts) when is_list(opts) do
-    validate(value, opts, %{})
-  end
-
-  # Behaviour implementation (arity-3)
-  @impl true
-  def validate(value, opts, env)
-
-  def validate(%Nothing{}, _opts, _env) do
-    Either.right(%Nothing{})
-  end
-
-  def validate(%Just{value: number}, opts, _env) when is_number(number) do
-    validate_number(number, opts)
-  end
-
-  def validate(%Just{value: value}, opts, _env) do
-    message = build_message(opts, value, "must be a number")
-    Either.left(ValidationError.new(message))
-  end
-
-  def validate(value, opts, _env) when is_number(value) do
-    validate_number(value, opts)
-  end
-
-  def validate(value, opts, _env) do
-    message = build_message(opts, value, "must be a number")
-    Either.left(ValidationError.new(message))
-  end
-
-  defp validate_number(value, opts) do
+  @impl Funx.Validator
+  def valid?(number, opts, _env) when is_number(number) do
     min = Keyword.get(opts, :min)
     max = Keyword.get(opts, :max)
 
@@ -75,33 +36,35 @@ defmodule Funx.Validator.Range do
       raise ArgumentError, "Range validator requires at least :min or :max option"
     end
 
-    Either.lift_predicate(
-      value,
-      fn v -> in_range?(v, min, max) end,
-      fn v -> ValidationError.new(build_message(opts, v, default_message(min, max))) end
-    )
+    in_range?(number, min, max)
+  end
+
+  def valid?(_non_number, _opts, _env), do: false
+
+  @impl Funx.Validator
+  def default_message(value, opts) when is_number(value) do
+    min = Keyword.get(opts, :min)
+    max = Keyword.get(opts, :max)
+    build_range_message(min, max)
+  end
+
+  def default_message(_value, _opts) do
+    "must be a number"
   end
 
   defp in_range?(value, nil, max), do: value <= max
   defp in_range?(value, min, nil), do: value >= min
   defp in_range?(value, min, max), do: value >= min and value <= max
 
-  defp default_message(min, max) when not is_nil(min) and not is_nil(max) do
+  defp build_range_message(min, max) when not is_nil(min) and not is_nil(max) do
     "must be between #{min} and #{max}"
   end
 
-  defp default_message(min, nil) when not is_nil(min) do
+  defp build_range_message(min, nil) when not is_nil(min) do
     "must be at least #{min}"
   end
 
-  defp default_message(nil, max) when not is_nil(max) do
+  defp build_range_message(nil, max) when not is_nil(max) do
     "must be at most #{max}"
-  end
-
-  defp build_message(opts, value, default) do
-    case Keyword.get(opts, :message) do
-      nil -> default
-      callback -> callback.(value)
-    end
   end
 end

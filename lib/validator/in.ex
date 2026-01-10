@@ -7,7 +7,7 @@ defmodule Funx.Validator.In do
   "value must be one of these".
 
   Membership is defined by an `Eq` instance, not by structural equality or
-  Elixir’s `in` operator.
+  Elixir's `in` operator.
 
   Options
 
@@ -31,10 +31,10 @@ defmodule Funx.Validator.In do
 
   @behaviour Funx.Validate.Behaviour
 
-  alias Funx.Errors.ValidationError
   alias Funx.List
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Validator
 
   def validate(value) do
     validate(value, [])
@@ -77,15 +77,8 @@ defmodule Funx.Validator.In do
       end,
       fn v ->
         rendered = Enum.map_join(values, ", ", &inspect/1)
-        ValidationError.new(build_message(opts, v, "must be one of: #{rendered}"))
+        Validator.validation_error(opts, v, "must be one of: #{rendered}")
       end
     )
-  end
-
-  defp build_message(opts, value, default) do
-    case Keyword.get(opts, :message) do
-      nil -> default
-      callback -> callback.(value)
-    end
   end
 end
