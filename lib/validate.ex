@@ -105,23 +105,6 @@ defmodule Funx.Validate do
         at :email, Email
       end
 
-  ### Return Type Options
-
-      # Either (default): returns Either.t()
-      validate as: :either do
-        at :name, Required
-      end
-
-      # Tuple: returns {:ok, value} or {:error, error}
-      validate as: :tuple do
-        at :name, Required
-      end
-
-      # Raise: returns value or raises on error
-      validate as: :raise do
-        at :name, Required
-      end
-
   ## Examples
 
       validate do
@@ -132,19 +115,11 @@ defmodule Funx.Validate do
   """
   defmacro validate(opts \\ [], do: block) do
     mode = Keyword.get(opts, :mode, :sequential)
-    as = Keyword.get(opts, :as, :either)
-
-    # Validate as at compile time
-    unless as in [:either, :tuple, :raise] do
-      raise CompileError,
-        description: "Invalid return type: #{inspect(as)}. Must be :either, :tuple, or :raise"
-    end
-
-    compile_validation(block, mode, as, __CALLER__)
+    compile_validation(block, mode, __CALLER__)
   end
 
-  defp compile_validation(block, mode, as, caller_env) do
+  defp compile_validation(block, mode, caller_env) do
     steps = Parser.parse_steps(block, caller_env)
-    Executor.execute_steps(steps, mode, as)
+    Executor.execute_steps(steps, mode)
   end
 end

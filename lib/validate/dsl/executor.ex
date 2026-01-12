@@ -22,61 +22,33 @@ defmodule Funx.Validate.Dsl.Executor do
   @doc """
   Execute a list of Step nodes and generate a validator function.
   """
-  def execute_steps(steps, mode \\ :sequential, as \\ :either)
+  def execute_steps(steps, mode \\ :sequential)
 
-  def execute_steps(steps, :sequential, as) do
-    validator_fn =
-      quote do
-        validator_fns = unquote(compile_steps_to_validators(steps, :sequential))
+  def execute_steps(steps, :sequential) do
+    quote do
+      validator_fns = unquote(compile_steps_to_validators(steps, :sequential))
 
-        # Return the core validator function that always returns Either.t()
-        fn value, opts ->
-          Either.traverse_a(validator_fns, fn validator_fn ->
-            validator_fn.(value, opts)
-          end)
-          |> map(fn _ -> value end)
-        end
-      end
-
-    if as == :either do
-      validator_fn
-    else
-      quote do
-        core_fn = unquote(validator_fn)
-
-        fn value, opts ->
-          result = core_fn.(value, opts)
-          unquote(__MODULE__).wrap_result(result, unquote(as))
-        end
+      # Return the validator function that always returns Either.t()
+      fn value, opts ->
+        Either.traverse_a(validator_fns, fn validator_fn ->
+          validator_fn.(value, opts)
+        end)
+        |> map(fn _ -> value end)
       end
     end
   end
 
-  def execute_steps(steps, :parallel, as) do
-    validator_fn =
-      quote do
-        validator_fns = unquote(compile_steps_to_validators(steps, :parallel))
+  def execute_steps(steps, :parallel) do
+    quote do
+      validator_fns = unquote(compile_steps_to_validators(steps, :parallel))
 
-        # Return the core validator function that always returns Either.t()
-        fn value, opts ->
-          Effect.traverse_a(validator_fns, fn effect_fn ->
-            effect_fn.(value, opts)
-          end)
-          |> Effect.run()
-          |> map(fn _ -> value end)
-        end
-      end
-
-    if as == :either do
-      validator_fn
-    else
-      quote do
-        core_fn = unquote(validator_fn)
-
-        fn value, opts ->
-          result = core_fn.(value, opts)
-          unquote(__MODULE__).wrap_result(result, unquote(as))
-        end
+      # Return the validator function that always returns Either.t()
+      fn value, opts ->
+        Effect.traverse_a(validator_fns, fn effect_fn ->
+          effect_fn.(value, opts)
+        end)
+        |> Effect.run()
+        |> map(fn _ -> value end)
       end
     end
   end
@@ -294,14 +266,4 @@ defmodule Funx.Validate.Dsl.Executor do
         raise ArgumentError, "Validator must be a function with arity 1, 2, or 3, or a module"
     end
   end
-
-  # ============================================================================
-  # RETURN TYPE WRAPPING
-  # ============================================================================
-
-  @doc false
-  def wrap_result(result, :tuple), do: Either.to_result(result)
-
-  @doc false
-  def wrap_result(result, :raise), do: Either.to_try!(result)
 end
