@@ -67,6 +67,19 @@ defmodule Funx.Validate do
 
   By default, `at :key` uses `Prism.key(:key)` (optional field).
 
+  ### Nested Field Validation (List Paths)
+
+      validate do
+        at [:user, :profile, :name], Required
+        at [:user, :profile, :age], Positive
+      end
+
+  List paths support struct modules for type-safe nested access:
+
+      validate do
+        at [User, :profile, Profile, :age], Positive
+      end
+
   ### Explicit Optics
 
       validate do

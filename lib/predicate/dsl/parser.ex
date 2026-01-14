@@ -27,6 +27,7 @@ defmodule Funx.Predicate.Dsl.Parser do
   #
   # The `check` directive supports:
   #   - Atom fields: `:name` → uses Prism.key(:name)
+  #   - List/Struct paths: `[:a, :b]` or `[User, :name]` → uses Prism.path(...)
   #   - Lens: `Lens.key(:name)` or `Lens.path([:a, :b])`
   #   - Prism: `Prism.key(:name)`, `Prism.at(0)`, etc.
   #   - Functions: `&get_value/1` or `fn x -> x.value end`
@@ -169,10 +170,17 @@ defmodule Funx.Predicate.Dsl.Parser do
   # Normalize projection AST to canonical form
   #
   # Atoms are converted to Prism.key calls for safe nil handling.
+  # Lists are converted to Prism.path calls for nested field access (supports structs too).
   # Optics and functions are validated and passed through.
   defp normalize_projection(atom) when is_atom(atom) do
     quote do
       Prism.key(unquote(atom))
+    end
+  end
+
+  defp normalize_projection(list) when is_list(list) do
+    quote do
+      Prism.path(unquote(list))
     end
   end
 

@@ -41,7 +41,9 @@ Plus special types for modules and runtime values:
 All syntax sugar resolves to these types:
 
 * `:atom` → `Prism.key(:atom)`
+* `[:a, :b]` → `Prism.path([:a, :b])` (supports nested keys and structs)
 * `:atom, or_else: x` → `{Prism.key(:atom), x}`
+* `[:a, :b], or_else: x` → `{Prism.path([:a, :b]), x}`
 * `Lens.key(...)` → `Lens.key(...)` (pass through)
 * `Prism.key(...)` → `Prism.key(...)` (pass through)
 * `{Prism, x}` → `{Prism, x}` (pass through)
@@ -109,6 +111,59 @@ Ord.concat([
   Ord.reverse(Ord.contramap(Prism.key(:age), Funx.Ord)),
   Ord.contramap(fn x -> x end, Funx.Ord)  # implicit identity
 ])
+```
+
+### List Paths (Nested Field Access)
+
+List paths provide convenient syntax for accessing nested fields without manually composing optics:
+
+```elixir
+# Instead of:
+ord do
+  asc Prism.path([:user, :profile, :age])
+end
+
+# You can write:
+ord do
+  asc [:user, :profile, :age]
+end
+```
+
+List paths support both atom keys and struct modules:
+
+```elixir
+defmodule Company, do: defstruct [:name, :address]
+defmodule Address, do: defstruct [:city, :state]
+
+# Sort companies by nested city
+ord_by_city = ord do
+  asc [Company, :address, Address, :city]
+end
+
+companies = [
+  %Company{name: "ACME", address: %Address{city: "Seattle", state: "WA"}},
+  %Company{name: "Corp", address: %Address{city: "Austin", state: "TX"}},
+  %Company{name: "Inc", address: %Address{city: "Boston", state: "MA"}}
+]
+
+Enum.sort(companies, &Ord.lt?(&1, &2, ord_by_city))
+# => [Austin, Boston, Seattle]
+```
+
+List paths work with `or_else` for handling missing values:
+
+```elixir
+ord do
+  asc [:user, :profile, :score], or_else: 0
+end
+```
+
+List paths work with `desc` for descending order:
+
+```elixir
+ord do
+  desc [:user, :profile, :created_at]
+end
 ```
 
 ## Ord Variables

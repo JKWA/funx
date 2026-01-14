@@ -422,4 +422,61 @@ defmodule Funx.Validate.Dsl.ParserTest do
       assert length(steps) == 1
     end
   end
+
+  describe "parse_steps/2 with list paths" do
+    test "accepts list path with atoms" do
+      ast =
+        quote do
+          at [:user, :profile, :name], Required
+        end
+
+      # Should not raise
+      steps = Parser.parse_steps(ast, __ENV__)
+      assert length(steps) == 1
+    end
+
+    test "accepts list path with struct modules" do
+      ast =
+        quote do
+          at [User, :profile, :name], Required
+        end
+
+      # Should not raise
+      steps = Parser.parse_steps(ast, __ENV__)
+      assert length(steps) == 1
+    end
+
+    test "accepts nested list path with multiple structs" do
+      ast =
+        quote do
+          at [Company, :address, Address, :city], Required
+        end
+
+      # Should not raise
+      steps = Parser.parse_steps(ast, __ENV__)
+      assert length(steps) == 1
+    end
+
+    test "accepts list path with validator list" do
+      ast =
+        quote do
+          at [:user, :email], [Required, Email]
+        end
+
+      # Should not raise
+      steps = Parser.parse_steps(ast, __ENV__)
+      assert length(steps) == 1
+    end
+
+    test "accepts empty list as path (though unusual)" do
+      ast =
+        quote do
+          at [], Required
+        end
+
+      # Should not raise - will be handled at runtime
+      steps = Parser.parse_steps(ast, __ENV__)
+      assert length(steps) == 1
+    end
+  end
 end

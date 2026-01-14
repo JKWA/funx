@@ -37,6 +37,15 @@ defmodule Funx.Validate.DSL.DSLTest do
   alias Funx.Optics.{Lens, Prism}
   alias Funx.Validator.{Email, MinLength, Positive, Required}
 
+  # Test domain structs
+  defmodule User do
+    defstruct [:name, :profile]
+  end
+
+  defmodule Profile do
+    defstruct [:age]
+  end
+
   # Custom validator for date range validation (not a built-in)
   defmodule DateRange do
     @behaviour Funx.Validate.Behaviour
@@ -677,6 +686,85 @@ defmodule Funx.Validate.DSL.DSLTest do
       # Function returns nil for missing key - Required should fail
       result = Either.validate(%{name: "Alice"}, user_validation)
       assert %Left{left: %ValidationError{errors: ["is required"]}} = result
+    end
+  end
+
+  describe "list paths (nested field access)" do
+    test "list path normalizes to Prism.path" do
+      use Funx.Validate
+
+      nested_validation =
+        validate do
+          at [:user, :profile, :name], Required
+        end
+
+      # Valid nested path
+      result = Either.validate(%{user: %{profile: %{name: "Alice"}}}, nested_validation)
+      assert result == %Right{right: %{user: %{profile: %{name: "Alice"}}}}
+
+      # Missing nested key fails
+      result = Either.validate(%{user: %{profile: %{}}}, nested_validation)
+      assert %Left{left: %ValidationError{errors: ["is required"]}} = result
+    end
+
+    test "list path with struct modules" do
+      use Funx.Validate
+
+      nested_validation =
+        validate do
+          at [User, :profile, Profile, :age], Positive
+        end
+
+      user = %User{name: "Alice", profile: %Profile{age: 30}}
+      result = Either.validate(user, nested_validation)
+      assert result == %Right{right: user}
+
+      invalid_user = %User{name: "Bob", profile: %Profile{age: -5}}
+      result = Either.validate(invalid_user, nested_validation)
+      assert %Left{left: %ValidationError{}} = result
+    end
+
+    test "list path with multiple validators" do
+      use Funx.Validate
+
+      nested_validation =
+        validate do
+          at [:user, :email], [Required, Email]
+        end
+
+      # Valid
+      result = Either.validate(%{user: %{email: "alice@example.com"}}, nested_validation)
+      assert result == %Right{right: %{user: %{email: "alice@example.com"}}}
+
+      # Missing email
+      result = Either.validate(%{user: %{}}, nested_validation)
+      assert %Left{left: %ValidationError{}} = result
+
+      # Invalid email format
+      result = Either.validate(%{user: %{email: "not-an-email"}}, nested_validation)
+      assert %Left{left: %ValidationError{}} = result
+    end
+
+    test "multiple list paths in same validation" do
+      use Funx.Validate
+
+      nested_validation =
+        validate do
+          at [:user, :name], Required
+          at [:user, :age], Positive
+        end
+
+      # Valid
+      result = Either.validate(%{user: %{name: "Alice", age: 30}}, nested_validation)
+      assert result == %Right{right: %{user: %{name: "Alice", age: 30}}}
+
+      # Missing name
+      result = Either.validate(%{user: %{age: 30}}, nested_validation)
+      assert %Left{left: %ValidationError{}} = result
+
+      # Invalid age
+      result = Either.validate(%{user: %{name: "Alice", age: -5}}, nested_validation)
+      assert %Left{left: %ValidationError{}} = result
     end
   end
 

@@ -48,6 +48,7 @@ The `check` directive composes a projection with a predicate. All projection syn
 Syntax sugar for projections:
 
 * `:atom` → `Prism.key(:atom)`
+* `[:a, :b]` → `Prism.path([:a, :b])` (supports nested keys and structs)
 * `Lens.key(...)` → `Lens.key(...)` (pass through)
 * `Prism.key(...)` → `Prism.key(...)` (pass through)
 * `fn -> ... end` → `fn -> ... end` (pass through)
@@ -115,6 +116,26 @@ check :name, fn name -> String.length(name) > 5 end
 ```
 
 Equivalent to `check Prism.key(:name), fn name -> String.length(name) > 5 end`.
+
+**With list path (nested fields):**
+
+```elixir
+check [:user, :profile, :age], fn age -> age >= 18 end
+```
+
+Equivalent to `check Prism.path([:user, :profile, :age]), fn age -> age >= 18 end`. The list path supports both atom keys and struct modules:
+
+```elixir
+defmodule User, do: defstruct [:name, :profile]
+defmodule Profile, do: defstruct [:age, :verified]
+
+check_adult = pred do
+  check [User, :profile, Profile, :age], fn age -> age >= 18 end
+end
+
+user = %User{name: "Alice", profile: %Profile{age: 25, verified: true}}
+check_adult.(user)  # true
+```
 
 ### Compilation Example
 

@@ -99,6 +99,12 @@ defmodule Funx.Ord do
         asc :score, or_else: 0
         desc &String.length(&1.bio)
       end
+
+      # With nested field paths
+      ord do
+        asc [:user, :profile, :created_at]
+        desc [:user, :stats, :score]
+      end
   """
   defmacro ord(do: block) do
     compile_ord(block, __CALLER__)

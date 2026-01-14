@@ -27,6 +27,7 @@ defmodule Funx.Eq.Dsl.Parser do
   # All user syntax is normalized to canonical forms that contramap/2 accepts:
   #
   #   - :atom              → Prism.key(:atom)
+  #   - [:a, :b]           → Prism.path([:a, :b]) (supports structs too)
   #   - :atom, or_else: x  → {Prism.key(:atom), x}
   #   - Lens.key(...)      → pass through
   #   - Prism.key(...)     → pass through (or tuple with or_else)
@@ -117,6 +118,27 @@ defmodule Funx.Eq.Dsl.Parser do
     ast =
       quote do
         {Prism.key(unquote(atom)), unquote(or_else)}
+      end
+
+    {ast, :projection}
+  end
+
+  # List without or_else
+  defp build_projection_ast(list, nil, _behaviour_opts, _meta, _caller_env) when is_list(list) do
+    ast =
+      quote do
+        Prism.path(unquote(list))
+      end
+
+    {ast, :projection}
+  end
+
+  # List with or_else
+  defp build_projection_ast(list, or_else, _behaviour_opts, _meta, _caller_env)
+       when is_list(list) and not is_nil(or_else) do
+    ast =
+      quote do
+        {Prism.path(unquote(list)), unquote(or_else)}
       end
 
     {ast, :projection}

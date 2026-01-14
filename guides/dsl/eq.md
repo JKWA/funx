@@ -37,7 +37,9 @@ The parser converts the DSL block into a tree of Step and Block structures. It n
 All syntax sugar resolves to these types:
 
 * `:atom` → `Prism.key(:atom)`
+* `[:a, :b]` → `Prism.path([:a, :b])` (supports nested keys and structs)
 * `:atom, or_else: x` → `{Prism.key(:atom), x}`
+* `[:a, :b], or_else: x` → `{Prism.path([:a, :b]), x}`
 * `Lens.key(...)` → `Lens.key(...)` (pass through)
 * `Prism.key(...)` → `Prism.key(...)` (pass through)
 * `{Prism, x}` → `{Prism, x}` (pass through)
@@ -128,6 +130,47 @@ Utils.concat_all([
     Utils.contramap(Prism.key(:username), Funx.Eq)
   ])
 ])
+```
+
+### List Paths (Nested Field Access)
+
+List paths provide convenient syntax for accessing nested fields without manually composing optics:
+
+```elixir
+# Instead of:
+eq do
+  on Prism.path([:user, :profile, :name])
+end
+
+# You can write:
+eq do
+  on [:user, :profile, :name]
+end
+```
+
+List paths support both atom keys and struct modules:
+
+```elixir
+defmodule Company, do: defstruct [:name, :address]
+defmodule Address, do: defstruct [:city, :state]
+
+# Compare companies by nested city
+eq_by_city = eq do
+  on [Company, :address, Address, :city]
+end
+
+company1 = %Company{name: "ACME", address: %Address{city: "NYC", state: "NY"}}
+company2 = %Company{name: "Corp", address: %Address{city: "NYC", state: "NY"}}
+
+Funx.Eq.eq?(company1, company2, eq_by_city)  # true
+```
+
+List paths work with `or_else` for handling missing values:
+
+```elixir
+eq do
+  on [:user, :profile, :age], or_else: 0
+end
 ```
 
 ## Behaviours

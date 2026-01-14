@@ -350,6 +350,57 @@ defmodule Funx.Predicate.DslTest do
       refute check.(%{age: 16, score: 75})
       refute check.(%{age: 20, score: 25})
     end
+
+    test "check with list path (nested keys)" do
+      nested_data = %{user: %{profile: %{age: 25}}}
+      no_profile = %{user: %{}}
+      no_user = %{}
+
+      age_check =
+        pred do
+          check([:user, :profile, :age], fn age -> age >= 18 end)
+        end
+
+      assert age_check.(nested_data)
+      # Missing keys fail (Prism.path returns nil for missing paths)
+      refute age_check.(no_profile)
+      refute age_check.(no_user)
+    end
+
+    test "check with list path containing struct (struct-aware path)" do
+      user = %User{name: "Alice", age: 30}
+      nested_data = %{user: user}
+      no_user = %{}
+
+      name_check =
+        pred do
+          check([User, :name], fn name -> String.length(name) > 3 end)
+        end
+
+      # Works with struct projection
+      assert name_check.(user)
+
+      # Works with nested struct
+      nested_name_check =
+        pred do
+          check([:user, User, :name], fn name -> String.length(name) > 3 end)
+        end
+
+      assert nested_name_check.(nested_data)
+      # Missing keys fail
+      refute nested_name_check.(no_user)
+    end
+
+    test "check with list path (short names)" do
+      nested_data = %{user: %{profile: %{name: "Jo"}}}
+
+      name_check =
+        pred do
+          check([:user, :profile, :name], fn name -> String.length(name) > 3 end)
+        end
+
+      refute name_check.(nested_data)
+    end
   end
 
   # ============================================================================
@@ -746,6 +797,22 @@ defmodule Funx.Predicate.DslTest do
       assert verified_user.(%{age: 20, banned: false})
       refute verified_user.(%{age: 16, banned: false})
       refute verified_user.(%{age: 20, banned: true})
+    end
+
+    test "negate check with list path" do
+      nested_adult = %{user: %{profile: %{age: 25}}}
+      nested_minor = %{user: %{profile: %{age: 16}}}
+      no_age = %{user: %{profile: %{}}}
+
+      not_adult =
+        pred do
+          negate(check([:user, :profile, :age], fn age -> age >= 18 end))
+        end
+
+      refute not_adult.(nested_adult)
+      assert not_adult.(nested_minor)
+      # Missing path passes negation (Prism behavior)
+      assert not_adult.(no_age)
     end
   end
 
@@ -1469,15 +1536,15 @@ defmodule Funx.Predicate.DslTest do
       end
     end
 
-    test "raises compile error on invalid projection type (list)" do
+    test "raises compile error on invalid projection type (tuple)" do
       assert_raise CompileError, ~r/Invalid projection type in `check` directive/, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Predicate
 
             pred do
-              # List is not a valid projection type
-              check [:foo, :bar], fn _ -> true end
+              # Tuple is not a valid projection type
+              check {:foo, :bar}, fn _ -> true end
             end
           end
         )

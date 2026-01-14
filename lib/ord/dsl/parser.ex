@@ -22,6 +22,7 @@ defmodule Funx.Ord.Dsl.Parser do
   # All syntax sugar resolves to these types:
   #
   #   - :atom              → Prism.key(:atom)
+  #   - [:a, :b]           → Prism.path([:a, :b]) (supports structs too)
   #   - :atom, or_else: x  → {Prism.key(:atom), x}
   #   - Lens.key(...)      → Lens.key(...) (pass through)
   #   - Prism.key(...)     → Prism.key(...) (pass through)
@@ -114,6 +115,25 @@ defmodule Funx.Ord.Dsl.Parser do
     ast =
       quote do
         {Prism.key(unquote(atom)), unquote(or_else)}
+      end
+
+    {ast, :projection}
+  end
+
+  defp build_projection_ast(list, nil, _behaviour_opts, _meta, _caller_env) when is_list(list) do
+    ast =
+      quote do
+        Prism.path(unquote(list))
+      end
+
+    {ast, :projection}
+  end
+
+  defp build_projection_ast(list, or_else, _behaviour_opts, _meta, _caller_env)
+       when is_list(list) and not is_nil(or_else) do
+    ast =
+      quote do
+        {Prism.path(unquote(list)), unquote(or_else)}
       end
 
     {ast, :projection}

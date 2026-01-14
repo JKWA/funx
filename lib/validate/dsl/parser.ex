@@ -8,6 +8,7 @@ defmodule Funx.Validate.Dsl.Parser do
   #
   #   - Bare validator                        → Step{optic: nil, validators: [validator]}
   #   - at :key, validator                    → Step{optic: :key, validators: [validator]}
+  #   - at [:a, :b], validator                → Step{optic: Prism.path([:a, :b]), validators: [validator]}
   #   - at :key, [v1, v2]                     → Step{optic: :key, validators: [v1, v2]}
   #   - at Lens.key(:key), validator          → Step{optic: Lens, validators: [validator]}
   #   - at Prism.key(:key), validator         → Step{optic: Prism, validators: [validator]}
@@ -51,10 +52,17 @@ defmodule Funx.Validate.Dsl.Parser do
   end
 
   # Normalize optic expressions
-  # Atom keys default to Prism
+  # Atom keys default to Prism.key
   defp normalize_optic(key) when is_atom(key) do
     quote do
       Prism.key(unquote(key))
+    end
+  end
+
+  # Lists default to Prism.path (supports nested keys and structs)
+  defp normalize_optic(list) when is_list(list) do
+    quote do
+      Prism.path(unquote(list))
     end
   end
 

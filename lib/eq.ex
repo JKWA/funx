@@ -139,6 +139,13 @@ defmodule Funx.Eq do
           on :username
         end
       end
+
+  With nested field paths:
+
+      eq_nested = eq do
+        on [:user, :profile, :name]
+        on [:user, :profile, :age]
+      end
   """
   defmacro eq(do: block) do
     compile_eq(block, __CALLER__)

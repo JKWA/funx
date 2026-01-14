@@ -38,6 +38,7 @@ end
 ### Valid Projections:
 
 * Atoms: `:field_name`, converts to `Prism.key(:field_name)`
+* Lists: `[:a, :b]`, converts to `Prism.path([:a, :b])` (supports nested keys and structs)
 * Lenses: `Lens.key(:field)`, `Lens.path([:a, :b])`
 * Prisms: `Prism.key(:field)`, `Prism.path([{Struct, :field}])`
 * Traversals: `Traversal.all()`, `Traversal.filter(pred)`
@@ -114,6 +115,110 @@ Different age returns false:
 
 ```elixir
 Eq.eq?(alice, %Person{name: "Alice", age: 99}, eq_name_and_age)
+```
+
+## List Paths (Nested Field Access)
+
+List paths provide convenient syntax for accessing nested fields without manually composing optics.
+
+### Basic List Paths
+
+Define nested structs for testing:
+
+```elixir
+defmodule Company do
+  defstruct [:name, :address]
+end
+
+defmodule Location do
+  defstruct [:city, :state, :country]
+end
+```
+
+Create sample data:
+
+```elixir
+company1 = %Company{name: "ACME", address: %Location{city: "Austin", state: "TX", country: "USA"}}
+company2 = %Company{name: "Corp", address: %Location{city: "Austin", state: "TX", country: "USA"}}
+company3 = %Company{name: "Inc", address: %Location{city: "Boston", state: "MA", country: "USA"}}
+```
+
+Use list syntax to access nested fields:
+
+```elixir
+eq_by_city =
+  eq do
+    on [:address, :city]
+  end
+
+Eq.eq?(company1, company2, eq_by_city)
+```
+
+```elixir
+Eq.eq?(company1, company3, eq_by_city)
+```
+
+### List Paths with Structs
+
+List paths support struct modules for type-safe nested access:
+
+```elixir
+eq_struct_path =
+  eq do
+    on [Company, :address, Location, :city]
+  end
+
+Eq.eq?(company1, company2, eq_struct_path)
+```
+
+### List Paths with or_else
+
+List paths work with the `or_else` option for handling missing values:
+
+```elixir
+incomplete_company = %Company{name: "Startup", address: %Location{city: nil, state: "CA", country: "USA"}}
+
+eq_with_default =
+  eq do
+    on [:address, :city], or_else: "Unknown"
+  end
+
+Eq.eq?(incomplete_company, %Company{address: %Location{city: "Unknown"}}, eq_with_default)
+```
+
+### Multiple List Paths
+
+Combine multiple nested field checks:
+
+```elixir
+eq_city_and_state =
+  eq do
+    on [:address, :city]
+    on [:address, :state]
+  end
+
+Eq.eq?(company1, company2, eq_city_and_state)
+```
+
+```elixir
+Eq.eq?(company1, company3, eq_city_and_state)
+```
+
+### Equivalent to Prism.path
+
+List paths are syntax sugar for `Prism.path`:
+
+```elixir
+# These are equivalent:
+eq_list = eq do
+  on [:address, :city]
+end
+
+eq_explicit = eq do
+  on Prism.path([:address, :city])
+end
+
+Eq.eq?(company1, company2, eq_list) == Eq.eq?(company1, company2, eq_explicit)
 ```
 
 ## diff_on Directive
