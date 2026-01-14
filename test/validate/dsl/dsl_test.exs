@@ -1013,6 +1013,210 @@ defmodule Funx.Validate.DSL.DSLTest do
     end
   end
 
+  describe "compile-time validation" do
+    test "rejects literal number as validator" do
+      assert_raise CompileError,
+                   ~r/Invalid validator: 123/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         require Funx.Validate
+                         import Funx.Validate
+
+                         validate do
+                           at :name, 123
+                         end
+                       end,
+                       [],
+                       __ENV__
+                     )
+                   end
+    end
+
+    test "rejects literal string as validator" do
+      assert_raise CompileError,
+                   ~r/Invalid validator: "string"/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         require Funx.Validate
+                         import Funx.Validate
+
+                         validate do
+                           at :name, "string"
+                         end
+                       end,
+                       [],
+                       __ENV__
+                     )
+                   end
+    end
+
+    test "rejects literal atom as validator" do
+      assert_raise CompileError,
+                   ~r/Invalid validator: :atom/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         require Funx.Validate
+                         import Funx.Validate
+
+                         validate do
+                           at :name, :atom
+                         end
+                       end,
+                       [],
+                       __ENV__
+                     )
+                   end
+    end
+
+    test "rejects empty list as validator" do
+      assert_raise CompileError,
+                   ~r/Invalid validator: empty list \[\]/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         require Funx.Validate
+                         import Funx.Validate
+
+                         validate do
+                           at :name, []
+                         end
+                       end,
+                       [],
+                       __ENV__
+                     )
+                   end
+    end
+
+    test "rejects literal number in validator list" do
+      assert_raise CompileError,
+                   ~r/Invalid validator in list: 123/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         require Funx.Validate
+                         import Funx.Validate
+
+                         validate do
+                           at :name, [Required, 123]
+                         end
+                       end,
+                       [],
+                       __ENV__
+                     )
+                   end
+    end
+
+    test "rejects literal string in validator list" do
+      assert_raise CompileError,
+                   ~r/Invalid validator in list: "bad"/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         require Funx.Validate
+                         import Funx.Validate
+
+                         validate do
+                           at :name, [Required, "bad"]
+                         end
+                       end,
+                       [],
+                       __ENV__
+                     )
+                   end
+    end
+
+    test "rejects nested list in validator list" do
+      assert_raise CompileError,
+                   ~r/Invalid validator in list:/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         require Funx.Validate
+                         import Funx.Validate
+
+                         validate do
+                           at :name, [Required, [Email]]
+                         end
+                       end,
+                       [],
+                       __ENV__
+                     )
+                   end
+    end
+
+    test "rejects literal in bare validator position" do
+      assert_raise CompileError,
+                   ~r/Invalid validator: 42/,
+                   fn ->
+                     Code.eval_quoted(
+                       quote do
+                         require Funx.Validate
+                         import Funx.Validate
+
+                         validate do
+                           42
+                         end
+                       end,
+                       [],
+                       __ENV__
+                     )
+                   end
+    end
+
+    test "allows module alias as validator" do
+      use Funx.Validate
+
+      # Should not raise
+      _validation =
+        validate do
+          at :name, Required
+        end
+    end
+
+    test "allows tuple with options as validator" do
+      use Funx.Validate
+
+      # Should not raise
+      _validation =
+        validate do
+          at :name, {MinLength, min: 3}
+        end
+    end
+
+    test "allows list of validators" do
+      use Funx.Validate
+
+      # Should not raise
+      _validation =
+        validate do
+          at :name, [Required, Email]
+        end
+    end
+
+    test "allows function capture as validator" do
+      use Funx.Validate
+
+      # Should not raise - function captures are allowed
+      _validation =
+        validate do
+          at :name, &String.upcase/1
+        end
+    end
+
+    test "allows anonymous function as validator" do
+      use Funx.Validate
+
+      # Should not raise
+      _validation =
+        validate do
+          at :name, fn x -> Either.right(x) end
+        end
+    end
+  end
+
   describe "composable validators" do
     test "can use validator functions in at statements" do
       use Funx.Validate
