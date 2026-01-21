@@ -36,6 +36,9 @@ defmodule Funx.Validate do
   2. **Executor** - Converts Step nodes into executable validator function
   """
 
+  @type t ::
+          (any(), keyword(), map() -> Funx.Monad.Either.t(any(), Funx.Errors.ValidationError.t()))
+
   alias Funx.Validate.Dsl.{Executor, Parser}
 
   defmacro __using__(_opts) do

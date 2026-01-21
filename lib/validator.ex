@@ -221,6 +221,9 @@ defmodule Funx.Validator do
 
       def valid?(_non_number, _opts, _env), do: false
   """
+
+  @type t :: module()
+
   alias Funx.Errors.ValidationError
 
   @callback valid?(value :: any(), opts :: keyword(), env :: map()) :: boolean()
