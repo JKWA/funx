@@ -184,6 +184,69 @@ defmodule Funx.Eq.DslTest do
   end
 
   # ============================================================================
+  # List Path Tests
+  # ============================================================================
+
+  describe "list paths (nested field access)" do
+    test "list path without or_else" do
+      nested_data = %{user: %{profile: %{name: "Alice"}}}
+      other_data = %{user: %{profile: %{name: "Bob"}}}
+
+      eq_name =
+        eq do
+          on [:user, :profile, :name]
+        end
+
+      assert Funx.Eq.eq?(nested_data, nested_data, eq_name)
+      refute Funx.Eq.eq?(nested_data, other_data, eq_name)
+    end
+
+    test "list path with or_else" do
+      complete_data = %{user: %{profile: %{name: "Alice"}}}
+      incomplete_data = %{user: %{}}
+
+      eq_with_default =
+        eq do
+          on [:user, :profile, :name], or_else: "Unknown"
+        end
+
+      # Both missing should be equal (both get default)
+      assert Funx.Eq.eq?(incomplete_data, incomplete_data, eq_with_default)
+      # Complete vs incomplete should differ
+      refute Funx.Eq.eq?(complete_data, incomplete_data, eq_with_default)
+    end
+
+    test "list path with struct" do
+      person1 = %PersonWithAddress{name: "Alice", address: %Address{city: "NYC"}}
+      person2 = %PersonWithAddress{name: "Alice", address: %Address{city: "NYC"}}
+      person3 = %PersonWithAddress{name: "Alice", address: %Address{city: "LA"}}
+
+      eq_city =
+        eq do
+          on [PersonWithAddress, :address, Address, :city]
+        end
+
+      assert Funx.Eq.eq?(person1, person2, eq_city)
+      refute Funx.Eq.eq?(person1, person3, eq_city)
+    end
+
+    test "multiple list paths" do
+      data1 = %{user: %{name: "Alice", age: 30}}
+      data2 = %{user: %{name: "Alice", age: 30}}
+      data3 = %{user: %{name: "Alice", age: 25}}
+
+      eq_user =
+        eq do
+          on [:user, :name]
+          on [:user, :age]
+        end
+
+      assert Funx.Eq.eq?(data1, data2, eq_user)
+      refute Funx.Eq.eq?(data1, data3, eq_user)
+    end
+  end
+
+  # ============================================================================
   # diff_on Directive Tests
   # ============================================================================
 
@@ -991,7 +1054,7 @@ defmodule Funx.Eq.DslTest do
             use Funx.Eq
 
             eq do
-              on [1, 2, 3]
+              on "invalid"
             end
           end
         )

@@ -206,6 +206,7 @@ The DSL version:
 **Projections (for `check` directive):**
 
 - `check :atom, pred` - Atom field (converts to `Prism.key/1`, degenerate sum: present | absent)
+- `check [:a, :b], pred` - List path (converts to `Prism.path/1`, nested keys and structs)
 - `check Lens.key(:field), pred` - Explicit Lens (total accessor, raises on missing keys)
 - `check Prism.key(:field), pred` - Explicit Prism (branch selector, Nothing fails the predicate)
 - `check Prism.struct(Module), pred` - Sum type branch selection (selects one case)
@@ -239,6 +240,26 @@ end
 pred do
   check :email, fn email -> String.contains?(email, "@") end
   check :age, fn age -> age >= 18 end
+end
+```
+
+**Using check with list paths (nested fields):**
+
+```elixir
+# Basic list path
+pred do
+  check [:user, :profile, :age], fn age -> age >= 18 end
+  check [:user, :settings, :notifications], fn n -> n == true end
+end
+
+# List path with struct modules
+pred do
+  check [Account, :owner, Owner, :age], fn age -> age >= 21 end
+end
+
+# Negating list path checks
+pred do
+  negate check [:settings, :privacy], fn p -> p == :private end
 end
 ```
 

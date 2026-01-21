@@ -25,17 +25,17 @@ defmodule Funx.Monad.Maybe.Dsl do
 
       iex> defmodule GetUser do
       ...>   use Funx.Monad.Maybe
-      ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run_maybe(_value, _env, _opts), do: nothing()
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
+      ...>   def bind(_value, _opts, _env), do: nothing()
       ...> end
       iex> defmodule CheckPermissions do
       ...>   use Funx.Monad.Maybe
-      ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run_maybe(value, _env, _opts), do: just(value)
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
+      ...>   def bind(value, _opts, _env), do: just(value)
       ...> end
       iex> defmodule FormatUser do
-      ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run_maybe(value, _env, _opts), do: "formatted: \#{value}"
+      ...>   @behaviour Funx.Monad.Behaviour.Map
+      ...>   def map(value, _opts, _env), do: "formatted: \#{value}"
       ...> end
       iex> use Funx.Monad.Maybe
       iex> maybe 123 do
@@ -55,8 +55,8 @@ defmodule Funx.Monad.Maybe.Dsl do
 
       iex> defmodule ParseInt do
       ...>   use Funx.Monad.Maybe
-      ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run_maybe(value, _env, _opts) when is_binary(value) do
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
+      ...>   def bind(value, _opts, _env) when is_binary(value) do
       ...>     case Integer.parse(value) do
       ...>       {int, ""} -> just(int)
       ...>       _ -> nothing()
@@ -64,8 +64,8 @@ defmodule Funx.Monad.Maybe.Dsl do
       ...>   end
       ...> end
       iex> defmodule Double do
-      ...>   @behaviour Funx.Monad.Maybe.Dsl.Behaviour
-      ...>   def run_maybe(value, _env, _opts), do: value * 2
+      ...>   @behaviour Funx.Monad.Behaviour.Map
+      ...>   def map(value, _opts, _env), do: value * 2
       ...> end
       iex> use Funx.Monad.Maybe
       iex> maybe "42" do

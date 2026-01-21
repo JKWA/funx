@@ -13,78 +13,85 @@ defmodule Funx.Monad.Either.Dsl.ExecutorTest do
   use ExUnit.Case, async: true
   use Funx.Monad.Either
 
+  alias Funx.Monad.Either
   alias Funx.Monad.Either.Dsl.Executor
 
   # Tests input lifting for various input types
   describe "lift_input/1" do
     test "lifts plain value to Right" do
-      assert Executor.lift_input(42) == right(42)
+      assert Executor.lift_input(42) == Either.right(42)
     end
 
     test "passes through Right unchanged" do
-      input = right(42)
+      input = Either.right(42)
       assert Executor.lift_input(input) == input
     end
 
     test "passes through Left unchanged" do
-      input = left("error")
+      input = Either.left("error")
       assert Executor.lift_input(input) == input
     end
 
     test "converts {:ok, value} to Right" do
-      assert Executor.lift_input({:ok, 42}) == right(42)
+      assert Executor.lift_input({:ok, 42}) == Either.right(42)
     end
 
     test "converts {:error, reason} to Left" do
-      assert Executor.lift_input({:error, "failed"}) == left("failed")
+      assert Executor.lift_input({:error, "failed"}) == Either.left("failed")
     end
 
     test "lifts nil to Right" do
-      assert Executor.lift_input(nil) == right(nil)
+      assert Executor.lift_input(nil) == Either.right(nil)
     end
 
     test "lifts complex data structures" do
       data = %{name: "Alice", age: 30}
-      assert Executor.lift_input(data) == right(data)
+      assert Executor.lift_input(data) == Either.right(data)
     end
   end
 
   # Tests normalization of module run/3 results
   describe "normalize_run_result/1" do
     test "converts {:ok, value} to Right" do
-      assert Executor.normalize_run_result({:ok, 42}) == right(42)
+      assert Executor.normalize_run_result({:ok, 42}) == Either.right(42)
     end
 
     test "converts {:error, reason} to Left" do
-      assert Executor.normalize_run_result({:error, "failed"}) == left("failed")
+      assert Executor.normalize_run_result({:error, "failed"}) == Either.left("failed")
     end
 
     test "passes through Right unchanged" do
-      either = right(42)
+      either = Either.right(42)
       assert Executor.normalize_run_result(either) == either
     end
 
     test "passes through Left unchanged" do
-      either = left("error")
+      either = Either.left("error")
       assert Executor.normalize_run_result(either) == either
     end
 
     test "raises ArgumentError for invalid return value" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
-        Executor.normalize_run_result(:invalid)
-      end
+      assert_raise ArgumentError,
+                   ~r/Operation must return either an Either struct or a result tuple/,
+                   fn ->
+                     Executor.normalize_run_result(:invalid)
+                   end
     end
 
     test "raises ArgumentError for plain value" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
-        Executor.normalize_run_result(42)
-      end
+      assert_raise ArgumentError,
+                   ~r/Operation must return either an Either struct or a result tuple/,
+                   fn ->
+                     Executor.normalize_run_result(42)
+                   end
     end
 
     test "raises ArgumentError for list" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
-        Executor.normalize_run_result([1, 2, 3])
-      end
+      assert_raise ArgumentError,
+                   ~r/Operation must return either an Either struct or a result tuple/,
+                   fn ->
+                     Executor.normalize_run_result([1, 2, 3])
+                   end
     end
 
     test "includes operation type in error message when provided" do
@@ -135,12 +142,12 @@ defmodule Funx.Monad.Either.Dsl.ExecutorTest do
   # Tests result wrapping for different return types
   describe "wrap_result/2" do
     test "as: :either passes through Right" do
-      either = right(42)
+      either = Either.right(42)
       assert Executor.wrap_result(either, :either) == either
     end
 
     test "as: :either passes through Left" do
-      either = left("error")
+      either = Either.left("error")
       assert Executor.wrap_result(either, :either) == either
     end
 
@@ -151,20 +158,20 @@ defmodule Funx.Monad.Either.Dsl.ExecutorTest do
     end
 
     test "as: :tuple converts Right to {:ok, value}" do
-      assert Executor.wrap_result(right(42), :tuple) == {:ok, 42}
+      assert Executor.wrap_result(Either.right(42), :tuple) == {:ok, 42}
     end
 
     test "as: :tuple converts Left to {:error, reason}" do
-      assert Executor.wrap_result(left("failed"), :tuple) == {:error, "failed"}
+      assert Executor.wrap_result(Either.left("failed"), :tuple) == {:error, "failed"}
     end
 
     test "as: :raise returns value on Right" do
-      assert Executor.wrap_result(right(42), :raise) == 42
+      assert Executor.wrap_result(Either.right(42), :raise) == 42
     end
 
     test "as: :raise raises on Left" do
       assert_raise RuntimeError, "failed", fn ->
-        Executor.wrap_result(left("failed"), :raise)
+        Executor.wrap_result(Either.left("failed"), :raise)
       end
     end
   end

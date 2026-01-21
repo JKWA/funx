@@ -36,6 +36,7 @@ end
 ### Valid Projections:
 
 * Atoms: `:field_name`, converts to `Prism.key(:field_name)`
+* Lists: `[:a, :b]`, converts to `Prism.path([:a, :b])` (supports nested keys and structs)
 * Lenses: `Lens.key(:field)`, `Lens.path([:a, :b])`
 * Prisms: `Prism.key(:field)`, `Prism.path([{Struct, :field}])`
 * Functions: `&String.length/1`, `fn x -> x.field end`
@@ -125,6 +126,111 @@ ord_mixed =
   end
 
 List.sort([charlie, alice, bob], ord_mixed)
+```
+
+## List Paths (Nested Field Access)
+
+List paths provide convenient syntax for accessing nested fields without manually composing optics.
+
+### Basic List Paths
+
+Create nested test data:
+
+```elixir
+defmodule Company do
+  defstruct [:name, :location]
+end
+
+defmodule Location do
+  defstruct [:city, :state, :founded]
+end
+
+companies = [
+  %Company{name: "ACME", location: %Location{city: "Seattle", state: "WA", founded: 2015}},
+  %Company{name: "Corp", location: %Location{city: "Austin", state: "TX", founded: 2020}},
+  %Company{name: "Inc", location: %Location{city: "Boston", state: "MA", founded: 2018}}
+]
+```
+
+Sort by nested city using list syntax:
+
+```elixir
+ord_by_city =
+  ord do
+    asc [:location, :city]
+  end
+
+List.sort(companies, ord_by_city)
+```
+
+### List Paths with Structs
+
+List paths support struct modules for type-safe nested access:
+
+```elixir
+ord_struct_path =
+  ord do
+    asc [Company, :location, Location, :city]
+  end
+
+List.sort(companies, ord_struct_path)
+```
+
+### Descending with List Paths
+
+```elixir
+ord_founded_desc =
+  ord do
+    desc [:location, :founded]
+  end
+
+List.sort(companies, ord_founded_desc)
+```
+
+### Multiple List Paths
+
+Combine multiple nested field projections:
+
+```elixir
+ord_state_then_city =
+  ord do
+    asc [:location, :state]
+    asc [:location, :city]
+  end
+
+List.sort(companies, ord_state_then_city)
+```
+
+### List Paths with or_else
+
+Handle missing values with `or_else`:
+
+```elixir
+incomplete_company = %Company{name: "Startup", location: %Location{city: nil, state: "CA", founded: 2023}}
+
+ord_with_default =
+  ord do
+    asc [:location, :city], or_else: "ZZZ"
+  end
+
+List.sort([incomplete_company | companies], ord_with_default)
+```
+
+### Equivalent to Prism.path
+
+List paths are syntax sugar for `Prism.path`:
+
+```elixir
+# These are equivalent:
+ord_list = ord do
+  asc [:location, :city]
+end
+
+ord_explicit = ord do
+  asc Prism.path([:location, :city])
+end
+
+List.sort(companies, ord_list) == List.sort(companies, ord_explicit)
 ```
 
 ## Handling Nil Values

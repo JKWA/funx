@@ -368,14 +368,14 @@ end
 
 ### Module-Based Operations
 
-Create reusable operations as modules with `run/3`:
+Create reusable operations as modules that implement specific behaviors:
 
 ```elixir
 defmodule ParseInt do
-  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  @behaviour Funx.Monad.Behaviour.Bind
   use Funx.Monad.Either
 
-  def run(str, _opts, _env) do
+  def bind(str, _opts, _env) do
     case Integer.parse(str) do
       {int, ""} -> right(int)
       _ -> left("Invalid integer: #{str}")
@@ -391,10 +391,10 @@ end
 
 # With options
 defmodule ParseIntWithBase do
-  @behaviour Funx.Monad.Either.Dsl.Behaviour
+  @behaviour Funx.Monad.Behaviour.Bind
   use Funx.Monad.Either
 
-  def run(str, opts, _env) do
+  def bind(str, opts, _env) do
     base = Keyword.get(opts, :base, 10)
     case Integer.parse(str, base) do
       {int, ""} -> right(int)

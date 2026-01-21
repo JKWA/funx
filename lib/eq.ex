@@ -139,6 +139,13 @@ defmodule Funx.Eq do
           on :username
         end
       end
+
+  With nested field paths:
+
+      eq_nested = eq do
+        on [:user, :profile, :name]
+        on [:user, :profile, :age]
+      end
   """
   defmacro eq(do: block) do
     compile_eq(block, __CALLER__)
@@ -382,7 +389,7 @@ defmodule Funx.Eq do
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
-  @spec append_all(Monoid.Eq.All.t(), Monoid.Eq.All.t()) :: Monoid.Eq.All.t()
+  @spec append_all(eq_t(), eq_t()) :: eq_t()
   def append_all(a, b) do
     m_append(%Monoid.Eq.All{}, a, b)
   end
@@ -403,7 +410,7 @@ defmodule Funx.Eq do
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
       false
   """
-  @spec append_any(Monoid.Eq.Any.t(), Monoid.Eq.Any.t()) :: Monoid.Eq.Any.t()
+  @spec append_any(eq_t(), eq_t()) :: eq_t()
   def append_any(a, b) do
     m_append(%Monoid.Eq.Any{}, a, b)
   end
@@ -424,7 +431,7 @@ defmodule Funx.Eq do
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
-  @spec concat_all([Monoid.Eq.All.t()]) :: Monoid.Eq.All.t()
+  @spec concat_all([eq_t()]) :: eq_t()
   def concat_all(eq_list) when is_list(eq_list) do
     m_concat(%Monoid.Eq.All{}, eq_list)
   end
@@ -445,7 +452,7 @@ defmodule Funx.Eq do
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
       false
   """
-  @spec concat_any([Monoid.Eq.Any.t()]) :: Monoid.Eq.Any.t()
+  @spec concat_any([eq_t()]) :: eq_t()
   def concat_any(eq_list) when is_list(eq_list) do
     m_concat(%Monoid.Eq.Any{}, eq_list)
   end

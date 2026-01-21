@@ -43,6 +43,45 @@ defmodule Funx.ListTest do
     end
   end
 
+  describe "elem?/3" do
+    test "returns true when element is present (default Eq)" do
+      assert List.elem?([1, 2, 3], 1)
+      assert List.elem?([:banana, :apple], :apple)
+    end
+
+    test "returns false when element is not present" do
+      refute List.elem?([1, 2, 3], 4)
+      refute List.elem?([:apple, :banana], :orange)
+    end
+
+    test "works with empty list" do
+      refute List.elem?([], 1)
+    end
+
+    test "uses custom Eq for comparison" do
+      case_insensitive_eq = %{
+        eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) == String.downcase(b)
+        end,
+        not_eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) != String.downcase(b)
+        end
+      }
+
+      assert List.elem?(["hello", "world"], "HELLO", case_insensitive_eq)
+      refute List.elem?(["goodbye"], "HELLO", case_insensitive_eq)
+    end
+
+    test "works with complex values under Eq" do
+      map = %{a: 1}
+      assert List.elem?([map, %{a: 2}], map)
+    end
+
+    test "distinguishes values when default Eq does not consider them equal" do
+      refute List.elem?(["hello"], "HELLO")
+    end
+  end
+
   describe "subset?/2" do
     test "checks if one list is contained in another" do
       assert List.subset?([:apple], [:apple, :banana])

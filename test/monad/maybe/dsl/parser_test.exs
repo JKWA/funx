@@ -66,19 +66,35 @@ defmodule Funx.Monad.Maybe.Dsl.ParserTest do
     test "parses single bind operation" do
       step = parse_one(quote do: bind(SomeModule))
 
-      assert %Step.Bind{operation: SomeModule, opts: []} = step
+      # Module is transformed to fn value -> SomeModule.bind(value, [], []) end
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "parses single map operation" do
       step = parse_one(quote do: map(SomeModule))
 
-      assert %Step.Map{operation: SomeModule, opts: []} = step
+      # Module is transformed to fn value -> SomeModule.map(value, [], []) end
+      assert %Step.Map{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "parses single ap operation" do
       step = parse_one(quote do: ap(just(&(&1 + 1))))
 
       assert_type(step, :ap)
+    end
+
+    test "parses ap operation with module" do
+      step = parse_one(quote do: ap(SomeModule))
+
+      # Module is transformed to fn value -> SomeModule.ap(value, [], []) end
+      assert %Step.Ap{applicative: {:fn, _, _}} = step
+    end
+
+    test "parses ap operation with module and options" do
+      step = parse_one(quote do: ap({SomeModule, opt: :value}))
+
+      # Module with options is transformed to fn value -> SomeModule.ap(value, [opt: :value], []) end
+      assert %Step.Ap{applicative: {:fn, _, _}} = step
     end
 
     test "parses multiple operations in sequence" do
@@ -91,15 +107,17 @@ defmodule Funx.Monad.Maybe.Dsl.ParserTest do
 
       [step1, step2, step3] = parse_all(block)
 
-      assert %Step.Bind{operation: SomeModule} = step1
-      assert %Step.Map{operation: AnotherModule} = step2
-      assert %Step.Bind{operation: ThirdModule} = step3
+      # Modules are transformed to function calls
+      assert %Step.Bind{operation: {:fn, _, _}} = step1
+      assert %Step.Map{operation: {:fn, _, _}} = step2
+      assert %Step.Bind{operation: {:fn, _, _}} = step3
     end
 
     test "parses operations with options" do
       step = parse_one(quote do: bind({SomeModule, [opt: :value]}))
 
-      assert %Step.Bind{operation: SomeModule, opts: [opt: :value]} = step
+      # Module with options is transformed to function call with options baked in
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "parses anonymous functions" do
@@ -226,20 +244,20 @@ defmodule Funx.Monad.Maybe.Dsl.ParserTest do
     end
   end
 
-  # Tests expansion of module aliases to full atoms at compile time
+  # Tests transformation of module aliases
   describe "module alias expansion" do
-    test "expands module aliases to atoms" do
+    test "transforms module aliases to behavior method calls" do
       step = parse_one(quote do: bind(String))
 
-      assert %Step.Bind{operation: String} = step
-      assert is_atom(step.operation)
+      # Module is transformed to fn value -> String.bind(value, [], []) end
+      assert %Step.Bind{operation: {:fn, _, _}} = step
     end
 
-    test "expands nested module aliases" do
+    test "transforms nested module aliases" do
       step = parse_one(quote do: bind(Funx.Monad.Maybe))
 
-      assert %Step.Bind{operation: Funx.Monad.Maybe} = step
-      assert is_atom(step.operation)
+      # Module is transformed to fn value -> Funx.Monad.Maybe.bind(value, [], []) end
+      assert %Step.Bind{operation: {:fn, _, _}} = step
     end
   end
 
@@ -283,131 +301,8 @@ defmodule Funx.Monad.Maybe.Dsl.ParserTest do
     end
   end
 
-  # Tests validation of validator lists (reject literals, accept functions/modules)
-  describe "validator list validation" do
-    test "rejects number literals in validator lists" do
-      assert_compile_error(quote(do: filter([1, 2, 3])), "Invalid validator in list")
-    end
-
-    test "rejects string literals in validator lists" do
-      assert_compile_error(quote(do: filter(["not", "valid"])), "Invalid validator in list")
-    end
-
-    test "rejects map literals in validator lists" do
-      assert_compile_error(quote(do: filter([%{key: :value}])), "Invalid validator in list")
-    end
-
-    test "rejects atom literals in validator lists" do
-      assert_compile_error(quote(do: filter([:atom])), "Invalid validator in list")
-    end
-
-    test "accepts modules in validator lists" do
-      block = quote do: filter([SomeValidator, AnotherValidator])
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: _args} = step
-    end
-
-    test "accepts {Module, opts} tuples in validator lists" do
-      block = quote do: filter([{SomeValidator, opt: :value}])
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: _args} = step
-    end
-
-    test "accepts function captures in validator lists" do
-      block = quote do: filter([&positive?/1])
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: _args} = step
-    end
-
-    test "accepts anonymous functions in validator lists" do
-      block = quote do: filter([fn x -> x > 0 end])
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: _args} = step
-    end
-
-    test "accepts function calls in validator lists" do
-      block = quote do: filter([Validator.positive?()])
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: _args} = step
-    end
-
-    test "accepts variables in validator lists" do
-      # Variables are AST nodes like {name, meta, context}
-      block = quote do: filter([validator_var])
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: _args} = step
-    end
-
-    test "accepts other valid AST nodes in validator lists" do
-      # Test the catch-all clause that allows other AST nodes
-      # This could be things like case expressions, with statements, etc.
-      # We'll use a simple tuple AST that doesn't match other patterns
-      block =
-        quote do
-          filter([
-            case x do
-              _ -> true
-            end
-          ])
-        end
-
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: _args} = step
-    end
-
-    test "rejects empty list literals in validator lists" do
-      assert_compile_error(quote(do: filter([[]])), "Invalid validator in list")
-    end
-
-    test "rejects non-empty list literals in validator lists" do
-      assert_compile_error(quote(do: filter([[1, 2, 3]])), "Invalid validator in list")
-    end
-  end
-
-  # Tests transformation of bare modules and {Module, opts} in function arguments
-  describe "module transformation in arguments" do
-    test "transforms bare module to function call" do
-      block = quote do: filter([SomeValidator])
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: [validators]} = step
-      # Should be transformed to list of functions
-      assert is_list(validators)
-    end
-
-    test "transforms {Module, opts} to function call with options" do
-      block = quote do: filter([{SomeValidator, min: 0, max: 100}])
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: [validators]} = step
-      assert is_list(validators)
-    end
-
-    test "transforms mixed list of validators" do
-      block =
-        quote do
-          filter([
-            SomeValidator,
-            {AnotherValidator, opt: :value},
-            &third_validator/1,
-            fn x -> x > 0 end
-          ])
-        end
-
-      step = parse_one(block)
-
-      assert %Step.ProtocolFunction{function: :filter, args: [validators]} = step
-      assert is_list(validators)
-      assert length(validators) == 4
-    end
-  end
+  # Note: Maybe DSL's filter operation takes a single predicate, not a list.
+  # Validator list validation only applies to Either DSL's validate operation.
 
   # Tests {Module, opts} syntax for bind/map operations
   describe "operation with options syntax" do
@@ -415,29 +310,34 @@ defmodule Funx.Monad.Maybe.Dsl.ParserTest do
       block = quote do: bind({ParseInt, base: 16})
       step = parse_one(block)
 
-      assert %Step.Bind{operation: ParseInt, opts: [base: 16]} = step
+      # Module with opts is transformed to fn value -> ParseInt.bind(value, [base: 16], []) end
+      # Options are baked into the function, not stored in opts field
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "parses {Module, opts} tuple for map" do
       block = quote do: map({Multiplier, factor: 5})
       step = parse_one(block)
 
-      assert %Step.Map{operation: Multiplier, opts: [factor: 5]} = step
+      # Module with opts is transformed to fn value -> Multiplier.map(value, [factor: 5], []) end
+      # Options are baked into the function, not stored in opts field
+      assert %Step.Map{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "handles empty options list" do
       block = quote do: bind({SomeModule, []})
       step = parse_one(block)
 
-      assert %Step.Bind{operation: SomeModule, opts: []} = step
+      # Module with empty opts is transformed to fn value -> SomeModule.bind(value, [], []) end
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "handles multiple options" do
       block = quote do: bind({SomeModule, [opt1: :val1, opt2: :val2, opt3: :val3]})
       step = parse_one(block)
 
-      assert %Step.Bind{operation: SomeModule, opts: [opt1: :val1, opt2: :val2, opt3: :val3]} =
-               step
+      # Multiple options are baked into the function
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
   end
 

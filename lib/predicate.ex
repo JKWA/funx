@@ -212,6 +212,12 @@ defmodule Funx.Predicate do
         check :email, fn email -> String.contains?(email, "@") end
       end
 
+      # With nested field projection (list paths)
+      pred do
+        check [:user, :profile, :age], fn age -> age >= 18 end
+        check [:user, :settings, :notifications], fn n -> n == true end
+      end
+
       # With negated projection
       pred do
         is_adult

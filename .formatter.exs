@@ -36,7 +36,9 @@ export_locals_without_parens = [
   check: 2,
   negate: 1,
   negate_all: 1,
-  negate_any: 1
+  negate_any: 1,
+  # Validate DSL
+  at: 2
 ]
 
 [

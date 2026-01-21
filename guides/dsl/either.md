@@ -48,4 +48,10 @@ Except for validation, a `Left` value stops the pipeline immediately. The return
 
 ## Behaviours
 
-Modules participating in the Either DSL implement `Funx.Monad.Either.Dsl.Behaviour`. The executor calls `run/3` on these modules. The DSL determines whether the result is interpreted as a bindable value, a mapped value, or a result to be normalized. The executor only invokes the callback and applies the step semantics.
+Modules participating in the Either DSL implement specific monad behaviors based on their purpose:
+- `Funx.Validate.Behaviour` - validators (called with `validate/3`)
+- `Funx.Monad.Behaviour.Bind` - operations that can fail (called with `bind/3`)
+- `Funx.Monad.Behaviour.Map` - pure transformations (called with `map/3`)
+- `Funx.Monad.Behaviour.Predicate` - boolean tests (called with `predicate/3`)
+
+The executor calls the appropriate behavior method based on the DSL operation. Each behavior has specific semantics for how the result is interpreted and processed in the pipeline.

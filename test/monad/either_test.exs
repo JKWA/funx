@@ -726,6 +726,57 @@ defmodule Funx.Monad.EitherTest do
       validators = [&validate_positive/1, &validate_even/1]
       assert validate(-2, validators) == left(["Value must be positive: -2"])
     end
+
+    test "supports arity-2 validators with opts" do
+      validator_2 = fn value, opts ->
+        min = Keyword.get(opts, :min, 0)
+
+        if value > min do
+          right(value)
+        else
+          left("Value must be greater than #{min}: #{value}")
+        end
+      end
+
+      assert validate(5, validator_2) == right(5)
+    end
+
+    test "supports arity-3 validators with opts and env" do
+      validator_3 = fn value, opts, env ->
+        min = Keyword.get(opts, :min, 0)
+        multiplier = Map.get(env, :multiplier, 1)
+        threshold = min * multiplier
+
+        if value > threshold do
+          right(value)
+        else
+          left("Value must be greater than #{threshold}: #{value}")
+        end
+      end
+
+      assert validate(5, validator_3) == right(5)
+    end
+
+    test "arity-3 validator receives empty env when called with validate/2" do
+      validator_3 = fn value, _opts, env ->
+        # When called via validate/2, env should be empty map
+        if env == %{} do
+          right(value)
+        else
+          left("Expected empty env, got: #{inspect(env)}")
+        end
+      end
+
+      assert validate(5, validator_3) == right(5)
+    end
+
+    test "raises ArgumentError for validator with invalid arity" do
+      invalid_validator = fn _a, _b, _c, _d -> right("not allowed") end
+
+      assert_raise ArgumentError, "Validator must be a function with arity 1, 2, or 3", fn ->
+        validate(5, [invalid_validator])
+      end
+    end
   end
 
   describe "Eq.eq?/2" do

@@ -317,6 +317,82 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
   end
 
   # ============================================================================
+  # List Path Tests
+  # ============================================================================
+
+  describe "list paths (nested field access)" do
+    test "list path without or_else" do
+      nested1 = %{user: %{profile: %{age: 25}}}
+      nested2 = %{user: %{profile: %{age: 30}}}
+
+      ord_age =
+        ord do
+          asc [:user, :profile, :age]
+        end
+
+      assert Ord.compare(nested1, nested2, ord_age) == :lt
+      assert Ord.compare(nested2, nested1, ord_age) == :gt
+    end
+
+    test "list path with or_else" do
+      complete = %{user: %{profile: %{score: 100}}}
+      incomplete = %{user: %{}}
+
+      ord_score =
+        ord do
+          asc [:user, :profile, :score], or_else: 0
+        end
+
+      # Incomplete gets default of 0, complete has 100
+      assert Ord.compare(incomplete, complete, ord_score) == :lt
+    end
+
+    test "list path with struct" do
+      person1 = %Person{name: "Alice", address: %Address{city: "Boston"}}
+      person2 = %Person{name: "Bob", address: %Address{city: "Austin"}}
+
+      ord_city =
+        ord do
+          asc [Person, :address, Address, :city]
+        end
+
+      assert Ord.compare(person2, person1, ord_city) == :lt
+      assert Ord.compare(person1, person2, ord_city) == :gt
+    end
+
+    test "list path with desc" do
+      nested1 = %{user: %{profile: %{age: 25}}}
+      nested2 = %{user: %{profile: %{age: 30}}}
+
+      ord_age_desc =
+        ord do
+          desc [:user, :profile, :age]
+        end
+
+      # Reversed order from asc
+      assert Ord.compare(nested1, nested2, ord_age_desc) == :gt
+      assert Ord.compare(nested2, nested1, ord_age_desc) == :lt
+    end
+
+    test "multiple list paths" do
+      data1 = %{user: %{name: "Alice", age: 25}}
+      data2 = %{user: %{name: "Alice", age: 30}}
+      data3 = %{user: %{name: "Bob", age: 20}}
+
+      ord_user =
+        ord do
+          asc [:user, :name]
+          asc [:user, :age]
+        end
+
+      # Same name, different age
+      assert Ord.compare(data1, data2, ord_user) == :lt
+      # Different name
+      assert Ord.compare(data2, data3, ord_user) == :lt
+    end
+  end
+
+  # ============================================================================
   # Function Projection Tests
   # ============================================================================
 

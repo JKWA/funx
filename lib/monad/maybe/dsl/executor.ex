@@ -3,8 +3,7 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
   # Runtime execution engine for Maybe DSL pipelines
 
   alias Funx.Monad.{Either, Maybe}
-  alias Funx.Monad.Maybe.Dsl.Pipeline
-  alias Funx.Monad.Maybe.Dsl.Step
+  alias Funx.Monad.Maybe.Dsl.{Errors, Pipeline, Step}
 
   @doc """
   Execute a pipeline by running each step in sequence
@@ -55,22 +54,23 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
 
   defp execute_step(
          maybe_value,
-         %Step.Bind{operation: operation, opts: opts, __meta__: meta},
-         user_env
+         %Step.Bind{operation: operation, opts: _opts, __meta__: meta},
+         _user_env
        ) do
     Funx.Monad.bind(maybe_value, fn value ->
-      result = call_operation(operation, value, opts, user_env)
+      result = operation.(value)
       normalize_run_result(result, meta, "bind")
     end)
   end
 
-  defp execute_step(maybe_value, %Step.Map{operation: operation, opts: opts}, user_env) do
+  defp execute_step(maybe_value, %Step.Map{operation: operation, opts: _opts}, _user_env) do
     Funx.Monad.map(maybe_value, fn value ->
-      call_operation(operation, value, opts, user_env)
+      operation.(value)
     end)
   end
 
   defp execute_step(maybe_value, %Step.Ap{applicative: applicative}, _user_env) do
+    # applicative is already a function from parser transformation
     Funx.Monad.ap(maybe_value, applicative)
   end
 
@@ -85,12 +85,12 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
   defp execute_step(
          maybe_value,
          %Step.ProtocolFunction{protocol: protocol, function: :guard, args: [predicate | rest]},
-         user_env
+         _user_env
        ) do
-    # guard expects a boolean, but DSL passes a predicate function
-    # Evaluate the predicate on the value and pass the boolean to guard
+    # guard is special: protocol expects boolean, but DSL passes predicate function
+    # Evaluate predicate to get boolean, then call protocol with boolean
     Funx.Monad.bind(maybe_value, fn value ->
-      bool_result = call_predicate(predicate, value, user_env)
+      bool_result = predicate.(value)
       apply(protocol, :guard, [Maybe.just(value), bool_result | rest])
     end)
   end
@@ -100,26 +100,8 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
          %Step.ProtocolFunction{protocol: protocol, function: func_name, args: args},
          _user_env
        ) do
+    # filter, filter_map, tap - args are already transformed functions by parser
     apply(protocol, func_name, [maybe_value | args])
-  end
-
-  # Helper to call predicate function
-  # Note: The parser always converts modules to functions at compile time,
-  # so we only need to handle the function case here
-  defp call_predicate(func, value, _user_env) when is_function(func, 1) do
-    func.(value)
-  end
-
-  # ============================================================================
-  # OPERATION CALLING
-  # ============================================================================
-
-  defp call_operation(module, value, opts, user_env) when is_atom(module) do
-    module.run_maybe(value, opts, user_env)
-  end
-
-  defp call_operation(func, value, _opts, _user_env) when is_function(func) do
-    func.(value)
   end
 
   # ============================================================================
@@ -165,41 +147,8 @@ defmodule Funx.Monad.Maybe.Dsl.Executor do
     do: Maybe.nothing()
 
   def normalize_run_result(other, meta, operation_type) do
-    raise_invalid_result_error(other, meta, operation_type)
+    raise ArgumentError, Errors.invalid_result_error(other, meta, operation_type)
   end
-
-  defp raise_invalid_result_error(result, meta, operation_type) do
-    location = format_location(meta)
-    op_info = if operation_type, do: " in #{operation_type} operation", else: ""
-
-    raise ArgumentError, """
-    Module run_maybe/3 callback must return a Maybe struct, Either struct, result tuple, or nil#{op_info}.#{location}
-    Got: #{inspect(result)}
-
-    Expected return types:
-      - Maybe: just(value) or nothing()
-      - Either: right(value) or left(error)
-      - Result tuple: {:ok, value} or {:error, reason}
-      - nil (lifted to nothing())
-    """
-  end
-
-  # ============================================================================
-  # METADATA FORMATTING
-  # ============================================================================
-
-  defp format_location(nil), do: ""
-
-  defp format_location(%{line: line, column: column})
-       when not is_nil(line) and not is_nil(column) do
-    "\n  at line #{line}, column #{column}"
-  end
-
-  defp format_location(%{line: line}) when not is_nil(line) do
-    "\n  at line #{line}"
-  end
-
-  defp format_location(_), do: ""
 
   # ============================================================================
   # RESULT WRAPPING

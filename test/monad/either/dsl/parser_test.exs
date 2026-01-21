@@ -67,13 +67,15 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
     test "parses single bind operation" do
       step = parse_one(quote do: bind(SomeModule))
 
-      assert %Step.Bind{operation: SomeModule, opts: []} = step
+      # Module is transformed to fn value -> SomeModule.bind(value, []) end
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "parses single map operation" do
       step = parse_one(quote do: map(SomeModule))
 
-      assert %Step.Map{operation: SomeModule, opts: []} = step
+      # Module is transformed to fn value -> SomeModule.map(value, []) end
+      assert %Step.Map{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "parses single ap operation" do
@@ -92,15 +94,17 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
 
       [step1, step2, step3] = parse_all(block)
 
-      assert %Step.Bind{operation: SomeModule} = step1
-      assert %Step.Map{operation: AnotherModule} = step2
-      assert %Step.Bind{operation: ThirdModule} = step3
+      # Modules are transformed to functions
+      assert %Step.Bind{operation: {:fn, _, _}} = step1
+      assert %Step.Map{operation: {:fn, _, _}} = step2
+      assert %Step.Bind{operation: {:fn, _, _}} = step3
     end
 
     test "parses operations with options" do
       step = parse_one(quote do: bind({SomeModule, [opt: :value]}))
 
-      assert %Step.Bind{operation: SomeModule, opts: [opt: :value]} = step
+      # Module with opts is transformed to function with baked-in options
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "parses anonymous functions" do
@@ -223,20 +227,20 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
     end
   end
 
-  # Tests expansion of module aliases to full atoms at compile time
+  # Tests transformation of module aliases
   describe "module alias expansion" do
-    test "expands module aliases to atoms" do
+    test "transforms module aliases to behavior method calls" do
       step = parse_one(quote do: bind(String))
 
-      assert %Step.Bind{operation: String} = step
-      assert is_atom(step.operation)
+      # Module is transformed to fn value -> String.bind(value, []) end
+      assert %Step.Bind{operation: {:fn, _, _}} = step
     end
 
-    test "expands nested module aliases" do
+    test "transforms nested module aliases" do
       step = parse_one(quote do: bind(Funx.Monad.Either))
 
-      assert %Step.Bind{operation: Funx.Monad.Either} = step
-      assert is_atom(step.operation)
+      # Module is transformed to fn value -> Funx.Monad.Either.bind(value, []) end
+      assert %Step.Bind{operation: {:fn, _, _}} = step
     end
   end
 
@@ -412,29 +416,33 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
       block = quote do: bind({ParseInt, base: 16})
       step = parse_one(block)
 
-      assert %Step.Bind{operation: ParseInt, opts: [base: 16]} = step
+      # Module with opts is transformed to fn value -> ParseInt.bind(value, [base: 16]) end
+      # Options are baked into the function, not stored in opts field
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "parses {Module, opts} tuple for map" do
       block = quote do: map({Multiplier, factor: 5})
       step = parse_one(block)
 
-      assert %Step.Map{operation: Multiplier, opts: [factor: 5]} = step
+      # Module with opts is transformed to function with baked-in options
+      assert %Step.Map{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "handles empty options list" do
       block = quote do: bind({SomeModule, []})
       step = parse_one(block)
 
-      assert %Step.Bind{operation: SomeModule, opts: []} = step
+      # Module with empty opts is transformed to function
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
 
     test "handles multiple options" do
       block = quote do: bind({SomeModule, [opt1: :val1, opt2: :val2, opt3: :val3]})
       step = parse_one(block)
 
-      assert %Step.Bind{operation: SomeModule, opts: [opt1: :val1, opt2: :val2, opt3: :val3]} =
-               step
+      # Module with multiple opts is transformed to function with all options baked in
+      assert %Step.Bind{operation: {:fn, _, _}, opts: []} = step
     end
   end
 

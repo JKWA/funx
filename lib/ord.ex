@@ -99,6 +99,12 @@ defmodule Funx.Ord do
         asc :score, or_else: 0
         desc &String.length(&1.bio)
       end
+
+      # With nested field paths
+      ord do
+        asc [:user, :profile, :created_at]
+        desc [:user, :stats, :score]
+      end
   """
   defmacro ord(do: block) do
     compile_ord(block, __CALLER__)
@@ -397,7 +403,7 @@ defmodule Funx.Ord do
       iex> combined.lt?.(%{age: 30, name: "Alice"}, %{age: 30, name: "Bob"})
       true
   """
-  @spec append(Funx.Monoid.Ord.t(), Funx.Monoid.Ord.t()) :: Funx.Monoid.Ord.t()
+  @spec append(ord_t(), ord_t()) :: ord_t()
   def append(a, b) do
     m_append(%Funx.Monoid.Ord{}, a, b)
   end
@@ -418,7 +424,7 @@ defmodule Funx.Ord do
       iex> combined.gt?.(%{age: 25, name: "Charlie"}, %{age: 25, name: "Bob"})
       true
   """
-  @spec concat([Funx.Monoid.Ord.t()]) :: Funx.Monoid.Ord.t()
+  @spec concat([ord_t()]) :: ord_t()
   def concat(ord_list) when is_list(ord_list) do
     m_concat(%Funx.Monoid.Ord{}, ord_list)
   end

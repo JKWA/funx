@@ -18,32 +18,32 @@ defmodule Funx.Monad.Either.DslTest do
   use Funx.TestCase, async: true
 
   doctest Funx.Monad.Either.Dsl
-  doctest Funx.Monad.Either.Dsl.Behaviour
 
   use Funx.Monad.Either
 
+  alias Funx.Monad.Either
   alias Funx.Monad.Either.Dsl
   alias Funx.Monad.Either.Dsl.Executor
 
   alias Funx.Monad.Either.Dsl.Examples.{
+    Adder,
     Double,
     ErrorWrapper,
     InRange,
     InvalidReturn,
     IsPositive,
     Logger,
-    MinValidator,
     Multiplier,
     ParseInt,
     ParseIntWithBase,
     PositiveNumber,
-    RangeValidator,
     RangeValidatorWithOpts,
     TupleParseInt,
     TupleValidator
   }
 
-  alias Funx.Monad.Either.{Left, Right}
+  alias Funx.Errors.ValidationError
+  alias Funx.Validator.{Positive, Range}
 
   # Helper function to test named function partial application
   defp check_value_with_threshold(value, threshold) do
@@ -65,6 +65,12 @@ defmodule Funx.Monad.Either.DslTest do
     def check_positive(x) when x > 0, do: {:ok, x}
     def check_positive(_), do: {:error, "not positive"}
 
+    # Deliberately not implementing @behaviour - this is for testing
+    # that modules without proper behavior implementation fail at runtime
+    def bind(_value, _opts, _env) do
+      raise "PipeTarget does not implement Funx.Monad.Behaviour.Bind"
+    end
+
     def format_error(error, context), do: "#{context}: #{error}"
   end
 
@@ -80,7 +86,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind ParseInt
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "with module returning tuple" do
@@ -89,7 +95,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind TupleParseInt
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "with anonymous function returning Either" do
@@ -97,13 +103,13 @@ defmodule Funx.Monad.Either.DslTest do
         either "42" do
           bind fn x ->
             case Integer.parse(x) do
-              {int, ""} -> right(int)
-              _ -> left("invalid")
+              {int, ""} -> Either.right(int)
+              _ -> Either.left("invalid")
             end
           end
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "with anonymous function returning tuple" do
@@ -117,7 +123,7 @@ defmodule Funx.Monad.Either.DslTest do
           end
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "with capture syntax" do
@@ -133,7 +139,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind &parse_int.(&1)
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "with multi-line anonymous function" do
@@ -143,13 +149,13 @@ defmodule Funx.Monad.Either.DslTest do
             result = Integer.parse(x)
 
             case result do
-              {int, ""} -> right(int)
-              _ -> left("invalid")
+              {int, ""} -> Either.right(int)
+              _ -> Either.left("invalid")
             end
           end
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "propagates failures correctly" do
@@ -159,7 +165,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind PositiveNumber
         end
 
-      assert %Left{left: msg} = result
+      assert %Either.Left{left: msg} = result
       assert msg =~ "must be positive"
     end
 
@@ -170,46 +176,48 @@ defmodule Funx.Monad.Either.DslTest do
           bind PositiveNumber
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
   end
 
   # Tests applicative functor semantics for applying wrapped functions
   describe "ap keyword" do
+    alias Funx.Monad.Either
+
     test "applies a function in Right to a value in Right" do
       result =
-        either right(&(&1 + 1)) do
-          ap right(42)
+        either Either.right(&(&1 + 1)) do
+          ap Either.right(42)
         end
 
-      assert result == %Right{right: 43}
+      assert result == %Either.Right{right: 43}
     end
 
     test "returns Left if the function is in Left" do
       result =
-        either left("error") do
-          ap right(42)
+        either Either.left("error") do
+          ap Either.right(42)
         end
 
-      assert result == %Left{left: "error"}
+      assert result == %Either.Left{left: "error"}
     end
 
     test "returns Left if the value is in Left" do
       result =
-        either right(&(&1 + 1)) do
-          ap left("error")
+        either Either.right(&(&1 + 1)) do
+          ap Either.left("error")
         end
 
-      assert result == %Left{left: "error"}
+      assert result == %Either.Left{left: "error"}
     end
 
     test "returns Left if both are Left" do
       result =
-        either left("error1") do
-          ap left("error2")
+        either Either.left("error1") do
+          ap Either.left("error2")
         end
 
-      assert result == %Left{left: "error1"}
+      assert result == %Either.Left{left: "error1"}
     end
 
     test "chains with bind and map" do
@@ -217,20 +225,38 @@ defmodule Funx.Monad.Either.DslTest do
         either "10" do
           bind ParseInt
           map fn x -> &(&1 + x) end
-          ap right(5)
+          ap Either.right(5)
         end
 
-      assert result == %Right{right: 15}
+      assert result == %Either.Right{right: 15}
     end
 
     test "applies a function from previous step" do
       result =
         either 5 do
           map fn x -> &(&1 + x) end
-          ap right(10)
+          ap Either.right(10)
         end
 
-      assert result == %Right{right: 15}
+      assert result == %Either.Right{right: 15}
+    end
+
+    test "with module implementing Ap behavior" do
+      result =
+        either 5 do
+          ap Adder
+        end
+
+      assert result == %Either.Right{right: 10}
+    end
+
+    test "with module and options implementing Ap behavior" do
+      result =
+        either 10 do
+          ap Adder
+        end
+
+      assert result == %Either.Right{right: 20}
     end
   end
 
@@ -243,7 +269,7 @@ defmodule Funx.Monad.Either.DslTest do
           map Double
         end
 
-      assert result == %Right{right: 20}
+      assert result == %Either.Right{right: 20}
     end
 
     test "with stdlib function" do
@@ -253,7 +279,7 @@ defmodule Funx.Monad.Either.DslTest do
           map &to_string/1
         end
 
-      assert result == %Right{right: "10"}
+      assert result == %Either.Right{right: "10"}
     end
 
     test "with stdlib function and additional arguments" do
@@ -263,7 +289,7 @@ defmodule Funx.Monad.Either.DslTest do
           map String.pad_leading(3, "0")
         end
 
-      assert result == %Right{right: "005"}
+      assert result == %Either.Right{right: "005"}
     end
 
     test "with capture syntax &(&1 * 2)" do
@@ -273,7 +299,7 @@ defmodule Funx.Monad.Either.DslTest do
           map &(&1 * 2)
         end
 
-      assert result == %Right{right: 20}
+      assert result == %Either.Right{right: 20}
     end
 
     test "with anonymous function" do
@@ -283,7 +309,7 @@ defmodule Funx.Monad.Either.DslTest do
           map fn x -> x * 2 end
         end
 
-      assert result == %Right{right: 20}
+      assert result == %Either.Right{right: 20}
     end
 
     test "with function that returns a function" do
@@ -294,7 +320,7 @@ defmodule Funx.Monad.Either.DslTest do
           map make_multiplier.(3)
         end
 
-      assert result == %Right{right: 15}
+      assert result == %Either.Right{right: 15}
     end
 
     test "with helper function that returns a function (like maybe_filter pattern)" do
@@ -307,14 +333,14 @@ defmodule Funx.Monad.Either.DslTest do
           map maybe_double.(true)
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
 
       result2 =
         either 5 do
           map maybe_double.(false)
         end
 
-      assert result2 == %Right{right: 5}
+      assert result2 == %Either.Right{right: 5}
     end
 
     test "with named function partial application (like check_no_other_assignments pattern)" do
@@ -326,14 +352,14 @@ defmodule Funx.Monad.Either.DslTest do
           bind check_value_with_threshold(10)
         end
 
-      assert result == %Right{right: 15}
+      assert result == %Either.Right{right: 15}
 
       result2 =
         either 5 do
           bind check_value_with_threshold(10)
         end
 
-      assert result2 == %Left{left: "below threshold"}
+      assert result2 == %Either.Left{left: "below threshold"}
     end
 
     test "with function that returns a function (like maybe_filter_closed pattern)" do
@@ -346,14 +372,14 @@ defmodule Funx.Monad.Either.DslTest do
           map double_fn
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
 
       result2 =
         either 5 do
           map no_double_fn
         end
 
-      assert result2 == %Right{right: 5}
+      assert result2 == %Either.Right{right: 5}
     end
 
     test "with multi-line anonymous function" do
@@ -367,7 +393,7 @@ defmodule Funx.Monad.Either.DslTest do
           end
         end
 
-      assert result == %Right{right: 30}
+      assert result == %Either.Right{right: 30}
     end
   end
 
@@ -381,64 +407,74 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "10" do
           bind ParseInt
-          validate [PositiveNumber, RangeValidator]
+          validate [Positive, {Range, min: 0, max: 100}]
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
     end
 
     test "validate accumulates errors from all validators" do
       result =
         either "-5" do
           bind ParseInt
-          validate [PositiveNumber, RangeValidator]
+          validate [Positive, {Range, min: 0, max: 100}]
         end
 
-      assert %Left{left: errors} = result
-      assert is_list(errors)
-      assert length(errors) == 2
+      assert %Either.Left{left: %ValidationError{errors: error_messages}} = result
+      assert is_list(error_messages)
+      assert length(error_messages) == 2
     end
 
     test "validate with module-specific options" do
       result =
         either "50" do
           bind ParseInt
-          validate [{RangeValidator, min: 0, max: 100}, {MinValidator, min: 10}]
+          validate [{Range, min: 0, max: 100}, {Range, min: 10}]
         end
 
-      assert result == %Right{right: 50}
+      assert result == %Either.Right{right: 50}
     end
 
     test "validate with mixed bare and tuple syntax" do
       result =
         either "50" do
           bind ParseInt
-          validate [PositiveNumber, {RangeValidator, min: 0, max: 100}, {MinValidator, min: 10}]
+          validate [Positive, {Range, min: 0, max: 100}, {Range, min: 10}]
         end
 
-      assert result == %Right{right: 50}
+      assert result == %Either.Right{right: 50}
     end
 
     test "validate accumulates errors with options" do
       result =
         either "-5" do
           bind ParseInt
-          validate [PositiveNumber, {RangeValidator, min: 0, max: 100}, {MinValidator, min: 0}]
+          validate [Positive, {Range, min: 0, max: 100}, {Range, min: 0}]
         end
 
-      assert %Left{left: errors} = result
-      assert is_list(errors)
-      assert length(errors) == 3
+      assert %Either.Left{left: %ValidationError{errors: error_messages}} = result
+      assert is_list(error_messages)
+      assert length(error_messages) == 3
     end
 
     test "validate with empty options list in tuple" do
       result =
         either "50" do
           bind ParseInt
-          validate [{RangeValidator, []}]
+          validate [Positive]
         end
 
-      assert result == %Right{right: 50}
+      assert result == %Either.Right{right: 50}
+    end
+
+    test "validate with bare module (not in list)" do
+      result =
+        either "50" do
+          bind ParseInt
+          validate Positive
+        end
+
+      assert result == %Either.Right{right: 50}
     end
 
     test "validate options are isolated per validator" do
@@ -447,27 +483,28 @@ defmodule Funx.Monad.Either.DslTest do
           bind ParseInt
 
           validate [
-            {RangeValidator, min: 0, max: 10},
-            {MinValidator, min: 3}
+            {Range, min: 0, max: 10},
+            {Range, min: 3}
           ]
         end
 
-      assert result == %Right{right: 5}
+      assert result == %Either.Right{right: 5}
 
       result_fail =
         either "5" do
           bind ParseInt
 
           validate [
-            {RangeValidator, min: 10, max: 20},
-            {MinValidator, min: 1}
+            {Range, min: 10, max: 20},
+            {Range, min: 1}
           ]
         end
 
-      assert %Left{left: errors} = result_fail
-      assert is_list(errors)
-      assert length(errors) == 1
-      assert hd(errors) =~ "must be between 10 and 20"
+      assert %Either.Left{left: %ValidationError{errors: error_messages}} = result_fail
+      assert is_list(error_messages)
+      assert length(error_messages) == 1
+      # Check error message
+      assert hd(error_messages) =~ "must be between 10 and 20"
     end
 
     test "filter_or_else passes when predicate is true" do
@@ -477,7 +514,7 @@ defmodule Funx.Monad.Either.DslTest do
           filter_or_else &(&1 < 50), fn -> "too large" end
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
     end
 
     test "filter_or_else fails when predicate is false" do
@@ -487,7 +524,7 @@ defmodule Funx.Monad.Either.DslTest do
           filter_or_else &(&1 < 50), fn -> "too large" end
         end
 
-      assert result == %Left{left: "too large"}
+      assert result == %Either.Left{left: "too large"}
     end
 
     test "or_else provides fallback on failure" do
@@ -495,10 +532,10 @@ defmodule Funx.Monad.Either.DslTest do
         either "-5" do
           bind ParseInt
           bind PositiveNumber
-          or_else fn -> right(42) end
+          or_else fn -> Either.right(42) end
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "or_else passes through success" do
@@ -506,10 +543,10 @@ defmodule Funx.Monad.Either.DslTest do
         either "10" do
           bind ParseInt
           bind PositiveNumber
-          or_else fn -> right(42) end
+          or_else fn -> Either.right(42) end
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
     end
   end
 
@@ -525,7 +562,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind TupleParseInt
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "normalizes {:error, reason} to Left" do
@@ -534,7 +571,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind TupleParseInt
         end
 
-      assert result == %Left{left: "Invalid integer"}
+      assert result == %Either.Left{left: "Invalid integer"}
     end
 
     test "chains tuple and Either operations" do
@@ -546,7 +583,7 @@ defmodule Funx.Monad.Either.DslTest do
           map Double
         end
 
-      assert result == %Right{right: 20}
+      assert result == %Either.Right{right: 20}
     end
 
     test "tuple followed by map" do
@@ -556,7 +593,7 @@ defmodule Funx.Monad.Either.DslTest do
           map Double
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
     end
 
     test "handles tuple errors in chain" do
@@ -566,7 +603,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind TupleValidator
         end
 
-      assert %Left{left: msg} = result
+      assert %Either.Left{left: msg} = result
       assert msg =~ "must be positive"
     end
   end
@@ -584,7 +621,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind PositiveNumber
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "as: :either (explicit)" do
@@ -593,7 +630,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind ParseInt
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "as: :tuple - success and failure cases" do
@@ -674,7 +711,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind PositiveNumber
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
 
       # Failure case also returns Either
       failure =
@@ -683,7 +720,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind PositiveNumber
         end
 
-      assert %Left{} = failure
+      assert %Either.Left{} = failure
     end
 
     test "as: :either raises error if pipeline returns non-Either" do
@@ -710,7 +747,7 @@ defmodule Funx.Monad.Either.DslTest do
             import Dsl
 
             either "42", as: :invalid_type do
-              bind fn x -> right(x) end
+              bind fn x -> Either.right(x) end
             end
           end,
           [],
@@ -733,15 +770,15 @@ defmodule Funx.Monad.Either.DslTest do
           map &(&1 * 2)
 
           bind fn x ->
-            if x > 15, do: right(x), else: left("too small")
+            if x > 15, do: Either.right(x), else: Either.left("too small")
           end
 
-          validate [PositiveNumber]
+          validate [Positive]
           filter_or_else &(&1 < 50), fn -> "too large" end
           map Double
         end
 
-      assert result == %Right{right: 40}
+      assert result == %Either.Right{right: 40}
     end
 
     test "real-world file reading example" do
@@ -756,7 +793,7 @@ defmodule Funx.Monad.Either.DslTest do
         end
 
       File.rm(path)
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "mixing Either and tuple operations" do
@@ -767,7 +804,7 @@ defmodule Funx.Monad.Either.DslTest do
           map Double
         end
 
-      assert result == %Right{right: 84}
+      assert result == %Either.Right{right: 84}
     end
   end
 
@@ -779,11 +816,11 @@ defmodule Funx.Monad.Either.DslTest do
   describe "input lifting" do
     test "various input types are lifted correctly" do
       test_cases = [
-        {42, %Right{right: 84}, "plain value wrapped in Right"},
-        {right(42), %Right{right: 84}, "Either Right passed through"},
-        {left("error"), %Left{left: "error"}, "Either Left short-circuits"},
-        {{:ok, 42}, %Right{right: 84}, "{:ok, value} converted to Right"},
-        {{:error, "failed"}, %Left{left: "failed"}, "{:error, reason} converted to Left"}
+        {42, %Either.Right{right: 84}, "plain value wrapped in Right"},
+        {Either.right(42), %Either.Right{right: 84}, "Either Right passed through"},
+        {Either.left("error"), %Either.Left{left: "error"}, "Either Left short-circuits"},
+        {{:ok, 42}, %Either.Right{right: 84}, "{:ok, value} converted to Right"},
+        {{:error, "failed"}, %Either.Left{left: "failed"}, "{:error, reason} converted to Left"}
       ]
 
       for {input, expected, description} <- test_cases do
@@ -805,18 +842,18 @@ defmodule Funx.Monad.Either.DslTest do
           map Double
         end
 
-      assert result == %Right{right: 20}
+      assert result == %Either.Right{right: 20}
     end
 
     test "can compose with function returning Either" do
-      fetch_data = fn -> right(10) end
+      fetch_data = fn -> Either.right(10) end
 
       result =
         either fetch_data.() do
           map Double
         end
 
-      assert result == %Right{right: 20}
+      assert result == %Either.Right{right: 20}
     end
 
     test "error tuple short-circuits pipeline" do
@@ -826,26 +863,30 @@ defmodule Funx.Monad.Either.DslTest do
           map Double
         end
 
-      assert result == %Left{left: "initial error"}
+      assert result == %Either.Left{left: "initial error"}
     end
   end
 
   # Tests runtime error handling for invalid module callbacks
   describe "error handling" do
     test "raises on invalid return value from bind" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
-        either "test" do
-          bind InvalidReturn
-        end
-      end
+      assert_raise ArgumentError,
+                   ~r/Operation must return either an Either struct or a result tuple/,
+                   fn ->
+                     either "test" do
+                       bind InvalidReturn
+                     end
+                   end
     end
 
     test "raises on invalid return value from anonymous function" do
-      assert_raise ArgumentError, ~r/run\/3 callback must return/, fn ->
-        either "test" do
-          bind fn _ -> "not an Either or tuple" end
-        end
-      end
+      assert_raise ArgumentError,
+                   ~r/Operation must return either an Either struct or a result tuple/,
+                   fn ->
+                     either "test" do
+                       bind fn _ -> "not an Either or tuple" end
+                     end
+                   end
     end
 
     test "explicit keywords required - bare module would fail" do
@@ -854,7 +895,17 @@ defmodule Funx.Monad.Either.DslTest do
           bind ParseInt
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
+    end
+
+    test "filter_or_else with no arguments raises UndefinedFunctionError" do
+      assert_raise UndefinedFunctionError,
+                   ~r/function Funx.Monad.Either.filter_or_else\/1 is undefined/,
+                   fn ->
+                     either 5 do
+                       filter_or_else()
+                     end
+                   end
     end
   end
 
@@ -866,7 +917,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind PipeTarget.add(5)
         end
 
-      assert result == right(15)
+      assert result == Either.right(15)
     end
 
     test "map lifts the pipeline value into the first argument" do
@@ -875,7 +926,7 @@ defmodule Funx.Monad.Either.DslTest do
           map PipeTarget.mul(4)
         end
 
-      assert result == right(12)
+      assert result == Either.right(12)
     end
 
     test "bind with lifted call normalizes tuple return" do
@@ -884,7 +935,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind PipeTarget.check_positive()
         end
 
-      assert result == left("not positive")
+      assert result == Either.left("not positive")
     end
 
     test "map with lifted call wraps pure value in Right" do
@@ -893,7 +944,7 @@ defmodule Funx.Monad.Either.DslTest do
           map PipeTarget.mul(10)
         end
 
-      assert result == right(20)
+      assert result == Either.right(20)
     end
 
     test "mixed lifted bind + lifted map works correctly" do
@@ -903,7 +954,7 @@ defmodule Funx.Monad.Either.DslTest do
           map PipeTarget.mul(4)
         end
 
-      assert result == right(20)
+      assert result == Either.right(20)
     end
 
     test "lifted functions respect error propagation" do
@@ -913,7 +964,7 @@ defmodule Funx.Monad.Either.DslTest do
           map PipeTarget.mul(5)
         end
 
-      assert result == left("not positive")
+      assert result == Either.left("not positive")
     end
 
     test "auto-pipe does not break existing function-capture behavior" do
@@ -923,12 +974,12 @@ defmodule Funx.Monad.Either.DslTest do
           map &(&1 + 3)
         end
 
-      assert result == right(13)
+      assert result == Either.right(13)
     end
 
-    test "bare modules without run/3 raise runtime error" do
-      # Without compile-time checks, invalid modules raise at runtime
-      assert_raise UndefinedFunctionError, ~r/PipeTarget.run\/3/, fn ->
+    test "bare modules without behavior implementation raise runtime error" do
+      # Modules that don't properly implement the behavior raise at runtime
+      assert_raise RuntimeError, ~r/PipeTarget does not implement/, fn ->
         either 5 do
           bind PipeTarget
         end
@@ -943,7 +994,7 @@ defmodule Funx.Monad.Either.DslTest do
           map PipeTarget.mul(3)
         end
 
-      assert result == right(21)
+      assert result == Either.right(21)
     end
   end
 
@@ -951,18 +1002,16 @@ defmodule Funx.Monad.Either.DslTest do
   describe "auto-pipe lifting in validate lists" do
     # Helper module with zero-arity validator function
     defmodule ValidatorHelpers do
-      import Funx.Monad.Either
-
       def positive?(x) do
-        if x > 0, do: right(x), else: left("must be positive: #{x}")
+        if x > 0, do: Either.right(x), else: Either.left("must be positive: #{x}")
       end
 
       def even?(x) do
-        if rem(x, 2) == 0, do: right(x), else: left("must be even: #{x}")
+        if rem(x, 2) == 0, do: Either.right(x), else: Either.left("must be even: #{x}")
       end
 
       def less_than(x, max) do
-        if x < max, do: right(x), else: left("must be less than #{max}: #{x}")
+        if x < max, do: Either.right(x), else: Either.left("must be less than #{max}: #{x}")
       end
     end
 
@@ -972,7 +1021,7 @@ defmodule Funx.Monad.Either.DslTest do
           validate [ValidatorHelpers.positive?(), ValidatorHelpers.even?()]
         end
 
-      assert result == %Right{right: 4}
+      assert result == %Either.Right{right: 4}
     end
 
     test "validate with zero-arity function calls accumulates errors" do
@@ -981,7 +1030,7 @@ defmodule Funx.Monad.Either.DslTest do
           validate [ValidatorHelpers.positive?(), ValidatorHelpers.even?()]
         end
 
-      assert %Left{left: errors} = result
+      assert %Either.Left{left: errors} = result
       assert is_list(errors)
       assert length(errors) == 2
       assert Enum.any?(errors, &String.contains?(&1, "must be positive"))
@@ -994,7 +1043,7 @@ defmodule Funx.Monad.Either.DslTest do
           validate [ValidatorHelpers.positive?(), ValidatorHelpers.less_than(10)]
         end
 
-      assert result == %Right{right: 5}
+      assert result == %Either.Right{right: 5}
     end
 
     test "validate with function calls with args fails when condition not met" do
@@ -1003,7 +1052,7 @@ defmodule Funx.Monad.Either.DslTest do
           validate [ValidatorHelpers.positive?(), ValidatorHelpers.less_than(10)]
         end
 
-      assert %Left{left: errors} = result
+      assert %Either.Left{left: errors} = result
       assert is_list(errors)
       assert length(errors) == 1
       assert hd(errors) =~ "must be less than 10"
@@ -1012,10 +1061,12 @@ defmodule Funx.Monad.Either.DslTest do
     test "validate mixes modules and auto-lifted functions" do
       result =
         either 5 do
-          validate [ValidatorHelpers.positive?(), PositiveNumber, ValidatorHelpers.even?()]
+          validate [ValidatorHelpers.positive?(), Positive, ValidatorHelpers.even?()]
         end
 
-      assert %Left{left: errors} = result
+      # When mixing auto-lifted functions (plain strings) with validators (ValidationError),
+      # the result is a plain list of error strings
+      assert %Either.Left{left: errors} = result
       assert is_list(errors)
       # even? should fail
       assert Enum.any?(errors, &String.contains?(&1, "must be even"))
@@ -1026,12 +1077,12 @@ defmodule Funx.Monad.Either.DslTest do
         either 50 do
           validate [
             ValidatorHelpers.positive?(),
-            {RangeValidator, min: 0, max: 100},
+            {Range, min: 0, max: 100},
             ValidatorHelpers.even?()
           ]
         end
 
-      assert result == %Right{right: 50}
+      assert result == %Either.Right{right: 50}
     end
 
     test "validate auto-lifting works with single validator" do
@@ -1040,7 +1091,7 @@ defmodule Funx.Monad.Either.DslTest do
           validate ValidatorHelpers.positive?()
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
     end
 
     test "validate auto-lifting fails properly with single validator" do
@@ -1049,7 +1100,7 @@ defmodule Funx.Monad.Either.DslTest do
           validate ValidatorHelpers.positive?()
         end
 
-      assert %Left{left: errors} = result
+      assert %Either.Left{left: errors} = result
       assert is_list(errors)
       assert hd(errors) =~ "must be positive"
     end
@@ -1061,7 +1112,7 @@ defmodule Funx.Monad.Either.DslTest do
           validate ValidatorHelpers.less_than(10)
         end
 
-      assert result == %Right{right: 4}
+      assert result == %Either.Right{right: 4}
     end
 
     test "auto-lifted functions respect arity checking" do
@@ -1071,7 +1122,7 @@ defmodule Funx.Monad.Either.DslTest do
           validate [ValidatorHelpers.positive?(), ValidatorHelpers.less_than(100)]
         end
 
-      assert result == %Right{right: 50}
+      assert result == %Either.Right{right: 50}
     end
 
     test "zero-arity qualified calls are lifted in bind" do
@@ -1081,7 +1132,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind PipeTarget.check_positive()
         end
 
-      assert result == %Right{right: 5}
+      assert result == %Either.Right{right: 5}
     end
 
     test "zero-arity qualified calls are lifted in map" do
@@ -1091,7 +1142,7 @@ defmodule Funx.Monad.Either.DslTest do
           map String.upcase()
         end
 
-      assert result == %Right{right: "HELLO"}
+      assert result == %Either.Right{right: "HELLO"}
     end
 
     test "zero-arity qualified calls work with error cases" do
@@ -1100,7 +1151,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind PipeTarget.check_positive()
         end
 
-      assert result == %Left{left: "not positive"}
+      assert result == %Either.Left{left: "not positive"}
     end
   end
 
@@ -1116,7 +1167,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind {ParseIntWithBase, base: 16}
         end
 
-      assert result == %Right{right: 255}
+      assert result == %Either.Right{right: 255}
     end
 
     test "uses default when no options provided" do
@@ -1125,28 +1176,28 @@ defmodule Funx.Monad.Either.DslTest do
           bind ParseIntWithBase
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "different options for different modules in pipeline" do
       result =
         either "10" do
           bind {ParseIntWithBase, base: 10}
-          bind {MinValidator, min: 5}
+          validate {Range, min: 5}
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
     end
 
     test "fails when option constraints not met" do
       result =
         either "5" do
           bind ParseIntWithBase
-          bind {MinValidator, min: 10}
+          validate {Range, min: 10}
         end
 
-      assert %Left{left: msg} = result
-      assert msg =~ "must be > 10"
+      assert %Either.Left{left: %ValidationError{errors: msg}} = result
+      assert msg == ["must be at least 10"]
     end
 
     test "works with different number bases" do
@@ -1162,7 +1213,7 @@ defmodule Funx.Monad.Either.DslTest do
             bind {ParseIntWithBase, base: base}
           end
 
-        assert result == %Right{right: expected},
+        assert result == %Either.Right{right: expected},
                "Failed to parse #{input} as #{name} (base #{base})"
       end
     end
@@ -1171,11 +1222,11 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either "FF" do
           bind {ParseIntWithBase, base: 16}
-          bind {MinValidator, min: 100}
+          validate {Range, min: 100}
           bind {RangeValidatorWithOpts, min: 200, max: 300}
         end
 
-      assert result == %Right{right: 255}
+      assert result == %Either.Right{right: 255}
     end
 
     test "error message includes base when parsing fails" do
@@ -1184,7 +1235,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind {ParseIntWithBase, base: 16}
         end
 
-      assert %Left{left: msg} = result
+      assert %Either.Left{left: msg} = result
       assert msg =~ "base 16"
     end
   end
@@ -1197,7 +1248,7 @@ defmodule Funx.Monad.Either.DslTest do
           map {Multiplier, factor: 5}
         end
 
-      assert result == %Right{right: 50}
+      assert result == %Either.Right{right: 50}
     end
 
     test "uses default when no options provided" do
@@ -1206,7 +1257,7 @@ defmodule Funx.Monad.Either.DslTest do
           map Multiplier
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
     end
 
     test "multiple map operations with different options" do
@@ -1216,18 +1267,18 @@ defmodule Funx.Monad.Either.DslTest do
           map {Multiplier, factor: 4}
         end
 
-      assert result == %Right{right: 24}
+      assert result == %Either.Right{right: 24}
     end
 
     test "bind and map with options in same pipeline" do
       result =
         either "10" do
           bind {ParseIntWithBase, base: 10}
-          bind {MinValidator, min: 5}
+          validate {Range, min: 5}
           map {Multiplier, factor: 10}
         end
 
-      assert result == %Right{right: 100}
+      assert result == %Either.Right{right: 100}
     end
 
     test "map with options after validation" do
@@ -1238,7 +1289,7 @@ defmodule Funx.Monad.Either.DslTest do
           map {Multiplier, factor: 2}
         end
 
-      assert result == %Right{right: 510}
+      assert result == %Either.Right{right: 510}
     end
   end
 
@@ -1250,17 +1301,17 @@ defmodule Funx.Monad.Either.DslTest do
           bind {ParseIntWithBase, base: 10}
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "bind with options" do
       result =
         either "FF" do
           bind {ParseIntWithBase, base: 16}
-          bind {MinValidator, min: 100}
+          validate {Range, min: 100}
         end
 
-      assert result == %Right{right: 255}
+      assert result == %Either.Right{right: 255}
     end
   end
 
@@ -1272,7 +1323,7 @@ defmodule Funx.Monad.Either.DslTest do
           bind {ParseIntWithBase, []}
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "multiple options in single call" do
@@ -1282,24 +1333,24 @@ defmodule Funx.Monad.Either.DslTest do
           bind {RangeValidatorWithOpts, min: 0, max: 100}
         end
 
-      assert result == %Right{right: 50}
+      assert result == %Either.Right{right: 50}
     end
 
     test "options do not affect global environment" do
       result =
         either "10" do
           bind {ParseIntWithBase, base: 16}
-          bind {MinValidator, min: 5}
+          validate {Range, min: 5}
         end
 
-      assert result == %Right{right: 16}
+      assert result == %Either.Right{right: 16}
     end
 
     test "works with as: :tuple return type" do
       result =
         either "FF", as: :tuple do
           bind {ParseIntWithBase, base: 16}
-          bind {MinValidator, min: 100}
+          validate {Range, min: 100}
         end
 
       assert result == {:ok, 255}
@@ -1323,25 +1374,25 @@ defmodule Funx.Monad.Either.DslTest do
           filter_or_else &(&1 > 3), fn -> "too small" end
         end
 
-      assert result == %Right{right: 5}
+      assert result == %Either.Right{right: 5}
     end
 
     test "allows or_else/2" do
       result =
-        either left("error") do
-          or_else fn -> right(42) end
+        either Either.left("error") do
+          or_else fn -> Either.right(42) end
         end
 
-      assert result == %Right{right: 42}
+      assert result == %Either.Right{right: 42}
     end
 
     test "allows map_left/2" do
       result =
-        either left("error") do
+        either Either.left("error") do
           map_left fn e -> "wrapped: " <> e end
         end
 
-      assert result == %Left{left: "wrapped: error"}
+      assert result == %Either.Left{left: "wrapped: error"}
     end
 
     test "map_left with auto-lifting" do
@@ -1350,20 +1401,20 @@ defmodule Funx.Monad.Either.DslTest do
       format_fn = &PipeTarget.format_error(&1, "validation")
 
       result =
-        either left("failed") do
+        either Either.left("failed") do
           map_left format_fn
         end
 
-      assert result == %Left{left: "validation: failed"}
+      assert result == %Either.Left{left: "validation: failed"}
     end
 
     test "allows flip/1" do
       result =
-        either left("error") do
+        either Either.left("error") do
           flip()
         end
 
-      assert result == %Right{right: "error"}
+      assert result == %Either.Right{right: "error"}
     end
 
     test "allows tap/2 on Right" do
@@ -1376,17 +1427,17 @@ defmodule Funx.Monad.Either.DslTest do
           map(&(&1 + 1))
         end
 
-      assert result == %Right{right: 11}
+      assert result == %Either.Right{right: 11}
       assert_received {:tapped, 10}
     end
 
     test "allows tap/2 on Left" do
       result =
-        either left("error") do
+        either Either.left("error") do
           tap(fn x -> send(self(), {:should_not_tap, x}) end)
         end
 
-      assert result == %Left{left: "error"}
+      assert result == %Either.Left{left: "error"}
       refute_received {:should_not_tap, _}
     end
 
@@ -1403,7 +1454,7 @@ defmodule Funx.Monad.Either.DslTest do
           tap(fn x -> send(test_pid, {:final, x}) end)
         end
 
-      assert result == %Right{right: 84}
+      assert result == %Either.Right{right: 84}
       assert_received {:after_parse, 42}
       assert_received {:after_validate, 42}
       assert_received {:final, 84}
@@ -1413,10 +1464,10 @@ defmodule Funx.Monad.Either.DslTest do
       result =
         either 4 do
           map(&(&1 + 1))
-          validate [PositiveNumber]
+          validate [Positive]
         end
 
-      assert result == %Right{right: 5}
+      assert result == %Either.Right{right: 5}
     end
 
     test "tap with bare module on Right" do
@@ -1428,17 +1479,17 @@ defmodule Funx.Monad.Either.DslTest do
           map(&(&1 * 2))
         end
 
-      assert result == %Right{right: 84}
+      assert result == %Either.Right{right: 84}
       assert_received {:logged_value, 42}
     end
 
     test "tap with bare module on Left" do
       result =
-        either left("error") do
+        either Either.left("error") do
           tap {Logger, test_pid: self(), label: :should_not_log}
         end
 
-      assert result == %Left{left: "error"}
+      assert result == %Either.Left{left: "error"}
       refute_received {:should_not_log, _}
     end
 
@@ -1454,39 +1505,39 @@ defmodule Funx.Monad.Either.DslTest do
           map(&(&1 * 2))
         end
 
-      assert result == %Right{right: 84}
+      assert result == %Either.Right{right: 84}
       assert_received {:after_parse, 42}
       assert_received {:after_validate, 42}
     end
 
     test "map_left with bare module" do
       result =
-        either left("file not found") do
+        either Either.left("file not found") do
           map_left ErrorWrapper
           map(&(&1 * 2))
         end
 
-      assert result == %Left{left: "Error: file not found"}
+      assert result == %Either.Left{left: "Error: file not found"}
     end
 
     test "map_left with module and options" do
       result =
-        either left("invalid input") do
+        either Either.left("invalid input") do
           map_left {ErrorWrapper, prefix: "Validation Error"}
           map(&(&1 * 2))
         end
 
-      assert result == %Left{left: "Validation Error: invalid input"}
+      assert result == %Either.Left{left: "Validation Error: invalid input"}
     end
 
     test "map_left with module on Right" do
       result =
-        either right(42) do
+        either Either.right(42) do
           map_left ErrorWrapper
           map(&(&1 * 2))
         end
 
-      assert result == %Right{right: 84}
+      assert result == %Either.Right{right: 84}
     end
 
     test "filter_or_else with bare module predicate (passes)" do
@@ -1496,7 +1547,7 @@ defmodule Funx.Monad.Either.DslTest do
           map(&(&1 * 2))
         end
 
-      assert result == %Right{right: 10}
+      assert result == %Either.Right{right: 10}
     end
 
     test "filter_or_else with bare module predicate (fails)" do
@@ -1506,7 +1557,7 @@ defmodule Funx.Monad.Either.DslTest do
           map(&(&1 * 2))
         end
 
-      assert result == %Left{left: "Must be positive"}
+      assert result == %Either.Left{left: "Must be positive"}
     end
 
     test "filter_or_else with module and options (passes)" do
@@ -1516,7 +1567,7 @@ defmodule Funx.Monad.Either.DslTest do
           map(&(&1 * 2))
         end
 
-      assert result == %Right{right: 100}
+      assert result == %Either.Right{right: 100}
     end
 
     test "filter_or_else with module and options (fails)" do
@@ -1526,7 +1577,7 @@ defmodule Funx.Monad.Either.DslTest do
           map(&(&1 * 2))
         end
 
-      assert result == %Left{left: "Out of range"}
+      assert result == %Either.Left{left: "Out of range"}
     end
 
     test "filter_or_else with module in complex pipeline" do
@@ -1538,7 +1589,7 @@ defmodule Funx.Monad.Either.DslTest do
           map(&(&1 * 2))
         end
 
-      assert result == %Right{right: 84}
+      assert result == %Either.Right{right: 84}
     end
   end
 end

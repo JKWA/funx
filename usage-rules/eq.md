@@ -202,7 +202,9 @@ The DSL version:
 ### Supported Projections
 
 - `on :atom` - Field access via `Prism.key/1` (Nothing == Nothing)
+- `on [:a, :b]` - List path via `Prism.path/1` (nested keys and structs, Nothing == Nothing)
 - `on :atom, or_else: value` - Prism with fallback (replaces Nothing with value)
+- `on [:a, :b], or_else: value` - List path with fallback
 - `on Lens.key(:field)` - Explicit Lens (total access, raises `KeyError` on missing keys)
 - `on Lens.path([:a, :b])` - Nested Lens (raises on missing keys or nil intermediate values)
 - `on Prism.key(:field)` - Explicit Prism (Nothing == Nothing)
@@ -504,7 +506,28 @@ eq do
 end
 ```
 
-### Nested Field Access
+### Nested Field Access (List Paths)
+
+List paths provide convenient syntax for accessing nested fields:
+
+```elixir
+# Using list path syntax (recommended)
+eq_by_city = eq do
+  on [:company, :address, :city]
+end
+
+# Equivalent to explicit Prism.path
+eq_by_city = eq do
+  on Prism.path([:company, :address, :city])
+end
+
+# Or using Lens.path for total access
+eq_by_city = eq do
+  on Lens.path([:company, :address, :city])
+end
+```
+
+**List paths with struct modules:**
 
 ```elixir
 employees = [
@@ -516,11 +539,30 @@ employees = [
   }
 ]
 
+# Struct-aware path
 eq_by_city = eq do
-  on Lens.path([:company, :address, :city])
+  on [Employee, :company, Company, :address, Address, :city]
 end
 
 Eq.eq?(emp1, emp2, eq_by_city)
+```
+
+**List paths with or_else:**
+
+```elixir
+# Handle missing nested values
+eq_with_default = eq do
+  on [:user, :profile, :city], or_else: "Unknown"
+end
+```
+
+**Multiple list paths:**
+
+```elixir
+eq_nested = eq do
+  on [:user, :profile, :name]
+  on [:user, :profile, :age]
+end
 ```
 
 ### Empty Eq Block

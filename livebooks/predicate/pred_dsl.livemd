@@ -69,6 +69,8 @@ end
 
   * When absent or nil: the `check` is false (predicate never receives nil)
 
+* Lists: `[:a, :b]`, converts to `Prism.path([:a, :b])` (supports nested keys and structs)
+
 * Lenses: `Lens.key(:field)`, `Lens.path([:a, :b])` (total accessor - always succeeds)
 
 * Prisms: `Prism.struct(Variant)`, `Prism.path([:field, Variant, ...])` (branch selection)
@@ -339,6 +341,101 @@ check_gmail =
   end
 
 Enum.filter(users, check_gmail)
+```
+
+### check with List Paths (Nested Field Access)
+
+List paths provide convenient syntax for accessing nested fields without manually composing optics.
+
+Define nested test data:
+
+```elixir
+defmodule Account do
+  defstruct [:owner, :settings]
+end
+
+defmodule Owner do
+  defstruct [:name, :age]
+end
+
+defmodule Settings do
+  defstruct [:notifications, :privacy]
+end
+
+accounts = [
+  %Account{
+    owner: %Owner{name: "Alice", age: 30},
+    settings: %Settings{notifications: true, privacy: :public}
+  },
+  %Account{
+    owner: %Owner{name: "Bob", age: 17},
+    settings: %Settings{notifications: false, privacy: :private}
+  },
+  %Account{
+    owner: %Owner{name: "Charlie", age: 25},
+    settings: %Settings{notifications: true, privacy: :private}
+  }
+]
+```
+
+Check nested fields using list syntax:
+
+```elixir
+check_adult_owner =
+  pred do
+    check [:owner, :age], fn age -> age >= 18 end
+  end
+
+Enum.filter(accounts, check_adult_owner)
+```
+
+Check multiple nested fields:
+
+```elixir
+check_adult_notifications =
+  pred do
+    check [:owner, :age], fn age -> age >= 18 end
+    check [:settings, :notifications], fn n -> n == true end
+  end
+
+Enum.filter(accounts, check_adult_notifications)
+```
+
+List paths work with struct modules for type-safe access:
+
+```elixir
+check_struct_path =
+  pred do
+    check [Account, :owner, Owner, :age], fn age -> age >= 21 end
+  end
+
+Enum.filter(accounts, check_struct_path)
+```
+
+Negating list path checks:
+
+```elixir
+check_not_private =
+  pred do
+    negate check [:settings, :privacy], fn p -> p == :private end
+  end
+
+Enum.filter(accounts, check_not_private)
+```
+
+List paths are syntax sugar for `Prism.path`:
+
+```elixir
+# These are equivalent:
+check_list = pred do
+  check [:owner, :age], fn age -> age >= 18 end
+end
+
+check_explicit = pred do
+  check Prism.path([:owner, :age]), fn age -> age >= 18 end
+end
+
+Enum.filter(accounts, check_list) == Enum.filter(accounts, check_explicit)
 ```
 
 ### check with Traversal (Relating Multiple Foci)

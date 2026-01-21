@@ -27,17 +27,19 @@ defmodule Funx.Monad.Either.Dsl do
 
       iex> defmodule GetUser do
       ...>   use Funx.Monad.Either
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(_value, _env, _opts), do: left("not found")
+      ...>   alias Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
+      ...>   def bind(_value, _opts, _env), do: Either.left("not found")
       ...> end
       iex> defmodule CheckPermissions do
       ...>   use Funx.Monad.Either
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(value, _env, _opts), do: right(value)
+      ...>   alias Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
+      ...>   def bind(value, _opts, _env), do: Either.right(value)
       ...> end
       iex> defmodule FormatUser do
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(value, _env, _opts), do: "formatted: \#{value}"
+      ...>   @behaviour Funx.Monad.Behaviour.Map
+      ...>   def map(value, _opts, _env), do: "formatted: \#{value}"
       ...> end
       iex> use Funx.Monad.Either
       iex> either 123 do
@@ -53,9 +55,9 @@ defmodule Funx.Monad.Either.Dsl do
   Example:
 
       iex> use Funx.Monad.Either
-      iex> positive? = fn x -> if x > 0, do: right(x), else: left("not positive") end
-      iex> even? = fn x -> if rem(x, 2) == 0, do: right(x), else: left("not even") end
-      iex> less_than_100? = fn x -> if x < 100, do: right(x), else: left("too large") end
+      iex> positive? = fn x -> if x > 0, do: Funx.Monad.Either.right(x), else: Funx.Monad.Either.left("not positive") end
+      iex> even? = fn x -> if rem(x, 2) == 0, do: Funx.Monad.Either.right(x), else: Funx.Monad.Either.left("not even") end
+      iex> less_than_100? = fn x -> if x < 100, do: Funx.Monad.Either.right(x), else: Funx.Monad.Either.left("too large") end
       iex> either -5 do
       ...>   validate [positive?, even?, less_than_100?]
       ...> end
@@ -71,17 +73,18 @@ defmodule Funx.Monad.Either.Dsl do
 
       iex> defmodule ParseInt do
       ...>   use Funx.Monad.Either
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(value, _env, _opts) when is_binary(value) do
+      ...>   alias Funx.Monad.Either
+      ...>   @behaviour Funx.Monad.Behaviour.Bind
+      ...>   def bind(value, _opts, _env) when is_binary(value) do
       ...>     case Integer.parse(value) do
-      ...>       {int, ""} -> right(int)
-      ...>       _ -> left("invalid integer")
+      ...>       {int, ""} -> Either.right(int)
+      ...>       _ -> Either.left("invalid integer")
       ...>     end
       ...>   end
       ...> end
       iex> defmodule Double do
-      ...>   @behaviour Funx.Monad.Either.Dsl.Behaviour
-      ...>   def run(value, _env, _opts), do: value * 2
+      ...>   @behaviour Funx.Monad.Behaviour.Map
+      ...>   def map(value, _opts, _env), do: value * 2
       ...> end
       iex> use Funx.Monad.Either
       iex> either "42" do

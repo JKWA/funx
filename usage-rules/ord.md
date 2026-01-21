@@ -371,7 +371,9 @@ The DSL version:
 ### Supported Projections
 
 - `asc :atom` / `desc :atom` - Field access via `Prism.key/1` (returns `Nothing` for missing keys or nil)
+- `asc [:a, :b]` / `desc [:a, :b]` - List path via `Prism.path/1` (nested keys and structs, Nothing < Just)
 - `asc :atom, or_else: value` - Prism with fallback (replaces `Nothing` with value)
+- `asc [:a, :b], or_else: value` - List path with fallback
 - `asc Lens.key(:field)` - Explicit Lens (total access, raises `KeyError` on missing keys)
 - `asc Lens.path([:a, :b])` - Nested Lens (raises on missing keys or nil intermediate values)
 - `asc Prism.key(:field)` - Explicit Prism (returns `Maybe`, Nothing < Just with `Maybe.lift_ord`)
@@ -405,12 +407,45 @@ ord do
 end
 ```
 
-**Nested field access:**
+**Nested field access (list paths):**
 
 ```elixir
+# Using list path syntax (recommended)
+ord do
+  asc [:address, :city]
+  asc :name
+end
+
+# Equivalent to explicit Prism.path
+ord do
+  asc Prism.path([:address, :city])
+  asc :name
+end
+
+# Or using Lens.path for total access
 ord do
   asc Lens.path([:address, :city])
   asc :name
+end
+```
+
+**List paths with struct modules:**
+
+```elixir
+# Struct-aware nested sorting
+ord do
+  asc [Company, :address, Address, :city]
+  desc [:founded]
+end
+```
+
+**List paths with or_else:**
+
+```elixir
+# Handle missing nested values
+ord do
+  asc [:user, :profile, :score], or_else: 0
+  asc [:user, :name]
 end
 ```
 

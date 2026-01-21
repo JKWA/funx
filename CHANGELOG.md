@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.0] - Unreleased
+
+### Breaking Changes
+
+* Removed the import Either and import Maybe from the DSLs.
+
 ## [0.6.1] - Unreleased
 
 ### Added
