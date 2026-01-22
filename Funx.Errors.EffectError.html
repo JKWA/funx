@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.6.1">
+    <meta name="project" content="funx v0.7.0">
 
 
-    <title>Funx.Errors.EffectError — funx v0.6.1</title>
+    <title>Funx.Errors.EffectError — funx v0.7.0</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Errors.EffectError.html" />
 
-    <script defer src="dist/sidebar_items-5957B80B.js"></script>
+    <script defer src="dist/sidebar_items-8DBFF3DA.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.6.1
+          v0.7.0
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Errors.EffectError</span> <small>exception</small>
-      <small class="app-vsn" translate="no">(funx v0.6.1)</small>
+      <small class="app-vsn" translate="no">(funx v0.7.0)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/errors/effect_error.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/errors/effect_error.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -109,7 +109,7 @@ funx
 
 
     <section id="moduledoc">
-<p>Represents a system-level failure in an effectful computation.</p><p><code class="inline">EffectError</code> is raised or returned when a failure occurs during the execution
+<p><a href="https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ferrors%2Feffect_error.livemd"><img src="https://livebook.dev/badge/v1/black.svg" alt="Run in Livebook"/></a></p><p>Represents a system-level failure in an effectful computation.</p><p><code class="inline">EffectError</code> is raised or returned when a failure occurs during the execution
 of an <code class="inline">Effect</code> stage, such as <code class="inline">map</code>, <code class="inline">bind</code>, or <code class="inline">ap</code>. It is not meant for user-facing
 validation, but rather for internal tracing, telemetry, and diagnostics.</p><h2 id="module-fields" class="section-heading"><a href="#module-fields" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Fields</span></h2><ul><li><code class="inline">stage</code> – the name of the effect stage where the error occurred (<code class="inline">:map</code>, <code class="inline">:bind</code>, <code class="inline">:ap</code>, etc.)</li><li><code class="inline">reason</code> – the term (often an exception) that caused the failure</li></ul><p>This error implements the <a href="https://hexdocs.pm/elixir/Exception.html"><code class="inline">Exception</code></a>, <a href="https://hexdocs.pm/elixir/String.Chars.html"><code class="inline">String.Chars</code></a>, and <a href="Funx.Summarizable.html"><code class="inline">Funx.Summarizable</code></a> behaviours.</p>
     </section>
@@ -176,7 +176,7 @@ validation, but rather for internal tracing, telemetry, and diagnostics.</p><h2 
       <h1 class="signature" translate="no">t()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/errors/effect_error.ex#L21" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/errors/effect_error.ex#L23" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -221,7 +221,7 @@ validation, but rather for internal tracing, telemetry, and diagnostics.</p><h2 
       <h1 class="signature" translate="no">new(stage, reason)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/errors/effect_error.ex#L35" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/errors/effect_error.ex#L37" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -236,8 +236,8 @@ validation, but rather for internal tracing, telemetry, and diagnostics.</p><h2 
 
       </div>
 
-<p>Creates a new <code class="inline">EffectError</code> from the given stage and reason.</p><h2 id="new/2-examples" class="section-heading"><a href="#new/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.EffectError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="8601055121-1">(</span><span class="ss">:bind</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8601055121-2">%</span><span class="nc" data-group-id="8601055121-2">RuntimeError</span><span class="p" data-group-id="8601055121-2">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;boom&quot;</span><span class="p" data-group-id="8601055121-2">}</span><span class="p" data-group-id="8601055121-1">)</span><span class="w">
-</span><span class="p" data-group-id="8601055121-3">%</span><span class="nc" data-group-id="8601055121-3">Funx.Errors.EffectError</span><span class="p" data-group-id="8601055121-3">{</span><span class="ss">stage</span><span class="p">:</span><span class="w"> </span><span class="ss">:bind</span><span class="p">,</span><span class="w"> </span><span class="ss">reason</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8601055121-4">%</span><span class="nc" data-group-id="8601055121-4">RuntimeError</span><span class="p" data-group-id="8601055121-4">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;boom&quot;</span><span class="p" data-group-id="8601055121-4">}</span><span class="p" data-group-id="8601055121-3">}</span></code></pre>
+<p>Creates a new <code class="inline">EffectError</code> from the given stage and reason.</p><h2 id="new/2-examples" class="section-heading"><a href="#new/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.EffectError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="1616322851-1">(</span><span class="ss">:bind</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1616322851-2">%</span><span class="nc" data-group-id="1616322851-2">RuntimeError</span><span class="p" data-group-id="1616322851-2">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;boom&quot;</span><span class="p" data-group-id="1616322851-2">}</span><span class="p" data-group-id="1616322851-1">)</span><span class="w">
+</span><span class="p" data-group-id="1616322851-3">%</span><span class="nc" data-group-id="1616322851-3">Funx.Errors.EffectError</span><span class="p" data-group-id="1616322851-3">{</span><span class="ss">stage</span><span class="p">:</span><span class="w"> </span><span class="ss">:bind</span><span class="p">,</span><span class="w"> </span><span class="ss">reason</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1616322851-4">%</span><span class="nc" data-group-id="1616322851-4">RuntimeError</span><span class="p" data-group-id="1616322851-4">{</span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;boom&quot;</span><span class="p" data-group-id="1616322851-4">}</span><span class="p" data-group-id="1616322851-3">}</span></code></pre>
   </section>
 </section>
 
@@ -249,9 +249,9 @@ validation, but rather for internal tracing, telemetry, and diagnostics.</p><h2 
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.6.1" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.7.0" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.6.1">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.7.0">Hex Preview</a>
 
             </span>
 

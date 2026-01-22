@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.6.1">
+    <meta name="project" content="funx v0.7.0">
 
 
-    <title>Funx.Monoid — funx v0.6.1</title>
+    <title>Funx.Monoid — funx v0.7.0</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monoid.html" />
 
-    <script defer src="dist/sidebar_items-5957B80B.js"></script>
+    <script defer src="dist/sidebar_items-8DBFF3DA.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.6.1
+          v0.7.0
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Monoid</span> <small>protocol</small>
-      <small class="app-vsn" translate="no">(funx v0.6.1)</small>
+      <small class="app-vsn" translate="no">(funx v0.7.0)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monoid.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monoid.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -109,7 +109,7 @@ funx
 
 
     <section id="moduledoc">
-<p>A protocol defining the Monoid algebraic structure, which consists of
+<p><a href="https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonoid%2Fmonoid.livemd"><img src="https://livebook.dev/badge/v1/black.svg" alt="Run in Livebook"/></a></p><p>A protocol defining the Monoid algebraic structure, which consists of
 an identity element and an associative binary operation for combining values.</p><p>This protocol provides four key functions:</p><ul><li><a href="#empty/1"><code class="inline">empty/1</code></a>: Returns the identity element for the given monoid.</li><li><a href="#append/2"><code class="inline">append/2</code></a>: Combines two monoid structs.</li><li><a href="#wrap/2"><code class="inline">wrap/2</code></a>: Wraps a value into the monoid struct.</li><li><a href="#unwrap/1"><code class="inline">unwrap/1</code></a>: Extracts the underlying value from the monoid struct.</li></ul>
     </section>
 
@@ -207,7 +207,7 @@ an identity element and an associative binary operation for combining values.</p
       <h1 class="signature" translate="no">t()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monoid.ex#L1" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monoid.ex#L1" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -248,7 +248,7 @@ an identity element and an associative binary operation for combining values.</p
       <h1 class="signature" translate="no">append(monoid_struct_a, monoid_struct_b)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monoid.ex#L43" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monoid.ex#L45" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -263,8 +263,8 @@ an identity element and an associative binary operation for combining values.</p
 
       </div>
 
-<p>Combines two monoid structs.</p><p>The operation must satisfy associativity:</p><pre><code class="makeup elixir" translate="no"><span class="n">append</span><span class="p" data-group-id="9269499191-1">(</span><span class="n">append</span><span class="p" data-group-id="9269499191-2">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="9269499191-2">)</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p" data-group-id="9269499191-1">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">append</span><span class="p" data-group-id="9269499191-3">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">append</span><span class="p" data-group-id="9269499191-4">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p" data-group-id="9269499191-4">)</span><span class="p" data-group-id="9269499191-3">)</span></code></pre><h2 id="append/2-examples" class="section-heading"><a href="#append/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monoid</span><span class="o">.</span><span class="n">append</span><span class="p" data-group-id="7582886153-1">(</span><span class="p" data-group-id="7582886153-2">%</span><span class="nc" data-group-id="7582886153-2">Funx.Monoid.Sum</span><span class="p" data-group-id="7582886153-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7582886153-2">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7582886153-3">%</span><span class="nc" data-group-id="7582886153-3">Funx.Monoid.Sum</span><span class="p" data-group-id="7582886153-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7582886153-3">}</span><span class="p" data-group-id="7582886153-1">)</span><span class="w">
-</span><span class="p" data-group-id="7582886153-4">%</span><span class="nc" data-group-id="7582886153-4">Funx.Monoid.Sum</span><span class="p" data-group-id="7582886153-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7582886153-4">}</span></code></pre>
+<p>Combines two monoid structs.</p><p>The operation must satisfy associativity:</p><pre><code class="makeup elixir" translate="no"><span class="n">append</span><span class="p" data-group-id="6335995274-1">(</span><span class="n">append</span><span class="p" data-group-id="6335995274-2">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p" data-group-id="6335995274-2">)</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p" data-group-id="6335995274-1">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">append</span><span class="p" data-group-id="6335995274-3">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">append</span><span class="p" data-group-id="6335995274-4">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p" data-group-id="6335995274-4">)</span><span class="p" data-group-id="6335995274-3">)</span></code></pre><h2 id="append/2-examples" class="section-heading"><a href="#append/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monoid</span><span class="o">.</span><span class="n">append</span><span class="p" data-group-id="5974017108-1">(</span><span class="p" data-group-id="5974017108-2">%</span><span class="nc" data-group-id="5974017108-2">Funx.Monoid.Sum</span><span class="p" data-group-id="5974017108-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="5974017108-2">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5974017108-3">%</span><span class="nc" data-group-id="5974017108-3">Funx.Monoid.Sum</span><span class="p" data-group-id="5974017108-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5974017108-3">}</span><span class="p" data-group-id="5974017108-1">)</span><span class="w">
+</span><span class="p" data-group-id="5974017108-4">%</span><span class="nc" data-group-id="5974017108-4">Funx.Monoid.Sum</span><span class="p" data-group-id="5974017108-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="5974017108-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="empty/1">
@@ -277,7 +277,7 @@ an identity element and an associative binary operation for combining values.</p
       <h1 class="signature" translate="no">empty(monoid_struct)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monoid.ex#L28" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monoid.ex#L30" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -292,9 +292,9 @@ an identity element and an associative binary operation for combining values.</p
 
       </div>
 
-<p>Returns the identity element for the given monoid struct.</p><p>The identity element is a special value that satisfies the property:</p><pre><code class="makeup elixir" translate="no"><span class="n">append</span><span class="p" data-group-id="4995674855-1">(</span><span class="n">empty</span><span class="p" data-group-id="4995674855-2">(</span><span class="n">monoid_struct</span><span class="p" data-group-id="4995674855-2">)</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p" data-group-id="4995674855-1">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="w">
-</span><span class="n">append</span><span class="p" data-group-id="4995674855-3">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">empty</span><span class="p" data-group-id="4995674855-4">(</span><span class="n">monoid_struct</span><span class="p" data-group-id="4995674855-4">)</span><span class="p" data-group-id="4995674855-3">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span></code></pre><h2 id="empty/1-examples" class="section-heading"><a href="#empty/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monoid</span><span class="o">.</span><span class="n">empty</span><span class="p" data-group-id="6466211164-1">(</span><span class="p" data-group-id="6466211164-2">%</span><span class="nc" data-group-id="6466211164-2">Funx.Monoid.Sum</span><span class="p" data-group-id="6466211164-2">{</span><span class="p" data-group-id="6466211164-2">}</span><span class="p" data-group-id="6466211164-1">)</span><span class="w">
-</span><span class="p" data-group-id="6466211164-3">%</span><span class="nc" data-group-id="6466211164-3">Funx.Monoid.Sum</span><span class="p" data-group-id="6466211164-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="6466211164-3">}</span></code></pre>
+<p>Returns the identity element for the given monoid struct.</p><p>The identity element is a special value that satisfies the property:</p><pre><code class="makeup elixir" translate="no"><span class="n">append</span><span class="p" data-group-id="4695680970-1">(</span><span class="n">empty</span><span class="p" data-group-id="4695680970-2">(</span><span class="n">monoid_struct</span><span class="p" data-group-id="4695680970-2">)</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p" data-group-id="4695680970-1">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="w">
+</span><span class="n">append</span><span class="p" data-group-id="4695680970-3">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">empty</span><span class="p" data-group-id="4695680970-4">(</span><span class="n">monoid_struct</span><span class="p" data-group-id="4695680970-4">)</span><span class="p" data-group-id="4695680970-3">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span></code></pre><h2 id="empty/1-examples" class="section-heading"><a href="#empty/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monoid</span><span class="o">.</span><span class="n">empty</span><span class="p" data-group-id="5879371834-1">(</span><span class="p" data-group-id="5879371834-2">%</span><span class="nc" data-group-id="5879371834-2">Funx.Monoid.Sum</span><span class="p" data-group-id="5879371834-2">{</span><span class="p" data-group-id="5879371834-2">}</span><span class="p" data-group-id="5879371834-1">)</span><span class="w">
+</span><span class="p" data-group-id="5879371834-3">%</span><span class="nc" data-group-id="5879371834-3">Funx.Monoid.Sum</span><span class="p" data-group-id="5879371834-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="5879371834-3">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="unwrap/1">
@@ -307,7 +307,7 @@ an identity element and an associative binary operation for combining values.</p
       <h1 class="signature" translate="no">unwrap(monoid_struct)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monoid.ex#L65" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monoid.ex#L67" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -322,7 +322,7 @@ an identity element and an associative binary operation for combining values.</p
 
       </div>
 
-<p>Extracts the underlying value from the monoid struct.</p><h2 id="unwrap/1-examples" class="section-heading"><a href="#unwrap/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monoid</span><span class="o">.</span><span class="n">unwrap</span><span class="p" data-group-id="1326661335-1">(</span><span class="p" data-group-id="1326661335-2">%</span><span class="nc" data-group-id="1326661335-2">Funx.Monoid.Sum</span><span class="p" data-group-id="1326661335-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="1326661335-2">}</span><span class="p" data-group-id="1326661335-1">)</span><span class="w">
+<p>Extracts the underlying value from the monoid struct.</p><h2 id="unwrap/1-examples" class="section-heading"><a href="#unwrap/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monoid</span><span class="o">.</span><span class="n">unwrap</span><span class="p" data-group-id="4316788489-1">(</span><span class="p" data-group-id="4316788489-2">%</span><span class="nc" data-group-id="4316788489-2">Funx.Monoid.Sum</span><span class="p" data-group-id="4316788489-2">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4316788489-2">}</span><span class="p" data-group-id="4316788489-1">)</span><span class="w">
 </span><span class="mi">10</span></code></pre>
   </section>
 </section>
@@ -336,7 +336,7 @@ an identity element and an associative binary operation for combining values.</p
       <h1 class="signature" translate="no">wrap(monoid_struct, value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monoid.ex#L54" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monoid.ex#L56" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -351,8 +351,8 @@ an identity element and an associative binary operation for combining values.</p
 
       </div>
 
-<p>Wraps a value into the given monoid struct.</p><h2 id="wrap/2-examples" class="section-heading"><a href="#wrap/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monoid</span><span class="o">.</span><span class="n">wrap</span><span class="p" data-group-id="7503847786-1">(</span><span class="p" data-group-id="7503847786-2">%</span><span class="nc" data-group-id="7503847786-2">Funx.Monoid.Sum</span><span class="p" data-group-id="7503847786-2">{</span><span class="p" data-group-id="7503847786-2">}</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7503847786-1">)</span><span class="w">
-</span><span class="p" data-group-id="7503847786-3">%</span><span class="nc" data-group-id="7503847786-3">Funx.Monoid.Sum</span><span class="p" data-group-id="7503847786-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7503847786-3">}</span></code></pre>
+<p>Wraps a value into the given monoid struct.</p><h2 id="wrap/2-examples" class="section-heading"><a href="#wrap/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monoid</span><span class="o">.</span><span class="n">wrap</span><span class="p" data-group-id="7925063614-1">(</span><span class="p" data-group-id="7925063614-2">%</span><span class="nc" data-group-id="7925063614-2">Funx.Monoid.Sum</span><span class="p" data-group-id="7925063614-2">{</span><span class="p" data-group-id="7925063614-2">}</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7925063614-1">)</span><span class="w">
+</span><span class="p" data-group-id="7925063614-3">%</span><span class="nc" data-group-id="7925063614-3">Funx.Monoid.Sum</span><span class="p" data-group-id="7925063614-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7925063614-3">}</span></code></pre>
   </section>
 </section>
 
@@ -364,9 +364,9 @@ an identity element and an associative binary operation for combining values.</p
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.6.1" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.7.0" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.6.1">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.7.0">Hex Preview</a>
 
             </span>
 

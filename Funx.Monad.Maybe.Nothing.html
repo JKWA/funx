@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.6.1">
+    <meta name="project" content="funx v0.7.0">
 
 
-    <title>Funx.Monad.Maybe.Nothing — funx v0.6.1</title>
+    <title>Funx.Monad.Maybe.Nothing — funx v0.7.0</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.Maybe.Nothing.html" />
 
-    <script defer src="dist/sidebar_items-5957B80B.js"></script>
+    <script defer src="dist/sidebar_items-8DBFF3DA.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.6.1
+          v0.7.0
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Monad.Maybe.Nothing</span> 
-      <small class="app-vsn" translate="no">(funx v0.6.1)</small>
+      <small class="app-vsn" translate="no">(funx v0.7.0)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monad/maybe/nothing.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monad/maybe/nothing.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -109,7 +109,7 @@ funx
 
 
     <section id="moduledoc">
-<p>Represents the <code class="inline">Nothing</code> variant of the <code class="inline">Maybe</code> monad, used to model the absence of a value.</p><p>A <code class="inline">Nothing</code> indicates that no value is present. All operations in the monad context simply propagate the absence, making <code class="inline">Nothing</code> an identity for failure or emptiness.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code>, all of which return <code class="inline">Nothing</code>.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code>, invoking the fallback function when folding.</li><li><a href="Funx.Filterable.html"><code class="inline">Funx.Filterable</code></a>: Supports filtering operations, which always return <code class="inline">Nothing</code>.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Enables equality checks between <code class="inline">Nothing</code> and other <code class="inline">Maybe</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering behavior between <code class="inline">Nothing</code> and <code class="inline">Just</code>.</li><li><a href="Funx.Tappable.html"><code class="inline">Funx.Tappable</code></a>: Returns <code class="inline">Nothing</code> unchanged without executing the tap function.</li></ul><p>These implementations ensure that <code class="inline">Nothing</code> behaves consistently in functional composition, filtering, and comparison, treating absence as a stable and composable case.</p>
+<p><a href="https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Fmaybe%2Fnothing.livemd"><img src="https://livebook.dev/badge/v1/black.svg" alt="Run in Livebook"/></a></p><p>Represents the <code class="inline">Nothing</code> variant of the <code class="inline">Maybe</code> monad, used to model the absence of a value.</p><p>A <code class="inline">Nothing</code> indicates that no value is present. All operations in the monad context simply propagate the absence, making <code class="inline">Nothing</code> an identity for failure or emptiness.</p><p>This module implements the following protocols:</p><ul><li><a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a>: Implements <code class="inline">bind/2</code>, <code class="inline">map/2</code>, and <code class="inline">ap/2</code>, all of which return <code class="inline">Nothing</code>.</li><li><a href="Funx.Foldable.html"><code class="inline">Funx.Foldable</code></a>: Provides <code class="inline">fold_l/3</code> and <code class="inline">fold_r/3</code>, invoking the fallback function when folding.</li><li><a href="Funx.Filterable.html"><code class="inline">Funx.Filterable</code></a>: Supports filtering operations, which always return <code class="inline">Nothing</code>.</li><li><a href="Funx.Eq.html"><code class="inline">Funx.Eq</code></a>: Enables equality checks between <code class="inline">Nothing</code> and other <code class="inline">Maybe</code> values.</li><li><a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>: Defines ordering behavior between <code class="inline">Nothing</code> and <code class="inline">Just</code>.</li><li><a href="Funx.Tappable.html"><code class="inline">Funx.Tappable</code></a>: Returns <code class="inline">Nothing</code> unchanged without executing the tap function.</li></ul><p>These implementations ensure that <code class="inline">Nothing</code> behaves consistently in functional composition, filtering, and comparison, treating absence as a stable and composable case.</p>
     </section>
 
 </div>
@@ -174,7 +174,7 @@ funx
       <h1 class="signature" translate="no">t()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monad/maybe/nothing.ex#L21" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monad/maybe/nothing.ex#L23" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -215,7 +215,7 @@ funx
       <h1 class="signature" translate="no">pure()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monad/maybe/nothing.ex#L32" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monad/maybe/nothing.ex#L34" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -230,8 +230,8 @@ funx
 
       </div>
 
-<p>Creates a new <code class="inline">Nothing</code> value.</p><h2 id="pure/0-examples" class="section-heading"><a href="#pure/0-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe.Nothing</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="6146340450-1">(</span><span class="p" data-group-id="6146340450-1">)</span><span class="w">
-</span><span class="p" data-group-id="6146340450-2">%</span><span class="nc" data-group-id="6146340450-2">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="6146340450-2">{</span><span class="p" data-group-id="6146340450-2">}</span></code></pre>
+<p>Creates a new <code class="inline">Nothing</code> value.</p><h2 id="pure/0-examples" class="section-heading"><a href="#pure/0-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad.Maybe.Nothing</span><span class="o">.</span><span class="n">pure</span><span class="p" data-group-id="3442327223-1">(</span><span class="p" data-group-id="3442327223-1">)</span><span class="w">
+</span><span class="p" data-group-id="3442327223-2">%</span><span class="nc" data-group-id="3442327223-2">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="3442327223-2">{</span><span class="p" data-group-id="3442327223-2">}</span></code></pre>
   </section>
 </section>
 
@@ -243,9 +243,9 @@ funx
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.6.1" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.7.0" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.6.1">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.7.0">Hex Preview</a>
 
             </span>
 

@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.6.1">
+    <meta name="project" content="funx v0.7.0">
 
 
-    <title>Funx.Monad — funx v0.6.1</title>
+    <title>Funx.Monad — funx v0.7.0</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monad.html" />
 
-    <script defer src="dist/sidebar_items-5957B80B.js"></script>
+    <script defer src="dist/sidebar_items-8DBFF3DA.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.6.1
+          v0.7.0
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Monad</span> <small>protocol</small>
-      <small class="app-vsn" translate="no">(funx v0.6.1)</small>
+      <small class="app-vsn" translate="no">(funx v0.7.0)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monad.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monad.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -109,7 +109,7 @@ funx
 
 
     <section id="moduledoc">
-<p>The <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a> protocol defines the core monadic operations: <a href="#ap/2"><code class="inline">ap/2</code></a>, <a href="#bind/2"><code class="inline">bind/2</code></a>, and <a href="#map/2"><code class="inline">map/2</code></a>.</p><p>A monad is an abstraction that represents computations as a series of steps.
+<p><a href="https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Fmonad.livemd"><img src="https://livebook.dev/badge/v1/black.svg" alt="Run in Livebook"/></a></p><p>The <a href="Funx.Monad.html"><code class="inline">Funx.Monad</code></a> protocol defines the core monadic operations: <a href="#ap/2"><code class="inline">ap/2</code></a>, <a href="#bind/2"><code class="inline">bind/2</code></a>, and <a href="#map/2"><code class="inline">map/2</code></a>.</p><p>A monad is an abstraction that represents computations as a series of steps.
 This protocol is designed to be implemented by types that wrap a value and allow chaining of operations while preserving the wrapped context.</p><h2 id="module-functions" class="section-heading"><a href="#module-functions" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Functions</span></h2><ul><li><a href="#map/2"><code class="inline">map/2</code></a>: Applies a function to the value within the monad.</li><li><a href="#bind/2"><code class="inline">bind/2</code></a>: Chains operations by passing the unwrapped value into a function that returns another monad.</li><li><a href="#ap/2"><code class="inline">ap/2</code></a>: Applies a monadic function to another monadic value.</li></ul>
     </section>
 
@@ -195,7 +195,7 @@ This protocol is designed to be implemented by types that wrap a value and allow
       <h1 class="signature" translate="no">t()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monad.ex#L15" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monad.ex#L17" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -236,7 +236,7 @@ This protocol is designed to be implemented by types that wrap a value and allow
       <h1 class="signature" translate="no">ap(monadic_func, monad_value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monad.ex#L34" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monad.ex#L36" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -252,9 +252,9 @@ This protocol is designed to be implemented by types that wrap a value and allow
       </div>
 
 <p>Applies a monadic function to another monadic value.</p><p>The function <code class="inline">func</code> is expected to be wrapped in a monadic context and is applied to the value <code class="inline">m</code> within its own monadic context.
-The result is wrapped in the same context as the original monad.</p><h2 id="ap/2-examples" class="section-heading"><a href="#ap/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">ap</span><span class="p" data-group-id="9029983391-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9029983391-2">(</span><span class="k" data-group-id="9029983391-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="9029983391-3">end</span><span class="p" data-group-id="9029983391-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9029983391-4">(</span><span class="mi">3</span><span class="p" data-group-id="9029983391-4">)</span><span class="p" data-group-id="9029983391-1">)</span><span class="w">
-</span><span class="p" data-group-id="9029983391-5">%</span><span class="nc" data-group-id="9029983391-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="9029983391-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p" data-group-id="9029983391-5">}</span></code></pre><p>In the case of <code class="inline">Nothing</code>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">ap</span><span class="p" data-group-id="0640243620-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="0640243620-2">(</span><span class="p" data-group-id="0640243620-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0640243620-3">(</span><span class="mi">3</span><span class="p" data-group-id="0640243620-3">)</span><span class="p" data-group-id="0640243620-1">)</span><span class="w">
-</span><span class="p" data-group-id="0640243620-4">%</span><span class="nc" data-group-id="0640243620-4">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="0640243620-4">{</span><span class="p" data-group-id="0640243620-4">}</span></code></pre>
+The result is wrapped in the same context as the original monad.</p><h2 id="ap/2-examples" class="section-heading"><a href="#ap/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">ap</span><span class="p" data-group-id="0071579773-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0071579773-2">(</span><span class="k" data-group-id="0071579773-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="0071579773-3">end</span><span class="p" data-group-id="0071579773-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0071579773-4">(</span><span class="mi">3</span><span class="p" data-group-id="0071579773-4">)</span><span class="p" data-group-id="0071579773-1">)</span><span class="w">
+</span><span class="p" data-group-id="0071579773-5">%</span><span class="nc" data-group-id="0071579773-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="0071579773-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p" data-group-id="0071579773-5">}</span></code></pre><p>In the case of <code class="inline">Nothing</code>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">ap</span><span class="p" data-group-id="5867106177-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="5867106177-2">(</span><span class="p" data-group-id="5867106177-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="5867106177-3">(</span><span class="mi">3</span><span class="p" data-group-id="5867106177-3">)</span><span class="p" data-group-id="5867106177-1">)</span><span class="w">
+</span><span class="p" data-group-id="5867106177-4">%</span><span class="nc" data-group-id="5867106177-4">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="5867106177-4">{</span><span class="p" data-group-id="5867106177-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="bind/2">
@@ -267,7 +267,7 @@ The result is wrapped in the same context as the original monad.</p><h2 id="ap/2
       <h1 class="signature" translate="no">bind(monad_value, func_returning_monad)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monad.ex#L55" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monad.ex#L57" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -283,9 +283,9 @@ The result is wrapped in the same context as the original monad.</p><h2 id="ap/2
       </div>
 
 <p>Chains a monadic operation.</p><p>The <a href="#bind/2"><code class="inline">bind/2</code></a> function takes a monad <code class="inline">m</code> and a function <code class="inline">func</code>. The function <code class="inline">func</code> is applied to the unwrapped value of <code class="inline">m</code>,
-and must return another monad. The result is the new monad produced by <code class="inline">func</code>.</p><p>This is the core operation that allows chaining of computations, with the value being passed from one function to the next in a sequence.</p><h2 id="bind/2-examples" class="section-heading"><a href="#bind/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="3877327632-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3877327632-2">(</span><span class="mi">5</span><span class="p" data-group-id="3877327632-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3877327632-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="3877327632-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3877327632-4">)</span><span class="w"> </span><span class="k" data-group-id="3877327632-3">end</span><span class="p" data-group-id="3877327632-1">)</span><span class="w">
-</span><span class="p" data-group-id="3877327632-5">%</span><span class="nc" data-group-id="3877327632-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3877327632-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="3877327632-5">}</span></code></pre><p>In the case of <code class="inline">Nothing</code>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="7160772442-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="7160772442-2">(</span><span class="p" data-group-id="7160772442-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="7160772442-3">fn</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="7160772442-4">(</span><span class="mi">5</span><span class="p" data-group-id="7160772442-4">)</span><span class="w"> </span><span class="k" data-group-id="7160772442-3">end</span><span class="p" data-group-id="7160772442-1">)</span><span class="w">
-</span><span class="p" data-group-id="7160772442-5">%</span><span class="nc" data-group-id="7160772442-5">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7160772442-5">{</span><span class="p" data-group-id="7160772442-5">}</span></code></pre>
+and must return another monad. The result is the new monad produced by <code class="inline">func</code>.</p><p>This is the core operation that allows chaining of computations, with the value being passed from one function to the next in a sequence.</p><h2 id="bind/2-examples" class="section-heading"><a href="#bind/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="0854766909-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0854766909-2">(</span><span class="mi">5</span><span class="p" data-group-id="0854766909-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0854766909-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="0854766909-4">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0854766909-4">)</span><span class="w"> </span><span class="k" data-group-id="0854766909-3">end</span><span class="p" data-group-id="0854766909-1">)</span><span class="w">
+</span><span class="p" data-group-id="0854766909-5">%</span><span class="nc" data-group-id="0854766909-5">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="0854766909-5">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="0854766909-5">}</span></code></pre><p>In the case of <code class="inline">Nothing</code>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">bind</span><span class="p" data-group-id="9263900009-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="9263900009-2">(</span><span class="p" data-group-id="9263900009-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9263900009-3">fn</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="9263900009-4">(</span><span class="mi">5</span><span class="p" data-group-id="9263900009-4">)</span><span class="w"> </span><span class="k" data-group-id="9263900009-3">end</span><span class="p" data-group-id="9263900009-1">)</span><span class="w">
+</span><span class="p" data-group-id="9263900009-5">%</span><span class="nc" data-group-id="9263900009-5">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="9263900009-5">{</span><span class="p" data-group-id="9263900009-5">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="map/2">
@@ -298,7 +298,7 @@ and must return another monad. The result is the new monad produced by <code cla
       <h1 class="signature" translate="no">map(monad_value, func)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.6.1/lib/monad.ex#L74" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/monad.ex#L76" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -314,9 +314,9 @@ and must return another monad. The result is the new monad produced by <code cla
       </div>
 
 <p>Maps a function over the value inside the monad.</p><p>The <a href="#map/2"><code class="inline">map/2</code></a> function takes a monad <code class="inline">m</code> and a function <code class="inline">func</code>, applies the function to the value inside <code class="inline">m</code>, and returns a new monad
-containing the result. The original monadic context is preserved.</p><h2 id="map/2-examples" class="section-heading"><a href="#map/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="4365813759-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="4365813759-2">(</span><span class="mi">2</span><span class="p" data-group-id="4365813759-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4365813759-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="4365813759-3">end</span><span class="p" data-group-id="4365813759-1">)</span><span class="w">
-</span><span class="p" data-group-id="4365813759-4">%</span><span class="nc" data-group-id="4365813759-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="4365813759-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4365813759-4">}</span></code></pre><p>In the case of <code class="inline">Nothing</code>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="4291166821-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="4291166821-2">(</span><span class="p" data-group-id="4291166821-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4291166821-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="4291166821-3">end</span><span class="p" data-group-id="4291166821-1">)</span><span class="w">
-</span><span class="p" data-group-id="4291166821-4">%</span><span class="nc" data-group-id="4291166821-4">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="4291166821-4">{</span><span class="p" data-group-id="4291166821-4">}</span></code></pre>
+containing the result. The original monadic context is preserved.</p><h2 id="map/2-examples" class="section-heading"><a href="#map/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="1069421966-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">just</span><span class="p" data-group-id="1069421966-2">(</span><span class="mi">2</span><span class="p" data-group-id="1069421966-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="1069421966-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="1069421966-3">end</span><span class="p" data-group-id="1069421966-1">)</span><span class="w">
+</span><span class="p" data-group-id="1069421966-4">%</span><span class="nc" data-group-id="1069421966-4">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="1069421966-4">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1069421966-4">}</span></code></pre><p>In the case of <code class="inline">Nothing</code>:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Monad</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="3825665446-1">(</span><span class="nc">Funx.Monad.Maybe</span><span class="o">.</span><span class="n">nothing</span><span class="p" data-group-id="3825665446-2">(</span><span class="p" data-group-id="3825665446-2">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="3825665446-3">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k" data-group-id="3825665446-3">end</span><span class="p" data-group-id="3825665446-1">)</span><span class="w">
+</span><span class="p" data-group-id="3825665446-4">%</span><span class="nc" data-group-id="3825665446-4">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="3825665446-4">{</span><span class="p" data-group-id="3825665446-4">}</span></code></pre>
   </section>
 </section>
 
@@ -328,9 +328,9 @@ containing the result. The original monadic context is preserved.</p><h2 id="map
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.6.1" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.7.0" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.6.1">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.7.0">Hex Preview</a>
 
             </span>
 
