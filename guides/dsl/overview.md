@@ -6,9 +6,9 @@ Funx provides two distinct categories of DSLs with different purposes and semant
 
 ### Builder DSLs
 
-Builder DSLs construct data structures (comparators, orderings, predicates) for later use.
+Builder DSLs construct data structures (comparators, orderings, predicates, validators) for later use.
 
-Examples: `eq`, `ord`, `pred`
+Examples: `eq`, `ord`, `pred`, `validate`
 
 Characteristics:
 
