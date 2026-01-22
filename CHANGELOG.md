@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.1] - Unreleased
+
+### Added
+
+* Exported .formatter to hex
+
 ## [0.7.0] - Unreleased
 
 ### Added
