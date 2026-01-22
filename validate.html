@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="ExDoc v0.39.3">
+    <meta name="project" content="funx v0.6.1">
+
+
+    <title>Validate — funx v0.6.1</title>
+
+    <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
+
+      <link rel="canonical" href="https://hexdocs.pm/funx/validate.html" />
+
+    <script defer src="dist/sidebar_items-5957B80B.js"></script>
+    <script defer src="docs_config.js"></script>
+    <script defer src="dist/html-XBCM4BHM.js"></script>
+
+  </head>
+  <body>
+    <script>(()=>{var t="ex_doc:settings",e="dark";var o="dark",s="light";var E="sidebar_state",n="closed";var r="sidebar_width";var a="sidebar-open";var i=new URLSearchParams(window.location.search),S=i.get("theme")||JSON.parse(localStorage.getItem(t)||"{}").theme;(S===o||S!==s&&window.matchMedia("(prefers-color-scheme: dark)").matches)&&document.body.classList.add(e);var d=sessionStorage.getItem(E),A=d!==n&&!window.matchMedia(`screen and (max-width: ${768}px)`).matches;document.body.classList.toggle(a,A);var c=sessionStorage.getItem(r);c&&document.body.style.setProperty("--sidebarWidth",`${c}px`);var p=/(Macintosh|iPhone|iPad|iPod)/.test(window.navigator.userAgent);document.documentElement.classList.toggle("apple-os",p);})();
+</script>
+
+<div class="body-wrapper">
+
+<button id="sidebar-menu" class="sidebar-button sidebar-toggle" aria-label="toggle sidebar" aria-controls="sidebar">
+  <i class="ri-menu-line ri-lg" title="Collapse/expand sidebar"></i>
+</button>
+
+<nav id="sidebar" class="sidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-projectInfo">
+
+      <div>
+        <a href="readme.html" class="sidebar-projectName" translate="no">
+funx
+        </a>
+        <div class="sidebar-projectVersion" translate="no">
+          v0.6.1
+        </div>
+      </div>
+    </div>
+    <ul id="sidebar-list-nav" class="sidebar-list-nav" role="tablist" data-extras=""></ul>
+  </div>
+</nav>
+
+<output role="status" id="toast"></output>
+
+<main class="content page-extra" id="main" data-type="extras">
+  <div id="content" class="content-inner">
+    <div class="top-search">
+      <div class="search-settings">
+        <form class="search-bar" action="search.html">
+          <label class="search-label">
+            <span class="sr-only">Search documentation of funx</span>
+            <div class="search-input-wrapper">
+              <input name="q" type="text" class="search-input" placeholder="Press / to search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+              <button type="button" tabindex="-1" class="search-close-button" aria-hidden="true">
+                <i class="ri-close-line ri-lg" title="Cancel search"></i>
+              </button>
+            </div>
+          </label>
+        </form>
+        <div class="autocomplete">
+        </div>
+        <div class="engine-selector" data-multiple="false">
+          <button type="button" class="engine-button" aria-label="Select search engine" aria-haspopup="true" aria-expanded="false">
+            <i class="ri-search-2-line" aria-hidden="true"></i>
+            <span class="engine-name">Default</span>
+            <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </button>
+          <div class="engine-dropdown" hidden role="menu">
+
+              <button type="button"
+                      class="engine-option"
+                      data-engine-url="search.html?q="
+                      role="menuitemradio"
+                      aria-checked="true">
+                <span class="name">Default</span>
+                <span class="help">In-browser search</span>
+              </button>
+
+          </div>
+        </div>
+        <button class="icon-settings display-settings">
+          <i class="ri-settings-3-line"></i>
+          <span class="sr-only">Settings</span>
+        </button>
+      </div>
+    </div>
+
+<div id="top-content">
+  <div class="heading-with-actions top-heading">
+    <h1>Validate</h1>
+
+
+      <a href="https://github.com/JKWA/funx/blob/v0.6.1/guides/dsl/validate.md#L1" title="View Source" class="icon-action" rel="help">
+        <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        <span class="sr-only">View Source</span>
+      </a>
+
+  </div>
+
+
+<p>The Validate DSL is a builder DSL that constructs validators for later use. See the <a href="overview.html">DSL Overview</a> for the distinction between builder and pipeline DSLs.</p><h2 id="structure" class="section-heading"><a href="#structure" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Structure</span></h2><p>A <code class="inline">validate</code> block compiles at compile time to quoted AST that builds a validator function. The validator takes a value and options, projects into fields using optics, runs validators, and accumulates all errors applicatively.</p><h2 id="internal-representation" class="section-heading"><a href="#internal-representation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Internal Representation</span></h2><p>The Validate DSL uses a single structure type to represent validation steps:</p><ul><li><code class="inline">Step</code> - Contains optic AST (optional), validators list, and metadata</li></ul><p>Each Step describes a single validation target: either a root validator (no optic) or a field validator (with optic projection). The compiler pattern-matches on these structs to generate the final quoted AST.</p><pre><code class="text">Compilation
+    ├── Step (root validator - no optic)
+    ├── Step (at :name, [Required, MinLength])
+    ├── Step (at [:user, :email], [Required, Email])
+    └── Step (at Traversal.combine([...]), DateRange)</code></pre><h2 id="parser" class="section-heading"><a href="#parser" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Parser</span></h2><p>The parser converts the DSL block into a list of Step structures. It normalizes all syntax into canonical forms:</p><h3 id="root-validators" class="section-heading"><a href="#root-validators" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Root Validators</span></h3><ul><li>Module implementing <a href="Funx.Validate.Behaviour.html"><code class="inline">Funx.Validate.Behaviour</code></a> - Validates entire structure</li><li><code class="inline">{Module, opts}</code> - Behaviour with options</li><li>Function (arity-2 or arity-3) - Custom validator function</li><li>Previously defined validator - Composable validator</li></ul><h3 id="field-validators-at-directive" class="section-heading"><a href="#field-validators-at-directive" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Field Validators (at directive)</span></h3><p>The <code class="inline">at</code> directive composes an optic projection with validators. All projection syntax normalizes to one of:</p><ul><li><code class="inline">Prism.t()</code> - Optional field projection (default for atoms)</li><li><code class="inline">Lens.t()</code> - Required field projection (raises on missing)</li><li><code class="inline">Traversal.t()</code> - Multiple foci projection</li><li><code class="inline">(a -&gt; b)</code> - Projection function</li></ul><p>Syntax sugar for projections:</p><ul><li><code class="inline">:atom</code> → <code class="inline">Prism.key(:atom)</code></li><li><code class="inline">[:a, :b]</code> → <code class="inline">Prism.path([:a, :b])</code> (supports nested keys and structs)</li><li><code class="inline">Lens.key(...)</code> → <code class="inline">Lens.key(...)</code> (pass through)</li><li><code class="inline">Prism.key(...)</code> → <code class="inline">Prism.key(...)</code> (pass through)</li><li><code class="inline">Traversal.combine(...)</code> → <code class="inline">Traversal.combine(...)</code> (pass through)</li><li><code class="inline">fn -&gt; ... end</code> → <code class="inline">fn -&gt; ... end</code> (pass through)</li></ul><h3 id="validator-forms" class="section-heading"><a href="#validator-forms" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Validator Forms</span></h3><ul><li>Module alias → <a href="https://hexdocs.pm/elixir/Module.html"><code class="inline">Module</code></a></li><li>Tuple with options → <code class="inline">{Module, opts}</code></li><li>List of validators → <code class="inline">[V1, V2, V3]</code></li><li>Function (arity-2) → <code class="inline">fn value, opts -&gt; ... end</code></li><li>Function (arity-3) → <code class="inline">fn value, opts, env -&gt; ... end</code></li><li>Composable validator → Previously defined validator function</li></ul><p>The parser validates projections and validators, raising compile-time errors for unsupported syntax (literals, empty lists, nested lists).</p><h2 id="transformers" class="section-heading"><a href="#transformers" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Transformers</span></h2><p>The Validate DSL does not currently support transformers. All compilation is handled by the parser and executor without intermediate rewriting stages.</p><h2 id="execution" class="section-heading"><a href="#execution" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Execution</span></h2><p>The executor runs at compile time and generates quoted AST. It processes the list of steps:</p><ol><li>Take normalized steps from the parser</li><li>For each Step:<ul><li>If root validator (no optic) → generate validator call on entire structure</li><li>If field validator (with optic) → project with optic, run validators on projected value</li></ul></li><li>Combine all validators using applicative composition</li><li>Return <code class="inline">Either.t(ValidationError.t(), value)</code></li></ol><h3 id="execution-modes" class="section-heading"><a href="#execution-modes" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Execution Modes</span></h3><p>The DSL supports two execution modes:</p><p><strong>Sequential (default):</strong></p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="5935654346-1">do</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="w">
+</span><span class="k" data-group-id="5935654346-1">end</span></code></pre><p>Uses <code class="inline">Either.traverse_a</code> for monadic composition. All validators still run and accumulate errors.</p><p><strong>Parallel:</strong></p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="ss">mode</span><span class="p">:</span><span class="w"> </span><span class="ss">:parallel</span><span class="w"> </span><span class="k" data-group-id="5216205103-1">do</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="w">
+</span><span class="k" data-group-id="5216205103-1">end</span></code></pre><p>Uses <code class="inline">Effect.traverse_a</code> for explicit applicative composition. Semantically equivalent but makes the applicative nature explicit.</p><h3 id="execution-model" class="section-heading"><a href="#execution-model" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Execution Model</span></h3><p>An empty <code class="inline">validate</code> block compiles to a validator that always returns <code class="inline">Right(value)</code> (identity element).</p><p>Each directive compiles to:</p><ul><li>Root validator → <code class="inline">validator.validate(value, opts, env)</code></li><li><code class="inline">at optic, validators</code> → Project value, run validators on projected result, accumulate errors</li><li>Multiple validators → All run, all errors accumulated via <code class="inline">Appendable</code></li></ul><h3 id="optic-projection" class="section-heading"><a href="#optic-projection" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Optic Projection</span></h3><p>The <code class="inline">at</code> directive projects into the structure before validation:</p><p><strong>With Prism (default for atoms):</strong></p><pre><code class="makeup elixir" translate="no"><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span></code></pre><p>Projects using <code class="inline">Prism.preview/2</code>. Missing keys result in <code class="inline">Nothing</code>, which most validators skip. Only <code class="inline">Required</code> validates on <code class="inline">Nothing</code>.</p><p><strong>With Lens:</strong></p><pre><code class="makeup elixir" translate="no"><span class="n">at</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4667844294-1">(</span><span class="ss">:name</span><span class="p" data-group-id="4667844294-1">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span></code></pre><p>Projects using <code class="inline">Lens.view/2</code>. Missing keys raise <a href="https://hexdocs.pm/elixir/KeyError.html"><code class="inline">KeyError</code></a>. Use when field must structurally exist.</p><p><strong>With list path:</strong></p><pre><code class="makeup elixir" translate="no"><span class="n">at</span><span class="w"> </span><span class="p" data-group-id="1423097179-1">[</span><span class="ss">:user</span><span class="p">,</span><span class="w"> </span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="ss">:name</span><span class="p" data-group-id="1423097179-1">]</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span></code></pre><p>Converts to <code class="inline">Prism.path([:user, :profile, :name])</code>. Supports nested keys and struct modules.</p><p><strong>With Traversal:</strong></p><pre><code class="makeup elixir" translate="no"><span class="n">at</span><span class="w"> </span><span class="nc">Traversal</span><span class="o">.</span><span class="n">combine</span><span class="p" data-group-id="6822974037-1">(</span><span class="p" data-group-id="6822974037-2">[</span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="6822974037-3">(</span><span class="ss">:start_date</span><span class="p" data-group-id="6822974037-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="6822974037-4">(</span><span class="ss">:end_date</span><span class="p" data-group-id="6822974037-4">)</span><span class="p" data-group-id="6822974037-2">]</span><span class="p" data-group-id="6822974037-1">)</span><span class="p">,</span><span class="w"> </span><span class="nc">DateRange</span></code></pre><p>Collects multiple foci into a list for relationship validation.</p><h3 id="compilation-example" class="section-heading"><a href="#compilation-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Compilation Example</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="0256486966-1">do</span><span class="w">
+  </span><span class="nc">HasContactMethod</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0256486966-2">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0256486966-3">{</span><span class="nc">MinLength</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0256486966-3">}</span><span class="p" data-group-id="0256486966-2">]</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0256486966-4">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="p" data-group-id="0256486966-4">]</span><span class="w">
+</span><span class="k" data-group-id="0256486966-1">end</span></code></pre><p>Compiles to a function equivalent to:</p><pre><code class="makeup elixir" translate="no"><span class="k" data-group-id="3336865784-1">fn</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="3336865784-2">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:env</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3336865784-3">%{</span><span class="p" data-group-id="3336865784-3">}</span><span class="p" data-group-id="3336865784-2">)</span><span class="w">
+
+  </span><span class="n">validators</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="3336865784-4">[</span><span class="w">
+    </span><span class="k" data-group-id="3336865784-5">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">HasContactMethod</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3336865784-6">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3336865784-7">[</span><span class="p" data-group-id="3336865784-7">]</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="3336865784-6">)</span><span class="w"> </span><span class="k" data-group-id="3336865784-5">end</span><span class="p">,</span><span class="w">
+    </span><span class="k" data-group-id="3336865784-8">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="n">projected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="3336865784-9">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="3336865784-10">(</span><span class="ss">:name</span><span class="p" data-group-id="3336865784-10">)</span><span class="p" data-group-id="3336865784-9">)</span><span class="w">
+      </span><span class="n">run_validators</span><span class="p" data-group-id="3336865784-11">(</span><span class="n">projected</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3336865784-12">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3336865784-13">{</span><span class="nc">MinLength</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="3336865784-13">}</span><span class="p" data-group-id="3336865784-12">]</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="3336865784-11">)</span><span class="w">
+    </span><span class="k" data-group-id="3336865784-8">end</span><span class="p">,</span><span class="w">
+    </span><span class="k" data-group-id="3336865784-14">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="n">projected</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="3336865784-15">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="3336865784-16">(</span><span class="ss">:email</span><span class="p" data-group-id="3336865784-16">)</span><span class="p" data-group-id="3336865784-15">)</span><span class="w">
+      </span><span class="n">run_validators</span><span class="p" data-group-id="3336865784-17">(</span><span class="n">projected</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3336865784-18">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="p" data-group-id="3336865784-18">]</span><span class="p">,</span><span class="w"> </span><span class="n">env</span><span class="p" data-group-id="3336865784-17">)</span><span class="w">
+    </span><span class="k" data-group-id="3336865784-14">end</span><span class="w">
+  </span><span class="p" data-group-id="3336865784-4">]</span><span class="w">
+
+  </span><span class="n">validators</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="3336865784-19">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="p" data-group-id="3336865784-20">(</span><span class="n">value</span><span class="p" data-group-id="3336865784-20">)</span><span class="p" data-group-id="3336865784-19">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">accumulate_results</span><span class="p" data-group-id="3336865784-21">(</span><span class="n">value</span><span class="p" data-group-id="3336865784-21">)</span><span class="w">
+</span><span class="k" data-group-id="3336865784-1">end</span></code></pre><p>Where <code class="inline">accumulate_results</code> combines all <code class="inline">Either</code> results applicatively, returning <code class="inline">Right(original_value)</code> on success or <code class="inline">Left(accumulated_errors)</code> on failure.</p><h2 id="behaviours" class="section-heading"><a href="#behaviours" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Behaviours</span></h2><p>Modules participating in the Validate DSL implement <a href="Funx.Validate.Behaviour.html"><code class="inline">Funx.Validate.Behaviour</code></a>. The callback receives the value, options, and environment.</p><p>The <code class="inline">validate/3</code> callback receives:</p><ul><li><code class="inline">value</code> - The value to validate (may be <code class="inline">Nothing</code> from Prism projection)</li><li><code class="inline">opts</code> - Keyword list of options passed in the DSL</li><li><code class="inline">env</code> - Environment map passed via <code class="inline">Either.validate(data, validator, env: env)</code></li></ul><p>Example:</p><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">Positive</span><span class="w"> </span><span class="k" data-group-id="0209548736-1">do</span><span class="w">
+  </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Validate.Behaviour</span><span class="w">
+  </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monad.Maybe.Nothing</span><span class="w">
+  </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="w">
+  </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="w">
+
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">validate</span><span class="p" data-group-id="0209548736-2">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p" data-group-id="0209548736-2">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_list</span><span class="p" data-group-id="0209548736-3">(</span><span class="n">opts</span><span class="p" data-group-id="0209548736-3">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="n">validate</span><span class="p" data-group-id="0209548736-4">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0209548736-5">%{</span><span class="p" data-group-id="0209548736-5">}</span><span class="p" data-group-id="0209548736-4">)</span><span class="w">
+
+  </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">validate</span><span class="p" data-group-id="0209548736-6">(</span><span class="p" data-group-id="0209548736-7">%</span><span class="nc" data-group-id="0209548736-7">Nothing</span><span class="p" data-group-id="0209548736-7">{</span><span class="p" data-group-id="0209548736-7">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="0209548736-6">)</span><span class="p">,</span><span class="w"> </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0209548736-8">(</span><span class="n">value</span><span class="p" data-group-id="0209548736-8">)</span><span class="w">
+
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">validate</span><span class="p" data-group-id="0209548736-9">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="0209548736-9">)</span><span class="w"> </span><span class="ow">when</span><span class="w"> </span><span class="n">is_number</span><span class="p" data-group-id="0209548736-10">(</span><span class="n">value</span><span class="p" data-group-id="0209548736-10">)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+    </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Either</span><span class="o">.</span><span class="n">right</span><span class="p" data-group-id="0209548736-11">(</span><span class="n">value</span><span class="p" data-group-id="0209548736-11">)</span><span class="w">
+
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">validate</span><span class="p" data-group-id="0209548736-12">(</span><span class="bp">_</span><span class="p">,</span><span class="w"> </span><span class="c">_opts</span><span class="p">,</span><span class="w"> </span><span class="c">_env</span><span class="p" data-group-id="0209548736-12">)</span><span class="p">,</span><span class="w">
+    </span><span class="ss">do</span><span class="p">:</span><span class="w"> </span><span class="nc">Either</span><span class="o">.</span><span class="n">left</span><span class="p" data-group-id="0209548736-13">(</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="0209548736-14">(</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="0209548736-14">)</span><span class="p" data-group-id="0209548736-13">)</span><span class="w">
+</span><span class="k" data-group-id="0209548736-1">end</span></code></pre><h3 id="return-value-normalization" class="section-heading"><a href="#return-value-normalization" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Return Value Normalization</span></h3><p>The DSL normalizes various return formats:</p><ul><li><code class="inline">Either.t()</code> → Used directly</li><li><code class="inline">:ok</code> → Converted to <code class="inline">Right(value)</code></li><li><code class="inline">{:ok, value}</code> → Converted to <code class="inline">Right(value)</code></li><li><code class="inline">{:error, ValidationError.t()}</code> → Converted to <code class="inline">Left(error)</code></li></ul><h2 id="error-accumulation" class="section-heading"><a href="#error-accumulation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Error Accumulation</span></h2><p>The Validate DSL uses applicative composition for error accumulation:</p><h3 id="applicative-semantics" class="section-heading"><a href="#applicative-semantics" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Applicative Semantics</span></h3><p>All validators run regardless of earlier failures. Errors are accumulated via <code class="inline">Appendable</code>:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="4669066502-1">do</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">      </span><span class="c1"># Fails: &quot;is required&quot;</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="w">        </span><span class="c1"># Fails: &quot;must be a valid email&quot;</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:age</span><span class="p">,</span><span class="w"> </span><span class="nc">Positive</span><span class="w">       </span><span class="c1"># Fails: &quot;must be positive&quot;</span><span class="w">
+</span><span class="k" data-group-id="4669066502-1">end</span></code></pre><p>Result: <code class="inline">Left(%ValidationError{errors: [&quot;is required&quot;, &quot;must be a valid email&quot;, &quot;must be positive&quot;]})</code></p><h3 id="validationerror-accumulation" class="section-heading"><a href="#validationerror-accumulation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">ValidationError Accumulation</span></h3><p><code class="inline">ValidationError</code> implements <code class="inline">Appendable</code>, allowing errors to be concatenated:</p><pre><code class="makeup elixir" translate="no"><span class="nc">ValidationError</span><span class="o">.</span><span class="n">append</span><span class="p" data-group-id="4744917088-1">(</span><span class="w">
+  </span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="4744917088-2">(</span><span class="s">&quot;error 1&quot;</span><span class="p" data-group-id="4744917088-2">)</span><span class="p">,</span><span class="w">
+  </span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="4744917088-3">(</span><span class="s">&quot;error 2&quot;</span><span class="p" data-group-id="4744917088-3">)</span><span class="w">
+</span><span class="p" data-group-id="4744917088-1">)</span><span class="w">
+</span><span class="c1"># =&gt; %ValidationError{errors: [&quot;error 1&quot;, &quot;error 2&quot;]}</span></code></pre><h2 id="identity-preservation" class="section-heading"><a href="#identity-preservation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Identity Preservation</span></h2><p>The Validate DSL preserves the original structure on success:</p><pre><code class="makeup elixir" translate="no"><span class="n">validation</span><span class="w"> </span><span class="o">=</span><span class="w">
+  </span><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="6201592841-1">do</span><span class="w">
+    </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
+  </span><span class="k" data-group-id="6201592841-1">end</span><span class="w">
+
+</span><span class="n">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="6201592841-2">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">extra</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;field&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">nested</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6201592841-3">%{</span><span class="ss">data</span><span class="p">:</span><span class="w"> </span><span class="mi">123</span><span class="p" data-group-id="6201592841-3">}</span><span class="p" data-group-id="6201592841-2">}</span><span class="w">
+</span><span class="nc">Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="6201592841-4">(</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">validation</span><span class="p" data-group-id="6201592841-4">)</span><span class="w">
+</span><span class="c1"># =&gt; %Right{right: %{name: &quot;Alice&quot;, extra: &quot;field&quot;, nested: %{data: 123}}}</span></code></pre><p>The original structure is returned unchanged. Validators check data; they do not transform it.</p><h2 id="compile-time-validation" class="section-heading"><a href="#compile-time-validation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Compile-Time Validation</span></h2><p>The parser validates at compile time, rejecting invalid forms:</p><p><strong>Rejected:</strong></p><ul><li>Literal numbers: <code class="inline">at :name, 123</code></li><li>Literal strings: <code class="inline">at :name, &quot;string&quot;</code></li><li>Literal atoms: <code class="inline">at :name, :atom</code></li><li>Empty lists: <code class="inline">at :name, []</code></li><li>Nested lists: <code class="inline">at :name, [Required, [Email]]</code></li></ul><p><strong>Accepted:</strong></p><ul><li>Module aliases: <code class="inline">Required</code>, <code class="inline">Email</code></li><li>Tuples with options: <code class="inline">{MinLength, min: 3}</code></li><li>Lists of validators: <code class="inline">[Required, Email]</code></li><li>Function captures: <code class="inline">&amp;my_validator/2</code></li><li>Anonymous functions: <code class="inline">fn x, opts -&gt; ... end</code></li><li>Variables: <code class="inline">my_validator</code></li><li>Function calls: <code class="inline">my_validator()</code>, <code class="inline">Module.validator()</code></li></ul><h2 id="composable-validators" class="section-heading"><a href="#composable-validators" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Composable Validators</span></h2><p>Validators created with <code class="inline">validate</code> can be used inside other validators:</p><pre><code class="makeup elixir" translate="no"><span class="n">item_validation</span><span class="w"> </span><span class="o">=</span><span class="w">
+  </span><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="4040964108-1">do</span><span class="w">
+    </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
+    </span><span class="n">at</span><span class="w"> </span><span class="ss">:price</span><span class="p">,</span><span class="w"> </span><span class="nc">Positive</span><span class="w">
+  </span><span class="k" data-group-id="4040964108-1">end</span><span class="w">
+
+</span><span class="n">order_validation</span><span class="w"> </span><span class="o">=</span><span class="w">
+  </span><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="4040964108-2">do</span><span class="w">
+    </span><span class="n">at</span><span class="w"> </span><span class="ss">:item</span><span class="p">,</span><span class="w"> </span><span class="n">item_validation</span><span class="w">  </span><span class="c1"># Nested validator</span><span class="w">
+    </span><span class="n">at</span><span class="w"> </span><span class="ss">:quantity</span><span class="p">,</span><span class="w"> </span><span class="nc">Positive</span><span class="w">
+  </span><span class="k" data-group-id="4040964108-2">end</span></code></pre><p>The nested validator runs on the projected value and its errors are accumulated with the parent's errors.</p><h2 id="environment-passing" class="section-heading"><a href="#environment-passing" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Environment Passing</span></h2><p>Validators can receive context via the environment:</p><pre><code class="makeup elixir" translate="no"><span class="n">validation</span><span class="w"> </span><span class="o">=</span><span class="w">
+  </span><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="3137073940-1">do</span><span class="w">
+    </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="nc">UniqueEmail</span><span class="w">  </span><span class="c1"># Uses env[:existing_emails]</span><span class="w">
+  </span><span class="k" data-group-id="3137073940-1">end</span><span class="w">
+
+</span><span class="nc">Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3137073940-2">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">validation</span><span class="p">,</span><span class="w"> </span><span class="ss">env</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3137073940-3">%{</span><span class="ss">existing_emails</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3137073940-4">[</span><span class="s">&quot;taken@example.com&quot;</span><span class="p" data-group-id="3137073940-4">]</span><span class="p" data-group-id="3137073940-3">}</span><span class="p" data-group-id="3137073940-2">)</span></code></pre><p>The environment is passed to all validators via the third argument of the <code class="inline">validate/3</code> callback.</p><h2 id="integration-with-either" class="section-heading"><a href="#integration-with-either" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Integration with Either</span></h2><p>Validators are executed via <code class="inline">Either.validate/3</code>:</p><pre><code class="makeup elixir" translate="no"><span class="nc">Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="4308074988-1">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">validator</span><span class="p" data-group-id="4308074988-1">)</span><span class="w">
+</span><span class="nc">Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="4308074988-2">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">validator</span><span class="p">,</span><span class="w"> </span><span class="ss">env</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4308074988-3">%{</span><span class="ss">key</span><span class="p">:</span><span class="w"> </span><span class="n">value</span><span class="p" data-group-id="4308074988-3">}</span><span class="p" data-group-id="4308074988-2">)</span></code></pre><p>The result is <code class="inline">Either.t(ValidationError.t(), value)</code>:</p><ul><li><code class="inline">%Right{right: value}</code> - Validation passed, original value returned</li><li><code class="inline">%Left{left: %ValidationError{errors: [...]}}</code> - Validation failed, all errors accumulated</li></ul>
+
+</div>
+
+<div class="bottom-actions" id="bottom-actions">
+  <div class="bottom-actions-item">
+
+      <a href="predicate.html" class="bottom-actions-button" rel="prev">
+        <span class="subheader">
+          ← Previous Page
+        </span>
+        <span class="title">
+Predicate
+        </span>
+      </a>
+
+  </div>
+  <div class="bottom-actions-item">
+
+  </div>
+</div>
+    <footer class="footer">
+
+        <p>
+
+            <span class="line">
+              <a href="https://hex.pm/packages/funx/0.6.1" class="footer-hex-package">Hex Package</a>
+
+              <a href="https://preview.hex.pm/preview/funx/0.6.1">Hex Preview</a>
+
+                (<a href="https://preview.hex.pm/preview/funx/0.6.1/show/guides/dsl/validate.md">current file</a>)
+
+            </span>
+
+          <span class="line">
+            <button class="a-main footer-button display-quick-switch" title="Go to package docs">
+              Go to package docs
+            </button>
+
+              <a href="funx.epub" title="ePub version">
+                Download ePub version
+              </a>
+
+          </span>
+        </p>
+
+        <p class="built-using">
+          Built using
+          <a href="https://github.com/elixir-lang/ex_doc" title="ExDoc" target="_blank" rel="help noopener" translate="no">ExDoc</a> (v0.39.3) for the
+
+            <a href="https://elixir-lang.org" title="Elixir" target="_blank" translate="no">Elixir programming language</a>
+
+        </p>
+
+
+    </footer>
+  </div>
+</main>
+</div>
+
+  </body>
+</html>
