@@ -1,0 +1,674 @@
+# Funx.Validate DSL
+
+```elixir
+Mix.install([
+    {:funx, github: "JKWA/funx", ref: "3b4a628"}
+])
+```
+
+## Overview
+
+The `Funx.Validate` module provides a declarative DSL for building composable validators. Validators project into data structures using optics, run validation logic, and accumulate all errors applicatively.
+
+Key Features:
+
+* Declarative validation composition with optics-based field projection
+* `at` directive for field-level validation using Lens, Prism, or Traversal
+* Applicative error accumulation - all validators run, all errors collected
+* Two execution modes: sequential (default) and parallel
+* Environment passing for context-dependent validation
+* Identity-preserving - returns original structure unchanged on success
+
+## Mental Model
+
+Core rules:
+
+* A validator is a function `(value, opts) -> Either.t(ValidationError.t(), value)`
+* `validate` builds a validator by composing smaller validators
+* `at :key` lowers to `Prism.key(:key)` - fields are optional by default
+* **Required is the sole mechanism for presence validation**
+* Missing keys result in `Nothing`, which most validators skip
+* Use explicit `Lens.key(:key)` for structural requirements (raises KeyError on missing)
+* Validation is identity on success - returns original structure unchanged
+* Empty validation is the identity element - always succeeds
+
+## Quick Reference
+
+### DSL Syntax:
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+validate do
+  RootValidator                       # Root validator runs on entire structure
+  at :field, Validator                # Field validation (Prism.key)
+  at [:a, :b, :c], Validator          # Nested path (Prism.path)
+  at :field, [V1, V2]                 # Multiple validators for same field
+  at :field, {Validator, opts}        # Validator with options
+  at Lens.key(:field), Validator      # Explicit Lens (required field)
+  at Prism.key(:field), Validator     # Explicit Prism (optional field)
+  at Traversal.combine([...]), V      # Traversal for relating foci
+end
+
+validate mode: :parallel do           # Parallel mode (applicative)
+  ...
+end
+```
+
+### Valid Validators:
+
+* Module aliases: `Required`, `Email`, `Positive`
+* Tuples with options: `{MinLength, min: 3}`, `{In, values: [:a, :b]}`
+* Lists of validators: `[Required, Email]`
+* Function captures: `&my_validator/2`
+* Anonymous functions: `fn value, opts -> Either.right(value) end`
+* Composable validators: Previously defined validators can be used directly
+
+### Valid Projections (for `at` directive):
+
+* Atoms: `:field_name`, converts to `Prism.key(:field_name)` (optional field)
+* Lists: `[:a, :b]`, converts to `Prism.path([:a, :b])` (nested path)
+* Lenses: `Lens.key(:field)` (required field - raises on missing)
+* Prisms: `Prism.key(:field)` (optional field - Nothing on missing)
+* Traversals: `Traversal.combine([...])` (collects multiple foci)
+* Functions: `&(&1.field)`, `fn x -> x.value end` (custom extraction)
+
+## Setup
+
+Use the DSL and alias helper modules:
+
+```elixir
+use Funx.Validate
+alias Funx.Monad.Either
+alias Funx.Monad.Either.{Left, Right}
+alias Funx.Errors.ValidationError
+alias Funx.Optics.{Lens, Prism, Traversal}
+alias Funx.Validator.{Required, Email, MinLength, Positive}
+```
+
+Define test structs:
+
+```elixir
+defmodule User do
+  defstruct [:name, :email, :age, :profile]
+end
+
+defmodule Profile do
+  defstruct [:bio, :avatar_url]
+end
+
+defmodule Order do
+  defstruct [:id, :item, :quantity, :price]
+end
+```
+
+Create sample data:
+
+```elixir
+alice = %{name: "Alice", email: "alice@example.com", age: 30}
+bob = %{name: "Bob", email: "bob@example.com", age: 17}
+charlie = %{name: "", email: "not-an-email", age: -5}
+```
+
+## Basic Field Validation
+
+The simplest validation targets a single field with a single validator.
+
+### Single Field Validation
+
+```elixir
+name_validation =
+  validate do
+    at :name, Required
+  end
+
+Either.validate(alice, name_validation)
+```
+
+```elixir
+Either.validate(%{name: ""}, name_validation)
+```
+
+### Multiple Fields
+
+Validate multiple fields independently - all validators run:
+
+```elixir
+user_validation =
+  validate do
+    at :name, Required
+    at :email, Required
+  end
+
+Either.validate(alice, user_validation)
+```
+
+```elixir
+Either.validate(%{name: "", email: ""}, user_validation)
+```
+
+### Error Accumulation
+
+All validators run and all errors are collected:
+
+```elixir
+strict_validation =
+  validate do
+    at :name, Required
+    at :email, [Required, Email]
+    at :age, Positive
+  end
+
+Either.validate(charlie, strict_validation)
+```
+
+## Prism vs Lens: Optional vs Required Fields
+
+By default, `at :key` uses `Prism.key(:key)`, making fields optional. Use explicit `Lens` for structural requirements.
+
+### Prism (Default): Optional Fields
+
+With Prism, missing keys result in `Nothing`, which most validators skip:
+
+```elixir
+age_validation =
+  validate do
+    at :age, Positive
+  end
+
+# Missing :age field - Positive skips Nothing
+Either.validate(%{name: "Alice"}, age_validation)
+```
+
+```elixir
+# Present but invalid - validation fails
+Either.validate(%{age: -5}, age_validation)
+```
+
+### Required: Presence Validation
+
+`Required` is the sole mechanism for presence validation. It runs on `Nothing`:
+
+```elixir
+required_email =
+  validate do
+    at :email, Required
+  end
+
+# Missing :email - Required fails on Nothing
+Either.validate(%{name: "Alice"}, required_email)
+```
+
+```elixir
+# Empty string - Required also fails
+Either.validate(%{email: ""}, required_email)
+```
+
+### Explicit Lens: Structural Requirement
+
+Use explicit `Lens` when the key must exist structurally:
+
+```elixir
+lens_validation =
+  validate do
+    at Lens.key(:name), Required
+  end
+
+# Works when key exists
+Either.validate(%{name: "Alice"}, lens_validation)
+```
+
+When using Lens, missing keys raise `KeyError` instead of producing validation errors:
+
+```elixir
+Either.validate(%{email: "alice@example.com"}, lens_validation)
+```
+
+## Multiple Validators Per Field
+
+Apply multiple validators to the same field using list syntax:
+
+```elixir
+email_validation =
+  validate do
+    at :email, [Required, Email]
+  end
+
+Either.validate(%{email: "alice@example.com"}, email_validation)
+```
+
+```elixir
+# Both validators fail - errors accumulated
+Either.validate(%{email: ""}, email_validation)
+```
+
+### Validator Options
+
+Pass options to validators using tuple syntax:
+
+```elixir
+name_validation =
+  validate do
+    at :name, [Required, {MinLength, min: 3}]
+  end
+
+Either.validate(%{name: "Alice"}, name_validation)
+```
+
+```elixir
+Either.validate(%{name: "Al"}, name_validation)
+```
+
+## Nested Path Validation
+
+Use list syntax for nested field access:
+
+```elixir
+nested_validation =
+  validate do
+    at [:user, :profile, :name], Required
+  end
+
+Either.validate(%{user: %{profile: %{name: "Alice"}}}, nested_validation)
+```
+
+```elixir
+Either.validate(%{user: %{profile: %{name: ""}}}, nested_validation)
+```
+
+### Nested Paths with Struct Modules
+
+List paths support struct modules for type-safe access:
+
+```elixir
+struct_validation =
+  validate do
+    at [User, :profile, Profile, :bio], Required
+  end
+
+user = %User{name: "Alice", profile: %Profile{bio: "Hello!"}}
+Either.validate(user, struct_validation)
+```
+
+### Multiple Nested Paths
+
+```elixir
+contact_validation =
+  validate do
+    at [:user, :name], Required
+    at [:user, :email], [Required, Email]
+    at [:user, :profile, :bio], {MinLength, min: 10}
+  end
+
+data = %{
+  user: %{
+    name: "Alice",
+    email: "alice@example.com",
+    profile: %{bio: "I love functional programming!"}
+  }
+}
+
+Either.validate(data, contact_validation)
+```
+
+## Root Validators
+
+Validators without `at` run on the entire structure:
+
+```elixir
+defmodule HasContactMethod do
+  @behaviour Funx.Validate.Behaviour
+
+  def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
+
+  @impl true
+  def validate(value, _opts, _env)
+
+  def validate(%{email: email} = value, _opts, _env) when is_binary(email) and email != "",
+    do: Either.right(value)
+
+  def validate(%{phone: phone} = value, _opts, _env) when is_binary(phone) and phone != "",
+    do: Either.right(value)
+
+  def validate(_, _opts, _env),
+    do: Either.left(ValidationError.new("must have email or phone"))
+end
+```
+
+```elixir
+contact_check =
+  validate do
+    HasContactMethod
+  end
+
+Either.validate(%{email: "alice@example.com"}, contact_check)
+```
+
+```elixir
+Either.validate(%{phone: "555-1234"}, contact_check)
+```
+
+```elixir
+Either.validate(%{name: "Alice"}, contact_check)
+```
+
+### Combining Root and Field Validators
+
+Root validators compose with `at` clauses:
+
+```elixir
+full_validation =
+  validate do
+    HasContactMethod
+    at :name, Required
+    at :age, Positive
+  end
+
+Either.validate(%{name: "Alice", email: "alice@example.com", age: 30}, full_validation)
+```
+
+```elixir
+# All errors accumulated
+Either.validate(%{name: "", age: -5}, full_validation)
+```
+
+## Environment Passing
+
+Validators can receive environment context for runtime decisions:
+
+```elixir
+defmodule UniqueEmail do
+  @behaviour Funx.Validate.Behaviour
+  alias Funx.Monad.Maybe.Nothing
+
+  def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
+
+  @impl true
+  def validate(value, _opts, env)
+  def validate(%Nothing{} = value, _opts, _env), do: Either.right(value)
+
+  def validate(email, _opts, env) do
+    existing = Map.get(env, :existing_emails, [])
+
+    if email in existing do
+      Either.left(ValidationError.new("email already taken"))
+    else
+      Either.right(email)
+    end
+  end
+end
+```
+
+```elixir
+unique_email_check =
+  validate do
+    at :email, [Required, Email, UniqueEmail]
+  end
+
+env = %{existing_emails: ["alice@example.com", "bob@example.com"]}
+
+# New email - passes
+Either.validate(%{email: "charlie@example.com"}, unique_email_check, env: env)
+```
+
+```elixir
+# Existing email - fails
+Either.validate(%{email: "alice@example.com"}, unique_email_check, env: env)
+```
+
+## Traversal: Relating Multiple Foci
+
+Use Traversal when validation depends on multiple field values together:
+
+```elixir
+defmodule DateRange do
+  @behaviour Funx.Validate.Behaviour
+  alias Funx.Monad.Maybe.Nothing
+
+  def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
+
+  @impl true
+  def validate(value, _opts, _env)
+  def validate(%Nothing{} = value, _opts, _env), do: Either.right(value)
+
+  def validate([start_date, end_date], _opts, _env) do
+    if Date.compare(start_date, end_date) == :lt do
+      Either.right([start_date, end_date])
+    else
+      Either.left(ValidationError.new("start_date must be before end_date"))
+    end
+  end
+end
+```
+
+```elixir
+booking_validation =
+  validate do
+    at Traversal.combine([Lens.key(:start_date), Lens.key(:end_date)]), DateRange
+  end
+
+Either.validate(%{start_date: ~D[2024-01-01], end_date: ~D[2024-01-31]}, booking_validation)
+```
+
+```elixir
+Either.validate(%{start_date: ~D[2024-01-31], end_date: ~D[2024-01-01]}, booking_validation)
+```
+
+## Parallel Mode
+
+Use `:parallel` mode for explicit applicative execution:
+
+```elixir
+parallel_validation =
+  validate mode: :parallel do
+    at :name, [Required, {MinLength, min: 3}]
+    at :email, [Required, Email]
+    at :age, Positive
+  end
+
+Either.validate(%{name: "Alice", email: "alice@example.com", age: 30}, parallel_validation)
+```
+
+```elixir
+# All errors collected in parallel
+Either.validate(%{name: "", email: "bad", age: -5}, parallel_validation)
+```
+
+## Composable Validators
+
+Validators created with `validate` can be used inside other validators:
+
+```elixir
+item_validation =
+  validate do
+    at :name, Required
+    at :price, [Required, Positive]
+  end
+
+order_validation =
+  validate do
+    at :item, item_validation
+    at :quantity, Positive
+  end
+
+order = %{
+  item: %{name: "Widget", price: 10},
+  quantity: 5
+}
+
+Either.validate(order, order_validation)
+```
+
+```elixir
+invalid_order = %{
+  item: %{name: "", price: -5},
+  quantity: 0
+}
+
+Either.validate(invalid_order, order_validation)
+```
+
+### Multi-Level Composition
+
+```elixir
+name_validation =
+  validate do
+    at :name, [Required, {MinLength, min: 3}]
+  end
+
+contact_validation =
+  validate do
+    name_validation
+    at :email, [Required, Email]
+  end
+
+user_validation =
+  validate do
+    contact_validation
+    at :age, Positive
+  end
+
+Either.validate(%{name: "Alice", email: "alice@example.com", age: 30}, user_validation)
+```
+
+```elixir
+Either.validate(%{name: "Al", email: "bad", age: -5}, user_validation)
+```
+
+## Edge Cases
+
+### Empty Validation
+
+Empty validation is the identity element - always succeeds:
+
+```elixir
+empty_validation =
+  validate do
+  end
+
+Either.validate(%{anything: "goes"}, empty_validation)
+```
+
+```elixir
+Either.validate(%{}, empty_validation)
+```
+
+### Identity Preservation
+
+Validation returns the original structure unchanged on success:
+
+```elixir
+simple_check =
+  validate do
+    at :name, Required
+  end
+
+input = %{name: "Alice", extra: "field", nested: %{data: 123}}
+result = Either.validate(input, simple_check)
+
+# Original structure preserved
+result == %Right{right: input}
+```
+
+## Compile-Time Validation
+
+The DSL validates at compile time:
+
+**Invalid (will raise CompileError):**
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+# Literal number as validator
+validate do
+  at :name, 123
+end
+
+# Literal string as validator
+validate do
+  at :name, "string"
+end
+
+# Empty list as validator
+validate do
+  at :name, []
+end
+```
+
+**Valid:**
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+# Module alias
+validate do
+  at :name, Required
+end
+
+# Tuple with options
+validate do
+  at :name, {MinLength, min: 3}
+end
+
+# List of validators
+validate do
+  at :name, [Required, Email]
+end
+
+# Function capture
+validate do
+  at :name, &my_validator/2
+end
+
+# Anonymous function
+validate do
+  at :name, fn x, _opts -> Either.right(x) end
+end
+```
+
+## Common Mistakes
+
+Three mistakes to avoid:
+
+* **Expecting validation without `Required`** - Most validators skip `Nothing`. Use `Required` to validate presence.
+
+* **Using `at :key` for structural requirements** - `at :key` uses Prism (optional). Use `at Lens.key(:key)` if the key must exist.
+
+* **Assuming validators short-circuit** - All validators run and all errors accumulate. This is intentional for better UX.
+
+## Summary
+
+The Validate DSL provides a declarative, composable way to build validators:
+
+* Field projection with `at` using Lenses, Prisms, or Traversals
+
+* **Prism by default** - `at :key` treats fields as optional
+
+* **Required for presence** - Only validator that runs on `Nothing`
+
+* **Lens for structure** - Use when key must exist (raises `KeyError` otherwise)
+
+* **Traversals for relationships** - Validate across multiple fields
+
+* **Root validators** - Run on entire structure without `at`
+
+* **Environment passing** - Context-dependent validation
+
+* **Composable** - Validators can be nested and reused
+
+* **Error accumulation** - All validators run, all errors collected
+
+* **Identity preservation** - Original structure returned unchanged on success
+
+**Key Insight:** The default `at :key` uses Prism, making fields optional. Use `Required` for presence validation or explicit `Lens.key(:key)` for structural requirements.
+
+## When to Reach for This
+
+Use `validate` when:
+
+* You want **declarative validation rules** that are easy to read and maintain
+* You need **all errors at once** for better UX (not just the first failure)
+* You want **composable validators** that can be reused and combined
+* You need **context-dependent validation** (environment passing)
+* You're validating **nested structures** with complex field access patterns
+* You want **type-safe projections** using optics (Lens, Prism, Traversal)
