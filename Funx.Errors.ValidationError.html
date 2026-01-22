@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.7.0">
+    <meta name="project" content="funx v0.7.1">
 
 
-    <title>Funx.Errors.ValidationError — funx v0.7.0</title>
+    <title>Funx.Errors.ValidationError — funx v0.7.1</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.7.0
+          v0.7.1
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Errors.ValidationError</span> <small>exception</small>
-      <small class="app-vsn" translate="no">(funx v0.7.0)</small>
+      <small class="app-vsn" translate="no">(funx v0.7.1)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/errors/validation_error.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/errors/validation_error.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -113,17 +113,17 @@ funx
 the check passes, or an <code class="inline">Either.Left</code> with an error message if it fails. If any validation fails,
 all errors are aggregated and returned in a single <code class="inline">Left</code>.</p><p>In contexts where an error must halt execution, <code class="inline">ValidationError</code> can be raised directly using <a href="https://hexdocs.pm/elixir/Kernel.html#raise/1"><code class="inline">raise/1</code></a>.</p><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><p>You can also use a <code class="inline">ValidationError</code> to hold errors:</p><pre><code class="makeup elixir" translate="no"><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="w">
 
-</span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="9014923879-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="9014923879-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="9014923879-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="9014923879-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9014923879-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="9014923879-5">(</span><span class="n">v</span><span class="p" data-group-id="9014923879-5">)</span><span class="w"> </span><span class="k" data-group-id="9014923879-4">end</span><span class="p" data-group-id="9014923879-2">)</span><span class="w">
-  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="9014923879-6">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="9014923879-6">)</span><span class="w">
-</span><span class="k" data-group-id="9014923879-1">end</span><span class="w">
+</span><span class="n">validate_positive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4746496961-1">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="4746496961-2">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="4746496961-3">(</span><span class="ni">&amp;1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4746496961-3">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4746496961-4">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be positive: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="4746496961-5">(</span><span class="n">v</span><span class="p" data-group-id="4746496961-5">)</span><span class="w"> </span><span class="k" data-group-id="4746496961-4">end</span><span class="p" data-group-id="4746496961-2">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="4746496961-6">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4746496961-6">)</span><span class="w">
+</span><span class="k" data-group-id="4746496961-1">end</span><span class="w">
 
-</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="9014923879-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="9014923879-8">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="9014923879-9">(</span><span class="n">rem</span><span class="p" data-group-id="9014923879-10">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9014923879-10">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="9014923879-9">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="9014923879-11">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="9014923879-12">(</span><span class="n">v</span><span class="p" data-group-id="9014923879-12">)</span><span class="w"> </span><span class="k" data-group-id="9014923879-11">end</span><span class="p" data-group-id="9014923879-8">)</span><span class="w">
-  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="9014923879-13">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="9014923879-13">)</span><span class="w">
-</span><span class="k" data-group-id="9014923879-7">end</span><span class="w">
+</span><span class="n">validate_even</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k" data-group-id="4746496961-7">fn</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">lift_predicate</span><span class="p" data-group-id="4746496961-8">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p" data-group-id="4746496961-9">(</span><span class="n">rem</span><span class="p" data-group-id="4746496961-10">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4746496961-10">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="4746496961-9">)</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="4746496961-11">fn</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;Value must be even: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">to_string</span><span class="p" data-group-id="4746496961-12">(</span><span class="n">v</span><span class="p" data-group-id="4746496961-12">)</span><span class="w"> </span><span class="k" data-group-id="4746496961-11">end</span><span class="p" data-group-id="4746496961-8">)</span><span class="w">
+  </span><span class="o">|&gt;</span><span class="w"> </span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">map_left</span><span class="p" data-group-id="4746496961-13">(</span><span class="o">&amp;</span><span class="nc">ValidationError</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4746496961-13">)</span><span class="w">
+</span><span class="k" data-group-id="4746496961-7">end</span><span class="w">
 
-</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="9014923879-14">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9014923879-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="9014923879-15">]</span><span class="p" data-group-id="9014923879-14">)</span><span class="w">
+</span><span class="nc">Funx.Monad.Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="4746496961-14">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4746496961-15">[</span><span class="n">validate_positive</span><span class="p">,</span><span class="w"> </span><span class="n">validate_even</span><span class="p" data-group-id="4746496961-15">]</span><span class="p" data-group-id="4746496961-14">)</span><span class="w">
 </span><span class="c1">#=&gt; %Funx.Monad.Either.Left{</span><span class="w">
 </span><span class="c1">#     left: %ValidationError{</span><span class="w">
 </span><span class="c1">#       errors: [&quot;Value must be positive: -3&quot;, &quot;Value must be even: -3&quot;]</span><span class="w">
@@ -223,7 +223,7 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
       <h1 class="signature" translate="no">t()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/errors/validation_error.ex#L62" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/errors/validation_error.ex#L62" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -264,7 +264,7 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
       <h1 class="signature" translate="no">empty()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/errors/validation_error.ex#L91" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/errors/validation_error.ex#L91" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -279,8 +279,8 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
 
       </div>
 
-<p>Returns an empty <code class="inline">ValidationError</code>.</p><h2 id="empty/0-examples" class="section-heading"><a href="#empty/0-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">empty</span><span class="p" data-group-id="5156756246-1">(</span><span class="p" data-group-id="5156756246-1">)</span><span class="w">
-</span><span class="p" data-group-id="5156756246-2">%</span><span class="nc" data-group-id="5156756246-2">Funx.Errors.ValidationError</span><span class="p" data-group-id="5156756246-2">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5156756246-3">[</span><span class="p" data-group-id="5156756246-3">]</span><span class="p" data-group-id="5156756246-2">}</span></code></pre>
+<p>Returns an empty <code class="inline">ValidationError</code>.</p><h2 id="empty/0-examples" class="section-heading"><a href="#empty/0-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">empty</span><span class="p" data-group-id="3118206316-1">(</span><span class="p" data-group-id="3118206316-1">)</span><span class="w">
+</span><span class="p" data-group-id="3118206316-2">%</span><span class="nc" data-group-id="3118206316-2">Funx.Errors.ValidationError</span><span class="p" data-group-id="3118206316-2">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3118206316-3">[</span><span class="p" data-group-id="3118206316-3">]</span><span class="p" data-group-id="3118206316-2">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="from_tagged/1">
@@ -293,7 +293,7 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
       <h1 class="signature" translate="no">from_tagged(arg)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/errors/validation_error.ex#L116" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/errors/validation_error.ex#L116" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -308,8 +308,8 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
 
       </div>
 
-<p>Converts a tagged error tuple into a <code class="inline">ValidationError</code>.</p><h2 id="from_tagged/1-examples" class="section-heading"><a href="#from_tagged/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">from_tagged</span><span class="p" data-group-id="3804812756-1">(</span><span class="p" data-group-id="3804812756-2">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3804812756-3">[</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="3804812756-3">]</span><span class="p" data-group-id="3804812756-2">}</span><span class="p" data-group-id="3804812756-1">)</span><span class="w">
-</span><span class="p" data-group-id="3804812756-4">%</span><span class="nc" data-group-id="3804812756-4">Funx.Errors.ValidationError</span><span class="p" data-group-id="3804812756-4">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3804812756-5">[</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="3804812756-5">]</span><span class="p" data-group-id="3804812756-4">}</span></code></pre>
+<p>Converts a tagged error tuple into a <code class="inline">ValidationError</code>.</p><h2 id="from_tagged/1-examples" class="section-heading"><a href="#from_tagged/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">from_tagged</span><span class="p" data-group-id="6923896728-1">(</span><span class="p" data-group-id="6923896728-2">{</span><span class="ss">:error</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6923896728-3">[</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="6923896728-3">]</span><span class="p" data-group-id="6923896728-2">}</span><span class="p" data-group-id="6923896728-1">)</span><span class="w">
+</span><span class="p" data-group-id="6923896728-4">%</span><span class="nc" data-group-id="6923896728-4">Funx.Errors.ValidationError</span><span class="p" data-group-id="6923896728-4">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6923896728-5">[</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="6923896728-5">]</span><span class="p" data-group-id="6923896728-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="merge/2">
@@ -322,7 +322,7 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
       <h1 class="signature" translate="no">merge(validation_error1, validation_error2)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/errors/validation_error.ex#L104" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/errors/validation_error.ex#L104" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -337,10 +337,10 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
 
       </div>
 
-<p>Merges two <code class="inline">ValidationError</code> structs into one by concatenating their error lists.</p><h2 id="merge/2-examples" class="section-heading"><a href="#merge/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">e1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="2348314957-1">(</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="2348314957-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">e2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="2348314957-2">(</span><span class="s">&quot;must be even&quot;</span><span class="p" data-group-id="2348314957-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">merge</span><span class="p" data-group-id="2348314957-3">(</span><span class="n">e1</span><span class="p">,</span><span class="w"> </span><span class="n">e2</span><span class="p" data-group-id="2348314957-3">)</span><span class="w">
-</span><span class="p" data-group-id="2348314957-4">%</span><span class="nc" data-group-id="2348314957-4">Funx.Errors.ValidationError</span><span class="p" data-group-id="2348314957-4">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2348314957-5">[</span><span class="s">&quot;must be positive&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;must be even&quot;</span><span class="p" data-group-id="2348314957-5">]</span><span class="p" data-group-id="2348314957-4">}</span></code></pre>
+<p>Merges two <code class="inline">ValidationError</code> structs into one by concatenating their error lists.</p><h2 id="merge/2-examples" class="section-heading"><a href="#merge/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">e1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="3074779079-1">(</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="3074779079-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">e2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="3074779079-2">(</span><span class="s">&quot;must be even&quot;</span><span class="p" data-group-id="3074779079-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">merge</span><span class="p" data-group-id="3074779079-3">(</span><span class="n">e1</span><span class="p">,</span><span class="w"> </span><span class="n">e2</span><span class="p" data-group-id="3074779079-3">)</span><span class="w">
+</span><span class="p" data-group-id="3074779079-4">%</span><span class="nc" data-group-id="3074779079-4">Funx.Errors.ValidationError</span><span class="p" data-group-id="3074779079-4">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3074779079-5">[</span><span class="s">&quot;must be positive&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;must be even&quot;</span><span class="p" data-group-id="3074779079-5">]</span><span class="p" data-group-id="3074779079-4">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="new/1">
@@ -353,7 +353,7 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
       <h1 class="signature" translate="no">new(errors)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/errors/validation_error.ex#L77" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/errors/validation_error.ex#L77" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -370,11 +370,11 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
 
       </div>
 
-<p>Creates a <code class="inline">ValidationError</code> from a single string or list of strings.</p><h2 id="new/1-examples" class="section-heading"><a href="#new/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="6863393923-1">(</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="6863393923-1">)</span><span class="w">
-</span><span class="p" data-group-id="6863393923-2">%</span><span class="nc" data-group-id="6863393923-2">Funx.Errors.ValidationError</span><span class="p" data-group-id="6863393923-2">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6863393923-3">[</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="6863393923-3">]</span><span class="p" data-group-id="6863393923-2">}</span><span class="w">
+<p>Creates a <code class="inline">ValidationError</code> from a single string or list of strings.</p><h2 id="new/1-examples" class="section-heading"><a href="#new/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="4897282135-1">(</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="4897282135-1">)</span><span class="w">
+</span><span class="p" data-group-id="4897282135-2">%</span><span class="nc" data-group-id="4897282135-2">Funx.Errors.ValidationError</span><span class="p" data-group-id="4897282135-2">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4897282135-3">[</span><span class="s">&quot;must be positive&quot;</span><span class="p" data-group-id="4897282135-3">]</span><span class="p" data-group-id="4897282135-2">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="6863393923-4">(</span><span class="p" data-group-id="6863393923-5">[</span><span class="s">&quot;must be positive&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;must be even&quot;</span><span class="p" data-group-id="6863393923-5">]</span><span class="p" data-group-id="6863393923-4">)</span><span class="w">
-</span><span class="p" data-group-id="6863393923-6">%</span><span class="nc" data-group-id="6863393923-6">Funx.Errors.ValidationError</span><span class="p" data-group-id="6863393923-6">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6863393923-7">[</span><span class="s">&quot;must be positive&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;must be even&quot;</span><span class="p" data-group-id="6863393923-7">]</span><span class="p" data-group-id="6863393923-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Errors.ValidationError</span><span class="o">.</span><span class="n">new</span><span class="p" data-group-id="4897282135-4">(</span><span class="p" data-group-id="4897282135-5">[</span><span class="s">&quot;must be positive&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;must be even&quot;</span><span class="p" data-group-id="4897282135-5">]</span><span class="p" data-group-id="4897282135-4">)</span><span class="w">
+</span><span class="p" data-group-id="4897282135-6">%</span><span class="nc" data-group-id="4897282135-6">Funx.Errors.ValidationError</span><span class="p" data-group-id="4897282135-6">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4897282135-7">[</span><span class="s">&quot;must be positive&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;must be even&quot;</span><span class="p" data-group-id="4897282135-7">]</span><span class="p" data-group-id="4897282135-6">}</span></code></pre>
   </section>
 </section>
 
@@ -386,9 +386,9 @@ all errors are aggregated and returned in a single <code class="inline">Left</co
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.7.0" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.7.1" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.7.0">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.7.1">Hex Preview</a>
 
             </span>
 

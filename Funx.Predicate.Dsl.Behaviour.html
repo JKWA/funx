@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.7.0">
+    <meta name="project" content="funx v0.7.1">
 
 
-    <title>Funx.Predicate.Dsl.Behaviour — funx v0.7.0</title>
+    <title>Funx.Predicate.Dsl.Behaviour — funx v0.7.1</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.7.0
+          v0.7.1
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Predicate.Dsl.Behaviour</span> <small>behaviour</small>
-      <small class="app-vsn" translate="no">(funx v0.7.0)</small>
+      <small class="app-vsn" translate="no">(funx v0.7.1)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/predicate/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/predicate/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -111,35 +111,35 @@ funx
     <section id="moduledoc">
 <p>Behaviour for custom predicate logic in the Predicate DSL.</p><p>Implement this behaviour to define reusable predicates that can be
 used with <code class="inline">on</code> directives in the DSL.</p><p>This is useful for teams that want to create reusable, configurable
-predicates without repeating logic across the codebase.</p><h2 id="module-basic-example" class="section-heading"><a href="#module-basic-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Basic Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">IsActive</span><span class="w"> </span><span class="k" data-group-id="1324141877-1">do</span><span class="w">
+predicates without repeating logic across the codebase.</p><h2 id="module-basic-example" class="section-heading"><a href="#module-basic-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Basic Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">IsActive</span><span class="w"> </span><span class="k" data-group-id="4823666648-1">do</span><span class="w">
   </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Predicate.Dsl.Behaviour</span><span class="w">
 
   </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
-  </span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="1324141877-2">(</span><span class="c">_opts</span><span class="p" data-group-id="1324141877-2">)</span><span class="w"> </span><span class="k" data-group-id="1324141877-3">do</span><span class="w">
-    </span><span class="k" data-group-id="1324141877-4">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">active</span><span class="w"> </span><span class="k" data-group-id="1324141877-4">end</span><span class="w">
-  </span><span class="k" data-group-id="1324141877-3">end</span><span class="w">
-</span><span class="k" data-group-id="1324141877-1">end</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="4823666648-2">(</span><span class="c">_opts</span><span class="p" data-group-id="4823666648-2">)</span><span class="w"> </span><span class="k" data-group-id="4823666648-3">do</span><span class="w">
+    </span><span class="k" data-group-id="4823666648-4">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">active</span><span class="w"> </span><span class="k" data-group-id="4823666648-4">end</span><span class="w">
+  </span><span class="k" data-group-id="4823666648-3">end</span><span class="w">
+</span><span class="k" data-group-id="4823666648-1">end</span><span class="w">
 
 </span><span class="c1"># In DSL</span><span class="w">
 </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="w">
 
-</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="1324141877-5">do</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="4823666648-5">do</span><span class="w">
   </span><span class="n">on</span><span class="w"> </span><span class="nc">IsActive</span><span class="w">  </span><span class="c1"># Checks if active</span><span class="w">
-</span><span class="k" data-group-id="1324141877-5">end</span></code></pre><h2 id="module-with-options" class="section-heading"><a href="#module-with-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">With Options</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">HasMinimumAge</span><span class="w"> </span><span class="k" data-group-id="0798489335-1">do</span><span class="w">
+</span><span class="k" data-group-id="4823666648-5">end</span></code></pre><h2 id="module-with-options" class="section-heading"><a href="#module-with-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">With Options</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">HasMinimumAge</span><span class="w"> </span><span class="k" data-group-id="1901444212-1">do</span><span class="w">
   </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Predicate.Dsl.Behaviour</span><span class="w">
 
   </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
-  </span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="0798489335-2">(</span><span class="n">opts</span><span class="p" data-group-id="0798489335-2">)</span><span class="w"> </span><span class="k" data-group-id="0798489335-3">do</span><span class="w">
-    </span><span class="n">minimum_age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="0798489335-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:minimum</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p" data-group-id="0798489335-4">)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="1901444212-2">(</span><span class="n">opts</span><span class="p" data-group-id="1901444212-2">)</span><span class="w"> </span><span class="k" data-group-id="1901444212-3">do</span><span class="w">
+    </span><span class="n">minimum_age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="1901444212-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:minimum</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p" data-group-id="1901444212-4">)</span><span class="w">
 
-    </span><span class="k" data-group-id="0798489335-5">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">minimum_age</span><span class="w"> </span><span class="k" data-group-id="0798489335-5">end</span><span class="w">
-  </span><span class="k" data-group-id="0798489335-3">end</span><span class="w">
-</span><span class="k" data-group-id="0798489335-1">end</span><span class="w">
+    </span><span class="k" data-group-id="1901444212-5">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">minimum_age</span><span class="w"> </span><span class="k" data-group-id="1901444212-5">end</span><span class="w">
+  </span><span class="k" data-group-id="1901444212-3">end</span><span class="w">
+</span><span class="k" data-group-id="1901444212-1">end</span><span class="w">
 
 </span><span class="c1"># In DSL</span><span class="w">
-</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="0798489335-6">do</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="1901444212-6">do</span><span class="w">
   </span><span class="n">on</span><span class="w"> </span><span class="nc">HasMinimumAge</span><span class="p">,</span><span class="w"> </span><span class="ss">minimum</span><span class="p">:</span><span class="w"> </span><span class="mi">21</span><span class="w">
-</span><span class="k" data-group-id="0798489335-6">end</span></code></pre><h2 id="module-why-use-this" class="section-heading"><a href="#module-why-use-this" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Why Use This?</span></h2><ul><li><strong>Reusable</strong>: Define predicates once, use everywhere</li><li><strong>Configurable</strong>: Built-in support for options</li><li><strong>Testable</strong>: Predicates can be unit tested independently</li><li><strong>Discoverable</strong>: All predicates in one module namespace</li></ul><p>The returned predicate is a function <code class="inline">(any() -&gt; boolean())</code> that will be
+</span><span class="k" data-group-id="1901444212-6">end</span></code></pre><h2 id="module-why-use-this" class="section-heading"><a href="#module-why-use-this" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Why Use This?</span></h2><ul><li><strong>Reusable</strong>: Define predicates once, use everywhere</li><li><strong>Configurable</strong>: Built-in support for options</li><li><strong>Testable</strong>: Predicates can be unit tested independently</li><li><strong>Discoverable</strong>: All predicates in one module namespace</li></ul><p>The returned predicate is a function <code class="inline">(any() -&gt; boolean())</code> that will be
 composed with other predicates using the DSL's combinator logic.</p>
     </section>
 
@@ -191,7 +191,7 @@ composed with other predicates using the DSL's combinator logic.</p>
       <h1 class="signature" translate="no">pred(opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.0/lib/predicate/dsl/behaviour.ex#L99" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/predicate/dsl/behaviour.ex#L99" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -206,26 +206,26 @@ composed with other predicates using the DSL's combinator logic.</p>
 
       </div>
 
-<p>Returns a predicate function.</p><p>Takes options and returns a predicate function <code class="inline">(any() -&gt; boolean())</code>.</p><h2 id="c:pred/1-arguments" class="section-heading"><a href="#c:pred/1-arguments" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Arguments</span></h2><ul><li><code class="inline">opts</code> - Keyword list of options passed from the DSL</li></ul><h2 id="c:pred/1-return-value" class="section-heading"><a href="#c:pred/1-return-value" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Return Value</span></h2><p>A predicate function with the signature:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="5262647143-1">(</span><span class="n">any</span><span class="p" data-group-id="5262647143-2">(</span><span class="p" data-group-id="5262647143-2">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">boolean</span><span class="p" data-group-id="5262647143-3">(</span><span class="p" data-group-id="5262647143-3">)</span><span class="p" data-group-id="5262647143-1">)</span></code></pre><h2 id="c:pred/1-examples" class="section-heading"><a href="#c:pred/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Simple predicate</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="6809224445-1">(</span><span class="c">_opts</span><span class="p" data-group-id="6809224445-1">)</span><span class="w"> </span><span class="k" data-group-id="6809224445-2">do</span><span class="w">
-  </span><span class="k" data-group-id="6809224445-3">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">active</span><span class="w"> </span><span class="k" data-group-id="6809224445-3">end</span><span class="w">
-</span><span class="k" data-group-id="6809224445-2">end</span><span class="w">
+<p>Returns a predicate function.</p><p>Takes options and returns a predicate function <code class="inline">(any() -&gt; boolean())</code>.</p><h2 id="c:pred/1-arguments" class="section-heading"><a href="#c:pred/1-arguments" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Arguments</span></h2><ul><li><code class="inline">opts</code> - Keyword list of options passed from the DSL</li></ul><h2 id="c:pred/1-return-value" class="section-heading"><a href="#c:pred/1-return-value" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Return Value</span></h2><p>A predicate function with the signature:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="4307943833-1">(</span><span class="n">any</span><span class="p" data-group-id="4307943833-2">(</span><span class="p" data-group-id="4307943833-2">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">boolean</span><span class="p" data-group-id="4307943833-3">(</span><span class="p" data-group-id="4307943833-3">)</span><span class="p" data-group-id="4307943833-1">)</span></code></pre><h2 id="c:pred/1-examples" class="section-heading"><a href="#c:pred/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Simple predicate</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="2323597454-1">(</span><span class="c">_opts</span><span class="p" data-group-id="2323597454-1">)</span><span class="w"> </span><span class="k" data-group-id="2323597454-2">do</span><span class="w">
+  </span><span class="k" data-group-id="2323597454-3">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">active</span><span class="w"> </span><span class="k" data-group-id="2323597454-3">end</span><span class="w">
+</span><span class="k" data-group-id="2323597454-2">end</span><span class="w">
 
 </span><span class="c1"># With options</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="6809224445-4">(</span><span class="n">opts</span><span class="p" data-group-id="6809224445-4">)</span><span class="w"> </span><span class="k" data-group-id="6809224445-5">do</span><span class="w">
-  </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="6809224445-6">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:field</span><span class="p">,</span><span class="w"> </span><span class="ss">:active</span><span class="p" data-group-id="6809224445-6">)</span><span class="w">
-  </span><span class="k" data-group-id="6809224445-7">fn</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="6809224445-8">(</span><span class="n">item</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p" data-group-id="6809224445-8">)</span><span class="w"> </span><span class="k" data-group-id="6809224445-7">end</span><span class="w">
-</span><span class="k" data-group-id="6809224445-5">end</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="2323597454-4">(</span><span class="n">opts</span><span class="p" data-group-id="2323597454-4">)</span><span class="w"> </span><span class="k" data-group-id="2323597454-5">do</span><span class="w">
+  </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="2323597454-6">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:field</span><span class="p">,</span><span class="w"> </span><span class="ss">:active</span><span class="p" data-group-id="2323597454-6">)</span><span class="w">
+  </span><span class="k" data-group-id="2323597454-7">fn</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="2323597454-8">(</span><span class="n">item</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p" data-group-id="2323597454-8">)</span><span class="w"> </span><span class="k" data-group-id="2323597454-7">end</span><span class="w">
+</span><span class="k" data-group-id="2323597454-5">end</span><span class="w">
 
 </span><span class="c1"># Complex logic</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="6809224445-9">(</span><span class="n">opts</span><span class="p" data-group-id="6809224445-9">)</span><span class="w"> </span><span class="k" data-group-id="6809224445-10">do</span><span class="w">
-  </span><span class="n">min_age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="6809224445-11">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:min_age</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p" data-group-id="6809224445-11">)</span><span class="w">
-  </span><span class="n">max_age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="6809224445-12">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:max_age</span><span class="p">,</span><span class="w"> </span><span class="mi">65</span><span class="p" data-group-id="6809224445-12">)</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">pred</span><span class="p" data-group-id="2323597454-9">(</span><span class="n">opts</span><span class="p" data-group-id="2323597454-9">)</span><span class="w"> </span><span class="k" data-group-id="2323597454-10">do</span><span class="w">
+  </span><span class="n">min_age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="2323597454-11">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:min_age</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p" data-group-id="2323597454-11">)</span><span class="w">
+  </span><span class="n">max_age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="2323597454-12">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:max_age</span><span class="p">,</span><span class="w"> </span><span class="mi">65</span><span class="p" data-group-id="2323597454-12">)</span><span class="w">
 
-  </span><span class="k" data-group-id="6809224445-13">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+  </span><span class="k" data-group-id="2323597454-13">fn</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
     </span><span class="n">user</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">min_age</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">user</span><span class="o">.</span><span class="n">age</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">max_age</span><span class="w">
-  </span><span class="k" data-group-id="6809224445-13">end</span><span class="w">
-</span><span class="k" data-group-id="6809224445-10">end</span></code></pre><p>Most implementations return simple predicate functions that check
+  </span><span class="k" data-group-id="2323597454-13">end</span><span class="w">
+</span><span class="k" data-group-id="2323597454-10">end</span></code></pre><p>Most implementations return simple predicate functions that check
 specific conditions on the input value.</p>
   </section>
 </section>
@@ -238,9 +238,9 @@ specific conditions on the input value.</p>
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.7.0" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.7.1" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.7.0">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.7.1">Hex Preview</a>
 
             </span>
 
