@@ -74,6 +74,7 @@ defmodule Funx.MixProject do
             "https://pragprog.com/titles/jkelixir/advanced-functional-programming-with-elixir"
         },
         files: [
+          ".formatter.exs",
           "lib",
           "mix.exs",
           "README.md",
