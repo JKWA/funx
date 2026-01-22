@@ -1,5 +1,7 @@
 defmodule Funx.Optics.Lens do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Foptics%2Flens.livemd)
+
   The `Funx.Optics.Lens` module provides a lawful total optic for focusing on a part of a data structure.
 
   A lens is **total**: it assumes the focus always exists within the valid domain. This is a contract

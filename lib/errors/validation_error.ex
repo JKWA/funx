@@ -1,5 +1,7 @@
 defmodule Funx.Errors.ValidationError do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ferrors%2Fvalidation_error.livemd)
+
   Represents a validation error in the Funx library.
 
   A `ValidationError` wraps one or more domain-level validation messages. It is typically used with `Either.Left` to indicate that a value failed validation and should not proceed in a computation. It can also be raised directly, as it implements the `Exception` behaviour.

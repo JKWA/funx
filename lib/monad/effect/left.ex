@@ -1,5 +1,7 @@
 defmodule Funx.Monad.Effect.Left do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Feffect%2Fleft.livemd)
+
   Represents the `Left` variant of the `Effect` monad, used to model a failure or error in an asynchronous context.
 
   This module implements the following protocols:

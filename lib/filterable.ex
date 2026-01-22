@@ -1,5 +1,7 @@
 defprotocol Funx.Filterable do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ffilterable%2Ffilterable.livemd)
+
   The `Funx.Filterable` protocol defines functions for conditionally retaining or discarding
   values within a context. It generalizes the concepts of `filter`, `filter_map`, and `guard`
   across different data structures like `Maybe`, `List`, and others.

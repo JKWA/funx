@@ -1,5 +1,7 @@
 defmodule Funx.Monad.Reader do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Freader%2Freader.livemd)
+
   The `Funx.Monad.Reader` module represents the Reader monad, which allows computations to access
   shared, read-only environment values.
 

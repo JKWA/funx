@@ -1,5 +1,7 @@
 defmodule Funx.Monad.Effect.Context do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Feffect%2Fcontext.livemd)
+
   Represents the execution context attached to an effect.
 
   This struct carries contextual information such as `trace_id`, `span_name`,

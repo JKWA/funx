@@ -1,5 +1,7 @@
 defmodule Funx.Monoid.ListConcat do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonoid%2Flist_concat.livemd)
+
   A Monoid implementation for concatenating lists.
 
   This monoid uses list concatenation as its associative operation

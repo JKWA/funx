@@ -2,9 +2,27 @@
 
 ## [0.7.0] - Unreleased
 
+### Added
+
+* `Funx.Validate` – A declarative DSL for building composable validators with optics-based field projection, applicative error accumulation, and identity preservation. Supports sequential and parallel modes, environment passing, and composable nested validators.
+* `Funx.Validator` – Built-in validators for common validation patterns:
+  * `Required` – Presence validation (handles `Nothing` from Prism)
+  * `Email` – Email format validation
+  * `MinLength` / `MaxLength` – String length constraints
+  * `Pattern` – Regex pattern matching
+  * `Positive` / `Negative` – Numeric sign validation
+  * `Integer` – Integer type validation
+  * `GreaterThan` / `LessThan` / `GreaterThanOrEq` / `LessThanOrEq` – Numeric comparisons
+  * `In` / `NotIn` – Set membership validation
+  * `Range` – Numeric range validation
+  * `Each` – Collection item validation
+  * `Confirmation` – Field matching validation
+  * `Not` – Validator negation
+
 ### Breaking Changes
 
 * Removed the import Either and import Maybe from the DSLs.
+* Changed behavior for Either and Maybe to use Monad behaviours (not `run/3` and `run_maybe/3`)
 
 ## [0.6.1] - Unreleased
 
@@ -20,27 +38,27 @@
 
 #### Eq Module Changes
 
-- **`Funx.Eq` (protocol) → `Funx.Eq.Protocol`**
-  - The equality protocol is now `Funx.Eq.Protocol`
-  - Protocol implementations must use `defimpl Funx.Eq.Protocol, for: YourType`
+* **`Funx.Eq` (protocol) → `Funx.Eq.Protocol`**
+  * The equality protocol is now `Funx.Eq.Protocol`
+  * Protocol implementations must use `defimpl Funx.Eq.Protocol, for: YourType`
 
-- **`Funx.Eq.Utils` → `Funx.Eq`**
-  - Utility functions moved from `Funx.Eq.Utils` to `Funx.Eq`
-  - DSL merged into `Funx.Eq` (no more separate `Funx.Eq.Dsl`)
-  - `use Funx.Eq` imports the `eq` DSL macro
-  - `alias Funx.Eq` for utility functions (optional, or use fully qualified)
+* **`Funx.Eq.Utils` → `Funx.Eq`**
+  * Utility functions moved from `Funx.Eq.Utils` to `Funx.Eq`
+  * DSL merged into `Funx.Eq` (no more separate `Funx.Eq.Dsl`)
+  * `use Funx.Eq` imports the `eq` DSL macro
+  * `alias Funx.Eq` for utility functions (optional, or use fully qualified)
 
 #### Ord Module Changes
 
-- **`Funx.Ord` (protocol) → `Funx.Ord.Protocol`**
-  - The ordering protocol is now `Funx.Ord.Protocol`
-  - Protocol implementations must use `defimpl Funx.Ord.Protocol, for: YourType`
+* **`Funx.Ord` (protocol) → `Funx.Ord.Protocol`**
+  * The ordering protocol is now `Funx.Ord.Protocol`
+  * Protocol implementations must use `defimpl Funx.Ord.Protocol, for: YourType`
 
-- **`Funx.Ord.Utils` → `Funx.Ord`**
-  - Utility functions moved from `Funx.Ord.Utils` to `Funx.Ord`
-  - DSL merged into `Funx.Ord` (no more separate `Funx.Ord.Dsl`)
-  - `use Funx.Ord` imports the `ord` DSL macro
-  - `alias Funx.Ord` for utility functions (optional, or use fully qualified)
+* **`Funx.Ord.Utils` → `Funx.Ord`**
+  * Utility functions moved from `Funx.Ord.Utils` to `Funx.Ord`
+  * DSL merged into `Funx.Ord` (no more separate `Funx.Ord.Dsl`)
+  * `use Funx.Ord` imports the `ord` DSL macro
+  * `alias Funx.Ord` for utility functions (optional, or use fully qualified)
 
 #### Migration Guide
 
@@ -92,17 +110,17 @@ end
 
 **Default parameter changes:**
 
-- Functions with `ord \\ Ord` now use `ord \\ Funx.Ord.Protocol`
-- DSL parser defaults to `Funx.Ord.Protocol` for comparison checks
+* Functions with `ord \\ Ord` now use `ord \\ Funx.Ord.Protocol`
+* DSL parser defaults to `Funx.Ord.Protocol` for comparison checks
 
 ### Rationale
 
 This reorganization provides:
 
-- Clear separation: Protocols (`*.Protocol`) vs utilities (`Funx.Eq`, `Funx.Ord`)
-- Minimal imports: `use` imports only the DSL macro, not all functions
-- Better discoverability: Main modules contain the utilities users interact with
-- User control: Users decide whether to alias or use fully qualified names
+* Clear separation: Protocols (`*.Protocol`) vs utilities (`Funx.Eq`, `Funx.Ord`)
+* Minimal imports: `use` imports only the DSL macro, not all functions
+* Better discoverability: Main modules contain the utilities users interact with
+* User control: Users decide whether to alias or use fully qualified names
 
 ## [0.5.0] - Unreleased
 
@@ -173,19 +191,19 @@ Existing direct tap/2 implementations have been removed. Code relying on the pre
 
 We're currently in beta, focusing on:
 
-- Core functionality implementation and stabilization
-- Comprehensive usage rules and documentation for humans and LLMs
-- Real-world testing and feedback incorporation
-- API refinement based on practical usage patterns
+* Core functionality implementation and stabilization
+* Comprehensive usage rules and documentation for humans and LLMs
+* Real-world testing and feedback incorporation
+* API refinement based on practical usage patterns
 
 **Current Status**: Feature-complete beta with comprehensive documentation. Ready for experimentation and feedback, but expect potential API changes before 1.0.
 
 ## Feedback Welcome
 
-- 🐛 **Issues**: [Report bugs and suggest improvements](https://github.com/JKWA/funx/issues)
-- 📖 **Documentation**: Help us improve usage rules and examples
-- 🧪 **Real-world usage**: Share your experience using Funx in projects
-- 💬 **Discussion**: Join conversations about functional programming patterns in Elixir
+* 🐛 **Issues**: [Report bugs and suggest improvements](https://github.com/JKWA/funx/issues)
+* 📖 **Documentation**: Help us improve usage rules and examples
+* 🧪 **Real-world usage**: Share your experience using Funx in projects
+* 💬 **Discussion**: Join conversations about functional programming patterns in Elixir
 
 ---
 

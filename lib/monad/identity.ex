@@ -1,5 +1,7 @@
 defmodule Funx.Monad.Identity do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Fidentity%2Fidentity.livemd)
+
   The `Funx.Monad.Identity` module represents the identity monad, where values are simply wrapped in a structure
   and operations are applied directly to those values.
 

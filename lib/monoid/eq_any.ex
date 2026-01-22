@@ -2,6 +2,8 @@
 
 defmodule Funx.Monoid.Eq.Any do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonoid%2Feq_any.livemd)
+
   A Monoid implementation for equality checks for Any.
   """
   @type t :: %__MODULE__{

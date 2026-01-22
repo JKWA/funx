@@ -1,5 +1,7 @@
 defmodule Funx.Ord do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ford%2Ford.livemd)
+
   Provides utilities and DSL for working with the `Funx.Ord.Protocol`.
 
   This module combines:

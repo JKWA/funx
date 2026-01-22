@@ -1,5 +1,7 @@
 defprotocol Funx.Appendable do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fappendable%2Fappendable.livemd)
+
   A protocol for combining values in a generic, extensible way.
 
   The `Appendable` protocol defines how two values of the same type can be combined. It is

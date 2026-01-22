@@ -1,5 +1,7 @@
 defmodule Funx.Monad.Writer do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Fwriter%2Fwriter.livemd)
+
   The `Funx.Monad.Writer` module defines the Writer monad, which threads a log alongside a computed result.
 
   Logs are accumulated using a `Monoid` implementation, injected lazily at runtime. This makes the Writer monad flexible and monoid-polymorphic—supporting lists, strings, or any user-defined monoid.

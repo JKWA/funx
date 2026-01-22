@@ -1,5 +1,7 @@
 defmodule Funx.Monoid.Utils do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonoid%2Futils.livemd)
+
   Utility functions for working with Monoids.
 
   This module provides functions to combine monoidal values using

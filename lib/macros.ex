@@ -1,5 +1,7 @@
 defmodule Funx.Macros do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmacros%2Fmacros.livemd)
+
   Provides macros for automatically implementing `Funx.Eq` and `Funx.Ord` protocols
   for structs based on field projections.
 
