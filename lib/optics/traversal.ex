@@ -1,5 +1,7 @@
 defmodule Funx.Optics.Traversal do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Foptics%2Ftraversal.livemd)
+
   The `Funx.Optics.Traversal` module provides a multi-focus optic for targeting multiple locations in a data structure.
 
   A traversal is built using `combine`, which takes multiple optics (Lens or Prism) and creates a single

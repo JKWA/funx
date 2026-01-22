@@ -2,6 +2,8 @@ defmodule Funx.Optics.Prism do
   import Kernel, except: [struct: 1]
 
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Foptics%2Fprism.livemd)
+
   The `Funx.Optics.Prism` module provides a lawful partial optic for focusing on a branch of a data structure.
 
   A prism is **partial**: the focus may or may not be present. This makes prisms ideal for working with

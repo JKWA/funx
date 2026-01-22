@@ -1,5 +1,7 @@
 defprotocol Funx.Monad do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Fmonad.livemd)
+
   The `Funx.Monad` protocol defines the core monadic operations: `ap/2`, `bind/2`, and `map/2`.
 
   A monad is an abstraction that represents computations as a series of steps.

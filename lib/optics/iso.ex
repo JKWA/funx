@@ -1,5 +1,7 @@
 defmodule Funx.Optics.Iso do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Foptics%2Fiso.livemd)
+
   The `Funx.Optics.Iso` module provides a lawful isomorphism optic for bidirectional, lossless transformations.
 
   An isomorphism (iso) represents a reversible transformation between two types. It consists of

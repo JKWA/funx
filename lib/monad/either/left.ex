@@ -1,5 +1,7 @@
 defmodule Funx.Monad.Either.Left do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Feither%2Fleft.livemd)
+
   Represents the `Left` variant of the `Either` monad, used to model an error or failure.
 
   This module implements the following protocols:

@@ -2,6 +2,8 @@
 
 defmodule Funx.Monoid.Ord do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonoid%2Ford.livemd)
+
   A monoid implementation for ordering logic (Ord).
   Provides default comparison functions and supports combining multiple
   `Ord` comparators into a single composite comparator.

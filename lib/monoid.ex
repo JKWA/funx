@@ -1,5 +1,7 @@
 defprotocol Funx.Monoid do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonoid%2Fmonoid.livemd)
+
   A protocol defining the Monoid algebraic structure, which consists of
   an identity element and an associative binary operation for combining values.
 

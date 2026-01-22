@@ -1,5 +1,7 @@
 defprotocol Funx.Foldable do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ffoldable%2Ffoldable.livemd)
+
   The `Funx.Foldable` protocol defines two core folding operations: `fold_l/3` (fold left) and `fold_r/3` (fold right).
 
   These functions allow structures to be collapsed into a single value by applying functions in a specific order.

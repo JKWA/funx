@@ -1,5 +1,7 @@
 defmodule Funx.List do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Flist%2Flist.livemd)
+
   The `Funx.List` module provides utility functions for working with lists while respecting `Eq` and `Ord` instances. This allows for set-like operations, uniqueness constraints, and sorted collections that align with functional programming principles.
 
   ## Features

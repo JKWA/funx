@@ -1,5 +1,7 @@
 defmodule Funx.Monad.Maybe do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Fmaybe%2Fmaybe.livemd)
+
   The `Funx.Monad.Maybe` module provides an implementation of the `Maybe` monad, a functional abstraction used to represent optional values in Elixir.
 
   A `Maybe` represents one of two possibilities:

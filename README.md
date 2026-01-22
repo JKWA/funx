@@ -64,7 +64,7 @@ To use Funx, add it to the list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:funx, "~> 0.6"}
+    {:funx, "~> 0.7"}
   ]
 end
 ```
@@ -223,6 +223,70 @@ Predicates are functions that return `true` or `false`. Funx provides combinator
 - `p_all`: Returns `true` if all predicates in a list pass.
 - `p_any`: Returns `true` if any predicate in a list passes.
 - `p_none`: Returns `true` if none pass.
+
+### Pred DSL
+
+The Predicate module includes a DSL for building boolean predicates declaratively:
+
+```elixir
+use Funx.Predicate
+
+check_eligible = pred do
+  check :age, fn age -> age >= 18 end
+  check :verified, fn v -> v == true end
+  any do
+    check :role, fn r -> r == :admin end
+    check :role, fn r -> r == :moderator end
+  end
+end
+
+Enum.filter(users, check_eligible)
+```
+
+Features:
+
+- `check` - Project into a field and test with a predicate
+- `negate` - Invert a predicate (logical NOT)
+- `all` blocks - All predicates must pass (AND logic)
+- `any` blocks - At least one must pass (OR logic)
+- Support for optics (Lens, Prism), functions, and behaviour modules
+
+## Validation
+
+The `Validate` module provides declarative data validation with applicative error accumulation—all validators run and all errors are collected.
+
+### Validate DSL
+
+```elixir
+use Funx.Validate
+alias Funx.Monad.Either
+alias Funx.Validator.{Required, Email, MinLength, Positive}
+
+user_validation =
+  validate do
+    at :name, [Required, {MinLength, min: 3}]
+    at :email, [Required, Email]
+    at :age, Positive
+  end
+
+Either.validate(%{name: "Alice", email: "alice@example.com", age: 30}, user_validation)
+# => %Right{right: %{name: "Alice", email: "alice@example.com", age: 30}}
+
+Either.validate(%{name: "", email: "bad", age: -5}, user_validation)
+# => %Left{left: %ValidationError{errors: ["is required", "must be at least 3 characters", ...]}}
+```
+
+Features:
+
+- `at :field, Validator` - Field validation using Prism (optional by default)
+- `at [:a, :b], Validator` - Nested path validation
+- `at Lens.key(:field), Validator` - Required field (raises if missing)
+- Multiple validators: `[Required, Email]` or `{MinLength, min: 3}`
+- Root validators for whole-structure validation
+- Environment passing for context-dependent validation
+- Composable validators that can be nested and reused
+
+Built-in validators: `Required`, `Email`, `MinLength`, `MaxLength`, `Pattern`, `Positive`, `Negative`, `Integer`, `GreaterThan`, `LessThan`, `In`, `NotIn`, `Range`, `Each`, `Confirmation`, `Not`
 
 ## Folding
 

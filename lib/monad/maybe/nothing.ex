@@ -1,5 +1,7 @@
 defmodule Funx.Monad.Maybe.Nothing do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Fmaybe%2Fnothing.livemd)
+
   Represents the `Nothing` variant of the `Maybe` monad, used to model the absence of a value.
 
   A `Nothing` indicates that no value is present. All operations in the monad context simply propagate the absence, making `Nothing` an identity for failure or emptiness.

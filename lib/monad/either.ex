@@ -1,5 +1,7 @@
 defmodule Funx.Monad.Either do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonad%2Feither%2Feither.livemd)
+
   The `Funx.Monad.Either` module provides an implementation of the `Either` monad, a functional abstraction used to model computations that may fail.
 
   An `Either` represents one of two possibilities:

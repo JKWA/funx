@@ -1,5 +1,7 @@
 defmodule Funx.Config do
   @moduledoc """
+  [![Run in Livebook](https://livebook.dev/badge/v1/black.svg)](https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fconfig%2Fconfig.livemd)
+
   Internal access to `:funx` application configuration.
 
   These functions read from `Application.get_env/3` with sane defaults.
