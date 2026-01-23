@@ -210,9 +210,9 @@ eq = to_eq(Funx.Ord.Protocol)
 eq.eq?.(5, 5)
 ```
 
-### append/2
+### compose/2
 
-Appends two `Ord` instances, combining their comparison logic.
+Composes two `Ord` instances, combining their comparison logic.
 
 If the first `Ord` comparator determines an order, that result is used.
 If not, the second comparator is used as a fallback.
@@ -220,13 +220,13 @@ If not, the second comparator is used as a fallback.
 ```elixir
 ord1 = contramap(& &1.age, Funx.Ord.Protocol)
 ord2 = contramap(& &1.name, Funx.Ord.Protocol)
-combined = append(ord1, ord2)
+combined = compose(ord1, ord2)
 combined.lt?.(%{age: 30, name: "Alice"}, %{age: 30, name: "Bob"})
 ```
 
-### concat/1
+### compose/1
 
-Concatenates a list of `Ord` instances into a single composite comparator.
+Composes a list of `Ord` instances into a single composite comparator.
 
 This function reduces a list of `Ord` comparators into a single `Ord`,
 applying them in sequence until an order is determined.
@@ -236,6 +236,6 @@ ord_list = [
   contramap(& &1.age, Funx.Ord.Protocol),
   contramap(& &1.name, Funx.Ord.Protocol)
 ]
-combined = concat(ord_list)
+combined = compose(ord_list)
 combined.gt?.(%{age: 25, name: "Charlie"}, %{age: 25, name: "Bob"})
 ```

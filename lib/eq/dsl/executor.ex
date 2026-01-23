@@ -24,10 +24,10 @@ defmodule Funx.Eq.Dsl.Executor do
   #
   # The executor recursively walks the node tree:
   #   - Step nodes → Generate contramap/to_eq_map calls
-  #   - Block nodes → Generate concat_all/concat_any calls
+  #   - Block nodes → Generate compose_all/compose_any calls
   #   - Negate flag → Swap eq?/not_eq? functions
   #
-  # Top-level nodes are implicitly combined with concat_all (AND logic).
+  # Top-level nodes are implicitly combined with compose_all (AND logic).
 
   alias Funx.Eq
   alias Funx.Eq.Dsl.{Block, Step}
@@ -43,10 +43,10 @@ defmodule Funx.Eq.Dsl.Executor do
   Each node is converted to:
   - Step (on) → `contramap(projection, eq)`
   - Step (not_on) → `contramap(projection, negate(eq))`
-  - Block (all) → `concat_all([children...])`
-  - Block (any) → `concat_any([children...])`
+  - Block (all) → `compose_all([children...])`
+  - Block (any) → `compose_any([children...])`
 
-  Top-level nodes are combined with `concat_all` (implicit all strategy).
+  Top-level nodes are combined with `compose_all` (implicit all strategy).
   """
   @spec execute_nodes(list(Step.t() | Block.t())) :: Macro.t()
   def execute_nodes([]) do
@@ -60,7 +60,7 @@ defmodule Funx.Eq.Dsl.Executor do
     eq_asts = Enum.map(nodes, &node_to_ast/1)
 
     quote do
-      Eq.concat_all([unquote_splicing(eq_asts)])
+      Eq.compose_all([unquote_splicing(eq_asts)])
     end
   end
 
@@ -68,7 +68,7 @@ defmodule Funx.Eq.Dsl.Executor do
     eq_asts = Enum.map(nodes, &node_to_ast/1)
 
     quote do
-      Eq.concat_any([unquote_splicing(eq_asts)])
+      Eq.compose_any([unquote_splicing(eq_asts)])
     end
   end
 

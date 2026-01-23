@@ -461,27 +461,19 @@ defmodule Funx.Eq do
 
   @deprecated "Use compose_all/2 instead"
   @spec append_all(eq_t(), eq_t()) :: eq_t()
-  def append_all(a, b) do
-    m_append(%Monoid.Eq.All{}, a, b)
-  end
+  def append_all(a, b), do: compose_all(a, b)
 
   @deprecated "Use compose_any/2 instead"
   @spec append_any(eq_t(), eq_t()) :: eq_t()
-  def append_any(a, b) do
-    m_append(%Monoid.Eq.Any{}, a, b)
-  end
+  def append_any(a, b), do: compose_any(a, b)
 
   @deprecated "Use compose_all/1 instead"
   @spec concat_all([eq_t()]) :: eq_t()
-  def concat_all(eq_list) when is_list(eq_list) do
-    m_concat(%Monoid.Eq.All{}, eq_list)
-  end
+  def concat_all(eq_list) when is_list(eq_list), do: compose_all(eq_list)
 
   @deprecated "Use compose_any/1 instead"
   @spec concat_any([eq_t()]) :: eq_t()
-  def concat_any(eq_list) when is_list(eq_list) do
-    m_concat(%Monoid.Eq.Any{}, eq_list)
-  end
+  def concat_any(eq_list) when is_list(eq_list), do: compose_any(eq_list)
 
   @doc """
   Converts an `Eq` comparator into a single-argument predicate function for use in `Enum` functions.

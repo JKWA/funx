@@ -433,15 +433,11 @@ defmodule Funx.Ord do
 
   @deprecated "Use compose/2 instead"
   @spec append(ord_t(), ord_t()) :: ord_t()
-  def append(a, b) do
-    m_append(%Funx.Monoid.Ord{}, a, b)
-  end
+  def append(a, b), do: compose(a, b)
 
   @deprecated "Use compose/1 instead"
   @spec concat([ord_t()]) :: ord_t()
-  def concat(ord_list) when is_list(ord_list) do
-    m_concat(%Funx.Monoid.Ord{}, ord_list)
-  end
+  def concat(ord_list) when is_list(ord_list), do: compose(ord_list)
 
   def to_ord_map(%{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun} = ord_map)
       when is_function(lt_fun, 2) and

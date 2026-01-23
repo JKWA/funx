@@ -22,13 +22,7 @@ defmodule Funx.OrdTest do
   defp ord_name, do: contramap(& &1.name)
   defp ord_age, do: contramap(& &1.age)
   defp ord_ticket, do: contramap(& &1.ticket)
-  defp ord_append, do: append(ord_name(), ord_age())
-  defp ord_concat, do: concat([ord_name(), ord_age()])
-  defp ord_concat_age, do: concat([ord_age(), ord_ticket(), Funx.Ord.Protocol])
-  defp ord_concat_default, do: concat([Funx.Ord.Protocol])
-  defp ord_empty, do: concat([])
 
-  # Compose fixtures (new API)
   defp ord_compose_2, do: compose(ord_name(), ord_age())
   defp ord_compose_list, do: compose([ord_name(), ord_age()])
   defp ord_compose_age, do: compose([ord_age(), ord_ticket(), Funx.Ord.Protocol])
@@ -393,56 +387,21 @@ defmodule Funx.OrdTest do
   # Monoid Operations Tests
   # ============================================================================
 
-  describe "Ord Monoid - append and concat" do
-    test "with ordered persons" do
-      alice = %Person{name: "Alice", age: 30, ticket: :b}
-      bob = %Person{name: "Bob", age: 25, ticket: :a}
-      bob_b = %Person{name: "Bob", age: 30, ticket: :a}
-      bob_c = %Person{name: "Bob", age: 30, ticket: :b}
-
-      assert compare(alice, bob, ord_name()) == :lt
-      assert compare(bob, alice, ord_name()) == :gt
-      assert compare(alice, alice, ord_name()) == :eq
-
-      assert compare(alice, bob, ord_age()) == :gt
-      assert compare(bob, alice, ord_age()) == :lt
-      assert compare(alice, alice, ord_age()) == :eq
-
-      assert compare(alice, bob, ord_ticket()) == :gt
-      assert compare(bob, alice, ord_ticket()) == :lt
-      assert compare(alice, alice, ord_ticket()) == :eq
-
-      assert compare(alice, bob, ord_append()) == :lt
-      assert compare(bob, alice, ord_append()) == :gt
-      assert compare(alice, alice, ord_append()) == :eq
-
-      assert compare(alice, bob, ord_concat()) == :lt
-      assert compare(bob, alice, ord_concat()) == :gt
-      assert compare(alice, alice, ord_concat()) == :eq
-
-      assert compare(alice, bob, ord_concat_age()) == :gt
-      assert compare(bob, alice, ord_concat_age()) == :lt
-      assert compare(alice, alice, ord_concat_age()) == :eq
-      assert compare(alice, bob_b, ord_concat_age()) == :gt
-      assert compare(alice, bob_c, ord_concat_age()) == :lt
-
-      assert compare(alice, bob, ord_empty()) == :eq
-      assert compare(bob, alice, ord_empty()) == :eq
-      assert compare(alice, alice, ord_empty()) == :eq
-
-      assert ord_concat().lt?.(alice, bob)
-      assert ord_concat().le?.(alice, alice)
-      assert ord_concat().gt?.(bob, alice)
-      assert ord_concat().ge?.(bob, alice)
-    end
-
-    test "with default ord persons (name)" do
+  describe "Ord Monoid - deprecated append/concat" do
+    test "append/2 delegates to compose/2" do
       alice = %Person{name: "Alice", age: 30}
       bob = %Person{name: "Bob", age: 25}
 
-      assert compare(alice, bob, ord_concat_default()) == :lt
-      assert compare(bob, alice, ord_concat_default()) == :gt
-      assert compare(alice, alice, ord_concat_default()) == :eq
+      combined = append(ord_name(), ord_age())
+      assert compare(alice, bob, combined) == :lt
+    end
+
+    test "concat/1 delegates to compose/1" do
+      alice = %Person{name: "Alice", age: 30}
+      bob = %Person{name: "Bob", age: 25}
+
+      combined = concat([ord_name(), ord_age()])
+      assert compare(alice, bob, combined) == :lt
     end
   end
 
@@ -797,71 +756,6 @@ defmodule Funx.OrdTest do
   end
 
   describe "property: monoid laws" do
-    property "concat with empty list is identity (all equal)" do
-      check all(
-              a <- integer(),
-              b <- integer()
-            ) do
-        empty_ord = concat([])
-
-        # Empty concat makes everything equal
-        assert compare(a, b, empty_ord) == :eq
-      end
-    end
-
-    property "concat combines orderings lexicographically" do
-      check all(
-              name1 <- string(:alphanumeric, min_length: 1),
-              name2 <- string(:alphanumeric, min_length: 1),
-              age1 <- integer(1..100),
-              age2 <- integer(1..100)
-            ) do
-        ord_name = contramap(& &1.name)
-        ord_age = contramap(& &1.age)
-        combined = concat([ord_name, ord_age])
-
-        person1 = %{name: name1, age: age1}
-        person2 = %{name: name2, age: age2}
-
-        cond do
-          # Names differ - ordering determined by name
-          name1 < name2 ->
-            assert combined.lt?.(person1, person2)
-
-          name1 > name2 ->
-            assert combined.gt?.(person1, person2)
-
-          # Names equal - ordering determined by age
-          name1 == name2 and age1 < age2 ->
-            assert combined.lt?.(person1, person2)
-
-          name1 == name2 and age1 > age2 ->
-            assert combined.gt?.(person1, person2)
-
-          # Both equal
-          name1 == name2 and age1 == age2 ->
-            assert compare(person1, person2, combined) == :eq
-        end
-      end
-    end
-
-    property "append is associative" do
-      check all(
-              x <- integer(),
-              y <- integer()
-            ) do
-        ord1 = contramap(& &1)
-        ord2 = contramap(& &1)
-        ord3 = contramap(& &1)
-
-        # (ord1 + ord2) + ord3 == ord1 + (ord2 + ord3)
-        left = append(append(ord1, ord2), ord3)
-        right = append(ord1, append(ord2, ord3))
-
-        assert compare(x, y, left) == compare(x, y, right)
-      end
-    end
-
     property "compose/1 with empty list is identity (all equal)" do
       check all(
               a <- integer(),

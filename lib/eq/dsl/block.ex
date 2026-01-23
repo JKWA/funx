@@ -5,8 +5,8 @@ defmodule Funx.Eq.Dsl.Block do
   # ## Purpose
   #
   # Blocks group multiple equality checks with a composition strategy:
-  #   - `:all` → All children must pass (AND logic) via concat_all
-  #   - `:any` → At least one child must pass (OR logic) via concat_any
+  #   - `:all` → All children must pass (AND logic) via compose_all
+  #   - `:any` → At least one child must pass (OR logic) via compose_any
   #
   # ## Structure
   #

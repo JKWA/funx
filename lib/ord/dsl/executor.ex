@@ -32,7 +32,7 @@ defmodule Funx.Ord.Dsl.Executor do
   - `:asc` → `contramap(projection, ord)`
   - `:desc` → `reverse(contramap(projection, ord))`
 
-  Multiple steps are combined with `concat([...])` (monoid append).
+  Multiple steps are combined with `compose([...])` (monoid append).
 
   If two values are equal on all specified fields, they compare as equal.
   Users can add an explicit tiebreaker if needed (e.g., `asc &Function.identity/1`).
@@ -50,7 +50,7 @@ defmodule Funx.Ord.Dsl.Executor do
     ord_asts = Enum.map(steps, &step_to_ord_ast/1)
 
     quote do
-      Ord.concat([unquote_splicing(ord_asts)])
+      Ord.compose([unquote_splicing(ord_asts)])
     end
   end
 
@@ -166,7 +166,7 @@ defmodule Funx.Ord.Dsl.Executor do
               - ord do ... end
               - Ord.contramap(...)
               - Ord.reverse(...)
-              - Ord.concat([...])
+              - Ord.compose([...])
             """
         end
       end
