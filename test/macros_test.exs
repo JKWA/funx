@@ -214,6 +214,42 @@ defmodule Funx.MacrosTest do
   end
 
   # ============================================================================
+  # DSL-based Test Structs
+  # ============================================================================
+
+  defmodule DslEqPerson do
+    @moduledoc false
+    use Funx.Eq
+
+    defstruct [:name, :age, :email]
+
+    # Complex equality: match on both name and age (inline DSL)
+    Funx.Macros.eq_for(
+      DslEqPerson,
+      eq do
+        on :name
+        on :age
+      end
+    )
+  end
+
+  defmodule DslOrdProduct do
+    @moduledoc false
+    use Funx.Ord
+
+    defstruct [:name, :price, :rating]
+
+    # Complex ordering: first by rating desc, then by name asc (inline DSL)
+    Funx.Macros.ord_for(
+      DslOrdProduct,
+      ord do
+        desc :rating
+        asc :name
+      end
+    )
+  end
+
+  # ============================================================================
   # Test Fixtures
   # ============================================================================
 
@@ -445,6 +481,72 @@ defmodule Funx.MacrosTest do
           )
         end
       end
+    end
+  end
+
+  # ============================================================================
+  # DSL Tests (eq_for with Eq DSL, ord_for with Ord DSL)
+  # ============================================================================
+
+  describe "eq_for with Eq DSL" do
+    test "eq?/2 uses DSL-defined equality (both fields must match)" do
+      p1 = %DslEqPerson{name: "Alice", age: 30, email: "alice@example.com"}
+      p2 = %DslEqPerson{name: "Alice", age: 30, email: "different@example.com"}
+      p3 = %DslEqPerson{name: "Alice", age: 25, email: "alice@example.com"}
+      p4 = %DslEqPerson{name: "Bob", age: 30, email: "alice@example.com"}
+
+      # Same name and age, different email - should be equal (DSL only checks name and age)
+      assert Eq.eq?(p1, p2)
+
+      # Same name, different age - should not be equal
+      refute Eq.eq?(p1, p3)
+
+      # Different name, same age - should not be equal
+      refute Eq.eq?(p1, p4)
+    end
+
+    test "not_eq?/2 negates DSL-defined equality" do
+      p1 = %DslEqPerson{name: "Alice", age: 30, email: "a@test.com"}
+      p2 = %DslEqPerson{name: "Alice", age: 30, email: "b@test.com"}
+      p3 = %DslEqPerson{name: "Bob", age: 30, email: "a@test.com"}
+
+      refute Eq.not_eq?(p1, p2)
+      assert Eq.not_eq?(p1, p3)
+    end
+  end
+
+  describe "ord_for with Ord DSL" do
+    test "compares using DSL-defined ordering (desc rating, then asc name)" do
+      # Higher rating should come first (desc), so prod1 is "less than" prod2 in sort order
+      prod1 = %DslOrdProduct{name: "Widget", price: 10, rating: 5}
+      prod2 = %DslOrdProduct{name: "Gadget", price: 20, rating: 3}
+
+      # In desc rating order: rating 5 comes before rating 3
+      assert Protocol.lt?(prod1, prod2)
+      assert Protocol.gt?(prod2, prod1)
+    end
+
+    test "uses secondary sort key when primary is equal" do
+      # Same rating, should sort by name (asc)
+      prod1 = %DslOrdProduct{name: "Apple", price: 10, rating: 5}
+      prod2 = %DslOrdProduct{name: "Banana", price: 20, rating: 5}
+
+      assert Protocol.lt?(prod1, prod2)
+      assert Protocol.gt?(prod2, prod1)
+    end
+
+    test "sorts list correctly with DSL ordering" do
+      products = [
+        %DslOrdProduct{name: "Zebra", price: 10, rating: 3},
+        %DslOrdProduct{name: "Apple", price: 20, rating: 5},
+        %DslOrdProduct{name: "Banana", price: 15, rating: 5},
+        %DslOrdProduct{name: "Cherry", price: 25, rating: 3}
+      ]
+
+      sorted = Enum.sort(products, &Protocol.le?/2)
+
+      # Should be: rating 5 first (Apple, Banana by name), then rating 3 (Cherry, Zebra by name)
+      assert Enum.map(sorted, & &1.name) == ["Apple", "Banana", "Cherry", "Zebra"]
     end
   end
 

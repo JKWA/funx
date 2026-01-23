@@ -18,8 +18,7 @@ Each Step describes a single ordering projection. The compiler pattern-matches o
 Compilation
     ├── Step (asc :name)
     ├── Step (desc :age)
-    ├── Step (asc :score, or_else: 0)
-    └── Step (identity tiebreaker - implicit)
+    └── Step (asc :score, or_else: 0)
 ```
 
 ## Parser
@@ -65,8 +64,7 @@ The executor runs at compile time and generates quoted AST. It follows a single,
 1. Take normalized structures from the parser
 2. Wrap each in `Ord.contramap(projection, ord)`
 3. Optionally wrap in `Ord.reverse(...)` for `:desc` direction
-4. Combine all with `Ord.concat([...])`
-5. Automatically append an identity tiebreaker
+4. Combine all with `Ord.concat([...])` (or return single ord for one step)
 
 ### Execution Model
 
@@ -82,17 +80,24 @@ Each operation compiles based on its type:
 
 Multiple operations are combined with `concat([...])` (monoid composition).
 
-### Implicit Identity Tiebreaker
+### No Implicit Tiebreaker
 
-A final identity projection (`fn x -> x end`) is automatically appended to ensure deterministic total ordering. This uses the value's `Ord` protocol implementation.
+The DSL does NOT add an implicit tiebreaker. If two values are equal on all specified fields, they compare as `:eq`.
 
 This means:
 
-* Custom orderings are refinements of the domain's natural ordering
-* No arbitrary tiebreaking via Elixir term ordering or insertion order
-* Sorts are always deterministic and reproducible across runs
+* You have explicit control over what matters for ordering
+* DSL results can be composed without hidden tiebreakers in the middle
+* DSL results can be used with `ord_for` macro without recursion issues
 
-For example, if `Product` has `ord_for(Product, :amount)` defining its natural ordering, then `ord do asc :name end` will sort by name first, then by amount for ties.
+To add a tiebreaker, explicitly include `Funx.Ord.Protocol` as the last projection:
+
+```elixir
+ord do
+  asc :name
+  asc Funx.Ord.Protocol  # Falls back to struct's Ord implementation
+end
+```
 
 ### Compilation Example
 
@@ -107,9 +112,8 @@ Compiles to:
 
 ```elixir
 Ord.concat([
-  Ord.contramap(Prism.key(:name), Funx.Ord),
-  Ord.reverse(Ord.contramap(Prism.key(:age), Funx.Ord)),
-  Ord.contramap(fn x -> x end, Funx.Ord)  # implicit identity
+  Ord.contramap(Prism.key(:name), Funx.Ord.Protocol),
+  Ord.reverse(Ord.contramap(Prism.key(:age), Funx.Ord.Protocol))
 ])
 ```
 
@@ -222,7 +226,7 @@ When you use an ord variable with `asc` or `desc`:
 * `asc ord_var` - Uses the ord variable as-is
 * `desc ord_var` - Reverses the ord variable
 
-Ord variables include their complete ordering semantics, including any implicit identity tiebreaker from their creation.
+Ord variables preserve their complete ordering semantics when composed.
 
 ### Common Patterns
 

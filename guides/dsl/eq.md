@@ -75,7 +75,7 @@ The executor runs at compile time and generates quoted AST. It recursively walks
 
 ### Execution Model
 
-Unlike Ord DSL, Eq DSL has no implicit identity tiebreaker. An empty `eq` block compiles to an identity Eq that considers all values equal.
+An empty `eq` block compiles to an identity Eq that considers all values equal. Similarly, an empty `ord` block compiles to an identity Ord where all values compare as `:eq`.
 
 Each directive compiles to:
 

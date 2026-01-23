@@ -37,6 +37,8 @@ defmodule Funx.Macros do
     - **{Prism, default}** - Tuple syntax for partial access with explicit fallback value.
     - **Traversal** - Multiple foci via `Traversal.combine/1`. All foci must match for equality.
     - **Function** - Custom projection `fn x -> ... end` or `&fun/1`. Must return a comparable value.
+    - **Eq DSL** - A pre-built equality comparator from `eq do ... end`. Used directly by `eq_for`.
+    - **Ord DSL** - A pre-built ordering from `ord do ... end`. Used directly by `ord_for`.
 
   > Note: Atoms use Prism by default for safety. Use explicit `Lens.key(:field)` when you need
   > total access that raises on missing keys or nil intermediate values.
@@ -224,11 +226,12 @@ defmodule Funx.Macros do
   - **{Prism, default}** - Partial access with fallback value.
   - **Traversal** - Multiple foci via `Traversal.combine/1`. All foci must match.
   - **Function** - Custom projection function `(struct -> value)`.
+  - **Eq DSL** - A pre-built equality comparator from `eq do ... end`. Used directly without contramap.
 
   ## Options
 
   - `:or_else` - Fallback value for optional fields. Only valid with atoms and Prisms.
-  - `:eq` - Custom Eq module or map for comparison. Defaults to `Funx.Eq`.
+  - `:eq` - Custom Eq module or map for comparison. Defaults to `Funx.Eq.Protocol`.
 
   ## Examples
 
@@ -255,7 +258,15 @@ defmodule Funx.Macros do
 
       # Custom Eq module
       Funx.Macros.eq_for(Person, :name, eq: CaseInsensitiveEq)
+
+      # Eq DSL - complex equality with multiple fields
+      use Funx.Eq
+      Funx.Macros.eq_for(Person, eq do
+        on :name
+        on :age
+      end)
   """
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defmacro eq_for(for_struct, projection, opts \\ []) do
     or_else = Keyword.get(opts, :or_else)
     custom_eq = Keyword.get(opts, :eq)
@@ -269,7 +280,7 @@ defmodule Funx.Macros do
       defimpl Funx.Eq.Protocol, for: unquote(for_struct) do
         # Private function to build the eq_map once at module compile time
         defp __eq_map__ do
-          Funx.Eq.contramap(unquote(projection_ast), unquote(eq_module_ast))
+          Funx.Eq.to_eq_map_or_contramap(unquote(projection_ast), unquote(eq_module_ast))
         end
 
         def eq?(a, b)
@@ -304,10 +315,12 @@ defmodule Funx.Macros do
   - **Prism with or_else** - `ord_for(Struct, Prism.key(:field), or_else: default)` → `{prism, default}`.
   - **{Prism, default}** - Partial access with fallback value for Nothing.
   - **Function** - Custom projection function `(struct -> comparable)`.
+  - **Ord DSL** - A pre-built ordering from `ord do ... end`. Used directly without contramap.
 
   ## Options
 
   - `:or_else` - Fallback value for optional fields. Only valid with atoms and Prisms.
+  - `:ord` - Custom Ord module or map for comparison. Defaults to `Funx.Ord.Protocol`.
 
   ## Examples
 
@@ -337,11 +350,20 @@ defmodule Funx.Macros do
 
       # Function projection
       Funx.Macros.ord_for(Article, &String.length(&1.title))
+
+      # Ord DSL - complex ordering with multiple fields
+      use Funx.Ord
+      Funx.Macros.ord_for(Person, ord do
+        asc :name
+        desc :age
+      end)
   """
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defmacro ord_for(for_struct, projection, opts \\ []) do
     or_else = Keyword.get(opts, :or_else)
+    custom_ord = Keyword.get(opts, :ord)
     projection_ast = normalize_projection(projection, or_else)
+    ord_module_ast = custom_ord || quote(do: Funx.Ord.Protocol)
 
     quote do
       alias Funx.Optics.Prism
@@ -350,7 +372,7 @@ defmodule Funx.Macros do
       defimpl Funx.Ord.Protocol, for: unquote(for_struct) do
         # Private function to build the ord_map once at module compile time
         defp __ord_map__ do
-          Funx.Ord.contramap(unquote(projection_ast))
+          Funx.Ord.to_ord_map_or_contramap(unquote(projection_ast), unquote(ord_module_ast))
         end
 
         def lt?(a, b)

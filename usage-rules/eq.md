@@ -152,7 +152,7 @@ The DSL provides a declarative syntax for building complex equality comparisons 
 - Explicit Lens for required fields, atoms for optional fields
 - Nested `any`/`all` blocks for OR/AND logic
 - Zero runtime overhead - compiles to direct function calls
-- No implicit tiebreaker (unlike Ord DSL)
+- DSL results can be used with `eq_for` macro for protocol implementation
 
 ### Basic Usage
 
@@ -777,7 +777,6 @@ end
 ### Key Differences from Ord DSL
 
 - **No direction field** - Equality is symmetric (no asc/desc)
-- **No implicit tiebreaker** - Empty eq block is identity (all equal)
 - **Tree structure** - Nested `all`/`any` blocks vs linear operations
 - **diff_on directive** - Check inequality (breaks transitivity)
 - **Different monoids** - `Eq.All` (AND) and `Eq.Any` (OR) vs `Ord` monoid
@@ -801,7 +800,7 @@ The Eq DSL provides declarative multi-field equality:
 - Use Prism with or_else for optional fields with specific defaults
 - Use behaviours for complex, reusable equality logic (fuzzy matching, etc.)
 - Nested `any`/`all` blocks for complex boolean logic
-- No implicit tiebreaker (unlike Ord DSL)
+- DSL results can be used with `eq_for` macro for protocol implementation
 - Avoid `diff_on` if you need equivalence classes (grouping, uniq, sets)
 
 **Remember:** The Eq DSL compiles to Utils function calls at compile time - use whichever syntax is clearer for your use case.

@@ -63,3 +63,129 @@ Ord.lt?(%Person{age: 25}, %Person{age: 30})
 ```elixir
 Ord.gt?(%Person{age: 35}, %Person{age: 30})
 ```
+
+## Using DSLs with Macros
+
+The macros also accept pre-built comparators from the `eq do ... end` and `ord do ... end` DSLs.
+This allows you to define complex multi-field equality and ordering logic while still getting
+automatic protocol implementation.
+
+### eq_for with Eq DSL
+
+When you need equality based on multiple fields or custom logic, use the Eq DSL:
+
+    defmodule User do
+      defstruct [:id, :name, :email, :role]
+    end
+
+    use Funx.Eq
+    require Funx.Macros
+
+    # Equal if both name and email match (ignoring id and role)
+    Funx.Macros.eq_for(User, eq do
+      on :name
+      on :email
+    end)
+
+```elixir
+defmodule Employee do
+  defstruct [:id, :name, :department]
+end
+
+use Funx.Eq
+require Funx.Macros
+
+# Two employees are equal if they have the same name and department
+Funx.Macros.eq_for(Employee, eq do
+  on :name
+  on :department
+end)
+```
+
+```elixir
+# Same name and department - equal (even with different ids)
+Eq.eq?(
+  %Employee{id: 1, name: "Alice", department: "Engineering"},
+  %Employee{id: 2, name: "Alice", department: "Engineering"}
+)
+```
+
+```elixir
+# Different department - not equal
+Eq.eq?(
+  %Employee{id: 1, name: "Alice", department: "Engineering"},
+  %Employee{id: 2, name: "Alice", department: "Sales"}
+)
+```
+
+### ord_for with Ord DSL
+
+When you need ordering based on multiple fields with different directions, use the Ord DSL:
+
+    defmodule Product do
+      defstruct [:name, :price, :rating]
+    end
+
+    use Funx.Ord
+    require Funx.Macros
+
+    # Sort by rating (descending), then by name (ascending)
+    Funx.Macros.ord_for(Product, ord do
+      desc :rating
+      asc :name
+    end)
+
+```elixir
+defmodule Article do
+  defstruct [:title, :published_at, :views]
+end
+
+use Funx.Ord
+require Funx.Macros
+
+# Sort articles by views (descending), then by title (ascending)
+Funx.Macros.ord_for(Article, ord do
+  desc :views
+  asc :title
+end)
+```
+
+```elixir
+# Higher views comes first
+Ord.lt?(
+  %Article{title: "First Post", views: 1000},
+  %Article{title: "Second Post", views: 500}
+)
+```
+
+```elixir
+# Same views - sort by title alphabetically
+Ord.lt?(
+  %Article{title: "Alpha", views: 100},
+  %Article{title: "Beta", views: 100}
+)
+```
+
+```elixir
+# Sort a list of articles
+articles = [
+  %Article{title: "Zebra", views: 100},
+  %Article{title: "Alpha", views: 500},
+  %Article{title: "Beta", views: 500},
+  %Article{title: "Gamma", views: 100}
+]
+
+Enum.sort(articles, &Ord.le?/2)
+```
+
+### When to Use DSLs vs Simple Projections
+
+Use a **simple projection** (atom, lens, function) when:
+- Equality/ordering is based on a single field
+- You need straightforward comparison
+
+Use the **DSL** when:
+- You need multi-field comparison
+- Fields should be compared in a specific order (for ordering)
+- You need mixed ascending/descending directions
+- You want to leverage DSL features like `or_else` for nil handling

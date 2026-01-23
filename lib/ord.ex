@@ -223,6 +223,29 @@ defmodule Funx.Ord do
   end
 
   @doc """
+  Converts an Ord DSL result or projection to an ord_map.
+
+  If passed a plain map with `lt?/2`, `le?/2`, `gt?/2`, and `ge?/2` functions
+  (the result of `ord do ... end`), returns it directly. Otherwise, delegates
+  to `contramap/2`.
+
+  Used internally by `Funx.Macros.ord_for/3` to support both projection-based
+  and DSL-based ordering definitions.
+  """
+  @spec to_ord_map_or_contramap(any(), ord_t()) :: ord_map()
+
+  # Plain map with ord keys (DSL result)
+  def to_ord_map_or_contramap(%{lt?: lt?, le?: le?, gt?: gt?, ge?: ge?} = map, _ord)
+      when is_function(lt?, 2) and is_function(le?, 2) and is_function(gt?, 2) and
+             is_function(ge?, 2) and not is_struct(map) do
+    map
+  end
+
+  def to_ord_map_or_contramap(projection, ord) do
+    contramap(projection, ord)
+  end
+
+  @doc """
   Returns the maximum of two values, with an optional custom `Ord`.
 
   ## Examples
