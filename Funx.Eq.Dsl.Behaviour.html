@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.7.1">
+    <meta name="project" content="funx v0.8.0">
 
 
-    <title>Funx.Eq.Dsl.Behaviour — funx v0.7.1</title>
+    <title>Funx.Eq.Dsl.Behaviour — funx v0.8.0</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.7.1
+          v0.8.0
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Eq.Dsl.Behaviour</span> <small>behaviour</small>
-      <small class="app-vsn" translate="no">(funx v0.7.1)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.0)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/eq/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/eq/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -111,39 +111,39 @@ funx
     <section id="moduledoc">
 <p>Behaviour for custom equality logic in the Eq DSL.</p><p>Implement this behaviour to define reusable Eq comparators that can be
 used with <code class="inline">on</code> directives in the DSL without implementing the Eq protocol.</p><p>This is useful for teams that want to avoid teaching developers about protocols,
-or want struct-specific equality without global protocol implementations.</p><h2 id="module-basic-example" class="section-heading"><a href="#module-basic-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Basic Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">UserById</span><span class="w"> </span><span class="k" data-group-id="4468454227-1">do</span><span class="w">
+or want struct-specific equality without global protocol implementations.</p><h2 id="module-basic-example" class="section-heading"><a href="#module-basic-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Basic Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">UserById</span><span class="w"> </span><span class="k" data-group-id="8132819421-1">do</span><span class="w">
   </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Eq.Dsl.Behaviour</span><span class="w">
 
   </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
-  </span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="4468454227-2">(</span><span class="c">_opts</span><span class="p" data-group-id="4468454227-2">)</span><span class="w"> </span><span class="k" data-group-id="4468454227-3">do</span><span class="w">
-    </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4468454227-4">(</span><span class="o">&amp;</span><span class="p" data-group-id="4468454227-5">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">id</span><span class="p" data-group-id="4468454227-5">)</span><span class="p" data-group-id="4468454227-4">)</span><span class="w">
-  </span><span class="k" data-group-id="4468454227-3">end</span><span class="w">
-</span><span class="k" data-group-id="4468454227-1">end</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="8132819421-2">(</span><span class="c">_opts</span><span class="p" data-group-id="8132819421-2">)</span><span class="w"> </span><span class="k" data-group-id="8132819421-3">do</span><span class="w">
+    </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8132819421-4">(</span><span class="o">&amp;</span><span class="p" data-group-id="8132819421-5">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">id</span><span class="p" data-group-id="8132819421-5">)</span><span class="p" data-group-id="8132819421-4">)</span><span class="w">
+  </span><span class="k" data-group-id="8132819421-3">end</span><span class="w">
+</span><span class="k" data-group-id="8132819421-1">end</span><span class="w">
 
 </span><span class="c1"># In DSL</span><span class="w">
 </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Eq</span><span class="w">
 
-</span><span class="n">eq</span><span class="w"> </span><span class="k" data-group-id="4468454227-6">do</span><span class="w">
+</span><span class="n">eq</span><span class="w"> </span><span class="k" data-group-id="8132819421-6">do</span><span class="w">
   </span><span class="n">on</span><span class="w"> </span><span class="nc">UserById</span><span class="w">  </span><span class="c1"># Compares by id</span><span class="w">
-</span><span class="k" data-group-id="4468454227-6">end</span></code></pre><h2 id="module-with-options" class="section-heading"><a href="#module-with-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">With Options</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">UserByName</span><span class="w"> </span><span class="k" data-group-id="8804217288-1">do</span><span class="w">
+</span><span class="k" data-group-id="8132819421-6">end</span></code></pre><h2 id="module-with-options" class="section-heading"><a href="#module-with-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">With Options</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">UserByName</span><span class="w"> </span><span class="k" data-group-id="8792251092-1">do</span><span class="w">
   </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Eq.Dsl.Behaviour</span><span class="w">
 
   </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
-  </span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="8804217288-2">(</span><span class="n">opts</span><span class="p" data-group-id="8804217288-2">)</span><span class="w"> </span><span class="k" data-group-id="8804217288-3">do</span><span class="w">
-    </span><span class="n">case_sensitive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="8804217288-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:case_sensitive</span><span class="p">,</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="8804217288-4">)</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="8792251092-2">(</span><span class="n">opts</span><span class="p" data-group-id="8792251092-2">)</span><span class="w"> </span><span class="k" data-group-id="8792251092-3">do</span><span class="w">
+    </span><span class="n">case_sensitive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="8792251092-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:case_sensitive</span><span class="p">,</span><span class="w"> </span><span class="no">true</span><span class="p" data-group-id="8792251092-4">)</span><span class="w">
 
-    </span><span class="k">if</span><span class="w"> </span><span class="n">case_sensitive</span><span class="w"> </span><span class="k" data-group-id="8804217288-5">do</span><span class="w">
-      </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8804217288-6">(</span><span class="o">&amp;</span><span class="p" data-group-id="8804217288-7">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="8804217288-7">)</span><span class="p" data-group-id="8804217288-6">)</span><span class="w">
-    </span><span class="k" data-group-id="8804217288-5">else</span><span class="w">
-      </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8804217288-8">(</span><span class="k" data-group-id="8804217288-9">fn</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">downcase</span><span class="p" data-group-id="8804217288-10">(</span><span class="n">u</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="8804217288-10">)</span><span class="w"> </span><span class="k" data-group-id="8804217288-9">end</span><span class="p" data-group-id="8804217288-8">)</span><span class="w">
-    </span><span class="k" data-group-id="8804217288-5">end</span><span class="w">
-  </span><span class="k" data-group-id="8804217288-3">end</span><span class="w">
-</span><span class="k" data-group-id="8804217288-1">end</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="n">case_sensitive</span><span class="w"> </span><span class="k" data-group-id="8792251092-5">do</span><span class="w">
+      </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8792251092-6">(</span><span class="o">&amp;</span><span class="p" data-group-id="8792251092-7">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="8792251092-7">)</span><span class="p" data-group-id="8792251092-6">)</span><span class="w">
+    </span><span class="k" data-group-id="8792251092-5">else</span><span class="w">
+      </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8792251092-8">(</span><span class="k" data-group-id="8792251092-9">fn</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">downcase</span><span class="p" data-group-id="8792251092-10">(</span><span class="n">u</span><span class="o">.</span><span class="n">name</span><span class="p" data-group-id="8792251092-10">)</span><span class="w"> </span><span class="k" data-group-id="8792251092-9">end</span><span class="p" data-group-id="8792251092-8">)</span><span class="w">
+    </span><span class="k" data-group-id="8792251092-5">end</span><span class="w">
+  </span><span class="k" data-group-id="8792251092-3">end</span><span class="w">
+</span><span class="k" data-group-id="8792251092-1">end</span><span class="w">
 
 </span><span class="c1"># In DSL</span><span class="w">
-</span><span class="n">eq</span><span class="w"> </span><span class="k" data-group-id="8804217288-11">do</span><span class="w">
+</span><span class="n">eq</span><span class="w"> </span><span class="k" data-group-id="8792251092-11">do</span><span class="w">
   </span><span class="n">on</span><span class="w"> </span><span class="nc">UserByName</span><span class="p">,</span><span class="w"> </span><span class="ss">case_sensitive</span><span class="p">:</span><span class="w"> </span><span class="no">false</span><span class="w">
-</span><span class="k" data-group-id="8804217288-11">end</span></code></pre><h2 id="module-why-use-this-instead-of-protocols" class="section-heading"><a href="#module-why-use-this-instead-of-protocols" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Why Use This Instead of Protocols?</span></h2><ul><li><strong>Simpler</strong>: Just one function returning an Eq map</li><li><strong>No protocol knowledge required</strong>: Easier for team onboarding</li><li><strong>Module-specific</strong>: Override struct equality without global protocol</li><li><strong>Options support</strong>: Built-in support for configuration</li></ul><p>The returned Eq map typically uses <a href="Funx.Eq.html#contramap/2"><code class="inline">Funx.Eq.contramap/2</code></a> to build
+</span><span class="k" data-group-id="8792251092-11">end</span></code></pre><h2 id="module-why-use-this-instead-of-protocols" class="section-heading"><a href="#module-why-use-this-instead-of-protocols" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Why Use This Instead of Protocols?</span></h2><ul><li><strong>Simpler</strong>: Just one function returning an Eq map</li><li><strong>No protocol knowledge required</strong>: Easier for team onboarding</li><li><strong>Module-specific</strong>: Override struct equality without global protocol</li><li><strong>Options support</strong>: Built-in support for configuration</li></ul><p>The returned Eq map typically uses <a href="Funx.Eq.html#contramap/2"><code class="inline">Funx.Eq.contramap/2</code></a> to build
 projection-based equality, but can implement any custom comparison logic.</p>
     </section>
 
@@ -195,7 +195,7 @@ projection-based equality, but can implement any custom comparison logic.</p>
       <h1 class="signature" translate="no">eq(opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/eq/dsl/behaviour.ex#L104" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/eq/dsl/behaviour.ex#L104" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -210,27 +210,27 @@ projection-based equality, but can implement any custom comparison logic.</p>
 
       </div>
 
-<p>Returns an Eq map for comparison.</p><p>Takes options and returns an Eq map (with <code class="inline">:eq?</code> and <code class="inline">:not_eq?</code> functions).</p><h2 id="c:eq/1-arguments" class="section-heading"><a href="#c:eq/1-arguments" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Arguments</span></h2><ul><li><code class="inline">opts</code> - Keyword list of options passed from the DSL</li></ul><h2 id="c:eq/1-return-value" class="section-heading"><a href="#c:eq/1-return-value" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Return Value</span></h2><p>An Eq map with the structure:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="1219663565-1">%{</span><span class="w">
-  </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1219663565-2">(</span><span class="n">any</span><span class="p" data-group-id="1219663565-3">(</span><span class="p" data-group-id="1219663565-3">)</span><span class="p">,</span><span class="w"> </span><span class="n">any</span><span class="p" data-group-id="1219663565-4">(</span><span class="p" data-group-id="1219663565-4">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">boolean</span><span class="p" data-group-id="1219663565-5">(</span><span class="p" data-group-id="1219663565-5">)</span><span class="p" data-group-id="1219663565-2">)</span><span class="p">,</span><span class="w">
-  </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1219663565-6">(</span><span class="n">any</span><span class="p" data-group-id="1219663565-7">(</span><span class="p" data-group-id="1219663565-7">)</span><span class="p">,</span><span class="w"> </span><span class="n">any</span><span class="p" data-group-id="1219663565-8">(</span><span class="p" data-group-id="1219663565-8">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">boolean</span><span class="p" data-group-id="1219663565-9">(</span><span class="p" data-group-id="1219663565-9">)</span><span class="p" data-group-id="1219663565-6">)</span><span class="w">
-</span><span class="p" data-group-id="1219663565-1">}</span></code></pre><h2 id="c:eq/1-examples" class="section-heading"><a href="#c:eq/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Simple projection-based equality</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="1563301036-1">(</span><span class="c">_opts</span><span class="p" data-group-id="1563301036-1">)</span><span class="w"> </span><span class="k" data-group-id="1563301036-2">do</span><span class="w">
-  </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="1563301036-3">(</span><span class="o">&amp;</span><span class="p" data-group-id="1563301036-4">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">id</span><span class="p" data-group-id="1563301036-4">)</span><span class="p" data-group-id="1563301036-3">)</span><span class="w">
-</span><span class="k" data-group-id="1563301036-2">end</span><span class="w">
+<p>Returns an Eq map for comparison.</p><p>Takes options and returns an Eq map (with <code class="inline">:eq?</code> and <code class="inline">:not_eq?</code> functions).</p><h2 id="c:eq/1-arguments" class="section-heading"><a href="#c:eq/1-arguments" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Arguments</span></h2><ul><li><code class="inline">opts</code> - Keyword list of options passed from the DSL</li></ul><h2 id="c:eq/1-return-value" class="section-heading"><a href="#c:eq/1-return-value" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Return Value</span></h2><p>An Eq map with the structure:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="8047125111-1">%{</span><span class="w">
+  </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8047125111-2">(</span><span class="n">any</span><span class="p" data-group-id="8047125111-3">(</span><span class="p" data-group-id="8047125111-3">)</span><span class="p">,</span><span class="w"> </span><span class="n">any</span><span class="p" data-group-id="8047125111-4">(</span><span class="p" data-group-id="8047125111-4">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">boolean</span><span class="p" data-group-id="8047125111-5">(</span><span class="p" data-group-id="8047125111-5">)</span><span class="p" data-group-id="8047125111-2">)</span><span class="p">,</span><span class="w">
+  </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8047125111-6">(</span><span class="n">any</span><span class="p" data-group-id="8047125111-7">(</span><span class="p" data-group-id="8047125111-7">)</span><span class="p">,</span><span class="w"> </span><span class="n">any</span><span class="p" data-group-id="8047125111-8">(</span><span class="p" data-group-id="8047125111-8">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">boolean</span><span class="p" data-group-id="8047125111-9">(</span><span class="p" data-group-id="8047125111-9">)</span><span class="p" data-group-id="8047125111-6">)</span><span class="w">
+</span><span class="p" data-group-id="8047125111-1">}</span></code></pre><h2 id="c:eq/1-examples" class="section-heading"><a href="#c:eq/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Simple projection-based equality</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="6348805346-1">(</span><span class="c">_opts</span><span class="p" data-group-id="6348805346-1">)</span><span class="w"> </span><span class="k" data-group-id="6348805346-2">do</span><span class="w">
+  </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="6348805346-3">(</span><span class="o">&amp;</span><span class="p" data-group-id="6348805346-4">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">id</span><span class="p" data-group-id="6348805346-4">)</span><span class="p" data-group-id="6348805346-3">)</span><span class="w">
+</span><span class="k" data-group-id="6348805346-2">end</span><span class="w">
 
 </span><span class="c1"># With options</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="1563301036-5">(</span><span class="n">opts</span><span class="p" data-group-id="1563301036-5">)</span><span class="w"> </span><span class="k" data-group-id="1563301036-6">do</span><span class="w">
-  </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="1563301036-7">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:field</span><span class="p">,</span><span class="w"> </span><span class="ss">:id</span><span class="p" data-group-id="1563301036-7">)</span><span class="w">
-  </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="1563301036-8">(</span><span class="o">&amp;</span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="1563301036-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p" data-group-id="1563301036-9">)</span><span class="p" data-group-id="1563301036-8">)</span><span class="w">
-</span><span class="k" data-group-id="1563301036-6">end</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="6348805346-5">(</span><span class="n">opts</span><span class="p" data-group-id="6348805346-5">)</span><span class="w"> </span><span class="k" data-group-id="6348805346-6">do</span><span class="w">
+  </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="6348805346-7">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:field</span><span class="p">,</span><span class="w"> </span><span class="ss">:id</span><span class="p" data-group-id="6348805346-7">)</span><span class="w">
+  </span><span class="nc">Funx.Eq</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="6348805346-8">(</span><span class="o">&amp;</span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="6348805346-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p" data-group-id="6348805346-9">)</span><span class="p" data-group-id="6348805346-8">)</span><span class="w">
+</span><span class="k" data-group-id="6348805346-6">end</span><span class="w">
 
 </span><span class="c1"># Custom comparison logic</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="1563301036-10">(</span><span class="c">_opts</span><span class="p" data-group-id="1563301036-10">)</span><span class="w"> </span><span class="k" data-group-id="1563301036-11">do</span><span class="w">
-  </span><span class="p" data-group-id="1563301036-12">%{</span><span class="w">
-    </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1563301036-13">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="1563301036-14">(</span><span class="n">a</span><span class="p" data-group-id="1563301036-14">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="1563301036-15">(</span><span class="n">b</span><span class="p" data-group-id="1563301036-15">)</span><span class="w"> </span><span class="k" data-group-id="1563301036-13">end</span><span class="p">,</span><span class="w">
-    </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="1563301036-16">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="1563301036-17">(</span><span class="n">a</span><span class="p" data-group-id="1563301036-17">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="1563301036-18">(</span><span class="n">b</span><span class="p" data-group-id="1563301036-18">)</span><span class="w"> </span><span class="k" data-group-id="1563301036-16">end</span><span class="w">
-  </span><span class="p" data-group-id="1563301036-12">}</span><span class="w">
-</span><span class="k" data-group-id="1563301036-11">end</span></code></pre><p>Most implementations use <a href="Funx.Eq.html#contramap/2"><code class="inline">Funx.Eq.contramap/2</code></a> for projection-based
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">eq</span><span class="p" data-group-id="6348805346-10">(</span><span class="c">_opts</span><span class="p" data-group-id="6348805346-10">)</span><span class="w"> </span><span class="k" data-group-id="6348805346-11">do</span><span class="w">
+  </span><span class="p" data-group-id="6348805346-12">%{</span><span class="w">
+    </span><span class="ss">eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="6348805346-13">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="6348805346-14">(</span><span class="n">a</span><span class="p" data-group-id="6348805346-14">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="6348805346-15">(</span><span class="n">b</span><span class="p" data-group-id="6348805346-15">)</span><span class="w"> </span><span class="k" data-group-id="6348805346-13">end</span><span class="p">,</span><span class="w">
+    </span><span class="ss">not_eq?</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="6348805346-16">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="6348805346-17">(</span><span class="n">a</span><span class="p" data-group-id="6348805346-17">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="6348805346-18">(</span><span class="n">b</span><span class="p" data-group-id="6348805346-18">)</span><span class="w"> </span><span class="k" data-group-id="6348805346-16">end</span><span class="w">
+  </span><span class="p" data-group-id="6348805346-12">}</span><span class="w">
+</span><span class="k" data-group-id="6348805346-11">end</span></code></pre><p>Most implementations use <a href="Funx.Eq.html#contramap/2"><code class="inline">Funx.Eq.contramap/2</code></a> for projection-based
 equality, which handles the Eq map creation automatically.</p>
   </section>
 </section>
@@ -243,9 +243,9 @@ equality, which handles the Eq map creation automatically.</p>
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.7.1" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.0" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.7.1">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.0">Hex Preview</a>
 
             </span>
 

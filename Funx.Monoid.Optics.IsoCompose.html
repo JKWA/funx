@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.7.1">
+    <meta name="project" content="funx v0.8.0">
 
 
-    <title>Funx.Monoid.Optics.IsoCompose — funx v0.7.1</title>
+    <title>Funx.Monoid.Optics.IsoCompose — funx v0.8.0</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.7.1
+          v0.8.0
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Monoid.Optics.IsoCompose</span> 
-      <small class="app-vsn" translate="no">(funx v0.7.1)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.0)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/monoid/optics/iso_compose.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/monoid/optics/iso_compose.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -112,18 +112,18 @@ funx
 <p>The <a href="Funx.Monoid.Optics.IsoCompose.html"><code class="inline">Funx.Monoid.Optics.IsoCompose</code></a> module provides a monoid wrapper for sequential iso composition.</p><p>This wrapper allows isos to be used with generic monoid operations like <code class="inline">m_concat/2</code> and <code class="inline">m_append/3</code>,
 enabling functional composition of multiple isos into a single bidirectional transformation.</p><h3 id="module-wrapping-and-unwrapping" class="section-heading"><a href="#module-wrapping-and-unwrapping" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Wrapping and Unwrapping</span></h3><ul><li><a href="#new/1"><code class="inline">new/1</code></a>: Wraps an iso in an <code class="inline">IsoCompose</code> monoid.</li><li><a href="#unwrap/1"><code class="inline">unwrap/1</code></a>: Extracts the iso from an <code class="inline">IsoCompose</code> wrapper.</li></ul><h3 id="module-monoid-operations-via-protocol" class="section-heading"><a href="#module-monoid-operations-via-protocol" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Monoid Operations (via protocol)</span></h3><ul><li><code class="inline">empty/1</code>: Returns the identity iso (both directions are identity).</li><li><code class="inline">append/2</code>: Composes two isos sequentially.</li><li><code class="inline">wrap/2</code>: Wraps an iso value into the monoid.</li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monoid.Optics.IsoCompose</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics.Iso</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">isos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="9949638418-1">[</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="9949638418-2">(</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="9949638418-3">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="9949638418-4">(</span><span class="n">s</span><span class="p" data-group-id="9949638418-4">)</span><span class="w"> </span><span class="k" data-group-id="9949638418-3">end</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="9949638418-5">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="9949638418-6">(</span><span class="n">i</span><span class="p" data-group-id="9949638418-6">)</span><span class="w"> </span><span class="k" data-group-id="9949638418-5">end</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="p" data-group-id="9949638418-2">)</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="9949638418-7">(</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="9949638418-8">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="9949638418-8">end</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="9949638418-9">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">div</span><span class="p" data-group-id="9949638418-10">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="9949638418-10">)</span><span class="w"> </span><span class="k" data-group-id="9949638418-9">end</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="p" data-group-id="9949638418-7">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="9949638418-1">]</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monoid.Utils</span><span class="o">.</span><span class="n">m_concat</span><span class="p" data-group-id="9949638418-11">(</span><span class="p" data-group-id="9949638418-12">%</span><span class="nc" data-group-id="9949638418-12">IsoCompose</span><span class="p" data-group-id="9949638418-12">{</span><span class="p" data-group-id="9949638418-12">}</span><span class="p">,</span><span class="w"> </span><span class="n">isos</span><span class="p" data-group-id="9949638418-11">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="9949638418-13">(</span><span class="s">&quot;21&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="9949638418-13">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">isos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="4867797147-1">[</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="4867797147-2">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="4867797147-3">fn</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">String</span><span class="o">.</span><span class="n">to_integer</span><span class="p" data-group-id="4867797147-4">(</span><span class="n">s</span><span class="p" data-group-id="4867797147-4">)</span><span class="w"> </span><span class="k" data-group-id="4867797147-3">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="4867797147-5">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nc">Integer</span><span class="o">.</span><span class="n">to_string</span><span class="p" data-group-id="4867797147-6">(</span><span class="n">i</span><span class="p" data-group-id="4867797147-6">)</span><span class="w"> </span><span class="k" data-group-id="4867797147-5">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="p" data-group-id="4867797147-2">)</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Iso</span><span class="o">.</span><span class="n">make</span><span class="p" data-group-id="4867797147-7">(</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="4867797147-8">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k" data-group-id="4867797147-8">end</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">    </span><span class="k" data-group-id="4867797147-9">fn</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">div</span><span class="p" data-group-id="4867797147-10">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4867797147-10">)</span><span class="w"> </span><span class="k" data-group-id="4867797147-9">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="p" data-group-id="4867797147-7">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="4867797147-1">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monoid.Utils</span><span class="o">.</span><span class="n">m_concat</span><span class="p" data-group-id="4867797147-11">(</span><span class="p" data-group-id="4867797147-12">%</span><span class="nc" data-group-id="4867797147-12">IsoCompose</span><span class="p" data-group-id="4867797147-12">{</span><span class="p" data-group-id="4867797147-12">}</span><span class="p">,</span><span class="w"> </span><span class="n">isos</span><span class="p" data-group-id="4867797147-11">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Iso</span><span class="o">.</span><span class="n">view</span><span class="p" data-group-id="4867797147-13">(</span><span class="s">&quot;21&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="4867797147-13">)</span><span class="w">
 </span><span class="mi">42</span></code></pre>
     </section>
 
@@ -199,7 +199,7 @@ enabling functional composition of multiple isos into a single bidirectional tra
       <h1 class="signature" translate="no">t()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/monoid/optics/iso_compose.ex#L40" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/monoid/optics/iso_compose.ex#L40" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -240,7 +240,7 @@ enabling functional composition of multiple isos into a single bidirectional tra
       <h1 class="signature" translate="no">new(iso)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/monoid/optics/iso_compose.ex#L50" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/monoid/optics/iso_compose.ex#L50" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -268,7 +268,7 @@ enabling functional composition of multiple isos into a single bidirectional tra
       <h1 class="signature" translate="no">unwrap(iso_compose)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.7.1/lib/monoid/optics/iso_compose.ex#L56" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/monoid/optics/iso_compose.ex#L56" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -295,9 +295,9 @@ enabling functional composition of multiple isos into a single bidirectional tra
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.7.1" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.0" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.7.1">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.0">Hex Preview</a>
 
             </span>
 
