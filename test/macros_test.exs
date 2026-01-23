@@ -166,8 +166,69 @@ defmodule Funx.MacrosTest do
     @moduledoc false
     defstruct [:item, :stars, :verified]
 
-    # Prism with or_else option
+    # Prism.key with or_else option
     Funx.Macros.ord_for(Rating, Prism.key(:stars), or_else: 0)
+  end
+
+  defmodule NestedPayment do
+    @moduledoc false
+    defstruct [:method, :amount]
+  end
+
+  defmodule NestedOrder do
+    @moduledoc false
+    defstruct [:id, :payment]
+
+    # Prism.path with or_else option
+    Funx.Macros.ord_for(
+      NestedOrder,
+      Prism.path([{NestedOrder, :payment}, {NestedPayment, :amount}]),
+      or_else: 0
+    )
+  end
+
+  defmodule EqNestedOrder do
+    @moduledoc false
+    defstruct [:id, :payment]
+
+    # Prism.path with or_else option for eq_for
+    Funx.Macros.eq_for(
+      EqNestedOrder,
+      Prism.path([{EqNestedOrder, :payment}, {NestedPayment, :amount}]),
+      or_else: 0
+    )
+  end
+
+  # Helper module for local function import tests
+  defmodule LocalPrismHelpers do
+    @moduledoc false
+    alias Funx.Optics.Prism
+
+    def level_prism, do: Prism.key(:level)
+    def rank_prism, do: Prism.key(:rank)
+  end
+
+  # Test structs for local function call + or_else (via import)
+  defmodule LocalFnOrdWithOrElse do
+    @moduledoc false
+    defstruct [:name, :level]
+
+    # Import to get local function call syntax
+    import LocalPrismHelpers, only: [level_prism: 0]
+
+    # Local function call with or_else option
+    Funx.Macros.ord_for(LocalFnOrdWithOrElse, level_prism(), or_else: 0)
+  end
+
+  defmodule LocalFnEqWithOrElse do
+    @moduledoc false
+    defstruct [:name, :rank]
+
+    # Import to get local function call syntax
+    import LocalPrismHelpers, only: [rank_prism: 0]
+
+    # Local function call with or_else option
+    Funx.Macros.eq_for(LocalFnEqWithOrElse, rank_prism(), or_else: 0)
   end
 
   # eq_for/3 test structs
@@ -561,6 +622,7 @@ defmodule Funx.MacrosTest do
     use Funx.Eq
 
     alias Funx.Optics.Lens
+    alias Funx.Optics.Prism
 
     def card_ord do
       ord do
@@ -582,6 +644,10 @@ defmodule Funx.MacrosTest do
         asc :title
       end
     end
+
+    # Helper that returns a Prism (for testing function call + or_else)
+    def score_prism, do: Prism.key(:score)
+    def rating_prism, do: Prism.key(:rating)
   end
 
   defmodule FnOrdCard do
@@ -606,6 +672,23 @@ defmodule Funx.MacrosTest do
 
     # Using function call with desc ordering
     Funx.Macros.ord_for(FnOrdTask, OrdEqHelpers.reverse_priority_ord())
+  end
+
+  # Test structs for function call + or_else (returns Prism, not ord/eq map)
+  defmodule FnOrdWithOrElse do
+    @moduledoc false
+    defstruct [:name, :score]
+
+    # Function call returning Prism with or_else option
+    Funx.Macros.ord_for(FnOrdWithOrElse, OrdEqHelpers.score_prism(), or_else: 0)
+  end
+
+  defmodule FnEqWithOrElse do
+    @moduledoc false
+    defstruct [:name, :rating]
+
+    # Function call returning Prism with or_else option
+    Funx.Macros.eq_for(FnEqWithOrElse, OrdEqHelpers.rating_prism(), or_else: 0)
   end
 
   describe "ord_for with function returning Ord DSL result" do
@@ -693,6 +776,92 @@ defmodule Funx.MacrosTest do
 
       assert Eq.eq?(emp, emp)
       refute Eq.not_eq?(emp, emp)
+    end
+  end
+
+  describe "ord_for with function call + or_else (returns Prism)" do
+    test "compares values when both present" do
+      s1 = %FnOrdWithOrElse{name: "A", score: 10}
+      s2 = %FnOrdWithOrElse{name: "B", score: 20}
+
+      assert Protocol.lt?(s1, s2)
+      assert Protocol.gt?(s2, s1)
+    end
+
+    test "uses or_else default when field is nil" do
+      s1 = %FnOrdWithOrElse{name: "A", score: nil}
+      s2 = %FnOrdWithOrElse{name: "B", score: 10}
+
+      # nil becomes 0 via or_else
+      assert Protocol.lt?(s1, s2)
+    end
+
+    test "both nil values use default and are equal" do
+      s1 = %FnOrdWithOrElse{name: "A", score: nil}
+      s2 = %FnOrdWithOrElse{name: "B", score: nil}
+
+      # Both nil → 0, so equal
+      assert Protocol.le?(s1, s2)
+      assert Protocol.ge?(s1, s2)
+      refute Protocol.lt?(s1, s2)
+    end
+
+    test "nil equals explicit default value" do
+      s1 = %FnOrdWithOrElse{name: "A", score: nil}
+      s2 = %FnOrdWithOrElse{name: "B", score: 0}
+
+      # nil → 0, so equal to explicit 0
+      assert Protocol.le?(s1, s2)
+      assert Protocol.ge?(s1, s2)
+    end
+
+    test "sorts list with mixed nil and values" do
+      items = [
+        %FnOrdWithOrElse{name: "C", score: 50},
+        %FnOrdWithOrElse{name: "A", score: nil},
+        %FnOrdWithOrElse{name: "B", score: 25}
+      ]
+
+      sorted = Enum.sort(items, &Protocol.le?/2)
+
+      # nil → 0: [0, 25, 50]
+      assert Enum.map(sorted, & &1.score) == [nil, 25, 50]
+    end
+  end
+
+  describe "eq_for with function call + or_else (returns Prism)" do
+    test "compares values when both present" do
+      r1 = %FnEqWithOrElse{name: "A", rating: 5}
+      r2 = %FnEqWithOrElse{name: "B", rating: 5}
+      r3 = %FnEqWithOrElse{name: "C", rating: 3}
+
+      assert Eq.eq?(r1, r2)
+      refute Eq.eq?(r1, r3)
+    end
+
+    test "uses or_else default when field is nil" do
+      r1 = %FnEqWithOrElse{name: "A", rating: nil}
+      r2 = %FnEqWithOrElse{name: "B", rating: 0}
+
+      # nil becomes 0 via or_else
+      assert Eq.eq?(r1, r2)
+    end
+
+    test "both nil values are equal via default" do
+      r1 = %FnEqWithOrElse{name: "A", rating: nil}
+      r2 = %FnEqWithOrElse{name: "B", rating: nil}
+
+      # Both nil → 0, so equal
+      assert Eq.eq?(r1, r2)
+    end
+
+    test "nil not equal to non-zero value" do
+      r1 = %FnEqWithOrElse{name: "A", rating: nil}
+      r2 = %FnEqWithOrElse{name: "B", rating: 5}
+
+      # nil → 0, 0 != 5
+      refute Eq.eq?(r1, r2)
+      assert Eq.not_eq?(r1, r2)
     end
   end
 
@@ -1090,7 +1259,7 @@ defmodule Funx.MacrosTest do
       assert Protocol.lt?(s1, s2)
     end
 
-    test "Prism with or_else treats Nothing as default" do
+    test "Prism.key with or_else treats Nothing as default" do
       r1 = %Rating{item: "A", stars: nil}
       r2 = %Rating{item: "B", stars: 3}
       r3 = %Rating{item: "C", stars: 0}
@@ -1098,6 +1267,25 @@ defmodule Funx.MacrosTest do
       # nil becomes 0
       assert Protocol.le?(r1, r3)
       assert Protocol.lt?(r1, r2)
+    end
+
+    test "Prism.path with or_else treats nested Nothing as default" do
+      o1 = %NestedOrder{id: 1, payment: nil}
+      o2 = %NestedOrder{id: 2, payment: %NestedPayment{amount: 100}}
+      o3 = %NestedOrder{id: 3, payment: %NestedPayment{amount: 0}}
+
+      # nil payment becomes amount 0
+      assert Protocol.le?(o1, o3)
+      assert Protocol.ge?(o1, o3)
+      assert Protocol.lt?(o1, o2)
+    end
+
+    test "Prism.path with or_else handles nil leaf value" do
+      o1 = %NestedOrder{id: 1, payment: %NestedPayment{amount: nil}}
+      o2 = %NestedOrder{id: 2, payment: %NestedPayment{amount: 50}}
+
+      # nil amount becomes 0
+      assert Protocol.lt?(o1, o2)
     end
 
     test "sorts using or_else default" do
@@ -1111,6 +1299,95 @@ defmodule Funx.MacrosTest do
 
       # nil→0, so: 0, 5, 10
       assert Enum.map(sorted, & &1.points) == [nil, 5, 100]
+    end
+  end
+
+  describe "eq_for/3 with Prism.path and or_else option" do
+    test "compares nested values when both present" do
+      o1 = %EqNestedOrder{id: 1, payment: %NestedPayment{amount: 100}}
+      o2 = %EqNestedOrder{id: 2, payment: %NestedPayment{amount: 100}}
+      o3 = %EqNestedOrder{id: 3, payment: %NestedPayment{amount: 50}}
+
+      assert Eq.eq?(o1, o2)
+      refute Eq.eq?(o1, o3)
+    end
+
+    test "uses or_else default when payment is nil" do
+      o1 = %EqNestedOrder{id: 1, payment: nil}
+      o2 = %EqNestedOrder{id: 2, payment: %NestedPayment{amount: 0}}
+
+      # nil payment → amount 0
+      assert Eq.eq?(o1, o2)
+    end
+
+    test "uses or_else default when amount is nil" do
+      o1 = %EqNestedOrder{id: 1, payment: %NestedPayment{amount: nil}}
+      o2 = %EqNestedOrder{id: 2, payment: %NestedPayment{amount: 0}}
+
+      # nil amount → 0
+      assert Eq.eq?(o1, o2)
+    end
+
+    test "both nil values equal via default" do
+      o1 = %EqNestedOrder{id: 1, payment: nil}
+      o2 = %EqNestedOrder{id: 2, payment: %NestedPayment{amount: nil}}
+
+      # Both → 0
+      assert Eq.eq?(o1, o2)
+    end
+  end
+
+  describe "ord_for/3 with local function call + or_else" do
+    test "compares values when both present" do
+      l1 = %LocalFnOrdWithOrElse{name: "A", level: 5}
+      l2 = %LocalFnOrdWithOrElse{name: "B", level: 10}
+
+      assert Protocol.lt?(l1, l2)
+      assert Protocol.gt?(l2, l1)
+    end
+
+    test "uses or_else default when field is nil" do
+      l1 = %LocalFnOrdWithOrElse{name: "A", level: nil}
+      l2 = %LocalFnOrdWithOrElse{name: "B", level: 5}
+
+      # nil becomes 0 via or_else
+      assert Protocol.lt?(l1, l2)
+    end
+
+    test "both nil values use default and are equal" do
+      l1 = %LocalFnOrdWithOrElse{name: "A", level: nil}
+      l2 = %LocalFnOrdWithOrElse{name: "B", level: nil}
+
+      # Both nil → 0
+      assert Protocol.le?(l1, l2)
+      assert Protocol.ge?(l1, l2)
+    end
+  end
+
+  describe "eq_for/3 with local function call + or_else" do
+    test "compares values when both present" do
+      r1 = %LocalFnEqWithOrElse{name: "A", rank: 3}
+      r2 = %LocalFnEqWithOrElse{name: "B", rank: 3}
+      r3 = %LocalFnEqWithOrElse{name: "C", rank: 5}
+
+      assert Eq.eq?(r1, r2)
+      refute Eq.eq?(r1, r3)
+    end
+
+    test "uses or_else default when field is nil" do
+      r1 = %LocalFnEqWithOrElse{name: "A", rank: nil}
+      r2 = %LocalFnEqWithOrElse{name: "B", rank: 0}
+
+      # nil becomes 0 via or_else
+      assert Eq.eq?(r1, r2)
+    end
+
+    test "both nil values equal via default" do
+      r1 = %LocalFnEqWithOrElse{name: "A", rank: nil}
+      r2 = %LocalFnEqWithOrElse{name: "B", rank: nil}
+
+      # Both nil → 0
+      assert Eq.eq?(r1, r2)
     end
   end
 

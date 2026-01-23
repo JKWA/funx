@@ -270,29 +270,17 @@ defmodule Funx.Macros do
   defmacro eq_for(for_struct, projection, opts \\ []) do
     or_else = Keyword.get(opts, :or_else)
     custom_eq = Keyword.get(opts, :eq)
-    projection_ast = normalize_projection(projection, or_else)
+    {projection_ast, projection_type} = normalize_projection(projection, or_else)
     eq_module_ast = custom_eq || quote(do: Funx.Eq.Protocol)
+
+    eq_map_ast = build_eq_map_ast(projection_ast, eq_module_ast, projection_type)
 
     quote do
       alias Funx.Eq
       alias Funx.Optics.Prism
 
       defimpl Funx.Eq.Protocol, for: unquote(for_struct) do
-        # Private function to build the eq_map once at module compile time
-        defp __eq_map__ do
-          __resolve_eq_map__(unquote(projection_ast), unquote(eq_module_ast))
-        end
-
-        # Eq map (plain map or Monoid.Eq struct) - use directly
-        defp __resolve_eq_map__(%{eq?: eq_fun, not_eq?: not_eq_fun} = map, _eq)
-             when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) do
-          map
-        end
-
-        # Projection - wrap in contramap
-        defp __resolve_eq_map__(projection, eq) do
-          Funx.Eq.contramap(projection, eq)
-        end
+        defp __eq_map__, do: unquote(eq_map_ast)
 
         def eq?(a, b)
             when is_struct(a, unquote(for_struct)) and is_struct(b, unquote(for_struct)) do
@@ -373,33 +361,17 @@ defmodule Funx.Macros do
   defmacro ord_for(for_struct, projection, opts \\ []) do
     or_else = Keyword.get(opts, :or_else)
     custom_ord = Keyword.get(opts, :ord)
-    projection_ast = normalize_projection(projection, or_else)
+    {projection_ast, projection_type} = normalize_projection(projection, or_else)
     ord_module_ast = custom_ord || quote(do: Funx.Ord.Protocol)
+
+    ord_map_ast = build_ord_map_ast(projection_ast, ord_module_ast, projection_type)
 
     quote do
       alias Funx.Optics.Prism
       alias Funx.Ord
 
       defimpl Funx.Ord.Protocol, for: unquote(for_struct) do
-        # Private function to build the ord_map once at module compile time
-        defp __ord_map__ do
-          __resolve_ord_map__(unquote(projection_ast), unquote(ord_module_ast))
-        end
-
-        # Ord map (plain map or Monoid.Ord struct) - use directly
-        defp __resolve_ord_map__(
-               %{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun} = map,
-               _ord
-             )
-             when is_function(lt_fun, 2) and is_function(le_fun, 2) and
-                    is_function(gt_fun, 2) and is_function(ge_fun, 2) do
-          map
-        end
-
-        # Projection - wrap in contramap
-        defp __resolve_ord_map__(projection, ord) do
-          Funx.Ord.contramap(projection, ord)
-        end
+        defp __ord_map__, do: unquote(ord_map_ast)
 
         def lt?(a, b)
             when is_struct(a, unquote(for_struct)) and is_struct(b, unquote(for_struct)) do
@@ -437,21 +409,79 @@ defmodule Funx.Macros do
   end
 
   # ============================================================================
+  # AST BUILDERS (PRIVATE)
+  # ============================================================================
+
+  # For known projections, directly call contramap
+  defp build_eq_map_ast(projection_ast, eq_module_ast, :projection) do
+    quote do
+      Funx.Eq.contramap(unquote(projection_ast), unquote(eq_module_ast))
+    end
+  end
+
+  # For function calls that might return an eq_map, do runtime check
+  defp build_eq_map_ast(projection_ast, eq_module_ast, :maybe_map) do
+    quote do
+      projection = unquote(projection_ast)
+
+      case projection do
+        %{eq?: eq_fun, not_eq?: not_eq_fun}
+        when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) ->
+          projection
+
+        _ ->
+          Funx.Eq.contramap(projection, unquote(eq_module_ast))
+      end
+    end
+  end
+
+  # For known projections, directly call contramap
+  defp build_ord_map_ast(projection_ast, ord_module_ast, :projection) do
+    quote do
+      Funx.Ord.contramap(unquote(projection_ast), unquote(ord_module_ast))
+    end
+  end
+
+  # For function calls that might return an ord_map, do runtime check
+  defp build_ord_map_ast(projection_ast, ord_module_ast, :maybe_map) do
+    quote do
+      projection = unquote(projection_ast)
+
+      case projection do
+        %{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun}
+        when is_function(lt_fun, 2) and is_function(le_fun, 2) and
+               is_function(gt_fun, 2) and is_function(ge_fun, 2) ->
+          projection
+
+        _ ->
+          Funx.Ord.contramap(projection, unquote(ord_module_ast))
+      end
+    end
+  end
+
+  # ============================================================================
   # PROJECTION NORMALIZATION (PRIVATE)
   # ============================================================================
+  # Returns {normalized_ast, type} where type is :projection or :maybe_map
 
   # Atom without or_else - convert to Prism.key (safe for nil values, Nothing < Just semantics)
   defp normalize_projection(atom, nil) when is_atom(atom) do
-    quote do
-      Prism.key(unquote(atom))
-    end
+    ast =
+      quote do
+        Prism.key(unquote(atom))
+      end
+
+    {ast, :projection}
   end
 
   # Atom with or_else - convert to {Prism.key, default}
   defp normalize_projection(atom, or_else) when is_atom(atom) and not is_nil(or_else) do
-    quote do
-      {Prism.key(unquote(atom)), unquote(or_else)}
-    end
+    ast =
+      quote do
+        {Prism.key(unquote(atom)), unquote(or_else)}
+      end
+
+    {ast, :projection}
   end
 
   # Lens.key(...) - cannot use or_else with Lens
@@ -460,7 +490,7 @@ defmodule Funx.Macros do
          or_else
        ) do
     if is_nil(or_else) do
-      lens_ast
+      {lens_ast, :projection}
     else
       raise ArgumentError, Errors.or_else_with_lens()
     end
@@ -472,7 +502,7 @@ defmodule Funx.Macros do
          or_else
        ) do
     if is_nil(or_else) do
-      lens_ast
+      {lens_ast, :projection}
     else
       raise ArgumentError, Errors.or_else_with_lens()
     end
@@ -484,11 +514,14 @@ defmodule Funx.Macros do
          or_else
        ) do
     if is_nil(or_else) do
-      prism_ast
+      {prism_ast, :projection}
     else
-      quote do
-        {unquote(prism_ast), unquote(or_else)}
-      end
+      ast =
+        quote do
+          {unquote(prism_ast), unquote(or_else)}
+        end
+
+      {ast, :projection}
     end
   end
 
@@ -498,11 +531,14 @@ defmodule Funx.Macros do
          or_else
        ) do
     if is_nil(or_else) do
-      prism_ast
+      {prism_ast, :projection}
     else
-      quote do
-        {unquote(prism_ast), unquote(or_else)}
-      end
+      ast =
+        quote do
+          {unquote(prism_ast), unquote(or_else)}
+        end
+
+      {ast, :projection}
     end
   end
 
@@ -512,7 +548,7 @@ defmodule Funx.Macros do
          or_else
        ) do
     if is_nil(or_else) do
-      traversal_ast
+      {traversal_ast, :projection}
     else
       raise ArgumentError, Errors.or_else_with_traversal()
     end
@@ -520,9 +556,12 @@ defmodule Funx.Macros do
 
   # {Prism, default} tuple - cannot have additional or_else (redundant)
   defp normalize_projection({_prism_ast, _or_else_ast} = tuple, nil) do
-    quote do
-      unquote(tuple)
-    end
+    ast =
+      quote do
+        unquote(tuple)
+      end
+
+    {ast, :projection}
   end
 
   defp normalize_projection({_prism_ast, _or_else_ast}, _extra_or_else) do
@@ -532,7 +571,7 @@ defmodule Funx.Macros do
   # Captured function &fun/1 - cannot use or_else
   defp normalize_projection({:&, _, _} = fun_ast, or_else) do
     if is_nil(or_else) do
-      fun_ast
+      {fun_ast, :projection}
     else
       raise ArgumentError, Errors.or_else_with_captured_function()
     end
@@ -541,7 +580,7 @@ defmodule Funx.Macros do
   # Anonymous function fn ... end - cannot use or_else
   defp normalize_projection({:fn, _, _} = fun_ast, or_else) do
     if is_nil(or_else) do
-      fun_ast
+      {fun_ast, :projection}
     else
       raise ArgumentError, Errors.or_else_with_anonymous_function()
     end
@@ -550,34 +589,40 @@ defmodule Funx.Macros do
   # Struct literal (e.g., %Lens{...}) - cannot use or_else with Lens struct
   defp normalize_projection({:%, _, _} = struct_ast, or_else) do
     if is_nil(or_else) do
-      struct_ast
+      {struct_ast, :projection}
     else
       raise ArgumentError, Errors.or_else_with_struct_literal()
     end
   end
 
-  # Remote function call (Module.function()) - can use or_else (runtime check)
+  # Remote function call (Module.function()) - might return ord/eq map
   defp normalize_projection({{:., _, _}, _, _} = call_ast, or_else) do
     if is_nil(or_else) do
-      call_ast
+      {call_ast, :maybe_map}
     else
-      # Runtime: if helper returns Lens, contramap will raise
-      quote do
-        {unquote(call_ast), unquote(or_else)}
-      end
+      # If or_else is provided, it's definitely a projection (wrapped in tuple)
+      ast =
+        quote do
+          {unquote(call_ast), unquote(or_else)}
+        end
+
+      {ast, :projection}
     end
   end
 
-  # Local function call (function_name()) - pass through (already handled by remote call pattern or atom)
+  # Local function call (function_name()) - might return ord/eq map
   defp normalize_projection({function_name, _, args} = call_ast, or_else)
        when is_atom(function_name) and is_list(args) do
     if is_nil(or_else) do
-      call_ast
+      {call_ast, :maybe_map}
     else
-      # Runtime: if helper returns Lens, contramap will raise
-      quote do
-        {unquote(call_ast), unquote(or_else)}
-      end
+      # If or_else is provided, it's definitely a projection (wrapped in tuple)
+      ast =
+        quote do
+          {unquote(call_ast), unquote(or_else)}
+        end
+
+      {ast, :projection}
     end
   end
 end
