@@ -91,9 +91,22 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
     defstruct [:name, :office]
   end
 
+  # Struct for testing explicit protocol tiebreaker
+  defmodule Worker do
+    defstruct [:department, :name, :worker_id]
+  end
+
   # ============================================================================
   # Protocol Implementations
   # ============================================================================
+
+  # Worker orders by worker_id (natural ordering for the struct)
+  defimpl Funx.Ord.Protocol, for: Worker do
+    def lt?(a, b), do: a.worker_id < b.worker_id
+    def le?(a, b), do: a.worker_id <= b.worker_id
+    def gt?(a, b), do: a.worker_id > b.worker_id
+    def ge?(a, b), do: a.worker_id >= b.worker_id
+  end
 
   defimpl Funx.Ord.Protocol, for: Address do
     def lt?(a, b), do: {a.state, a.city} < {b.state, b.city}
@@ -650,7 +663,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       assert Ord.compare(alice, charlie, ord_score_desc) == :lt
     end
 
-    test "two Nothing values fall back to identity tiebreaker" do
+    test "two Nothing values compare as equal" do
       charlie1 = %Person{name: "Alice", score: nil}
       charlie2 = %Person{name: "Bob", score: nil}
 
@@ -659,9 +672,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
           asc Prism.key(:score)
         end
 
-      # Both nil (Nothing), so identity tiebreaker uses Ord.Any
-      # "Alice" < "Bob" in Elixir term ordering
-      assert Ord.compare(charlie1, charlie2, ord_score) == :lt
+      # Both nil (Nothing), and no tiebreaker, so they compare as equal
+      assert Ord.compare(charlie1, charlie2, ord_score) == :eq
     end
 
     test "bare Prism with nested path uses Maybe.lift_ord" do
@@ -1423,9 +1435,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       # "CA" < "US"
       assert Ord.compare(d2, d1, ord_country_code) == :lt
-      # d1 and d3 both have "US", so identity tiebreaker compares whole struct
-      # d1.name ("Engineering") < d3.name ("Sales")
-      assert Ord.compare(d1, d3, ord_country_code) == :lt
+      # d1 and d3 both have "US", and no tiebreaker, so they compare as equal
+      assert Ord.compare(d1, d3, ord_country_code) == :eq
 
       ord_region_name =
         ord do
@@ -1455,7 +1466,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       assert Ord.compare(alice, alice, ord_empty) == :eq
     end
 
-    test "equal values on projection field fall back to identity tiebreaker" do
+    test "equal values on projection field compare as equal" do
       alice1 = %Person{name: "Alice", age: 30}
       alice2 = %Person{name: "Alice", age: 25}
 
@@ -1464,9 +1475,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
           asc :name
         end
 
-      # Same name, but implicit identity tiebreaker uses Ord.Any on whole struct
-      # alice1.age (30) > alice2.age (25) in Elixir term ordering
-      assert Ord.compare(alice1, alice2, ord_name) == :gt
+      # Same name, and no implicit tiebreaker, so they compare as equal
+      assert Ord.compare(alice1, alice2, ord_name) == :eq
     end
 
     test "first projection has priority in tie-breaking" do
@@ -1491,6 +1501,94 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
                %Person{name: "Bob", age: 25},
                %Person{name: "Bob", age: 30}
              ] = sorted
+    end
+  end
+
+  # ============================================================================
+  # Explicit Protocol Tiebreaker Tests
+  # ============================================================================
+
+  describe "explicit protocol tiebreaker" do
+    test "Ord.Protocol as explicit tiebreaker uses struct's Ord implementation" do
+      # Two workers in same department, different worker_ids
+      worker1 = %Worker{department: "Engineering", name: "Alice", worker_id: 100}
+      worker2 = %Worker{department: "Engineering", name: "Bob", worker_id: 50}
+
+      # Without tiebreaker - same department, so equal
+      ord_dept_only =
+        ord do
+          asc :department
+        end
+
+      assert Ord.compare(worker1, worker2, ord_dept_only) == :eq
+
+      # With explicit Ord.Protocol tiebreaker - uses Worker's Ord (by worker_id)
+      ord_dept_with_tiebreaker =
+        ord do
+          asc :department
+          asc Funx.Ord.Protocol
+        end
+
+      # worker2 (id=50) < worker1 (id=100) by Worker's Ord implementation
+      assert Ord.compare(worker2, worker1, ord_dept_with_tiebreaker) == :lt
+      assert Ord.compare(worker1, worker2, ord_dept_with_tiebreaker) == :gt
+    end
+
+    test "Ord.Protocol tiebreaker sorts correctly" do
+      workers = [
+        %Worker{department: "Sales", name: "Charlie", worker_id: 300},
+        %Worker{department: "Engineering", name: "Alice", worker_id: 100},
+        %Worker{department: "Engineering", name: "Bob", worker_id: 50},
+        %Worker{department: "Sales", name: "Diana", worker_id: 25}
+      ]
+
+      ord_dept_then_protocol =
+        ord do
+          asc :department
+          asc Funx.Ord.Protocol
+        end
+
+      sorted = Enum.sort(workers, Ord.comparator(ord_dept_then_protocol))
+
+      # First by department (Engineering < Sales), then by worker_id within department
+      assert [
+               %Worker{department: "Engineering", worker_id: 50},
+               %Worker{department: "Engineering", worker_id: 100},
+               %Worker{department: "Sales", worker_id: 25},
+               %Worker{department: "Sales", worker_id: 300}
+             ] = sorted
+    end
+
+    test "Ord.Protocol on type without implementation uses Elixir term ordering" do
+      # Person doesn't have a custom Ord implementation, so falls back to Any
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 25}
+
+      ord_name_with_protocol_tiebreaker =
+        ord do
+          asc :name
+          asc Funx.Ord.Protocol
+        end
+
+      # Same name, but Ord.Protocol falls back to Any (Elixir term ordering)
+      # age: 25 < age: 30 in term ordering
+      assert Ord.compare(alice2, alice1, ord_name_with_protocol_tiebreaker) == :lt
+      assert Ord.compare(alice1, alice2, ord_name_with_protocol_tiebreaker) == :gt
+    end
+
+    test "desc Ord.Protocol reverses the tiebreaker ordering" do
+      worker1 = %Worker{department: "Engineering", name: "Alice", worker_id: 100}
+      worker2 = %Worker{department: "Engineering", name: "Bob", worker_id: 50}
+
+      ord_dept_desc_tiebreaker =
+        ord do
+          asc :department
+          desc Funx.Ord.Protocol
+        end
+
+      # Reversed: worker1 (id=100) < worker2 (id=50) in desc order
+      assert Ord.compare(worker1, worker2, ord_dept_desc_tiebreaker) == :lt
+      assert Ord.compare(worker2, worker1, ord_dept_desc_tiebreaker) == :gt
     end
   end
 
@@ -1905,7 +2003,7 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
       end
     end
 
-    property "two Nothing values fall back to identity tiebreaker" do
+    property "two Nothing values compare as equal" do
       check all(
               name1 <- string(:alphanumeric),
               name2 <- string(:alphanumeric)
@@ -1918,11 +2016,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
             asc Prism.key(:score)
           end
 
-        # Both are Nothing on :score, so identity tiebreaker compares whole struct
-        # Result is deterministic and based on name ordering
-        result = Ord.compare(p1, p2, ord_score)
-        expected = if name1 == name2, do: :eq, else: if(name1 < name2, do: :lt, else: :gt)
-        assert result == expected
+        # Both are Nothing on :score, and no tiebreaker, so they compare as equal
+        assert Ord.compare(p1, p2, ord_score) == :eq
       end
     end
   end
@@ -1949,8 +2044,8 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
           cond do
             len1 < len2 -> :lt
             len1 > len2 -> :gt
-            # Same length: identity tiebreaker compares whole struct (by bio content)
-            true -> if(bio1 < bio2, do: :lt, else: if(bio1 > bio2, do: :gt, else: :eq))
+            # Same length: no tiebreaker, so equal
+            true -> :eq
           end
 
         assert result == expected
@@ -2098,9 +2193,10 @@ defmodule Funx.Ord.Dsl.OrdDslTest do
 
       sorted = Enum.sort(people, Ord.comparator(combined))
 
+      # Sorted by name asc, then age desc (30 before 25)
       assert [
-               %Person{name: "Alice", age: 25, score: 50},
                %Person{name: "Alice", age: 30, score: 100},
+               %Person{name: "Alice", age: 25, score: 50},
                %Person{name: "Bob", age: 30, score: nil}
              ] = sorted
     end

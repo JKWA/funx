@@ -192,22 +192,20 @@ defmodule MyEntity do
   def required_field(%__MODULE__{required_field: field}), do: field
 end
 
-# Protocol Implementations
-defimpl Funx.Eq, for: MyEntity do
-  alias Funx.Eq
-  alias MyEntity
-  def eq?(%MyEntity{id: v1}, %MyEntity{id: v2}), do: Eq.eq?(v1, v2)
-  def not_eq?(%MyEntity{id: v1}, %MyEntity{id: v2}), do: not eq?(v1, v2)
-end
+# Protocol Implementations (using macros)
+require Funx.Macros
 
-defimpl Funx.Ord, for: MyEntity do
-  alias Funx.Ord
-  alias MyEntity
-  def lt?(%MyEntity{required_field: v1}, %MyEntity{required_field: v2}), do: Ord.lt?(v1, v2)
-  def le?(%MyEntity{required_field: v1}, %MyEntity{required_field: v2}), do: Ord.le?(v1, v2)
-  def gt?(%MyEntity{required_field: v1}, %MyEntity{required_field: v2}), do: Ord.gt?(v1, v2)
-  def ge?(%MyEntity{required_field: v1}, %MyEntity{required_field: v2}), do: Ord.ge?(v1, v2)
-end
+# Equality by ID
+Funx.Macros.eq_for(MyEntity, :id)
+
+# Ordering by required_field
+Funx.Macros.ord_for(MyEntity, :required_field)
+
+# Or with DSL for multi-field (use Funx.Eq / use Funx.Ord required)
+# Funx.Macros.eq_for(MyEntity, eq do
+#   on :id
+#   on :required_field
+# end)
 
 # Repository Pattern
 defmodule MyEntity.Repo do
@@ -294,9 +292,37 @@ end
 
 #### Protocol Implementation Pattern
 
+**Using Macros (Recommended)**
+
+The `Funx.Macros` module provides `eq_for` and `ord_for` macros that generate protocol implementations from projections or DSL results:
+
+```elixir
+# Simple field-based equality
+Funx.Macros.eq_for(MyType, :id)
+
+# Simple field-based ordering
+Funx.Macros.ord_for(MyType, :name)
+
+# Multi-field equality using Eq DSL
+use Funx.Eq
+Funx.Macros.eq_for(MyType, eq do
+  on :name
+  on :email
+end)
+
+# Multi-field ordering using Ord DSL
+use Funx.Ord
+Funx.Macros.ord_for(MyType, ord do
+  desc :priority
+  asc :name
+end)
+```
+
+**Manual Implementation (When More Control Needed)**
+
 ```elixir
 # Equality by ID (identity)
-defimpl Funx.Eq, for: MyType do
+defimpl Funx.Eq.Protocol, for: MyType do
   alias Funx.Eq
   alias MyType
   def eq?(%MyType{id: v1}, %MyType{id: v2}), do: Eq.eq?(v1, v2)
@@ -304,7 +330,7 @@ defimpl Funx.Eq, for: MyType do
 end
 
 # Ordering by display field (sorting)
-defimpl Funx.Ord, for: MyType do
+defimpl Funx.Ord.Protocol, for: MyType do
   alias Funx.Ord
   alias MyType
   def lt?(%MyType{name: v1}, %MyType{name: v2}), do: Ord.lt?(v1, v2)

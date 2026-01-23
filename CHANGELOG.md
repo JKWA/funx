@@ -1,5 +1,25 @@
 # Changelog
 
+
+## [0.8.0] - Unreleased
+
+### Added
+
+* Can now use DSL `Eq` and `Ord` in the Macro `eq_for` and `ord_for`
+
+### Breaking Changes
+
+* Ord DSL no longer adds default protocol tiebreaker. Instead, add it explicitly with `Ord.Protocol`:
+
+```elixir
+ord do
+  desc :name
+  asc Ord.Protocol
+end
+```
+
+This makes the DSL more composable.
+
 ## [0.7.1] - Unreleased
 
 ### Added

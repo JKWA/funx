@@ -317,7 +317,6 @@ The DSL provides a declarative syntax for building complex lexicographic orderin
 - **Declarative ordering** - Describe what to sort by, not how to sort
 - **Compile-time composition** - DSL expands to static `Ord` compositions at compile time
 - **Type-safe projections** - Leverages Lens and Prism for safe data access
-- **Deterministic tiebreaking** - Automatic identity projection ensures total ordering
 
 **Key Benefits:**
 
@@ -326,7 +325,7 @@ The DSL provides a declarative syntax for building complex lexicographic orderin
 - Explicit Lens for required fields, atoms for optional fields
 - Type filtering with bare struct modules
 - Zero runtime overhead - compiles to direct function calls
-- Automatic tiebreaker ensures reproducible sorts
+- Composable - DSL results can be used with `ord_for` macros or composed together
 
 ### Basic Usage
 
@@ -608,9 +607,9 @@ ord do
 end
 ```
 
-### Implicit Identity Tiebreaker
+### No Implicit Tiebreaker
 
-The DSL automatically appends an identity projection as the final tiebreaker:
+The DSL does NOT add an implicit tiebreaker. If two values are equal on all specified fields, they compare as `:eq`:
 
 ```elixir
 ord do
@@ -621,18 +620,23 @@ end
 Compiles to:
 
 ```elixir
-Ord.concat([
-  Ord.contramap(Prism.key(:name)),
-  Ord.contramap(fn x -> x end)  # implicit identity
-])
+Ord.contramap(Prism.key(:name))
 ```
 
-This ensures:
+This means:
 
-- **Deterministic ordering** - Same input always produces same output
-- **Total ordering** - All values can be compared
-- **No arbitrary tiebreaking** - Uses value's Ord protocol implementation
-- **Reproducible sorts** - Consistent across runs and environments
+- **Explicit control** - You define exactly what matters for ordering
+- **Composable** - DSL results can be composed without hidden tiebreakers in the middle
+- **Protocol-friendly** - DSL results can be used with `ord_for` macro without recursion
+
+**To add a tiebreaker**, explicitly include `Funx.Ord.Protocol` as the last projection:
+
+```elixir
+ord do
+  asc :name
+  asc Funx.Ord.Protocol  # Falls back to struct's Ord implementation
+end
+```
 
 ### Working with Lists
 
@@ -772,7 +776,7 @@ ord do
 end
 ```
 
-**Note:** Ord variables include their implicit identity tiebreaker, so composing them preserves their complete ordering semantics.
+**Note:** Ord variables preserve their complete ordering semantics when composed.
 
 ### Type Filtering with Bare Struct Modules
 
@@ -935,8 +939,7 @@ end
 Ord.concat([
   Ord.contramap(Prism.key(:name)),
   Ord.reverse(Ord.contramap(Prism.key(:age))),
-  Ord.contramap({Prism.key(:score), 0}),
-  Ord.contramap(fn x -> x end)  # implicit identity
+  Ord.contramap({Prism.key(:score), 0})
 ])
 ```
 
@@ -962,7 +965,7 @@ test "multi-field ordering" do
   # Same name, 30 > 25 in desc age
   assert Ord.compare(alice_30, alice_25, ord_person) == :lt
 
-  # Verify identity tiebreaker
+  # Same values compare as equal
   assert Ord.compare(alice_30, alice_30, ord_person) == :eq
 end
 
@@ -1020,6 +1023,7 @@ The Ord DSL provides declarative multi-field sorting:
 - Use Prism with or_else for optional fields with specific defaults
 - Use behaviours for complex, reusable projection logic
 - Use bare struct modules for type-based partitioning (heterogeneous lists)
-- Automatic identity tiebreaker ensures deterministic total ordering
+- No implicit tiebreaker - add `asc Funx.Ord.Protocol` if you need one
+- DSL results can be used with `ord_for` macro for protocol implementation
 
 **Remember:** The Ord DSL compiles to Utils function calls at compile time - use whichever syntax is clearer for your use case.

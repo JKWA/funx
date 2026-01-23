@@ -34,45 +34,18 @@ defmodule Funx.Ord.Dsl.Executor do
 
   Multiple steps are combined with `concat([...])` (monoid append).
 
-  ## Implicit Tiebreaker
-
-  A final identity projection is automatically appended to ensure deterministic
-  total ordering. This uses the value's `Ord` protocol implementation, falling
-  back to `Funx.Ord.Any` if no implementation exists.
-
-  This means:
-    - Custom orderings are refinements of the domain's natural ordering
-    - No arbitrary tiebreaking via Elixir term ordering
-    - Sorts are always deterministic and reproducible
+  If two values are equal on all specified fields, they compare as equal.
+  Users can add an explicit tiebreaker if needed (e.g., `asc &Function.identity/1`).
   """
   @spec execute_steps(list(Step.t())) :: Macro.t()
   def execute_steps([]), do: empty_ord_ast()
-  def execute_steps(steps), do: build_concat_ast(append_identity_tiebreaker(steps))
-
-  # ============================================================================
-  # IMPLICIT TIEBREAKER
-  # ============================================================================
-
-  # Append identity projection as final tiebreaker
-  # This ensures deterministic ordering by falling back to the value's Ord protocol
-  defp append_identity_tiebreaker(steps) do
-    identity_step = %Step{
-      direction: :asc,
-      projection: quote(do: fn x -> x end),
-      ord: quote(do: Funx.Ord.Protocol),
-      type: :projection,
-      __meta__: %{line: nil, column: nil}
-    }
-
-    steps ++ [identity_step]
-  end
+  def execute_steps([step]), do: step_to_ord_ast(step)
+  def execute_steps(steps), do: build_concat_ast(steps)
 
   # ============================================================================
   # AST BUILDING
   # ============================================================================
 
-  # Note: With implicit identity tiebreaker, we always have at least 2 steps
-  # (user steps + identity), so we always use concat
   defp build_concat_ast(steps) do
     ord_asts = Enum.map(steps, &step_to_ord_ast/1)
 
