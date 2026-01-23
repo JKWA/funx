@@ -280,7 +280,18 @@ defmodule Funx.Macros do
       defimpl Funx.Eq.Protocol, for: unquote(for_struct) do
         # Private function to build the eq_map once at module compile time
         defp __eq_map__ do
-          Funx.Eq.to_eq_map_or_contramap(unquote(projection_ast), unquote(eq_module_ast))
+          __resolve_eq_map__(unquote(projection_ast), unquote(eq_module_ast))
+        end
+
+        # Eq map (plain map or Monoid.Eq struct) - use directly
+        defp __resolve_eq_map__(%{eq?: eq_fun, not_eq?: not_eq_fun} = map, _eq)
+             when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) do
+          map
+        end
+
+        # Projection - wrap in contramap
+        defp __resolve_eq_map__(projection, eq) do
+          Funx.Eq.contramap(projection, eq)
         end
 
         def eq?(a, b)
@@ -372,7 +383,22 @@ defmodule Funx.Macros do
       defimpl Funx.Ord.Protocol, for: unquote(for_struct) do
         # Private function to build the ord_map once at module compile time
         defp __ord_map__ do
-          Funx.Ord.to_ord_map_or_contramap(unquote(projection_ast), unquote(ord_module_ast))
+          __resolve_ord_map__(unquote(projection_ast), unquote(ord_module_ast))
+        end
+
+        # Ord map (plain map or Monoid.Ord struct) - use directly
+        defp __resolve_ord_map__(
+               %{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun} = map,
+               _ord
+             )
+             when is_function(lt_fun, 2) and is_function(le_fun, 2) and
+                    is_function(gt_fun, 2) and is_function(ge_fun, 2) do
+          map
+        end
+
+        # Projection - wrap in contramap
+        defp __resolve_ord_map__(projection, ord) do
+          Funx.Ord.contramap(projection, ord)
         end
 
         def lt?(a, b)

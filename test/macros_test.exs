@@ -551,6 +551,152 @@ defmodule Funx.MacrosTest do
   end
 
   # ============================================================================
+  # DSL via Function Call Tests (ord_for/eq_for with function returning DSL result)
+  # ============================================================================
+
+  # Helper module for defining ord/eq functions
+  defmodule OrdEqHelpers do
+    @moduledoc false
+    use Funx.Ord
+    use Funx.Eq
+
+    alias Funx.Optics.Lens
+
+    def card_ord do
+      ord do
+        asc Lens.key(:color)
+        asc Lens.key(:value)
+      end
+    end
+
+    def person_eq do
+      eq do
+        on :name
+        on :age
+      end
+    end
+
+    def reverse_priority_ord do
+      ord do
+        desc :priority
+        asc :title
+      end
+    end
+  end
+
+  defmodule FnOrdCard do
+    @moduledoc false
+    defstruct [:color, :value, :suit]
+
+    # Using function call that returns an Ord map from DSL
+    Funx.Macros.ord_for(FnOrdCard, OrdEqHelpers.card_ord())
+  end
+
+  defmodule FnEqEmployee do
+    @moduledoc false
+    defstruct [:name, :age, :department]
+
+    # Using function call that returns an Eq map from DSL
+    Funx.Macros.eq_for(FnEqEmployee, OrdEqHelpers.person_eq())
+  end
+
+  defmodule FnOrdTask do
+    @moduledoc false
+    defstruct [:title, :priority, :status]
+
+    # Using function call with desc ordering
+    Funx.Macros.ord_for(FnOrdTask, OrdEqHelpers.reverse_priority_ord())
+  end
+
+  describe "ord_for with function returning Ord DSL result" do
+    test "compares using DSL from function call" do
+      card1 = %FnOrdCard{color: :red, value: 5, suit: :hearts}
+      card2 = %FnOrdCard{color: :red, value: 10, suit: :diamonds}
+      card3 = %FnOrdCard{color: :blue, value: 1, suit: :clubs}
+
+      # Same color, different value: 5 < 10
+      assert Protocol.lt?(card1, card2)
+
+      # Different color: :blue < :red (atom ordering)
+      assert Protocol.lt?(card3, card1)
+    end
+
+    test "uses secondary sort key from function-returned DSL" do
+      card1 = %FnOrdCard{color: :red, value: 5, suit: :hearts}
+      card2 = %FnOrdCard{color: :red, value: 5, suit: :diamonds}
+
+      # Same color and value - should be equal
+      assert Protocol.le?(card1, card2)
+      assert Protocol.ge?(card1, card2)
+    end
+
+    test "sorts list using function-returned DSL ordering" do
+      cards = [
+        %FnOrdCard{color: :red, value: 10, suit: :hearts},
+        %FnOrdCard{color: :blue, value: 5, suit: :clubs},
+        %FnOrdCard{color: :red, value: 3, suit: :diamonds},
+        %FnOrdCard{color: :blue, value: 8, suit: :spades}
+      ]
+
+      sorted = Enum.sort(cards, &Protocol.le?/2)
+
+      # First by color (:blue < :red), then by value
+      assert Enum.map(sorted, &{&1.color, &1.value}) == [
+               {:blue, 5},
+               {:blue, 8},
+               {:red, 3},
+               {:red, 10}
+             ]
+    end
+
+    test "desc ordering from function-returned DSL" do
+      task1 = %FnOrdTask{title: "A", priority: 1, status: :pending}
+      task2 = %FnOrdTask{title: "B", priority: 5, status: :done}
+
+      # Higher priority should come first (desc), so task2 < task1 in sort order
+      assert Protocol.lt?(task2, task1)
+      assert Protocol.gt?(task1, task2)
+    end
+
+    test "secondary asc sort with desc primary from function" do
+      task1 = %FnOrdTask{title: "Zebra", priority: 3, status: :pending}
+      task2 = %FnOrdTask{title: "Alpha", priority: 3, status: :done}
+
+      # Same priority, sort by title asc: Alpha < Zebra
+      assert Protocol.lt?(task2, task1)
+    end
+  end
+
+  describe "eq_for with function returning Eq DSL result" do
+    test "compares using DSL from function call" do
+      emp1 = %FnEqEmployee{name: "Alice", age: 30, department: "Engineering"}
+      emp2 = %FnEqEmployee{name: "Alice", age: 30, department: "Marketing"}
+      emp3 = %FnEqEmployee{name: "Bob", age: 30, department: "Engineering"}
+
+      # Same name and age, different department - equal (DSL only checks name and age)
+      assert Eq.eq?(emp1, emp2)
+
+      # Different name - not equal
+      refute Eq.eq?(emp1, emp3)
+    end
+
+    test "not_eq? works with function-returned DSL" do
+      emp1 = %FnEqEmployee{name: "Alice", age: 30, department: "Eng"}
+      emp2 = %FnEqEmployee{name: "Alice", age: 25, department: "Eng"}
+
+      # Different age - not equal
+      assert Eq.not_eq?(emp1, emp2)
+    end
+
+    test "reflexivity with function-returned DSL" do
+      emp = %FnEqEmployee{name: "Test", age: 42, department: "QA"}
+
+      assert Eq.eq?(emp, emp)
+      refute Eq.not_eq?(emp, emp)
+    end
+  end
+
+  # ============================================================================
   # Ordering Tests (ord_for/2) - Basic Operations
   # ============================================================================
 

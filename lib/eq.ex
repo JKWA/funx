@@ -267,26 +267,6 @@ defmodule Funx.Eq do
   end
 
   @doc """
-  Converts an Eq DSL result or projection to an eq_map.
-
-  If passed a plain map with `eq?/2` and `not_eq?/2` functions (the result
-  of `eq do ... end`), returns it directly. Otherwise, delegates to `contramap/2`.
-
-  Used internally by `Funx.Macros.eq_for/3` to support both projection-based
-  and DSL-based equality definitions.
-  """
-  @spec to_eq_map_or_contramap(any(), eq_t()) :: eq_map()
-  # Plain map with eq?/not_eq? keys (DSL result)
-  def to_eq_map_or_contramap(%{eq?: eq?, not_eq?: not_eq?} = map, _eq)
-      when is_function(eq?, 2) and is_function(not_eq?, 2) and not is_struct(map) do
-    map
-  end
-
-  def to_eq_map_or_contramap(projection, eq) do
-    contramap(projection, eq)
-  end
-
-  @doc """
   Checks equality of two values by applying a projection before comparison.
 
   The `projection` must be one of:
