@@ -64,7 +64,7 @@ To use Funx, add it to the list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:funx, "~> 0.7"}
+    {:funx, "~> 0.8"}
   ]
 end
 ```
@@ -115,7 +115,6 @@ Enum.sort(users, Funx.Ord.comparator(user_ord))
 Features:
 
 - Multiple projections with `asc` and `desc` directions
-- Automatic identity tiebreaker for deterministic ordering
 - Support for optics (Lens, Prism), functions, and modules
 - Ord variables for composing and reversing orderings
 
