@@ -28,6 +28,13 @@ defmodule Funx.OrdTest do
   defp ord_concat_default, do: concat([Funx.Ord.Protocol])
   defp ord_empty, do: concat([])
 
+  # Compose fixtures (new API)
+  defp ord_compose_2, do: compose(ord_name(), ord_age())
+  defp ord_compose_list, do: compose([ord_name(), ord_age()])
+  defp ord_compose_age, do: compose([ord_age(), ord_ticket(), Funx.Ord.Protocol])
+  defp ord_compose_default, do: compose([Funx.Ord.Protocol])
+  defp ord_compose_empty, do: compose([])
+
   # ============================================================================
   # Basic Operations Tests
   # ============================================================================
@@ -439,6 +446,57 @@ defmodule Funx.OrdTest do
     end
   end
 
+  describe "Ord Monoid - compose" do
+    test "compose/2 combines two orderings" do
+      alice = %Person{name: "Alice", age: 30, ticket: :b}
+      bob = %Person{name: "Bob", age: 25, ticket: :a}
+
+      assert compare(alice, bob, ord_compose_2()) == :lt
+      assert compare(bob, alice, ord_compose_2()) == :gt
+      assert compare(alice, alice, ord_compose_2()) == :eq
+    end
+
+    test "compose/1 with list combines orderings lexicographically" do
+      alice = %Person{name: "Alice", age: 30, ticket: :b}
+      bob = %Person{name: "Bob", age: 25, ticket: :a}
+      bob_b = %Person{name: "Bob", age: 30, ticket: :a}
+      bob_c = %Person{name: "Bob", age: 30, ticket: :b}
+
+      assert compare(alice, bob, ord_compose_list()) == :lt
+      assert compare(bob, alice, ord_compose_list()) == :gt
+      assert compare(alice, alice, ord_compose_list()) == :eq
+
+      assert compare(alice, bob, ord_compose_age()) == :gt
+      assert compare(bob, alice, ord_compose_age()) == :lt
+      assert compare(alice, alice, ord_compose_age()) == :eq
+      assert compare(alice, bob_b, ord_compose_age()) == :gt
+      assert compare(alice, bob_c, ord_compose_age()) == :lt
+
+      assert ord_compose_list().lt?.(alice, bob)
+      assert ord_compose_list().le?.(alice, alice)
+      assert ord_compose_list().gt?.(bob, alice)
+      assert ord_compose_list().ge?.(bob, alice)
+    end
+
+    test "compose/1 with empty list makes everything equal" do
+      alice = %Person{name: "Alice", age: 30}
+      bob = %Person{name: "Bob", age: 25}
+
+      assert compare(alice, bob, ord_compose_empty()) == :eq
+      assert compare(bob, alice, ord_compose_empty()) == :eq
+      assert compare(alice, alice, ord_compose_empty()) == :eq
+    end
+
+    test "compose/1 with default ord (name)" do
+      alice = %Person{name: "Alice", age: 30}
+      bob = %Person{name: "Bob", age: 25}
+
+      assert compare(alice, bob, ord_compose_default()) == :lt
+      assert compare(bob, alice, ord_compose_default()) == :gt
+      assert compare(alice, alice, ord_compose_default()) == :eq
+    end
+  end
+
   # ============================================================================
   # Property-Based Tests
   # ============================================================================
@@ -799,6 +857,71 @@ defmodule Funx.OrdTest do
         # (ord1 + ord2) + ord3 == ord1 + (ord2 + ord3)
         left = append(append(ord1, ord2), ord3)
         right = append(ord1, append(ord2, ord3))
+
+        assert compare(x, y, left) == compare(x, y, right)
+      end
+    end
+
+    property "compose/1 with empty list is identity (all equal)" do
+      check all(
+              a <- integer(),
+              b <- integer()
+            ) do
+        empty_ord = compose([])
+
+        # Empty compose makes everything equal
+        assert compare(a, b, empty_ord) == :eq
+      end
+    end
+
+    property "compose/1 combines orderings lexicographically" do
+      check all(
+              name1 <- string(:alphanumeric, min_length: 1),
+              name2 <- string(:alphanumeric, min_length: 1),
+              age1 <- integer(1..100),
+              age2 <- integer(1..100)
+            ) do
+        ord_name = contramap(& &1.name)
+        ord_age = contramap(& &1.age)
+        combined = compose([ord_name, ord_age])
+
+        person1 = %{name: name1, age: age1}
+        person2 = %{name: name2, age: age2}
+
+        cond do
+          # Names differ - ordering determined by name
+          name1 < name2 ->
+            assert combined.lt?.(person1, person2)
+
+          name1 > name2 ->
+            assert combined.gt?.(person1, person2)
+
+          # Names equal - ordering determined by age
+          name1 == name2 and age1 < age2 ->
+            assert combined.lt?.(person1, person2)
+
+          name1 == name2 and age1 > age2 ->
+            assert combined.gt?.(person1, person2)
+
+          # Both equal
+          name1 == name2 and age1 == age2 ->
+            assert compare(person1, person2, combined) == :eq
+        end
+      end
+    end
+
+    property "compose/2 is associative" do
+      check all(
+              x <- integer(),
+              y <- integer()
+            ) do
+        ord1 = contramap(& &1)
+        ord2 = contramap(& &1)
+        ord3 = contramap(& &1)
+
+        # (ord1 + ord2) + ord3 == ord1 + (ord2 + ord3)
+        left = compose(compose(ord1, ord2), ord3)
+        right = compose(ord1, compose(ord2, ord3))
 
         assert compare(x, y, left) == compare(x, y, right)
       end
