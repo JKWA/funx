@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.1] - Unreleased
+
+### Added
+
+* Added mismatch struct logic to eq macro (same as ord)
+
 ## [0.8.0] - Unreleased
 
 ### Added
