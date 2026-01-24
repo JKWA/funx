@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.0">
+    <meta name="project" content="funx v0.8.1">
 
 
-    <title>Funx.Validate — funx v0.8.0</title>
+    <title>Funx.Validate — funx v0.8.1</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Validate.html" />
 
-    <script defer src="dist/sidebar_items-00439239.js"></script>
+    <script defer src="dist/sidebar_items-72A005C5.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.0
+          v0.8.1
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Validate</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.0)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.1)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/validate.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validate.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -112,12 +112,12 @@ funx
 <p>Declarative validation DSL using optics and applicative error accumulation.</p><h2 id="module-overview" class="section-heading"><a href="#module-overview" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Overview</span></h2><p>The Validation DSL provides:</p><ul><li>Declarative syntax for validating nested structures</li><li>Projection to fields using optics (Lens, Prism, Traversal)</li><li>Applicative error accumulation (all validators run, all errors collected)</li><li>Structure preservation (returns original value on success)</li></ul><h2 id="module-usage" class="section-heading"><a href="#module-usage" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Usage</span></h2><pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Validate</span><span class="w">
 
 </span><span class="n">user_validation</span><span class="w"> </span><span class="o">=</span><span class="w">
-  </span><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="7535339867-1">do</span><span class="w">
-    </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7535339867-2">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7535339867-3">{</span><span class="nc">MinLength</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7535339867-3">}</span><span class="p" data-group-id="7535339867-2">]</span><span class="w">
-    </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7535339867-4">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="p" data-group-id="7535339867-4">]</span><span class="w">
-  </span><span class="k" data-group-id="7535339867-1">end</span><span class="w">
+  </span><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="6946878288-1">do</span><span class="w">
+    </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6946878288-2">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6946878288-3">{</span><span class="nc">MinLength</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="6946878288-3">}</span><span class="p" data-group-id="6946878288-2">]</span><span class="w">
+    </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6946878288-4">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="p" data-group-id="6946878288-4">]</span><span class="w">
+  </span><span class="k" data-group-id="6946878288-1">end</span><span class="w">
 
-</span><span class="nc">Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="7535339867-5">(</span><span class="p" data-group-id="7535339867-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice@example.com&quot;</span><span class="p" data-group-id="7535339867-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">user_validation</span><span class="p" data-group-id="7535339867-5">)</span><span class="w">
+</span><span class="nc">Either</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="6946878288-5">(</span><span class="p" data-group-id="6946878288-6">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alice@example.com&quot;</span><span class="p" data-group-id="6946878288-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">user_validation</span><span class="p" data-group-id="6946878288-5">)</span><span class="w">
 </span><span class="c1">#=&gt; %Right{right: %{name: &quot;Alice&quot;, email: &quot;alice@example.com&quot;}}</span></code></pre><h2 id="module-laws" class="section-heading"><a href="#module-laws" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Laws</span></h2><ol><li><strong>Identity</strong>: <code class="inline">validate do end</code> returns <code class="inline">Right(value)</code></li><li><strong>Structure Preservation</strong>: Successful validation returns original structure</li><li><strong>Applicative</strong>: All validators run; all errors accumulate</li></ol><h2 id="module-architecture" class="section-heading"><a href="#module-architecture" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Architecture</span></h2><p>The DSL compiles in two phases:</p><ol><li><strong>Parser</strong> - Converts DSL syntax into Step nodes</li><li><strong>Executor</strong> - Converts Step nodes into executable validator function</li></ol>
     </section>
 
@@ -183,7 +183,7 @@ funx
       <h1 class="signature" translate="no">t()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/validate.ex#L43" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validate.ex#L43" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -229,7 +229,7 @@ funx
         <span class="note">(macro)</span>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/validate.ex#L133" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validate.ex#L133" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -238,42 +238,42 @@ funx
 
   <section class="docstring">
 
-<p>Defines a validation using the DSL.</p><p>Returns a validator function compatible with <code class="inline">Either.validate/2,3</code>.</p><h2 id="validate/2-syntax" class="section-heading"><a href="#validate/2-syntax" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Syntax</span></h2><h3 id="validate/2-root-validators" class="section-heading"><a href="#validate/2-root-validators" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Root Validators</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="1775778984-1">do</span><span class="w">
+<p>Defines a validation using the DSL.</p><p>Returns a validator function compatible with <code class="inline">Either.validate/2,3</code>.</p><h2 id="validate/2-syntax" class="section-heading"><a href="#validate/2-syntax" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Syntax</span></h2><h3 id="validate/2-root-validators" class="section-heading"><a href="#validate/2-root-validators" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Root Validators</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="2590416916-1">do</span><span class="w">
   </span><span class="nc">HasContactMethod</span><span class="w">
   </span><span class="nc">ValidTimezone</span><span class="w">
-</span><span class="k" data-group-id="1775778984-1">end</span></code></pre><h3 id="validate/2-field-validation-with-at" class="section-heading"><a href="#validate/2-field-validation-with-at" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Field Validation with <code class="inline">at</code></span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="7876863617-1">do</span><span class="w">
+</span><span class="k" data-group-id="2590416916-1">end</span></code></pre><h3 id="validate/2-field-validation-with-at" class="section-heading"><a href="#validate/2-field-validation-with-at" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Field Validation with <code class="inline">at</code></span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="5058435939-1">do</span><span class="w">
   </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
   </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="w">
-</span><span class="k" data-group-id="7876863617-1">end</span></code></pre><p>By default, <code class="inline">at :key</code> uses <code class="inline">Prism.key(:key)</code> (optional field).</p><h3 id="validate/2-nested-field-validation-list-paths" class="section-heading"><a href="#validate/2-nested-field-validation-list-paths" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Nested Field Validation (List Paths)</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="0891330821-1">do</span><span class="w">
-  </span><span class="n">at</span><span class="w"> </span><span class="p" data-group-id="0891330821-2">[</span><span class="ss">:user</span><span class="p">,</span><span class="w"> </span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="ss">:name</span><span class="p" data-group-id="0891330821-2">]</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
-  </span><span class="n">at</span><span class="w"> </span><span class="p" data-group-id="0891330821-3">[</span><span class="ss">:user</span><span class="p">,</span><span class="w"> </span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="0891330821-3">]</span><span class="p">,</span><span class="w"> </span><span class="nc">Positive</span><span class="w">
-</span><span class="k" data-group-id="0891330821-1">end</span></code></pre><p>List paths support struct modules for type-safe nested access:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="0183900477-1">do</span><span class="w">
-  </span><span class="n">at</span><span class="w"> </span><span class="p" data-group-id="0183900477-2">[</span><span class="nc">User</span><span class="p">,</span><span class="w"> </span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="nc">Profile</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="0183900477-2">]</span><span class="p">,</span><span class="w"> </span><span class="nc">Positive</span><span class="w">
-</span><span class="k" data-group-id="0183900477-1">end</span></code></pre><h3 id="validate/2-explicit-optics" class="section-heading"><a href="#validate/2-explicit-optics" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Explicit Optics</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="4648285919-1">do</span><span class="w">
+</span><span class="k" data-group-id="5058435939-1">end</span></code></pre><p>By default, <code class="inline">at :key</code> uses <code class="inline">Prism.key(:key)</code> (optional field).</p><h3 id="validate/2-nested-field-validation-list-paths" class="section-heading"><a href="#validate/2-nested-field-validation-list-paths" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Nested Field Validation (List Paths)</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="4105650357-1">do</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="p" data-group-id="4105650357-2">[</span><span class="ss">:user</span><span class="p">,</span><span class="w"> </span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="ss">:name</span><span class="p" data-group-id="4105650357-2">]</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="p" data-group-id="4105650357-3">[</span><span class="ss">:user</span><span class="p">,</span><span class="w"> </span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="4105650357-3">]</span><span class="p">,</span><span class="w"> </span><span class="nc">Positive</span><span class="w">
+</span><span class="k" data-group-id="4105650357-1">end</span></code></pre><p>List paths support struct modules for type-safe nested access:</p><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="6379172932-1">do</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="p" data-group-id="6379172932-2">[</span><span class="nc">User</span><span class="p">,</span><span class="w"> </span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="nc">Profile</span><span class="p">,</span><span class="w"> </span><span class="ss">:age</span><span class="p" data-group-id="6379172932-2">]</span><span class="p">,</span><span class="w"> </span><span class="nc">Positive</span><span class="w">
+</span><span class="k" data-group-id="6379172932-1">end</span></code></pre><h3 id="validate/2-explicit-optics" class="section-heading"><a href="#validate/2-explicit-optics" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Explicit Optics</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="6537779278-1">do</span><span class="w">
   </span><span class="c1"># Prism: optional field</span><span class="w">
-  </span><span class="n">at</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4648285919-2">(</span><span class="ss">:email</span><span class="p" data-group-id="4648285919-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="6537779278-2">(</span><span class="ss">:email</span><span class="p" data-group-id="6537779278-2">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="w">
 
   </span><span class="c1"># Lens: required field (raises KeyError if missing)</span><span class="w">
-  </span><span class="n">at</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4648285919-3">(</span><span class="ss">:name</span><span class="p" data-group-id="4648285919-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
-</span><span class="k" data-group-id="4648285919-1">end</span></code></pre><h3 id="validate/2-validator-options" class="section-heading"><a href="#validate/2-validator-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Validator Options</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="0872575790-1">do</span><span class="w">
-  </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0872575790-2">{</span><span class="nc">MinLength</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0872575790-2">}</span><span class="w">
-</span><span class="k" data-group-id="0872575790-1">end</span></code></pre><h3 id="validate/2-multiple-validators-per-field" class="section-heading"><a href="#validate/2-multiple-validators-per-field" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Multiple Validators per Field</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="4449897292-1">do</span><span class="w">
-  </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4449897292-2">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4449897292-3">{</span><span class="nc">MinLength</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4449897292-3">}</span><span class="p" data-group-id="4449897292-2">]</span><span class="w">
-</span><span class="k" data-group-id="4449897292-1">end</span></code></pre><p>Validators run sequentially left-to-right.</p><h3 id="validate/2-validation-modes" class="section-heading"><a href="#validate/2-validation-modes" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Validation Modes</span></h3><pre><code class="makeup elixir" translate="no"><span class="c1"># Sequential mode (default): fail-fast, short-circuits on first error</span><span class="w">
-</span><span class="n">validate</span><span class="w"> </span><span class="ss">mode</span><span class="p">:</span><span class="w"> </span><span class="ss">:sequential</span><span class="w"> </span><span class="k" data-group-id="4081139509-1">do</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="nc">Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="6537779278-3">(</span><span class="ss">:name</span><span class="p" data-group-id="6537779278-3">)</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
+</span><span class="k" data-group-id="6537779278-1">end</span></code></pre><h3 id="validate/2-validator-options" class="section-heading"><a href="#validate/2-validator-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Validator Options</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="0008279809-1">do</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0008279809-2">{</span><span class="nc">MinLength</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0008279809-2">}</span><span class="w">
+</span><span class="k" data-group-id="0008279809-1">end</span></code></pre><h3 id="validate/2-multiple-validators-per-field" class="section-heading"><a href="#validate/2-multiple-validators-per-field" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Multiple Validators per Field</span></h3><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="0344270338-1">do</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0344270338-2">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0344270338-3">{</span><span class="nc">MinLength</span><span class="p">,</span><span class="w"> </span><span class="ss">min</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0344270338-3">}</span><span class="p" data-group-id="0344270338-2">]</span><span class="w">
+</span><span class="k" data-group-id="0344270338-1">end</span></code></pre><p>Validators run sequentially left-to-right.</p><h3 id="validate/2-validation-modes" class="section-heading"><a href="#validate/2-validation-modes" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Validation Modes</span></h3><pre><code class="makeup elixir" translate="no"><span class="c1"># Sequential mode (default): fail-fast, short-circuits on first error</span><span class="w">
+</span><span class="n">validate</span><span class="w"> </span><span class="ss">mode</span><span class="p">:</span><span class="w"> </span><span class="ss">:sequential</span><span class="w"> </span><span class="k" data-group-id="7296789320-1">do</span><span class="w">
   </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
   </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="w">
-</span><span class="k" data-group-id="4081139509-1">end</span><span class="w">
+</span><span class="k" data-group-id="7296789320-1">end</span><span class="w">
 
 </span><span class="c1"># Parallel mode: runs all validations, accumulates all errors</span><span class="w">
-</span><span class="n">validate</span><span class="w"> </span><span class="ss">mode</span><span class="p">:</span><span class="w"> </span><span class="ss">:parallel</span><span class="w"> </span><span class="k" data-group-id="4081139509-2">do</span><span class="w">
+</span><span class="n">validate</span><span class="w"> </span><span class="ss">mode</span><span class="p">:</span><span class="w"> </span><span class="ss">:parallel</span><span class="w"> </span><span class="k" data-group-id="7296789320-2">do</span><span class="w">
   </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
   </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="w">
-</span><span class="k" data-group-id="4081139509-2">end</span></code></pre><h2 id="validate/2-examples" class="section-heading"><a href="#validate/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="7765950936-1">do</span><span class="w">
+</span><span class="k" data-group-id="7296789320-2">end</span></code></pre><h2 id="validate/2-examples" class="section-heading"><a href="#validate/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="n">validate</span><span class="w"> </span><span class="k" data-group-id="0868808416-1">do</span><span class="w">
   </span><span class="n">at</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="nc">Required</span><span class="w">
-  </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7765950936-2">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="p" data-group-id="7765950936-2">]</span><span class="w">
+  </span><span class="n">at</span><span class="w"> </span><span class="ss">:email</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0868808416-2">[</span><span class="nc">Required</span><span class="p">,</span><span class="w"> </span><span class="nc">Email</span><span class="p" data-group-id="0868808416-2">]</span><span class="w">
   </span><span class="n">at</span><span class="w"> </span><span class="ss">:age</span><span class="p">,</span><span class="w"> </span><span class="nc">Positive</span><span class="w">
-</span><span class="k" data-group-id="7765950936-1">end</span></code></pre>
+</span><span class="k" data-group-id="0868808416-1">end</span></code></pre>
   </section>
 </section>
 
@@ -285,9 +285,9 @@ funx
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.0" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.1" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.0">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.1">Hex Preview</a>
 
             </span>
 

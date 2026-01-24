@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.0">
+    <meta name="project" content="funx v0.8.1">
 
 
-    <title>Funx.Validator.NotIn — funx v0.8.0</title>
+    <title>Funx.Validator.NotIn — funx v0.8.1</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Validator.NotIn.html" />
 
-    <script defer src="dist/sidebar_items-00439239.js"></script>
+    <script defer src="dist/sidebar_items-72A005C5.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.0
+          v0.8.1
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Validator.NotIn</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.0)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.1)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/validator/not_in.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validator/not_in.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -118,9 +118,9 @@ An equality comparator. Defaults to <a href="Funx.Eq.Protocol.html"><code class=
 A custom error message callback <code class="inline">(value -&gt; String.t())</code> used to override the
 default error message on failure.</p></li></ul><p>Semantics</p><ul><li>If the value matches any element in <code class="inline">:values</code> under <code class="inline">Eq</code>, validation fails.</li><li>If the value does not match any element, validation succeeds.</li><li><code class="inline">Nothing</code> values are preserved and treated as not applicable.</li><li><code class="inline">Just</code> values are unwrapped before comparison.</li></ul><p>Examples</p><p>  iex&gt; Funx.Validator.NotIn.validate(&quot;deleted&quot;, values: [&quot;active&quot;, &quot;inactive&quot;])
   %Funx.Monad.Either.Right{right: &quot;deleted&quot;}</p><p>  iex&gt; Funx.Validator.NotIn.validate(&quot;active&quot;, values: [&quot;active&quot;, &quot;inactive&quot;])
-  %Funx.Monad.Either.Left{</p><pre><code class="makeup elixir" translate="no"><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6035264888-1">%</span><span class="nc" data-group-id="6035264888-1">Funx.Errors.ValidationError</span><span class="p" data-group-id="6035264888-1">{</span><span class="w">
-  </span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6035264888-2">[</span><span class="s">&quot;must not be one of: [</span><span class="se">\&quot;</span><span class="s">active</span><span class="se">\&quot;</span><span class="s">, </span><span class="se">\&quot;</span><span class="s">inactive</span><span class="se">\&quot;</span><span class="s">]&quot;</span><span class="p" data-group-id="6035264888-2">]</span><span class="w">
-</span><span class="p" data-group-id="6035264888-1">}</span></code></pre><p>  }</p><p>  iex&gt; Funx.Validator.NotIn.validate(%Funx.Monad.Maybe.Nothing{}, values: [&quot;a&quot;, &quot;b&quot;])
+  %Funx.Monad.Either.Left{</p><pre><code class="makeup elixir" translate="no"><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6158027790-1">%</span><span class="nc" data-group-id="6158027790-1">Funx.Errors.ValidationError</span><span class="p" data-group-id="6158027790-1">{</span><span class="w">
+  </span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6158027790-2">[</span><span class="s">&quot;must not be one of: [</span><span class="se">\&quot;</span><span class="s">active</span><span class="se">\&quot;</span><span class="s">, </span><span class="se">\&quot;</span><span class="s">inactive</span><span class="se">\&quot;</span><span class="s">]&quot;</span><span class="p" data-group-id="6158027790-2">]</span><span class="w">
+</span><span class="p" data-group-id="6158027790-1">}</span></code></pre><p>  }</p><p>  iex&gt; Funx.Validator.NotIn.validate(%Funx.Monad.Maybe.Nothing{}, values: [&quot;a&quot;, &quot;b&quot;])
   %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}</p>
     </section>
 
@@ -178,7 +178,7 @@ default error message on failure.</p></li></ul><p>Semantics</p><ul><li>If the va
       <h1 class="signature" translate="no">validate(value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/validator/not_in.ex#L54" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validator/not_in.ex#L54" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -200,7 +200,7 @@ default error message on failure.</p></li></ul><p>Semantics</p><ul><li>If the va
       <h1 class="signature" translate="no">validate(value, opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/validator/not_in.ex#L58" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validator/not_in.ex#L58" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -221,9 +221,9 @@ default error message on failure.</p></li></ul><p>Semantics</p><ul><li>If the va
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.0" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.1" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.0">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.1">Hex Preview</a>
 
             </span>
 

@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.0">
+    <meta name="project" content="funx v0.8.1">
 
 
-    <title>Funx.Validator.Email — funx v0.8.0</title>
+    <title>Funx.Validator.Email — funx v0.8.1</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Validator.Email.html" />
 
-    <script defer src="dist/sidebar_items-00439239.js"></script>
+    <script defer src="dist/sidebar_items-72A005C5.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.0
+          v0.8.1
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Validator.Email</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.0)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.1)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/validator/email.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validator/email.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -110,11 +110,11 @@ funx
 
     <section id="moduledoc">
 <p>Validates that a string is a valid email format.</p><h2 id="module-basic-check" class="section-heading"><a href="#module-basic-check" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Basic Check</span></h2><p>This is a simple email validator that checks for the presence of an <code class="inline">@</code> symbol.
-For more robust email validation, use a dedicated library or custom validator.</p><h2 id="module-optional-options" class="section-heading"><a href="#module-optional-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Optional Options</span></h2><ul><li><code class="inline">:message</code> - Custom error message callback <code class="inline">(value -&gt; String.t())</code></li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Email</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3384542867-1">(</span><span class="s">&quot;user@example.com&quot;</span><span class="p" data-group-id="3384542867-1">)</span><span class="w">
-</span><span class="p" data-group-id="3384542867-2">%</span><span class="nc" data-group-id="3384542867-2">Funx.Monad.Either.Right</span><span class="p" data-group-id="3384542867-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;user@example.com&quot;</span><span class="p" data-group-id="3384542867-2">}</span><span class="w">
+For more robust email validation, use a dedicated library or custom validator.</p><h2 id="module-optional-options" class="section-heading"><a href="#module-optional-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Optional Options</span></h2><ul><li><code class="inline">:message</code> - Custom error message callback <code class="inline">(value -&gt; String.t())</code></li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Email</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="2313391270-1">(</span><span class="s">&quot;user@example.com&quot;</span><span class="p" data-group-id="2313391270-1">)</span><span class="w">
+</span><span class="p" data-group-id="2313391270-2">%</span><span class="nc" data-group-id="2313391270-2">Funx.Monad.Either.Right</span><span class="p" data-group-id="2313391270-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;user@example.com&quot;</span><span class="p" data-group-id="2313391270-2">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Email</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3384542867-3">(</span><span class="s">&quot;not-an-email&quot;</span><span class="p" data-group-id="3384542867-3">)</span><span class="w">
-</span><span class="p" data-group-id="3384542867-4">%</span><span class="nc" data-group-id="3384542867-4">Funx.Monad.Either.Left</span><span class="p" data-group-id="3384542867-4">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3384542867-5">%</span><span class="nc" data-group-id="3384542867-5">Funx.Errors.ValidationError</span><span class="p" data-group-id="3384542867-5">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3384542867-6">[</span><span class="s">&quot;must be a valid email&quot;</span><span class="p" data-group-id="3384542867-6">]</span><span class="p" data-group-id="3384542867-5">}</span><span class="p" data-group-id="3384542867-4">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Email</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="2313391270-3">(</span><span class="s">&quot;not-an-email&quot;</span><span class="p" data-group-id="2313391270-3">)</span><span class="w">
+</span><span class="p" data-group-id="2313391270-4">%</span><span class="nc" data-group-id="2313391270-4">Funx.Monad.Either.Left</span><span class="p" data-group-id="2313391270-4">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2313391270-5">%</span><span class="nc" data-group-id="2313391270-5">Funx.Errors.ValidationError</span><span class="p" data-group-id="2313391270-5">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2313391270-6">[</span><span class="s">&quot;must be a valid email&quot;</span><span class="p" data-group-id="2313391270-6">]</span><span class="p" data-group-id="2313391270-5">}</span><span class="p" data-group-id="2313391270-4">}</span></code></pre>
     </section>
 
 </div>
@@ -171,7 +171,7 @@ For more robust email validation, use a dedicated library or custom validator.</
       <h1 class="signature" translate="no">validate(value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/validator/email.ex#L23" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validator/email.ex#L23" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -193,7 +193,7 @@ For more robust email validation, use a dedicated library or custom validator.</
       <h1 class="signature" translate="no">validate(value, opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.0/lib/validator/email.ex#L23" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validator/email.ex#L23" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -214,9 +214,9 @@ For more robust email validation, use a dedicated library or custom validator.</
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.0" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.1" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.0">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.1">Hex Preview</a>
 
             </span>
 
