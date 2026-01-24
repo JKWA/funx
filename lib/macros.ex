@@ -287,10 +287,14 @@ defmodule Funx.Macros do
           __eq_map__().eq?.(a, b)
         end
 
+        def eq?(%unquote(for_struct){}, b) when is_struct(b), do: false
+
         def not_eq?(a, b)
             when is_struct(a, unquote(for_struct)) and is_struct(b, unquote(for_struct)) do
           __eq_map__().not_eq?.(a, b)
         end
+
+        def not_eq?(%unquote(for_struct){}, b) when is_struct(b), do: true
       end
     end
   end

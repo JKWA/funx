@@ -361,6 +361,29 @@ defmodule Funx.MacrosTest do
     end
   end
 
+  describe "eq_for - cross-type comparison" do
+    test "different struct types are not equal" do
+      product = %EqProduct{name: "Widget", rating: 5}
+      item = %EqItem{name: "Widget", score: 5}
+
+      refute Eq.eq?(product, item)
+      assert Eq.not_eq?(product, item)
+    end
+
+    test "works in mixed list with Funx.List.uniq" do
+      p1 = %EqProduct{name: "A", rating: 5}
+      p2 = %EqProduct{name: "B", rating: 5}
+      i1 = %EqItem{name: "C", score: 5}
+
+      # p1 and p2 are equal by rating, i1 is different type
+      result = Funx.List.uniq([p1, p2, i1])
+
+      assert length(result) == 2
+      assert p1 in result
+      assert i1 in result
+    end
+  end
+
   # ============================================================================
   # Equality Tests (eq_for/3)
   # ============================================================================
