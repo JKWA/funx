@@ -850,6 +850,189 @@ defmodule Funx.Eq.DslTest do
   end
 
   # ============================================================================
+  # Bare Eq Maps Tests
+  # ============================================================================
+
+  describe "bare eq maps" do
+    test "single eq map variable" do
+      name_eq = Funx.Eq.contramap(& &1.name)
+
+      eq_bare =
+        eq do
+          name_eq
+        end
+
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_bare)
+      refute Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_bare)
+    end
+
+    test "single helper function call" do
+      eq_helper =
+        eq do
+          EqHelpers.name_case_insensitive()
+        end
+
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "alice"}, eq_helper)
+      refute Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_helper)
+    end
+
+    test "multiple bare eq maps" do
+      eq_multi =
+        eq do
+          EqHelpers.name_case_insensitive()
+          EqHelpers.age_mod_10()
+        end
+
+      assert Funx.Eq.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "ALICE", age: 35},
+               eq_multi
+             )
+
+      refute Funx.Eq.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "ALICE", age: 36},
+               eq_multi
+             )
+    end
+
+    test "bare eq with diff_on projection (mixed)" do
+      eq_mixed =
+        eq do
+          EqHelpers.name_case_insensitive()
+          diff_on(:id)
+        end
+
+      # Same name (case insensitive) AND different id
+      assert Funx.Eq.eq?(
+               %Person{name: "Alice", id: 1},
+               %Person{name: "ALICE", id: 2},
+               eq_mixed
+             )
+
+      # Same name but same id -> should fail
+      refute Funx.Eq.eq?(
+               %Person{name: "Alice", id: 1},
+               %Person{name: "ALICE", id: 1},
+               eq_mixed
+             )
+    end
+
+    test "bare eq inside any block" do
+      eq_any =
+        eq do
+          any do
+            EqHelpers.name_case_insensitive()
+            EqHelpers.age_mod_10()
+          end
+        end
+
+      # Same name (case insensitive) OR same age mod 10
+      assert Funx.Eq.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "ALICE", age: 36},
+               eq_any
+             )
+
+      assert Funx.Eq.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "Bob", age: 35},
+               eq_any
+             )
+
+      refute Funx.Eq.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "Bob", age: 36},
+               eq_any
+             )
+    end
+
+    test "bare eq inside all block" do
+      eq_all =
+        eq do
+          all do
+            EqHelpers.name_case_insensitive()
+            EqHelpers.age_mod_10()
+          end
+        end
+
+      # Same name (case insensitive) AND same age mod 10
+      assert Funx.Eq.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "ALICE", age: 35},
+               eq_all
+             )
+
+      refute Funx.Eq.eq?(
+               %Person{name: "Alice", age: 25},
+               %Person{name: "ALICE", age: 36},
+               eq_all
+             )
+    end
+
+    test "bare behaviour module" do
+      eq_behaviour =
+        eq do
+          UserById
+        end
+
+      assert Funx.Eq.eq?(%Person{id: 1, name: "Alice"}, %Person{id: 1, name: "Bob"}, eq_behaviour)
+
+      refute Funx.Eq.eq?(
+               %Person{id: 1, name: "Alice"},
+               %Person{id: 2, name: "Alice"},
+               eq_behaviour
+             )
+    end
+
+    test "bare behaviour module with options" do
+      eq_behaviour =
+        eq do
+          {UserByName, case_sensitive: false}
+        end
+
+      assert Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_behaviour)
+      refute Funx.Eq.eq?(%Person{name: "Alice"}, %Person{name: "Bob"}, eq_behaviour)
+    end
+
+    test "compile error for bare module without behaviour" do
+      defmodule NotAnEqBehaviour do
+        def some_function, do: :ok
+      end
+
+      assert_raise CompileError, ~r/does not implement Eq.Dsl.Behaviour/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Eq
+
+            eq do
+              NotAnEqBehaviour
+            end
+          end
+        )
+      end
+    end
+
+    test "compile error for bare module with options without behaviour" do
+      defmodule NotAnEqBehaviourWithOpts do
+        def some_function, do: :ok
+      end
+
+      assert_raise CompileError, ~r/does not implement the Eq.Dsl.Behaviour/, fn ->
+        Code.eval_quoted(
+          quote do
+            use Funx.Eq
+
+            eq do
+              {NotAnEqBehaviourWithOpts, some_opt: true}
+            end
+          end
+        )
+      end
+    end
+  end
+
+  # ============================================================================
   # Protocol Dispatch Tests
   # ============================================================================
 
@@ -912,20 +1095,6 @@ defmodule Funx.Eq.DslTest do
   # ============================================================================
 
   describe "compile-time errors" do
-    test "rejects invalid syntax" do
-      assert_raise CompileError, fn ->
-        Code.compile_quoted(
-          quote do
-            use Funx.Eq
-
-            eq do
-              check(:name)
-            end
-          end
-        )
-      end
-    end
-
     test "rejects or_else with captured function" do
       assert_raise CompileError, fn ->
         Code.compile_quoted(

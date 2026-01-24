@@ -76,6 +76,16 @@ defmodule Funx.Eq.Dsl.Executor do
   #
   # Each type generates specific code based on compile-time type information.
 
+  # Bare eq map - pass through directly (non-negated)
+  defp node_to_ast(%Step{projection: eq_ast, negate: false, type: :bare}) do
+    eq_ast
+  end
+
+  # Behaviour step - return the eq map from Module.eq(opts) (non-negated)
+  defp node_to_ast(%Step{projection: behaviour_ast, negate: false, type: :behaviour}) do
+    behaviour_ast
+  end
+
   # Projection type - use contramap (non-negated)
   defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: false, type: :projection}) do
     quote do
@@ -120,6 +130,30 @@ defmodule Funx.Eq.Dsl.Executor do
   # === Negated Step nodes ===
   #
   # Same as non-negated but swaps eq?/not_eq? functions.
+
+  # Bare eq map - negate it (negated)
+  defp node_to_ast(%Step{projection: eq_ast, negate: true, type: :bare}) do
+    quote do
+      eq_map = unquote(eq_ast)
+
+      %{
+        eq?: eq_map.not_eq?,
+        not_eq?: eq_map.eq?
+      }
+    end
+  end
+
+  # Behaviour step - negate the eq map (negated)
+  defp node_to_ast(%Step{projection: behaviour_ast, negate: true, type: :behaviour}) do
+    quote do
+      eq_map = unquote(behaviour_ast)
+
+      %{
+        eq?: eq_map.not_eq?,
+        not_eq?: eq_map.eq?
+      }
+    end
+  end
 
   # Projection type - use contramap with negated eq (negated)
   defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: true, type: :projection}) do

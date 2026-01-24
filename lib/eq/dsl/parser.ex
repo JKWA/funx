@@ -80,8 +80,56 @@ defmodule Funx.Eq.Dsl.Parser do
     parse_projection(projection_value, [], negate, meta, caller_env)
   end
 
-  defp parse_entry_to_node(other, _caller_env) do
-    raise CompileError, description: Errors.invalid_dsl_syntax(other)
+  # Bare behaviour module with options: "{UserByName, case_sensitive: false}"
+  defp parse_entry_to_node({{:__aliases__, meta, _} = module_alias, opts}, caller_env)
+       when is_list(opts) do
+    parse_bare_behaviour_module(module_alias, opts, meta, caller_env)
+  end
+
+  # Catch-all for bare eq expressions (variables, helpers, behaviour modules, etc.)
+  # This handles:
+  # - Behaviour modules: UserById → check if module has eq/1
+  # - Other eq expressions: variables, function calls, etc.
+  defp parse_entry_to_node(eq_ast, caller_env) do
+    case eq_ast do
+      {:__aliases__, meta, _} = module_alias ->
+        # Try to parse as behaviour module
+        expanded_module = Macro.expand(module_alias, caller_env)
+
+        if function_exported?(expanded_module, :eq, 1) do
+          parse_bare_behaviour_module(module_alias, [], meta, caller_env)
+        else
+          # Error: bare module reference without eq/1 will cause runtime error
+          raise CompileError,
+            line: Keyword.get(meta, :line),
+            description: Errors.bare_module_without_behaviour(expanded_module)
+        end
+
+      _ ->
+        # Not a module alias, treat as bare Eq map expression
+        Step.new_bare(eq_ast, false, %{})
+    end
+  end
+
+  # Parses a bare behaviour module reference into a Step node.
+  defp parse_bare_behaviour_module(module_alias, opts, meta, caller_env) do
+    expanded_module = Macro.expand(module_alias, caller_env)
+
+    unless function_exported?(expanded_module, :eq, 1) do
+      raise CompileError,
+        line: Keyword.get(meta, :line),
+        description:
+          "Module #{inspect(expanded_module)} does not implement the Eq.Dsl.Behaviour (missing eq/1)"
+    end
+
+    # Generate AST to call Module.eq(opts) at runtime
+    behaviour_ast =
+      quote do
+        unquote(module_alias).eq(unquote(opts))
+      end
+
+    metadata = extract_meta(meta)
+    Step.new_behaviour(behaviour_ast, false, metadata)
   end
 
   # Parses a single projection (on/diff_on directive) into a Step node.

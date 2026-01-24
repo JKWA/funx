@@ -3,7 +3,7 @@ defmodule Funx.Eq.Dsl.Behaviour do
   Behaviour for custom equality logic in the Eq DSL.
 
   Implement this behaviour to define reusable Eq comparators that can be
-  used with `on` directives in the DSL without implementing the Eq protocol.
+  used in the DSL without implementing the Eq protocol.
 
   This is useful for teams that want to avoid teaching developers about protocols,
   or want struct-specific equality without global protocol implementations.
@@ -19,11 +19,16 @@ defmodule Funx.Eq.Dsl.Behaviour do
         end
       end
 
-      # In DSL
+      # In DSL - bare usage (preferred)
       use Funx.Eq
 
       eq do
-        on UserById  # Compares by id
+        UserById  # Compares by id
+      end
+
+      # Or with `on` directive
+      eq do
+        on UserById
       end
 
   ## With Options
@@ -43,9 +48,24 @@ defmodule Funx.Eq.Dsl.Behaviour do
         end
       end
 
-      # In DSL
+      # In DSL - bare with options
+      eq do
+        {UserByName, case_sensitive: false}
+      end
+
+      # Or with `on` directive
       eq do
         on UserByName, case_sensitive: false
+      end
+
+  ## Composing Multiple Behaviours
+
+  Behaviour modules can be composed with other eq expressions:
+
+      eq do
+        UserById                              # bare behaviour
+        {UserByName, case_sensitive: false}   # bare with options
+        on :email                             # projection
       end
 
   ## Why Use This Instead of Protocols?

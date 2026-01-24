@@ -77,7 +77,16 @@ defmodule Funx.Eq do
     - `any` - At least one nested check must pass (OR logic)
     - `all` - All nested checks must pass (AND logic, implicit at top level)
 
-  ## Projection Types
+  ## Bare Eq Maps
+
+  Eq maps can be composed directly without the `on` directive:
+
+    - Variable - Eq map stored in a variable
+    - Helper call - 0-arity function returning an Eq map (e.g., `EqHelpers.by_name()`)
+    - Behaviour module - Module implementing `Funx.Eq.Dsl.Behaviour`
+    - Behaviour with options - Tuple syntax `{Module, opts}`
+
+  ## Projection Types (with `on` directive)
 
   The DSL supports the same projection forms as Ord DSL:
 
@@ -147,6 +156,29 @@ defmodule Funx.Eq do
       eq_nested = eq do
         on [:user, :profile, :name]
         on [:user, :profile, :age]
+      end
+
+  Bare eq maps (without `on` directive):
+
+      # Using a helper function
+      eq_helper = eq do
+        EqHelpers.name_case_insensitive()
+      end
+
+      # Using a behaviour module
+      eq_behaviour = eq do
+        UserById
+      end
+
+      # Behaviour with options
+      eq_opts = eq do
+        {UserByName, case_sensitive: false}
+      end
+
+      # Mixing bare eq with projections
+      eq_mixed = eq do
+        UserById
+        on :department
       end
   """
   defmacro eq(do: block) do
