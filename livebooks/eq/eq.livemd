@@ -128,9 +128,9 @@ eq_by?(& &1.age, %{age: 30}, %{age: 25})
 
 ## Monoid Operations
 
-### append_all/2
+### compose_all/2
 
-Combines two equality comparators using the `Eq.All` monoid.
+Composes two equality comparators using the `Eq.All` monoid.
 
 This function merges two equality comparisons, requiring **both** to return `true`
 for the final result to be considered equal. This enforces a **strict** equality rule,
@@ -139,20 +139,20 @@ where all comparators must agree.
 ```elixir
 eq1 = contramap(& &1.name)
 eq2 = contramap(& &1.age)
-combined = append_all(eq1, eq2)
+combined = compose_all(eq1, eq2)
 eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
 ```
 
 ```elixir
 eq1 = contramap(& &1.name)
 eq2 = contramap(& &1.age)
-combined = append_all(eq1, eq2)
+combined = compose_all(eq1, eq2)
 eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
 ```
 
-### append_any/2
+### compose_any/2
 
-Combines two equality comparators using the `Eq.Any` monoid.
+Composes two equality comparators using the `Eq.Any` monoid.
 
 This function merges two equality comparisons, where **at least one**
 must return `true` for the final result to be considered equal.
@@ -160,20 +160,20 @@ must return `true` for the final result to be considered equal.
 ```elixir
 eq1 = contramap(& &1.name)
 eq2 = contramap(& &1.age)
-combined = append_any(eq1, eq2)
+combined = compose_any(eq1, eq2)
 eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
 ```
 
 ```elixir
 eq1 = contramap(& &1.name)
 eq2 = contramap(& &1.age)
-combined = append_any(eq1, eq2)
+combined = compose_any(eq1, eq2)
 eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
 ```
 
-### concat_all/1
+### compose_all/1
 
-Concatenates a list of equality comparators using the `Eq.All` monoid.
+Composes a list of equality comparators using the `Eq.All` monoid.
 
 The resulting comparator requires **all** comparators in the list to agree
 that two values are equal.
@@ -181,20 +181,20 @@ that two values are equal.
 ```elixir
 eq1 = contramap(& &1.name)
 eq2 = contramap(& &1.age)
-combined = concat_all([eq1, eq2])
+combined = compose_all([eq1, eq2])
 eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
 ```
 
 ```elixir
 eq1 = contramap(& &1.name)
 eq2 = contramap(& &1.age)
-combined = concat_all([eq1, eq2])
+combined = compose_all([eq1, eq2])
 eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
 ```
 
-### concat_any/1
+### compose_any/1
 
-Concatenates a list of equality comparators using the `Eq.Any` monoid.
+Composes a list of equality comparators using the `Eq.Any` monoid.
 
 The resulting comparator allows **any** comparator in the list to determine
 equality, making it more permissive.
@@ -202,14 +202,14 @@ equality, making it more permissive.
 ```elixir
 eq1 = contramap(& &1.name)
 eq2 = contramap(& &1.age)
-combined = concat_any([eq1, eq2])
+combined = compose_any([eq1, eq2])
 eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
 ```
 
 ```elixir
 eq1 = contramap(& &1.name)
 eq2 = contramap(& &1.age)
-combined = concat_any([eq1, eq2])
+combined = compose_any([eq1, eq2])
 eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
 ```
 

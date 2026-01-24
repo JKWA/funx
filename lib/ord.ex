@@ -20,7 +20,7 @@ defmodule Funx.Ord do
   - `reverse/1` - Reverse ordering logic
   - `comparator/1` - Convert to Elixir comparator for `Enum.sort/2`
   - `to_eq/1` - Convert to equality comparator
-  - `append/2`, `concat/1` - Combine multiple orderings
+  - `compose/2`, `compose/1` - Combine multiple orderings
 
   ## DSL
 
@@ -392,7 +392,7 @@ defmodule Funx.Ord do
   end
 
   @doc """
-  Appends two `Ord` instances, combining their comparison logic.
+  Composes two `Ord` instances, combining their comparison logic.
 
   If the first `Ord` comparator determines an order, that result is used.
   If not, the second comparator is used as a fallback.
@@ -401,17 +401,17 @@ defmodule Funx.Ord do
 
       iex> ord1 = Funx.Ord.contramap(& &1.age, Funx.Ord.Protocol.Any)
       iex> ord2 = Funx.Ord.contramap(& &1.name, Funx.Ord.Protocol.Any)
-      iex> combined = Funx.Ord.append(ord1, ord2)
+      iex> combined = Funx.Ord.compose(ord1, ord2)
       iex> combined.lt?.(%{age: 30, name: "Alice"}, %{age: 30, name: "Bob"})
       true
   """
-  @spec append(ord_t(), ord_t()) :: ord_t()
-  def append(a, b) do
+  @spec compose(ord_t(), ord_t()) :: ord_t()
+  def compose(a, b) do
     m_append(%Funx.Monoid.Ord{}, a, b)
   end
 
   @doc """
-  Concatenates a list of `Ord` instances into a single composite comparator.
+  Composes a list of `Ord` instances into a single composite comparator.
 
   This function reduces a list of `Ord` comparators into a single `Ord`,
   applying them in sequence until an order is determined.
@@ -422,14 +422,22 @@ defmodule Funx.Ord do
       ...>   Funx.Ord.contramap(& &1.age, Funx.Ord.Protocol.Any),
       ...>   Funx.Ord.contramap(& &1.name, Funx.Ord.Protocol.Any)
       ...> ]
-      iex> combined = Funx.Ord.concat(ord_list)
+      iex> combined = Funx.Ord.compose(ord_list)
       iex> combined.gt?.(%{age: 25, name: "Charlie"}, %{age: 25, name: "Bob"})
       true
   """
-  @spec concat([ord_t()]) :: ord_t()
-  def concat(ord_list) when is_list(ord_list) do
+  @spec compose([ord_t()]) :: ord_t()
+  def compose(ord_list) when is_list(ord_list) do
     m_concat(%Funx.Monoid.Ord{}, ord_list)
   end
+
+  @deprecated "Use compose/2 instead"
+  @spec append(ord_t(), ord_t()) :: ord_t()
+  def append(a, b), do: compose(a, b)
+
+  @deprecated "Use compose/1 instead"
+  @spec concat([ord_t()]) :: ord_t()
+  def concat(ord_list) when is_list(ord_list), do: compose(ord_list)
 
   def to_ord_map(%{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun} = ord_map)
       when is_function(lt_fun, 2) and

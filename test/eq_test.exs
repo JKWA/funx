@@ -398,100 +398,143 @@ defmodule Funx.EqTest do
 
   defp eq_name, do: Funx.Eq.contramap(& &1.name)
   defp eq_age, do: Funx.Eq.contramap(& &1.age)
-  defp eq_all, do: Funx.Eq.append_all(eq_name(), eq_age())
-  defp eq_any, do: Funx.Eq.append_any(eq_name(), eq_age())
 
-  defp eq_concat_all, do: Funx.Eq.concat_all([eq_name(), eq_age()])
-  defp eq_concat_any, do: Funx.Eq.concat_any([eq_name(), eq_age()])
+  defp eq_compose_all_2, do: Funx.Eq.compose_all(eq_name(), eq_age())
+  defp eq_compose_any_2, do: Funx.Eq.compose_any(eq_name(), eq_age())
 
-  defp eq_concat_all_default, do: Funx.Eq.concat_all([Funx.Eq.Protocol])
-  defp eq_concat_any_default, do: Funx.Eq.concat_any([Funx.Eq.Protocol])
+  defp eq_compose_all_list, do: Funx.Eq.compose_all([eq_name(), eq_age()])
+  defp eq_compose_any_list, do: Funx.Eq.compose_any([eq_name(), eq_age()])
 
-  describe "Eq Monoid - append" do
-    test "append with equal persons" do
+  defp eq_compose_all_default, do: Funx.Eq.compose_all([Funx.Eq.Protocol])
+  defp eq_compose_any_default, do: Funx.Eq.compose_any([Funx.Eq.Protocol])
+
+  describe "Eq Monoid - deprecated append/concat" do
+    test "append_all/2 delegates to compose_all/2" do
       alice1 = %Person{name: "Alice", age: 30}
       alice2 = %Person{name: "Alice", age: 30}
 
-      assert Funx.Eq.eq?(alice1, alice2, eq_name())
-      assert Funx.Eq.eq?(alice1, alice2, eq_age())
-      assert Funx.Eq.eq?(alice1, alice2, eq_all())
-      assert Funx.Eq.eq?(alice1, alice2, eq_any())
-
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_name())
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_age())
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_all())
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_any())
+      combined = Funx.Eq.append_all(eq_name(), eq_age())
+      assert Funx.Eq.eq?(alice1, alice2, combined)
     end
 
-    test "append with not equal persons" do
+    test "append_any/2 delegates to compose_any/2" do
       alice1 = %Person{name: "Alice", age: 30}
       alice2 = %Person{name: "Alice", age: 29}
 
-      assert Funx.Eq.eq?(alice1, alice2, eq_name())
-      refute Funx.Eq.eq?(alice1, alice2, eq_age())
-      refute Funx.Eq.eq?(alice1, alice2, eq_all())
-      assert Funx.Eq.eq?(alice1, alice2, eq_any())
+      combined = Funx.Eq.append_any(eq_name(), eq_age())
+      assert Funx.Eq.eq?(alice1, alice2, combined)
+    end
 
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_name())
-      assert Funx.Eq.not_eq?(alice1, alice2, eq_age())
-      assert Funx.Eq.not_eq?(alice1, alice2, eq_all())
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_any())
+    test "concat_all/1 delegates to compose_all/1" do
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 30}
+
+      combined = Funx.Eq.concat_all([eq_name(), eq_age()])
+      assert Funx.Eq.eq?(alice1, alice2, combined)
+    end
+
+    test "concat_any/1 delegates to compose_any/1" do
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 29}
+
+      combined = Funx.Eq.concat_any([eq_name(), eq_age()])
+      assert Funx.Eq.eq?(alice1, alice2, combined)
     end
   end
 
-  describe "Eq Monoid - concat" do
-    test "concat with equal persons" do
+  describe "Eq Monoid - compose_all" do
+    test "compose_all/2 combines with AND logic" do
       alice1 = %Person{name: "Alice", age: 30}
       alice2 = %Person{name: "Alice", age: 30}
+      alice3 = %Person{name: "Alice", age: 29}
 
-      assert Funx.Eq.eq?(alice1, alice2, eq_name())
-      assert Funx.Eq.eq?(alice1, alice2, eq_age())
-      assert Funx.Eq.eq?(alice1, alice2, eq_concat_all())
-      assert Funx.Eq.eq?(alice1, alice2, eq_concat_any())
+      assert Funx.Eq.eq?(alice1, alice2, eq_compose_all_2())
+      refute Funx.Eq.eq?(alice1, alice3, eq_compose_all_2())
 
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_name())
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_age())
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_concat_all())
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_concat_any())
+      refute Funx.Eq.not_eq?(alice1, alice2, eq_compose_all_2())
+      assert Funx.Eq.not_eq?(alice1, alice3, eq_compose_all_2())
     end
 
-    test "concat with not equal persons" do
+    test "compose_all/1 with list combines with AND logic" do
       alice1 = %Person{name: "Alice", age: 30}
-      alice2 = %Person{name: "Alice", age: 29}
+      alice2 = %Person{name: "Alice", age: 30}
+      alice3 = %Person{name: "Alice", age: 29}
 
-      assert Funx.Eq.eq?(alice1, alice2, eq_name())
-      refute Funx.Eq.eq?(alice1, alice2, eq_age())
-      refute Funx.Eq.eq?(alice1, alice2, eq_concat_all())
-      assert Funx.Eq.eq?(alice1, alice2, eq_concat_any())
+      assert Funx.Eq.eq?(alice1, alice2, eq_compose_all_list())
+      refute Funx.Eq.eq?(alice1, alice3, eq_compose_all_list())
 
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_name())
-      assert Funx.Eq.not_eq?(alice1, alice2, eq_age())
-      assert Funx.Eq.not_eq?(alice1, alice2, eq_concat_all())
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_any())
+      refute Funx.Eq.not_eq?(alice1, alice2, eq_compose_all_list())
+      assert Funx.Eq.not_eq?(alice1, alice3, eq_compose_all_list())
     end
 
-    test "concat all with default (name)" do
+    test "compose_all/1 with default (name)" do
       alice1 = %Person{name: "Alice", age: 30}
       alice2 = %Person{name: "Alice", age: 29}
       bob = %Person{name: "Bob", age: 30}
 
-      assert Funx.Eq.eq?(alice1, alice2, eq_concat_all_default())
-      refute Funx.Eq.eq?(alice1, bob, eq_concat_all_default())
+      assert Funx.Eq.eq?(alice1, alice2, eq_compose_all_default())
+      refute Funx.Eq.eq?(alice1, bob, eq_compose_all_default())
 
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_concat_all_default())
-      assert Funx.Eq.not_eq?(alice1, bob, eq_concat_all_default())
+      refute Funx.Eq.not_eq?(alice1, alice2, eq_compose_all_default())
+      assert Funx.Eq.not_eq?(alice1, bob, eq_compose_all_default())
     end
 
-    test "concat any with default (name)" do
+    test "compose_all/1 with empty list behaves as identity (vacuous truth)" do
+      alice = %Person{name: "Alice", age: 30}
+      bob = %Person{name: "Bob", age: 25}
+
+      empty_eq = Funx.Eq.compose_all([])
+
+      assert empty_eq.eq?.(alice, alice)
+      assert empty_eq.eq?.(alice, bob)
+    end
+  end
+
+  describe "Eq Monoid - compose_any" do
+    test "compose_any/2 combines with OR logic" do
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 29}
+      bob = %Person{name: "Bob", age: 25}
+
+      assert Funx.Eq.eq?(alice1, alice2, eq_compose_any_2())
+      refute Funx.Eq.eq?(alice1, bob, eq_compose_any_2())
+
+      refute Funx.Eq.not_eq?(alice1, alice2, eq_compose_any_2())
+      assert Funx.Eq.not_eq?(alice1, bob, eq_compose_any_2())
+    end
+
+    test "compose_any/1 with list combines with OR logic" do
+      alice1 = %Person{name: "Alice", age: 30}
+      alice2 = %Person{name: "Alice", age: 29}
+      bob = %Person{name: "Bob", age: 25}
+
+      assert Funx.Eq.eq?(alice1, alice2, eq_compose_any_list())
+      refute Funx.Eq.eq?(alice1, bob, eq_compose_any_list())
+
+      refute Funx.Eq.not_eq?(alice1, alice2, eq_compose_any_list())
+      assert Funx.Eq.not_eq?(alice1, bob, eq_compose_any_list())
+    end
+
+    test "compose_any/1 with default (name)" do
       alice1 = %Person{name: "Alice", age: 30}
       alice2 = %Person{name: "Alice", age: 29}
       bob = %Person{name: "Bob", age: 30}
 
-      assert Funx.Eq.eq?(alice1, alice2, eq_concat_any_default())
-      refute Funx.Eq.eq?(alice1, bob, eq_concat_any_default())
+      assert Funx.Eq.eq?(alice1, alice2, eq_compose_any_default())
+      refute Funx.Eq.eq?(alice1, bob, eq_compose_any_default())
 
-      refute Funx.Eq.not_eq?(alice1, alice2, eq_concat_any_default())
-      assert Funx.Eq.not_eq?(alice1, bob, eq_concat_any_default())
+      refute Funx.Eq.not_eq?(alice1, alice2, eq_compose_any_default())
+      assert Funx.Eq.not_eq?(alice1, bob, eq_compose_any_default())
+    end
+
+    test "compose_any/1 with empty list makes nothing equal" do
+      alice = %Person{name: "Alice", age: 30}
+      bob = %Person{name: "Bob", age: 25}
+
+      empty_eq = Funx.Eq.compose_any([])
+
+      refute empty_eq.eq?.(alice, alice)
+      refute empty_eq.eq?.(alice, bob)
     end
   end
 
@@ -749,10 +792,10 @@ defmodule Funx.EqTest do
   end
 
   describe "property: monoid laws" do
-    property "concat_all: empty list behaves as identity" do
+    property "compose_all/1: empty list behaves as identity" do
       check all(value <- integer()) do
-        # Empty concat_all should compare everything as equal (identity)
-        empty_eq = Funx.Eq.concat_all([])
+        # Empty compose_all should compare everything as equal (identity)
+        empty_eq = Funx.Eq.compose_all([])
 
         # With empty list, everything equals everything (vacuous truth)
         assert empty_eq.eq?.(value, value)
@@ -760,10 +803,10 @@ defmodule Funx.EqTest do
       end
     end
 
-    property "concat_any: empty list behaves as identity" do
+    property "compose_any/1: empty list behaves as identity" do
       check all(value <- integer()) do
-        # Empty concat_any should compare nothing as equal
-        empty_eq = Funx.Eq.concat_any([])
+        # Empty compose_any should compare nothing as equal
+        empty_eq = Funx.Eq.compose_any([])
 
         # With empty list, nothing equals anything (even itself)
         refute empty_eq.eq?.(value, value)
@@ -771,7 +814,7 @@ defmodule Funx.EqTest do
       end
     end
 
-    property "append_all combines equality checks with AND logic" do
+    property "compose_all/2 combines equality checks with AND logic" do
       check all(
               name1 <- string(:alphanumeric, min_length: 1),
               name2 <- string(:alphanumeric, min_length: 1),
@@ -780,7 +823,7 @@ defmodule Funx.EqTest do
             ) do
         eq_name = Funx.Eq.contramap(& &1.name)
         eq_age = Funx.Eq.contramap(& &1.age)
-        eq_all = Funx.Eq.append_all(eq_name, eq_age)
+        eq_all = Funx.Eq.compose_all(eq_name, eq_age)
 
         person1 = %{name: name1, age: age1}
         person2 = %{name: name2, age: age2}
@@ -794,7 +837,7 @@ defmodule Funx.EqTest do
       end
     end
 
-    property "append_any combines equality checks with OR logic" do
+    property "compose_any/2 combines equality checks with OR logic" do
       check all(
               name1 <- string(:alphanumeric, min_length: 1),
               name2 <- string(:alphanumeric, min_length: 1),
@@ -803,7 +846,7 @@ defmodule Funx.EqTest do
             ) do
         eq_name = Funx.Eq.contramap(& &1.name)
         eq_age = Funx.Eq.contramap(& &1.age)
-        eq_any = Funx.Eq.append_any(eq_name, eq_age)
+        eq_any = Funx.Eq.compose_any(eq_name, eq_age)
 
         person1 = %{name: name1, age: age1}
         person2 = %{name: name2, age: age2}

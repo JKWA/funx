@@ -15,7 +15,7 @@ defmodule Funx.Monoid.MaxTest do
     m_concat(
       %Monoid.Max{
         value: Maybe.nothing(),
-        ord: concat([ord_age(), ord_ticket(), Funx.Ord.Protocol])
+        ord: compose([ord_age(), ord_ticket(), Funx.Ord.Protocol])
       },
       people
     )
@@ -25,7 +25,7 @@ defmodule Funx.Monoid.MaxTest do
     m_concat(
       %Monoid.Max{
         value: Maybe.nothing(),
-        ord: concat([Funx.Ord.Protocol, ord_age()])
+        ord: compose([Funx.Ord.Protocol, ord_age()])
       },
       people
     )
@@ -35,7 +35,7 @@ defmodule Funx.Monoid.MaxTest do
     m_concat(
       %Monoid.Max{
         value: Maybe.nothing(),
-        ord: concat([ord_ticket(), ord_age()])
+        ord: compose([ord_ticket(), ord_age()])
       },
       people
     )

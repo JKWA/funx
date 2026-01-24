@@ -9,8 +9,8 @@ defmodule Funx.Eq do
   1. **Utility functions** for working with equality comparisons:
      - `contramap/2` - Transform equality checks via projections
      - `eq?/3`, `not_eq?/3` - Direct equality checks
-     - `append_all/2`, `append_any/2` - Combine comparators
-     - `concat_all/1`, `concat_any/1` - Combine lists of comparators
+     - `compose_all/2`, `compose_any/2` - Combine comparators
+     - `compose_all/1`, `compose_any/1` - Combine lists of comparators
      - `to_predicate/2` - Convert to single-argument predicates
 
   2. **Declarative DSL** for building complex equality comparators:
@@ -375,7 +375,7 @@ defmodule Funx.Eq do
   end
 
   @doc """
-  Combines two equality comparators using the `Eq.All` monoid.
+  Composes two equality comparators using the `Eq.All` monoid.
 
   This function merges two equality comparisons, requiring **both** to return `true`
   for the final result to be considered equal. This enforces a **strict** equality rule,
@@ -385,40 +385,19 @@ defmodule Funx.Eq do
 
       iex> eq1 = Funx.Eq.contramap(& &1.name)
       iex> eq2 = Funx.Eq.contramap(& &1.age)
-      iex> combined = Funx.Eq.append_all(eq1, eq2)
+      iex> combined = Funx.Eq.compose_all(eq1, eq2)
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
       true
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
-  @spec append_all(eq_t(), eq_t()) :: eq_t()
-  def append_all(a, b) do
+  @spec compose_all(eq_t(), eq_t()) :: eq_t()
+  def compose_all(a, b) do
     m_append(%Monoid.Eq.All{}, a, b)
   end
 
   @doc """
-  Combines two equality comparators using the `Eq.Any` monoid.
-
-  This function merges two equality comparisons, where **at least one**
-  must return `true` for the final result to be considered equal.
-
-  ## Examples
-
-      iex> eq1 = Funx.Eq.contramap(& &1.name)
-      iex> eq2 = Funx.Eq.contramap(& &1.age)
-      iex> combined = Funx.Eq.append_any(eq1, eq2)
-      iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
-      true
-      iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
-      false
-  """
-  @spec append_any(eq_t(), eq_t()) :: eq_t()
-  def append_any(a, b) do
-    m_append(%Monoid.Eq.Any{}, a, b)
-  end
-
-  @doc """
-  Concatenates a list of equality comparators using the `Eq.All` monoid.
+  Composes a list of equality comparators using the `Eq.All` monoid.
 
   The resulting comparator requires **all** comparators in the list to agree
   that two values are equal.
@@ -427,19 +406,40 @@ defmodule Funx.Eq do
 
       iex> eq1 = Funx.Eq.contramap(& &1.name)
       iex> eq2 = Funx.Eq.contramap(& &1.age)
-      iex> combined = Funx.Eq.concat_all([eq1, eq2])
+      iex> combined = Funx.Eq.compose_all([eq1, eq2])
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 30}, combined)
       true
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       false
   """
-  @spec concat_all([eq_t()]) :: eq_t()
-  def concat_all(eq_list) when is_list(eq_list) do
+  @spec compose_all([eq_t()]) :: eq_t()
+  def compose_all(eq_list) when is_list(eq_list) do
     m_concat(%Monoid.Eq.All{}, eq_list)
   end
 
   @doc """
-  Concatenates a list of equality comparators using the `Eq.Any` monoid.
+  Composes two equality comparators using the `Eq.Any` monoid.
+
+  This function merges two equality comparisons, where **at least one**
+  must return `true` for the final result to be considered equal.
+
+  ## Examples
+
+      iex> eq1 = Funx.Eq.contramap(& &1.name)
+      iex> eq2 = Funx.Eq.contramap(& &1.age)
+      iex> combined = Funx.Eq.compose_any(eq1, eq2)
+      iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
+      true
+      iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
+      false
+  """
+  @spec compose_any(eq_t(), eq_t()) :: eq_t()
+  def compose_any(a, b) do
+    m_append(%Monoid.Eq.Any{}, a, b)
+  end
+
+  @doc """
+  Composes a list of equality comparators using the `Eq.Any` monoid.
 
   The resulting comparator allows **any** comparator in the list to determine
   equality, making it more permissive.
@@ -448,16 +448,32 @@ defmodule Funx.Eq do
 
       iex> eq1 = Funx.Eq.contramap(& &1.name)
       iex> eq2 = Funx.Eq.contramap(& &1.age)
-      iex> combined = Funx.Eq.concat_any([eq1, eq2])
+      iex> combined = Funx.Eq.compose_any([eq1, eq2])
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Alice", age: 25}, combined)
       true
       iex> Funx.Eq.eq?(%{name: "Alice", age: 30}, %{name: "Bob", age: 25}, combined)
       false
   """
-  @spec concat_any([eq_t()]) :: eq_t()
-  def concat_any(eq_list) when is_list(eq_list) do
+  @spec compose_any([eq_t()]) :: eq_t()
+  def compose_any(eq_list) when is_list(eq_list) do
     m_concat(%Monoid.Eq.Any{}, eq_list)
   end
+
+  @deprecated "Use compose_all/2 instead"
+  @spec append_all(eq_t(), eq_t()) :: eq_t()
+  def append_all(a, b), do: compose_all(a, b)
+
+  @deprecated "Use compose_any/2 instead"
+  @spec append_any(eq_t(), eq_t()) :: eq_t()
+  def append_any(a, b), do: compose_any(a, b)
+
+  @deprecated "Use compose_all/1 instead"
+  @spec concat_all([eq_t()]) :: eq_t()
+  def concat_all(eq_list) when is_list(eq_list), do: compose_all(eq_list)
+
+  @deprecated "Use compose_any/1 instead"
+  @spec concat_any([eq_t()]) :: eq_t()
+  def concat_any(eq_list) when is_list(eq_list), do: compose_any(eq_list)
 
   @doc """
   Converts an `Eq` comparator into a single-argument predicate function for use in `Enum` functions.
