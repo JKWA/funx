@@ -85,6 +85,30 @@ defmodule Funx.ListTest do
     end
   end
 
+  describe "group_sort/2" do
+    test "sorts and groups elements" do
+      assert List.group_sort([1, 2, 1, 2, 1]) == [[1, 1, 1], [2, 2]]
+    end
+
+    test "returns empty list for empty input" do
+      assert List.group_sort([]) == []
+    end
+
+    test "returns single group for single element" do
+      assert List.group_sort([1]) == [[1]]
+    end
+
+    test "groups all equal elements together after sorting" do
+      assert List.group_sort([3, 1, 2, 1, 3]) == [[1, 1], [2], [3, 3]]
+    end
+
+    test "uses custom Ord for sorting and grouping" do
+      ord = OrdUtils.contramap(&String.downcase/1)
+
+      assert List.group_sort(["b", "A", "a", "B"], ord) == [["A", "a"], ["b", "B"]]
+    end
+  end
+
   describe "elem?/3" do
     test "returns true when element is present (default Eq)" do
       assert List.elem?([1, 2, 3], 1)

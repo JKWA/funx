@@ -4,7 +4,7 @@
 
 * All functions operate on Elixir lists (`[term()]`).
 * `Eq` is used for: `uniq/2`, `union/3`, `intersection/3`, `difference/3`, `symmetric_difference/3`, `group/2`, `subset?/3`, and `superset?/3`.
-* `Ord` is used for: `sort/2` and `strict_sort/2`.
+* `Ord` is used for: `sort/2`, `strict_sort/2`, and `group_sort/2`.
 * `strict_sort/2` combines `Ord` (for sorting) and `Eq` (for deduplication).
 * All functions default to protocol dispatch; no wiring needed if instances exist.
 * Ad-hoc comparators can be passed using `Eq.contramap/1` or `Ord.contramap/1`.
@@ -124,6 +124,23 @@ Sorts the list and removes duplicates. Uses `Ord` for sorting and derives `Eq` f
 ```elixir
 Funx.List.strict_sort([3, 1, 3, 2])
 # => [1, 2, 3]
+```
+
+### `group_sort/2`
+
+Sorts the list and groups consecutive equal elements. Uses `Ord` for sorting and derives `Eq` from ordering.
+
+```elixir
+Funx.List.group_sort([1, 2, 1, 2, 1])
+# => [[1, 1, 1], [2, 2]]
+```
+
+With custom ordering:
+
+```elixir
+ord = Ord.contramap(&String.downcase/1)
+Funx.List.group_sort(["b", "A", "a", "B"], ord)
+# => [["A", "a"], ["b", "B"]]
 ```
 
 ## Concatenation

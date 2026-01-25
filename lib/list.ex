@@ -35,6 +35,7 @@ defmodule Funx.List do
 
   - `sort/2`: Sorts a list using `Ord`.
   - `strict_sort/2`: Sorts while ensuring uniqueness.
+  - `group_sort/2`: Sorts and groups consecutive equal elements.
 
   ### Set Operations
 
@@ -176,6 +177,30 @@ defmodule Funx.List do
       end)
 
     :lists.reverse([:lists.reverse(current) | groups])
+  end
+
+  @doc """
+  Sorts a list and then groups consecutive equal elements.
+
+  This combines `sort/2` and `group/2`, using `Ord` for sorting and
+  deriving `Eq` from the ordering for grouping.
+
+  ## Examples
+
+      iex> Funx.List.group_sort([1, 2, 1, 2, 1])
+      [[1, 1, 1], [2, 2]]
+
+      iex> Funx.List.group_sort([])
+      []
+
+      iex> Funx.List.group_sort([3, 1, 2, 1, 3])
+      [[1, 1], [2], [3, 3]]
+  """
+  @spec group_sort([a], Ord.ord_t()) :: [[a]] when a: term()
+  def group_sort(list, ord \\ Ord.Protocol) when is_list(list) do
+    list
+    |> sort(ord)
+    |> group(Ord.to_eq(ord))
   end
 
   @doc """
