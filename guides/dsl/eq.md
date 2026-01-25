@@ -20,14 +20,19 @@ Compilation
     ├── Block (all - implicit at top level)
     │   ├── Step (on :name)
     │   ├── Step (on :age)
+    │   ├── Step (bare: my_eq_variable)
     │   └── Block (any)
     │       ├── Step (on :email)
-    │       └── Step (on :username)
+    │       └── Step (bare: EqHelpers.by_name())
 ```
 
 ## Parser
 
-The parser converts the DSL block into a tree of Step and Block structures. It normalizes all projection syntax into one of four canonical types that `contramap/2` accepts:
+The parser converts the DSL block into a tree of Step and Block structures. It handles two categories of entries:
+
+### Projection-based entries (with `on`/`diff_on`)
+
+These normalize projection syntax into one of four canonical types that `contramap/2` accepts:
 
 * `Lens.t()` - Bare lens struct
 * `Prism.t()` - Bare prism struct (Nothing == Nothing)
@@ -47,12 +52,27 @@ All syntax sugar resolves to these types:
 * `Behaviour` → Behaviour.eq([]) (returns Eq map)
 * `StructModule` → `Utils.to_eq_map(StructModule)` (uses protocol)
 
-Additionally, the parser tracks a `type` field for each Step to enable compile-time optimization:
+### Bare Eq map entries (without directive)
 
+These are Eq maps passed through directly without `on`:
+
+* `my_eq` - Variable holding an Eq map
+* `EqHelpers.by_name()` - Helper function returning an Eq map
+* `UserById` - Behaviour module (must implement `eq/1`)
+* `{UserByName, opts}` - Behaviour module with options
+
+Bare module references are validated at compile time - modules without `eq/1` raise a `CompileError`.
+
+### Type tracking
+
+The parser tracks a `type` field for each Step to enable compile-time optimization:
+
+* `:bare` - Bare Eq map (variable, helper) → pass through directly
+* `:behaviour` - Behaviour module → call `Module.eq(opts)` and use result
 * `:projection` - Optics or functions → wrap in contramap
 * `:module_eq` - Module with `eq?/2` → convert via `to_eq_map`
-* `:eq_map` - Behaviour returning Eq map → use directly
-* `:dynamic` - Unknown (0-arity helper) → runtime detection
+* `:eq_map` - Behaviour returning Eq map (via `on`) → use directly
+* `:dynamic` - Unknown (0-arity helper with `on`) → runtime detection
 
 The parser validates projections and raises compile-time errors for unsupported syntax, producing the final structure tree that the executor will compile.
 
@@ -88,9 +108,11 @@ Each directive compiles to:
 
 The executor uses the `type` field from Steps to generate specific code paths, eliminating runtime branching and compiler warnings:
 
+* `:bare` - Pass through Eq map directly (or negate if needed)
+* `:behaviour` - Call `Module.eq(opts)` and use result directly (or negate)
 * `:projection` - Direct contramap with projection
 * `:module_eq` - Convert module via `to_eq_map` then use
-* `:eq_map` - Use Eq map directly (from Behaviour)
+* `:eq_map` - Use Eq map directly (from Behaviour via `on`)
 * `:dynamic` - Runtime case statement to detect type
 
 ### Negation (diff_on)
@@ -131,6 +153,28 @@ Utils.concat_all([
   ])
 ])
 ```
+
+### Bare Eq Compilation Example
+
+```elixir
+eq do
+  UserById
+  EqHelpers.name_case_insensitive()
+  on :department
+end
+```
+
+Compiles to:
+
+```elixir
+Utils.concat_all([
+  UserById.eq([]),
+  EqHelpers.name_case_insensitive(),
+  Utils.contramap(Prism.key(:department), Funx.Eq)
+])
+```
+
+Bare Eq maps are passed through directly (or have their `eq?/not_eq?` swapped if negation were supported).
 
 ### List Paths (Nested Field Access)
 
@@ -179,7 +223,7 @@ Modules participating in the Eq DSL implement `Funx.Eq.Dsl.Behaviour`. The parse
 
 The `eq/1` callback receives:
 
-* `opts` - Keyword list of options passed in the DSL (e.g., `on MyBehaviour, threshold: 0.5`)
+* `opts` - Keyword list of options passed in the DSL
 
 Example:
 
@@ -201,13 +245,35 @@ defmodule FuzzyStringEq do
     # Implementation here
   end
 end
+```
 
+### Usage with `on` directive
+
+```elixir
 eq do
   on FuzzyStringEq, threshold: 0.9
 end
 ```
 
 The executor uses the returned Eq map directly (type `:eq_map`), avoiding the need to wrap it in `contramap`.
+
+### Bare usage (preferred)
+
+Behaviour modules can also be used without the `on` directive:
+
+```elixir
+# Bare behaviour module
+eq do
+  FuzzyStringEq
+end
+
+# Bare behaviour with options (tuple syntax)
+eq do
+  {FuzzyStringEq, threshold: 0.9}
+end
+```
+
+The executor calls `Module.eq(opts)` and uses the returned Eq map directly (type `:behaviour`).
 
 ## Equivalence Relations and diff_on
 

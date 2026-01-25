@@ -198,8 +198,18 @@ The DSL version:
 - `diff_on <projection>` - Field/projection must be different
 - `any do ... end` - At least one nested check must pass (OR logic)
 - `all do ... end` - All nested checks must pass (AND logic, implicit at top level)
+- `<bare_eq_map>` - Eq map passed through directly (no directive needed)
 
-### Supported Projections
+### Bare Eq Maps
+
+Eq maps can be composed directly without the `on` directive:
+
+- `my_eq` - Variable holding an Eq map
+- `EqHelpers.by_name()` - Helper function returning an Eq map
+- `UserById` - Behaviour module (must implement `eq/1`)
+- `{UserByName, case_sensitive: false}` - Behaviour module with options
+
+### Supported Projections (with `on` directive)
 
 - `on :atom` - Field access via `Prism.key/1` (Nothing == Nothing)
 - `on [:a, :b]` - List path via `Prism.path/1` (nested keys and structs, Nothing == Nothing)
@@ -310,6 +320,39 @@ end
 
 eq do
   on FuzzyStringEq, threshold: 0.9
+end
+```
+
+**Bare Eq maps (without `on` directive):**
+
+```elixir
+# Variable holding an Eq map
+name_eq = Eq.contramap(& &1.name)
+
+eq do
+  name_eq
+end
+
+# Helper function returning an Eq map
+eq do
+  EqHelpers.name_case_insensitive()
+end
+
+# Behaviour module (bare)
+eq do
+  UserById
+end
+
+# Behaviour with options (tuple syntax)
+eq do
+  {UserByName, case_sensitive: false}
+end
+
+# Mixing bare Eq with projections
+eq do
+  UserById
+  on :department
+  EqHelpers.name_case_insensitive()
 end
 ```
 
@@ -791,6 +834,7 @@ The Eq DSL provides declarative multi-field equality:
 - `diff_on <projection>` - Field must be different (breaks transitivity)
 - `any do ... end` - OR logic (at least one must match)
 - `all do ... end` - AND logic (all must match)
+- `<bare_eq_map>` - Eq map passed through directly
 
 **Key Patterns:**
 
@@ -799,6 +843,7 @@ The Eq DSL provides declarative multi-field equality:
 - Use Prism explicitly for sum types with partial access (`Nothing == Nothing`)
 - Use Prism with or_else for optional fields with specific defaults
 - Use behaviours for complex, reusable equality logic (fuzzy matching, etc.)
+- Use bare Eq maps for composing variables, helpers, or behaviour modules
 - Nested `any`/`all` blocks for complex boolean logic
 - DSL results can be used with `eq_for` macro for protocol implementation
 - Avoid `diff_on` if you need equivalence classes (grouping, uniq, sets)

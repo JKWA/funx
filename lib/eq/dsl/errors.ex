@@ -15,27 +15,6 @@ defmodule Funx.Eq.Dsl.Errors do
   # - Examples when helpful
 
   @doc """
-  Error: DSL syntax must be `on projection`, `not_on projection`, or block syntax.
-  """
-  def invalid_dsl_syntax(got) do
-    """
-    Invalid Eq DSL syntax.
-
-    Expected: `on projection`, `not_on projection`, or nested blocks
-    Got: #{inspect(got)}
-
-    Valid examples:
-      on :name
-      not_on :id
-      on Lens.key(:score)
-      any do
-        on :email
-        on :username
-      end
-    """
-  end
-
-  @doc """
   Error: Captured function with `or_else:` option.
   """
   def or_else_with_captured_function do
@@ -167,6 +146,31 @@ defmodule Funx.Eq.Dsl.Errors do
       - Behaviour module      (e.g., MyProjection)
 
     Got: #{inspect(got)}
+    """
+  end
+
+  @doc """
+  Error: Bare module reference without eq/1 behaviour.
+  """
+  def bare_module_without_behaviour(module) do
+    """
+    Bare module reference #{inspect(module)} does not implement Eq.Dsl.Behaviour.
+
+    Module atoms are not Eq maps and will cause a runtime error.
+
+    To fix, choose one of:
+      1. Implement the Eq.Dsl.Behaviour:
+         @behaviour Funx.Eq.Dsl.Behaviour
+         def eq(_opts), do: Funx.Eq.contramap(& &1.id)
+
+      2. Use tuple syntax to pass options:
+         {#{inspect(module)}, []}
+
+      3. Call a function explicitly:
+         #{inspect(module)}.my_eq_function()
+
+      4. Use a variable or captured function instead:
+         my_eq  # where my_eq is bound to an Eq map
     """
   end
 end

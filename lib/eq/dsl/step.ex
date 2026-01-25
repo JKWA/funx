@@ -30,7 +30,7 @@ defmodule Funx.Eq.Dsl.Step do
 
   @type projection :: Macro.t()
   @type eq :: module() | Macro.t()
-  @type projection_type :: :projection | :module_eq | :eq_map | :dynamic
+  @type projection_type :: :bare | :behaviour | :projection | :module_eq | :eq_map | :dynamic
 
   @type t :: %__MODULE__{
           projection: projection(),
@@ -55,6 +55,40 @@ defmodule Funx.Eq.Dsl.Step do
       eq: eq,
       negate: negate,
       type: type,
+      __meta__: meta
+    }
+  end
+
+  @doc """
+  Creates a new bare Eq step that passes through an Eq map directly.
+
+  Used when the DSL contains a bare Eq map expression (variable, helper call, etc.)
+  without any projection wrapping.
+  """
+  @spec new_bare(Macro.t(), boolean(), map()) :: t()
+  def new_bare(eq_ast, negate \\ false, meta \\ %{}) do
+    %__MODULE__{
+      projection: eq_ast,
+      eq: nil,
+      negate: negate,
+      type: :bare,
+      __meta__: meta
+    }
+  end
+
+  @doc """
+  Creates a new step for a behaviour module.
+
+  Used when a behaviour module is referenced in the DSL.
+  The `eq` field contains the AST for calling `Module.eq(opts)`.
+  """
+  @spec new_behaviour(Macro.t(), boolean(), map()) :: t()
+  def new_behaviour(behaviour_ast, negate \\ false, meta \\ %{}) do
+    %__MODULE__{
+      projection: behaviour_ast,
+      eq: nil,
+      negate: negate,
+      type: :behaviour,
       __meta__: meta
     }
   end
