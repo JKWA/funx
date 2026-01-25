@@ -32,10 +32,18 @@ eq do
   diff_on <projection>  # Field/projection must differ
   any do ... end       # At least one nested check must pass (OR)
   all do ... end       # All nested checks must pass (AND)
+  <bare_eq_map>        # Eq map passed through directly
 end
 ```
 
-### Valid Projections:
+### Bare Eq Maps:
+
+* Variables: `my_eq` (Eq map stored in variable)
+* Helper calls: `EqHelpers.by_name()` (0-arity function returning Eq map)
+* Behaviour modules: `UserById` (module with `eq/1` callback)
+* Behaviour with options: `{UserByName, case_sensitive: false}`
+
+### Valid Projections (with `on` directive):
 
 * Atoms: `:field_name`, converts to `Prism.key(:field_name)`
 * Lists: `[:a, :b]`, converts to `Prism.path([:a, :b])` (supports nested keys and structs)
@@ -783,6 +791,85 @@ eq_name_ci =
 Eq.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_name_ci)
 ```
 
+## Bare Eq Maps
+
+Eq maps can be composed directly without the `on` directive. This is useful for composing helper functions, behaviour modules, or Eq maps stored in variables.
+
+### Bare Variables
+
+Pass an Eq map stored in a variable directly:
+
+```elixir
+name_eq = Eq.contramap(& &1.name)
+
+eq_bare =
+  eq do
+    name_eq
+  end
+
+Eq.eq?(%Person{name: "Alice"}, %Person{name: "Alice"}, eq_bare)
+```
+
+### Bare Helper Functions
+
+Call helper functions that return Eq maps:
+
+```elixir
+defmodule EqHelpers do
+  def name_case_insensitive do
+    Funx.Eq.contramap(fn p -> String.downcase(p.name) end)
+  end
+end
+```
+
+```elixir
+eq_helper =
+  eq do
+    EqHelpers.name_case_insensitive()
+  end
+
+Eq.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_helper)
+```
+
+### Bare Behaviour Modules
+
+Reference behaviour modules directly (without `on`):
+
+```elixir
+eq_by_id =
+  eq do
+    UserById
+  end
+
+Eq.eq?(%Person{id: 1, name: "Alice"}, %Person{id: 1, name: "Bob"}, eq_by_id)
+```
+
+### Bare Behaviour with Options
+
+Use tuple syntax to pass options to behaviour modules:
+
+```elixir
+eq_name_ci =
+  eq do
+    {UserByName, case_sensitive: false}
+  end
+
+Eq.eq?(%Person{name: "Alice"}, %Person{name: "ALICE"}, eq_name_ci)
+```
+
+### Mixing Bare Eq with Projections
+
+Bare Eq maps can be combined with `on` directives:
+
+```elixir
+eq_mixed =
+  eq do
+    UserById
+    on :department
+    EqHelpers.name_case_insensitive()
+  end
+```
+
 ## Protocol Dispatch
 
 LiveBook does not handle creating new protocols
@@ -985,6 +1072,7 @@ The Eq DSL provides a declarative, type-safe way to build complex equality compa
 * Functions for custom transformations
 * Behaviours for reusable equality logic
 * Bare structs for type-based filtering
+* Bare Eq maps for direct composition (variables, helpers, behaviours)
 * `any` blocks for OR logic
 * `all` blocks for explicit AND logic
 * `diff_on` for non-equivalence constraints (escape hatch from Eq laws)
