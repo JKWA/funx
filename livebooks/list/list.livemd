@@ -24,6 +24,7 @@ The `Funx.List` module provides utility functions for working with lists while r
 4. **Sort**: Use `sort/2` or `strict_sort/2` with `Ord` instances.
 5. **Check Membership**: Use `subset?/2` or `superset?/2` to verify inclusion relationships.
 6. **Find Extremes**: Use `min/2`, `max/2` for safe min/max, or `min!/2`, `max!/2` to raise on empty.
+7. **Group**: Use `group/1` to group consecutive equal elements.
 
 ### Equality-Based Operations
 
@@ -32,6 +33,7 @@ The `Funx.List` module provides utility functions for working with lists while r
 - `intersection/2`: Returns elements common to both lists.
 - `difference/2`: Returns elements from the first list not in the second.
 - `symmetric_difference/2`: Returns elements unique to each list.
+- `group/1`: Groups consecutive equal elements into sublists.
 
 ### Ordering Functions
 
@@ -122,6 +124,26 @@ Returns the symmetric difference of two lists.
 
 ```elixir
 symmetric_difference([1, 2, 3], [3, 4, 5])
+```
+
+## group/2
+
+Groups consecutive equal elements into sublists.
+
+This is the Eq-based equivalent of Haskell's `group`.
+
+### Examples
+
+```elixir
+group([1, 1, 2, 2, 2, 3, 1, 1])
+```
+
+```elixir
+group([])
+```
+
+```elixir
+group([:a, :a, :b, :c, :c, :c])
 ```
 
 ## subset?/3

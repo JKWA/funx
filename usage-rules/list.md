@@ -3,7 +3,7 @@
 ## Quick Reference
 
 * All functions operate on Elixir lists (`[term()]`).
-* `Eq` is used for: `uniq/2`, `union/3`, `intersection/3`, `difference/3`, `symmetric_difference/3`, `subset?/3`, and `superset?/3`.
+* `Eq` is used for: `uniq/2`, `union/3`, `intersection/3`, `difference/3`, `symmetric_difference/3`, `group/2`, `subset?/3`, and `superset?/3`.
 * `Ord` is used for: `sort/2` and `strict_sort/2`.
 * `strict_sort/2` combines `Ord` (for sorting) and `Eq` (for deduplication).
 * All functions default to protocol dispatch; no wiring needed if instances exist.
@@ -68,6 +68,23 @@ Returns elements that appear in only one of the two lists.
 ```elixir
 Funx.List.symmetric_difference([1, 2], [2, 3])
 # => [1, 3]
+```
+
+### `group/2`
+
+Groups consecutive equal elements into sublists. This is the Eq-based equivalent of Haskell's `group`.
+
+```elixir
+Funx.List.group([1, 1, 2, 2, 2, 3, 1, 1])
+# => [[1, 1], [2, 2, 2], [3], [1, 1]]
+```
+
+With custom comparator:
+
+```elixir
+eq = Eq.contramap(&String.downcase/1)
+Funx.List.group(["a", "A", "b", "B"], eq)
+# => [["a", "A"], ["b", "B"]]
 ```
 
 ### `subset?/3` and `superset?/3`

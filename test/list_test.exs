@@ -43,6 +43,48 @@ defmodule Funx.ListTest do
     end
   end
 
+  describe "group/2" do
+    test "groups consecutive equal elements" do
+      assert List.group([1, 1, 2, 2, 2, 3, 1, 1]) == [[1, 1], [2, 2, 2], [3], [1, 1]]
+    end
+
+    test "returns empty list for empty input" do
+      assert List.group([]) == []
+    end
+
+    test "returns single group for single element" do
+      assert List.group([1]) == [[1]]
+    end
+
+    test "returns single group when all elements are equal" do
+      assert List.group([:a, :a, :a]) == [[:a, :a, :a]]
+    end
+
+    test "returns separate groups when no consecutive elements are equal" do
+      assert List.group([1, 2, 3]) == [[1], [2], [3]]
+    end
+
+    test "uses custom Eq for comparison" do
+      case_insensitive_eq = %{
+        eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) == String.downcase(b)
+        end,
+        not_eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) != String.downcase(b)
+        end
+      }
+
+      assert List.group(["a", "A", "b", "B", "b"], case_insensitive_eq) == [
+               ["a", "A"],
+               ["b", "B", "b"]
+             ]
+    end
+
+    test "preserves original values in groups" do
+      assert List.group(["Cat", "cat", "DOG"]) == [["Cat"], ["cat"], ["DOG"]]
+    end
+  end
+
   describe "elem?/3" do
     test "returns true when element is present (default Eq)" do
       assert List.elem?([1, 2, 3], 1)
