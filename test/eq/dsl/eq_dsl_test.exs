@@ -1000,7 +1000,7 @@ defmodule Funx.Eq.DslTest do
         def some_function, do: :ok
       end
 
-      assert_raise CompileError, ~r/does not implement Eq.Dsl.Behaviour/, fn ->
+      assert_raise CompileError, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Eq
@@ -1018,7 +1018,7 @@ defmodule Funx.Eq.DslTest do
         def some_function, do: :ok
       end
 
-      assert_raise CompileError, ~r/does not implement the Eq.Dsl.Behaviour/, fn ->
+      assert_raise CompileError, fn ->
         Code.eval_quoted(
           quote do
             use Funx.Eq

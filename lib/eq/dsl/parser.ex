@@ -118,8 +118,7 @@ defmodule Funx.Eq.Dsl.Parser do
     unless function_exported?(expanded_module, :eq, 1) do
       raise CompileError,
         line: Keyword.get(meta, :line),
-        description:
-          "Module #{inspect(expanded_module)} does not implement the Eq.Dsl.Behaviour (missing eq/1)"
+        description: Errors.bare_module_without_behaviour(expanded_module)
     end
 
     # Generate AST to call Module.eq(opts) at runtime
