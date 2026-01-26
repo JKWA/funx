@@ -20,6 +20,7 @@ defmodule Funx.List do
   4. **Sort**: Use `sort/2` or `strict_sort/2` with `Ord` instances.
   5. **Check Membership**: Use `subset?/2` or `superset?/2` to verify inclusion relationships.
   6. **Find Extremes**: Use `min/2`, `max/2` for safe min/max, or `min!/2`, `max!/2` to raise on empty.
+  7. **Group**: Use `group/1` to group consecutive equal elements.
 
   ### Equality-Based Operations
 
@@ -28,11 +29,14 @@ defmodule Funx.List do
   - `intersection/2`: Returns elements common to both lists.
   - `difference/2`: Returns elements from the first list not in the second.
   - `symmetric_difference/2`: Returns elements unique to each list.
+  - `group/1`: Groups consecutive equal elements into sublists.
+  - `partition/2`: Partitions into elements equal to a value and those not.
 
   ### Ordering Functions
 
   - `sort/2`: Sorts a list using `Ord`.
   - `strict_sort/2`: Sorts while ensuring uniqueness.
+  - `group_sort/2`: Sorts and groups consecutive equal elements.
 
   ### Set Operations
 
@@ -62,8 +66,10 @@ defmodule Funx.List do
   import Funx.Filterable, only: [filter: 2]
   import Funx.Monoid.Utils, only: [m_concat: 2]
 
+  alias Funx.Eq
   alias Funx.Monad.Maybe
   alias Funx.Monoid.ListConcat
+  alias Funx.Ord
 
   @doc """
   Removes duplicate elements from a list based on the given equality module.
@@ -73,11 +79,11 @@ defmodule Funx.List do
       iex> Funx.List.uniq([1, 2, 2, 3, 1, 4, 5])
       [1, 2, 3, 4, 5]
   """
-  @spec uniq([term()], Funx.Eq.eq_t()) :: [term()]
-  def uniq(list, eq \\ Funx.Eq.Protocol) when is_list(list) do
+  @spec uniq([term()], Eq.eq_t()) :: [term()]
+  def uniq(list, eq \\ Eq.Protocol) when is_list(list) do
     list
     |> fold_l([], fn item, acc ->
-      if Enum.any?(acc, &Funx.Eq.eq?(item, &1, eq)), do: acc, else: [item | acc]
+      if Enum.any?(acc, &Eq.eq?(item, &1, eq)), do: acc, else: [item | acc]
     end)
     |> :lists.reverse()
   end
@@ -90,8 +96,8 @@ defmodule Funx.List do
       iex> Funx.List.union([1, 2, 3], [3, 4, 5])
       [1, 2, 3, 4, 5]
   """
-  @spec union([term()], [term()], Funx.Eq.eq_t()) :: [term()]
-  def union(list1, list2, eq \\ Funx.Eq.Protocol) when is_list(list1) and is_list(list2) do
+  @spec union([term()], [term()], Eq.eq_t()) :: [term()]
+  def union(list1, list2, eq \\ Eq.Protocol) when is_list(list1) and is_list(list2) do
     (list1 ++ list2) |> uniq(eq)
   end
 
@@ -103,10 +109,10 @@ defmodule Funx.List do
       iex> Funx.List.intersection([1, 2, 3, 4], [3, 4, 5])
       [3, 4]
   """
-  @spec intersection([term()], [term()], Funx.Eq.eq_t()) :: [term()]
-  def intersection(list1, list2, eq \\ Funx.Eq.Protocol) when is_list(list1) and is_list(list2) do
+  @spec intersection([term()], [term()], Eq.eq_t()) :: [term()]
+  def intersection(list1, list2, eq \\ Eq.Protocol) when is_list(list1) and is_list(list2) do
     list1
-    |> filter(fn item -> Enum.any?(list2, &Funx.Eq.eq?(item, &1, eq)) end)
+    |> filter(fn item -> Enum.any?(list2, &Eq.eq?(item, &1, eq)) end)
     |> uniq(eq)
   end
 
@@ -118,10 +124,10 @@ defmodule Funx.List do
       iex> Funx.List.difference([1, 2, 3, 4], [3, 4, 5])
       [1, 2]
   """
-  @spec difference([term()], [term()], Funx.Eq.eq_t()) :: [term()]
-  def difference(list1, list2, eq \\ Funx.Eq.Protocol) when is_list(list1) and is_list(list2) do
+  @spec difference([term()], [term()], Eq.eq_t()) :: [term()]
+  def difference(list1, list2, eq \\ Eq.Protocol) when is_list(list1) and is_list(list2) do
     list1
-    |> Enum.reject(fn item -> Enum.any?(list2, &Funx.Eq.eq?(item, &1, eq)) end)
+    |> Enum.reject(fn item -> Enum.any?(list2, &Eq.eq?(item, &1, eq)) end)
     |> uniq(eq)
   end
 
@@ -133,11 +139,101 @@ defmodule Funx.List do
       iex> Funx.List.symmetric_difference([1, 2, 3], [3, 4, 5])
       [1, 2, 4, 5]
   """
-  @spec symmetric_difference([term()], [term()], Funx.Eq.eq_t()) :: [term()]
-  def symmetric_difference(list1, list2, eq \\ Funx.Eq.Protocol)
+  @spec symmetric_difference([term()], [term()], Eq.eq_t()) :: [term()]
+  def symmetric_difference(list1, list2, eq \\ Eq.Protocol)
       when is_list(list1) and is_list(list2) do
     (difference(list1, list2, eq) ++ difference(list2, list1, eq))
     |> uniq(eq)
+  end
+
+  @doc """
+  Groups consecutive equal elements into sublists.
+
+  This is the Eq-based equivalent of Haskell's `group`.
+
+  ## Examples
+
+      iex> Funx.List.group([1, 1, 2, 2, 2, 3, 1, 1])
+      [[1, 1], [2, 2, 2], [3], [1, 1]]
+
+      iex> Funx.List.group([])
+      []
+
+      iex> Funx.List.group([1])
+      [[1]]
+  """
+  @spec group([a], Eq.eq_t()) :: [[a]] when a: term()
+  def group(list, eq \\ Eq.Protocol)
+
+  def group([], _eq), do: []
+
+  def group([first | rest], eq) do
+    {current, groups} =
+      fold_l(rest, {[first], []}, fn item, {[head | _] = current, acc} ->
+        if Eq.eq?(item, head, eq) do
+          {[item | current], acc}
+        else
+          {[item], [:lists.reverse(current) | acc]}
+        end
+      end)
+
+    :lists.reverse([:lists.reverse(current) | groups])
+  end
+
+  @doc """
+  Partitions a list into elements equal to a value and elements not equal.
+
+  Returns a tuple `{matching, non_matching}` where `matching` contains all
+  elements equal to `value` under the provided `Eq`, and `non_matching`
+  contains the rest.
+
+  ## Examples
+
+      iex> Funx.List.partition([1, 2, 1, 3, 1], 1)
+      {[1, 1, 1], [2, 3]}
+
+      iex> Funx.List.partition([1, 2, 3], 4)
+      {[], [1, 2, 3]}
+
+      iex> Funx.List.partition([], 1)
+      {[], []}
+  """
+  @spec partition([a], a, Eq.eq_t()) :: {[a], [a]} when a: term()
+  def partition(list, value, eq \\ Eq.Protocol) when is_list(list) do
+    {matching, non_matching} =
+      fold_l(list, {[], []}, fn item, {yes, no} ->
+        if Eq.eq?(item, value, eq) do
+          {[item | yes], no}
+        else
+          {yes, [item | no]}
+        end
+      end)
+
+    {:lists.reverse(matching), :lists.reverse(non_matching)}
+  end
+
+  @doc """
+  Sorts a list and then groups consecutive equal elements.
+
+  This combines `sort/2` and `group/2`, using `Ord` for sorting and
+  deriving `Eq` from the ordering for grouping.
+
+  ## Examples
+
+      iex> Funx.List.group_sort([1, 2, 1, 2, 1])
+      [[1, 1, 1], [2, 2]]
+
+      iex> Funx.List.group_sort([])
+      []
+
+      iex> Funx.List.group_sort([3, 1, 2, 1, 3])
+      [[1, 1], [2], [3, 3]]
+  """
+  @spec group_sort([a], Ord.ord_t()) :: [[a]] when a: term()
+  def group_sort(list, ord \\ Ord.Protocol) when is_list(list) do
+    list
+    |> sort(ord)
+    |> group(Ord.to_eq(ord))
   end
 
   @doc """
@@ -153,9 +249,9 @@ defmodule Funx.List do
       iex> Funx.List.elem?([1, 3], 2)
       false
   """
-  @spec elem?(term(), [term()], Funx.Eq.eq_t()) :: boolean()
-  def elem?(list, value, eq \\ Funx.Eq.Protocol) when is_list(list) do
-    Enum.any?(list, &Funx.Eq.eq?(value, &1, eq))
+  @spec elem?([term()], term(), Eq.eq_t()) :: boolean()
+  def elem?(list, value, eq \\ Eq.Protocol) when is_list(list) do
+    Enum.any?(list, &Eq.eq?(value, &1, eq))
   end
 
   @doc """
@@ -169,9 +265,9 @@ defmodule Funx.List do
       iex> Funx.List.subset?([1, 5], [1, 2, 3, 4])
       false
   """
-  @spec subset?([term()], [term()], Funx.Eq.eq_t()) :: boolean()
-  def subset?(small, large, eq \\ Funx.Eq.Protocol) when is_list(small) and is_list(large) do
-    Enum.all?(small, fn item -> Enum.any?(large, &Funx.Eq.eq?(item, &1, eq)) end)
+  @spec subset?([term()], [term()], Eq.eq_t()) :: boolean()
+  def subset?(small, large, eq \\ Eq.Protocol) when is_list(small) and is_list(large) do
+    Enum.all?(small, fn item -> Enum.any?(large, &Eq.eq?(item, &1, eq)) end)
   end
 
   @doc """
@@ -185,8 +281,8 @@ defmodule Funx.List do
       iex> Funx.List.superset?([1, 2, 3, 4], [1, 5])
       false
   """
-  @spec superset?([term()], [term()], Funx.Eq.eq_t()) :: boolean()
-  def superset?(large, small, eq \\ Funx.Eq.Protocol) when is_list(small) and is_list(large) do
+  @spec superset?([term()], [term()], Eq.eq_t()) :: boolean()
+  def superset?(large, small, eq \\ Eq.Protocol) when is_list(small) and is_list(large) do
     subset?(small, large, eq)
   end
 
@@ -198,9 +294,9 @@ defmodule Funx.List do
       iex> Funx.List.sort([3, 1, 4, 1, 5])
       [1, 1, 3, 4, 5]
   """
-  @spec sort([term()], Funx.Ord.ord_t()) :: [term()]
-  def sort(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
-    Enum.sort(list, Funx.Ord.comparator(ord))
+  @spec sort([term()], Ord.ord_t()) :: [term()]
+  def sort(list, ord \\ Ord.Protocol) when is_list(list) do
+    Enum.sort(list, Ord.comparator(ord))
   end
 
   @doc """
@@ -211,8 +307,8 @@ defmodule Funx.List do
       iex> Funx.List.strict_sort([3, 1, 4, 1, 5])
       [1, 3, 4, 5]
   """
-  @spec strict_sort([term()], Funx.Ord.ord_t()) :: [term()]
-  def strict_sort(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
+  @spec strict_sort([term()], Ord.ord_t()) :: [term()]
+  def strict_sort(list, ord \\ Ord.Protocol) when is_list(list) do
     list
     |> uniq(Funx.Ord.to_eq(ord))
     |> sort(ord)
@@ -315,13 +411,13 @@ defmodule Funx.List do
       iex> Funx.List.max(["cat", "elephant", "ox"], ord)
       %Funx.Monad.Maybe.Just{value: "elephant"}
   """
-  @spec max([a], Funx.Ord.ord_t()) :: Maybe.t(a) when a: term()
-  def max(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
+  @spec max([a], Ord.ord_t()) :: Maybe.t(a) when a: term()
+  def max(list, ord \\ Ord.Protocol) when is_list(list) do
     import Funx.Monad, only: [map: 2]
 
     head(list)
     |> map(fn first ->
-      fold_l(tail(list), first, fn item, acc -> Funx.Ord.max(item, acc, ord) end)
+      fold_l(tail(list), first, fn item, acc -> Ord.max(item, acc, ord) end)
     end)
   end
 
@@ -339,8 +435,8 @@ defmodule Funx.List do
       iex> Funx.List.max!(["cat", "elephant", "ox"], ord)
       "elephant"
   """
-  @spec max!([a], Funx.Ord.ord_t()) :: a when a: term()
-  def max!(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
+  @spec max!([a], Ord.ord_t()) :: a when a: term()
+  def max!(list, ord \\ Ord.Protocol) when is_list(list) do
     Maybe.to_try!(max(list, ord), Enum.EmptyError)
   end
 
@@ -364,13 +460,13 @@ defmodule Funx.List do
       iex> Funx.List.min(["cat", "elephant", "ox"], ord)
       %Funx.Monad.Maybe.Just{value: "ox"}
   """
-  @spec min([a], Funx.Ord.ord_t()) :: Maybe.t(a) when a: term()
-  def min(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
+  @spec min([a], Ord.ord_t()) :: Maybe.t(a) when a: term()
+  def min(list, ord \\ Ord.Protocol) when is_list(list) do
     import Funx.Monad, only: [map: 2]
 
     head(list)
     |> map(fn first ->
-      fold_l(tail(list), first, fn item, acc -> Funx.Ord.min(item, acc, ord) end)
+      fold_l(tail(list), first, fn item, acc -> Ord.min(item, acc, ord) end)
     end)
   end
 
@@ -388,8 +484,8 @@ defmodule Funx.List do
       iex> Funx.List.min!(["cat", "elephant", "ox"], ord)
       "ox"
   """
-  @spec min!([a], Funx.Ord.ord_t()) :: a when a: term()
-  def min!(list, ord \\ Funx.Ord.Protocol) when is_list(list) do
+  @spec min!([a], Ord.ord_t()) :: a when a: term()
+  def min!(list, ord \\ Ord.Protocol) when is_list(list) do
     Maybe.to_try!(min(list, ord), Enum.EmptyError)
   end
 end

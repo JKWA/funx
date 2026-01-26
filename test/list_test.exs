@@ -43,6 +43,108 @@ defmodule Funx.ListTest do
     end
   end
 
+  describe "group/2" do
+    test "groups consecutive equal elements" do
+      assert List.group([1, 1, 2, 2, 2, 3, 1, 1]) == [[1, 1], [2, 2, 2], [3], [1, 1]]
+    end
+
+    test "returns empty list for empty input" do
+      assert List.group([]) == []
+    end
+
+    test "returns single group for single element" do
+      assert List.group([1]) == [[1]]
+    end
+
+    test "returns single group when all elements are equal" do
+      assert List.group([:a, :a, :a]) == [[:a, :a, :a]]
+    end
+
+    test "returns separate groups when no consecutive elements are equal" do
+      assert List.group([1, 2, 3]) == [[1], [2], [3]]
+    end
+
+    test "uses custom Eq for comparison" do
+      case_insensitive_eq = %{
+        eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) == String.downcase(b)
+        end,
+        not_eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) != String.downcase(b)
+        end
+      }
+
+      assert List.group(["a", "A", "b", "B", "b"], case_insensitive_eq) == [
+               ["a", "A"],
+               ["b", "B", "b"]
+             ]
+    end
+
+    test "preserves original values in groups" do
+      assert List.group(["Cat", "cat", "DOG"]) == [["Cat"], ["cat"], ["DOG"]]
+    end
+  end
+
+  describe "partition/3" do
+    test "partitions elements equal to value" do
+      assert List.partition([1, 2, 1, 3, 1], 1) == {[1, 1, 1], [2, 3]}
+    end
+
+    test "returns empty matching list when no elements match" do
+      assert List.partition([1, 2, 3], 4) == {[], [1, 2, 3]}
+    end
+
+    test "returns empty non-matching list when all elements match" do
+      assert List.partition([1, 1, 1], 1) == {[1, 1, 1], []}
+    end
+
+    test "returns empty tuple for empty input" do
+      assert List.partition([], 1) == {[], []}
+    end
+
+    test "preserves order within each partition" do
+      assert List.partition([1, 2, 1, 3, 1, 4], 1) == {[1, 1, 1], [2, 3, 4]}
+    end
+
+    test "uses custom Eq for comparison" do
+      case_insensitive_eq = %{
+        eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) == String.downcase(b)
+        end,
+        not_eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) != String.downcase(b)
+        end
+      }
+
+      assert List.partition(["a", "B", "A", "c"], "a", case_insensitive_eq) ==
+               {["a", "A"], ["B", "c"]}
+    end
+  end
+
+  describe "group_sort/2" do
+    test "sorts and groups elements" do
+      assert List.group_sort([1, 2, 1, 2, 1]) == [[1, 1, 1], [2, 2]]
+    end
+
+    test "returns empty list for empty input" do
+      assert List.group_sort([]) == []
+    end
+
+    test "returns single group for single element" do
+      assert List.group_sort([1]) == [[1]]
+    end
+
+    test "groups all equal elements together after sorting" do
+      assert List.group_sort([3, 1, 2, 1, 3]) == [[1, 1], [2], [3, 3]]
+    end
+
+    test "uses custom Ord for sorting and grouping" do
+      ord = OrdUtils.contramap(&String.downcase/1)
+
+      assert List.group_sort(["b", "A", "a", "B"], ord) == [["A", "a"], ["b", "B"]]
+    end
+  end
+
   describe "elem?/3" do
     test "returns true when element is present (default Eq)" do
       assert List.elem?([1, 2, 3], 1)
