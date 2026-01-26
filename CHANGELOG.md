@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.2] - Unreleased
+
+### Added
+
+* `List` group, group_sort, and partition
+* Bare fn for `Eq` DSL
+* `Eq` `compose_all`, `compose_any`
+* `Ord` `compose`
+
+### Deprecated
+
+* Eq `append_all`, `append_any`, `concat_all`, `concat_any` (use `compose_all` and `compose_any`)
+* Ord `append`, `concat` (use `compose`)
+
 ## [0.8.1] - Unreleased
 
 ### Added
