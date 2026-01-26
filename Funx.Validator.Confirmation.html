@@ -5,16 +5,16 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.1">
+    <meta name="project" content="funx v0.8.2">
 
 
-    <title>Funx.Validator.Confirmation — funx v0.8.1</title>
+    <title>Funx.Validator.Confirmation — funx v0.8.2</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Validator.Confirmation.html" />
 
-    <script defer src="dist/sidebar_items-BE0F2809.js"></script>
+    <script defer src="dist/sidebar_items-8773E282.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.1
+          v0.8.2
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Validator.Confirmation</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.1)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.2)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validator/confirmation.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/confirmation.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -109,15 +109,15 @@ funx
 
 
     <section id="moduledoc">
-<p>Validates that a value matches another field in the data structure.</p><p>Useful for password confirmation, email confirmation, etc.</p><h2 id="module-required-options" class="section-heading"><a href="#module-required-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Required Options</span></h2><ul><li><code class="inline">:field</code> – The field name to compare against (atom)</li><li><code class="inline">:data</code> – The full data structure containing both fields</li></ul><h2 id="module-optional-options" class="section-heading"><a href="#module-optional-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Optional Options</span></h2><ul><li><code class="inline">:eq</code> – An equality comparator. Defaults to <a href="Funx.Eq.Protocol.html"><code class="inline">Funx.Eq.Protocol</code></a>.</li><li><code class="inline">:message</code> – Custom error message callback <code class="inline">(value -&gt; String.t())</code></li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="1622152652-1">%{</span><span class="ss">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">password_confirmation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret&quot;</span><span class="p" data-group-id="1622152652-1">}</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Confirmation</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="1622152652-2">(</span><span class="s">&quot;secret&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">field</span><span class="p">:</span><span class="w"> </span><span class="ss">:password</span><span class="p">,</span><span class="w"> </span><span class="ss">data</span><span class="p">:</span><span class="w"> </span><span class="n">data</span><span class="p" data-group-id="1622152652-2">)</span><span class="w">
-</span><span class="p" data-group-id="1622152652-3">%</span><span class="nc" data-group-id="1622152652-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="1622152652-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret&quot;</span><span class="p" data-group-id="1622152652-3">}</span><span class="w">
+<p>Validates that a value matches another field in the data structure.</p><p>Useful for password confirmation, email confirmation, etc.</p><h2 id="module-required-options" class="section-heading"><a href="#module-required-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Required Options</span></h2><ul><li><code class="inline">:field</code> – The field name to compare against (atom)</li><li><code class="inline">:data</code> – The full data structure containing both fields</li></ul><h2 id="module-optional-options" class="section-heading"><a href="#module-optional-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Optional Options</span></h2><ul><li><code class="inline">:eq</code> – An equality comparator. Defaults to <a href="Funx.Eq.Protocol.html"><code class="inline">Funx.Eq.Protocol</code></a>.</li><li><code class="inline">:message</code> – Custom error message callback <code class="inline">(value -&gt; String.t())</code></li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="9312338021-1">%{</span><span class="ss">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">password_confirmation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret&quot;</span><span class="p" data-group-id="9312338021-1">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Confirmation</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="9312338021-2">(</span><span class="s">&quot;secret&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">field</span><span class="p">:</span><span class="w"> </span><span class="ss">:password</span><span class="p">,</span><span class="w"> </span><span class="ss">data</span><span class="p">:</span><span class="w"> </span><span class="n">data</span><span class="p" data-group-id="9312338021-2">)</span><span class="w">
+</span><span class="p" data-group-id="9312338021-3">%</span><span class="nc" data-group-id="9312338021-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="9312338021-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret&quot;</span><span class="p" data-group-id="9312338021-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="1622152652-4">%{</span><span class="ss">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">password_confirmation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;wrong&quot;</span><span class="p" data-group-id="1622152652-4">}</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Confirmation</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="1622152652-5">(</span><span class="s">&quot;wrong&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">field</span><span class="p">:</span><span class="w"> </span><span class="ss">:password</span><span class="p">,</span><span class="w"> </span><span class="ss">data</span><span class="p">:</span><span class="w"> </span><span class="n">data</span><span class="p" data-group-id="1622152652-5">)</span><span class="w">
-</span><span class="p" data-group-id="1622152652-6">%</span><span class="nc" data-group-id="1622152652-6">Funx.Monad.Either.Left</span><span class="p" data-group-id="1622152652-6">{</span><span class="w">
-  </span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1622152652-7">%</span><span class="nc" data-group-id="1622152652-7">Funx.Errors.ValidationError</span><span class="p" data-group-id="1622152652-7">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="1622152652-8">[</span><span class="s">&quot;does not match password&quot;</span><span class="p" data-group-id="1622152652-8">]</span><span class="p" data-group-id="1622152652-7">}</span><span class="w">
-</span><span class="p" data-group-id="1622152652-6">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="9312338021-4">%{</span><span class="ss">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;secret&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">password_confirmation</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;wrong&quot;</span><span class="p" data-group-id="9312338021-4">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Confirmation</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="9312338021-5">(</span><span class="s">&quot;wrong&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">field</span><span class="p">:</span><span class="w"> </span><span class="ss">:password</span><span class="p">,</span><span class="w"> </span><span class="ss">data</span><span class="p">:</span><span class="w"> </span><span class="n">data</span><span class="p" data-group-id="9312338021-5">)</span><span class="w">
+</span><span class="p" data-group-id="9312338021-6">%</span><span class="nc" data-group-id="9312338021-6">Funx.Monad.Either.Left</span><span class="p" data-group-id="9312338021-6">{</span><span class="w">
+  </span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9312338021-7">%</span><span class="nc" data-group-id="9312338021-7">Funx.Errors.ValidationError</span><span class="p" data-group-id="9312338021-7">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9312338021-8">[</span><span class="s">&quot;does not match password&quot;</span><span class="p" data-group-id="9312338021-8">]</span><span class="p" data-group-id="9312338021-7">}</span><span class="w">
+</span><span class="p" data-group-id="9312338021-6">}</span></code></pre>
     </section>
 
 </div>
@@ -174,7 +174,7 @@ funx
       <h1 class="signature" translate="no">validate(value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validator/confirmation.ex#L38" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/confirmation.ex#L38" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -196,7 +196,7 @@ funx
       <h1 class="signature" translate="no">validate(value, opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/validator/confirmation.ex#L43" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/confirmation.ex#L43" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -217,9 +217,9 @@ funx
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.1" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.2" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.1">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.2">Hex Preview</a>
 
             </span>
 
