@@ -30,6 +30,7 @@ defmodule Funx.List do
   - `difference/2`: Returns elements from the first list not in the second.
   - `symmetric_difference/2`: Returns elements unique to each list.
   - `group/1`: Groups consecutive equal elements into sublists.
+  - `partition/2`: Partitions into elements equal to a value and those not.
 
   ### Ordering Functions
 
@@ -177,6 +178,38 @@ defmodule Funx.List do
       end)
 
     :lists.reverse([:lists.reverse(current) | groups])
+  end
+
+  @doc """
+  Partitions a list into elements equal to a value and elements not equal.
+
+  Returns a tuple `{matching, non_matching}` where `matching` contains all
+  elements equal to `value` under the provided `Eq`, and `non_matching`
+  contains the rest.
+
+  ## Examples
+
+      iex> Funx.List.partition([1, 2, 1, 3, 1], 1)
+      {[1, 1, 1], [2, 3]}
+
+      iex> Funx.List.partition([1, 2, 3], 4)
+      {[], [1, 2, 3]}
+
+      iex> Funx.List.partition([], 1)
+      {[], []}
+  """
+  @spec partition([a], a, Eq.eq_t()) :: {[a], [a]} when a: term()
+  def partition(list, value, eq \\ Eq.Protocol) when is_list(list) do
+    {matching, non_matching} =
+      fold_l(list, {[], []}, fn item, {yes, no} ->
+        if Eq.eq?(item, value, eq) do
+          {[item | yes], no}
+        else
+          {yes, [item | no]}
+        end
+      end)
+
+    {:lists.reverse(matching), :lists.reverse(non_matching)}
   end
 
   @doc """

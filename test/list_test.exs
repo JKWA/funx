@@ -85,6 +85,42 @@ defmodule Funx.ListTest do
     end
   end
 
+  describe "partition/3" do
+    test "partitions elements equal to value" do
+      assert List.partition([1, 2, 1, 3, 1], 1) == {[1, 1, 1], [2, 3]}
+    end
+
+    test "returns empty matching list when no elements match" do
+      assert List.partition([1, 2, 3], 4) == {[], [1, 2, 3]}
+    end
+
+    test "returns empty non-matching list when all elements match" do
+      assert List.partition([1, 1, 1], 1) == {[1, 1, 1], []}
+    end
+
+    test "returns empty tuple for empty input" do
+      assert List.partition([], 1) == {[], []}
+    end
+
+    test "preserves order within each partition" do
+      assert List.partition([1, 2, 1, 3, 1, 4], 1) == {[1, 1, 1], [2, 3, 4]}
+    end
+
+    test "uses custom Eq for comparison" do
+      case_insensitive_eq = %{
+        eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) == String.downcase(b)
+        end,
+        not_eq?: fn a, b when is_binary(a) and is_binary(b) ->
+          String.downcase(a) != String.downcase(b)
+        end
+      }
+
+      assert List.partition(["a", "B", "A", "c"], "a", case_insensitive_eq) ==
+               {["a", "A"], ["B", "c"]}
+    end
+  end
+
   describe "group_sort/2" do
     test "sorts and groups elements" do
       assert List.group_sort([1, 2, 1, 2, 1]) == [[1, 1, 1], [2, 2]]

@@ -3,7 +3,7 @@
 ## Quick Reference
 
 * All functions operate on Elixir lists (`[term()]`).
-* `Eq` is used for: `uniq/2`, `union/3`, `intersection/3`, `difference/3`, `symmetric_difference/3`, `group/2`, `subset?/3`, and `superset?/3`.
+* `Eq` is used for: `uniq/2`, `union/3`, `intersection/3`, `difference/3`, `symmetric_difference/3`, `group/2`, `partition/3`, `subset?/3`, and `superset?/3`.
 * `Ord` is used for: `sort/2`, `strict_sort/2`, and `group_sort/2`.
 * `strict_sort/2` combines `Ord` (for sorting) and `Eq` (for deduplication).
 * All functions default to protocol dispatch; no wiring needed if instances exist.
@@ -85,6 +85,23 @@ With custom comparator:
 eq = Eq.contramap(&String.downcase/1)
 Funx.List.group(["a", "A", "b", "B"], eq)
 # => [["a", "A"], ["b", "B"]]
+```
+
+### `partition/3`
+
+Partitions a list into elements equal to a value and elements not equal. This is the Eq-based equivalent of predicate-based partition.
+
+```elixir
+Funx.List.partition([1, 2, 1, 3, 1], 1)
+# => {[1, 1, 1], [2, 3]}
+```
+
+With custom comparator:
+
+```elixir
+eq = Eq.contramap(&String.downcase/1)
+Funx.List.partition(["a", "B", "A", "c"], "a", eq)
+# => {["a", "A"], ["B", "c"]}
 ```
 
 ### `subset?/3` and `superset?/3`

@@ -34,6 +34,7 @@ The `Funx.List` module provides utility functions for working with lists while r
 - `difference/2`: Returns elements from the first list not in the second.
 - `symmetric_difference/2`: Returns elements unique to each list.
 - `group/1`: Groups consecutive equal elements into sublists.
+- `partition/2`: Partitions into elements equal to a value and those not.
 
 ### Ordering Functions
 
@@ -145,6 +146,20 @@ group([])
 
 ```elixir
 group([:a, :a, :b, :c, :c, :c])
+```
+
+## partition/3
+
+Partitions a list into elements equal to a value and elements not equal.
+
+### Examples
+
+```elixir
+partition([1, 2, 1, 3, 1], 1)
+```
+
+```elixir
+partition([1, 2, 3], 4)
 ```
 
 ## subset?/3
