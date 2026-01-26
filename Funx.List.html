@@ -14,7 +14,7 @@
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.List.html" />
 
-    <script defer src="dist/sidebar_items-D3BB296A.js"></script>
+    <script defer src="dist/sidebar_items-BE0F2809.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -109,7 +109,7 @@ funx
 
 
     <section id="moduledoc">
-<p><a href="https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Flist%2Flist.livemd"><img src="https://livebook.dev/badge/v1/black.svg" alt="Run in Livebook"/></a></p><p>The <a href="Funx.List.html"><code class="inline">Funx.List</code></a> module provides utility functions for working with lists while respecting <code class="inline">Eq</code> and <code class="inline">Ord</code> instances. This allows for set-like operations, uniqueness constraints, and sorted collections that align with functional programming principles.</p><h2 id="module-features" class="section-heading"><a href="#module-features" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Features</span></h2><ul><li><strong>Equality-based Operations</strong>: Use <code class="inline">Eq</code> instances to compare elements for uniqueness, intersection, and difference.</li><li><strong>Ordering Functions</strong>: Leverage <code class="inline">Ord</code> instances to sort and enforce uniqueness in sorted collections.</li><li><strong>Set Operations</strong>: Perform union, intersection, difference, and symmetric difference while preserving custom equality logic.</li><li><strong>Subset &amp; Superset Checks</strong>: Verify relationships between lists in terms of inclusion.</li><li><strong>Functional Constructs</strong>: Implements <code class="inline">Monad</code> and <code class="inline">Foldable</code> protocols for lists, supporting mapping, binding, and folding.</li></ul><h3 id="module-usage-overview" class="section-heading"><a href="#module-usage-overview" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Usage Overview</span></h3><ol><li><strong>Deduplicate</strong>: Use <a href="#uniq/1"><code class="inline">uniq/1</code></a> to remove duplicates based on <code class="inline">Eq</code>.</li><li><strong>Combine</strong>: Use <a href="#union/2"><code class="inline">union/2</code></a> to merge lists without duplicates.</li><li><strong>Filter</strong>: Use <a href="#intersection/2"><code class="inline">intersection/2</code></a> or <a href="#difference/2"><code class="inline">difference/2</code></a> for set operations.</li><li><strong>Sort</strong>: Use <a href="#sort/2"><code class="inline">sort/2</code></a> or <a href="#strict_sort/2"><code class="inline">strict_sort/2</code></a> with <code class="inline">Ord</code> instances.</li><li><strong>Check Membership</strong>: Use <a href="#subset?/2"><code class="inline">subset?/2</code></a> or <a href="#superset?/2"><code class="inline">superset?/2</code></a> to verify inclusion relationships.</li><li><strong>Find Extremes</strong>: Use <a href="#min/2"><code class="inline">min/2</code></a>, <a href="#max/2"><code class="inline">max/2</code></a> for safe min/max, or <a href="#min!/2"><code class="inline">min!/2</code></a>, <a href="#max!/2"><code class="inline">max!/2</code></a> to raise on empty.</li></ol><h3 id="module-equality-based-operations" class="section-heading"><a href="#module-equality-based-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Equality-Based Operations</span></h3><ul><li><a href="#uniq/1"><code class="inline">uniq/1</code></a>: Removes duplicates using <code class="inline">Eq</code>.</li><li><a href="#union/2"><code class="inline">union/2</code></a>: Merges lists while preserving uniqueness.</li><li><a href="#intersection/2"><code class="inline">intersection/2</code></a>: Returns elements common to both lists.</li><li><a href="#difference/2"><code class="inline">difference/2</code></a>: Returns elements from the first list not in the second.</li><li><a href="#symmetric_difference/2"><code class="inline">symmetric_difference/2</code></a>: Returns elements unique to each list.</li></ul><h3 id="module-ordering-functions" class="section-heading"><a href="#module-ordering-functions" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Ordering Functions</span></h3><ul><li><a href="#sort/2"><code class="inline">sort/2</code></a>: Sorts a list using <code class="inline">Ord</code>.</li><li><a href="#strict_sort/2"><code class="inline">strict_sort/2</code></a>: Sorts while ensuring uniqueness.</li></ul><h3 id="module-set-operations" class="section-heading"><a href="#module-set-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Set Operations</span></h3><ul><li><a href="#subset?/2"><code class="inline">subset?/2</code></a>: Checks if one list is a subset of another.</li><li><a href="#superset?/2"><code class="inline">superset?/2</code></a>: Checks if one list is a superset of another.</li></ul><h3 id="module-min-max-operations" class="section-heading"><a href="#module-min-max-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Min/Max Operations</span></h3><ul><li><a href="#min/2"><code class="inline">min/2</code></a>: Returns the minimum element wrapped in <code class="inline">Maybe</code>.</li><li><a href="#min!/2"><code class="inline">min!/2</code></a>: Returns the minimum element, raises on empty list.</li><li><a href="#max/2"><code class="inline">max/2</code></a>: Returns the maximum element wrapped in <code class="inline">Maybe</code>.</li><li><a href="#max!/2"><code class="inline">max!/2</code></a>: Returns the maximum element, raises on empty list.</li></ul><h3 id="module-monad-implementation" class="section-heading"><a href="#module-monad-implementation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Monad Implementation</span></h3><ul><li><code class="inline">map/2</code>: Transforms list elements.</li><li><code class="inline">bind/2</code>: Applies a function returning lists and flattens the result.</li><li><code class="inline">ap/2</code>: Applies functions in a list to elements in another list.</li></ul><h3 id="module-foldable-implementation" class="section-heading"><a href="#module-foldable-implementation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Foldable Implementation</span></h3><ul><li><code class="inline">fold_l/3</code>: Performs left-associative folding.</li><li><code class="inline">fold_r/3</code>: Performs right-associative folding.</li></ul>
+<p><a href="https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Flist%2Flist.livemd"><img src="https://livebook.dev/badge/v1/black.svg" alt="Run in Livebook"/></a></p><p>The <a href="Funx.List.html"><code class="inline">Funx.List</code></a> module provides utility functions for working with lists while respecting <code class="inline">Eq</code> and <code class="inline">Ord</code> instances. This allows for set-like operations, uniqueness constraints, and sorted collections that align with functional programming principles.</p><h2 id="module-features" class="section-heading"><a href="#module-features" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Features</span></h2><ul><li><strong>Equality-based Operations</strong>: Use <code class="inline">Eq</code> instances to compare elements for uniqueness, intersection, and difference.</li><li><strong>Ordering Functions</strong>: Leverage <code class="inline">Ord</code> instances to sort and enforce uniqueness in sorted collections.</li><li><strong>Set Operations</strong>: Perform union, intersection, difference, and symmetric difference while preserving custom equality logic.</li><li><strong>Subset &amp; Superset Checks</strong>: Verify relationships between lists in terms of inclusion.</li><li><strong>Functional Constructs</strong>: Implements <code class="inline">Monad</code> and <code class="inline">Foldable</code> protocols for lists, supporting mapping, binding, and folding.</li></ul><h3 id="module-usage-overview" class="section-heading"><a href="#module-usage-overview" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Usage Overview</span></h3><ol><li><strong>Deduplicate</strong>: Use <a href="#uniq/1"><code class="inline">uniq/1</code></a> to remove duplicates based on <code class="inline">Eq</code>.</li><li><strong>Combine</strong>: Use <a href="#union/2"><code class="inline">union/2</code></a> to merge lists without duplicates.</li><li><strong>Filter</strong>: Use <a href="#intersection/2"><code class="inline">intersection/2</code></a> or <a href="#difference/2"><code class="inline">difference/2</code></a> for set operations.</li><li><strong>Sort</strong>: Use <a href="#sort/2"><code class="inline">sort/2</code></a> or <a href="#strict_sort/2"><code class="inline">strict_sort/2</code></a> with <code class="inline">Ord</code> instances.</li><li><strong>Check Membership</strong>: Use <a href="#subset?/2"><code class="inline">subset?/2</code></a> or <a href="#superset?/2"><code class="inline">superset?/2</code></a> to verify inclusion relationships.</li><li><strong>Find Extremes</strong>: Use <a href="#min/2"><code class="inline">min/2</code></a>, <a href="#max/2"><code class="inline">max/2</code></a> for safe min/max, or <a href="#min!/2"><code class="inline">min!/2</code></a>, <a href="#max!/2"><code class="inline">max!/2</code></a> to raise on empty.</li><li><strong>Group</strong>: Use <a href="#group/1"><code class="inline">group/1</code></a> to group consecutive equal elements.</li></ol><h3 id="module-equality-based-operations" class="section-heading"><a href="#module-equality-based-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Equality-Based Operations</span></h3><ul><li><a href="#uniq/1"><code class="inline">uniq/1</code></a>: Removes duplicates using <code class="inline">Eq</code>.</li><li><a href="#union/2"><code class="inline">union/2</code></a>: Merges lists while preserving uniqueness.</li><li><a href="#intersection/2"><code class="inline">intersection/2</code></a>: Returns elements common to both lists.</li><li><a href="#difference/2"><code class="inline">difference/2</code></a>: Returns elements from the first list not in the second.</li><li><a href="#symmetric_difference/2"><code class="inline">symmetric_difference/2</code></a>: Returns elements unique to each list.</li><li><a href="#group/1"><code class="inline">group/1</code></a>: Groups consecutive equal elements into sublists.</li><li><a href="#partition/2"><code class="inline">partition/2</code></a>: Partitions into elements equal to a value and those not.</li></ul><h3 id="module-ordering-functions" class="section-heading"><a href="#module-ordering-functions" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Ordering Functions</span></h3><ul><li><a href="#sort/2"><code class="inline">sort/2</code></a>: Sorts a list using <code class="inline">Ord</code>.</li><li><a href="#strict_sort/2"><code class="inline">strict_sort/2</code></a>: Sorts while ensuring uniqueness.</li><li><a href="#group_sort/2"><code class="inline">group_sort/2</code></a>: Sorts and groups consecutive equal elements.</li></ul><h3 id="module-set-operations" class="section-heading"><a href="#module-set-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Set Operations</span></h3><ul><li><a href="#subset?/2"><code class="inline">subset?/2</code></a>: Checks if one list is a subset of another.</li><li><a href="#superset?/2"><code class="inline">superset?/2</code></a>: Checks if one list is a superset of another.</li></ul><h3 id="module-min-max-operations" class="section-heading"><a href="#module-min-max-operations" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Min/Max Operations</span></h3><ul><li><a href="#min/2"><code class="inline">min/2</code></a>: Returns the minimum element wrapped in <code class="inline">Maybe</code>.</li><li><a href="#min!/2"><code class="inline">min!/2</code></a>: Returns the minimum element, raises on empty list.</li><li><a href="#max/2"><code class="inline">max/2</code></a>: Returns the maximum element wrapped in <code class="inline">Maybe</code>.</li><li><a href="#max!/2"><code class="inline">max!/2</code></a>: Returns the maximum element, raises on empty list.</li></ul><h3 id="module-monad-implementation" class="section-heading"><a href="#module-monad-implementation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Monad Implementation</span></h3><ul><li><code class="inline">map/2</code>: Transforms list elements.</li><li><code class="inline">bind/2</code>: Applies a function returning lists and flattens the result.</li><li><code class="inline">ap/2</code>: Applies functions in a list to elements in another list.</li></ul><h3 id="module-foldable-implementation" class="section-heading"><a href="#module-foldable-implementation" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Foldable Implementation</span></h3><ul><li><code class="inline">fold_l/3</code>: Performs left-associative folding.</li><li><code class="inline">fold_r/3</code>: Performs right-associative folding.</li></ul>
     </section>
 
 </div>
@@ -138,7 +138,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#difference/3" data-no-tooltip="" translate="no">difference(list1, list2, eq \\ Funx.Eq.Protocol)</a>
+        <a href="#difference/3" data-no-tooltip="" translate="no">difference(list1, list2, eq \\ Eq.Protocol)</a>
 
       </div>
 
@@ -148,11 +148,31 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#elem?/3" data-no-tooltip="" translate="no">elem?(list, value, eq \\ Funx.Eq.Protocol)</a>
+        <a href="#elem?/3" data-no-tooltip="" translate="no">elem?(list, value, eq \\ Eq.Protocol)</a>
 
       </div>
 
         <div class="summary-synopsis"><p>Returns true if the given value is an element of the list under the provided <code class="inline">Eq</code>.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#group/2" data-no-tooltip="" translate="no">group(list, eq \\ Eq.Protocol)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Groups consecutive equal elements into sublists.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#group_sort/2" data-no-tooltip="" translate="no">group_sort(list, ord \\ Ord.Protocol)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Sorts a list and then groups consecutive equal elements.</p></div>
 
     </div>
 
@@ -178,7 +198,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#intersection/3" data-no-tooltip="" translate="no">intersection(list1, list2, eq \\ Funx.Eq.Protocol)</a>
+        <a href="#intersection/3" data-no-tooltip="" translate="no">intersection(list1, list2, eq \\ Eq.Protocol)</a>
 
       </div>
 
@@ -188,7 +208,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#max/2" data-no-tooltip="" translate="no">max(list, ord \\ Funx.Ord.Protocol)</a>
+        <a href="#max/2" data-no-tooltip="" translate="no">max(list, ord \\ Ord.Protocol)</a>
 
       </div>
 
@@ -198,7 +218,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#max!/2" data-no-tooltip="" translate="no">max!(list, ord \\ Funx.Ord.Protocol)</a>
+        <a href="#max!/2" data-no-tooltip="" translate="no">max!(list, ord \\ Ord.Protocol)</a>
 
       </div>
 
@@ -208,7 +228,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#min/2" data-no-tooltip="" translate="no">min(list, ord \\ Funx.Ord.Protocol)</a>
+        <a href="#min/2" data-no-tooltip="" translate="no">min(list, ord \\ Ord.Protocol)</a>
 
       </div>
 
@@ -218,7 +238,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#min!/2" data-no-tooltip="" translate="no">min!(list, ord \\ Funx.Ord.Protocol)</a>
+        <a href="#min!/2" data-no-tooltip="" translate="no">min!(list, ord \\ Ord.Protocol)</a>
 
       </div>
 
@@ -228,7 +248,17 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#sort/2" data-no-tooltip="" translate="no">sort(list, ord \\ Funx.Ord.Protocol)</a>
+        <a href="#partition/3" data-no-tooltip="" translate="no">partition(list, value, eq \\ Eq.Protocol)</a>
+
+      </div>
+
+        <div class="summary-synopsis"><p>Partitions a list into elements equal to a value and elements not equal.</p></div>
+
+    </div>
+
+    <div class="summary-row">
+      <div class="summary-signature">
+        <a href="#sort/2" data-no-tooltip="" translate="no">sort(list, ord \\ Ord.Protocol)</a>
 
       </div>
 
@@ -238,7 +268,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#strict_sort/2" data-no-tooltip="" translate="no">strict_sort(list, ord \\ Funx.Ord.Protocol)</a>
+        <a href="#strict_sort/2" data-no-tooltip="" translate="no">strict_sort(list, ord \\ Ord.Protocol)</a>
 
       </div>
 
@@ -248,7 +278,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#subset?/3" data-no-tooltip="" translate="no">subset?(small, large, eq \\ Funx.Eq.Protocol)</a>
+        <a href="#subset?/3" data-no-tooltip="" translate="no">subset?(small, large, eq \\ Eq.Protocol)</a>
 
       </div>
 
@@ -258,7 +288,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#superset?/3" data-no-tooltip="" translate="no">superset?(large, small, eq \\ Funx.Eq.Protocol)</a>
+        <a href="#superset?/3" data-no-tooltip="" translate="no">superset?(large, small, eq \\ Eq.Protocol)</a>
 
       </div>
 
@@ -268,7 +298,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#symmetric_difference/3" data-no-tooltip="" translate="no">symmetric_difference(list1, list2, eq \\ Funx.Eq.Protocol)</a>
+        <a href="#symmetric_difference/3" data-no-tooltip="" translate="no">symmetric_difference(list1, list2, eq \\ Eq.Protocol)</a>
 
       </div>
 
@@ -288,7 +318,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#union/3" data-no-tooltip="" translate="no">union(list1, list2, eq \\ Funx.Eq.Protocol)</a>
+        <a href="#union/3" data-no-tooltip="" translate="no">union(list1, list2, eq \\ Eq.Protocol)</a>
 
       </div>
 
@@ -298,7 +328,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#uniq/2" data-no-tooltip="" translate="no">uniq(list, eq \\ Funx.Eq.Protocol)</a>
+        <a href="#uniq/2" data-no-tooltip="" translate="no">uniq(list, eq \\ Eq.Protocol)</a>
 
       </div>
 
@@ -330,7 +360,7 @@ funx
       <h1 class="signature" translate="no">concat(list)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L232" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L328" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -345,8 +375,8 @@ funx
 
       </div>
 
-<p>Concatenates a list of lists from left to right.</p><p>This uses the <code class="inline">ListConcat</code> monoid, preserving the original order of elements.</p><h2 id="concat/1-examples" class="section-heading"><a href="#concat/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="0279910684-1">(</span><span class="p" data-group-id="0279910684-2">[</span><span class="p" data-group-id="0279910684-3">[</span><span class="mi">1</span><span class="p" data-group-id="0279910684-3">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0279910684-4">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0279910684-4">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0279910684-5">[</span><span class="mi">4</span><span class="p" data-group-id="0279910684-5">]</span><span class="p" data-group-id="0279910684-2">]</span><span class="p" data-group-id="0279910684-1">)</span><span class="w">
-</span><span class="p" data-group-id="0279910684-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="0279910684-6">]</span></code></pre>
+<p>Concatenates a list of lists from left to right.</p><p>This uses the <code class="inline">ListConcat</code> monoid, preserving the original order of elements.</p><h2 id="concat/1-examples" class="section-heading"><a href="#concat/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">concat</span><span class="p" data-group-id="2878681625-1">(</span><span class="p" data-group-id="2878681625-2">[</span><span class="p" data-group-id="2878681625-3">[</span><span class="mi">1</span><span class="p" data-group-id="2878681625-3">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2878681625-4">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2878681625-4">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2878681625-5">[</span><span class="mi">4</span><span class="p" data-group-id="2878681625-5">]</span><span class="p" data-group-id="2878681625-2">]</span><span class="p" data-group-id="2878681625-1">)</span><span class="w">
+</span><span class="p" data-group-id="2878681625-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2878681625-6">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="difference/3">
@@ -358,10 +388,10 @@ funx
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">difference(list1, list2, eq \\ Funx.Eq.Protocol)</h1>
+      <h1 class="signature" translate="no">difference(list1, list2, eq \\ Eq.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L122" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L128" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -376,8 +406,8 @@ funx
 
       </div>
 
-<p>Returns the difference of two lists.</p><h2 id="difference/3-examples" class="section-heading"><a href="#difference/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">difference</span><span class="p" data-group-id="3942698033-1">(</span><span class="p" data-group-id="3942698033-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="3942698033-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3942698033-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3942698033-3">]</span><span class="p" data-group-id="3942698033-1">)</span><span class="w">
-</span><span class="p" data-group-id="3942698033-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3942698033-4">]</span></code></pre>
+<p>Returns the difference of two lists.</p><h2 id="difference/3-examples" class="section-heading"><a href="#difference/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">difference</span><span class="p" data-group-id="6080613843-1">(</span><span class="p" data-group-id="6080613843-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="6080613843-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="6080613843-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6080613843-3">]</span><span class="p" data-group-id="6080613843-1">)</span><span class="w">
+</span><span class="p" data-group-id="6080613843-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="6080613843-4">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="elem?/3">
@@ -389,10 +419,10 @@ funx
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">elem?(list, value, eq \\ Funx.Eq.Protocol)</h1>
+      <h1 class="signature" translate="no">elem?(list, value, eq \\ Eq.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L157" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L253" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -403,15 +433,90 @@ funx
 
       <div class="specs">
 
-          <pre translate="no"><span class="attribute">@spec</span> elem?(<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), [<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()], <a href="Funx.Eq.html#t:eq_t/0">Funx.Eq.eq_t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
+          <pre translate="no"><span class="attribute">@spec</span> elem?([<a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()], <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>(), <a href="Funx.Eq.html#t:eq_t/0">Funx.Eq.eq_t</a>()) :: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()</pre>
 
       </div>
 
-<p>Returns true if the given value is an element of the list under the provided <code class="inline">Eq</code>.</p><p>This is the Eq-based equivalent of Haskell's <code class="inline">elem</code>.</p><h2 id="elem?/3-examples" class="section-heading"><a href="#elem?/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">elem?</span><span class="p" data-group-id="3935101214-1">(</span><span class="p" data-group-id="3935101214-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="3935101214-2">]</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="3935101214-1">)</span><span class="w">
+<p>Returns true if the given value is an element of the list under the provided <code class="inline">Eq</code>.</p><p>This is the Eq-based equivalent of Haskell's <code class="inline">elem</code>.</p><h2 id="elem?/3-examples" class="section-heading"><a href="#elem?/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">elem?</span><span class="p" data-group-id="3910795726-1">(</span><span class="p" data-group-id="3910795726-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="3910795726-2">]</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="3910795726-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">elem?</span><span class="p" data-group-id="3935101214-3">(</span><span class="p" data-group-id="3935101214-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="3935101214-4">]</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3935101214-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">elem?</span><span class="p" data-group-id="3910795726-3">(</span><span class="p" data-group-id="3910795726-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="3910795726-4">]</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="3910795726-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="group/2">
+
+    <span id="group/1"></span>
+
+  <div class="detail-header">
+    <a href="#group/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">group(list, eq \\ Eq.Protocol)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L166" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> group([a], <a href="Funx.Eq.html#t:eq_t/0">Funx.Eq.eq_t</a>()) :: [[a]] when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Groups consecutive equal elements into sublists.</p><p>This is the Eq-based equivalent of Haskell's <code class="inline">group</code>.</p><h2 id="group/2-examples" class="section-heading"><a href="#group/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">group</span><span class="p" data-group-id="4885998572-1">(</span><span class="p" data-group-id="4885998572-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="4885998572-2">]</span><span class="p" data-group-id="4885998572-1">)</span><span class="w">
+</span><span class="p" data-group-id="4885998572-3">[</span><span class="p" data-group-id="4885998572-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="4885998572-4">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4885998572-5">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4885998572-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4885998572-6">[</span><span class="mi">3</span><span class="p" data-group-id="4885998572-6">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4885998572-7">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="4885998572-7">]</span><span class="p" data-group-id="4885998572-3">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">group</span><span class="p" data-group-id="4885998572-8">(</span><span class="p" data-group-id="4885998572-9">[</span><span class="p" data-group-id="4885998572-9">]</span><span class="p" data-group-id="4885998572-8">)</span><span class="w">
+</span><span class="p" data-group-id="4885998572-10">[</span><span class="p" data-group-id="4885998572-10">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">group</span><span class="p" data-group-id="4885998572-11">(</span><span class="p" data-group-id="4885998572-12">[</span><span class="mi">1</span><span class="p" data-group-id="4885998572-12">]</span><span class="p" data-group-id="4885998572-11">)</span><span class="w">
+</span><span class="p" data-group-id="4885998572-13">[</span><span class="p" data-group-id="4885998572-14">[</span><span class="mi">1</span><span class="p" data-group-id="4885998572-14">]</span><span class="p" data-group-id="4885998572-13">]</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="group_sort/2">
+
+    <span id="group_sort/1"></span>
+
+  <div class="detail-header">
+    <a href="#group_sort/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">group_sort(list, ord \\ Ord.Protocol)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L233" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> group_sort([a], <a href="Funx.Ord.html#t:ord_t/0">Funx.Ord.ord_t</a>()) :: [[a]] when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Sorts a list and then groups consecutive equal elements.</p><p>This combines <a href="#sort/2"><code class="inline">sort/2</code></a> and <a href="#group/2"><code class="inline">group/2</code></a>, using <code class="inline">Ord</code> for sorting and
+deriving <code class="inline">Eq</code> from the ordering for grouping.</p><h2 id="group_sort/2-examples" class="section-heading"><a href="#group_sort/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">group_sort</span><span class="p" data-group-id="0931513408-1">(</span><span class="p" data-group-id="0931513408-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0931513408-2">]</span><span class="p" data-group-id="0931513408-1">)</span><span class="w">
+</span><span class="p" data-group-id="0931513408-3">[</span><span class="p" data-group-id="0931513408-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0931513408-4">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0931513408-5">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0931513408-5">]</span><span class="p" data-group-id="0931513408-3">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">group_sort</span><span class="p" data-group-id="0931513408-6">(</span><span class="p" data-group-id="0931513408-7">[</span><span class="p" data-group-id="0931513408-7">]</span><span class="p" data-group-id="0931513408-6">)</span><span class="w">
+</span><span class="p" data-group-id="0931513408-8">[</span><span class="p" data-group-id="0931513408-8">]</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">group_sort</span><span class="p" data-group-id="0931513408-9">(</span><span class="p" data-group-id="0931513408-10">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0931513408-10">]</span><span class="p" data-group-id="0931513408-9">)</span><span class="w">
+</span><span class="p" data-group-id="0931513408-11">[</span><span class="p" data-group-id="0931513408-12">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0931513408-12">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0931513408-13">[</span><span class="mi">2</span><span class="p" data-group-id="0931513408-13">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0931513408-14">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0931513408-14">]</span><span class="p" data-group-id="0931513408-11">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="head/1">
@@ -424,7 +529,7 @@ funx
       <h1 class="signature" translate="no">head(list)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L253" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L349" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -439,14 +544,14 @@ funx
 
       </div>
 
-<p>Returns the head of a list wrapped in <code class="inline">Maybe.Just</code>, or <code class="inline">Maybe.Nothing</code> if empty.</p><p>This is a safe version of <a href="https://hexdocs.pm/elixir/Kernel.html#hd/1"><code class="inline">hd/1</code></a> that returns <code class="inline">Maybe</code> instead of raising.</p><h2 id="head/1-examples" class="section-heading"><a href="#head/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head</span><span class="p" data-group-id="4035641811-1">(</span><span class="p" data-group-id="4035641811-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4035641811-2">]</span><span class="p" data-group-id="4035641811-1">)</span><span class="w">
-</span><span class="p" data-group-id="4035641811-3">%</span><span class="nc" data-group-id="4035641811-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="4035641811-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="4035641811-3">}</span><span class="w">
+<p>Returns the head of a list wrapped in <code class="inline">Maybe.Just</code>, or <code class="inline">Maybe.Nothing</code> if empty.</p><p>This is a safe version of <a href="https://hexdocs.pm/elixir/Kernel.html#hd/1"><code class="inline">hd/1</code></a> that returns <code class="inline">Maybe</code> instead of raising.</p><h2 id="head/1-examples" class="section-heading"><a href="#head/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head</span><span class="p" data-group-id="0938383463-1">(</span><span class="p" data-group-id="0938383463-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="0938383463-2">]</span><span class="p" data-group-id="0938383463-1">)</span><span class="w">
+</span><span class="p" data-group-id="0938383463-3">%</span><span class="nc" data-group-id="0938383463-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="0938383463-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="0938383463-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head</span><span class="p" data-group-id="4035641811-4">(</span><span class="p" data-group-id="4035641811-5">[</span><span class="p" data-group-id="4035641811-5">]</span><span class="p" data-group-id="4035641811-4">)</span><span class="w">
-</span><span class="p" data-group-id="4035641811-6">%</span><span class="nc" data-group-id="4035641811-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="4035641811-6">{</span><span class="p" data-group-id="4035641811-6">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head</span><span class="p" data-group-id="0938383463-4">(</span><span class="p" data-group-id="0938383463-5">[</span><span class="p" data-group-id="0938383463-5">]</span><span class="p" data-group-id="0938383463-4">)</span><span class="w">
+</span><span class="p" data-group-id="0938383463-6">%</span><span class="nc" data-group-id="0938383463-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="0938383463-6">{</span><span class="p" data-group-id="0938383463-6">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head</span><span class="p" data-group-id="4035641811-7">(</span><span class="s">&quot;not a list&quot;</span><span class="p" data-group-id="4035641811-7">)</span><span class="w">
-</span><span class="p" data-group-id="4035641811-8">%</span><span class="nc" data-group-id="4035641811-8">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="4035641811-8">{</span><span class="p" data-group-id="4035641811-8">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head</span><span class="p" data-group-id="0938383463-7">(</span><span class="s">&quot;not a list&quot;</span><span class="p" data-group-id="0938383463-7">)</span><span class="w">
+</span><span class="p" data-group-id="0938383463-8">%</span><span class="nc" data-group-id="0938383463-8">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="0938383463-8">{</span><span class="p" data-group-id="0938383463-8">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="head!/1">
@@ -459,7 +564,7 @@ funx
       <h1 class="signature" translate="no">head!(list)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L274" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L370" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -474,10 +579,10 @@ funx
 
       </div>
 
-<p>Returns the head of a list.</p><p>Raises <a href="https://hexdocs.pm/elixir/ArgumentError.html"><code class="inline">ArgumentError</code></a> if the list is empty or not a list.</p><h2 id="head!/1-examples" class="section-heading"><a href="#head!/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head!</span><span class="p" data-group-id="4644066076-1">(</span><span class="p" data-group-id="4644066076-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4644066076-2">]</span><span class="p" data-group-id="4644066076-1">)</span><span class="w">
+<p>Returns the head of a list.</p><p>Raises <a href="https://hexdocs.pm/elixir/ArgumentError.html"><code class="inline">ArgumentError</code></a> if the list is empty or not a list.</p><h2 id="head!/1-examples" class="section-heading"><a href="#head!/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head!</span><span class="p" data-group-id="7329758470-1">(</span><span class="p" data-group-id="7329758470-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7329758470-2">]</span><span class="p" data-group-id="7329758470-1">)</span><span class="w">
 </span><span class="mi">1</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head!</span><span class="p" data-group-id="4644066076-3">(</span><span class="p" data-group-id="4644066076-4">[</span><span class="mi">42</span><span class="p" data-group-id="4644066076-4">]</span><span class="p" data-group-id="4644066076-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">head!</span><span class="p" data-group-id="7329758470-3">(</span><span class="p" data-group-id="7329758470-4">[</span><span class="mi">42</span><span class="p" data-group-id="7329758470-4">]</span><span class="p" data-group-id="7329758470-3">)</span><span class="w">
 </span><span class="mi">42</span></code></pre>
   </section>
 </section>
@@ -490,10 +595,10 @@ funx
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">intersection(list1, list2, eq \\ Funx.Eq.Protocol)</h1>
+      <h1 class="signature" translate="no">intersection(list1, list2, eq \\ Eq.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L107" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L113" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -508,8 +613,8 @@ funx
 
       </div>
 
-<p>Returns the intersection of two lists.</p><h2 id="intersection/3-examples" class="section-heading"><a href="#intersection/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">intersection</span><span class="p" data-group-id="0446571537-1">(</span><span class="p" data-group-id="0446571537-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="0446571537-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0446571537-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0446571537-3">]</span><span class="p" data-group-id="0446571537-1">)</span><span class="w">
-</span><span class="p" data-group-id="0446571537-4">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="0446571537-4">]</span></code></pre>
+<p>Returns the intersection of two lists.</p><h2 id="intersection/3-examples" class="section-heading"><a href="#intersection/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">intersection</span><span class="p" data-group-id="1002869790-1">(</span><span class="p" data-group-id="1002869790-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1002869790-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1002869790-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1002869790-3">]</span><span class="p" data-group-id="1002869790-1">)</span><span class="w">
+</span><span class="p" data-group-id="1002869790-4">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="1002869790-4">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="max/2">
@@ -521,10 +626,10 @@ funx
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">max(list, ord \\ Funx.Ord.Protocol)</h1>
+      <h1 class="signature" translate="no">max(list, ord \\ Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L319" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L415" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -540,15 +645,15 @@ funx
       </div>
 
 <p>Returns the maximum element in a list according to the given ordering.</p><p>Returns <code class="inline">Just(element)</code> for non-empty lists, <code class="inline">Nothing</code> for empty lists.</p><p>This is a safe version that returns <code class="inline">Maybe</code> instead of raising.
-Use <a href="#max!/2"><code class="inline">max!/2</code></a> if you want to raise on empty lists.</p><h2 id="max/2-examples" class="section-heading"><a href="#max/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="3380238300-1">(</span><span class="p" data-group-id="3380238300-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3380238300-2">]</span><span class="p" data-group-id="3380238300-1">)</span><span class="w">
-</span><span class="p" data-group-id="3380238300-3">%</span><span class="nc" data-group-id="3380238300-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3380238300-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3380238300-3">}</span><span class="w">
+Use <a href="#max!/2"><code class="inline">max!/2</code></a> if you want to raise on empty lists.</p><h2 id="max/2-examples" class="section-heading"><a href="#max/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="3077126323-1">(</span><span class="p" data-group-id="3077126323-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3077126323-2">]</span><span class="p" data-group-id="3077126323-1">)</span><span class="w">
+</span><span class="p" data-group-id="3077126323-3">%</span><span class="nc" data-group-id="3077126323-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3077126323-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3077126323-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="3380238300-4">(</span><span class="p" data-group-id="3380238300-5">[</span><span class="p" data-group-id="3380238300-5">]</span><span class="p" data-group-id="3380238300-4">)</span><span class="w">
-</span><span class="p" data-group-id="3380238300-6">%</span><span class="nc" data-group-id="3380238300-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="3380238300-6">{</span><span class="p" data-group-id="3380238300-6">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="3077126323-4">(</span><span class="p" data-group-id="3077126323-5">[</span><span class="p" data-group-id="3077126323-5">]</span><span class="p" data-group-id="3077126323-4">)</span><span class="w">
+</span><span class="p" data-group-id="3077126323-6">%</span><span class="nc" data-group-id="3077126323-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="3077126323-6">{</span><span class="p" data-group-id="3077126323-6">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="3380238300-7">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="3380238300-7">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="3380238300-8">(</span><span class="p" data-group-id="3380238300-9">[</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="3380238300-9">]</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="3380238300-8">)</span><span class="w">
-</span><span class="p" data-group-id="3380238300-10">%</span><span class="nc" data-group-id="3380238300-10">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3380238300-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p" data-group-id="3380238300-10">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="3077126323-7">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="3077126323-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="3077126323-8">(</span><span class="p" data-group-id="3077126323-9">[</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="3077126323-9">]</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="3077126323-8">)</span><span class="w">
+</span><span class="p" data-group-id="3077126323-10">%</span><span class="nc" data-group-id="3077126323-10">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="3077126323-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p" data-group-id="3077126323-10">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="max!/2">
@@ -560,10 +665,10 @@ Use <a href="#max!/2"><code class="inline">max!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">max!(list, ord \\ Funx.Ord.Protocol)</h1>
+      <h1 class="signature" translate="no">max!(list, ord \\ Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L343" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L439" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -578,11 +683,11 @@ Use <a href="#max!/2"><code class="inline">max!/2</code></a> if you want to rais
 
       </div>
 
-<p>Returns the maximum element in a list according to the given ordering.</p><p>Raises <a href="https://hexdocs.pm/elixir/Enum.EmptyError.html"><code class="inline">Enum.EmptyError</code></a> if the list is empty.</p><h2 id="max!/2-examples" class="section-heading"><a href="#max!/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max!</span><span class="p" data-group-id="4278883898-1">(</span><span class="p" data-group-id="4278883898-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4278883898-2">]</span><span class="p" data-group-id="4278883898-1">)</span><span class="w">
+<p>Returns the maximum element in a list according to the given ordering.</p><p>Raises <a href="https://hexdocs.pm/elixir/Enum.EmptyError.html"><code class="inline">Enum.EmptyError</code></a> if the list is empty.</p><h2 id="max!/2-examples" class="section-heading"><a href="#max!/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max!</span><span class="p" data-group-id="6184430504-1">(</span><span class="p" data-group-id="6184430504-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6184430504-2">]</span><span class="p" data-group-id="6184430504-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4278883898-3">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4278883898-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max!</span><span class="p" data-group-id="4278883898-4">(</span><span class="p" data-group-id="4278883898-5">[</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="4278883898-5">]</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="4278883898-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="6184430504-3">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="6184430504-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">max!</span><span class="p" data-group-id="6184430504-4">(</span><span class="p" data-group-id="6184430504-5">[</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="6184430504-5">]</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="6184430504-4">)</span><span class="w">
 </span><span class="s">&quot;elephant&quot;</span></code></pre>
   </section>
 </section>
@@ -595,10 +700,10 @@ Use <a href="#max!/2"><code class="inline">max!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">min(list, ord \\ Funx.Ord.Protocol)</h1>
+      <h1 class="signature" translate="no">min(list, ord \\ Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L368" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L464" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -614,15 +719,15 @@ Use <a href="#max!/2"><code class="inline">max!/2</code></a> if you want to rais
       </div>
 
 <p>Returns the minimum element in a list according to the given ordering.</p><p>Returns <code class="inline">Just(element)</code> for non-empty lists, <code class="inline">Nothing</code> for empty lists.</p><p>This is a safe version that returns <code class="inline">Maybe</code> instead of raising.
-Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to raise on empty lists.</p><h2 id="min/2-examples" class="section-heading"><a href="#min/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="7005686168-1">(</span><span class="p" data-group-id="7005686168-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="7005686168-2">]</span><span class="p" data-group-id="7005686168-1">)</span><span class="w">
-</span><span class="p" data-group-id="7005686168-3">%</span><span class="nc" data-group-id="7005686168-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7005686168-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7005686168-3">}</span><span class="w">
+Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to raise on empty lists.</p><h2 id="min/2-examples" class="section-heading"><a href="#min/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="8902088046-1">(</span><span class="p" data-group-id="8902088046-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8902088046-2">]</span><span class="p" data-group-id="8902088046-1">)</span><span class="w">
+</span><span class="p" data-group-id="8902088046-3">%</span><span class="nc" data-group-id="8902088046-3">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="8902088046-3">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="8902088046-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="7005686168-4">(</span><span class="p" data-group-id="7005686168-5">[</span><span class="p" data-group-id="7005686168-5">]</span><span class="p" data-group-id="7005686168-4">)</span><span class="w">
-</span><span class="p" data-group-id="7005686168-6">%</span><span class="nc" data-group-id="7005686168-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="7005686168-6">{</span><span class="p" data-group-id="7005686168-6">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="8902088046-4">(</span><span class="p" data-group-id="8902088046-5">[</span><span class="p" data-group-id="8902088046-5">]</span><span class="p" data-group-id="8902088046-4">)</span><span class="w">
+</span><span class="p" data-group-id="8902088046-6">%</span><span class="nc" data-group-id="8902088046-6">Funx.Monad.Maybe.Nothing</span><span class="p" data-group-id="8902088046-6">{</span><span class="p" data-group-id="8902088046-6">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="7005686168-7">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="7005686168-7">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="7005686168-8">(</span><span class="p" data-group-id="7005686168-9">[</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="7005686168-9">]</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="7005686168-8">)</span><span class="w">
-</span><span class="p" data-group-id="7005686168-10">%</span><span class="nc" data-group-id="7005686168-10">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7005686168-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="7005686168-10">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8902088046-7">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="8902088046-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="8902088046-8">(</span><span class="p" data-group-id="8902088046-9">[</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="8902088046-9">]</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="8902088046-8">)</span><span class="w">
+</span><span class="p" data-group-id="8902088046-10">%</span><span class="nc" data-group-id="8902088046-10">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="8902088046-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="8902088046-10">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="min!/2">
@@ -634,10 +739,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">min!(list, ord \\ Funx.Ord.Protocol)</h1>
+      <h1 class="signature" translate="no">min!(list, ord \\ Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L392" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L488" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -652,12 +757,51 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
 
       </div>
 
-<p>Returns the minimum element in a list according to the given ordering.</p><p>Raises <a href="https://hexdocs.pm/elixir/Enum.EmptyError.html"><code class="inline">Enum.EmptyError</code></a> if the list is empty.</p><h2 id="min!/2-examples" class="section-heading"><a href="#min!/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min!</span><span class="p" data-group-id="1295978622-1">(</span><span class="p" data-group-id="1295978622-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1295978622-2">]</span><span class="p" data-group-id="1295978622-1">)</span><span class="w">
+<p>Returns the minimum element in a list according to the given ordering.</p><p>Raises <a href="https://hexdocs.pm/elixir/Enum.EmptyError.html"><code class="inline">Enum.EmptyError</code></a> if the list is empty.</p><h2 id="min!/2-examples" class="section-heading"><a href="#min!/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min!</span><span class="p" data-group-id="4184646008-1">(</span><span class="p" data-group-id="4184646008-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4184646008-2">]</span><span class="p" data-group-id="4184646008-1">)</span><span class="w">
 </span><span class="mi">1</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="1295978622-3">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="1295978622-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min!</span><span class="p" data-group-id="1295978622-4">(</span><span class="p" data-group-id="1295978622-5">[</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="1295978622-5">]</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="1295978622-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4184646008-3">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4184646008-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">min!</span><span class="p" data-group-id="4184646008-4">(</span><span class="p" data-group-id="4184646008-5">[</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;elephant&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;ox&quot;</span><span class="p" data-group-id="4184646008-5">]</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="4184646008-4">)</span><span class="w">
 </span><span class="s">&quot;ox&quot;</span></code></pre>
+  </section>
+</section>
+<section class="detail" id="partition/3">
+
+    <span id="partition/2"></span>
+
+  <div class="detail-header">
+    <a href="#partition/3" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+      <i class="ri-link-m" aria-hidden="true"></i>
+    </a>
+    <div class="heading-with-actions">
+      <h1 class="signature" translate="no">partition(list, value, eq \\ Eq.Protocol)</h1>
+
+
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L202" class="icon-action" rel="help" aria-label="View Source">
+          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+        </a>
+
+    </div>
+  </div>
+
+  <section class="docstring">
+
+      <div class="specs">
+
+          <pre translate="no"><span class="attribute">@spec</span> partition([a], a, <a href="Funx.Eq.html#t:eq_t/0">Funx.Eq.eq_t</a>()) :: {[a], [a]} when a: <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">term</a>()</pre>
+
+      </div>
+
+<p>Partitions a list into elements equal to a value and elements not equal.</p><p>Returns a tuple <code class="inline">{matching, non_matching}</code> where <code class="inline">matching</code> contains all
+elements equal to <code class="inline">value</code> under the provided <code class="inline">Eq</code>, and <code class="inline">non_matching</code>
+contains the rest.</p><h2 id="partition/3-examples" class="section-heading"><a href="#partition/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">partition</span><span class="p" data-group-id="7101774032-1">(</span><span class="p" data-group-id="7101774032-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7101774032-2">]</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7101774032-1">)</span><span class="w">
+</span><span class="p" data-group-id="7101774032-3">{</span><span class="p" data-group-id="7101774032-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7101774032-4">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7101774032-5">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7101774032-5">]</span><span class="p" data-group-id="7101774032-3">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">partition</span><span class="p" data-group-id="7101774032-6">(</span><span class="p" data-group-id="7101774032-7">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7101774032-7">]</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="7101774032-6">)</span><span class="w">
+</span><span class="p" data-group-id="7101774032-8">{</span><span class="p" data-group-id="7101774032-9">[</span><span class="p" data-group-id="7101774032-9">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7101774032-10">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7101774032-10">]</span><span class="p" data-group-id="7101774032-8">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">partition</span><span class="p" data-group-id="7101774032-11">(</span><span class="p" data-group-id="7101774032-12">[</span><span class="p" data-group-id="7101774032-12">]</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p" data-group-id="7101774032-11">)</span><span class="w">
+</span><span class="p" data-group-id="7101774032-13">{</span><span class="p" data-group-id="7101774032-14">[</span><span class="p" data-group-id="7101774032-14">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7101774032-15">[</span><span class="p" data-group-id="7101774032-15">]</span><span class="p" data-group-id="7101774032-13">}</span></code></pre>
   </section>
 </section>
 <section class="detail" id="sort/2">
@@ -669,10 +813,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">sort(list, ord \\ Funx.Ord.Protocol)</h1>
+      <h1 class="signature" translate="no">sort(list, ord \\ Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L202" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L298" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -687,8 +831,8 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
 
       </div>
 
-<p>Sorts a list using the given ordering module.</p><h2 id="sort/2-examples" class="section-heading"><a href="#sort/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="5646342942-1">(</span><span class="p" data-group-id="5646342942-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5646342942-2">]</span><span class="p" data-group-id="5646342942-1">)</span><span class="w">
-</span><span class="p" data-group-id="5646342942-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5646342942-3">]</span></code></pre>
+<p>Sorts a list using the given ordering module.</p><h2 id="sort/2-examples" class="section-heading"><a href="#sort/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="6009544670-1">(</span><span class="p" data-group-id="6009544670-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6009544670-2">]</span><span class="p" data-group-id="6009544670-1">)</span><span class="w">
+</span><span class="p" data-group-id="6009544670-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6009544670-3">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="strict_sort/2">
@@ -700,10 +844,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">strict_sort(list, ord \\ Funx.Ord.Protocol)</h1>
+      <h1 class="signature" translate="no">strict_sort(list, ord \\ Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L215" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L311" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -718,8 +862,8 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
 
       </div>
 
-<p>Sorts a list while ensuring uniqueness.</p><h2 id="strict_sort/2-examples" class="section-heading"><a href="#strict_sort/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">strict_sort</span><span class="p" data-group-id="2966872567-1">(</span><span class="p" data-group-id="2966872567-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2966872567-2">]</span><span class="p" data-group-id="2966872567-1">)</span><span class="w">
-</span><span class="p" data-group-id="2966872567-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2966872567-3">]</span></code></pre>
+<p>Sorts a list while ensuring uniqueness.</p><h2 id="strict_sort/2-examples" class="section-heading"><a href="#strict_sort/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">strict_sort</span><span class="p" data-group-id="4623058251-1">(</span><span class="p" data-group-id="4623058251-2">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4623058251-2">]</span><span class="p" data-group-id="4623058251-1">)</span><span class="w">
+</span><span class="p" data-group-id="4623058251-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4623058251-3">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="subset?/3">
@@ -731,10 +875,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">subset?(small, large, eq \\ Funx.Eq.Protocol)</h1>
+      <h1 class="signature" translate="no">subset?(small, large, eq \\ Eq.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L173" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L269" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -749,10 +893,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
 
       </div>
 
-<p>Checks if the first list is a subset of the second.</p><h2 id="subset?/3-examples" class="section-heading"><a href="#subset?/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">subset?</span><span class="p" data-group-id="5879627015-1">(</span><span class="p" data-group-id="5879627015-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="5879627015-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5879627015-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="5879627015-3">]</span><span class="p" data-group-id="5879627015-1">)</span><span class="w">
+<p>Checks if the first list is a subset of the second.</p><h2 id="subset?/3-examples" class="section-heading"><a href="#subset?/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">subset?</span><span class="p" data-group-id="2153722168-1">(</span><span class="p" data-group-id="2153722168-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2153722168-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2153722168-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2153722168-3">]</span><span class="p" data-group-id="2153722168-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">subset?</span><span class="p" data-group-id="5879627015-4">(</span><span class="p" data-group-id="5879627015-5">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5879627015-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5879627015-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="5879627015-6">]</span><span class="p" data-group-id="5879627015-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">subset?</span><span class="p" data-group-id="2153722168-4">(</span><span class="p" data-group-id="2153722168-5">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2153722168-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="2153722168-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2153722168-6">]</span><span class="p" data-group-id="2153722168-4">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -765,10 +909,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">superset?(large, small, eq \\ Funx.Eq.Protocol)</h1>
+      <h1 class="signature" translate="no">superset?(large, small, eq \\ Eq.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L189" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L285" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -783,10 +927,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
 
       </div>
 
-<p>Checks if the first list is a superset of the second.</p><h2 id="superset?/3-examples" class="section-heading"><a href="#superset?/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">superset?</span><span class="p" data-group-id="0465926924-1">(</span><span class="p" data-group-id="0465926924-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="0465926924-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0465926924-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="0465926924-3">]</span><span class="p" data-group-id="0465926924-1">)</span><span class="w">
+<p>Checks if the first list is a superset of the second.</p><h2 id="superset?/3-examples" class="section-heading"><a href="#superset?/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">superset?</span><span class="p" data-group-id="4519912205-1">(</span><span class="p" data-group-id="4519912205-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4519912205-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4519912205-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="4519912205-3">]</span><span class="p" data-group-id="4519912205-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">superset?</span><span class="p" data-group-id="0465926924-4">(</span><span class="p" data-group-id="0465926924-5">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="0465926924-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0465926924-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="0465926924-6">]</span><span class="p" data-group-id="0465926924-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">superset?</span><span class="p" data-group-id="4519912205-4">(</span><span class="p" data-group-id="4519912205-5">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4519912205-5">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4519912205-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4519912205-6">]</span><span class="p" data-group-id="4519912205-4">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -799,10 +943,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">symmetric_difference(list1, list2, eq \\ Funx.Eq.Protocol)</h1>
+      <h1 class="signature" translate="no">symmetric_difference(list1, list2, eq \\ Eq.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L137" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L143" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -817,8 +961,8 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
 
       </div>
 
-<p>Returns the symmetric difference of two lists.</p><h2 id="symmetric_difference/3-examples" class="section-heading"><a href="#symmetric_difference/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p" data-group-id="9335974926-1">(</span><span class="p" data-group-id="9335974926-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="9335974926-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9335974926-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9335974926-3">]</span><span class="p" data-group-id="9335974926-1">)</span><span class="w">
-</span><span class="p" data-group-id="9335974926-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9335974926-4">]</span></code></pre>
+<p>Returns the symmetric difference of two lists.</p><h2 id="symmetric_difference/3-examples" class="section-heading"><a href="#symmetric_difference/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p" data-group-id="1589729751-1">(</span><span class="p" data-group-id="1589729751-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="1589729751-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1589729751-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1589729751-3">]</span><span class="p" data-group-id="1589729751-1">)</span><span class="w">
+</span><span class="p" data-group-id="1589729751-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1589729751-4">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="tail/1">
@@ -831,7 +975,7 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
       <h1 class="signature" translate="no">tail(list)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L295" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L391" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -846,14 +990,14 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
 
       </div>
 
-<p>Returns the tail of a list.</p><p>The tail of an empty list is an empty list.</p><h2 id="tail/1-examples" class="section-heading"><a href="#tail/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">tail</span><span class="p" data-group-id="4959851753-1">(</span><span class="p" data-group-id="4959851753-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4959851753-2">]</span><span class="p" data-group-id="4959851753-1">)</span><span class="w">
-</span><span class="p" data-group-id="4959851753-3">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="4959851753-3">]</span><span class="w">
+<p>Returns the tail of a list.</p><p>The tail of an empty list is an empty list.</p><h2 id="tail/1-examples" class="section-heading"><a href="#tail/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">tail</span><span class="p" data-group-id="5214389959-1">(</span><span class="p" data-group-id="5214389959-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="5214389959-2">]</span><span class="p" data-group-id="5214389959-1">)</span><span class="w">
+</span><span class="p" data-group-id="5214389959-3">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="5214389959-3">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">tail</span><span class="p" data-group-id="4959851753-4">(</span><span class="p" data-group-id="4959851753-5">[</span><span class="mi">1</span><span class="p" data-group-id="4959851753-5">]</span><span class="p" data-group-id="4959851753-4">)</span><span class="w">
-</span><span class="p" data-group-id="4959851753-6">[</span><span class="p" data-group-id="4959851753-6">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">tail</span><span class="p" data-group-id="5214389959-4">(</span><span class="p" data-group-id="5214389959-5">[</span><span class="mi">1</span><span class="p" data-group-id="5214389959-5">]</span><span class="p" data-group-id="5214389959-4">)</span><span class="w">
+</span><span class="p" data-group-id="5214389959-6">[</span><span class="p" data-group-id="5214389959-6">]</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">tail</span><span class="p" data-group-id="4959851753-7">(</span><span class="p" data-group-id="4959851753-8">[</span><span class="p" data-group-id="4959851753-8">]</span><span class="p" data-group-id="4959851753-7">)</span><span class="w">
-</span><span class="p" data-group-id="4959851753-9">[</span><span class="p" data-group-id="4959851753-9">]</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">tail</span><span class="p" data-group-id="5214389959-7">(</span><span class="p" data-group-id="5214389959-8">[</span><span class="p" data-group-id="5214389959-8">]</span><span class="p" data-group-id="5214389959-7">)</span><span class="w">
+</span><span class="p" data-group-id="5214389959-9">[</span><span class="p" data-group-id="5214389959-9">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="union/3">
@@ -865,10 +1009,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">union(list1, list2, eq \\ Funx.Eq.Protocol)</h1>
+      <h1 class="signature" translate="no">union(list1, list2, eq \\ Eq.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L94" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L100" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -883,8 +1027,8 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
 
       </div>
 
-<p>Returns the union of two lists, removing duplicates.</p><h2 id="union/3-examples" class="section-heading"><a href="#union/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">union</span><span class="p" data-group-id="1600591367-1">(</span><span class="p" data-group-id="1600591367-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="1600591367-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1600591367-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1600591367-3">]</span><span class="p" data-group-id="1600591367-1">)</span><span class="w">
-</span><span class="p" data-group-id="1600591367-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1600591367-4">]</span></code></pre>
+<p>Returns the union of two lists, removing duplicates.</p><h2 id="union/3-examples" class="section-heading"><a href="#union/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">union</span><span class="p" data-group-id="8870096747-1">(</span><span class="p" data-group-id="8870096747-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="8870096747-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8870096747-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8870096747-3">]</span><span class="p" data-group-id="8870096747-1">)</span><span class="w">
+</span><span class="p" data-group-id="8870096747-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8870096747-4">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="uniq/2">
@@ -896,10 +1040,10 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">uniq(list, eq \\ Funx.Eq.Protocol)</h1>
+      <h1 class="signature" translate="no">uniq(list, eq \\ Eq.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L77" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.1/lib/list.ex#L83" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -914,8 +1058,8 @@ Use <a href="#min!/2"><code class="inline">min!/2</code></a> if you want to rais
 
       </div>
 
-<p>Removes duplicate elements from a list based on the given equality module.</p><h2 id="uniq/2-examples" class="section-heading"><a href="#uniq/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">uniq</span><span class="p" data-group-id="3296871837-1">(</span><span class="p" data-group-id="3296871837-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3296871837-2">]</span><span class="p" data-group-id="3296871837-1">)</span><span class="w">
-</span><span class="p" data-group-id="3296871837-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="3296871837-3">]</span></code></pre>
+<p>Removes duplicate elements from a list based on the given equality module.</p><h2 id="uniq/2-examples" class="section-heading"><a href="#uniq/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.List</span><span class="o">.</span><span class="n">uniq</span><span class="p" data-group-id="9280910493-1">(</span><span class="p" data-group-id="9280910493-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9280910493-2">]</span><span class="p" data-group-id="9280910493-1">)</span><span class="w">
+</span><span class="p" data-group-id="9280910493-3">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9280910493-3">]</span></code></pre>
   </section>
 </section>
 
