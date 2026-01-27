@@ -83,7 +83,12 @@ defmodule Funx.Eq.Dsl.Executor do
   end
 
   # Projection type - use contramap (non-negated)
-  defp node_to_ast(%Step{projection: projection_ast, eq: eq_ast, negate: false, type: :projection}) do
+  defp node_to_ast(%Step{
+         projection: projection_ast,
+         eq: eq_ast,
+         negate: false,
+         type: :projection
+       }) do
     quote do
       Eq.contramap(unquote(projection_ast), unquote(eq_ast))
     end

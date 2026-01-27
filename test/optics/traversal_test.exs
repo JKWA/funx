@@ -60,22 +60,6 @@ defmodule Funx.Optics.TraversalTest do
     }
   end
 
-  defp fixture(:check_refund, amount) do
-    amount = amount || 200
-
-    %Transaction{
-      type: %Refund{
-        item: %Item{name: "Flash", amount: amount},
-        payment: %Check{
-          name: "Dave",
-          routing_number: "222000025",
-          account_number: "123456",
-          amount: amount
-        }
-      }
-    }
-  end
-
   # ============================================================================
   # Domain Boundary Prisms
   # ============================================================================

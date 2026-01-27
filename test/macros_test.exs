@@ -697,6 +697,23 @@ defmodule Funx.MacrosTest do
     Funx.Macros.ord_for(FnOrdTask, OrdEqHelpers.reverse_priority_ord())
   end
 
+  # Test structs for function call returning Prism (no or_else, uses maybe_map path)
+  defmodule FnEqWithPrism do
+    @moduledoc false
+    defstruct [:name, :rating]
+
+    # Function call returning Prism without or_else - exercises maybe_eq_map fallback
+    Funx.Macros.eq_for(FnEqWithPrism, OrdEqHelpers.rating_prism())
+  end
+
+  defmodule FnOrdWithPrism do
+    @moduledoc false
+    defstruct [:name, :score]
+
+    # Function call returning Prism without or_else - exercises maybe_ord_map fallback
+    Funx.Macros.ord_for(FnOrdWithPrism, OrdEqHelpers.score_prism())
+  end
+
   # Test structs for function call + or_else (returns Prism, not ord/eq map)
   defmodule FnOrdWithOrElse do
     @moduledoc false
@@ -849,6 +866,52 @@ defmodule Funx.MacrosTest do
 
       # nil → 0: [0, 25, 50]
       assert Enum.map(sorted, & &1.score) == [nil, 25, 50]
+    end
+  end
+
+  describe "eq_for with function call returning Prism (no or_else)" do
+    test "compares values using Prism projection" do
+      r1 = %FnEqWithPrism{name: "A", rating: 5}
+      r2 = %FnEqWithPrism{name: "B", rating: 5}
+      r3 = %FnEqWithPrism{name: "C", rating: 3}
+
+      # Same rating → equal (via Prism/Maybe lift)
+      assert Eq.eq?(r1, r2)
+      refute Eq.eq?(r1, r3)
+    end
+
+    test "nil values are equal to each other (Nothing == Nothing)" do
+      r1 = %FnEqWithPrism{name: "A", rating: nil}
+      r2 = %FnEqWithPrism{name: "B", rating: nil}
+
+      # Both nil → Nothing, Nothing == Nothing
+      assert Eq.eq?(r1, r2)
+    end
+
+    test "nil not equal to present value (Nothing != Just)" do
+      r1 = %FnEqWithPrism{name: "A", rating: nil}
+      r2 = %FnEqWithPrism{name: "B", rating: 5}
+
+      # nil vs 5 → Nothing vs Just(5)
+      refute Eq.eq?(r1, r2)
+    end
+  end
+
+  describe "ord_for with function call returning Prism (no or_else)" do
+    test "compares values using Prism projection" do
+      s1 = %FnOrdWithPrism{name: "A", score: 10}
+      s2 = %FnOrdWithPrism{name: "B", score: 20}
+
+      assert Protocol.lt?(s1, s2)
+      assert Protocol.gt?(s2, s1)
+    end
+
+    test "nil is less than any present value (Nothing < Just)" do
+      s1 = %FnOrdWithPrism{name: "A", score: nil}
+      s2 = %FnOrdWithPrism{name: "B", score: 0}
+
+      # nil → Nothing, 0 → Just(0), Nothing < Just
+      assert Protocol.lt?(s1, s2)
     end
   end
 

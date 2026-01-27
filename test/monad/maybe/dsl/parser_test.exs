@@ -153,22 +153,16 @@ defmodule Funx.Monad.Maybe.Dsl.ParserTest do
       end
     end
 
+    @protocol_function_steps %{
+      tap: quote(do: tap(fn x -> x end)),
+      filter: quote(do: filter(fn x -> x > 0 end)),
+      filter_map: quote(do: filter_map(fn x -> if x > 0, do: just(x), else: nothing() end))
+    }
+
     for func <- @protocol_functions do
       test "parses #{func} as protocol_function" do
         func_name = unquote(func)
-
-        step =
-          case func_name do
-            :tap ->
-              parse_one(quote do: tap(fn x -> x end))
-
-            :filter ->
-              parse_one(quote do: filter(fn x -> x > 0 end))
-
-            :filter_map ->
-              parse_one(quote do: filter_map(fn x -> if x > 0, do: just(x), else: nothing() end))
-          end
-
+        step = parse_one(@protocol_function_steps[func_name])
         assert %Step.ProtocolFunction{function: ^func_name, args: _args} = step
       end
     end
