@@ -413,6 +413,43 @@ defmodule Funx.Macros do
   end
 
   # ============================================================================
+  # RUNTIME HELPERS (PUBLIC - used by generated code)
+  # ============================================================================
+
+  @doc false
+  # Runtime check for eq_map - returns the value as-is if it's already an eq_map,
+  # otherwise wraps it with contramap. Using a separate function avoids type
+  # warnings in generated code when the projection type is statically known.
+  @spec maybe_eq_map(term(), module()) :: map()
+  def maybe_eq_map(projection, eq_module) do
+    case projection do
+      %{eq?: eq_fun, not_eq?: not_eq_fun}
+      when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) ->
+        projection
+
+      _ ->
+        Funx.Eq.contramap(projection, eq_module)
+    end
+  end
+
+  @doc false
+  # Runtime check for ord_map - returns the value as-is if it's already an ord_map,
+  # otherwise wraps it with contramap. Using a separate function avoids type
+  # warnings in generated code when the projection type is statically known.
+  @spec maybe_ord_map(term(), module()) :: map()
+  def maybe_ord_map(projection, ord_module) do
+    case projection do
+      %{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun}
+      when is_function(lt_fun, 2) and is_function(le_fun, 2) and
+             is_function(gt_fun, 2) and is_function(ge_fun, 2) ->
+        projection
+
+      _ ->
+        Funx.Ord.contramap(projection, ord_module)
+    end
+  end
+
+  # ============================================================================
   # AST BUILDERS (PRIVATE)
   # ============================================================================
 
@@ -423,19 +460,10 @@ defmodule Funx.Macros do
     end
   end
 
-  # For function calls that might return an eq_map, do runtime check
+  # For function calls that might return an eq_map, use runtime helper
   defp build_eq_map_ast(projection_ast, eq_module_ast, :maybe_map) do
     quote do
-      projection = unquote(projection_ast)
-
-      case projection do
-        %{eq?: eq_fun, not_eq?: not_eq_fun}
-        when is_function(eq_fun, 2) and is_function(not_eq_fun, 2) ->
-          projection
-
-        _ ->
-          Funx.Eq.contramap(projection, unquote(eq_module_ast))
-      end
+      Funx.Macros.maybe_eq_map(unquote(projection_ast), unquote(eq_module_ast))
     end
   end
 
@@ -446,20 +474,10 @@ defmodule Funx.Macros do
     end
   end
 
-  # For function calls that might return an ord_map, do runtime check
+  # For function calls that might return an ord_map, use runtime helper
   defp build_ord_map_ast(projection_ast, ord_module_ast, :maybe_map) do
     quote do
-      projection = unquote(projection_ast)
-
-      case projection do
-        %{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun}
-        when is_function(lt_fun, 2) and is_function(le_fun, 2) and
-               is_function(gt_fun, 2) and is_function(ge_fun, 2) ->
-          projection
-
-        _ ->
-          Funx.Ord.contramap(projection, unquote(ord_module_ast))
-      end
+      Funx.Macros.maybe_ord_map(unquote(projection_ast), unquote(ord_module_ast))
     end
   end
 

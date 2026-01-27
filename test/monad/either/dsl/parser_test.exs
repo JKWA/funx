@@ -127,30 +127,29 @@ defmodule Funx.Monad.Either.Dsl.ParserTest do
     @either_functions [:filter_or_else, :or_else, :map_left, :flip]
     @protocol_functions [:tap]
 
+    @either_function_steps %{
+      filter_or_else: quote(do: filter_or_else(&(&1 > 0), fn -> "error" end)),
+      or_else: quote(do: or_else(fn -> right(42) end)),
+      map_left: quote(do: map_left(fn e -> "Error: #{e}" end)),
+      flip: quote(do: flip())
+    }
+
     for func <- @either_functions do
       test "parses #{func} as either_function" do
         func_name = unquote(func)
-
-        step =
-          case func_name do
-            :filter_or_else -> parse_one(quote do: filter_or_else(&(&1 > 0), fn -> "error" end))
-            :or_else -> parse_one(quote do: or_else(fn -> right(42) end))
-            :map_left -> parse_one(quote do: map_left(fn e -> "Error: #{e}" end))
-            :flip -> parse_one(quote do: flip())
-          end
-
+        step = parse_one(@either_function_steps[func_name])
         assert %Step.EitherFunction{function: ^func_name, args: _args} = step
       end
     end
 
+    @protocol_function_steps %{
+      tap: quote(do: tap(fn x -> x end))
+    }
+
     for func <- @protocol_functions do
       test "parses #{func} as protocol_function" do
         func_name = unquote(func)
-
-        step =
-          case func_name do
-            :tap -> parse_one(quote do: tap(fn x -> x end))
-          end
+        step = parse_one(@protocol_function_steps[func_name])
 
         assert %Step.ProtocolFunction{function: ^func_name, protocol: Funx.Tappable, args: _args} =
                  step

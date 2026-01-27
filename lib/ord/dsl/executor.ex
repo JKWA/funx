@@ -139,36 +139,11 @@ defmodule Funx.Ord.Dsl.Executor do
   # Runtime validation of ord map variable
 
   defp step_to_ord_ast(%Step{direction: direction, projection: var_ast, type: :ord_variable}) do
+    executor = __MODULE__
+
     base_ord_ast =
       quote do
-        ord_var = unquote(var_ast)
-
-        case ord_var do
-          %{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun}
-          when is_function(lt_fun, 2) and is_function(le_fun, 2) and
-                 is_function(gt_fun, 2) and is_function(ge_fun, 2) ->
-            # Valid ord map - use it directly
-            ord_var
-
-          _ ->
-            raise RuntimeError, """
-            Expected an Ord map, got: #{inspect(ord_var)}
-
-            An Ord map must have the following structure:
-              %{
-                lt?: fn(a, b) -> boolean end,
-                le?: fn(a, b) -> boolean end,
-                gt?: fn(a, b) -> boolean end,
-                ge?: fn(a, b) -> boolean end
-              }
-
-            You can create ord maps using:
-              - ord do ... end
-              - Ord.contramap(...)
-              - Ord.reverse(...)
-              - Ord.compose([...])
-            """
-        end
+        unquote(executor).validate_ord_map!(unquote(var_ast))
       end
 
     case direction do
@@ -191,6 +166,40 @@ defmodule Funx.Ord.Dsl.Executor do
   defp empty_ord_ast do
     quote do
       %Funx.Monoid.Ord{}
+    end
+  end
+
+  @doc false
+  # Validates that a value is an ord_map at runtime. Returns the value if valid,
+  # raises RuntimeError with a helpful message if invalid. The function boundary
+  # prevents the type checker from warning about unreachable branches when the
+  # input type is statically known.
+  @spec validate_ord_map!(term()) :: Funx.Ord.ord_map()
+  def validate_ord_map!(ord_var) do
+    case ord_var do
+      %{lt?: lt_fun, le?: le_fun, gt?: gt_fun, ge?: ge_fun}
+      when is_function(lt_fun, 2) and is_function(le_fun, 2) and
+             is_function(gt_fun, 2) and is_function(ge_fun, 2) ->
+        ord_var
+
+      _ ->
+        raise RuntimeError, """
+        Expected an Ord map, got: #{inspect(ord_var)}
+
+        An Ord map must have the following structure:
+          %{
+            lt?: fn(a, b) -> boolean end,
+            le?: fn(a, b) -> boolean end,
+            gt?: fn(a, b) -> boolean end,
+            ge?: fn(a, b) -> boolean end
+          }
+
+        You can create ord maps using:
+          - ord do ... end
+          - Ord.contramap(...)
+          - Ord.reverse(...)
+          - Ord.compose([...])
+        """
     end
   end
 end

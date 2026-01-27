@@ -7,7 +7,7 @@ defmodule Funx.MixProject do
     [
       app: :funx,
       version: @version,
-      elixir: "~> 1.16 or ~> 1.17 or ~> 1.18",
+      elixir: "~> 1.16 or ~> 1.17 or ~> 1.18 or ~> 1.19",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       consolidate_protocols: Mix.env() != :test,
@@ -53,12 +53,6 @@ defmodule Funx.MixProject do
         ]
       ],
       test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      ],
       package: [
         name: "funx",
         description:
@@ -91,6 +85,17 @@ defmodule Funx.MixProject do
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
+
+  def cli do
+    [
+      preferred_envs: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
+    ]
+  end
 
   def application do
     [

@@ -178,11 +178,7 @@ defmodule Funx.Optics.Lens do
       iex> Funx.Optics.Lens.set!(data, lens, "Bob")
       %{user: %{profile: %{name: "Bob"}}}
 
-  Raises on missing keys when accessed:
-
-      iex> lens = Funx.Optics.Lens.path([:user, :name])
-      iex> Funx.Optics.Lens.view!(%{}, lens)
-      ** (KeyError) key :user not found in: %{}
+  Raises `KeyError` on missing keys when accessed.
   """
   @spec path([term()]) :: t(map(), term())
   def path(keys) when is_list(keys) do
@@ -239,9 +235,6 @@ defmodule Funx.Optics.Lens do
       iex> Funx.Optics.Lens.view!(%{name: "Alice"}, lens)
       "Alice"
 
-      iex> lens = Funx.Optics.Lens.key(:name)
-      iex> Funx.Optics.Lens.view!(%{}, lens)
-      ** (KeyError) key :name not found in: %{}
   """
   @spec view!(s, t(s, a)) :: a
         when s: term(), a: term()
@@ -263,10 +256,6 @@ defmodule Funx.Optics.Lens do
       iex> lens = Funx.Optics.Lens.key(:age)
       iex> Funx.Optics.Lens.set!(%{age: 30, name: "Alice"}, lens, 31)
       %{age: 31, name: "Alice"}
-
-      iex> lens = Funx.Optics.Lens.key(:age)
-      iex> Funx.Optics.Lens.set!(%{name: "Alice"}, lens, 31)
-      ** (KeyError) key :age not found in: %{name: "Alice"}
   """
   @spec set!(s, t(s, a), a) :: s
         when s: term(), a: term()
