@@ -31,9 +31,9 @@ defmodule Funx.Validator.In do
 
   @behaviour Funx.Validate.Behaviour
 
-  alias Funx.List
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.{Just, Nothing}
+  alias Funx.Predicate
   alias Funx.Validator
 
   def validate(value) do
@@ -61,20 +61,11 @@ defmodule Funx.Validator.In do
 
   defp validate_value(value, opts) do
     values = Keyword.fetch!(opts, :values)
-    eq = Keyword.get(opts, :eq, Funx.Eq.Protocol)
-    module_values? = is_list(values) and Enum.all?(values, &is_atom/1)
+    predicate = Predicate.In.pred(opts)
 
     Either.lift_predicate(
       value,
-      fn v ->
-        case {v, module_values?} do
-          {%{__struct__: mod}, true} ->
-            mod in values
-
-          _ ->
-            List.elem?(values, v, eq)
-        end
-      end,
+      predicate,
       fn v ->
         rendered = Enum.map_join(values, ", ", &inspect/1)
         Validator.validation_error(opts, v, "must be one of: #{rendered}")

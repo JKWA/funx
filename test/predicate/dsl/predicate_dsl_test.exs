@@ -404,6 +404,78 @@ defmodule Funx.Predicate.DslTest do
   end
 
   # ============================================================================
+  # Default Truthy Check Tests
+  # ============================================================================
+
+  describe "check with default truthy predicate" do
+    test "single-argument check defaults to truthy" do
+      is_active =
+        pred do
+          check(:active)
+        end
+
+      assert is_active.(%{active: true})
+      assert is_active.(%{active: 1})
+      assert is_active.(%{active: "yes"})
+      refute is_active.(%{active: false})
+      refute is_active.(%{active: nil})
+      refute is_active.(%{})
+    end
+
+    test "single-argument check with nested path" do
+      is_poisoned =
+        pred do
+          check([:poison, :active])
+        end
+
+      assert is_poisoned.(%{poison: %{active: true}})
+      assert is_poisoned.(%{poison: %{active: 1}})
+      refute is_poisoned.(%{poison: %{active: false}})
+      refute is_poisoned.(%{poison: %{active: nil}})
+      refute is_poisoned.(%{poison: %{}})
+      refute is_poisoned.(%{})
+    end
+
+    test "negate single-argument check" do
+      not_active =
+        pred do
+          negate check(:active)
+        end
+
+      assert not_active.(%{active: false})
+      assert not_active.(%{active: nil})
+      assert not_active.(%{})
+      refute not_active.(%{active: true})
+      refute not_active.(%{active: 1})
+    end
+
+    test "multiple single-argument checks" do
+      all_flags =
+        pred do
+          check(:active)
+          check(:verified)
+          check(:approved)
+        end
+
+      assert all_flags.(%{active: true, verified: true, approved: true})
+      refute all_flags.(%{active: true, verified: false, approved: true})
+      refute all_flags.(%{active: true, verified: true, approved: nil})
+    end
+
+    test "mixed single and two-argument checks" do
+      valid_user =
+        pred do
+          check(:active)
+          check :age, fn age -> age >= 18 end
+        end
+
+      assert valid_user.(%{active: true, age: 20})
+      refute valid_user.(%{active: false, age: 20})
+      refute valid_user.(%{active: true, age: 16})
+    end
+  end
+
+  # ============================================================================
   # Helper Function Tests
   # ============================================================================
 
