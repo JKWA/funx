@@ -19,13 +19,12 @@ defmodule Funx.Validator.LessThan do
 
   use Funx.Validator
 
-  alias Funx.Ord
+  alias Funx.Predicate
 
   @impl Funx.Validator
   def valid?(value, opts, _env) do
-    reference = Keyword.fetch!(opts, :value)
-    ord = Keyword.get(opts, :ord, Ord.Protocol)
-    Ord.compare(value, reference, ord) == :lt
+    predicate = Predicate.LessThan.pred(opts)
+    predicate.(value)
   end
 
   @impl Funx.Validator

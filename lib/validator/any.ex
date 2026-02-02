@@ -64,17 +64,14 @@ defmodule Funx.Validator.Any do
   alias Funx.Errors.ValidationError
   alias Funx.Monad.Either
 
-  # Convenience overload for default opts (raises on missing required options)
   def validate(value) do
     validate(value, [])
   end
 
-  # Convenience overload for easier direct usage
   def validate(value, opts) when is_list(opts) do
     validate(value, opts, %{})
   end
 
-  # Behaviour implementation (arity-3)
   @impl true
   def validate(value, opts, env) do
     validators = Keyword.get(opts, :validators)
@@ -91,26 +88,20 @@ defmodule Funx.Validator.Any do
     |> finalize(opts)
   end
 
-  # Run validator with options
   defp run({validator, opts}, value, env) do
     cond do
-      # Function validator with options
       is_function(validator, 3) -> validator.(value, opts, env)
       is_function(validator, 2) -> validator.(value, opts)
       is_function(validator, 1) -> validator.(value)
-      # Module validator with options
       true -> validator.validate(value, opts, env)
     end
   end
 
-  # Run validator without options
   defp run(validator, value, env) do
     cond do
-      # Function validator without options
       is_function(validator, 3) -> validator.(value, [], env)
       is_function(validator, 2) -> validator.(value, [])
       is_function(validator, 1) -> validator.(value)
-      # Module validator without options
       true -> validator.validate(value, [], env)
     end
   end
