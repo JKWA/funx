@@ -17,9 +17,12 @@ defmodule Funx.Validator.Integer do
 
   use Funx.Validator
 
+  alias Funx.Predicate
+
   @impl Funx.Validator
-  def valid?(value, _opts, _env) do
-    is_integer(value)
+  def valid?(value, opts, _env) do
+    predicate = Predicate.Integer.pred(opts)
+    predicate.(value)
   end
 
   @impl Funx.Validator

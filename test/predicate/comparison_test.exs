@@ -4,6 +4,11 @@ defmodule Funx.Predicate.ComparisonTest do
 
   alias Funx.Predicate.{GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual}
 
+  doctest GreaterThan
+  doctest GreaterThanOrEqual
+  doctest LessThan
+  doctest LessThanOrEqual
+
   describe "LessThan predicate" do
     test "returns true when value is less than reference" do
       predicate = LessThan.pred(value: 10)

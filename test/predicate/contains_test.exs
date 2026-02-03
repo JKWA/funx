@@ -2,6 +2,8 @@ defmodule Funx.Predicate.ContainsTest do
   use ExUnit.Case, async: true
   use Funx.Predicate
 
+  doctest Funx.Predicate.Contains
+
   alias Funx.Predicate.Contains
 
   describe "Contains predicate standalone" do

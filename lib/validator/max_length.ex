@@ -24,13 +24,13 @@ defmodule Funx.Validator.MaxLength do
 
   use Funx.Validator
 
-  @impl Funx.Validator
-  def valid?(string, opts, _env) when is_binary(string) do
-    max = Keyword.fetch!(opts, :max)
-    String.length(string) <= max
-  end
+  alias Funx.Predicate
 
-  def valid?(_non_string, _opts, _env), do: false
+  @impl Funx.Validator
+  def valid?(value, opts, _env) do
+    predicate = Predicate.MaxLength.pred(opts)
+    predicate.(value)
+  end
 
   @impl Funx.Validator
   def default_message(value, opts) when is_binary(value) do
