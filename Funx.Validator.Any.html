@@ -14,7 +14,7 @@
 
       <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Validator.Any.html" />
 
-    <script defer src="dist/sidebar_items-8773E282.js"></script>
+    <script defer src="dist/sidebar_items-855ABC33.js"></script>
     <script defer src="docs_config.js"></script>
     <script defer src="dist/html-XBCM4BHM.js"></script>
 
@@ -116,29 +116,29 @@ with a single aggregated <code class="inline">ValidationError</code>.</p><p>This
 &quot;value must satisfy rule A or rule B&quot;.</p><p>Options</p><ul><li><p><code class="inline">:validators</code> (required)
 A non-empty list of validators. Each entry may be:</p><ul><li>a validator module implementing <a href="Funx.Validate.Behaviour.html"><code class="inline">Funx.Validate.Behaviour</code></a></li><li>a <code class="inline">{Validator, opts}</code> tuple for optioned validators</li><li>a validator function with arity 1, 2, or 3 (e.g., result of <code class="inline">validate do...end</code>)</li><li>a <code class="inline">{validator_function, opts}</code> tuple for optioned function validators</li></ul></li><li><p><code class="inline">:message</code> (optional)
 A zero-arity callback <code class="inline">(() -&gt; String.t())</code> used to override the default error
-message when all alternatives fail.</p></li></ul><p>Semantics</p><ul><li>Validators are evaluated left-to-right.</li><li>Evaluation short-circuits on the first successful validation.</li><li>If any validator returns <code class="inline">Right</code>, the value is returned unchanged.</li><li>If all validators return <code class="inline">Left</code>, a single <code class="inline">ValidationError</code> is returned.</li><li><code class="inline">Nothing</code> values succeed if any validator accepts them.</li><li><code class="inline">Just</code> values are unwrapped before validation.</li></ul><p>Examples</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Any</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="6162693251-1">(</span><span class="mi">10</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">validators</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6162693251-2">[</span><span class="nc">Funx.Validator.Positive</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Validator.Negative</span><span class="p" data-group-id="6162693251-2">]</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="6162693251-1">)</span><span class="w">
-</span><span class="p" data-group-id="6162693251-3">%</span><span class="nc" data-group-id="6162693251-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="6162693251-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="6162693251-3">}</span><span class="w">
+message when all alternatives fail.</p></li></ul><p>Semantics</p><ul><li>Validators are evaluated left-to-right.</li><li>Evaluation short-circuits on the first successful validation.</li><li>If any validator returns <code class="inline">Right</code>, the value is returned unchanged.</li><li>If all validators return <code class="inline">Left</code>, a single <code class="inline">ValidationError</code> is returned.</li><li><code class="inline">Nothing</code> values succeed if any validator accepts them.</li><li><code class="inline">Just</code> values are unwrapped before validation.</li></ul><p>Examples</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Any</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="5346074259-1">(</span><span class="mi">10</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">validators</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5346074259-2">[</span><span class="nc">Funx.Validator.Positive</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Validator.Negative</span><span class="p" data-group-id="5346074259-2">]</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5346074259-1">)</span><span class="w">
+</span><span class="p" data-group-id="5346074259-3">%</span><span class="nc" data-group-id="5346074259-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="5346074259-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="5346074259-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Any</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="6162693251-4">(</span><span class="mi">0</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">validators</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6162693251-5">[</span><span class="nc">Funx.Validator.Positive</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Validator.Negative</span><span class="p" data-group-id="6162693251-5">]</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="6162693251-4">)</span><span class="w">
-</span><span class="p" data-group-id="6162693251-6">%</span><span class="nc" data-group-id="6162693251-6">Funx.Monad.Either.Left</span><span class="p" data-group-id="6162693251-6">{</span><span class="w">
-  </span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6162693251-7">%</span><span class="nc" data-group-id="6162693251-7">Funx.Errors.ValidationError</span><span class="p" data-group-id="6162693251-7">{</span><span class="w">
-    </span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6162693251-8">[</span><span class="s">&quot;value must satisfy at least one alternative&quot;</span><span class="p" data-group-id="6162693251-8">]</span><span class="w">
-  </span><span class="p" data-group-id="6162693251-7">}</span><span class="w">
-</span><span class="p" data-group-id="6162693251-6">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Any</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="5346074259-4">(</span><span class="mi">0</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">validators</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5346074259-5">[</span><span class="nc">Funx.Validator.Positive</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Validator.Negative</span><span class="p" data-group-id="5346074259-5">]</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5346074259-4">)</span><span class="w">
+</span><span class="p" data-group-id="5346074259-6">%</span><span class="nc" data-group-id="5346074259-6">Funx.Monad.Either.Left</span><span class="p" data-group-id="5346074259-6">{</span><span class="w">
+  </span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5346074259-7">%</span><span class="nc" data-group-id="5346074259-7">Funx.Errors.ValidationError</span><span class="p" data-group-id="5346074259-7">{</span><span class="w">
+    </span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5346074259-8">[</span><span class="s">&quot;value must satisfy at least one alternative&quot;</span><span class="p" data-group-id="5346074259-8">]</span><span class="w">
+  </span><span class="p" data-group-id="5346074259-7">}</span><span class="w">
+</span><span class="p" data-group-id="5346074259-6">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Any</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="6162693251-9">(</span><span class="mi">0</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">validators</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6162693251-10">[</span><span class="nc">Funx.Validator.Positive</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Validator.Negative</span><span class="p" data-group-id="6162693251-10">]</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="6162693251-11">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;must be positive or negative&quot;</span><span class="w"> </span><span class="k" data-group-id="6162693251-11">end</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="6162693251-9">)</span><span class="w">
-</span><span class="p" data-group-id="6162693251-12">%</span><span class="nc" data-group-id="6162693251-12">Funx.Monad.Either.Left</span><span class="p" data-group-id="6162693251-12">{</span><span class="w">
-  </span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6162693251-13">%</span><span class="nc" data-group-id="6162693251-13">Funx.Errors.ValidationError</span><span class="p" data-group-id="6162693251-13">{</span><span class="w">
-    </span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6162693251-14">[</span><span class="s">&quot;must be positive or negative&quot;</span><span class="p" data-group-id="6162693251-14">]</span><span class="w">
-  </span><span class="p" data-group-id="6162693251-13">}</span><span class="w">
-</span><span class="p" data-group-id="6162693251-12">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Any</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="5346074259-9">(</span><span class="mi">0</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">validators</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5346074259-10">[</span><span class="nc">Funx.Validator.Positive</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Validator.Negative</span><span class="p" data-group-id="5346074259-10">]</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="ss">message</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="5346074259-11">fn</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&quot;must be positive or negative&quot;</span><span class="w"> </span><span class="k" data-group-id="5346074259-11">end</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5346074259-9">)</span><span class="w">
+</span><span class="p" data-group-id="5346074259-12">%</span><span class="nc" data-group-id="5346074259-12">Funx.Monad.Either.Left</span><span class="p" data-group-id="5346074259-12">{</span><span class="w">
+  </span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5346074259-13">%</span><span class="nc" data-group-id="5346074259-13">Funx.Errors.ValidationError</span><span class="p" data-group-id="5346074259-13">{</span><span class="w">
+    </span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5346074259-14">[</span><span class="s">&quot;must be positive or negative&quot;</span><span class="p" data-group-id="5346074259-14">]</span><span class="w">
+  </span><span class="p" data-group-id="5346074259-13">}</span><span class="w">
+</span><span class="p" data-group-id="5346074259-12">}</span></code></pre>
     </section>
 
 </div>
@@ -195,7 +195,7 @@ message when all alternatives fail.</p></li></ul><p>Semantics</p><ul><li>Validat
       <h1 class="signature" translate="no">validate(value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/any.ex#L68" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/any.ex#L67" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -217,7 +217,7 @@ message when all alternatives fail.</p></li></ul><p>Semantics</p><ul><li>Validat
       <h1 class="signature" translate="no">validate(value, opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/any.ex#L73" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/any.ex#L71" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
