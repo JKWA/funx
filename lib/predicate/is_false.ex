@@ -11,7 +11,7 @@ defmodule Funx.Predicate.IsFalse do
 
       # Check if a flag is false
       pred do
-        check [:bleeding, :staunched], {IsFalse, []}
+        check [:bleeding, :staunched], IsFalse
       end
 
       # Equivalent to
@@ -21,7 +21,7 @@ defmodule Funx.Predicate.IsFalse do
 
       # Also equivalent to
       pred do
-        negate check [:bleeding, :staunched], {IsTrue, []}
+        negate check [:bleeding, :staunched], IsTrue
       end
   """
 

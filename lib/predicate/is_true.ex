@@ -11,7 +11,7 @@ defmodule Funx.Predicate.IsTrue do
 
       # Check if a flag is true
       pred do
-        check [:poison, :active], {IsTrue, []}
+        check [:poison, :active], IsTrue
       end
 
       # Equivalent to
