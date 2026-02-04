@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.2">
+    <meta name="project" content="funx v0.8.3">
 
 
-    <title>Funx.Ord.Dsl.Behaviour — funx v0.8.2</title>
+    <title>Funx.Ord.Dsl.Behaviour — funx v0.8.3</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.2
+          v0.8.3
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Ord.Dsl.Behaviour</span> <small>behaviour</small>
-      <small class="app-vsn" translate="no">(funx v0.8.2)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.3)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord/dsl/behaviour.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -111,34 +111,34 @@ funx
     <section id="moduledoc">
 <p>Behaviour for custom ordering logic in the Ord DSL.</p><p>Implement this behaviour to define reusable Ord comparators that can be
 used with <code class="inline">asc</code> and <code class="inline">desc</code> directives in the DSL without implementing the Ord protocol.</p><p>This is useful for teams that want to avoid teaching developers about protocols,
-or want struct-specific ordering without global protocol implementations.</p><h2 id="module-basic-example" class="section-heading"><a href="#module-basic-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Basic Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">UserById</span><span class="w"> </span><span class="k" data-group-id="3234650187-1">do</span><span class="w">
+or want struct-specific ordering without global protocol implementations.</p><h2 id="module-basic-example" class="section-heading"><a href="#module-basic-example" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Basic Example</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">UserById</span><span class="w"> </span><span class="k" data-group-id="8698099910-1">do</span><span class="w">
   </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Ord.Dsl.Behaviour</span><span class="w">
 
   </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
-  </span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="3234650187-2">(</span><span class="c">_opts</span><span class="p" data-group-id="3234650187-2">)</span><span class="w"> </span><span class="k" data-group-id="3234650187-3">do</span><span class="w">
-    </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="3234650187-4">(</span><span class="o">&amp;</span><span class="p" data-group-id="3234650187-5">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">id</span><span class="p" data-group-id="3234650187-5">)</span><span class="p" data-group-id="3234650187-4">)</span><span class="w">
-  </span><span class="k" data-group-id="3234650187-3">end</span><span class="w">
-</span><span class="k" data-group-id="3234650187-1">end</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="8698099910-2">(</span><span class="c">_opts</span><span class="p" data-group-id="8698099910-2">)</span><span class="w"> </span><span class="k" data-group-id="8698099910-3">do</span><span class="w">
+    </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8698099910-4">(</span><span class="o">&amp;</span><span class="p" data-group-id="8698099910-5">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">id</span><span class="p" data-group-id="8698099910-5">)</span><span class="p" data-group-id="8698099910-4">)</span><span class="w">
+  </span><span class="k" data-group-id="8698099910-3">end</span><span class="w">
+</span><span class="k" data-group-id="8698099910-1">end</span><span class="w">
 
 </span><span class="c1"># In DSL</span><span class="w">
 </span><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Ord.Dsl</span><span class="w">
 
-</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="3234650187-6">do</span><span class="w">
+</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="8698099910-6">do</span><span class="w">
   </span><span class="ss">asc</span><span class="p">:</span><span class="w"> </span><span class="nc">UserById</span><span class="w">  </span><span class="c1"># Orders by id ascending</span><span class="w">
-</span><span class="k" data-group-id="3234650187-6">end</span></code></pre><h2 id="module-with-options" class="section-heading"><a href="#module-with-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">With Options</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">UserByField</span><span class="w"> </span><span class="k" data-group-id="7898506338-1">do</span><span class="w">
+</span><span class="k" data-group-id="8698099910-6">end</span></code></pre><h2 id="module-with-options" class="section-heading"><a href="#module-with-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">With Options</span></h2><pre><code class="makeup elixir" translate="no"><span class="kd">defmodule</span><span class="w"> </span><span class="nc">UserByField</span><span class="w"> </span><span class="k" data-group-id="3374102889-1">do</span><span class="w">
   </span><span class="na">@behaviour</span><span class="w"> </span><span class="nc">Funx.Ord.Dsl.Behaviour</span><span class="w">
 
   </span><span class="na">@impl</span><span class="w"> </span><span class="no">true</span><span class="w">
-  </span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="7898506338-2">(</span><span class="n">opts</span><span class="p" data-group-id="7898506338-2">)</span><span class="w"> </span><span class="k" data-group-id="7898506338-3">do</span><span class="w">
-    </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="7898506338-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:field</span><span class="p">,</span><span class="w"> </span><span class="ss">:id</span><span class="p" data-group-id="7898506338-4">)</span><span class="w">
-    </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="7898506338-5">(</span><span class="o">&amp;</span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="7898506338-6">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p" data-group-id="7898506338-6">)</span><span class="p" data-group-id="7898506338-5">)</span><span class="w">
-  </span><span class="k" data-group-id="7898506338-3">end</span><span class="w">
-</span><span class="k" data-group-id="7898506338-1">end</span><span class="w">
+  </span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="3374102889-2">(</span><span class="n">opts</span><span class="p" data-group-id="3374102889-2">)</span><span class="w"> </span><span class="k" data-group-id="3374102889-3">do</span><span class="w">
+    </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="3374102889-4">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:field</span><span class="p">,</span><span class="w"> </span><span class="ss">:id</span><span class="p" data-group-id="3374102889-4">)</span><span class="w">
+    </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="3374102889-5">(</span><span class="o">&amp;</span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="3374102889-6">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p" data-group-id="3374102889-6">)</span><span class="p" data-group-id="3374102889-5">)</span><span class="w">
+  </span><span class="k" data-group-id="3374102889-3">end</span><span class="w">
+</span><span class="k" data-group-id="3374102889-1">end</span><span class="w">
 
 </span><span class="c1"># In DSL</span><span class="w">
-</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="7898506338-7">do</span><span class="w">
+</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="3374102889-7">do</span><span class="w">
   </span><span class="ss">asc</span><span class="p">:</span><span class="w"> </span><span class="nc">UserByField</span><span class="p">,</span><span class="w"> </span><span class="ss">field</span><span class="p">:</span><span class="w"> </span><span class="ss">:name</span><span class="w">
-</span><span class="k" data-group-id="7898506338-7">end</span></code></pre><h2 id="module-why-use-this-instead-of-protocols" class="section-heading"><a href="#module-why-use-this-instead-of-protocols" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Why Use This Instead of Protocols?</span></h2><ul><li><strong>Simpler</strong>: Just one function returning an Ord map</li><li><strong>No protocol knowledge required</strong>: Easier for team onboarding</li><li><strong>Module-specific</strong>: Override struct ordering without global protocol</li><li><strong>Options support</strong>: Built-in support for configuration</li></ul><p>The returned Ord map typically uses <a href="Funx.Ord.html#contramap/2"><code class="inline">Funx.Ord.contramap/2</code></a> to build
+</span><span class="k" data-group-id="3374102889-7">end</span></code></pre><h2 id="module-why-use-this-instead-of-protocols" class="section-heading"><a href="#module-why-use-this-instead-of-protocols" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Why Use This Instead of Protocols?</span></h2><ul><li><strong>Simpler</strong>: Just one function returning an Ord map</li><li><strong>No protocol knowledge required</strong>: Easier for team onboarding</li><li><strong>Module-specific</strong>: Override struct ordering without global protocol</li><li><strong>Options support</strong>: Built-in support for configuration</li></ul><p>The returned Ord map typically uses <a href="Funx.Ord.html#contramap/2"><code class="inline">Funx.Ord.contramap/2</code></a> to build
 projection-based ordering, but can implement any custom comparison logic.</p>
     </section>
 
@@ -190,7 +190,7 @@ projection-based ordering, but can implement any custom comparison logic.</p>
       <h1 class="signature" translate="no">ord(opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord/dsl/behaviour.ex#L103" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord/dsl/behaviour.ex#L103" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -205,31 +205,31 @@ projection-based ordering, but can implement any custom comparison logic.</p>
 
       </div>
 
-<p>Returns an Ord map for comparison.</p><p>Takes options and returns an Ord map (with <code class="inline">:compare</code> function).</p><h2 id="c:ord/1-arguments" class="section-heading"><a href="#c:ord/1-arguments" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Arguments</span></h2><ul><li><code class="inline">opts</code> - Keyword list of options passed from the DSL</li></ul><h2 id="c:ord/1-return-value" class="section-heading"><a href="#c:ord/1-return-value" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Return Value</span></h2><p>An Ord map with the structure:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="9450187562-1">%{</span><span class="w">
-  </span><span class="ss">compare</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9450187562-2">(</span><span class="n">any</span><span class="p" data-group-id="9450187562-3">(</span><span class="p" data-group-id="9450187562-3">)</span><span class="p">,</span><span class="w"> </span><span class="n">any</span><span class="p" data-group-id="9450187562-4">(</span><span class="p" data-group-id="9450187562-4">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:lt</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="ss">:eq</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="ss">:gt</span><span class="p" data-group-id="9450187562-2">)</span><span class="w">
-</span><span class="p" data-group-id="9450187562-1">}</span></code></pre><h2 id="c:ord/1-examples" class="section-heading"><a href="#c:ord/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Simple projection-based ordering</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="8204372192-1">(</span><span class="c">_opts</span><span class="p" data-group-id="8204372192-1">)</span><span class="w"> </span><span class="k" data-group-id="8204372192-2">do</span><span class="w">
-  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8204372192-3">(</span><span class="o">&amp;</span><span class="p" data-group-id="8204372192-4">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">id</span><span class="p" data-group-id="8204372192-4">)</span><span class="p" data-group-id="8204372192-3">)</span><span class="w">
-</span><span class="k" data-group-id="8204372192-2">end</span><span class="w">
+<p>Returns an Ord map for comparison.</p><p>Takes options and returns an Ord map (with <code class="inline">:compare</code> function).</p><h2 id="c:ord/1-arguments" class="section-heading"><a href="#c:ord/1-arguments" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Arguments</span></h2><ul><li><code class="inline">opts</code> - Keyword list of options passed from the DSL</li></ul><h2 id="c:ord/1-return-value" class="section-heading"><a href="#c:ord/1-return-value" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Return Value</span></h2><p>An Ord map with the structure:</p><pre><code class="makeup elixir" translate="no"><span class="p" data-group-id="6344158280-1">%{</span><span class="w">
+  </span><span class="ss">compare</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6344158280-2">(</span><span class="n">any</span><span class="p" data-group-id="6344158280-3">(</span><span class="p" data-group-id="6344158280-3">)</span><span class="p">,</span><span class="w"> </span><span class="n">any</span><span class="p" data-group-id="6344158280-4">(</span><span class="p" data-group-id="6344158280-4">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:lt</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="ss">:eq</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="ss">:gt</span><span class="p" data-group-id="6344158280-2">)</span><span class="w">
+</span><span class="p" data-group-id="6344158280-1">}</span></code></pre><h2 id="c:ord/1-examples" class="section-heading"><a href="#c:ord/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="c1"># Simple projection-based ordering</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="5081798862-1">(</span><span class="c">_opts</span><span class="p" data-group-id="5081798862-1">)</span><span class="w"> </span><span class="k" data-group-id="5081798862-2">do</span><span class="w">
+  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="5081798862-3">(</span><span class="o">&amp;</span><span class="p" data-group-id="5081798862-4">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">id</span><span class="p" data-group-id="5081798862-4">)</span><span class="p" data-group-id="5081798862-3">)</span><span class="w">
+</span><span class="k" data-group-id="5081798862-2">end</span><span class="w">
 
 </span><span class="c1"># With options</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="8204372192-5">(</span><span class="n">opts</span><span class="p" data-group-id="8204372192-5">)</span><span class="w"> </span><span class="k" data-group-id="8204372192-6">do</span><span class="w">
-  </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="8204372192-7">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:field</span><span class="p">,</span><span class="w"> </span><span class="ss">:id</span><span class="p" data-group-id="8204372192-7">)</span><span class="w">
-  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8204372192-8">(</span><span class="o">&amp;</span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="8204372192-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p" data-group-id="8204372192-9">)</span><span class="p" data-group-id="8204372192-8">)</span><span class="w">
-</span><span class="k" data-group-id="8204372192-6">end</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="5081798862-5">(</span><span class="n">opts</span><span class="p" data-group-id="5081798862-5">)</span><span class="w"> </span><span class="k" data-group-id="5081798862-6">do</span><span class="w">
+  </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Keyword</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="5081798862-7">(</span><span class="n">opts</span><span class="p">,</span><span class="w"> </span><span class="ss">:field</span><span class="p">,</span><span class="w"> </span><span class="ss">:id</span><span class="p" data-group-id="5081798862-7">)</span><span class="w">
+  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="5081798862-8">(</span><span class="o">&amp;</span><span class="nc">Map</span><span class="o">.</span><span class="n">get</span><span class="p" data-group-id="5081798862-9">(</span><span class="ni">&amp;1</span><span class="p">,</span><span class="w"> </span><span class="n">field</span><span class="p" data-group-id="5081798862-9">)</span><span class="p" data-group-id="5081798862-8">)</span><span class="w">
+</span><span class="k" data-group-id="5081798862-6">end</span><span class="w">
 
 </span><span class="c1"># Custom comparison logic</span><span class="w">
-</span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="8204372192-10">(</span><span class="c">_opts</span><span class="p" data-group-id="8204372192-10">)</span><span class="w"> </span><span class="k" data-group-id="8204372192-11">do</span><span class="w">
-  </span><span class="p" data-group-id="8204372192-12">%{</span><span class="w">
-    </span><span class="ss">compare</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="8204372192-13">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
-      </span><span class="k">cond</span><span class="w"> </span><span class="k" data-group-id="8204372192-14">do</span><span class="w">
-        </span><span class="n">normalize</span><span class="p" data-group-id="8204372192-15">(</span><span class="n">a</span><span class="p" data-group-id="8204372192-15">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="8204372192-16">(</span><span class="n">b</span><span class="p" data-group-id="8204372192-16">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:lt</span><span class="w">
-        </span><span class="n">normalize</span><span class="p" data-group-id="8204372192-17">(</span><span class="n">a</span><span class="p" data-group-id="8204372192-17">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="8204372192-18">(</span><span class="n">b</span><span class="p" data-group-id="8204372192-18">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:gt</span><span class="w">
+</span><span class="kd">def</span><span class="w"> </span><span class="nf">ord</span><span class="p" data-group-id="5081798862-10">(</span><span class="c">_opts</span><span class="p" data-group-id="5081798862-10">)</span><span class="w"> </span><span class="k" data-group-id="5081798862-11">do</span><span class="w">
+  </span><span class="p" data-group-id="5081798862-12">%{</span><span class="w">
+    </span><span class="ss">compare</span><span class="p">:</span><span class="w"> </span><span class="k" data-group-id="5081798862-13">fn</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+      </span><span class="k">cond</span><span class="w"> </span><span class="k" data-group-id="5081798862-14">do</span><span class="w">
+        </span><span class="n">normalize</span><span class="p" data-group-id="5081798862-15">(</span><span class="n">a</span><span class="p" data-group-id="5081798862-15">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="5081798862-16">(</span><span class="n">b</span><span class="p" data-group-id="5081798862-16">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:lt</span><span class="w">
+        </span><span class="n">normalize</span><span class="p" data-group-id="5081798862-17">(</span><span class="n">a</span><span class="p" data-group-id="5081798862-17">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">normalize</span><span class="p" data-group-id="5081798862-18">(</span><span class="n">b</span><span class="p" data-group-id="5081798862-18">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:gt</span><span class="w">
         </span><span class="no">true</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ss">:eq</span><span class="w">
-      </span><span class="k" data-group-id="8204372192-14">end</span><span class="w">
-    </span><span class="k" data-group-id="8204372192-13">end</span><span class="w">
-  </span><span class="p" data-group-id="8204372192-12">}</span><span class="w">
-</span><span class="k" data-group-id="8204372192-11">end</span></code></pre><p>Most implementations use <a href="Funx.Ord.html#contramap/2"><code class="inline">Funx.Ord.contramap/2</code></a> for projection-based
+      </span><span class="k" data-group-id="5081798862-14">end</span><span class="w">
+    </span><span class="k" data-group-id="5081798862-13">end</span><span class="w">
+  </span><span class="p" data-group-id="5081798862-12">}</span><span class="w">
+</span><span class="k" data-group-id="5081798862-11">end</span></code></pre><p>Most implementations use <a href="Funx.Ord.html#contramap/2"><code class="inline">Funx.Ord.contramap/2</code></a> for projection-based
 ordering, which handles the Ord map creation automatically.</p>
   </section>
 </section>
@@ -242,9 +242,9 @@ ordering, which handles the Ord map creation automatically.</p>
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.2" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.3" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.2">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.3">Hex Preview</a>
 
             </span>
 

@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.2">
+    <meta name="project" content="funx v0.8.3">
 
 
-    <title>Funx.Ord — funx v0.8.2</title>
+    <title>Funx.Ord — funx v0.8.3</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.2
+          v0.8.3
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Ord</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.2)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.3)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -112,10 +112,10 @@ funx
 <p><a href="https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Ford%2Ford.livemd"><img src="https://livebook.dev/badge/v1/black.svg" alt="Run in Livebook"/></a></p><p>Provides utilities and DSL for working with the <a href="Funx.Ord.Protocol.html"><code class="inline">Funx.Ord.Protocol</code></a>.</p><p>This module combines:</p><ul><li>Utility functions for ordering and comparison</li><li>A declarative DSL for building complex orderings</li></ul><h2 id="module-utility-functions" class="section-heading"><a href="#module-utility-functions" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Utility Functions</span></h2><p>These functions work with types that support Elixir's comparison operators
 or implement the <a href="Funx.Ord.Protocol.html"><code class="inline">Funx.Ord.Protocol</code></a>:</p><ul><li><a href="#contramap/2"><code class="inline">contramap/2</code></a> - Transform ordering by applying a projection</li><li><a href="#compare/3"><code class="inline">compare/3</code></a> - Compare two values, returns <code class="inline">:lt</code>, <code class="inline">:eq</code>, or <code class="inline">:gt</code></li><li><a href="#max/3"><code class="inline">max/3</code></a>, <a href="#min/3"><code class="inline">min/3</code></a> - Find maximum or minimum of two values</li><li><a href="#clamp/4"><code class="inline">clamp/4</code></a>, <a href="#between/4"><code class="inline">between/4</code></a> - Range operations</li><li><a href="#reverse/1"><code class="inline">reverse/1</code></a> - Reverse ordering logic</li><li><a href="#comparator/1"><code class="inline">comparator/1</code></a> - Convert to Elixir comparator for <a href="https://hexdocs.pm/elixir/Enum.html#sort/2"><code class="inline">Enum.sort/2</code></a></li><li><a href="#to_eq/1"><code class="inline">to_eq/1</code></a> - Convert to equality comparator</li><li><a href="#compose/2"><code class="inline">compose/2</code></a>, <a href="#compose/1"><code class="inline">compose/1</code></a> - Combine multiple orderings</li></ul><h2 id="module-dsl" class="section-heading"><a href="#module-dsl" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">DSL</span></h2><p>The DSL provides a declarative syntax for building total orderings over complex data structures.</p><p>Use <code class="inline">use Funx.Ord</code> to import both utilities and DSL:</p><pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="w">
 
-</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="6387432576-1">do</span><span class="w">
+</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="9704967898-1">do</span><span class="w">
   </span><span class="n">asc</span><span class="w"> </span><span class="ss">:name</span><span class="w">
   </span><span class="n">desc</span><span class="w"> </span><span class="ss">:age</span><span class="w">
-</span><span class="k" data-group-id="6387432576-1">end</span></code></pre><p>The DSL compiles at compile time into efficient compositions using <code class="inline">contramap</code>, <code class="inline">reverse</code>, and <code class="inline">concat</code>,
+</span><span class="k" data-group-id="9704967898-1">end</span></code></pre><p>The DSL compiles at compile time into efficient compositions using <code class="inline">contramap</code>, <code class="inline">reverse</code>, and <code class="inline">concat</code>,
 eliminating the need to manually compose ordering functions.</p><h3 id="module-directions" class="section-heading"><a href="#module-directions" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Directions</span></h3><ul><li><code class="inline">:asc</code> - Ascending order (smallest to largest)</li><li><code class="inline">:desc</code> - Descending order (largest to smallest)</li></ul><h3 id="module-projection-types" class="section-heading"><a href="#module-projection-types" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Projection Types</span></h3><ul><li>Atom - Field access via <code class="inline">Prism.key(atom)</code>. Safe for nil values.</li><li>Atom with or_else - Optional field with fallback value</li><li>Function - Direct projection <code class="inline">fn x -&gt; ... end</code> or <code class="inline">&amp;fun/1</code></li><li>Lens - Explicit lens for nested access</li><li>Prism - Explicit prism for optional fields</li><li>Prism with or_else - Optional with fallback</li><li>Behaviour - Custom ordering via <a href="Funx.Ord.Dsl.Behaviour.html"><code class="inline">Funx.Ord.Dsl.Behaviour</code></a></li><li>Ord variable - Existing ord map to compose</li></ul><p>See <a href="Funx.Ord.Dsl.Behaviour.html"><code class="inline">Funx.Ord.Dsl.Behaviour</code></a> for implementing custom ordering logic.</p>
     </section>
 
@@ -328,7 +328,7 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       <h1 class="signature" translate="no">ord_map()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L60" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L60" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -361,7 +361,7 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       <h1 class="signature" translate="no">ord_t()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L67" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L67" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -402,7 +402,7 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       <h1 class="signature" translate="no">append(a, b)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L436" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L436" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -436,7 +436,7 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       <h1 class="signature" translate="no">between(value, min, max, ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L305" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L305" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -451,13 +451,13 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
 
       </div>
 
-<p>Checks if <code class="inline">value</code> is between <code class="inline">min</code> and <code class="inline">max</code>, inclusive, with an optional custom <code class="inline">Ord</code>.</p><h2 id="between/4-examples" class="section-heading"><a href="#between/4-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="4120692464-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4120692464-1">)</span><span class="w">
+<p>Checks if <code class="inline">value</code> is between <code class="inline">min</code> and <code class="inline">max</code>, inclusive, with an optional custom <code class="inline">Ord</code>.</p><h2 id="between/4-examples" class="section-heading"><a href="#between/4-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="6178184128-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="6178184128-1">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="4120692464-2">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4120692464-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="6178184128-2">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="6178184128-2">)</span><span class="w">
 </span><span class="no">false</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="4120692464-3">(</span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="4120692464-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">between</span><span class="p" data-group-id="6178184128-3">(</span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="6178184128-3">)</span><span class="w">
 </span><span class="no">false</span></code></pre>
   </section>
 </section>
@@ -473,7 +473,7 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       <h1 class="signature" translate="no">clamp(value, min, max, ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L283" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L283" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -488,13 +488,13 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
 
       </div>
 
-<p>Clamps a value between <code class="inline">min</code> and <code class="inline">max</code>, with an optional custom <code class="inline">Ord</code>.</p><h2 id="clamp/4-examples" class="section-heading"><a href="#clamp/4-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="7688520116-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7688520116-1">)</span><span class="w">
+<p>Clamps a value between <code class="inline">min</code> and <code class="inline">max</code>, with an optional custom <code class="inline">Ord</code>.</p><h2 id="clamp/4-examples" class="section-heading"><a href="#clamp/4-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="0961390494-1">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="0961390494-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="7688520116-2">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7688520116-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="0961390494-2">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="0961390494-2">)</span><span class="w">
 </span><span class="mi">1</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="7688520116-3">(</span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="7688520116-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">clamp</span><span class="p" data-group-id="0961390494-3">(</span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="0961390494-3">)</span><span class="w">
 </span><span class="mi">10</span></code></pre>
   </section>
 </section>
@@ -508,7 +508,7 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       <h1 class="signature" translate="no">comparator(ord_module)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L369" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L369" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -524,9 +524,9 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       </div>
 
 <p>Creates a comparator function from the given <code class="inline">Ord</code> module, returning <code class="inline">true</code>
-if <code class="inline">a</code> is less than or equal to <code class="inline">b</code> according to the module's ordering.</p><p>Useful for sorting with <a href="https://hexdocs.pm/elixir/Enum.html#sort/2"><code class="inline">Enum.sort/2</code></a> or similar functions.</p><h2 id="comparator/1-examples" class="section-heading"><a href="#comparator/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">comparator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">comparator</span><span class="p" data-group-id="2833292146-1">(</span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="2833292146-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Enum</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="2833292146-2">(</span><span class="p" data-group-id="2833292146-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="2833292146-3">]</span><span class="p">,</span><span class="w"> </span><span class="n">comparator</span><span class="p" data-group-id="2833292146-2">)</span><span class="w">
-</span><span class="p" data-group-id="2833292146-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2833292146-4">]</span></code></pre>
+if <code class="inline">a</code> is less than or equal to <code class="inline">b</code> according to the module's ordering.</p><p>Useful for sorting with <a href="https://hexdocs.pm/elixir/Enum.html#sort/2"><code class="inline">Enum.sort/2</code></a> or similar functions.</p><h2 id="comparator/1-examples" class="section-heading"><a href="#comparator/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">comparator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">comparator</span><span class="p" data-group-id="7690132700-1">(</span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="7690132700-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Enum</span><span class="o">.</span><span class="n">sort</span><span class="p" data-group-id="7690132700-2">(</span><span class="p" data-group-id="7690132700-3">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p" data-group-id="7690132700-3">]</span><span class="p">,</span><span class="w"> </span><span class="n">comparator</span><span class="p" data-group-id="7690132700-2">)</span><span class="w">
+</span><span class="p" data-group-id="7690132700-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7690132700-4">]</span></code></pre>
   </section>
 </section>
 <section class="detail" id="compare/3">
@@ -541,7 +541,7 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       <h1 class="signature" translate="no">compare(a, b, ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L325" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L325" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -556,13 +556,13 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
 
       </div>
 
-<p>Compares two values and returns <code class="inline">:lt</code>, <code class="inline">:eq</code>, or <code class="inline">:gt</code>, with an optional custom <code class="inline">Ord</code>.</p><h2 id="compare/3-examples" class="section-heading"><a href="#compare/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="2264073858-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="2264073858-1">)</span><span class="w">
+<p>Compares two values and returns <code class="inline">:lt</code>, <code class="inline">:eq</code>, or <code class="inline">:gt</code>, with an optional custom <code class="inline">Ord</code>.</p><h2 id="compare/3-examples" class="section-heading"><a href="#compare/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="4622815990-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4622815990-1">)</span><span class="w">
 </span><span class="ss">:lt</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="2264073858-2">(</span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="2264073858-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="4622815990-2">(</span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="4622815990-2">)</span><span class="w">
 </span><span class="ss">:eq</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="2264073858-3">(</span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="2264073858-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compare</span><span class="p" data-group-id="4622815990-3">(</span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p" data-group-id="4622815990-3">)</span><span class="w">
 </span><span class="ss">:gt</span></code></pre>
   </section>
 </section>
@@ -576,7 +576,7 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       <h1 class="signature" translate="no">compose(ord_list)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L430" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L430" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -592,12 +592,12 @@ if <code class="inline">a</code> is less than or equal to <code class="inline">b
       </div>
 
 <p>Composes a list of <code class="inline">Ord</code> instances into a single composite comparator.</p><p>This function reduces a list of <code class="inline">Ord</code> comparators into a single <code class="inline">Ord</code>,
-applying them in sequence until an order is determined.</p><h2 id="compose/1-examples" class="section-heading"><a href="#compose/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="4904059271-1">[</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4904059271-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="4904059271-2">)</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4904059271-3">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="4904059271-3">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="4904059271-1">]</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="4904059271-4">(</span><span class="n">ord_list</span><span class="p" data-group-id="4904059271-4">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="4904059271-5">(</span><span class="p" data-group-id="4904059271-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Charlie&quot;</span><span class="p" data-group-id="4904059271-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4904059271-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="4904059271-7">}</span><span class="p" data-group-id="4904059271-5">)</span><span class="w">
+applying them in sequence until an order is determined.</p><h2 id="compose/1-examples" class="section-heading"><a href="#compose/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="5652687026-1">[</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="5652687026-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="5652687026-2">)</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="5652687026-3">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="5652687026-3">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="5652687026-1">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="5652687026-4">(</span><span class="n">ord_list</span><span class="p" data-group-id="5652687026-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="5652687026-5">(</span><span class="p" data-group-id="5652687026-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Charlie&quot;</span><span class="p" data-group-id="5652687026-6">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="5652687026-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="5652687026-7">}</span><span class="p" data-group-id="5652687026-5">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -611,7 +611,7 @@ applying them in sequence until an order is determined.</p><h2 id="compose/1-exa
       <h1 class="signature" translate="no">compose(a, b)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L409" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L409" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -627,10 +627,10 @@ applying them in sequence until an order is determined.</p><h2 id="compose/1-exa
       </div>
 
 <p>Composes two <code class="inline">Ord</code> instances, combining their comparison logic.</p><p>If the first <code class="inline">Ord</code> comparator determines an order, that result is used.
-If not, the second comparator is used as a fallback.</p><h2 id="compose/2-examples" class="section-heading"><a href="#compose/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="3835412168-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="3835412168-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="3835412168-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="3835412168-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="3835412168-3">(</span><span class="n">ord1</span><span class="p">,</span><span class="w"> </span><span class="n">ord2</span><span class="p" data-group-id="3835412168-3">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="3835412168-4">(</span><span class="p" data-group-id="3835412168-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="3835412168-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3835412168-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="3835412168-6">}</span><span class="p" data-group-id="3835412168-4">)</span><span class="w">
+If not, the second comparator is used as a fallback.</p><h2 id="compose/2-examples" class="section-heading"><a href="#compose/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="7403671443-1">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="7403671443-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="7403671443-2">(</span><span class="o">&amp;</span><span class="w"> </span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="7403671443-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">compose</span><span class="p" data-group-id="7403671443-3">(</span><span class="n">ord1</span><span class="p">,</span><span class="w"> </span><span class="n">ord2</span><span class="p" data-group-id="7403671443-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">combined</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="7403671443-4">(</span><span class="p" data-group-id="7403671443-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="7403671443-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="7403671443-6">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="p" data-group-id="7403671443-6">}</span><span class="p" data-group-id="7403671443-4">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -644,7 +644,7 @@ If not, the second comparator is used as a fallback.</p><h2 id="compose/2-exampl
       <h1 class="signature" translate="no">concat(ord_list)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L440" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L440" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -678,7 +678,7 @@ If not, the second comparator is used as a fallback.</p><h2 id="compose/2-exampl
       <h1 class="signature" translate="no">contramap(projection, ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L191" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L191" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -704,26 +704,26 @@ when a: <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>()
 in the Ord DSL. Every projection type resolves to one of these four forms:</p><ul><li><code class="inline">Lens.t()</code> - Uses <code class="inline">view!/2</code> to extract the focused value (raises on missing)</li><li><code class="inline">Prism.t()</code> - Uses <code class="inline">preview/2</code>, returns <code class="inline">Maybe</code>, with <code class="inline">Nothing &lt; Just(_)</code> ordering</li><li><code class="inline">{Prism.t(), or_else}</code> - Uses <code class="inline">preview/2</code>, falling back to <code class="inline">or_else</code> on <code class="inline">Nothing</code></li><li><code class="inline">(a -&gt; b)</code> - Projection function applied directly</li></ul><p>All DSL syntax sugar (atoms, helpers, etc.) normalizes to these types in the parser.
 This function is the <strong>only place</strong> that converts optics to executable functions.</p><p>The <code class="inline">ord</code> parameter may be an <code class="inline">Ord</code> module or a custom comparator map
 with <code class="inline">:lt?</code>, <code class="inline">:le?</code>, <code class="inline">:gt?</code>, and <code class="inline">:ge?</code> functions. The projection is applied
-to both inputs before invoking the underlying comparator.</p><h2 id="contramap/2-examples" class="section-heading"><a href="#contramap/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><p>Using a projection function:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4827723910-1">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4827723910-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="4827723910-2">(</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;zebra&quot;</span><span class="p" data-group-id="4827723910-2">)</span><span class="w">
+to both inputs before invoking the underlying comparator.</p><h2 id="contramap/2-examples" class="section-heading"><a href="#contramap/2-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><p>Using a projection function:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="2004215637-1">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="2004215637-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="2004215637-2">(</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;zebra&quot;</span><span class="p" data-group-id="2004215637-2">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="4827723910-3">(</span><span class="s">&quot;zebra&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cat&quot;</span><span class="p" data-group-id="4827723910-3">)</span><span class="w">
-</span><span class="no">true</span></code></pre><p>Using a lens for single key access:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4306780752-1">(</span><span class="nc">Funx.Optics.Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4306780752-2">(</span><span class="ss">:age</span><span class="p" data-group-id="4306780752-2">)</span><span class="p" data-group-id="4306780752-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="4306780752-3">(</span><span class="p" data-group-id="4306780752-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="p" data-group-id="4306780752-4">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4306780752-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4306780752-5">}</span><span class="p" data-group-id="4306780752-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="2004215637-3">(</span><span class="s">&quot;zebra&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cat&quot;</span><span class="p" data-group-id="2004215637-3">)</span><span class="w">
+</span><span class="no">true</span></code></pre><p>Using a lens for single key access:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="0530110302-1">(</span><span class="nc">Funx.Optics.Lens</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="0530110302-2">(</span><span class="ss">:age</span><span class="p" data-group-id="0530110302-2">)</span><span class="p" data-group-id="0530110302-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="0530110302-3">(</span><span class="p" data-group-id="0530110302-4">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="p" data-group-id="0530110302-4">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0530110302-5">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0530110302-5">}</span><span class="p" data-group-id="0530110302-3">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="4306780752-6">(</span><span class="p" data-group-id="4306780752-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4306780752-7">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4306780752-8">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="p" data-group-id="4306780752-8">}</span><span class="p" data-group-id="4306780752-6">)</span><span class="w">
-</span><span class="no">true</span></code></pre><p>Using a bare prism (Nothing &lt; Just):</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">prism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="9151674439-1">(</span><span class="ss">:score</span><span class="p" data-group-id="9151674439-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="9151674439-2">(</span><span class="n">prism</span><span class="p" data-group-id="9151674439-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="9151674439-3">(</span><span class="p" data-group-id="9151674439-4">%{</span><span class="p" data-group-id="9151674439-4">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9151674439-5">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="9151674439-5">}</span><span class="p" data-group-id="9151674439-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="0530110302-6">(</span><span class="p" data-group-id="0530110302-7">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="0530110302-7">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="0530110302-8">%{</span><span class="ss">age</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="p" data-group-id="0530110302-8">}</span><span class="p" data-group-id="0530110302-6">)</span><span class="w">
+</span><span class="no">true</span></code></pre><p>Using a bare prism (Nothing &lt; Just):</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">prism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4083975206-1">(</span><span class="ss">:score</span><span class="p" data-group-id="4083975206-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4083975206-2">(</span><span class="n">prism</span><span class="p" data-group-id="4083975206-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="4083975206-3">(</span><span class="p" data-group-id="4083975206-4">%{</span><span class="p" data-group-id="4083975206-4">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4083975206-5">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="4083975206-5">}</span><span class="p" data-group-id="4083975206-3">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="9151674439-6">(</span><span class="p" data-group-id="9151674439-7">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="9151674439-7">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="9151674439-8">%{</span><span class="p" data-group-id="9151674439-8">}</span><span class="p" data-group-id="9151674439-6">)</span><span class="w">
-</span><span class="no">true</span></code></pre><p>Using a prism with an or_else value:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">prism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="8290360708-1">(</span><span class="ss">:score</span><span class="p" data-group-id="8290360708-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8290360708-2">(</span><span class="p" data-group-id="8290360708-3">{</span><span class="n">prism</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="8290360708-3">}</span><span class="p" data-group-id="8290360708-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="8290360708-4">(</span><span class="p" data-group-id="8290360708-5">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="8290360708-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8290360708-6">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="8290360708-6">}</span><span class="p" data-group-id="8290360708-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="4083975206-6">(</span><span class="p" data-group-id="4083975206-7">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="4083975206-7">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="4083975206-8">%{</span><span class="p" data-group-id="4083975206-8">}</span><span class="p" data-group-id="4083975206-6">)</span><span class="w">
+</span><span class="no">true</span></code></pre><p>Using a prism with an or_else value:</p><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">prism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="1033329688-1">(</span><span class="ss">:score</span><span class="p" data-group-id="1033329688-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="1033329688-2">(</span><span class="p" data-group-id="1033329688-3">{</span><span class="n">prism</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p" data-group-id="1033329688-3">}</span><span class="p" data-group-id="1033329688-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1033329688-4">(</span><span class="p" data-group-id="1033329688-5">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p" data-group-id="1033329688-5">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1033329688-6">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="1033329688-6">}</span><span class="p" data-group-id="1033329688-4">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="8290360708-7">(</span><span class="p" data-group-id="8290360708-8">%{</span><span class="p" data-group-id="8290360708-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8290360708-9">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="8290360708-9">}</span><span class="p" data-group-id="8290360708-7">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="1033329688-7">(</span><span class="p" data-group-id="1033329688-8">%{</span><span class="p" data-group-id="1033329688-8">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1033329688-9">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p" data-group-id="1033329688-9">}</span><span class="p" data-group-id="1033329688-7">)</span><span class="w">
 </span><span class="no">true</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="8290360708-10">(</span><span class="p" data-group-id="8290360708-11">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="8290360708-11">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="8290360708-12">%{</span><span class="p" data-group-id="8290360708-12">}</span><span class="p" data-group-id="8290360708-10">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">gt?</span><span class="o">.</span><span class="p" data-group-id="1033329688-10">(</span><span class="p" data-group-id="1033329688-11">%{</span><span class="ss">score</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p" data-group-id="1033329688-11">}</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1033329688-12">%{</span><span class="p" data-group-id="1033329688-12">}</span><span class="p" data-group-id="1033329688-10">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -739,7 +739,7 @@ to both inputs before invoking the underlying comparator.</p><h2 id="contramap/2
       <h1 class="signature" translate="no">max(a, b, ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L239" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L239" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -754,11 +754,11 @@ to both inputs before invoking the underlying comparator.</p><h2 id="contramap/2
 
       </div>
 
-<p>Returns the maximum of two values, with an optional custom <code class="inline">Ord</code>.</p><h2 id="max/3-examples" class="section-heading"><a href="#max/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="6698168959-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="6698168959-1">)</span><span class="w">
+<p>Returns the maximum of two values, with an optional custom <code class="inline">Ord</code>.</p><h2 id="max/3-examples" class="section-heading"><a href="#max/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="8707724817-1">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="8707724817-1">)</span><span class="w">
 </span><span class="mi">5</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="6698168959-2">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="6698168959-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="6698168959-3">(</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;zebra&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="6698168959-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="8707724817-2">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="8707724817-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">max</span><span class="p" data-group-id="8707724817-3">(</span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;zebra&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="8707724817-3">)</span><span class="w">
 </span><span class="s">&quot;zebra&quot;</span></code></pre>
   </section>
 </section>
@@ -774,7 +774,7 @@ to both inputs before invoking the underlying comparator.</p><h2 id="contramap/2
       <h1 class="signature" translate="no">min(a, b, ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L260" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L260" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -789,11 +789,11 @@ to both inputs before invoking the underlying comparator.</p><h2 id="contramap/2
 
       </div>
 
-<p>Returns the minimum of two values, with an optional custom <code class="inline">Ord</code>.</p><h2 id="min/3-examples" class="section-heading"><a href="#min/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="4217001428-1">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="4217001428-1">)</span><span class="w">
+<p>Returns the minimum of two values, with an optional custom <code class="inline">Ord</code>.</p><h2 id="min/3-examples" class="section-heading"><a href="#min/3-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="9045756890-1">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p" data-group-id="9045756890-1">)</span><span class="w">
 </span><span class="mi">7</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="4217001428-2">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="4217001428-2">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="4217001428-3">(</span><span class="s">&quot;apple&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;kiwi&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="4217001428-3">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">contramap</span><span class="p" data-group-id="9045756890-2">(</span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="9045756890-2">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">min</span><span class="p" data-group-id="9045756890-3">(</span><span class="s">&quot;apple&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;kiwi&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ord</span><span class="p" data-group-id="9045756890-3">)</span><span class="w">
 </span><span class="s">&quot;kiwi&quot;</span></code></pre>
   </section>
 </section>
@@ -809,7 +809,7 @@ to both inputs before invoking the underlying comparator.</p><h2 id="contramap/2
         <span class="note">(macro)</span>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L111" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L111" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -819,21 +819,21 @@ to both inputs before invoking the underlying comparator.</p><h2 id="contramap/2
   <section class="docstring">
 
 <p>Creates an ordering from a block of projection specifications.</p><p>Returns a <code class="inline">%Funx.Monoid.Ord{}</code> struct that can be used with <a href="Funx.Ord.html"><code class="inline">Funx.Ord</code></a>
-functions like <a href="#compare/3"><code class="inline">compare/3</code></a>, <a href="#max/3"><code class="inline">max/3</code></a>, <a href="#min/3"><code class="inline">min/3</code></a>, or <a href="#comparator/1"><code class="inline">comparator/1</code></a>.</p><h2 id="ord/1-examples" class="section-heading"><a href="#ord/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="8992397963-1">do</span><span class="w">
+functions like <a href="#compare/3"><code class="inline">compare/3</code></a>, <a href="#max/3"><code class="inline">max/3</code></a>, <a href="#min/3"><code class="inline">min/3</code></a>, or <a href="#comparator/1"><code class="inline">comparator/1</code></a>.</p><h2 id="ord/1-examples" class="section-heading"><a href="#ord/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="8600615886-1">do</span><span class="w">
   </span><span class="n">asc</span><span class="w"> </span><span class="ss">:name</span><span class="w">
   </span><span class="n">desc</span><span class="w"> </span><span class="ss">:age</span><span class="w">
-</span><span class="k" data-group-id="8992397963-1">end</span><span class="w">
+</span><span class="k" data-group-id="8600615886-1">end</span><span class="w">
 
-</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="8992397963-2">do</span><span class="w">
+</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="8600615886-2">do</span><span class="w">
   </span><span class="n">asc</span><span class="w"> </span><span class="ss">:score</span><span class="p">,</span><span class="w"> </span><span class="ss">or_else</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
-  </span><span class="n">desc</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="p" data-group-id="8992397963-3">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">bio</span><span class="p" data-group-id="8992397963-3">)</span><span class="w">
-</span><span class="k" data-group-id="8992397963-2">end</span><span class="w">
+  </span><span class="n">desc</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">String</span><span class="o">.</span><span class="n">length</span><span class="p" data-group-id="8600615886-3">(</span><span class="ni">&amp;1</span><span class="o">.</span><span class="n">bio</span><span class="p" data-group-id="8600615886-3">)</span><span class="w">
+</span><span class="k" data-group-id="8600615886-2">end</span><span class="w">
 
 </span><span class="c1"># With nested field paths</span><span class="w">
-</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="8992397963-4">do</span><span class="w">
-  </span><span class="n">asc</span><span class="w"> </span><span class="p" data-group-id="8992397963-5">[</span><span class="ss">:user</span><span class="p">,</span><span class="w"> </span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="ss">:created_at</span><span class="p" data-group-id="8992397963-5">]</span><span class="w">
-  </span><span class="n">desc</span><span class="w"> </span><span class="p" data-group-id="8992397963-6">[</span><span class="ss">:user</span><span class="p">,</span><span class="w"> </span><span class="ss">:stats</span><span class="p">,</span><span class="w"> </span><span class="ss">:score</span><span class="p" data-group-id="8992397963-6">]</span><span class="w">
-</span><span class="k" data-group-id="8992397963-4">end</span></code></pre>
+</span><span class="n">ord</span><span class="w"> </span><span class="k" data-group-id="8600615886-4">do</span><span class="w">
+  </span><span class="n">asc</span><span class="w"> </span><span class="p" data-group-id="8600615886-5">[</span><span class="ss">:user</span><span class="p">,</span><span class="w"> </span><span class="ss">:profile</span><span class="p">,</span><span class="w"> </span><span class="ss">:created_at</span><span class="p" data-group-id="8600615886-5">]</span><span class="w">
+  </span><span class="n">desc</span><span class="w"> </span><span class="p" data-group-id="8600615886-6">[</span><span class="ss">:user</span><span class="p">,</span><span class="w"> </span><span class="ss">:stats</span><span class="p">,</span><span class="w"> </span><span class="ss">:score</span><span class="p" data-group-id="8600615886-6">]</span><span class="w">
+</span><span class="k" data-group-id="8600615886-4">end</span></code></pre>
   </section>
 </section>
 <section class="detail" id="reverse/1">
@@ -848,7 +848,7 @@ functions like <a href="#compare/3"><code class="inline">compare/3</code></a>, <
       <h1 class="signature" translate="no">reverse(ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L345" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L345" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -863,8 +863,8 @@ functions like <a href="#compare/3"><code class="inline">compare/3</code></a>, <
 
       </div>
 
-<p>Reverses the ordering logic.</p><h2 id="reverse/1-examples" class="section-heading"><a href="#reverse/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">reverse</span><span class="p" data-group-id="9681902578-1">(</span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="9681902578-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="9681902578-2">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="9681902578-2">)</span><span class="w">
+<p>Reverses the ordering logic.</p><h2 id="reverse/1-examples" class="section-heading"><a href="#reverse/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">reverse</span><span class="p" data-group-id="5413275099-1">(</span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="5413275099-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">ord</span><span class="o">.</span><span class="n">lt?</span><span class="o">.</span><span class="p" data-group-id="5413275099-2">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="5413275099-2">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -880,7 +880,7 @@ functions like <a href="#compare/3"><code class="inline">compare/3</code></a>, <
       <h1 class="signature" translate="no">to_eq(ord \\ Funx.Ord.Protocol)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L387" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L387" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -895,8 +895,8 @@ functions like <a href="#compare/3"><code class="inline">compare/3</code></a>, <
 
       </div>
 
-<p>Converts an <code class="inline">Ord</code> instance into an equality comparator.</p><p>This function creates a map containing two functions:</p><ul><li><code class="inline">eq?/2</code>: Returns <code class="inline">true</code> if <code class="inline">a</code> and <code class="inline">b</code> are considered equal by the given <code class="inline">Ord</code>.</li><li><code class="inline">not_eq?/2</code>: Returns <code class="inline">true</code> if <code class="inline">a</code> and <code class="inline">b</code> are not considered equal by the given <code class="inline">Ord</code>.</li></ul><h2 id="to_eq/1-examples" class="section-heading"><a href="#to_eq/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">to_eq</span><span class="p" data-group-id="1189305663-1">(</span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="1189305663-1">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="1189305663-2">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="1189305663-2">)</span><span class="w">
+<p>Converts an <code class="inline">Ord</code> instance into an equality comparator.</p><p>This function creates a map containing two functions:</p><ul><li><code class="inline">eq?/2</code>: Returns <code class="inline">true</code> if <code class="inline">a</code> and <code class="inline">b</code> are considered equal by the given <code class="inline">Ord</code>.</li><li><code class="inline">not_eq?/2</code>: Returns <code class="inline">true</code> if <code class="inline">a</code> and <code class="inline">b</code> are not considered equal by the given <code class="inline">Ord</code>.</li></ul><h2 id="to_eq/1-examples" class="section-heading"><a href="#to_eq/1-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Ord</span><span class="o">.</span><span class="n">to_eq</span><span class="p" data-group-id="4534705385-1">(</span><span class="nc">Funx.Ord.Protocol.Any</span><span class="p" data-group-id="4534705385-1">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">eq</span><span class="o">.</span><span class="n">eq?</span><span class="o">.</span><span class="p" data-group-id="4534705385-2">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p" data-group-id="4534705385-2">)</span><span class="w">
 </span><span class="no">true</span></code></pre>
   </section>
 </section>
@@ -910,7 +910,7 @@ functions like <a href="#compare/3"><code class="inline">compare/3</code></a>, <
       <h1 class="signature" translate="no">to_ord_map(ord_map)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/ord.ex#L442" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/ord.ex#L442" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -931,9 +931,9 @@ functions like <a href="#compare/3"><code class="inline">compare/3</code></a>, <
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.2" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.3" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.2">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.3">Hex Preview</a>
 
             </span>
 

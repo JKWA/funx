@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.2">
+    <meta name="project" content="funx v0.8.3">
 
 
-    <title>Funx.Validator.LiftPredicate — funx v0.8.2</title>
+    <title>Funx.Validator.LiftPredicate — funx v0.8.3</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.2
+          v0.8.3
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Validator.LiftPredicate</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.2)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.3)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/lift_predicate.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/validator/lift_predicate.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -122,12 +122,12 @@ when the predicate fails.</p></li></ul><p>Semantics</p><ul><li><p>If the predica
 .
 Examples</p><p>  iex&gt; Funx.Validator.LiftPredicate.validate(150, pred: fn v -&gt; v &gt; 100 end)
   %Funx.Monad.Either.Right{right: 150}</p><p>  iex&gt; Funx.Validator.LiftPredicate.validate(50, pred: fn v -&gt; v &gt; 100 end)
-  %Funx.Monad.Either.Left{</p><pre><code class="makeup elixir" translate="no"><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6120438693-1">%</span><span class="nc" data-group-id="6120438693-1">Funx.Errors.ValidationError</span><span class="p" data-group-id="6120438693-1">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="6120438693-2">[</span><span class="s">&quot;invalid value&quot;</span><span class="p" data-group-id="6120438693-2">]</span><span class="p" data-group-id="6120438693-1">}</span></code></pre><p>  }</p><p>  iex&gt; Funx.Validator.LiftPredicate.validate(
+  %Funx.Monad.Either.Left{</p><pre><code class="makeup elixir" translate="no"><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9879360947-1">%</span><span class="nc" data-group-id="9879360947-1">Funx.Errors.ValidationError</span><span class="p" data-group-id="9879360947-1">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9879360947-2">[</span><span class="s">&quot;invalid value&quot;</span><span class="p" data-group-id="9879360947-2">]</span><span class="p" data-group-id="9879360947-1">}</span></code></pre><p>  }</p><p>  iex&gt; Funx.Validator.LiftPredicate.validate(
   ...&gt;   50,
   ...&gt;   pred: fn v -&gt; v &gt; 100 end,
   ...&gt;   message: fn _ -&gt; &quot;must be greater than 100&quot; end
   ...&gt; )
-  %Funx.Monad.Either.Left{</p><pre><code class="makeup elixir" translate="no"><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5711562296-1">%</span><span class="nc" data-group-id="5711562296-1">Funx.Errors.ValidationError</span><span class="p" data-group-id="5711562296-1">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="5711562296-2">[</span><span class="s">&quot;must be greater than 100&quot;</span><span class="p" data-group-id="5711562296-2">]</span><span class="p" data-group-id="5711562296-1">}</span></code></pre><p>  }</p></li></ul>
+  %Funx.Monad.Either.Left{</p><pre><code class="makeup elixir" translate="no"><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9802319381-1">%</span><span class="nc" data-group-id="9802319381-1">Funx.Errors.ValidationError</span><span class="p" data-group-id="9802319381-1">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9802319381-2">[</span><span class="s">&quot;must be greater than 100&quot;</span><span class="p" data-group-id="9802319381-2">]</span><span class="p" data-group-id="9802319381-1">}</span></code></pre><p>  }</p></li></ul>
     </section>
 
 </div>
@@ -184,7 +184,7 @@ Examples</p><p>  iex&gt; Funx.Validator.LiftPredicate.validate(150, pred: fn v -
       <h1 class="signature" translate="no">validate(value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/lift_predicate.ex#L58" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/validator/lift_predicate.ex#L58" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -206,7 +206,7 @@ Examples</p><p>  iex&gt; Funx.Validator.LiftPredicate.validate(150, pred: fn v -
       <h1 class="signature" translate="no">validate(value, opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/lift_predicate.ex#L63" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/validator/lift_predicate.ex#L63" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -227,9 +227,9 @@ Examples</p><p>  iex&gt; Funx.Validator.LiftPredicate.validate(150, pred: fn v -
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.2" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.3" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.2">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.3">Hex Preview</a>
 
             </span>
 

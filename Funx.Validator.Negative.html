@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.2">
+    <meta name="project" content="funx v0.8.3">
 
 
-    <title>Funx.Validator.Negative — funx v0.8.2</title>
+    <title>Funx.Validator.Negative — funx v0.8.3</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.2
+          v0.8.3
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Validator.Negative</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.2)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.3)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/negative.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/validator/negative.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -109,14 +109,14 @@ funx
 
 
     <section id="moduledoc">
-<p>Validates that a number is strictly negative (&lt; 0).</p><h2 id="module-optional-options" class="section-heading"><a href="#module-optional-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Optional Options</span></h2><ul><li><code class="inline">:message</code> - Custom error message callback <code class="inline">(value -&gt; String.t())</code></li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Negative</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3974486913-1">(</span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="3974486913-1">)</span><span class="w">
-</span><span class="p" data-group-id="3974486913-2">%</span><span class="nc" data-group-id="3974486913-2">Funx.Monad.Either.Right</span><span class="p" data-group-id="3974486913-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="3974486913-2">}</span><span class="w">
+<p>Validates that a number is strictly negative (&lt; 0).</p><h2 id="module-optional-options" class="section-heading"><a href="#module-optional-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Optional Options</span></h2><ul><li><code class="inline">:message</code> - Custom error message callback <code class="inline">(value -&gt; String.t())</code></li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Negative</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="8587145839-1">(</span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="8587145839-1">)</span><span class="w">
+</span><span class="p" data-group-id="8587145839-2">%</span><span class="nc" data-group-id="8587145839-2">Funx.Monad.Either.Right</span><span class="p" data-group-id="8587145839-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="o">-</span><span class="mi">5</span><span class="p" data-group-id="8587145839-2">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Negative</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3974486913-3">(</span><span class="mi">0</span><span class="p" data-group-id="3974486913-3">)</span><span class="w">
-</span><span class="p" data-group-id="3974486913-4">%</span><span class="nc" data-group-id="3974486913-4">Funx.Monad.Either.Left</span><span class="p" data-group-id="3974486913-4">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3974486913-5">%</span><span class="nc" data-group-id="3974486913-5">Funx.Errors.ValidationError</span><span class="p" data-group-id="3974486913-5">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3974486913-6">[</span><span class="s">&quot;must be negative&quot;</span><span class="p" data-group-id="3974486913-6">]</span><span class="p" data-group-id="3974486913-5">}</span><span class="p" data-group-id="3974486913-4">}</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Negative</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="8587145839-3">(</span><span class="mi">0</span><span class="p" data-group-id="8587145839-3">)</span><span class="w">
+</span><span class="p" data-group-id="8587145839-4">%</span><span class="nc" data-group-id="8587145839-4">Funx.Monad.Either.Left</span><span class="p" data-group-id="8587145839-4">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8587145839-5">%</span><span class="nc" data-group-id="8587145839-5">Funx.Errors.ValidationError</span><span class="p" data-group-id="8587145839-5">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8587145839-6">[</span><span class="s">&quot;must be negative&quot;</span><span class="p" data-group-id="8587145839-6">]</span><span class="p" data-group-id="8587145839-5">}</span><span class="p" data-group-id="8587145839-4">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Negative</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="3974486913-7">(</span><span class="mi">5</span><span class="p" data-group-id="3974486913-7">)</span><span class="w">
-</span><span class="p" data-group-id="3974486913-8">%</span><span class="nc" data-group-id="3974486913-8">Funx.Monad.Either.Left</span><span class="p" data-group-id="3974486913-8">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3974486913-9">%</span><span class="nc" data-group-id="3974486913-9">Funx.Errors.ValidationError</span><span class="p" data-group-id="3974486913-9">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="3974486913-10">[</span><span class="s">&quot;must be negative&quot;</span><span class="p" data-group-id="3974486913-10">]</span><span class="p" data-group-id="3974486913-9">}</span><span class="p" data-group-id="3974486913-8">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Negative</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="8587145839-7">(</span><span class="mi">5</span><span class="p" data-group-id="8587145839-7">)</span><span class="w">
+</span><span class="p" data-group-id="8587145839-8">%</span><span class="nc" data-group-id="8587145839-8">Funx.Monad.Either.Left</span><span class="p" data-group-id="8587145839-8">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8587145839-9">%</span><span class="nc" data-group-id="8587145839-9">Funx.Errors.ValidationError</span><span class="p" data-group-id="8587145839-9">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="8587145839-10">[</span><span class="s">&quot;must be negative&quot;</span><span class="p" data-group-id="8587145839-10">]</span><span class="p" data-group-id="8587145839-9">}</span><span class="p" data-group-id="8587145839-8">}</span></code></pre>
     </section>
 
 </div>
@@ -173,7 +173,7 @@ funx
       <h1 class="signature" translate="no">validate(value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/negative.ex#L21" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/validator/negative.ex#L21" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -195,7 +195,7 @@ funx
       <h1 class="signature" translate="no">validate(value, opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/negative.ex#L21" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/validator/negative.ex#L21" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -216,9 +216,9 @@ funx
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.2" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.3" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.2">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.3">Hex Preview</a>
 
             </span>
 

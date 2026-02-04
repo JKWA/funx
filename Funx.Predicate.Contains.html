@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.2">
+    <meta name="project" content="funx v0.8.3">
 
 
-    <title>Funx.Predicate.Contains — funx v0.8.2</title>
+    <title>Funx.Predicate.Contains — funx v0.8.3</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.2
+          v0.8.3
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Predicate.Contains</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.2)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.3)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/predicate/contains.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/predicate/contains.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -115,19 +115,19 @@ The element to search for in the collection.</p></li><li><p><code class="inline"
 An equality comparator. Defaults to <a href="Funx.Eq.Protocol.html"><code class="inline">Funx.Eq.Protocol</code></a>.</p></li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="w">
 
 </span><span class="c1"># Check if grants list contains :poison_resistance</span><span class="w">
-</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="3494381162-1">do</span><span class="w">
-  </span><span class="n">check</span><span class="w"> </span><span class="p" data-group-id="3494381162-2">[</span><span class="ss">:blessing</span><span class="p">,</span><span class="w"> </span><span class="ss">:grants</span><span class="p" data-group-id="3494381162-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3494381162-3">{</span><span class="nc">Contains</span><span class="p">,</span><span class="w"> </span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="ss">:poison_resistance</span><span class="p" data-group-id="3494381162-3">}</span><span class="w">
-</span><span class="k" data-group-id="3494381162-1">end</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="1344234404-1">do</span><span class="w">
+  </span><span class="n">check</span><span class="w"> </span><span class="p" data-group-id="1344234404-2">[</span><span class="ss">:blessing</span><span class="p">,</span><span class="w"> </span><span class="ss">:grants</span><span class="p" data-group-id="1344234404-2">]</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1344234404-3">{</span><span class="nc">Contains</span><span class="p">,</span><span class="w"> </span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="ss">:poison_resistance</span><span class="p" data-group-id="1344234404-3">}</span><span class="w">
+</span><span class="k" data-group-id="1344234404-1">end</span><span class="w">
 
 </span><span class="c1"># Check if tags contain a specific tag</span><span class="w">
-</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="3494381162-4">do</span><span class="w">
-  </span><span class="n">check</span><span class="w"> </span><span class="ss">:tags</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3494381162-5">{</span><span class="nc">Contains</span><span class="p">,</span><span class="w"> </span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;featured&quot;</span><span class="p" data-group-id="3494381162-5">}</span><span class="w">
-</span><span class="k" data-group-id="3494381162-4">end</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="1344234404-4">do</span><span class="w">
+  </span><span class="n">check</span><span class="w"> </span><span class="ss">:tags</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1344234404-5">{</span><span class="nc">Contains</span><span class="p">,</span><span class="w"> </span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;featured&quot;</span><span class="p" data-group-id="1344234404-5">}</span><span class="w">
+</span><span class="k" data-group-id="1344234404-4">end</span><span class="w">
 
 </span><span class="c1"># With custom Eq comparator</span><span class="w">
-</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="3494381162-6">do</span><span class="w">
-  </span><span class="n">check</span><span class="w"> </span><span class="ss">:items</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="3494381162-7">{</span><span class="nc">Contains</span><span class="p">,</span><span class="w"> </span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">target_item</span><span class="p">,</span><span class="w"> </span><span class="ss">eq</span><span class="p">:</span><span class="w"> </span><span class="nc">Item.Eq</span><span class="p" data-group-id="3494381162-7">}</span><span class="w">
-</span><span class="k" data-group-id="3494381162-6">end</span></code></pre>
+</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="1344234404-6">do</span><span class="w">
+  </span><span class="n">check</span><span class="w"> </span><span class="ss">:items</span><span class="p">,</span><span class="w"> </span><span class="p" data-group-id="1344234404-7">{</span><span class="nc">Contains</span><span class="p">,</span><span class="w"> </span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="n">target_item</span><span class="p">,</span><span class="w"> </span><span class="ss">eq</span><span class="p">:</span><span class="w"> </span><span class="nc">Item.Eq</span><span class="p" data-group-id="1344234404-7">}</span><span class="w">
+</span><span class="k" data-group-id="1344234404-6">end</span></code></pre>
     </section>
 
 </div>
@@ -138,9 +138,9 @@ An equality comparator. Defaults to <a href="Funx.Eq.Protocol.html"><code class=
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.2" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.3" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.2">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.3">Hex Preview</a>
 
             </span>
 

@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.2">
+    <meta name="project" content="funx v0.8.3">
 
 
-    <title>Funx.Monoid.Optics.PrismCompose — funx v0.8.2</title>
+    <title>Funx.Monoid.Optics.PrismCompose — funx v0.8.3</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.2
+          v0.8.3
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Monoid.Optics.PrismCompose</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.2)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.3)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/monoid/optics/prism_compose.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/monoid/optics/prism_compose.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -112,14 +112,14 @@ funx
 <p>The <a href="Funx.Monoid.Optics.PrismCompose.html"><code class="inline">Funx.Monoid.Optics.PrismCompose</code></a> module provides a monoid wrapper for sequential prism composition.</p><p>This wrapper allows prisms to be used with generic monoid operations like <code class="inline">m_concat/2</code> and <code class="inline">m_append/3</code>,
 enabling functional composition of multiple prisms into a single partial focusing operation.</p><h3 id="module-wrapping-and-unwrapping" class="section-heading"><a href="#module-wrapping-and-unwrapping" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Wrapping and Unwrapping</span></h3><ul><li><a href="#new/1"><code class="inline">new/1</code></a>: Wraps a prism in a <code class="inline">PrismCompose</code> monoid.</li><li><a href="#unwrap/1"><code class="inline">unwrap/1</code></a>: Extracts the prism from a <code class="inline">PrismCompose</code> wrapper.</li></ul><h3 id="module-monoid-operations-via-protocol" class="section-heading"><a href="#module-monoid-operations-via-protocol" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Monoid Operations (via protocol)</span></h3><ul><li><code class="inline">empty/1</code>: Returns the identity prism (accepts all values).</li><li><code class="inline">append/2</code>: Composes two prisms sequentially (outer then inner).</li><li><code class="inline">wrap/2</code>: Wraps a prism value into the monoid.</li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Monoid.Optics.PrismCompose</span><span class="w">
 </span><span class="gp unselectable">iex&gt; </span><span class="kn">alias</span><span class="w"> </span><span class="nc">Funx.Optics.Prism</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">prisms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="7349313804-1">[</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="7349313804-2">(</span><span class="ss">:account</span><span class="p" data-group-id="7349313804-2">)</span><span class="p">,</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="7349313804-3">(</span><span class="ss">:name</span><span class="p" data-group-id="7349313804-3">)</span><span class="w">
-</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="7349313804-1">]</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">wrapped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="7349313804-4">(</span><span class="n">prisms</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">PrismCompose</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="7349313804-4">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monoid.Utils</span><span class="o">.</span><span class="n">m_concat</span><span class="p" data-group-id="7349313804-5">(</span><span class="p" data-group-id="7349313804-6">%</span><span class="nc" data-group-id="7349313804-6">PrismCompose</span><span class="p" data-group-id="7349313804-6">{</span><span class="p" data-group-id="7349313804-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">prisms</span><span class="p" data-group-id="7349313804-5">)</span><span class="w">
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="7349313804-7">(</span><span class="p" data-group-id="7349313804-8">%{</span><span class="ss">account</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7349313804-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="7349313804-9">}</span><span class="p" data-group-id="7349313804-8">}</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="7349313804-7">)</span><span class="w">
-</span><span class="p" data-group-id="7349313804-10">%</span><span class="nc" data-group-id="7349313804-10">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="7349313804-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="7349313804-10">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="n">prisms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p" data-group-id="4786233725-1">[</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4786233725-2">(</span><span class="ss">:account</span><span class="p" data-group-id="4786233725-2">)</span><span class="p">,</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="w">  </span><span class="nc">Prism</span><span class="o">.</span><span class="n">key</span><span class="p" data-group-id="4786233725-3">(</span><span class="ss">:name</span><span class="p" data-group-id="4786233725-3">)</span><span class="w">
+</span><span class="gp unselectable">...&gt; </span><span class="p" data-group-id="4786233725-1">]</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">wrapped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Enum</span><span class="o">.</span><span class="n">map</span><span class="p" data-group-id="4786233725-4">(</span><span class="n">prisms</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="nc">PrismCompose</span><span class="o">.</span><span class="n">new</span><span class="o">/</span><span class="mi">1</span><span class="p" data-group-id="4786233725-4">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="n">composed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Funx.Monoid.Utils</span><span class="o">.</span><span class="n">m_concat</span><span class="p" data-group-id="4786233725-5">(</span><span class="p" data-group-id="4786233725-6">%</span><span class="nc" data-group-id="4786233725-6">PrismCompose</span><span class="p" data-group-id="4786233725-6">{</span><span class="p" data-group-id="4786233725-6">}</span><span class="p">,</span><span class="w"> </span><span class="n">prisms</span><span class="p" data-group-id="4786233725-5">)</span><span class="w">
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Prism</span><span class="o">.</span><span class="n">preview</span><span class="p" data-group-id="4786233725-7">(</span><span class="p" data-group-id="4786233725-8">%{</span><span class="ss">account</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="4786233725-9">%{</span><span class="ss">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="4786233725-9">}</span><span class="p" data-group-id="4786233725-8">}</span><span class="p">,</span><span class="w"> </span><span class="n">composed</span><span class="p" data-group-id="4786233725-7">)</span><span class="w">
+</span><span class="p" data-group-id="4786233725-10">%</span><span class="nc" data-group-id="4786233725-10">Funx.Monad.Maybe.Just</span><span class="p" data-group-id="4786233725-10">{</span><span class="ss">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p" data-group-id="4786233725-10">}</span></code></pre>
     </section>
 
 </div>
@@ -194,7 +194,7 @@ enabling functional composition of multiple prisms into a single partial focusin
       <h1 class="signature" translate="no">t()</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/monoid/optics/prism_compose.ex#L35" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/monoid/optics/prism_compose.ex#L35" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -235,7 +235,7 @@ enabling functional composition of multiple prisms into a single partial focusin
       <h1 class="signature" translate="no">new(prism)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/monoid/optics/prism_compose.ex#L45" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/monoid/optics/prism_compose.ex#L45" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -263,7 +263,7 @@ enabling functional composition of multiple prisms into a single partial focusin
       <h1 class="signature" translate="no">unwrap(prism_compose)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/monoid/optics/prism_compose.ex#L51" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/monoid/optics/prism_compose.ex#L51" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -290,9 +290,9 @@ enabling functional composition of multiple prisms into a single partial focusin
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.2" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.3" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.2">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.3">Hex Preview</a>
 
             </span>
 

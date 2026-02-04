@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.2">
+    <meta name="project" content="funx v0.8.3">
 
 
-    <title>Funx.Validator.Each — funx v0.8.2</title>
+    <title>Funx.Validator.Each — funx v0.8.3</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.2
+          v0.8.3
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Validator.Each</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.2)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.3)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/each.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/validator/each.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -110,11 +110,11 @@ funx
 
     <section id="moduledoc">
 <p>Validates that every element in a list passes a given validator (or validators).</p><p><code class="inline">Each</code> provides universal quantification over list elements. It applies one or more
-validators to each element and collects all errors using applicative semantics.</p><h2 id="module-options" class="section-heading"><a href="#module-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Options</span></h2><p>Exactly one of the following must be provided:</p><ul><li><code class="inline">:validator</code> - A single validator to apply to each element</li><li><code class="inline">:validators</code> - A list of validators; each element must pass all of them</li></ul><p>Each validator may be:</p><ul><li>A validator module implementing <a href="Funx.Validate.Behaviour.html"><code class="inline">Funx.Validate.Behaviour</code></a></li><li>A <code class="inline">{Validator, opts}</code> tuple for optioned validators</li><li>A validator function with arity 1, 2, or 3</li></ul><h2 id="module-semantics" class="section-heading"><a href="#module-semantics" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Semantics</span></h2><ul><li>Uses <code class="inline">traverse_a</code> for applicative error collection (all failures reported)</li><li>Empty lists pass validation (vacuous truth)</li><li><code class="inline">Nothing</code> passes through unchanged</li><li><code class="inline">Just(list)</code> unwraps and validates the list</li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Each</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="7723099944-1">(</span><span class="p" data-group-id="7723099944-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7723099944-2">]</span><span class="p">,</span><span class="w"> </span><span class="ss">validator</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Validator.Positive</span><span class="p" data-group-id="7723099944-1">)</span><span class="w">
-</span><span class="p" data-group-id="7723099944-3">%</span><span class="nc" data-group-id="7723099944-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="7723099944-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7723099944-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7723099944-4">]</span><span class="p" data-group-id="7723099944-3">}</span><span class="w">
+validators to each element and collects all errors using applicative semantics.</p><h2 id="module-options" class="section-heading"><a href="#module-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Options</span></h2><p>Exactly one of the following must be provided:</p><ul><li><code class="inline">:validator</code> - A single validator to apply to each element</li><li><code class="inline">:validators</code> - A list of validators; each element must pass all of them</li></ul><p>Each validator may be:</p><ul><li>A validator module implementing <a href="Funx.Validate.Behaviour.html"><code class="inline">Funx.Validate.Behaviour</code></a></li><li>A <code class="inline">{Validator, opts}</code> tuple for optioned validators</li><li>A validator function with arity 1, 2, or 3</li></ul><h2 id="module-semantics" class="section-heading"><a href="#module-semantics" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Semantics</span></h2><ul><li>Uses <code class="inline">traverse_a</code> for applicative error collection (all failures reported)</li><li>Empty lists pass validation (vacuous truth)</li><li><code class="inline">Nothing</code> passes through unchanged</li><li><code class="inline">Just(list)</code> unwraps and validates the list</li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Each</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="2395382409-1">(</span><span class="p" data-group-id="2395382409-2">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2395382409-2">]</span><span class="p">,</span><span class="w"> </span><span class="ss">validator</span><span class="p">:</span><span class="w"> </span><span class="nc">Funx.Validator.Positive</span><span class="p" data-group-id="2395382409-1">)</span><span class="w">
+</span><span class="p" data-group-id="2395382409-3">%</span><span class="nc" data-group-id="2395382409-3">Funx.Monad.Either.Right</span><span class="p" data-group-id="2395382409-3">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2395382409-4">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2395382409-4">]</span><span class="p" data-group-id="2395382409-3">}</span><span class="w">
 
-</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Each</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="7723099944-5">(</span><span class="p" data-group-id="7723099944-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7723099944-6">]</span><span class="p">,</span><span class="w"> </span><span class="ss">validators</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7723099944-7">[</span><span class="nc">Funx.Validator.Positive</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Validator.Integer</span><span class="p" data-group-id="7723099944-7">]</span><span class="p" data-group-id="7723099944-5">)</span><span class="w">
-</span><span class="p" data-group-id="7723099944-8">%</span><span class="nc" data-group-id="7723099944-8">Funx.Monad.Either.Right</span><span class="p" data-group-id="7723099944-8">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="7723099944-9">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="7723099944-9">]</span><span class="p" data-group-id="7723099944-8">}</span></code></pre>
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.Each</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="2395382409-5">(</span><span class="p" data-group-id="2395382409-6">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2395382409-6">]</span><span class="p">,</span><span class="w"> </span><span class="ss">validators</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2395382409-7">[</span><span class="nc">Funx.Validator.Positive</span><span class="p">,</span><span class="w"> </span><span class="nc">Funx.Validator.Integer</span><span class="p" data-group-id="2395382409-7">]</span><span class="p" data-group-id="2395382409-5">)</span><span class="w">
+</span><span class="p" data-group-id="2395382409-8">%</span><span class="nc" data-group-id="2395382409-8">Funx.Monad.Either.Right</span><span class="p" data-group-id="2395382409-8">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="2395382409-9">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p" data-group-id="2395382409-9">]</span><span class="p" data-group-id="2395382409-8">}</span></code></pre>
     </section>
 
 </div>
@@ -171,7 +171,7 @@ validators to each element and collects all errors using applicative semantics.<
       <h1 class="signature" translate="no">validate(value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/each.ex#L44" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/validator/each.ex#L44" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -193,7 +193,7 @@ validators to each element and collects all errors using applicative semantics.<
       <h1 class="signature" translate="no">validate(value, opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.2/lib/validator/each.ex#L45" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.3/lib/validator/each.ex#L45" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -214,9 +214,9 @@ validators to each element and collects all errors using applicative semantics.<
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.2" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.3" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.2">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.3">Hex Preview</a>
 
             </span>
 
