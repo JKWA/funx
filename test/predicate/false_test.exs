@@ -6,19 +6,19 @@ defmodule Funx.Predicate.IsFalseTest do
 
   describe "IsFalse predicate standalone" do
     test "returns true for false value" do
-      predicate = IsFalse.pred([])
+      predicate = IsFalse.pred()
 
       assert predicate.(false)
     end
 
     test "returns false for true value" do
-      predicate = IsFalse.pred([])
+      predicate = IsFalse.pred()
 
       refute predicate.(true)
     end
 
     test "returns false for falsy values (strict equality)" do
-      predicate = IsFalse.pred([])
+      predicate = IsFalse.pred()
 
       refute predicate.(nil)
       refute predicate.(0)
@@ -26,7 +26,7 @@ defmodule Funx.Predicate.IsFalseTest do
     end
 
     test "returns false for truthy values" do
-      predicate = IsFalse.pred([])
+      predicate = IsFalse.pred()
 
       refute predicate.(1)
       refute predicate.("false")

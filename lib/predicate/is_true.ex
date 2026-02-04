@@ -23,7 +23,7 @@ defmodule Funx.Predicate.IsTrue do
   @behaviour Funx.Predicate.Dsl.Behaviour
 
   @impl true
-  def pred(_opts) do
+  def pred(_opts \\ []) do
     fn value -> value == true end
   end
 end
