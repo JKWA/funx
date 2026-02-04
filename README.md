@@ -229,14 +229,12 @@ The Predicate module includes a DSL for building boolean predicates declarativel
 
 ```elixir
 use Funx.Predicate
+alias Funx.Predicate.{GreaterThanOrEqual, IsTrue, In}
 
 check_eligible = pred do
-  check :age, fn age -> age >= 18 end
-  check :verified, fn v -> v == true end
-  any do
-    check :role, fn r -> r == :admin end
-    check :role, fn r -> r == :moderator end
-  end
+  check :age, {GreaterThanOrEqual, value: 18}
+  check :verified, IsTrue
+  check :role, {In, values: [:admin, :moderator]}
 end
 
 Enum.filter(users, check_eligible)
@@ -246,8 +244,8 @@ Features:
 
 - `check` - Project into a field and test with a predicate
 - `negate` - Invert a predicate (logical NOT)
-- `all` blocks - All predicates must pass (AND logic)
-- `any` blocks - At least one must pass (OR logic)
+- `all`/`any` blocks - AND/OR logic for complex predicates
+- Built-in predicates: `Eq`, `In`, `GreaterThan`, `LessThan`, `MinLength`, `Pattern`, `Required`, `IsTrue`, and more
 - Support for optics (Lens, Prism), functions, and behaviour modules
 
 ## Validation
