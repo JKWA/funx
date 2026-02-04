@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.8.3] - Unreleased
+
+### Added
+
+* `Funx.Predicate` – Built-in predicate modules for use in the Predicate DSL:
+  * `Eq` / `NotEq` – Equality and inequality checks using `Eq` comparator
+  * `In` / `NotIn` – List membership and exclusion checks
+  * `LessThan` / `LessThanOrEqual` / `GreaterThan` / `GreaterThanOrEqual` – Comparison predicates using `Ord` comparator
+  * `IsTrue` / `IsFalse` – Strict boolean equality checks
+  * `MinLength` / `MaxLength` – String length constraints
+  * `Pattern` – Regex pattern matching
+  * `Integer` / `Positive` / `Negative` – Numeric type and sign checks
+  * `Required` – Presence check (not nil, not empty string)
+  * `Contains` – List contains element check
+
+* Predicate DSL enhancements:
+  * Tuple syntax support in `check` directive: `check :field, {Module, opts}`
+  * Bare module syntax for predicates without options: `check :field, Required`
+  * Default truthy check when `check` has no predicate: `check :field` (equivalent to `!!value`)
+
 ## [0.8.2] - Unreleased
 
 ### Added

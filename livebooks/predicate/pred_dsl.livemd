@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:funx, "0.8.2"}
+  {:funx, github: "JKWA/funx", ref: "f7c62d2"}
 ])
 ```
 
@@ -62,6 +62,7 @@ end
 * Variables: `is_verified`, `check_active`
 * Helper functions: `MyModule.adult?`
 * Behaviour modules: `IsActive`, `{HasMinimumAge, minimum: 21}`
+* Built-in predicates: `Required`, `Integer`, `{Eq, value: :active}`, `{MinLength, min: 3}`
 
 ### Valid Projections (for `check` directive):
 
@@ -900,6 +901,223 @@ check_active_adult =
 Enum.filter(users, check_active_adult)
 ```
 
+## Built-in Predicates
+
+Funx provides built-in predicate modules that implement `Funx.Predicate.Dsl.Behaviour`. These can be used directly in the DSL with tuple syntax `{Module, opts}` or bare module syntax for predicates without required options.
+
+### Setup for Built-in Predicates
+
+```elixir
+alias Funx.Predicate.{
+  Eq, NotEq,
+  In, NotIn,
+  LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual,
+  IsTrue, IsFalse,
+  MinLength, MaxLength,
+  Integer, Positive, Negative,
+  Required, Pattern, Contains
+}
+```
+
+### Equality Predicates
+
+`Eq` checks if a value equals an expected value. `NotEq` checks inequality.
+
+```elixir
+check_active =
+  pred do
+    check :status, {Eq, value: :active}
+  end
+
+check_active.(%{status: :active})   # true
+check_active.(%{status: :inactive}) # false
+```
+
+```elixir
+not_deleted =
+  pred do
+    check :status, {NotEq, value: :deleted}
+  end
+
+not_deleted.(%{status: :active})  # true
+not_deleted.(%{status: :deleted}) # false
+```
+
+### Membership Predicates
+
+`In` checks if a value is in a list. `NotIn` checks exclusion.
+
+```elixir
+valid_role =
+  pred do
+    check :role, {In, values: [:admin, :moderator, :user]}
+  end
+
+valid_role.(%{role: :admin}) # true
+valid_role.(%{role: :guest}) # false
+```
+
+```elixir
+not_banned =
+  pred do
+    check :status, {NotIn, values: [:banned, :suspended]}
+  end
+
+not_banned.(%{status: :active}) # true
+not_banned.(%{status: :banned}) # false
+```
+
+### Comparison Predicates
+
+Comparison predicates use `Ord` for ordering.
+
+```elixir
+check_adult =
+  pred do
+    check :age, {GreaterThanOrEqual, value: 18}
+  end
+
+check_adult.(%{age: 21}) # true
+check_adult.(%{age: 16}) # false
+```
+
+```elixir
+check_discount =
+  pred do
+    check :price, {LessThan, value: 100}
+  end
+
+check_discount.(%{price: 50})  # true
+check_discount.(%{price: 150}) # false
+```
+
+### Boolean Predicates
+
+`IsTrue` and `IsFalse` check strict boolean equality (`== true` / `== false`).
+
+```elixir
+check_admin =
+  pred do
+    check :admin, IsTrue
+  end
+
+check_admin.(%{admin: true})    # true
+check_admin.(%{admin: "yes"})   # false (not strictly true)
+check_admin.(%{admin: false})   # false
+```
+
+### String Length Predicates
+
+```elixir
+valid_username =
+  pred do
+    check :username, {MinLength, min: 3}
+    check :username, {MaxLength, max: 20}
+  end
+
+valid_username.(%{username: "alice"})                    # true
+valid_username.(%{username: "ab"})                       # false (too short)
+valid_username.(%{username: "verylongusernamehere123"}) # false (too long)
+```
+
+### Pattern Predicate
+
+`Pattern` checks if a string matches a regex.
+
+```elixir
+valid_email =
+  pred do
+    check :email, {Pattern, regex: ~r/@/}
+  end
+
+valid_email.(%{email: "test@example.com"}) # true
+valid_email.(%{email: "invalid"})          # false
+```
+
+```elixir
+valid_code =
+  pred do
+    check :code, {Pattern, regex: ~r/^[A-Z]{3}-\d{3}$/}
+  end
+
+valid_code.(%{code: "ABC-123"}) # true
+valid_code.(%{code: "abc-123"}) # false
+```
+
+### Numeric Predicates
+
+`Integer`, `Positive`, and `Negative` check numeric properties.
+
+```elixir
+valid_quantity =
+  pred do
+    check :quantity, Integer
+    check :quantity, Positive
+  end
+
+valid_quantity.(%{quantity: 5})    # true
+valid_quantity.(%{quantity: 0})    # false (not positive)
+valid_quantity.(%{quantity: 5.5})  # false (not integer)
+valid_quantity.(%{quantity: -1})   # false (not positive)
+```
+
+### Required Predicate
+
+`Required` checks that a value is not `nil` and not an empty string. Unlike the default truthy check, `Required` passes for `false` and `0`.
+
+```elixir
+has_name =
+  pred do
+    check :name, Required
+  end
+
+has_name.(%{name: "Alice"}) # true
+has_name.(%{name: ""})      # false (empty string)
+has_name.(%{name: nil})     # false
+has_name.(%{name: false})   # true (false is a present value)
+```
+
+### Contains Predicate
+
+`Contains` checks if a list contains a specific element.
+
+```elixir
+has_admin_role =
+  pred do
+    check :roles, {Contains, value: :admin}
+  end
+
+has_admin_role.(%{roles: [:user, :admin]}) # true
+has_admin_role.(%{roles: [:user]})         # false
+```
+
+### Default Truthy Check
+
+When using `check` with only a projection (no predicate), the default is a truthy check (`!!value`):
+
+```elixir
+has_name =
+  pred do
+    check :name  # equivalent to: check :name, fn v -> !!v end
+  end
+
+has_name.(%{name: "Alice"}) # true
+has_name.(%{name: ""})      # true (empty string is truthy in Elixir)
+has_name.(%{name: nil})     # false
+has_name.(%{name: false})   # false
+```
+
+### Comparison: Default vs Required vs IsTrue
+
+| Value     | `check :field` (truthy) | `Required` | `IsTrue` |
+| --------- | ----------------------- | ---------- | -------- |
+| `"hello"` | true                    | true       | false    |
+| `""`      | true                    | **false**  | false    |
+| `nil`     | false                   | false      | false    |
+| `false`   | false                   | **true**   | false    |
+| `true`    | true                    | true       | **true** |
+| `0`       | true                    | true       | false    |
+
 ## Helper Functions
 
 Define reusable predicates as 0-arity helper functions:
@@ -1188,6 +1406,8 @@ The Predicate DSL provides a declarative, composable way to build complex boolea
 * Functions for custom transformations
 
 * Behaviours for reusable validation logic
+
+* **Built-in predicates** for common checks: `Eq`, `In`, `LessThan`, `GreaterThan`, `MinLength`, `MaxLength`, `Pattern`, `Required`, `Integer`, `Positive`, `Negative`, and more
 
 * `any` blocks for OR logic
 

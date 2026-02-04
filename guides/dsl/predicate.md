@@ -35,6 +35,7 @@ The parser converts the DSL block into a tree of Step and Block structures. It n
 * Variable reference - Resolved at runtime
 * Module implementing Behaviour - Calls `pred/1` at runtime
 * `{Module, opts}` - Behaviour with options
+* Built-in predicates - `Required`, `Integer`, `{Eq, value: :active}`, etc.
 * 0-arity helper - Runtime predicate resolution
 
 ### Projection-Based Predicates (check directive)
@@ -195,6 +196,80 @@ end
 ```
 
 The parser compiles this to a call to `HasMinimumAge.pred([minimum: 21])` which returns the predicate function.
+
+## Built-in Predicates
+
+Funx provides built-in predicate modules that implement `Funx.Predicate.Dsl.Behaviour`. These can be used directly in the DSL:
+
+### Available Predicates
+
+| Module | Required Option | Description |
+|--------|----------------|-------------|
+| `Eq` | `value:` | Checks equality using `Eq` comparator |
+| `NotEq` | `value:` | Checks inequality using `Eq` comparator |
+| `In` | `values:` | Checks membership in a list |
+| `NotIn` | `values:` | Checks exclusion from a list |
+| `LessThan` | `value:` | Checks `< value` using `Ord` comparator |
+| `LessThanOrEqual` | `value:` | Checks `<= value` using `Ord` comparator |
+| `GreaterThan` | `value:` | Checks `> value` using `Ord` comparator |
+| `GreaterThanOrEqual` | `value:` | Checks `>= value` using `Ord` comparator |
+| `IsTrue` | none | Checks strict `== true` |
+| `IsFalse` | none | Checks strict `== false` |
+| `MinLength` | `min:` | Checks string length `>= min` |
+| `MaxLength` | `max:` | Checks string length `<= max` |
+| `Pattern` | `regex:` | Checks string matches regex |
+| `Integer` | none | Checks `is_integer/1` |
+| `Positive` | none | Checks number `> 0` |
+| `Negative` | none | Checks number `< 0` |
+| `Required` | none | Checks not `nil` and not `""` |
+| `Contains` | `value:` | Checks list contains element |
+
+### Usage Syntax
+
+Predicates without required options use bare module syntax:
+
+```elixir
+pred do
+  check :count, Integer
+  check :count, Positive
+end
+```
+
+Predicates with options use tuple syntax:
+
+```elixir
+pred do
+  check :status, {Eq, value: :active}
+  check :age, {GreaterThanOrEqual, value: 18}
+  check :name, {MinLength, min: 2}
+end
+```
+
+### Default Truthy Check
+
+When `check` is used with only a projection (no predicate), the parser inserts a default truthy check:
+
+```elixir
+pred do
+  check :name  # equivalent to: check :name, fn v -> !!v end
+end
+```
+
+The default predicate is `fn value -> !!value end`, following Elixir's truthiness rules where only `nil` and `false` are falsy.
+
+### Required vs Truthy
+
+The `Required` predicate differs from the default truthy check:
+
+| Value | Default (truthy) | `Required` |
+|-------|-----------------|------------|
+| `"hello"` | true | true |
+| `""` | true | **false** |
+| `nil` | false | false |
+| `false` | false | **true** |
+| `0` | true | true |
+
+Use `Required` when empty strings should fail but `false` should pass.
 
 ## Boolean Logic
 

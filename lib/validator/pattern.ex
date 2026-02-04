@@ -21,13 +21,13 @@ defmodule Funx.Validator.Pattern do
 
   use Funx.Validator
 
-  @impl Funx.Validator
-  def valid?(string, opts, _env) when is_binary(string) do
-    regex = Keyword.fetch!(opts, :regex)
-    Regex.match?(regex, string)
-  end
+  alias Funx.Predicate
 
-  def valid?(_non_string, _opts, _env), do: false
+  @impl Funx.Validator
+  def valid?(value, opts, _env) do
+    predicate = Predicate.Pattern.pred(opts)
+    predicate.(value)
+  end
 
   @impl Funx.Validator
   def default_message(value, _opts) when is_binary(value) do
