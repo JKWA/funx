@@ -214,6 +214,70 @@ The DSL version:
 - `check &(&1.field), pred` - Function projection
 - `check fn x -> x.field end, pred` - Anonymous function projection
 
+### Built-in Predicates
+
+Funx provides built-in predicate modules that implement `Funx.Predicate.Dsl.Behaviour`:
+
+| Module | Required Option | Description |
+|--------|----------------|-------------|
+| `Eq` | `value:` | Equality check using `Eq` comparator |
+| `NotEq` | `value:` | Inequality check |
+| `In` | `values:` | Membership in list |
+| `NotIn` | `values:` | Exclusion from list |
+| `LessThan` | `value:` | `< value` using `Ord` |
+| `LessThanOrEqual` | `value:` | `<= value` using `Ord` |
+| `GreaterThan` | `value:` | `> value` using `Ord` |
+| `GreaterThanOrEqual` | `value:` | `>= value` using `Ord` |
+| `IsTrue` | none | Strict `== true` |
+| `IsFalse` | none | Strict `== false` |
+| `MinLength` | `min:` | String length `>= min` |
+| `MaxLength` | `max:` | String length `<= max` |
+| `Pattern` | `regex:` | String matches regex |
+| `Integer` | none | `is_integer/1` check |
+| `Positive` | none | Number `> 0` |
+| `Negative` | none | Number `< 0` |
+| `Required` | none | Not `nil` and not `""` |
+| `Contains` | `value:` | List contains element |
+
+**Usage syntax:**
+
+```elixir
+# Without options (bare module)
+pred do
+  check :count, Integer
+  check :count, Positive
+end
+
+# With options (tuple syntax)
+pred do
+  check :status, {Eq, value: :active}
+  check :age, {GreaterThanOrEqual, value: 18}
+  check :name, {MinLength, min: 2}
+end
+```
+
+**Default truthy check:**
+
+When `check` is used with only a projection (no predicate), the default is a truthy check:
+
+```elixir
+pred do
+  check :name  # equivalent to: check :name, fn v -> !!v end
+end
+```
+
+Only `nil` and `false` are falsy in Elixir. Empty strings, `0`, and `[]` are truthy.
+
+**Required vs truthy:**
+
+| Value | Default (truthy) | `Required` |
+|-------|-----------------|------------|
+| `"hello"` | true | true |
+| `""` | true | **false** |
+| `nil` | false | false |
+| `false` | false | **true** |
+| `0` | true | true |
+
 ### DSL Examples
 
 **Basic multi-condition predicate:**
@@ -336,6 +400,21 @@ pred do
 end
 ```
 
+**Using built-in predicates:**
+
+```elixir
+alias Funx.Predicate.{Eq, In, GreaterThanOrEqual, MinLength, Required, Pattern}
+
+pred do
+  check :status, {Eq, value: :active}
+  check :role, {In, values: [:admin, :user, :moderator]}
+  check :age, {GreaterThanOrEqual, value: 18}
+  check :name, Required
+  check :name, {MinLength, min: 2}
+  check :email, {Pattern, regex: ~r/@/}
+end
+```
+
 **Using behaviour modules:**
 
 ```elixir
@@ -405,6 +484,7 @@ The Predicate DSL provides declarative multi-condition boolean logic:
 - Bare predicate - Must pass (AND)
 - `negate <predicate>` - Must fail (NOT)
 - `check <projection>, <predicate>` - Project then test
+- `check <projection>` - Project then truthy check (default)
 - `negate check <projection>, <predicate>` - Projected value must NOT match
 - `any do ... end` - OR logic (at least one must match)
 - `all do ... end` - AND logic (all must match)
@@ -417,6 +497,7 @@ The Predicate DSL provides declarative multi-condition boolean logic:
 - **Lens** with `check` for required fields (total accessor, raises on missing keys)
 - **Prism** with `check` for sum type branch selection (selects one case, Nothing fails the predicate)
 - **Traversal** with `check` for relating multiple foci (collect values to compare or validate together)
+- **Built-in predicates** for common checks: `Eq`, `In`, `LessThan`, `GreaterThan`, `MinLength`, `Pattern`, `Required`, `Integer`, `Positive`, etc.
 - Use behaviour modules for reusable, configurable predicate logic
 - Nested `any`/`all` blocks for complex boolean expressions
 - Works seamlessly with Enum functions for filtering and searching

@@ -44,46 +44,19 @@ defmodule Funx.Validator.NotIn do
     %Funx.Monad.Either.Right{right: %Funx.Monad.Maybe.Nothing{}}
   """
 
-  @behaviour Funx.Validate.Behaviour
+  use Funx.Validator
 
-  alias Funx.List
-  alias Funx.Monad.Either
-  alias Funx.Monad.Maybe.{Just, Nothing}
-  alias Funx.Validator
+  alias Funx.Predicate
 
-  def validate(value) do
-    validate(value, [])
+  @impl Funx.Validator
+  def valid?(value, opts, _env) do
+    predicate = Predicate.NotIn.pred(opts)
+    predicate.(value)
   end
 
-  def validate(value, opts) when is_list(opts) do
-    validate(value, opts, %{})
-  end
-
-  @impl true
-  def validate(value, opts, env)
-
-  def validate(%Nothing{} = value, _opts, _env) do
-    Either.right(value)
-  end
-
-  def validate(%Just{value: v}, opts, _env) do
-    validate_value(v, opts)
-  end
-
-  def validate(value, opts, _env) do
-    validate_value(value, opts)
-  end
-
-  defp validate_value(value, opts) do
+  @impl Funx.Validator
+  def default_message(_value, opts) do
     values = Keyword.fetch!(opts, :values)
-    eq = Keyword.get(opts, :eq, Eq.Protocol)
-
-    Either.lift_predicate(
-      value,
-      fn v -> not List.elem?(values, v, eq) end,
-      fn v ->
-        Validator.validation_error(opts, v, "must not be one of: #{inspect(values)}")
-      end
-    )
+    "must not be one of: #{inspect(values)}"
   end
 end

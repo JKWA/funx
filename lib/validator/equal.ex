@@ -33,21 +33,12 @@ defmodule Funx.Validator.Equal do
 
   use Funx.Validator
 
-  alias Funx.Eq
+  alias Funx.Predicate
 
   @impl Funx.Validator
   def valid?(value, opts, _env) do
-    expected = Keyword.fetch!(opts, :value)
-    eq = Keyword.get(opts, :eq, Eq.Protocol)
-    expected_is_module = is_atom(expected)
-
-    case {value, expected_is_module} do
-      {%{__struct__: mod}, true} ->
-        mod == expected
-
-      _ ->
-        Eq.eq?(value, expected, eq)
-    end
+    predicate = Predicate.Eq.pred(opts)
+    predicate.(value)
   end
 
   @impl Funx.Validator

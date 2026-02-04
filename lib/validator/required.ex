@@ -40,9 +40,9 @@ defmodule Funx.Validator.Required do
 
   alias Funx.Monad.Either
   alias Funx.Monad.Maybe.Nothing
+  alias Funx.Predicate
   alias Funx.Validator
 
-  # Convenience overloads for easier direct usage
   def validate(value) do
     validate(value, [], %{})
   end
@@ -51,7 +51,6 @@ defmodule Funx.Validator.Required do
     validate(value, opts, %{})
   end
 
-  # Behaviour implementation (arity-3)
   @impl true
   def validate(value, opts, env)
 
@@ -61,9 +60,11 @@ defmodule Funx.Validator.Required do
   end
 
   def validate(value, opts, _env) do
+    predicate = Predicate.Required.pred(opts)
+
     Either.lift_predicate(
       value,
-      fn v -> not is_nil(v) and v != "" end,
+      predicate,
       fn v -> Validator.validation_error(opts, v, "is required") end
     )
   end

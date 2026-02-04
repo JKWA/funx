@@ -76,8 +76,17 @@ defmodule Funx.Predicate.Dsl.Parser do
   # Parse "check projection, predicate"
   defp parse_entry_to_node({:check, meta, [projection_ast, predicate_ast]}, _caller_env) do
     normalized_projection = normalize_projection(projection_ast)
+    normalized_predicate = normalize_check_predicate(predicate_ast)
     metadata = extract_meta(meta)
-    Step.new_with_projection(normalized_projection, predicate_ast, false, metadata)
+    Step.new_with_projection(normalized_projection, normalized_predicate, false, metadata)
+  end
+
+  # Parse "check projection" (single argument) - defaults to truthy check
+  defp parse_entry_to_node({:check, meta, [projection_ast]}, _caller_env) do
+    normalized_projection = normalize_projection(projection_ast)
+    truthy_predicate = default_truthy_predicate()
+    metadata = extract_meta(meta)
+    Step.new_with_projection(normalized_projection, truthy_predicate, false, metadata)
   end
 
   # Parse "negate check projection, predicate" - negated projection
@@ -86,8 +95,20 @@ defmodule Funx.Predicate.Dsl.Parser do
          _caller_env
        ) do
     normalized_projection = normalize_projection(projection_ast)
+    normalized_predicate = normalize_check_predicate(predicate_ast)
     metadata = extract_meta(meta)
-    Step.new_with_projection(normalized_projection, predicate_ast, true, metadata)
+    Step.new_with_projection(normalized_projection, normalized_predicate, true, metadata)
+  end
+
+  # Parse "negate check projection" (single argument) - negated truthy check
+  defp parse_entry_to_node(
+         {:negate, meta, [{:check, _check_meta, [projection_ast]}]},
+         _caller_env
+       ) do
+    normalized_projection = normalize_projection(projection_ast)
+    truthy_predicate = default_truthy_predicate()
+    metadata = extract_meta(meta)
+    Step.new_with_projection(normalized_projection, truthy_predicate, true, metadata)
   end
 
   # Parse "negate predicate" - bare negation
@@ -166,6 +187,40 @@ defmodule Funx.Predicate.Dsl.Parser do
       file: Keyword.get(meta, :file)
     }
   end
+
+  # Default predicate for single-argument check: truthy check
+  # Returns AST for `fn value -> !!value end` (truthy, not strict == true)
+  defp default_truthy_predicate do
+    quote do
+      fn value -> !!value end
+    end
+  end
+
+  # Normalize predicate AST in check directive
+  #
+  # Handles behaviour module tuple syntax: {Module, opts} -> Module.pred(opts)
+  # All other predicates pass through unchanged.
+  #
+  # Note: Unlike bare behaviour modules at top-level, we don't validate
+  # that the module implements the behaviour at compile time. This matches
+  # how the validate DSL handles validators - shape validation only.
+  # Runtime will fail with a clear error if the module doesn't have pred/1.
+  defp normalize_check_predicate({{:__aliases__, _meta, _} = module_alias, opts})
+       when is_list(opts) do
+    quote do
+      unquote(module_alias).pred(unquote(opts))
+    end
+  end
+
+  # Bare module reference in check: Module -> Module.pred([])
+  defp normalize_check_predicate({:__aliases__, _meta, _} = module_alias) do
+    quote do
+      unquote(module_alias).pred([])
+    end
+  end
+
+  # All other predicates pass through unchanged
+  defp normalize_check_predicate(predicate_ast), do: predicate_ast
 
   # Normalize projection AST to canonical form
   #

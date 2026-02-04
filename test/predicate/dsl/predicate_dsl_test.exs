@@ -211,7 +211,7 @@ defmodule Funx.Predicate.DslTest do
     test "check with atom field", %{age_20: age_20, age_16: age_16, age_empty: age_empty} do
       age_check =
         pred do
-          check(:age, fn age -> age >= 18 end)
+          check :age, fn age -> age >= 18 end
         end
 
       assert age_check.(age_20)
@@ -226,7 +226,7 @@ defmodule Funx.Predicate.DslTest do
     } do
       name_length_check =
         pred do
-          check(Prism.key(:name), fn name -> String.length(name) > 3 end)
+          check Prism.key(:name), fn name -> String.length(name) > 3 end
         end
 
       assert name_length_check.(has_name)
@@ -239,9 +239,9 @@ defmodule Funx.Predicate.DslTest do
       # Only applies to Completed orders (branch selection)
       check_high_value_completed =
         pred do
-          check(Prism.path([:status, OrderStatus.Completed]), fn completed ->
+          check Prism.path([:status, OrderStatus.Completed]), fn completed ->
             completed.total >= 500
-          end)
+          end
         end
 
       completed_order = %Order{
@@ -263,7 +263,7 @@ defmodule Funx.Predicate.DslTest do
     test "check with Lens.key", %{high_score: high_score, low_score: low_score} do
       score_check =
         pred do
-          check(Lens.key(:score), fn score -> score > 100 end)
+          check Lens.key(:score), fn score -> score > 100 end
         end
 
       assert score_check.(high_score)
@@ -273,7 +273,7 @@ defmodule Funx.Predicate.DslTest do
     test "on with captured function projection" do
       check =
         pred do
-          check(&Map.get(&1, :age), fn age -> age >= 21 end)
+          check &Map.get(&1, :age), fn age -> age >= 21 end
         end
 
       assert check.(%{age: 25})
@@ -283,7 +283,7 @@ defmodule Funx.Predicate.DslTest do
     test "on with anonymous function projection" do
       check =
         pred do
-          check(fn person -> person.age end, fn age -> age >= 18 end)
+          check fn person -> person.age end, fn age -> age >= 18 end
         end
 
       assert check.(%{age: 20})
@@ -296,7 +296,7 @@ defmodule Funx.Predicate.DslTest do
 
       check =
         pred do
-          check(my_lens, fn score -> score > 100 end)
+          check my_lens, fn score -> score > 100 end
         end
 
       assert check.(%{score: 150})
@@ -342,8 +342,8 @@ defmodule Funx.Predicate.DslTest do
     test "on with multiple projections" do
       check =
         pred do
-          check(:age, fn age -> age >= 18 end)
-          check(:score, fn score -> score > 50 end)
+          check :age, fn age -> age >= 18 end
+          check :score, fn score -> score > 50 end
         end
 
       assert check.(%{age: 20, score: 75})
@@ -358,7 +358,7 @@ defmodule Funx.Predicate.DslTest do
 
       age_check =
         pred do
-          check([:user, :profile, :age], fn age -> age >= 18 end)
+          check [:user, :profile, :age], fn age -> age >= 18 end
         end
 
       assert age_check.(nested_data)
@@ -374,7 +374,7 @@ defmodule Funx.Predicate.DslTest do
 
       name_check =
         pred do
-          check([User, :name], fn name -> String.length(name) > 3 end)
+          check [User, :name], fn name -> String.length(name) > 3 end
         end
 
       # Works with struct projection
@@ -383,7 +383,7 @@ defmodule Funx.Predicate.DslTest do
       # Works with nested struct
       nested_name_check =
         pred do
-          check([:user, User, :name], fn name -> String.length(name) > 3 end)
+          check [:user, User, :name], fn name -> String.length(name) > 3 end
         end
 
       assert nested_name_check.(nested_data)
@@ -396,10 +396,82 @@ defmodule Funx.Predicate.DslTest do
 
       name_check =
         pred do
-          check([:user, :profile, :name], fn name -> String.length(name) > 3 end)
+          check [:user, :profile, :name], fn name -> String.length(name) > 3 end
         end
 
       refute name_check.(nested_data)
+    end
+  end
+
+  # ============================================================================
+  # Default Truthy Check Tests
+  # ============================================================================
+
+  describe "check with default truthy predicate" do
+    test "single-argument check defaults to truthy" do
+      is_active =
+        pred do
+          check :active
+        end
+
+      assert is_active.(%{active: true})
+      assert is_active.(%{active: 1})
+      assert is_active.(%{active: "yes"})
+      refute is_active.(%{active: false})
+      refute is_active.(%{active: nil})
+      refute is_active.(%{})
+    end
+
+    test "single-argument check with nested path" do
+      is_poisoned =
+        pred do
+          check [:poison, :active]
+        end
+
+      assert is_poisoned.(%{poison: %{active: true}})
+      assert is_poisoned.(%{poison: %{active: 1}})
+      refute is_poisoned.(%{poison: %{active: false}})
+      refute is_poisoned.(%{poison: %{active: nil}})
+      refute is_poisoned.(%{poison: %{}})
+      refute is_poisoned.(%{})
+    end
+
+    test "negate single-argument check" do
+      not_active =
+        pred do
+          negate check :active
+        end
+
+      assert not_active.(%{active: false})
+      assert not_active.(%{active: nil})
+      assert not_active.(%{})
+      refute not_active.(%{active: true})
+      refute not_active.(%{active: 1})
+    end
+
+    test "multiple single-argument checks" do
+      all_flags =
+        pred do
+          check :active
+          check :verified
+          check :approved
+        end
+
+      assert all_flags.(%{active: true, verified: true, approved: true})
+      refute all_flags.(%{active: true, verified: false, approved: true})
+      refute all_flags.(%{active: true, verified: true, approved: nil})
+    end
+
+    test "mixed single and two-argument checks" do
+      valid_user =
+        pred do
+          check :active
+          check :age, fn age -> age >= 18 end
+        end
+
+      assert valid_user.(%{active: true, age: 20})
+      refute valid_user.(%{active: false, age: 20})
+      refute valid_user.(%{active: true, age: 16})
     end
   end
 
@@ -411,7 +483,7 @@ defmodule Funx.Predicate.DslTest do
     test "0-arity helper returning Prism" do
       check =
         pred do
-          check(OpticHelpers.name_prism(), fn name -> String.length(name) > 5 end)
+          check OpticHelpers.name_prism(), fn name -> String.length(name) > 5 end
         end
 
       assert check.(%{name: "Alexander"})
@@ -421,7 +493,7 @@ defmodule Funx.Predicate.DslTest do
     test "0-arity helper returning Lens" do
       check =
         pred do
-          check(OpticHelpers.age_lens(), fn age -> age >= 21 end)
+          check OpticHelpers.age_lens(), fn age -> age >= 21 end
         end
 
       assert check.(%{age: 25})
@@ -431,12 +503,12 @@ defmodule Funx.Predicate.DslTest do
     test "0-arity helper returning Traversal (relating foci)" do
       check =
         pred do
-          check(OpticHelpers.amounts_traversal(), fn amounts ->
+          check OpticHelpers.amounts_traversal(), fn amounts ->
             case amounts do
               [charge, refund] -> charge == refund
               _ -> false
             end
-          end)
+          end
         end
 
       assert check.(%Transaction{charge_amount: 100, refund_amount: 100, status: :refunded})
@@ -491,7 +563,7 @@ defmodule Funx.Predicate.DslTest do
       check =
         pred do
           IsActive
-          check(:age, fn age -> age >= 18 end)
+          check :age, fn age -> age >= 18 end
         end
 
       assert check.(%User{active: true, age: 20})
@@ -660,7 +732,7 @@ defmodule Funx.Predicate.DslTest do
     test "negate check with atom field (degenerate sum)" do
       not_long_name =
         pred do
-          negate(check(:name, fn name -> String.length(name) > 5 end))
+          negate check :name, fn name -> String.length(name) > 5 end
         end
 
       assert not_long_name.(%{name: "Joe"})
@@ -672,7 +744,7 @@ defmodule Funx.Predicate.DslTest do
     test "negate check with Prism.key (degenerate sum)" do
       not_adult =
         pred do
-          negate(check(Prism.key(:age), fn age -> age >= 18 end))
+          negate check Prism.key(:age), fn age -> age >= 18 end
         end
 
       assert not_adult.(%{age: 16})
@@ -684,7 +756,7 @@ defmodule Funx.Predicate.DslTest do
     test "negate check with Lens.key" do
       low_score =
         pred do
-          negate(check(Lens.key(:score), fn score -> score > 100 end))
+          negate check Lens.key(:score), fn score -> score > 100 end
         end
 
       assert low_score.(%{score: 50})
@@ -694,7 +766,7 @@ defmodule Funx.Predicate.DslTest do
     test "negate check with function projection" do
       not_verified =
         pred do
-          negate(check(fn user -> user.verified end, fn v -> v == true end))
+          negate check fn user -> user.verified end, fn v -> v == true end
         end
 
       assert not_verified.(%{verified: false})
@@ -735,8 +807,8 @@ defmodule Funx.Predicate.DslTest do
     test "multiple negate check directives" do
       safe_user =
         pred do
-          negate(check(:banned, fn b -> b == true end))
-          negate(check(:suspended, fn s -> s == true end))
+          negate check :banned, fn b -> b == true end
+          negate check :suspended, fn s -> s == true end
         end
 
       assert safe_user.(%{banned: false, suspended: false})
@@ -747,8 +819,8 @@ defmodule Funx.Predicate.DslTest do
     test "mixed check and negate check" do
       valid_user =
         pred do
-          check(:age, fn age -> age >= 18 end)
-          negate(check(:banned, fn b -> b == true end))
+          check :age, fn age -> age >= 18 end
+          negate check :banned, fn b -> b == true end
         end
 
       assert valid_user.(%{age: 20, banned: false})
@@ -760,7 +832,7 @@ defmodule Funx.Predicate.DslTest do
       can_enter =
         pred do
           &adult?/1
-          negate(check(:banned, fn b -> b == true end))
+          negate check :banned, fn b -> b == true end
         end
 
       assert can_enter.(%{age: 20, tickets: 1, banned: false})
@@ -773,7 +845,7 @@ defmodule Funx.Predicate.DslTest do
         pred do
           any do
             &vip?/1
-            negate(check(:suspended, fn s -> s == true end))
+            negate check :suspended, fn s -> s == true end
           end
         end
 
@@ -789,8 +861,8 @@ defmodule Funx.Predicate.DslTest do
       verified_user =
         pred do
           all do
-            check(:age, fn age -> age >= 18 end)
-            negate(check(:banned, fn b -> b == true end))
+            check :age, fn age -> age >= 18 end
+            negate check :banned, fn b -> b == true end
           end
         end
 
@@ -806,7 +878,7 @@ defmodule Funx.Predicate.DslTest do
 
       not_adult =
         pred do
-          negate(check([:user, :profile, :age], fn age -> age >= 18 end))
+          negate check [:user, :profile, :age], fn age -> age >= 18 end
         end
 
       refute not_adult.(nested_adult)

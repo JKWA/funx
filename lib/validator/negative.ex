@@ -20,12 +20,13 @@ defmodule Funx.Validator.Negative do
 
   use Funx.Validator
 
-  @impl Funx.Validator
-  def valid?(number, _opts, _env) when is_number(number) do
-    number < 0
-  end
+  alias Funx.Predicate
 
-  def valid?(_non_number, _opts, _env), do: false
+  @impl Funx.Validator
+  def valid?(value, opts, _env) do
+    predicate = Predicate.Negative.pred(opts)
+    predicate.(value)
+  end
 
   @impl Funx.Validator
   def default_message(value, _opts) when is_number(value) do

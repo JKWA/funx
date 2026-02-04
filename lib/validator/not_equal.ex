@@ -29,48 +29,19 @@ defmodule Funx.Validator.NotEqual do
   - `Just` values are unwrapped before comparison.
   """
 
-  @behaviour Funx.Validate.Behaviour
+  use Funx.Validator
 
-  alias Funx.Eq
-  alias Funx.Monad.Either
-  alias Funx.Monad.Maybe.{Just, Nothing}
-  alias Funx.Validator
+  alias Funx.Predicate
 
-  # Convenience overload for default opts (raises on missing required options)
-  def validate(value) do
-    validate(value, [])
+  @impl Funx.Validator
+  def valid?(value, opts, _env) do
+    predicate = Predicate.NotEq.pred(opts)
+    predicate.(value)
   end
 
-  # Convenience overload
-  def validate(value, opts) when is_list(opts) do
-    validate(value, opts, %{})
-  end
-
-  @impl true
-  def validate(value, opts, env)
-
-  def validate(%Nothing{} = value, _opts, _env) do
-    Either.right(value)
-  end
-
-  def validate(%Just{value: value}, opts, _env) do
-    validate_value(value, opts)
-  end
-
-  def validate(value, opts, _env) do
-    validate_value(value, opts)
-  end
-
-  defp validate_value(value, opts) do
+  @impl Funx.Validator
+  def default_message(_value, opts) do
     reference = Keyword.fetch!(opts, :value)
-    eq = Keyword.get(opts, :eq, Eq.Protocol)
-
-    Either.lift_predicate(
-      value,
-      fn v -> Eq.not_eq?(v, reference, eq) end,
-      fn v ->
-        Validator.validation_error(opts, v, "must not be equal to #{inspect(reference)}")
-      end
-    )
+    "must not be equal to #{inspect(reference)}"
   end
 end
