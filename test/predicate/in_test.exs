@@ -95,7 +95,7 @@ defmodule Funx.Predicate.InTest do
       valid_user =
         pred do
           check :status, {In, values: [:active, :pending]}
-          check(:verified)
+          check :verified
         end
 
       assert valid_user.(%{status: :active, verified: true})

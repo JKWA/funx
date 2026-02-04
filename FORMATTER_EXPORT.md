@@ -59,6 +59,7 @@ The following Eq DSL functions are configured to format without parentheses:
 The following Predicate DSL functions are configured to format without parentheses:
 
 - `pred/1` - DSL entry point for defining predicates
+- `check/1` - Project and default truthy (e.g., `check :field`)
 - `check/2` - Project and test a value (e.g., `check :field, predicate`)
 - `negate/1` - Negate a predicate or block
 - `negate_all/1` - Negate an AND block (applies De Morgan's Laws)

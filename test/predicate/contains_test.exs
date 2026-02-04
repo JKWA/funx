@@ -80,7 +80,7 @@ defmodule Funx.Predicate.ContainsTest do
     test "combined with other predicates" do
       valid_user =
         pred do
-          check(:active)
+          check :active
           check :permissions, {Contains, value: :read}
         end
 
