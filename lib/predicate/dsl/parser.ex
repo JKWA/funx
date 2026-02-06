@@ -145,6 +145,7 @@ defmodule Funx.Predicate.Dsl.Parser do
       {:__aliases__, meta, _} = module_alias ->
         # Try to parse as behaviour module
         expanded_module = Macro.expand(module_alias, caller_env)
+        Code.ensure_compiled(expanded_module)
 
         if function_exported?(expanded_module, :pred, 1) do
           parse_behaviour_module(module_alias, [], meta, caller_env)
@@ -163,6 +164,7 @@ defmodule Funx.Predicate.Dsl.Parser do
 
   defp parse_behaviour_module(module_alias, opts, meta, caller_env) do
     expanded_module = Macro.expand(module_alias, caller_env)
+    Code.ensure_compiled(expanded_module)
 
     unless function_exported?(expanded_module, :pred, 1) do
       raise CompileError,

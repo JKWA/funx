@@ -293,6 +293,7 @@ defmodule Funx.Ord.Dsl.Parser do
     end
 
     expanded_module = Macro.expand(module_alias, caller_env)
+    Code.ensure_compiled(expanded_module)
 
     cond do
       function_exported?(expanded_module, :lt?, 2) ->
