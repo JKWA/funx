@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.4] - Unreleased
+
+### Updated
+
+Small fix for Pred/Eq/Ord DSLs
+
 ## [0.8.3] - Unreleased
 
 ### Added
