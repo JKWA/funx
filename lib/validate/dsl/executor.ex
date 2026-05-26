@@ -14,7 +14,6 @@ defmodule Funx.Validate.Dsl.Executor do
 
   alias Funx.Monad.Effect
   alias Funx.Monad.Either
-  alias Funx.Monad.Either.{Left, Right}
   alias Funx.Monad.Maybe.{Just, Nothing}
   alias Funx.Optics.{Lens, Prism, Traversal}
   alias Funx.Validate.Dsl.Step
@@ -200,7 +199,7 @@ defmodule Funx.Validate.Dsl.Executor do
         merged_opts = Keyword.merge(unquote(validator_opts), runtime_opts)
         env = Keyword.get(merged_opts, :env, %{})
         result = unquote(module_spec).validate(value, merged_opts, env)
-        unquote(__MODULE__).normalize_validator_result(result, value)
+        Either.normalize_validator_result(result, value)
       end
     end
   end
@@ -211,7 +210,7 @@ defmodule Funx.Validate.Dsl.Executor do
       fn value, opts ->
         env = Keyword.get(opts, :env, %{})
         result = unquote(module_spec).validate(value, opts, env)
-        unquote(__MODULE__).normalize_validator_result(result, value)
+        Either.normalize_validator_result(result, value)
       end
     end
   end
@@ -225,7 +224,7 @@ defmodule Funx.Validate.Dsl.Executor do
         result =
           unquote(__MODULE__).call_validator_function(unquote(validator_spec), value, merged_opts)
 
-        unquote(__MODULE__).normalize_validator_result(result, value)
+        Either.normalize_validator_result(result, value)
       end
     end
   end
@@ -235,17 +234,10 @@ defmodule Funx.Validate.Dsl.Executor do
     quote do
       fn value, opts ->
         result = unquote(__MODULE__).call_validator_function(unquote(validator_spec), value, opts)
-        unquote(__MODULE__).normalize_validator_result(result, value)
+        Either.normalize_validator_result(result, value)
       end
     end
   end
-
-  # Normalize validator return values to Either (public for use in quoted code)
-  @doc false
-  def normalize_validator_result(%Right{} = result, _value), do: result
-  def normalize_validator_result(%Left{} = result, _value), do: result
-  def normalize_validator_result(:ok, value), do: Either.right(value)
-  def normalize_validator_result({:error, error}, _value), do: Either.left(error)
 
   # Call a function validator with appropriate arity (public for use in quoted code)
   @doc false

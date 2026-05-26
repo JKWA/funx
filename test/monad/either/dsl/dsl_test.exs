@@ -74,6 +74,27 @@ defmodule Funx.Monad.Either.DslTest do
     def format_error(error, context), do: "#{context}: #{error}"
   end
 
+  defmodule LegacyOkValidator do
+    @behaviour Funx.Validate.Behaviour
+
+    @impl true
+    def validate(_value, _opts, _env), do: :ok
+  end
+
+  defmodule LegacyOkTupleValidator do
+    @behaviour Funx.Validate.Behaviour
+
+    @impl true
+    def validate(value, _opts, _env), do: {:ok, value}
+  end
+
+  defmodule LegacyErrorTupleValidator do
+    @behaviour Funx.Validate.Behaviour
+
+    @impl true
+    def validate(_value, _opts, _env), do: {:error, ValidationError.new("legacy failure")}
+  end
+
   # ============================================================================
   # Core DSL Keywords - bind, map, run
   # ============================================================================
@@ -475,6 +496,36 @@ defmodule Funx.Monad.Either.DslTest do
         end
 
       assert result == %Either.Right{right: 50}
+    end
+
+    test "validate normalizes :ok validator returns" do
+      result =
+        either "50" do
+          bind ParseInt
+          validate LegacyOkValidator
+        end
+
+      assert result == %Either.Right{right: 50}
+    end
+
+    test "validate normalizes {:ok, value} validator returns" do
+      result =
+        either "50" do
+          bind ParseInt
+          validate LegacyOkTupleValidator
+        end
+
+      assert result == %Either.Right{right: 50}
+    end
+
+    test "validate normalizes {:error, ValidationError.t()} validator returns" do
+      result =
+        either "50" do
+          bind ParseInt
+          validate LegacyErrorTupleValidator
+        end
+
+      assert %Either.Left{left: %ValidationError{errors: ["legacy failure"]}} = result
     end
 
     test "validate options are isolated per validator" do
