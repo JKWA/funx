@@ -19,12 +19,13 @@
 
 **Key Path Syntax:**
 
-- `:atom` - Plain key access (works with maps and structs)
+- `term()` - Plain key access (works with maps and structs)
 - `Module` - Naked struct verification (checks type, no key access)
-- `{Module, :atom}` - Struct-typed field access (verifies struct type, then accesses key)
+- `{Module, atom}` - Struct-typed field access (verifies struct type, then accesses key)
 - Modules are distinguished from keys using `function_exported?(atom, :__struct__, 0)`
 - Examples:
-  - `path([:user, :profile])` - plain keys only
+  - `path([:user, :profile])` - plain atom keys
+  - `path(["user", "profile"])` - string keys (JSON-like)
   - `path([User, :profile])` - verify root is User, then get :profile
   - `path([{User, :profile}, Profile])` - typed field access, then verify Profile
   - `path([Person])` - just verify type (no field access)
@@ -162,7 +163,12 @@ p1 = Prism.path([:user, :profile, :email])
 Prism.review("alice@example.com", p1)
 #=> %{user: %{profile: %{email: "alice@example.com"}}}
 
-# Struct-typed path using {Module, :key} syntax
+# String-keyed path
+p1b = Prism.path(["user", "profile", "email"])
+Prism.review("alice@example.com", p1b)
+#=> %{"user" => %{"profile" => %{"email" => "alice@example.com"}}}
+
+# Struct-typed path using {Module, atom} syntax
 defmodule Profile, do: defstruct [:email, :age]
 defmodule User, do: defstruct [:name, :profile]
 
@@ -193,17 +199,17 @@ Prism.review("alice@example.com", p6)
 
 **Syntax:**
 
-- `:atom` - Plain key access
+- `term()` - Plain key access
 - `Module` - Naked struct verification (just type check, no field access)
-- `{Module, :atom}` - Typed field access (struct check + key access)
+- `{Module, atom}` - Typed field access (struct check + key access)
 
 **How it works:**
 
-- `:key` → `key(:key)`
+- `key` → `key(key)`
 - `Module` → `struct(Module)` (when Module has `__struct__/0`)
-- `{Module, :key}` → `compose(struct(Module), key(:key))`
+- `{Module, atom_key}` → `compose(struct(Module), key(atom_key))`
 
-**IMPORTANT**: Only use `{Module, :field}` when `:field` exists in `Module`. Using non-existent fields may violate prism laws.
+**IMPORTANT**: Only use `{Module, field}` when `field` exists in `Module`. Using non-existent fields may violate prism laws.
 
 ### `struct/1` - Focus on Struct Type
 

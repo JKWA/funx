@@ -2,6 +2,10 @@
 
 ## [0.8.4] - Unreleased
 
+### Added
+
+* `Funx.Optics.Prism` – Generalized `key/1` and `path/1` to support any `term()` as a key. This allows for easier navigation of JSON-like data with string keys while maintaining support for atom keys and struct-typed field access.
+
 ### Updated
 
 Small fix for Pred/Eq/Ord DSLs

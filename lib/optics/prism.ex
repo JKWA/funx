@@ -76,6 +76,13 @@ defmodule Funx.Optics.Prism do
       iex> person_name = Funx.Optics.Prism.path([:person, :name])
       iex> Funx.Optics.Prism.preview(%{person: %{name: "Alice"}}, person_name)
       %Funx.Monad.Maybe.Just{value: "Alice"}
+
+  Working with JSON-like string-keyed data:
+
+      iex> data = %{"user" => %{"profile" => %{"name" => "Alice"}}}
+      iex> name = Funx.Optics.Prism.path(["user", "profile", "name"])
+      iex> Funx.Optics.Prism.preview(data, name)
+      %Funx.Monad.Maybe.Just{value: "Alice"}
   """
 
   import Funx.Monoid.Utils, only: [m_append: 3, m_concat: 2]
@@ -109,9 +116,12 @@ defmodule Funx.Optics.Prism do
       %Funx.Monad.Maybe.Just{value: "Alice"}
       iex> Funx.Optics.Prism.preview(%{age: 30}, p)
       %Funx.Monad.Maybe.Nothing{}
+      iex> p = Funx.Optics.Prism.key("name")
+      iex> Funx.Optics.Prism.preview(%{"name" => "Alice"}, p)
+      %Funx.Monad.Maybe.Just{value: "Alice"}
   """
-  @spec key(atom) :: t(map(), any)
-  def key(k) when is_atom(k) do
+  @spec key(term()) :: t(map(), any)
+  def key(k) do
     make(
       fn
         %{} = m -> m |> Map.get(k) |> Maybe.from_nil()
@@ -185,16 +195,16 @@ defmodule Funx.Optics.Prism do
   Builds a prism that focuses on a nested path through maps and structs.
 
   Each element in the path can be:
-  - `:atom` - A plain key access (works with maps and structs)
+  - `term()` - A plain key access (works with maps and structs)
   - `Module` - A naked struct verification (checks type, no key access)
-  - `{Module, :atom}` - A struct-typed key access (verifies struct type and accesses key)
+  - `{Module, atom}` - A struct-typed key access (verifies struct type and accesses key)
 
   The syntax expands as follows:
-  - `:key` → `key(:key)` - plain key access
+  - `key` → `key(key)` - plain key access
   - `Module` → `struct(Module)` - struct type verification
-  - `{Module, :key}` → `compose(struct(Module), key(:key))` - typed field access
+  - `{Module, key}` → `compose(struct(Module), key(key))` - typed field access
 
-  Modules are distinguished from plain keys using `function_exported?(atom, :__struct__, 0)`.
+  Struct modules are distinguished from plain atom keys using `function_exported?(atom, :__struct__, 0)`.
 
   ## Examples
 
@@ -202,6 +212,11 @@ defmodule Funx.Optics.Prism do
       p1 = Prism.path([:person, :bio, :age])
       Prism.review(30, p1)
       #=> %{person: %{bio: %{age: 30}}}
+
+      # String-keyed path
+      p1b = Prism.path(["person", "bio", "age"])
+      Prism.review(30, p1b)
+      #=> %{"person" => %{"bio" => %{"age" => 30}}}
 
       # Given struct modules:
       defmodule Bio do
@@ -240,20 +255,21 @@ defmodule Funx.Optics.Prism do
   ## Implementation
 
   The `path/1` function composes prisms using `compose/1`:
-  - `:key` → `[key(:key)]`
+  - `key` → `[key(key)]`
   - `Module` → `[struct(Module)]`
-  - `{Mod, :key}` → `[struct(Mod), key(:key)]`
+  - `{Mod, atom_key}` → `[struct(Mod), key(atom_key)]`
 
   This means `path` is just syntactic sugar for prism composition.
 
   ## Important
 
-  - When using `{Module, :field}`, ensure `:field` exists in `Module`
+  - When using `{Module, field}`, `field` should be an atom key that exists in `Module`
   - Using non-existent fields may violate prism laws (Kernel.struct/2 silently drops invalid keys)
-  - The tuple form `{Module, :key}` requires `Module` to be a struct module (raises otherwise)
+  - The tuple form `{Module, key}` is only treated specially when `Module` is a struct module and `key` is an atom
+  - All other path segments, including non-atom values and non-struct tuples, are treated as plain map keys
   - Plain lowercase atoms like `:user` are always treated as keys, not struct modules
   """
-  @spec path([atom | {module, atom}]) :: t(map(), any)
+  @spec path([term() | {module, atom()}]) :: t(map(), any)
   def path(path) when is_list(path) do
     prisms =
       Enum.flat_map(path, fn
@@ -261,9 +277,11 @@ defmodule Funx.Optics.Prism do
           if function_exported?(mod, :__struct__, 0) do
             [struct(mod), key(key)]
           else
-            raise ArgumentError,
-                  "#{inspect(mod)} in {#{inspect(mod)}, #{inspect(key)}} is not a struct module"
+            [key({mod, key})]
           end
+
+        {mod, key} when is_atom(mod) ->
+          [key({mod, key})]
 
         atom when is_atom(atom) ->
           if function_exported?(atom, :__struct__, 0) do
@@ -272,9 +290,8 @@ defmodule Funx.Optics.Prism do
             [key(atom)]
           end
 
-        invalid ->
-          raise ArgumentError,
-                "path/1 expects atoms or {Module, :key} tuples, got: #{inspect(invalid)}"
+        key ->
+          [key(key)]
       end)
 
     compose(prisms)
