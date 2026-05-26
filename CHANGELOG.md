@@ -8,7 +8,10 @@
 
 ### Updated
 
-Small fix for Pred/Eq/Ord DSLs
+* Validation normalization is now consistent across `Either.validate/3`, the Either DSL `validate` step, and `Funx.Validate`.
+  * Supported validator returns are normalized uniformly: `Either`, `:ok`, `{:ok, value}`, and `{:error, error}`
+  * `:ok` preserves the original validated value in all validation paths
+* Validation docs, usage rules, and Livebooks were aligned with the current validator contract and normalization behavior.
 
 ## [0.8.3] - Unreleased
 
