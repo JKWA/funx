@@ -11,10 +11,11 @@ Mix.install([
 The `Funx.Monad.Either.Dsl` module provides a macro-based DSL for writing declarative pipelines that may fail. Instead of manually chaining `bind`, `map`, and other Either operations, you can express your logic in a clean, readable way.
 
 The DSL automatically:
-- Lifts input values into the Either context
-- Handles errors by short-circuiting on the first failure
-- Provides compile-time warnings for common mistakes
-- Supports multiple output formats (Either, tuple, or raise)
+
+* Lifts input values into the Either context
+* Handles errors by short-circuiting on the first failure
+* Provides compile-time warnings for common mistakes
+* Supports multiple output formats (Either, tuple, or raise)
 
 ## Setup
 
@@ -401,46 +402,56 @@ end
 
 The DSL supports validation with error accumulation using the `validate/2` function. Validators are modules that implement the `Funx.Validate.Behaviour` with the `validate/3` callback.
 
+Supported validator returns are normalized to `Either`:
+
+* `right(value)` / `left(error)`
+* `:ok` -> `Right(original_value)`
+* `{:ok, value}` -> `Right(value)`
+* `{:error, error}` -> `Left(error)`
+
 ```elixir
 # Example validator module pattern (works in compiled code):
 
 defmodule PositiveNumber do
   @behaviour Funx.Validate.Behaviour
   use Funx.Monad.Either
+  alias Funx.Errors.ValidationError
 
   def validate(value, _opts, _env) when is_number(value) and value > 0 do
     right(value)
   end
 
   def validate(value, _opts, _env) when is_number(value) do
-    left("Must be positive: #{value}")
+    left(ValidationError.new("Must be positive: #{value}"))
   end
 
   def validate(value, _opts, _env) do
-    left("Expected number, got: #{inspect(value)}")
+    left(ValidationError.new("Expected number, got: #{inspect(value)}"))
   end
 end
 
 defmodule EvenNumber do
   @behaviour Funx.Validate.Behaviour
   use Funx.Monad.Either
+  alias Funx.Errors.ValidationError
 
   def validate(value, _opts, _env) when is_number(value) and rem(value, 2) == 0 do
     right(value)
   end
 
   def validate(value, _opts, _env) when is_number(value) do
-    left("Must be even: #{value}")
+    left(ValidationError.new("Must be even: #{value}"))
   end
 
   def validate(value, _opts, _env) do
-    left("Expected number, got: #{inspect(value)}")
+    left(ValidationError.new("Expected number, got: #{inspect(value)}"))
   end
 end
 
 defmodule RangeValidator do
   @behaviour Funx.Validate.Behaviour
   use Funx.Monad.Either
+  alias Funx.Errors.ValidationError
 
   def validate(value, opts, _env) when is_number(value) do
     min = Keyword.get(opts, :min, 0)
@@ -449,13 +460,21 @@ defmodule RangeValidator do
     if value > min and value < max do
       right(value)
     else
-      left("Must be between #{min} and #{max}: #{value}")
+      left(ValidationError.new("Must be between #{min} and #{max}: #{value}"))
     end
   end
 
   def validate(value, _opts, _env) do
-    left("Expected number, got: #{inspect(value)}")
+    left(ValidationError.new("Expected number, got: #{inspect(value)}"))
   end
+end
+
+defmodule LegacyPositiveNumber do
+  @behaviour Funx.Validate.Behaviour
+  alias Funx.Errors.ValidationError
+
+  def validate(value, _opts, _env) when is_number(value) and value > 0, do: :ok
+  def validate(_value, _opts, _env), do: {:error, ValidationError.new("Must be positive")}
 end
 ```
 
@@ -481,6 +500,11 @@ end
 # Mix bare modules with modules that have options
 either 50 do
   validate [PositiveNumber, {RangeValidator, min: 0, max: 100}]
+end
+
+# Result-style validator returns also work
+either 4 do
+  validate LegacyPositiveNumber
 end
 ```
 
@@ -574,27 +598,27 @@ end
 
 The Either DSL provides a clean, declarative way to write error-handling pipelines:
 
-- **`bind`** - for operations that return Either or result tuples
-- **`map`** - for transformations that return plain values
-- **`tap`** - for side effects without changing the value (debugging, logging)
-- **Either functions** - `filter_or_else`, `or_else`, `map_left`, `flip`
-- **Validation** - `validate` for accumulating multiple errors
-- **Module support** - use modules with `bind`, `map`, `tap`, `map_left`, and `filter_or_else` for reusable operations
-- **Options support** - pass options to modules using `{Module, opts}` syntax
-- **Output formats** - `:either`, `:tuple`, or `:raise`
-- **Auto-lifting** - automatic conversion of function calls to work in pipelines
-- **Compile-time safety** - warnings for common mistakes
+* **`bind`** - for operations that return Either or result tuples
+* **`map`** - for transformations that return plain values
+* **`tap`** - for side effects without changing the value (debugging, logging)
+* **Either functions** - `filter_or_else`, `or_else`, `map_left`, `flip`
+* **Validation** - `validate` for accumulating multiple errors
+* **Module support** - use modules with `bind`, `map`, `tap`, `map_left`, and `filter_or_else` for reusable operations
+* **Options support** - pass options to modules using `{Module, opts}` syntax
+* **Output formats** - `:either`, `:tuple`, or `:raise`
+* **Auto-lifting** - automatic conversion of function calls to work in pipelines
+* **Compile-time safety** - warnings for common mistakes
 
 ### Module Support Summary
 
 All these operations support modules that implement `run/3`:
 
-- **`bind Module`** - module returns Either or tuple
-- **`map Module`** - module returns plain value
-- **`tap Module`** - module performs side effect, returns value unchanged
-- **`map_left Module`** - module transforms Left value
-- **`filter_or_else Module, fallback`** - module returns boolean predicate
-- **`validate [Module1, Module2]`** - modules validate and accumulate errors
+* **`bind Module`** - module returns Either or tuple
+* **`map Module`** - module returns plain value
+* **`tap Module`** - module performs side effect, returns value unchanged
+* **`map_left Module`** - module transforms Left value
+* **`filter_or_else Module, fallback`** - module returns boolean predicate
+* **`validate [Module1, Module2]`** - modules validate and accumulate errors
 
 Use `{Module, key: value}` syntax to pass options to any module's `run/3` function.
 
