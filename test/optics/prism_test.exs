@@ -141,6 +141,44 @@ defmodule Funx.Optics.PrismTest do
 
       assert Prism.review(50, p) == %{age: 50}
     end
+
+    test "supports string keys" do
+      p = Prism.key("age")
+
+      assert %Just{value: 40} = Prism.preview(%{"age" => 40}, p)
+      assert %Nothing{} = Prism.preview(%{"name" => "Alice"}, p)
+      assert Prism.review(50, p) == %{"age" => 50}
+    end
+
+    test "supports integer keys" do
+      p = Prism.key(1)
+
+      assert %Just{value: 40} = Prism.preview(%{1 => 40}, p)
+      assert %Nothing{} = Prism.preview(%{2 => 40}, p)
+      assert Prism.review(50, p) == %{1 => 50}
+    end
+
+    test "supports composite term keys" do
+      key = {:profile, "age"}
+      p = Prism.key(key)
+
+      assert %Just{value: 40} = Prism.preview(%{key => 40}, p)
+      assert %Nothing{} = Prism.preview(%{{:profile, "name"} => "Alice"}, p)
+      assert Prism.review(50, p) == %{key => 50}
+    end
+
+    test "supports composed access over string-keyed JSON-like maps" do
+      hero = %{
+        "powers" => %{
+          "strength" => 9000
+        }
+      }
+
+      powers_prism = Prism.key("powers")
+      strength_prism = Prism.compose(powers_prism, Prism.key("strength"))
+
+      assert %Just{value: 9000} = Prism.preview(hero, strength_prism)
+    end
   end
 
   # ============================================================================
@@ -178,6 +216,19 @@ defmodule Funx.Optics.PrismTest do
     test "review rebuilds structure from focused value" do
       p = Prism.path([:a, :b, :c])
       assert Prism.review(7, p) == %{a: %{b: %{c: 7}}}
+    end
+
+    test "supports string-keyed JSON-like paths" do
+      hero = %{
+        "powers" => %{
+          "strength" => 9000
+        }
+      }
+
+      p = Prism.path(["powers", "strength"])
+
+      assert %Just{value: 9000} = Prism.preview(hero, p)
+      assert Prism.review(42, p) == %{"powers" => %{"strength" => 42}}
     end
 
     test "path prism composes with struct prism" do
@@ -450,36 +501,31 @@ defmodule Funx.Optics.PrismTest do
       assert result == %User{name: "Alice", profile: nil}
     end
 
-    test "raises when tuple has non-struct module" do
-      assert_raise ArgumentError, ~r/:not_a_module.*is not a struct module/, fn ->
-        Prism.path([{:not_a_module, :key}])
-      end
+    test "treats tuples with non-struct module atoms as plain keys" do
+      p = Prism.path([{:not_a_module, :key}])
+
+      assert %Just{value: "value"} = Prism.preview(%{{:not_a_module, :key} => "value"}, p)
+      assert Prism.review("value", p) == %{{:not_a_module, :key} => "value"}
     end
 
-    test "raises when path contains invalid element" do
-      assert_raise ArgumentError,
-                   ~r/path\/1 expects atoms or \{Module, :key\} tuples, got: "string"/,
-                   fn ->
-                     Prism.path(["string"])
-                   end
+    test "accepts non-atom path elements as plain keys" do
+      assert %Just{value: "Alice"} = Prism.preview(%{"name" => "Alice"}, Prism.path(["name"]))
+      assert %Just{value: "one"} = Prism.preview(%{1 => "one"}, Prism.path([1]))
+      assert %Just{value: true} = Prism.preview(%{%{} => true}, Prism.path([%{}]))
+    end
 
-      assert_raise ArgumentError,
-                   ~r/path\/1 expects atoms or \{Module, :key\} tuples, got: 123/,
-                   fn ->
-                     Prism.path([123])
-                   end
+    test "treats atom-first tuples as plain keys unless key is an atom on a struct module" do
+      p = Prism.path([{:user, 1}])
 
-      assert_raise ArgumentError,
-                   ~r/path\/1 expects atoms or \{Module, :key\} tuples, got: %\{\}/,
-                   fn ->
-                     Prism.path([%{}])
-                   end
+      assert %Just{value: true} = Prism.preview(%{{:user, 1} => true}, p)
+      assert Prism.review("value", p) == %{{:user, 1} => "value"}
     end
 
     test "raises when tuple has non-atom key" do
-      assert_raise ArgumentError, ~r/path\/1 expects atoms or \{Module, :key\} tuples/, fn ->
-        Prism.path([{User, "name"}])
-      end
+      p = Prism.path([{User, "name"}])
+
+      assert %Just{value: "Alice"} = Prism.preview(%{{User, "name"} => "Alice"}, p)
+      assert Prism.review("Bob", p) == %{{User, "name"} => "Bob"}
     end
   end
 
@@ -719,16 +765,6 @@ defmodule Funx.Optics.PrismTest do
   # ============================================================================
 
   describe "malformed prism construction" do
-    test "key/1 raises for non-atom" do
-      assert_raise FunctionClauseError, fn ->
-        Prism.key("not_an_atom")
-      end
-
-      assert_raise FunctionClauseError, fn ->
-        Prism.key(123)
-      end
-    end
-
     test "struct/1 raises for non-struct module" do
       assert_raise ArgumentError,
                    ~r/String is not a struct module/,
