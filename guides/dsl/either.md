@@ -42,7 +42,7 @@ The executor evaluates steps in order:
 * `Step.Map` applies a pure function to the inner value.
 * `Step.Ap` applies an applicative function contained in an Either.
 * `Step.EitherFunction` calls a built-in Either operation such as `filter_or_else`, `or_else`, `map_left`, `flip`, or `tap`.
-* `Step.BindableFunction` wraps functions like `validate`, which accumulate errors instead of short-circuiting.
+* `Step.BindableFunction` wraps functions like `validate`, which accumulate errors instead of short-circuiting. Validator returns are normalized the same way as `Either.validate/3`: `Either` values are used directly, `:ok` becomes `Right(original_value)`, `{:ok, value}` becomes `Right(value)`, and `{:error, error}` becomes `Left(error)`.
 
 Except for validation, a `Left` value stops the pipeline immediately. The return mode controls how the final result is wrapped.
 

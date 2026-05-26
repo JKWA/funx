@@ -656,6 +656,12 @@ defmodule Funx.Monad.Either do
   Supports validators with arity 3: `(value, opts, env) -> Either.t()`.
   Also supports arity 1 and 2 for backwards compatibility.
 
+  Validator return values are normalized to `Either`:
+  - `Either.right(value)` / `Either.left(error)` are used directly
+  - `:ok` becomes `Right(original_value)`
+  - `{:ok, value}` becomes `Right(value)`
+  - `{:error, reason}` becomes `Left(reason)`
+
   ## Examples
 
       Either.validate(%{name: "Alice"}, validator, env: %{db: conn})
@@ -672,12 +678,9 @@ defmodule Funx.Monad.Either do
     env = Keyword.get(opts, :env, %{})
 
     traverse_a(validators, fn validator ->
-      cond do
-        is_function(validator, 3) -> validator.(value, opts, env)
-        is_function(validator, 2) -> validator.(value, opts)
-        is_function(validator, 1) -> validator.(value)
-        true -> raise ArgumentError, "Validator must be a function with arity 1, 2, or 3"
-      end
+      validator
+      |> call_validator(value, opts, env)
+      |> __MODULE__.normalize_validator_result(value)
     end)
     |> map(fn _ -> value end)
   end
@@ -685,6 +688,26 @@ defmodule Funx.Monad.Either do
   def validate(value, validator, opts) when is_function(validator) and is_list(opts) do
     validate(value, [validator], opts)
   end
+
+  defp call_validator(validator, value, opts, env) do
+    cond do
+      is_function(validator, 3) -> validator.(value, opts, env)
+      is_function(validator, 2) -> validator.(value, opts)
+      is_function(validator, 1) -> validator.(value)
+      true -> raise ArgumentError, "Validator must be a function with arity 1, 2, or 3"
+    end
+  end
+
+  @doc false
+  @spec normalize_validator_result(
+          t(any(), any()) | :ok | {:ok, any()} | {:error, any()},
+          any()
+        ) :: t(any(), any())
+  def normalize_validator_result(%Right{} = result, _value), do: result
+  def normalize_validator_result(%Left{} = result, _value), do: result
+  def normalize_validator_result(:ok, value), do: right(value)
+  def normalize_validator_result({:ok, value}, _original_value), do: right(value)
+  def normalize_validator_result({:error, reason}, _value), do: left(reason)
 
   @doc """
   Converts a `Maybe` value to an `Either`. If the `Maybe` is `Nothing`, a `Left` is returned using `on_none`.

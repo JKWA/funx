@@ -6,7 +6,7 @@
 
 **Validator**: A function that checks data and returns either success or accumulated errors
 
-- **Type signature**: `(value, opts) -> Either.t(ValidationError.t(), value)`
+- **Type signature**: `validate(value, opts, env) -> Either.t(ValidationError.t(), value) | :ok | {:ok, value} | {:error, ValidationError.t()}`
 - **Purpose**: Enable composable, declarative data validation with error accumulation
 - **Mathematical foundation**: Applicative functor for parallel error collection
 - **Composition**: Validators compose via optics-based field projection
@@ -27,8 +27,9 @@
 
 **Identity Preservation**: Validation returns original structure unchanged on success
 
-- **No transformation**: Validators check data, they don't transform it
+- **Value transformation allowed**: Validators may normalize the focused value for downstream validators
 - **Structure preservation**: Extra fields are preserved
+- **Original structure returned**: Successful validation returns the original input structure, not the transformed focused values
 - **Empty validation**: `validate do end` always returns `Right(value)`
 
 ## LLM Decision Guide: When to Use Validate
@@ -40,13 +41,14 @@
 - Building reusable, composable validation logic
 - Validating nested structures with complex field access
 - Need context-dependent validation (environment passing)
+- Need validator-local normalization before later validators run
 - User says: "validate", "check fields", "validation errors", "form validation"
 
 **❌ Don't use Validate when:**
 
 - Simple boolean checks (use Predicate instead)
 - Single validation that returns boolean
-- Need to transform data while validating (use separate steps)
+- Need to rewrite the outer structure as part of validation
 - Performance is absolutely critical (slight overhead from optics)
 
 **⚡ Validate vs. Predicate Decision:**
@@ -83,10 +85,13 @@
 - **Nested paths**: `at [:a, :b, :c], Validator` (converts to `Prism.path`)
 - **Root validators**: Bare validator module runs on entire structure
 - **Environment**: `Either.validate(data, validator, env: %{key: value})`
+- **Supported validator returns**: `:ok`, `{:ok, value}`, and `{:error, ValidationError.t()}` normalize to `Either`
 
 ## Overview
 
 `Funx.Validate` provides a declarative DSL for building composable validators. The DSL uses optics for field projection, accumulates all errors applicatively, and returns the original structure unchanged on success.
+
+Validators may transform the focused value they receive, and later validators in the same chain see that transformed value. Even so, the DSL preserves the outer input structure on success.
 
 The module follows an optics-first design where `at :key` defaults to `Prism.key(:key)`, making fields optional by default. Use `Required` for presence validation or explicit `Lens.key(:key)` for structural requirements.
 
@@ -147,6 +152,11 @@ at :price, fn value, _opts -> Either.right(value) end
 
 # Function (arity-3 with env)
 at :price, fn value, _opts, env -> Either.right(value) end
+
+# Additional supported return forms
+at :price, fn _value, _opts, _env -> :ok end
+at :price, fn value, _opts, _env -> {:ok, value} end
+at :price, fn _value, _opts, _env -> {:error, ValidationError.new("invalid")} end
 
 # Composable validator (previously defined)
 item_val = validate do
@@ -275,6 +285,32 @@ Either.validate(%{email: "new@example.com"}, validation, env: env)
 
 Either.validate(%{email: "taken@example.com"}, validation, env: env)
 # => %Left{left: %ValidationError{errors: ["email already taken"]}}
+```
+
+### Return Normalization
+
+```elixir
+defmodule LegacyPositive do
+  @behaviour Funx.Validate.Behaviour
+  alias Funx.Errors.ValidationError
+
+  def validate(value, opts) when is_list(opts), do: validate(value, opts, %{})
+
+  @impl true
+  def validate(value, _opts, _env) when is_number(value) and value > 0, do: :ok
+  def validate(_value, _opts, _env), do: {:error, ValidationError.new("must be positive")}
+end
+
+validation =
+  validate do
+    at :score, LegacyPositive
+  end
+
+Either.validate(%{score: 10}, validation)
+# => %Right{right: %{score: 10}}
+
+Either.validate(%{score: -1}, validation)
+# => %Left{left: %ValidationError{errors: ["must be positive"]}}
 ```
 
 ### Traversal for Relationship Validation

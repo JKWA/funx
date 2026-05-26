@@ -23,13 +23,14 @@ Key Features:
 
 Core rules:
 
-* A validator is a function `(value, opts) -> Either.t(ValidationError.t(), value)`
+* A validator uses the `validate(value, opts, env)` callback and may return `Either.t(ValidationError.t(), value)`, `:ok`, `{:ok, value}`, or `{:error, ValidationError.t()}`
 * `validate` builds a validator by composing smaller validators
 * `at :key` lowers to `Prism.key(:key)` - fields are optional by default
 * **Required is the sole mechanism for presence validation**
 * Missing keys result in `Nothing`, which most validators skip
 * Use explicit `Lens.key(:key)` for structural requirements (raises KeyError on missing)
-* Validation is identity on success - returns original structure unchanged
+* Validators may transform the focused value seen by later validators in the same chain
+* Validation preserves the outer input structure on success
 * Empty validation is the identity element - always succeeds
 
 ## Quick Reference
@@ -62,6 +63,7 @@ end
 * Lists of validators: `[Required, Email]`
 * Function captures: `&my_validator/2`
 * Anonymous functions: `fn value, opts -> Either.right(value) end`
+* Supported return forms include `:ok`, `{:ok, value}`, and `{:error, ValidationError.t()}`
 * Composable validators: Previously defined validators can be used directly
 
 ### Valid Projections (for `at` directive):

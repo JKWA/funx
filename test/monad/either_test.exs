@@ -671,6 +671,8 @@ defmodule Funx.Monad.EitherTest do
   end
 
   describe "validate/2" do
+    alias Funx.Errors.ValidationError
+
     def positive?(x), do: x > 0
     def even?(x), do: rem(x, 2) == 0
 
@@ -739,6 +741,24 @@ defmodule Funx.Monad.EitherTest do
       end
 
       assert validate(5, validator_2) == right(5)
+    end
+
+    test "normalizes :ok validator returns" do
+      validator = fn _value -> :ok end
+
+      assert validate(5, validator) == right(5)
+    end
+
+    test "normalizes {:ok, value} validator returns" do
+      validator = fn value -> {:ok, value * 2} end
+
+      assert validate(5, validator) == right(5)
+    end
+
+    test "normalizes {:error, reason} validator returns" do
+      validator = fn _value -> {:error, ValidationError.new("failed")} end
+
+      assert %Left{left: %ValidationError{errors: ["failed"]}} = validate(5, validator)
     end
 
     test "supports arity-3 validators with opts and env" do
