@@ -13,6 +13,13 @@
   * `:ok` preserves the original validated value in all validation paths
 * Validation docs, usage rules, and Livebooks were aligned with the current validator contract and normalization behavior.
 
+## [0.8.4] - Unreleased
+
+### Fixed
+
+* Eq, Ord, and Predicate DSL parsers now ensure referenced modules are compiled before calling `function_exported?/3`.
+  * Fixes behaviour-module detection during DSL compilation for `Funx.Eq`, `Funx.Ord`, and `Funx.Predicate`
+
 ## [0.8.3] - Unreleased
 
 ### Added
