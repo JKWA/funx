@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.8.6] - Unreleased
+
+### Added
+
+* `Funx.Validator` – New type validators for basic Elixir types:
+  * `String` – Validates that the value is a string (binary)
+  * `Float` – Validates that the value is a float
+  * `Number` – Validates that the value is a number (integer or float)
+  * `Boolean` – Validates that the value is a boolean (true or false)
+  * `Atom` – Validates that the value is an atom
+  * `List` – Validates that the value is a list
+  * `Map` – Validates that the value is a map
+
+* `Funx.Predicate` – Corresponding predicate modules for type checking:
+  * `String` – `is_binary/1` check
+  * `Float` – `is_float/1` check
+  * `Number` – `is_number/1` check
+  * `Boolean` – `is_boolean/1` check
+  * `Atom` – `is_atom/1` check
+  * `List` – `is_list/1` check
+  * `Map` – `is_map/1` check
+
+These follow the same pattern as the existing validators/predicates.
+
 ## [0.8.5] - Unreleased
 
 ### Added

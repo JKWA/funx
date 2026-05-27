@@ -131,6 +131,16 @@ defmodule Funx.Validator do
   - `Funx.Validator.Required` – Validates presence (not `nil`, not empty, not `Nothing`)
   - `Funx.Validator.Confirmation` – Validates that a value matches another field using `Eq`
 
+  ### Type Validators
+  - `Funx.Validator.String` – Validates that the value is a string (binary)
+  - `Funx.Validator.Integer` – Validates that the value is an integer
+  - `Funx.Validator.Float` – Validates that the value is a float
+  - `Funx.Validator.Number` – Validates that the value is a number (integer or float)
+  - `Funx.Validator.Boolean` – Validates that the value is a boolean (true or false)
+  - `Funx.Validator.Atom` – Validates that the value is an atom
+  - `Funx.Validator.List` – Validates that the value is a list
+  - `Funx.Validator.Map` – Validates that the value is a map
+
   ### String Validators
   - `Funx.Validator.Email` – Validates basic email format
   - `Funx.Validator.MinLength` – Validates minimum string length
@@ -138,7 +148,6 @@ defmodule Funx.Validator do
   - `Funx.Validator.Pattern` – Validates against a regular expression
 
   ### Numeric Validators
-  - `Funx.Validator.Integer` – Validates that the value is an integer
   - `Funx.Validator.Negative` – Validates number < 0
   - `Funx.Validator.Positive` – Validates number > 0
   - `Funx.Validator.Range` – Validates number within inclusive bounds

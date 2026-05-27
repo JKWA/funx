@@ -233,7 +233,14 @@ Funx provides built-in predicate modules that implement `Funx.Predicate.Dsl.Beha
 | `MinLength` | `min:` | String length `>= min` |
 | `MaxLength` | `max:` | String length `<= max` |
 | `Pattern` | `regex:` | String matches regex |
+| `String` | none | `is_binary/1` check |
 | `Integer` | none | `is_integer/1` check |
+| `Float` | none | `is_float/1` check |
+| `Number` | none | `is_number/1` check |
+| `Boolean` | none | `is_boolean/1` check |
+| `Atom` | none | `is_atom/1` check |
+| `List` | none | `is_list/1` check |
+| `Map` | none | `is_map/1` check |
 | `Positive` | none | Number `> 0` |
 | `Negative` | none | Number `< 0` |
 | `Required` | none | Not `nil` and not `""` |
@@ -497,7 +504,7 @@ The Predicate DSL provides declarative multi-condition boolean logic:
 - **Lens** with `check` for required fields (total accessor, raises on missing keys)
 - **Prism** with `check` for sum type branch selection (selects one case, Nothing fails the predicate)
 - **Traversal** with `check` for relating multiple foci (collect values to compare or validate together)
-- **Built-in predicates** for common checks: `Eq`, `In`, `LessThan`, `GreaterThan`, `MinLength`, `Pattern`, `Required`, `Integer`, `Positive`, etc.
+- **Built-in predicates** for common checks: `Eq`, `In`, `LessThan`, `GreaterThan`, `MinLength`, `Pattern`, `Required`, `String`, `Integer`, `Float`, `Number`, `Boolean`, `Atom`, `List`, `Map`, `Positive`, etc.
 - Use behaviour modules for reusable, configurable predicate logic
 - Nested `any`/`all` blocks for complex boolean expressions
 - Works seamlessly with Enum functions for filtering and searching
