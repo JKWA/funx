@@ -245,7 +245,7 @@ Features:
 - `check` - Project into a field and test with a predicate
 - `negate` - Invert a predicate (logical NOT)
 - `all`/`any` blocks - AND/OR logic for complex predicates
-- Built-in predicates: `Eq`, `In`, `GreaterThan`, `LessThan`, `MinLength`, `Pattern`, `Required`, `IsTrue`, and more
+- Built-in predicates: `Eq`, `In`, `GreaterThan`, `LessThan`, `MinLength`, `Pattern`, `String`, `Integer`, `Float`, `Number`, `Boolean`, `Atom`, `List`, `Map`, `Required`, `IsTrue`, and more
 - Support for optics (Lens, Prism), functions, and behaviour modules
 
 ## Validation
@@ -283,7 +283,7 @@ Features:
 - Environment passing for context-dependent validation
 - Composable validators that can be nested and reused
 
-Built-in validators: `Required`, `Email`, `MinLength`, `MaxLength`, `Pattern`, `Positive`, `Negative`, `Integer`, `GreaterThan`, `LessThan`, `In`, `NotIn`, `Range`, `Each`, `Confirmation`, `Not`
+Built-in validators: `Required`, `Email`, `MinLength`, `MaxLength`, `Pattern`, `String`, `Integer`, `Float`, `Number`, `Boolean`, `Atom`, `List`, `Map`, `Positive`, `Negative`, `GreaterThan`, `LessThan`, `In`, `NotIn`, `Range`, `Each`, `Confirmation`, `Not`
 
 ## Folding
 

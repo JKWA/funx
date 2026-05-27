@@ -390,6 +390,21 @@ Either.validate(%{name: "Alice", email: "alice@example.com"}, validation)
 
 ## Built-in Validators
 
+### Type Validators
+
+| Validator | Purpose | Options |
+|-----------|---------|---------|
+| `String` | Must be a string (binary) | None |
+| `Integer` | Must be an integer | None |
+| `Float` | Must be a float | None |
+| `Number` | Must be a number (integer or float) | None |
+| `Boolean` | Must be a boolean (true or false) | None |
+| `Atom` | Must be an atom | None |
+| `List` | Must be a list | None |
+| `Map` | Must be a map | None |
+
+### Presence and String Validators
+
 | Validator | Purpose | Options |
 |-----------|---------|---------|
 | `Required` | Presence validation | None |
@@ -397,16 +412,25 @@ Either.validate(%{name: "Alice", email: "alice@example.com"}, validation)
 | `MinLength` | Minimum string length | `min: integer` |
 | `MaxLength` | Maximum string length | `max: integer` |
 | `Pattern` | Regex pattern match | `pattern: regex` |
+
+### Numeric Validators
+
+| Validator | Purpose | Options |
+|-----------|---------|---------|
 | `Positive` | Number > 0 | None |
 | `Negative` | Number < 0 | None |
-| `Integer` | Must be integer | None |
 | `GreaterThan` | Number > value | `value: number` |
 | `LessThan` | Number < value | `value: number` |
 | `GreaterThanOrEq` | Number >= value | `value: number` |
 | `LessThanOrEq` | Number <= value | `value: number` |
+| `Range` | Value in range | `min: number, max: number` |
+
+### Collection and Logic Validators
+
+| Validator | Purpose | Options |
+|-----------|---------|---------|
 | `In` | Value in set | `values: list` |
 | `NotIn` | Value not in set | `values: list` |
-| `Range` | Value in range | `min: number, max: number` |
 | `Each` | Validate each item | `validator: validator` |
 | `Confirmation` | Matches another field | `field: atom` |
 | `Not` | Negate validator | `validator: validator` |

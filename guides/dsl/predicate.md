@@ -218,7 +218,14 @@ Funx provides built-in predicate modules that implement `Funx.Predicate.Dsl.Beha
 | `MinLength` | `min:` | Checks string length `>= min` |
 | `MaxLength` | `max:` | Checks string length `<= max` |
 | `Pattern` | `regex:` | Checks string matches regex |
+| `String` | none | Checks `is_binary/1` |
 | `Integer` | none | Checks `is_integer/1` |
+| `Float` | none | Checks `is_float/1` |
+| `Number` | none | Checks `is_number/1` |
+| `Boolean` | none | Checks `is_boolean/1` |
+| `Atom` | none | Checks `is_atom/1` |
+| `List` | none | Checks `is_list/1` |
+| `Map` | none | Checks `is_map/1` |
 | `Positive` | none | Checks number `> 0` |
 | `Negative` | none | Checks number `< 0` |
 | `Required` | none | Checks not `nil` and not `""` |
@@ -230,8 +237,10 @@ Predicates without required options use bare module syntax:
 
 ```elixir
 pred do
+  check :name, String
   check :count, Integer
   check :count, Positive
+  check :active, Boolean
 end
 ```
 
