@@ -5,10 +5,10 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="ExDoc v0.39.3">
-    <meta name="project" content="funx v0.8.5">
+    <meta name="project" content="funx v0.8.6">
 
 
-    <title>Funx.Predicate.IsFalse — funx v0.8.5</title>
+    <title>Funx.Predicate.IsFalse — funx v0.8.6</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
@@ -39,7 +39,7 @@
 funx
         </a>
         <div class="sidebar-projectVersion" translate="no">
-          v0.8.5
+          v0.8.6
         </div>
       </div>
     </div>
@@ -96,11 +96,11 @@ funx
   <div class="heading-with-actions top-heading">
     <h1>
       <span translate="no">Funx.Predicate.IsFalse</span> 
-      <small class="app-vsn" translate="no">(funx v0.8.5)</small>
+      <small class="app-vsn" translate="no">(funx v0.8.6)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.5/lib/predicate/is_false.ex#L1" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.6/lib/predicate/is_false.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -113,19 +113,19 @@ funx
 Uses strict equality (<code class="inline">== false</code>), not falsiness.</p><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="kn">use</span><span class="w"> </span><span class="nc">Funx.Predicate</span><span class="w">
 
 </span><span class="c1"># Check if a flag is false</span><span class="w">
-</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="0987707992-1">do</span><span class="w">
-  </span><span class="n">check</span><span class="w"> </span><span class="p" data-group-id="0987707992-2">[</span><span class="ss">:bleeding</span><span class="p">,</span><span class="w"> </span><span class="ss">:staunched</span><span class="p" data-group-id="0987707992-2">]</span><span class="p">,</span><span class="w"> </span><span class="nc">IsFalse</span><span class="w">
-</span><span class="k" data-group-id="0987707992-1">end</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="5402886988-1">do</span><span class="w">
+  </span><span class="n">check</span><span class="w"> </span><span class="p" data-group-id="5402886988-2">[</span><span class="ss">:bleeding</span><span class="p">,</span><span class="w"> </span><span class="ss">:staunched</span><span class="p" data-group-id="5402886988-2">]</span><span class="p">,</span><span class="w"> </span><span class="nc">IsFalse</span><span class="w">
+</span><span class="k" data-group-id="5402886988-1">end</span><span class="w">
 
 </span><span class="c1"># Equivalent to</span><span class="w">
-</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="0987707992-3">do</span><span class="w">
-  </span><span class="n">check</span><span class="w"> </span><span class="p" data-group-id="0987707992-4">[</span><span class="ss">:bleeding</span><span class="p">,</span><span class="w"> </span><span class="ss">:staunched</span><span class="p" data-group-id="0987707992-4">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="0987707992-5">fn</span><span class="w"> </span><span class="n">staunched</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">staunched</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="no">false</span><span class="w"> </span><span class="k" data-group-id="0987707992-5">end</span><span class="w">
-</span><span class="k" data-group-id="0987707992-3">end</span><span class="w">
+</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="5402886988-3">do</span><span class="w">
+  </span><span class="n">check</span><span class="w"> </span><span class="p" data-group-id="5402886988-4">[</span><span class="ss">:bleeding</span><span class="p">,</span><span class="w"> </span><span class="ss">:staunched</span><span class="p" data-group-id="5402886988-4">]</span><span class="p">,</span><span class="w"> </span><span class="k" data-group-id="5402886988-5">fn</span><span class="w"> </span><span class="n">staunched</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">staunched</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="no">false</span><span class="w"> </span><span class="k" data-group-id="5402886988-5">end</span><span class="w">
+</span><span class="k" data-group-id="5402886988-3">end</span><span class="w">
 
 </span><span class="c1"># Also equivalent to</span><span class="w">
-</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="0987707992-6">do</span><span class="w">
-  </span><span class="n">negate</span><span class="w"> </span><span class="n">check</span><span class="w"> </span><span class="p" data-group-id="0987707992-7">[</span><span class="ss">:bleeding</span><span class="p">,</span><span class="w"> </span><span class="ss">:staunched</span><span class="p" data-group-id="0987707992-7">]</span><span class="p">,</span><span class="w"> </span><span class="nc">IsTrue</span><span class="w">
-</span><span class="k" data-group-id="0987707992-6">end</span></code></pre>
+</span><span class="n">pred</span><span class="w"> </span><span class="k" data-group-id="5402886988-6">do</span><span class="w">
+  </span><span class="n">negate</span><span class="w"> </span><span class="n">check</span><span class="w"> </span><span class="p" data-group-id="5402886988-7">[</span><span class="ss">:bleeding</span><span class="p">,</span><span class="w"> </span><span class="ss">:staunched</span><span class="p" data-group-id="5402886988-7">]</span><span class="p">,</span><span class="w"> </span><span class="nc">IsTrue</span><span class="w">
+</span><span class="k" data-group-id="5402886988-6">end</span></code></pre>
     </section>
 
 </div>
@@ -136,9 +136,9 @@ Uses strict equality (<code class="inline">== false</code>), not falsiness.</p><
         <p>
 
             <span class="line">
-              <a href="https://hex.pm/packages/funx/0.8.5" class="footer-hex-package">Hex Package</a>
+              <a href="https://hex.pm/packages/funx/0.8.6" class="footer-hex-package">Hex Package</a>
 
-              <a href="https://preview.hex.pm/preview/funx/0.8.5">Hex Preview</a>
+              <a href="https://preview.hex.pm/preview/funx/0.8.6">Hex Preview</a>
 
             </span>
 
