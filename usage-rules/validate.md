@@ -408,6 +408,7 @@ Either.validate(%{name: "Alice", email: "alice@example.com"}, validation)
 | Validator | Purpose | Options |
 |-----------|---------|---------|
 | `Required` | Presence validation | None |
+| `NotBlank` | String is not blank (not empty or whitespace-only) | None |
 | `Email` | Email format | None |
 | `MinLength` | Minimum string length | `min: integer` |
 | `MaxLength` | Maximum string length | `max: integer` |
@@ -429,6 +430,7 @@ Either.validate(%{name: "Alice", email: "alice@example.com"}, validation)
 
 | Validator | Purpose | Options |
 |-----------|---------|---------|
+| `NonEmpty` | List is not empty | None |
 | `In` | Value in set | `values: list` |
 | `NotIn` | Value not in set | `values: list` |
 | `Each` | Validate each item | `validator: validator` |
