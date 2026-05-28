@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.7] - Unreleased
+
+### Added
+
+* `Funx.Validator` – New presence and content validators:
+  * `NonEmpty` – Validates that a list is not empty
+  * `NotBlank` – Validates that a string is not blank (not empty or whitespace-only)
+
+* `Funx.Predicate` – Corresponding predicate modules for presence and content:
+  * `NonEmpty` – Checks if a list is not empty (returns `true` for `[1, 2, 3]`, `false` for `[]`)
+  * `NotBlank` – Checks if a string is not blank (returns `true` for `"hello"`, `false` for `""` or `"   "`)
+
+These validators complement the existing `Required` validator, providing specific validation for non-empty collections and non-blank strings. They follow the same pattern as existing validators/predicates.
+
 ## [0.8.6] - Unreleased
 
 ### Added

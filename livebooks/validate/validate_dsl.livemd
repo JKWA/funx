@@ -85,7 +85,18 @@ alias Funx.Monad.Either
 alias Funx.Monad.Either.{Left, Right}
 alias Funx.Errors.ValidationError
 alias Funx.Optics.{Lens, Prism, Traversal}
-alias Funx.Validator.{Required, Email, MinLength, Positive}
+
+# Type validators
+alias Funx.Validator.{String, Integer, Float, Number, Boolean, Atom, List, Map}
+
+# Presence and content validators
+alias Funx.Validator.{Required, NotBlank, NonEmpty}
+
+# String validators
+alias Funx.Validator.{Email, MinLength, MaxLength, Pattern}
+
+# Numeric validators
+alias Funx.Validator.{Positive, Negative, GreaterThan, LessThan}
 ```
 
 Define test structs:
@@ -162,6 +173,106 @@ strict_validation =
   end
 
 Either.validate(charlie, strict_validation)
+```
+
+## Type Validators
+
+Validate values match expected Elixir types:
+
+```elixir
+type_validation =
+  validate do
+    at :name, String
+    at :age, Integer
+    at :score, Number
+    at :active, Boolean
+    at :tags, List
+    at :metadata, Map
+  end
+
+data = %{
+  name: "Alice",
+  age: 30,
+  score: 95.5,
+  active: true,
+  tags: [:elixir, :fp],
+  metadata: %{level: "expert"}
+}
+
+Either.validate(data, type_validation)
+```
+
+```elixir
+# Type mismatches accumulated
+bad_data = %{
+  name: 123,
+  age: "thirty",
+  score: :invalid,
+  active: "yes",
+  tags: "not a list",
+  metadata: []
+}
+
+Either.validate(bad_data, type_validation)
+```
+
+## Presence and Content Validators
+
+### NotBlank: Non-Empty Strings with Content
+
+`NotBlank` ensures strings have content after trimming whitespace:
+
+```elixir
+title_validation =
+  validate do
+    at :title, [Required, NotBlank]
+  end
+
+Either.validate(%{title: "My Article"}, title_validation)
+```
+
+```elixir
+# Fails on blank strings
+Either.validate(%{title: "   "}, title_validation)
+```
+
+### NonEmpty: Non-Empty Lists
+
+`NonEmpty` ensures lists contain at least one element:
+
+```elixir
+tags_validation =
+  validate do
+    at :tags, [Required, NonEmpty]
+  end
+
+Either.validate(%{tags: [:elixir, :fp]}, tags_validation)
+```
+
+```elixir
+# Fails on empty lists
+Either.validate(%{tags: []}, tags_validation)
+```
+
+### Combining Presence Validators
+
+```elixir
+post_validation =
+  validate do
+    at :title, [Required, NotBlank, {MinLength, min: 5}]
+    at :tags, [Required, NonEmpty]
+    at :author, [Required, NotBlank]
+  end
+
+Either.validate(
+  %{title: "Functional Programming", tags: [:elixir], author: "Alice"},
+  post_validation
+)
+```
+
+```elixir
+# All presence validations fail
+Either.validate(%{title: "   ", tags: [], author: ""}, post_validation)
 ```
 
 ## Prism vs Lens: Optional vs Required Fields
