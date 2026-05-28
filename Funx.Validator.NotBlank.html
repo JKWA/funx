@@ -8,11 +8,11 @@
     <meta name="project" content="funx v0.8.6">
 
 
-    <title>Funx.Monoid.Eq.All — funx v0.8.6</title>
+    <title>Funx.Validator.NotBlank — funx v0.8.6</title>
 
     <link rel="stylesheet" href="dist/html-elixir-VYWJUHZE.css" />
 
-      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Monoid.Eq.All.html" />
+      <link rel="canonical" href="https://hexdocs.pm/funx/Funx.Validator.NotBlank.html" />
 
     <script defer src="dist/sidebar_items-E1B884C0.js"></script>
     <script defer src="docs_config.js"></script>
@@ -95,12 +95,12 @@ funx
 <div id="top-content">
   <div class="heading-with-actions top-heading">
     <h1>
-      <span translate="no">Funx.Monoid.Eq.All</span> 
+      <span translate="no">Funx.Validator.NotBlank</span> 
       <small class="app-vsn" translate="no">(funx v0.8.6)</small>
 
     </h1>
 
-      <a href="https://github.com/JKWA/funx/blob/v0.8.6/lib/monoid/eq_all.ex#L3" title="View Source" class="icon-action" rel="help">
+      <a href="https://github.com/JKWA/funx/blob/v0.8.6/lib/validator/not_blank.ex#L1" title="View Source" class="icon-action" rel="help">
         <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         <span class="sr-only">View Source</span>
       </a>
@@ -109,7 +109,20 @@ funx
 
 
     <section id="moduledoc">
-<p><a href="https://livebook.dev/run?url=https%3A%2F%2Fgithub.com%2FJKWA%2Ffunx%2Fblob%2Fmain%2Flivebooks%2Fmonoid%2Feq_all.livemd"><img src="https://livebook.dev/badge/v1/black.svg" alt="Run in Livebook"/></a></p><p>A Monoid implementation for equality checks for All.</p>
+<p>Validates that a string is not blank (has content after trimming whitespace).</p><h2 id="module-optional-options" class="section-heading"><a href="#module-optional-options" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Optional Options</span></h2><ul><li><code class="inline">:message</code> - Custom error message callback <code class="inline">(value -&gt; String.t())</code></li></ul><h2 id="module-examples" class="section-heading"><a href="#module-examples" class="hover-link"><i class="ri-link-m" aria-hidden="true"></i></a><span class="text">Examples</span></h2><pre><code class="makeup elixir" translate="no"><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.NotBlank</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="9898394106-1">(</span><span class="s">&quot;hello&quot;</span><span class="p" data-group-id="9898394106-1">)</span><span class="w">
+</span><span class="p" data-group-id="9898394106-2">%</span><span class="nc" data-group-id="9898394106-2">Funx.Monad.Either.Right</span><span class="p" data-group-id="9898394106-2">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;hello&quot;</span><span class="p" data-group-id="9898394106-2">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.NotBlank</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="9898394106-3">(</span><span class="s">&quot;  hello  &quot;</span><span class="p" data-group-id="9898394106-3">)</span><span class="w">
+</span><span class="p" data-group-id="9898394106-4">%</span><span class="nc" data-group-id="9898394106-4">Funx.Monad.Either.Right</span><span class="p" data-group-id="9898394106-4">{</span><span class="ss">right</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;  hello  &quot;</span><span class="p" data-group-id="9898394106-4">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.NotBlank</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="9898394106-5">(</span><span class="s">&quot;&quot;</span><span class="p" data-group-id="9898394106-5">)</span><span class="w">
+</span><span class="p" data-group-id="9898394106-6">%</span><span class="nc" data-group-id="9898394106-6">Funx.Monad.Either.Left</span><span class="p" data-group-id="9898394106-6">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9898394106-7">%</span><span class="nc" data-group-id="9898394106-7">Funx.Errors.ValidationError</span><span class="p" data-group-id="9898394106-7">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9898394106-8">[</span><span class="s">&quot;must not be blank&quot;</span><span class="p" data-group-id="9898394106-8">]</span><span class="p" data-group-id="9898394106-7">}</span><span class="p" data-group-id="9898394106-6">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.NotBlank</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="9898394106-9">(</span><span class="s">&quot;   &quot;</span><span class="p" data-group-id="9898394106-9">)</span><span class="w">
+</span><span class="p" data-group-id="9898394106-10">%</span><span class="nc" data-group-id="9898394106-10">Funx.Monad.Either.Left</span><span class="p" data-group-id="9898394106-10">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9898394106-11">%</span><span class="nc" data-group-id="9898394106-11">Funx.Errors.ValidationError</span><span class="p" data-group-id="9898394106-11">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9898394106-12">[</span><span class="s">&quot;must not be blank&quot;</span><span class="p" data-group-id="9898394106-12">]</span><span class="p" data-group-id="9898394106-11">}</span><span class="p" data-group-id="9898394106-10">}</span><span class="w">
+
+</span><span class="gp unselectable">iex&gt; </span><span class="nc">Funx.Validator.NotBlank</span><span class="o">.</span><span class="n">validate</span><span class="p" data-group-id="9898394106-13">(</span><span class="mi">42</span><span class="p" data-group-id="9898394106-13">)</span><span class="w">
+</span><span class="p" data-group-id="9898394106-14">%</span><span class="nc" data-group-id="9898394106-14">Funx.Monad.Either.Left</span><span class="p" data-group-id="9898394106-14">{</span><span class="ss">left</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9898394106-15">%</span><span class="nc" data-group-id="9898394106-15">Funx.Errors.ValidationError</span><span class="p" data-group-id="9898394106-15">{</span><span class="ss">errors</span><span class="p">:</span><span class="w"> </span><span class="p" data-group-id="9898394106-16">[</span><span class="s">&quot;must not be blank&quot;</span><span class="p" data-group-id="9898394106-16">]</span><span class="p" data-group-id="9898394106-15">}</span><span class="p" data-group-id="9898394106-14">}</span></code></pre>
     </section>
 
 </div>
@@ -121,20 +134,6 @@ funx
       </a>
       <span class="text">Summary</span>
     </h1>
-<div class="summary-types summary">
-  <h2>
-    <a href="#types">Types</a>
-  </h2>
-
-    <div class="summary-row">
-      <div class="summary-signature">
-        <a href="#t:t/0" data-no-tooltip="" translate="no">t()</a>
-
-      </div>
-
-    </div>
-
-</div>
 <div class="summary-functions summary">
   <h2>
     <a href="#functions">Functions</a>
@@ -142,7 +141,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#default_eq?/2" data-no-tooltip="" translate="no">default_eq?(_, _)</a>
+        <a href="#validate/1" data-no-tooltip="" translate="no">validate(value)</a>
 
       </div>
 
@@ -150,7 +149,7 @@ funx
 
     <div class="summary-row">
       <div class="summary-signature">
-        <a href="#default_not_eq?/2" data-no-tooltip="" translate="no">default_not_eq?(_, _)</a>
+        <a href="#validate/2" data-no-tooltip="" translate="no">validate(value, opts)</a>
 
       </div>
 
@@ -160,50 +159,6 @@ funx
 
   </section>
 
-
-  <section id="types" class="details-list">
-    <h1 class="section-heading">
-      <a class="hover-link" href="#types">
-        <i class="ri-link-m" aria-hidden="true"></i>
-      </a>
-      <span class="text">Types</span>
-    </h1>
-
-    <div class="types-list">
-<section class="detail" id="t:t/0">
-
-  <div class="detail-header">
-    <a href="#t:t/0" class="detail-link" data-no-tooltip="" aria-label="Link to this type">
-      <i class="ri-link-m" aria-hidden="true"></i>
-    </a>
-    <div class="heading-with-actions">
-      <h1 class="signature" translate="no">t()</h1>
-
-
-        <a href="https://github.com/JKWA/funx/blob/v0.8.6/lib/monoid/eq_all.ex#L10" class="icon-action" rel="help" aria-label="View Source">
-          <i class="ri-code-s-slash-line" aria-hidden="true"></i>
-        </a>
-
-    </div>
-  </div>
-
-  <section class="docstring">
-
-      <div class="specs">
-
-          <pre translate="no"><span class="attribute">@type</span> t() :: %Funx.Monoid.Eq.All{
-  eq?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>()),
-  not_eq?: (<a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>(), <a href="https://hexdocs.pm/elixir/typespecs.html#basic-types">any</a>() -&gt; <a href="https://hexdocs.pm/elixir/typespecs.html#built-in-types">boolean</a>())
-}</pre>
-
-      </div>
-
-
-  </section>
-</section>
-
-    </div>
-  </section>
 
   <section id="functions" class="details-list">
     <h1 class="section-heading">
@@ -214,17 +169,17 @@ funx
     </h1>
 
     <div class="functions-list">
-<section class="detail" id="default_eq?/2">
+<section class="detail" id="validate/1">
 
   <div class="detail-header">
-    <a href="#default_eq?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+    <a href="#validate/1" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">default_eq?(_, _)</h1>
+      <h1 class="signature" translate="no">validate(value)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.6/lib/monoid/eq_all.ex#L18" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.6/lib/validator/not_blank.ex#L27" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
@@ -236,17 +191,17 @@ funx
 
   </section>
 </section>
-<section class="detail" id="default_not_eq?/2">
+<section class="detail" id="validate/2">
 
   <div class="detail-header">
-    <a href="#default_not_eq?/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
+    <a href="#validate/2" class="detail-link" data-no-tooltip="" aria-label="Link to this function">
       <i class="ri-link-m" aria-hidden="true"></i>
     </a>
     <div class="heading-with-actions">
-      <h1 class="signature" translate="no">default_not_eq?(_, _)</h1>
+      <h1 class="signature" translate="no">validate(value, opts)</h1>
 
 
-        <a href="https://github.com/JKWA/funx/blob/v0.8.6/lib/monoid/eq_all.ex#L20" class="icon-action" rel="help" aria-label="View Source">
+        <a href="https://github.com/JKWA/funx/blob/v0.8.6/lib/validator/not_blank.ex#L27" class="icon-action" rel="help" aria-label="View Source">
           <i class="ri-code-s-slash-line" aria-hidden="true"></i>
         </a>
 
