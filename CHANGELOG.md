@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.8] - Unreleased
+
+### Added
+
+* `Funx.Validator` – New boolean validators:
+  * `IsTrue` – Validates that a value is strictly `true` (not just truthy)
+  * `IsFalse` – Validates that a value is strictly `false` (not just falsy)
+
+Note: `IsTrue` and `IsFalse` predicates were added in 0.8.3, but corresponding validators were added in this release.
+
 ## [0.8.7] - Unreleased
 
 ### Added

@@ -75,6 +75,26 @@ end
 * Traversals: `Traversal.combine([...])` (collects multiple foci)
 * Functions: `&(&1.field)`, `fn x -> x.value end` (custom extraction)
 
+### Built-in Validators:
+
+**Type Validators:**
+`String`, `Integer`, `Float`, `Number`, `Boolean`, `Atom`, `List`, `Map`
+
+**Boolean Validators:**
+`IsTrue`, `IsFalse`
+
+**Presence & Content:**
+`Required`, `NotBlank`, `NonEmpty`
+
+**String Validators:**
+`Email`, `MinLength`, `MaxLength`, `Pattern`
+
+**Numeric Validators:**
+`Positive`, `Negative`, `GreaterThan`, `LessThan`, `GreaterThanOrEq`, `LessThanOrEq`, `Range`
+
+**Collection & Logic:**
+`In`, `NotIn`, `Contains`, `Each`, `Confirmation`, `Not`, `Equal`, `NotEqual`, `AllEqual`, `Any`
+
 ## Setup
 
 Use the DSL and alias helper modules:
@@ -88,6 +108,9 @@ alias Funx.Optics.{Lens, Prism, Traversal}
 
 # Type validators
 alias Funx.Validator.{String, Integer, Float, Number, Boolean, Atom, List, Map}
+
+# Boolean validators
+alias Funx.Validator.{IsTrue, IsFalse}
 
 # Presence and content validators
 alias Funx.Validator.{Required, NotBlank, NonEmpty}
@@ -214,6 +237,25 @@ bad_data = %{
 }
 
 Either.validate(bad_data, type_validation)
+```
+
+### Strict Boolean Validators
+
+`Boolean` checks if a value is a boolean type. For strict value checks, use `IsTrue` and `IsFalse`:
+
+```elixir
+terms_validation =
+  validate do
+    at :terms_accepted, [Required, IsTrue]
+    at :newsletter_opted_out, IsFalse
+  end
+
+Either.validate(%{terms_accepted: true, newsletter_opted_out: false}, terms_validation)
+```
+
+```elixir
+# IsTrue and IsFalse use strict equality, not truthiness
+Either.validate(%{terms_accepted: 1, newsletter_opted_out: nil}, terms_validation)
 ```
 
 ## Presence and Content Validators
