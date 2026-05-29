@@ -216,6 +216,72 @@ Either.validate(%{name: "", email: "bad", age: -5}, user_validation)
 # => %Left{left: %ValidationError{errors: ["is required", "must be at least 3 characters", "must be a valid email", "must be positive"]}}
 ```
 
+### Type Validation
+
+Validate that values match expected Elixir types:
+
+```elixir
+alias Funx.Validator.{String, Integer, Float, Number, Boolean, Atom, List, Map}
+
+config_validation =
+  validate do
+    at :name, String
+    at :port, Integer
+    at :timeout, Number
+    at :enabled, Boolean
+    at :tags, List
+    at :metadata, Map
+  end
+
+Either.validate(%{name: "api", port: 8080, timeout: 30.5, enabled: true, tags: [:prod], metadata: %{}}, config_validation)
+# => %Right{right: ...}
+```
+
+### Presence and Content Validation
+
+Use `NonEmpty` for lists and `NotBlank` for strings to ensure content exists:
+
+```elixir
+alias Funx.Validator.{Required, NotBlank, NonEmpty}
+
+post_validation =
+  validate do
+    at :title, [Required, NotBlank, {MinLength, min: 5}]
+    at :content, [Required, NotBlank]
+    at :tags, [Required, NonEmpty]
+  end
+
+# Valid post
+Either.validate(%{title: "Hello World", content: "...", tags: [:elixir]}, post_validation)
+# => %Right{right: ...}
+
+# Fails: blank title, empty tags
+Either.validate(%{title: "   ", content: "...", tags: []}, post_validation)
+# => %Left{left: %ValidationError{errors: ["must not be blank", "must be a non-empty list"]}}
+```
+
+### Strict Boolean Validation
+
+Use `IsTrue` and `IsFalse` for strict boolean checks (not truthiness):
+
+```elixir
+alias Funx.Validator.{IsTrue, IsFalse}
+
+consent_validation =
+  validate do
+    at :terms_accepted, [Required, IsTrue]
+    at :marketing_opted_out, IsFalse
+  end
+
+# Valid: strict boolean values
+Either.validate(%{terms_accepted: true, marketing_opted_out: false}, consent_validation)
+# => %Right{right: ...}
+
+# Fails: truthy/falsy values are not accepted
+Either.validate(%{terms_accepted: 1, marketing_opted_out: nil}, consent_validation)
+# => %Left{left: %ValidationError{errors: ["must be true", "must be false"]}}
+```
+
 ### Optional vs Required Fields
 
 ```elixir
@@ -390,6 +456,8 @@ Either.validate(%{name: "Alice", email: "alice@example.com"}, validation)
 
 ## Built-in Validators
 
+All validators support an optional `:message` option for custom error messages: `{Validator, message: fn value -> "custom error" end}`
+
 ### Type Validators
 
 | Validator | Purpose | Options |
@@ -403,11 +471,21 @@ Either.validate(%{name: "Alice", email: "alice@example.com"}, validation)
 | `List` | Must be a list | None |
 | `Map` | Must be a map | None |
 
+### Boolean Validators
+
+| Validator | Purpose | Options |
+|-----------|---------|---------|
+| `IsTrue` | Must be strictly `true` (not truthy) | None |
+| `IsFalse` | Must be strictly `false` (not falsy) | None |
+
+Use `Boolean` to check if a value is a boolean type. Use `IsTrue`/`IsFalse` for strict value equality checks.
+
 ### Presence and String Validators
 
 | Validator | Purpose | Options |
 |-----------|---------|---------|
-| `Required` | Presence validation | None |
+| `Required` | Presence validation (not nil, not empty string, not Nothing) | None |
+| `NonEmpty` | List is not empty | None |
 | `NotBlank` | String is not blank (not empty or whitespace-only) | None |
 | `Email` | Email format | None |
 | `MinLength` | Minimum string length | `min: integer` |
@@ -430,11 +508,13 @@ Either.validate(%{name: "Alice", email: "alice@example.com"}, validation)
 
 | Validator | Purpose | Options |
 |-----------|---------|---------|
-| `NonEmpty` | List is not empty | None |
 | `In` | Value in set | `values: list` |
 | `NotIn` | Value not in set | `values: list` |
+| `Contains` | List contains value | `value: term` |
 | `Each` | Validate each item | `validator: validator` |
 | `Confirmation` | Matches another field | `field: atom` |
+| `Equal` | Value equals another | `value: term` |
+| `NotEqual` | Value not equal to another | `value: term` |
 | `Not` | Negate validator | `validator: validator` |
 
 ## Creating Custom Validators
